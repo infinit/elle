@@ -9,14 +9,24 @@ import metalib
 from meta import conf, database
 from meta.page import Page
 
-class Device(Page):
+class All(Page):
     """
     Return all user's device ids
         GET /devices
             -> {
                 'devices': [device_id1, ...],
             }
+    """
 
+    __pattern__ = "/devices"
+
+    def GET(self):
+        self.requireLoggedIn()
+        return self.success({'devices': self.user.get('devices', [])})
+
+
+class One(Page):
+    """
     Return one user device
         GET /device/id1
             -> {
@@ -28,9 +38,24 @@ class Device(Page):
                 ],
                 'passport': "passport string",
             }
+    """
 
+    __pattern__ = "/device/(.+)"
+
+    def GET(self, id):
+        self.requireLoggedIn()
+        device = database.devices().find_one({
+            '_id': database.ObjectId(id),
+            'owner': self.user['_id'],
+        })
+        device.pop('owner')
+        return self.success(device)
+
+
+class Create(Page):
+    """
     Create a new device
-        POST /device {
+        POST /device/create {
             'name': 'pretty name', # required
             'local_ip': 'local ip address',
             'local_port': 1912,
@@ -41,52 +66,12 @@ class Device(Page):
                 'created_device_id': "id",
                 'passport': "passport string",
             }
-
-    Update an existing device
-        POST /device {
-            '_id': "id",
-            'name': 'pretty name', # optional
-            'local_ip': 'local ip address',
-            'local_port': 1912,
-            'extern_port': 343,
-        }
-            -> {
-                'success': True,
-                'updated_device_id': "id",
-            }
-
-    Delete a device
-        DELETE /device/id
-            -> {
-                'success': True,
-                'deleted_device_id': "id",
-            }
     """
-
-    def GET(self, id=None):
-        self.requireLoggedIn()
-        if id is None:
-            return self.success({'devices': self.user.get('devices', [])})
-        else:
-            device = database.devices().find_one({
-                '_id': database.ObjectId(id),
-                'owner': self.user['_id'],
-            })
-            device.pop('owner')
-            return self.success(device)
+    __pattern__ = "/device/create"
 
     def POST(self):
         self.requireLoggedIn()
         device = self.data
-        if '_id' in device:
-            func = self._update
-        else:
-            func = self._create
-
-        return func(device)
-
-    def _create(self, device):
-        print("Create device", device)
         name = device.get('name', '').strip()
         if not name:
             return self.error("You have to provide a valid device name")
@@ -106,31 +91,51 @@ class Device(Page):
             'port': int(device.get('extern_port', to_save['local_address']['port'])),
         }
 
-        id = database.devices().insert(to_save)
-        assert id is not None
+        id_ = database.devices().insert(to_save)
+        assert id_ is not None
 
         to_save['passport'] = metalib.generate_passport(
-            id,
+            id_,
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
         database.devices().save(to_save)
 
         # XXX check unique device ?
-        self.user.setdefault('devices', []).append(str(id))
+        self.user.setdefault('devices', []).append(id_)
         database.users().save(self.user)
         return self.success({
-            'created_device_id': str(id),
+            'created_device_id': id_,
             'passport': to_save['passport']
         })
 
-    def _update(self, device):
+class Update(Page):
+    """
+    Update an existing device
+        POST /device/update {
+            '_id': "id",
+            'name': 'pretty name', # optional
+            'local_ip': 'local ip address',
+            'local_port': 1912,
+            'extern_port': 343,
+        }
+            -> {
+                'success': True,
+                'updated_device_id': "id",
+            }
+    """
+
+    __pattern__ = "/device/update"
+
+    def POST(self):
+        self.requireLoggedIn()
+        device = self.data
         assert '_id' in device
-        id = device['_id'].strip()
-        if not id in self.user['devices']:
+        id_ = database.ObjectId(device['_id'].strip())
+        if not id_ in self.user['devices']:
             raise web.Forbidden("This network does not belong to you")
         to_save = database.devices().find_one({
-            '_id': database.ObjectId(id)
+            '_id': database.ObjectId(id_)
         })
         if 'name' in device:
             name = device['name'].strip()
@@ -148,29 +153,41 @@ class Device(Page):
             'port': device.get('extern_port', to_save['local_address']['port']),
         }
 
-        id = database.devices().save(to_save)
+        id_ = database.devices().save(to_save)
         return self.success({
-            'updated_device_id': str(id),
+            'updated_device_id': id_,
             'passport': to_save['passport'],
         })
 
-    def DELETE(self, id):
+class Delete(Page):
+    """
+    Delete a device
+        DELETE /device/id
+            -> {
+                'success': True,
+                'deleted_device_id': "id",
+            }
+    """
+
+    __pattern__ = "/device/(.+)"
+
+    def DELETE(self, id_):
         self.requireLoggedIn()
         try:
             devices = self.user['devices']
-            idx = devices.index(id)
+            idx = devices.index(id_)
             devices.pop(idx)
         except:
             return json.dumps({
                 'success': False,
-                'error': "The device '%s' was not found" % (id),
+                'error': "The device '%s' was not found" % (id_),
             })
         database.users().save(self.user)
         database.devices().find_and_modify({
-            '_id': database.ObjectId(id),
+            '_id': database.ObjectId(id_),
             'owner': self.user['_id'], #not required
         }, remove=True)
         return self.success({
-            'deleted_device_id': id,
+            'deleted_device_id': id_,
         })
 

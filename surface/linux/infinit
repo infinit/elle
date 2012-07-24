@@ -57,9 +57,12 @@ class InfinitShell(cmd.Cmd):
 
     def do_networks(self, args):
         """Print networks."""
-        networks = self._state.networks()
-        for network in networks:
-            print(network, ':', self._state.network_name(network))
+        try:
+            networks = self._state.networks()
+            for network in networks:
+                print(network, ':', self._state.network_name(network))
+        except Exception as e:
+            print(e)
 
     def do_create_network(self, args):
         """Create a new network."""
@@ -67,17 +70,29 @@ class InfinitShell(cmd.Cmd):
         if not name:
             print("You have to specify a name")
             return
-        self._state.create_network(name)
+        try:
+            self._state.create_network(name)
+        except Exception as e:
+            print(e)
 
     def do_refresh_networks(self, args):
-        self._state.refresh_networks()
+        try:
+            self._state.refresh_networks()
+        except Exception as e:
+            print(e)
 
     def do_start(self, args):
         """Mount all infinit networks."""
-        self._state.launch_watchdog()
+        try:
+            self._state.launch_watchdog()
+        except Exception as e:
+            print(e)
 
     def do_stop(self, args):
-        self._state.stop_watchdog()
+        try:
+            self._state.stop_watchdog()
+        except Exception as e:
+            print(e)
 
     def do_create_device(self, args=""):
         """Create local device with specified name or your host name"""
@@ -85,7 +100,10 @@ class InfinitShell(cmd.Cmd):
         if not dev_name:
             import socket
             dev_name = socket.gethostname().strip()
-        self._state.set_device_name(dev_name)
+        try:
+            self._state.set_device_name(dev_name)
+        except Exception as e:
+            print(e)
 
     def default(self, line):
         if line == 'EOF':

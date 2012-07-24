@@ -30,7 +30,7 @@ class Page(object):
         if self._user is None:
             try:
                 self._user = database.users().find_one({
-                    '_id': self.session._user_id
+                    '_id': database.ObjectId(self.session._user_id)
                 })
             except AttributeError:
                 return None

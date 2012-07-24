@@ -107,6 +107,8 @@ namespace surface
       void create_network(std::string const& name);
       void refresh_networks();
       Network const& network(std::string const& id);
+      void network_add_user(std::string const& network_id,
+                            std::string const& user_id);
 
     private:
       std::string _watchdog_id() const;

@@ -282,6 +282,16 @@ extern "C"
       __WRAP_CPP(state, create_network, name);
     }
 
+    gap_Status
+    gap_network_add_user(gap_State* state,
+                         char const* network_id,
+                         char const* user_id)
+    {
+      assert(network_id != nullptr);
+      assert(user_id != nullptr);
+      __WRAP_CPP(state, network_add_user, network_id, user_id);
+    }
+
     /// - User ----------------------------------------------------------------
 
     char const* gap_user_fullname(gap_State* state, char const* id)

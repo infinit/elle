@@ -8,7 +8,10 @@ from meta import conf, database
 import metalib
 import pythia
 
-class UserFromPublicKey(Page):
+class Search(Page):
+    # XXX doc and improve
+
+    __pattern__ = "/user/search"
 
     def POST(self):
         user = database.users().find_one({
@@ -42,6 +45,9 @@ http://infinit.io
 """.strip()
 
 class Invite(Page):
+    # XXX doc and improve
+
+    __pattern__ = "/user/invite"
 
     def POST(self):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:
@@ -92,10 +98,10 @@ class Invite(Page):
         smtp_server.quit()
 
 
-class User(Page):
+class Self(Page):
     """
     Get self infos
-        GET /self
+        GET
             -> {
                 'fullname': "My Name",
                 'email': "My email",
@@ -107,62 +113,11 @@ class User(Page):
                     {'type':'account type', 'id':'unique account identifier'}
                 ]
             }
-
-    Get public informations of an user by id or email
-        GET /user/id_or_email
-            -> {
-                '_id': "id",
-                'email': "email",
-                'public_key': "public key in base64",
-            }
-
-    Register a new user
-        POST /register {
-            'email': "email@pif.net", #required
-            'fullname': "The full name", #required
-            'password': "password', #required
-            'admin_token': 'admin token', #required
-        }
-
-    Generate a token for further communication
-        POST /login {
-            "email": "mail !",
-            "password": "password",
-        }
-            -> {
-                'success': True,
-                'token': "generated session token",
-                'fullname': 'full name',
-                'identity': 'Full base64 identity',
-            }
-
-    GET /logout
-        -> {
-            'success': True
-        }
     """
 
-    def GET(self, action=None):
-        if not action:
-            return self._me()
-        elif action == 'logout':
-            return self._logout()
-        return self._user_public(action)
+    __pattern__ = "/self"
 
-    def POST(self, action):
-        if action == 'register':
-            return self._register()
-        elif action == 'login':
-            return self._login()
-        raise Exception("Unknown action: %s" % str(action))
-
-    def _logout(self):
-        if not self.user:
-            return self.error("Not logged in")
-        self.logout()
-        return self.success()
-
-    def _me(self):
+    def GET(self):
         if not self.user:
             return self.error("Not logged in")
         return self.success({
@@ -176,7 +131,19 @@ class User(Page):
             'accounts': self.user['accounts'],
         })
 
-    def _user_public(self, id_or_email):
+class One(Page):
+    """
+    Get public informations of an user by id or email
+        GET
+            -> {
+                '_id': "id",
+                'email': "email",
+                'public_key': "public key in base64",
+            }
+    """
+    __pattern__ = "/user/(.+)"
+
+    def GET(self, id_or_email):
         if '@' in id_or_email:
             user = database.users().find_one({'email': id_or_email})
         else:
@@ -190,27 +157,26 @@ class User(Page):
             'fullname': user['fullname'],
         })
 
-    def _login(self):
-        if self.user is not None:
-            return self.error("Already logged in")
-        email = self.data.get('email')
-        password = self.data.get('password')
-        if self.authenticate(email, password):
-            return self.success({
-                'token': self.session.session_id,
-                'fullname': self.user['fullname'],
-                'email': self.user['email'],
-                'identity': self.user['identity'],
-            })
-        return self.error('Wrong login/password')
+class Register(Page):
+    """
+    Register a new user
+        POST {
+            'email': "email@pif.net", #required
+            'fullname': "The full name", #required
+            'password': "password', #required
+            'admin_token': 'admin token', #required
+        }
+    """
+
+    __pattern__ = "/user/register"
 
     _validators = {
         'email': web.form.regexp(r".*@.*", "must be a valid email address"),
         'fullname': web.form.regexp(r".{3,90}$", 'fullname must be between 3 and 90 characters'),
-        'password': web.form.regexp(r".{3,90}$", 'password must be between 3 and 90 characters'), #XXX min password size
+        'password': web.form.regexp(r".{3,90}$", 'password must be between 3 and 90 characters'),
     }
 
-    def _register(self):
+    def POST(self):
         if self.user is not None:
             return self.error("Please logout before any register attempt")
 
@@ -270,3 +236,51 @@ class User(Page):
             invitation['status'] = 'activated'
             database.invitations().save(invitation)
         return self.success()
+
+class Login(Page):
+    """
+    Generate a token for further communication
+        POST {
+            "email": "mail !",
+            "password": "password",
+        }
+            -> {
+                'success': True,
+                'token': "generated session token",
+                'fullname': 'full name',
+                'identity': 'Full base64 identity',
+            }
+    """
+    __pattern__ = "/user/login"
+
+    def POST(self):
+        if self.user is not None:
+            return self.error("Already logged in")
+        email = self.data.get('email')
+        password = self.data.get('password')
+        if self.authenticate(email, password):
+            return self.success({
+                'token': self.session.session_id,
+                'fullname': self.user['fullname'],
+                'email': self.user['email'],
+                'identity': self.user['identity'],
+            })
+        return self.error('Wrong login/password')
+
+class Logout(Page):
+    """
+    GET
+        -> {
+            'success': True
+        }
+    """
+
+    __pattern__ = "/user/logout"
+
+    def GET(self):
+        if not self.user:
+            return self.error("Not logged in")
+        self.logout()
+        return self.success()
+
+

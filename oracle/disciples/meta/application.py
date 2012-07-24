@@ -4,7 +4,7 @@ import sys
 import web
 
 from meta import conf
-from meta import pages
+from meta import resources
 from meta import database
 from meta.session import Session
 from meta.session_store import SessionStore
@@ -13,36 +13,22 @@ class Application(object):
     """
     Application class wrap web.application.run method
     """
-
-    _urls = (
-        '/',                            'Root',
-        '/me',                          'User',
-        '/user/(.+)',                   'User',
-        '/user_from_public_key',        'UserFromPublicKey',
-        '/device/(.+)',                 'Device',
-        '/devices',                     'Device',
-        '/network/(.+)/(.+)',           'Network',
-        '/network/(.+)',                'Network',
-        '/network',                     'Network',
-        '/networks',                    'Network',
-        '/invite',                      'Invite',
-    )
-
-    _views = {
-        'Root':                 pages.Root,
-        'User':                 pages.User,
-        'UserFromPublicKey':    pages.UserFromPublicKey,
-        'Device':               pages.Device,
-        'Network':              pages.Network,
-        'Invite':               pages.Invite,
-    }
-
     def __init__(self, ip='127.0.0.1', port=12345):
         self.ip = ip
         self.port = port
-        self.app = web.application(self._urls, self._views)
+
+        urls = []
+        views = {}
+
+        for resource in resources.ALL:
+            id_ = str(id(resource))
+            urls.extend([resource.__pattern__, id_])
+            print("%s: %s" % (resource.__name__, resource.__pattern__))
+            views[id_] = resource
+
+        self.app = web.application(urls, views)
         session = Session(self.app, SessionStore(database.sessions()))
-        for cls in self._views.itervalues():
+        for cls in views.itervalues():
             cls.__session__ = session
 
     def run(self):

@@ -96,6 +96,11 @@ extern "C" {
     /// Free a previously allocated network users'.
     void gap_network_users_free(char** users);
 
+    /// Invite a user to join a network.
+    gap_Status gap_network_add_user(gap_State* state,
+                                    char const* network_id,
+                                    char const* user_id);
+
     /// - User ----------------------------------------------------------------
 
     /// Retrieve user fullname.

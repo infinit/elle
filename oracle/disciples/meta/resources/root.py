@@ -14,6 +14,8 @@ class Root(Page):
             }
     """
 
+    __pattern__ = '/'
+
     def GET(self):
         return self.success({
             'server': 'Meta 0.1',

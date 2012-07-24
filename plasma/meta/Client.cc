@@ -109,6 +109,11 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
   ar & named("users", res.users);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::NetworkAddUserResponse, ar, res)
+{
+  ar & named("updated_network_id", res.updated_network_id);
+}
+
 namespace plasma
 {
   namespace meta
@@ -210,7 +215,7 @@ namespace plasma
         throw std::runtime_error("empty public key!");
       json::Dictionary request;
       request["public_key"] = public_key;
-      return this->_post<UserResponse>("/user_from_public_key", request);
+      return this->_post<UserResponse>("/user/search", request);
     }
 
     CreateDeviceResponse
@@ -223,7 +228,7 @@ namespace plasma
           {"local_ip", local_address},
           {"local_port", elle::sprint(port)},
       }};
-      return this->_post<CreateDeviceResponse>("/devices", request);
+      return this->_post<CreateDeviceResponse>("/device/create", request);
     }
 
     UpdateDeviceResponse
@@ -243,7 +248,7 @@ namespace plasma
       if (port != 0)
         request["local_port"] = port;
 
-      return this->_post<UpdateDeviceResponse>("/devices", request);
+      return this->_post<UpdateDeviceResponse>("/device/update", request);
 
     }
 
@@ -265,7 +270,18 @@ namespace plasma
       json::Dictionary request{std::map<std::string, std::string>{
           {"name", name},
       }};
-      return this->_post<CreateNetworkResponse>("/network", request);
+      return this->_post<CreateNetworkResponse>("/network/create", request);
+    }
+
+    NetworkAddUserResponse
+    Client::network_add_user(std::string const& network_id,
+                             std::string const& user_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"_id", network_id},
+          {"user_id", user_id},
+      }};
+      return this->_post<NetworkAddUserResponse>("/network/add_user", request);
     }
 
     void

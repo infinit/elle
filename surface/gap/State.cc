@@ -367,6 +367,23 @@ namespace surface
       return *(it->second);
     }
 
+    void
+    State::network_add_user(std::string const& network_id,
+                            std::string const& user_id)
+    {
+      auto res = this->_api->network_add_user(network_id, user_id);
+      if (!res.success)
+        {
+          throw Exception{
+              gap_error,
+              "Couldn't add user '" + user_id + "' in the network '" +
+              network_id + "': " + res.error
+          };
+        }
+    }
+
+    //- Watchdog --------------------------------------------------------------
+
     void State::stop_watchdog()
     {
       this->_send_watchdog_cmd("stop");

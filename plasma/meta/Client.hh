@@ -91,6 +91,11 @@ namespace plasma
       std::list<std::string>  nodes;
     };
 
+    struct NetworkAddUserResponse : Response
+    {
+      std::string             updated_network_id;
+    };
+
     /// Error values.
     enum class Error
     {
@@ -136,33 +141,48 @@ namespace plasma
       ~Client();
 
     public:
-      LoginResponse login(std::string const& email,
-                          std::string const& password);
+      LoginResponse
+      login(std::string const& email,
+            std::string const& password);
 
-      LogoutResponse logout();
+      LogoutResponse
+      logout();
 
-      RegisterResponse register_(std::string const& email,
-                                 std::string const& fullname,
-                                 std::string const& password,
-                                 std::string const& activation_code);
+      RegisterResponse
+      register_(std::string const& email,
+                std::string const& fullname,
+                std::string const& password,
+                std::string const& activation_code);
 
-      UserResponse user(std::string const& id);
-      UserResponse user_from_public_key(std::string const& public_key);
+      UserResponse
+      user(std::string const& id);
 
-      CreateDeviceResponse create_device(std::string const& name,
-                                         std::string const& local_address,
-                                         short port);
+      UserResponse
+      user_from_public_key(std::string const& public_key);
 
-      UpdateDeviceResponse update_device(std::string const& _id,
-                                         std::string const* name,
-                                         std::string const* local_address,
-                                         short port);
+      CreateDeviceResponse
+      create_device(std::string const& name,
+                    std::string const& local_address,
+                    short port);
 
-      NetworkResponse network(std::string const& _id);
+      UpdateDeviceResponse
+      update_device(std::string const& _id,
+                    std::string const* name,
+                    std::string const* local_address,
+                    short port);
 
-      NetworksResponse networks();
+      NetworkResponse
+      network(std::string const& _id);
 
-      CreateNetworkResponse create_network(std::string const& name);
+      NetworksResponse
+      networks();
+
+      CreateNetworkResponse
+      create_network(std::string const& name);
+
+      NetworkAddUserResponse
+      network_add_user(std::string const& network_id,
+                       std::string const& user_id);
 
     public:
       void token(std::string const& tok);
