@@ -20,7 +20,7 @@
     IBOutlet NSTextField *accountComputerName;
 	int currentViewTag;
 }
-
++ (OOPreferencesWindowController *)getInstance;
 - (NSView *)viewForTag:(int)tag;
 - (IBAction)switchView:(id)sender;
 - (NSRect)newFrameForNewContentView:(NSView *)view;

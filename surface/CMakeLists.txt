@@ -5,6 +5,6 @@ if(INFINIT_MACOSX)
 	message("Add surface/macosx")
 endif(INFINIT_MACOSX)
 
-if(INFINIT_LINUX)
+#if(INFINIT_LINUX)
 	add_subdirectory(linux)
-endif()
+#endif()

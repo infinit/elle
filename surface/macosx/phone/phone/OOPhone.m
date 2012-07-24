@@ -10,8 +10,9 @@
 #import "OOManifestParser.h"
 #import "OORestResquest.h"
 
-NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotification";
 #define countof(X) ( (size_t) ( sizeof(X)/sizeof*(X) ) )
+
+NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotification";
 
 @implementation OOPhone
 
@@ -81,19 +82,29 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     }];
 }
 
+- (void)createNetworkWithName:(NSString *)arg1 {
+    gap_create_network(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return;
+}
+
 - (NSArray*)getUserNetworks {
     NSMutableArray* returnArray = [[NSMutableArray alloc] init];
     char** networkIds = gap_networks(self._gap_State);
-    size_t i;
     
     if (networkIds == NULL) return returnArray;
     
-    for (i = 0; i < countof(networkIds); i++) {
-        NSString *myString = [[NSString alloc] initWithUTF8String:networkIds[i]];
+    while (*networkIds) {
+        char* p = *networkIds;
+        NSString *myString = [[NSString alloc] initWithUTF8String:p];
         [returnArray addObject:myString];
+        networkIds++;
     }
-    
     return returnArray;
+}
+
+- (NSString*)getNetworkNameWithId:(NSString*)arg1 {
+    char const* name = gap_network_name(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return [[NSString alloc] initWithUTF8String:name];
 }
 
 - (void)update {

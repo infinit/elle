@@ -1,6 +1,7 @@
 #import "OONetworkBrowserViewManager.h"
 #import "OONetworkBrowserBackgroundLayer.h"
 #import "OONetworkModel.h"
+#import "OONetworkAddButton.h"
 #import "OOUserBrowserView.h"
 #import <Phone/OOPhone.h>
 
@@ -13,6 +14,7 @@
         // The second one contains temporary imported images  for thread safeness.
         networks = [[NSMutableArray alloc] init];
         importedNetworks = [[NSMutableArray alloc] init];
+        [importedNetworks addObject:[[OONetworkAddButton alloc] init]];
     }
     return self;
 }
@@ -30,9 +32,9 @@
 	[networkBrowser setCellsStyleMask:IKCellsStyleTitled | IKCellsStyleOutlined];
 	
 	// background layer
-	OONetworkBrowserBackgroundLayer *backgroundLayer = [[OONetworkBrowserBackgroundLayer alloc] init];
-	[networkBrowser setBackgroundLayer:backgroundLayer];
-	backgroundLayer.owner = networkBrowser;
+	//OONetworkBrowserBackgroundLayer *backgroundLayer = [[OONetworkBrowserBackgroundLayer alloc] init];
+	//[networkBrowser setBackgroundLayer:backgroundLayer];
+	//backgroundLayer.owner = networkBrowser;
 	
 	//-- change default font 
 	// create a centered paragraph style
@@ -86,23 +88,27 @@
         if ([str.uid isEqualToString:arg1])
             return YES;
     }
+    for (OONetworkModel* str in networks) {
+        if ([str.uid isEqualToString:arg1])
+            return YES;
+    }
     return NO; 
 }
 
-- (void)addUserWithId:(NSString*)userId
+- (void)addNetworkWithId:(NSString*)arg1
 {   
 	BOOL addObject = NO;
     
-	if (![self containsUserId:userId]) {
+	if (![self containsUserId:arg1]) {
 		addObject = YES;
 	}
 	
 	if (addObject) {
 		// Add a path to the temporary images array.
 		OONetworkModel* p = [[OONetworkModel alloc] init];
-		p.name = @"Charles Guillot";
+		p.name = [[OOPhone getInstance] getNetworkNameWithId:arg1];
         p.image = [NSImage imageNamed:NSImageNameNetwork];
-        p.uid = userId;
+        p.uid = arg1;
 		[importedNetworks addObject:p];
 	}
 }
@@ -116,7 +122,7 @@
         for (i = 0; i < n; i++)
         {
             NSString* userId = [networkIds objectAtIndex:i];
-            [self addUserWithId:userId];
+            [self addNetworkWithId:userId];
         }
     
         // Update the data source in the main thread.

@@ -10,8 +10,11 @@
 #import "OOInjectorHelper.h"
 #import "OOSetupWindowController.h"
 #import "OOSetupWindowDelegate.h"
+#import "OOPreferencesWindowController.h"
 #import <Phone/OOPhone.h>
 #import <FinderPanel/OOBrowserWindowController.h>
+
+NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog";
 
 @implementation AppDelegate
 
@@ -31,34 +34,48 @@
     // Launch installer process
     //[OOInjectorHelper launchFinderHelperTools:YES];
     
-    //[self update];
+    [self update];
     [self tryToLogin];
-    //OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
-    //[aaa showWindow:self];
 }
 
 - (void)awakeFromNib
 {
     statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
     [statusItem setMenu:statusMenu];
-    NSImage *icon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active",currentFrame]];
-    [icon setTemplate:YES];
-    [statusItem setImage:icon];
-    [statusItem setHighlightMode:YES];
+    [self setDefaultStatusIcon];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSetupWindow) name:OOOpenSetupWindowAndStopWatchdog object:nil];
 }
 
 - (void)addPending {
     pendingCount += 1;
     if (pendingCount > 0 && !self.isPending){
         currentFrame = 0;
-        animTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/7.0 target:self selector:@selector(updateStatusItemImageWithTimer:) userInfo:nil repeats:YES];
+        animTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/7.0 
+                                                     target:self 
+                                                   selector:@selector(updateStatusItemImageWithTimer:) 
+                                                   userInfo:nil 
+                                                    repeats:YES];
+        self.isPending = YES;
     }
 }
 
 - (void)removePending {
     pendingCount -= 1;
-    if (pendingCount <= 0 && self.isPending)
+    if (pendingCount <= 0 && self.isPending) {
         [animTimer invalidate];
+        self.isPending = NO;
+        [self setDefaultStatusIcon];
+    }
+}
+
+- (void)setDefaultStatusIcon {
+    if (defaultIcon == nil) {
+        defaultIcon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active",currentFrame]];
+    }
+    [defaultIcon setTemplate:YES];
+    [statusItem setImage:defaultIcon];
+    [statusItem setHighlightMode:YES];
 }
 
 - (void)launch8infinit
@@ -69,39 +86,50 @@
 
 - (void)tryToLogin
 {
-    [self addPending];
     [statusItem setMenu:statusLoginMenu];
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
     NSString* email = [pref objectForKey:@"Email"];
     NSString* password = [pref objectForKey:@"Password"];
-    NSString* computerName = [pref objectForKey:@"ComputerName"];
-    
+    BOOL rememberMe = [[pref objectForKey:@"RememberMe"] boolValue];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     
-    [[OOPhone getInstance] loginWithEmail:email 
-                                 password:password
-                          performSelector:@selector(loginResult:) 
-                                forObject:self];
+    if (rememberMe) {
+        [self addPending];
+        [[OOPhone getInstance] loginWithEmail:email 
+                                     password:password
+                              performSelector:@selector(loginResult:) 
+                                    forObject:self];
+    } else {
+        [self loginResult:[NSNumber numberWithInt:1]];
+    }
     
 }
 
+- (void)showSetupWindow {
+    [self addPending];
+    OOSetupWindowController *setupWindowsController = [OOSetupWindowController getInstance];
+    [setupWindowsController showWindow:self];
+}
+
 - (void)loginResult:(NSNumber *)arg1 {
-    if (arg1 > 0) {
-        OOSetupWindowController *setupWindowsController = [[OOSetupWindowController alloc] init];
-        [setupWindowsController showWindow:self];
+    int error = [arg1 intValue];
+    if (error != 0) {
+        [self showSetupWindow];
     }
     else {
         [statusItem setMenu:statusMenu];
         [self removePending];
+        
+        OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
+        [aaa showWindow:self];
     }
 }
 
 - (void)userLoggedNotification:(NSNotification *)notification {
     if ([notification name] == OOUserLoggedNotification) {
-        [statusItem setMenu:statusMenu];
-        [self removePending];
+        [self loginResult:0];
     }
     else if([notification name] == OOUserUnLoggedNotification) {
         [NSApp terminate:nil];
@@ -145,6 +173,12 @@
 - (IBAction)openInfinitNeworks:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
+}
+
+- (IBAction)openPreferenceWindow:(id)sender
+{
+    OOPreferencesWindowController* preferencesWindowController = [OOPreferencesWindowController getInstance];
+    [preferencesWindowController showWindow:self];
 }
 
 - (IBAction)installInjectBundle:(id)sender

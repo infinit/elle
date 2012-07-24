@@ -31,6 +31,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 @synthesize loginViewEmail;
 @synthesize loginViewPassword;
 @synthesize loginViewComputerName;
+@synthesize loginViewRememberMe;
 @synthesize loginViewError;
 // Register view //
 @synthesize registerViewComputerName;
@@ -40,6 +41,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 @synthesize registerViewPasswordVerif;
 @synthesize registerViewActivationCode;
 @synthesize registerViewTermOfService;
+@synthesize registerViewRememberMe;
 @synthesize registerViewContinue;
 @synthesize registerViewError;
 
@@ -117,6 +119,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     [pref setObject:[self.loginViewEmail stringValue]  forKey:@"Email"];
     [pref setObject:[[self.loginViewPassword stringValue] sha1]  forKey:@"Password"];
     [pref setObject:[self.loginViewComputerName stringValue]  forKey:@"ComputerName"];
+    [pref setObject:[self.loginViewRememberMe stringValue]  forKey:@"RememberMe"];
     [pref synchronize];
     [[OOPhone getInstance] loginWithEmail:[pref objectForKey:@"Email"]
                                  password:[pref objectForKey:@"Password"]
@@ -133,6 +136,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
         [self swapView:loggedView];
         
         self.isLogged = YES;
+        [[self window] close];
     }
 }
 
@@ -158,8 +162,8 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     [pref setObject:[[self.registerViewPassword stringValue] sha1] forKey:@"Password"];
     [pref setObject:[self.registerViewComputerName stringValue] forKey:@"ComputerName"];
     [pref setObject:[self.registerViewActivationCode stringValue] forKey:@"ActivationCode"];
+    [pref setObject:(([self.registerViewTermOfService state] == NSOnState) ? @"YES" : @"NO") forKey:@"RememberMe"];
     [pref synchronize];
-    const char* a = [[pref objectForKey:@"ActivationCode"] UTF8String];
     [[OOPhone getInstance] registerWithFullName:[pref objectForKey:@"FullName"]
                                           email:[pref objectForKey:@"Email"]
                                        password:[pref objectForKey:@"Password"]
@@ -178,6 +182,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
         [self swapView:loggedView];
         
         self.isLogged = YES;
+        [[self window] close];
     }
 }
 

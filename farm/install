@@ -76,6 +76,7 @@ def to_add(lib):
             "SystemConfiguration",
             "CoreFoundation",
             "ApplicationServices",
+            "Security",
             "CoreServices",
             "Carbon",
             "AppKit",
@@ -199,6 +200,7 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
     for dependency in get_binary_dependencies(binary_path):
         #print('-' * indent, dependency)
         filename = os.path.basename(dependency)
+        print('-'*indent + '> dep', dependency)
         if not to_add(filename):
             #print('-'*indent + '> IGNORE', dependency)
             continue
@@ -206,13 +208,15 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
         if dependency not in dependencies:
             fill_dependencies(dependencies, dependency, 'lib', indent + 1)
 
+LIBRARY_EXT = "darwin" in sys.platform and "dylib" or "so"
+
 infinit_files = [
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
     ("plasma/watchdog/8watchdog", "bin"),
     ("surface/linux/infinit", "bin"),
     ("surface/linux/8chmod", "bin"),
-    ("surface/gap/libgap.so", "lib"),
+    ("surface/gap/libgap." + LIBRARY_EXT, "lib"),
     ("surface/gap/python/_gap.so", "python"),
     ("surface/gap/python/gap.py", "python"),
 ]
