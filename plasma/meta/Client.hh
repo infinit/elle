@@ -137,7 +137,9 @@ namespace plasma
       Impl* _impl;
 
     public:
-      Client(std::string const& server, short port);
+      Client(std::string const& server,
+             short port,
+             bool check_errors = true);
       ~Client();
 
     public:
@@ -179,6 +181,18 @@ namespace plasma
 
       CreateNetworkResponse
       create_network(std::string const& name);
+
+      NetworkNodesResponse
+      network_nodes(std::string const& network_id);
+
+      UpdateNetworkResponse
+      update_network(std::string const& _id,
+                     std::string const* name,
+                     std::list<std::string> const* users,
+                     std::list<std::string> const* devices,
+                     std::string const* root_block,
+                     std::string const* root_address);
+
 
       NetworkAddUserResponse
       network_add_user(std::string const& network_id,

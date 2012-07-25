@@ -81,9 +81,27 @@ SERIALIZE_RESPONSE(plasma::meta::NetworksResponse, ar, res)
   ar & named("networks", res.networks);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::NetworkNodesResponse, ar, res)
+{
+  ar & named("network_id", res.network_id);
+  ar & named("nodes", res.nodes);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
 {
   ar & named("created_network_id", res.created_network_id);
+}
+SERIALIZE_RESPONSE(plasma::meta::UpdateNetworkResponse, ar, res)
+{
+  ar & named("updated_network_id", res.updated_network_id);
+  try
+    {
+      ar & named("descriptor", res. descriptor);
+      ar & named("root_block", res.root_block);
+      ar & named("root_address", res.root_address);
+    }
+  catch (std::exception const&) // XXX rely on KeyError
+    {/* block and address are optionals */}
 }
 
 SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
@@ -136,15 +154,19 @@ namespace plasma
       std::string token;
       std::string identity;
       std::string email;
+      bool check_errors;
     };
 
     // - Ctor & dtor ----------------------------------------------------------
 
-    Client::Client(std::string const& server, short port)
+    Client::Client(std::string const& server,
+                   short port,
+                   bool check_errors)
       : _impl(new Impl)
     {
       _impl->server = server;
       _impl->port = port;
+      _impl->check_errors = check_errors;
     }
 
     Client::~Client()
@@ -261,7 +283,13 @@ namespace plasma
     NetworkResponse
     Client::network(std::string const& _id)
     {
-      return this->_get<NetworkResponse>("/network/" + _id);
+      return this->_get<NetworkResponse>("/network/" + _id + "/view");
+    }
+
+    NetworkNodesResponse
+    Client::network_nodes(std::string const& _id)
+    {
+      return this->_get<NetworkNodesResponse>("/network/" + _id + "/nodes");
     }
 
     CreateNetworkResponse
@@ -271,6 +299,33 @@ namespace plasma
           {"name", name},
       }};
       return this->_post<CreateNetworkResponse>("/network/create", request);
+    }
+
+    UpdateNetworkResponse
+    Client::update_network(std::string const& _id,
+                           std::string const* name,
+                           std::list<std::string> const* users,
+                           std::list<std::string> const* devices,
+                           std::string const* root_block,
+                           std::string const* root_address)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+            {"_id", _id},
+      }};
+      if (name != nullptr)
+        request["name"] = *name;
+      if (users != nullptr)
+        request["users"] = *users;
+      if (devices != nullptr)
+        request["devices"] = *devices;
+      assert(((root_block == nullptr && root_address == nullptr) ||
+              (root_block != nullptr && root_address != nullptr)) &&
+             "Give both root block and root address or none of them");
+      if (root_block != nullptr)
+        request["root_block"] = *root_block;
+      if (root_address != nullptr)
+        request["root_address"] = *root_address;
+      return this->_post<UpdateNetworkResponse>("/network/update", request);
     }
 
     NetworkAddUserResponse
@@ -325,11 +380,15 @@ namespace plasma
 
       T ret;
 
+      elle::log::debug("POST", url, req.repr(), "=>", res.str());
       // deserialize response
       try
         { elle::serialize::InputJSONArchive(res, ret); }
       catch (std::exception const& err)
         { throw Exception(Error::invalid_content, err.what()); }
+
+      if (!ret.success && _impl->check_errors)
+        throw Exception(Error::server_error, ret.error);
 
       return ret;
     }
@@ -354,6 +413,9 @@ namespace plasma
         { elle::serialize::InputJSONArchive(res, ret); }
       catch (std::exception const& err)
         { throw Exception(Error::invalid_content, err.what()); }
+
+      if (!ret.success && _impl->check_errors)
+        throw Exception(Error::server_error, ret.error);
 
       return ret;
     }
