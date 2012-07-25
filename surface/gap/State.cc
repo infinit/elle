@@ -212,9 +212,6 @@ namespace surface
       this->_api->token("");
       auto res = this->_api->login(email, password);
 
-      if (!res.success)
-        throw Exception(gap_api_error, res.error);
-
       elle::log::debug("Logged in as", email, "token =", res.token);
 
       std::string identity_clear;
@@ -259,8 +256,6 @@ namespace surface
     {
         {
           auto res = this->_api->register_(email, fullname, password, activation_code);
-          if (!res.success)
-              throw Exception(gap_api_error, res.error);
         }
       elle::log::debug("Registered new user", fullname, email);
       this->login(email, password);
@@ -299,8 +294,6 @@ namespace surface
       if (force_create || !this->has_device())
         {
           auto res = this->_api->create_device(name, local_address, 0);
-          if (!res.success)
-            throw Exception(gap_api_error, res.error);
           passport_string = res.passport;
           elle::log::debug("Created device id:", res.created_device_id);
         }
@@ -318,8 +311,6 @@ namespace surface
               &local_address,
               0);
 
-          if (!res.success)
-            throw Exception(gap_api_error, res.error);
           passport_string = res.passport;
         }
 
@@ -333,7 +324,7 @@ namespace surface
 
     void State::create_network(std::string const& name)
     {
-      this->_api->create_network(name);
+      auto response = this->_api->create_network(name);
       this->_networks_dirty = true;
     }
 
@@ -341,13 +332,13 @@ namespace surface
     {
       if (this->_networks_dirty)
         {
-          auto res = this->_api->networks();
-          for (auto const& network_id: res.networks)
+          auto response = this->_api->networks();
+          for (auto const& network_id: response.networks)
             {
               if (this->_networks.find(network_id) == this->_networks.end())
                 {
-                  this->_networks[network_id] =
-                    new Network{this->_api->network(network_id)};
+                  auto response = this->_api->network(network_id);
+                  this->_networks[network_id] = new Network{response};
                 }
             }
           this->_networks_dirty = false;
@@ -372,14 +363,6 @@ namespace surface
                             std::string const& user_id)
     {
       auto res = this->_api->network_add_user(network_id, user_id);
-      if (!res.success)
-        {
-          throw Exception{
-              gap_error,
-              "Couldn't add user '" + user_id + "' in the network '" +
-              network_id + "': " + res.error
-          };
-        }
     }
 
     //- Watchdog --------------------------------------------------------------

@@ -25,6 +25,8 @@ extern "C"
         elle::log::error(#_func_ " error:", err.what());                      \
         if (err.code == plasma::meta::Error::network_error)                   \
           ret = gap_network_error;                                            \
+        else if (err.code == plasma::meta::Error::server_error)               \
+          ret = gap_api_error;                                                \
         else                                                                  \
           ret = gap_internal_error;                                           \
     }                                                                         \
