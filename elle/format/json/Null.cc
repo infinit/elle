@@ -11,6 +11,9 @@ namespace elle
     namespace json
     {
 
+      Null::Null()
+      {}
+
       Null::~Null()
       {}
 
