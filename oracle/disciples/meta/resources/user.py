@@ -197,10 +197,10 @@ class Register(Page):
                 'error': ', '.join(errors),
             })
 
-        user["_id"] = str(database.users().save({}))
+        user["_id"] = database.users().save({})
 
         identity, public_key = metalib.generate_identity(
-            user["_id"],
+            str(user["_id"]),
             user['email'], user['password'],
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
