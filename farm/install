@@ -235,7 +235,7 @@ for src, node in dependencies.items():
         continue
     os.chmod(dst, stat.S_IRWXU)
     print("Strip", dst)
-    cmd('strip', dst)
+    #cmd('strip', dst) #XXX
     patch_binary(dst, DIR_INSTALL_CLIENT_LIB)
     for child in node['childs']:
         patch_binary_for(
