@@ -22,9 +22,21 @@ class _Page(Page):
             raise web.Forbidden("This network does not belong to you")
         return network
 
-    def _check_name(self, name):
-        """name is not empty"""
-        return bool(name)
+    def _check_name(self, name, id_=None):
+        """name is not empty and does not already exists for current user."""
+        assert id_ is None or isinstance(id_, database.ObjectId)
+        if not name:
+            raise Exception("Invalid network name")
+        req = {
+            'owner': database.ObjectId(self.user['_id']),
+            'name': name,
+        }
+        if id_ is None:
+            n = database.networks().find_one(req)
+        else:
+            n = database.networks().find_one(req, {'_id': id_})
+        if n is not None:
+            raise Exception("Cannot have two network with the same name!")
 
     def _check_device(self, device_id):
         """device_id is not empty and belongs to the user"""
@@ -43,7 +55,22 @@ class _Page(Page):
         }) is not None
 
     def _unique_ids_check(self, ids, checker):
-        ids = filter(checker, map(lambda d: database.ObjectId(d.strip()), ids))
+        return filter(
+            checker,
+            map(lambda d: database.ObjectId(d.strip()), ids)
+        )
+
+NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
+NETWORK_INVITATION_CONTENT = """
+Hi %(recipient)s,
+    You were invited by %(added_by)s to join the network %(network_name)s. Just
+launch infinit to gain access to this network !
+
+
+--%(space)s
+The infinit team
+http://infinit.io
+""".strip()
 
 class AddUser(_Page):
     """
@@ -64,6 +91,17 @@ class AddUser(_Page):
         #XXX users should invited instead of added
         if to_add_user_id in network['users']:
             return self.error("This user is already in the network")
+        to_add_user = database.byId(database.users(), to_add_user_id)
+        if '@' in to_add_user['email']:
+            infos = {
+                'added_by': self.user['fullname'],
+                'recipient': to_add_user['fullname'],
+                'network_name': network['name'],
+                'space': ' ',
+            }
+            subject = NETWORK_INVITATION_SUBJECT % infos
+            content = NETWORK_INVITATION_CONTENT % infos
+            meta.mail.send(to_add_user['mail'], subject, content)
         network['users'].append(to_add_user_id)
         database.networks().save(network)
         return self.success({
@@ -88,7 +126,7 @@ class All(_Page):
 class One(_Page):
     """
     Return one user network
-        GET /network/id1
+        GET
             -> {
                 '_id': "id",
                 'name': "pretty name",
@@ -100,7 +138,7 @@ class One(_Page):
             }
     """
 
-    __pattern__ = "/network/(.+)"
+    __pattern__ = "/network/(.+)/view"
 
     def GET(self, _id):
         print("Get one network: %s" % _id)
@@ -108,10 +146,10 @@ class One(_Page):
         network.pop('owner')
         return self.success(network)
 
-class Nodes(Page):
+class Nodes(_Page):
     """
     Return connected nodes of a network
-        GET /network/id1/nodes
+        GET
             -> {
                 'success': True,
                 'network_id': 'id1',
@@ -164,14 +202,16 @@ class Update(_Page):
 
     def POST(self):
         self.requireLoggedIn()
-        self.data = self.data
         id_ = database.ObjectId(self.data['_id'])
         to_save = self.network(id_)
 
+        print("about to Update network:", to_save, "with", self.data)
         if 'name' in self.data:
             name = self.data['name'].strip()
-            if not self._check_name(name):
-                return self.error("Given network name is not valid")
+            try:
+                self._check_name(name, id_)
+            except Exception, e:
+                return self.error(str(e))
             to_save['name'] = name
 
         if 'devices' in self.data:
@@ -219,6 +259,7 @@ class Update(_Page):
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
 
+        print("Update network:", to_save)
         id_ = database.networks().save(to_save)
         res = {
             'updated_network_id': id_
@@ -233,7 +274,7 @@ class Update(_Page):
 class Create(_Page):
     """
     Create a new network
-        POST /network {
+        POST  {
             'name': 'pretty name', # required
             'users': [user_id1, ...], # optional
             'devices': [device_id1, ...], # optional
@@ -250,8 +291,11 @@ class Create(_Page):
         if '_id' in self.data:
             return self.error("An id cannot be specified while creating a self.data")
         name = self.data.get('name', '').strip()
-        if not self._check_name(name):
-            return self.error("You have to provide a valid self.data name")
+        try:
+            self._check_name(name)
+        except Exception, e:
+            return self.error(str(e))
+
         devices = filter(
             self._check_device,
             map(
@@ -266,8 +310,6 @@ class Create(_Page):
                 self.data.get('users', [])
             )
         )
-        print(self.user)
-        print(self.user['_id'], database.ObjectId(self.user['_id']))
         network = {
             'name': name,
             'owner': self.user['_id'],
@@ -278,6 +320,7 @@ class Create(_Page):
             'root_block': None,
             'root_address': None,
         }
+        print("Create network:", network)
         _id = database.networks().insert(network)
         assert _id is not None
         self.user.setdefault('networks', []).append(_id)
@@ -290,17 +333,19 @@ class Create(_Page):
 class Delete(_Page):
     """
     Delete a network
-        DELETE /network/id
-            -> {
+        DELETE {
+            '_id': "id",
+        } -> {
                 'success': True,
                 'deleted_network_id': "id",
             }
     """
 
-    __pattern__ = "/network/(.+)"
+    __pattern__ = "/network/delete"
 
-    def DELETE(self, _id):
+    def DELETE(self):
         self.requireLoggedIn()
+
         _id = database.ObjectId(_id)
         try:
             networks = self.user['devices']

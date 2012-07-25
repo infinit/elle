@@ -5,6 +5,8 @@ import web
 
 from meta.page import Page
 from meta import conf, database
+import meta.mail
+
 import metalib
 import pythia
 
@@ -27,6 +29,8 @@ class Search(Page):
             'fullname': user['fullname'],
         })
 
+
+# TODO use mailchimp templates
 
 INVITATION_SUBJECT = "Invitation to test Infinit !"
 INVITATION_CONTENT = """
@@ -66,13 +70,12 @@ class Invite(Page):
             'space': ' ',
         }
         if send_email:
-            self._send_invitation(email, INVITATION_SUBJECT, content)
+            meta.mail.send(email, INVITATION_SUBJECT, content)
         database.invitations().insert({
             'email': email,
             'status': 'pending',
             'code': code,
         })
-
         return self.success()
 
     def _generate_code(self, mail):
@@ -81,22 +84,6 @@ class Invite(Page):
         hash_ = hashlib.md5()
         hash_.update(mail.encode('utf8') + str(time.time()))
         return hash_.hexdigest()
-
-    def _send_invitation(self, mail, subject, content):
-        from email.mime.text import MIMEText
-        from email.header import Header
-        #from email.utils import parseaddr, formataddr
-        import smtplib
-        msg = MIMEText(content, _charset='utf8')
-        msg['Subject'] = Header(subject, 'utf8')
-        msg['From'] = Header("Infinit.io <no-reply@infinit.io>", 'utf8')
-        msg['To'] = Header(mail, 'utf8')
-
-        smtp_server = smtplib.SMTP(conf.MANDRILL_SMTP_HOST, conf.MANDRILL_SMTP_PORT)
-        smtp_server.login(conf.MANDRILL_USERNAME, conf.MANDRILL_PASSWORD)
-        smtp_server.sendmail(msg['From'], [msg['To']], msg.as_string())
-        smtp_server.quit()
-
 
 class Self(Page):
     """
