@@ -26,6 +26,7 @@ def which(executable):
 DIR_SOURCE = os.environ["DIR_SOURCE"]
 DIR_BUILD = os.environ["DIR_BUILD"]
 DIR_INSTALL = os.environ["DIR_INSTALL"]
+DEBUG = True # XXX use env var
 
 for d in [DIR_SOURCE, DIR_BUILD]:
     if not os.path.isdir(d):
@@ -36,8 +37,6 @@ rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8").strip()
 version = name.split("-")[0]
 major = version.split(".")[0]
 minor = version.split(".")[1]
-
-
 
 DIR_INSTALL_CLIENT = "%s/client" % DIR_INSTALL
 
@@ -234,8 +233,11 @@ for src, node in dependencies.items():
     if not node['is_binary']:
         continue
     os.chmod(dst, stat.S_IRWXU)
-    print("Strip", dst)
-    #cmd('strip', dst) #XXX
+    if not DEBUG:
+        print("Strip", dst)
+        cmd('strip', dst)
+    else:
+        print("DO NOT STRIP", dst)
     patch_binary(dst, DIR_INSTALL_CLIENT_LIB)
     for child in node['childs']:
         patch_binary_for(
