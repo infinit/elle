@@ -211,7 +211,7 @@ def update_binaries():
         os.chmod(dst_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IEXEC)
 
 
-def main(state):
+def main():
     args = parser.parse_args()
 
     if not args.no_update:
