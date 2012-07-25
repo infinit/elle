@@ -141,16 +141,14 @@ void InfinitNetwork::_create_network_root_block()
   directory.Save(rootBlock);
   address.Save(rootAddress);
 
-  this->_manager.meta().UpdateNetwork(
+  this->_on_got_descriptor(this->_manager.meta().update_network(
       this->_description._id,
       nullptr,
       nullptr,
       nullptr,
       &rootBlock,
-      &rootAddress,
-      boost::bind(&InfinitNetwork::_on_got_descriptor, this, _1),
-      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-  );
+      &rootAddress
+  ));
 }
 
 /// Prepare the network directory, store root block and network descriptor
@@ -218,25 +216,21 @@ void InfinitNetwork::_register_device()
       LOG("Registering device for this network.");
 
       this->_description.devices.push_back(passport.id);
-      this->_manager.meta().UpdateNetwork(
+      this->_on_device_registered(this->_manager.meta().update_network(
           this->_description._id,
           nullptr,
           nullptr,
           &this->_description.devices,
           nullptr,
-          nullptr,
-          boost::bind(&InfinitNetwork::_on_device_registered, this, _1),
-          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-      );
+          nullptr
+      ));
     }
   else
     {
       LOG("Get network nodes.");
-      this->_manager.meta().NetworkNodes(
-          this->_description._id,
-          boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
-          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-      );
+      this->_on_network_nodes(this->_manager.meta().network_nodes(
+          this->_description._id
+      ));
     }
 }
 
@@ -244,11 +238,9 @@ void InfinitNetwork::_on_device_registered(meta::UpdateNetworkResponse const& re
 {
   LOG("Device successfully registered.");
   assert(response.updated_network_id == this->_description._id);
-  this->_manager.meta().NetworkNodes(
-      this->_description._id,
-      boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
-      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-  );
+  this->_on_network_nodes(this->_manager.meta().network_nodes(
+      this->_description._id
+  ));
 }
 
 /// Update the network nodes set when everything is good
@@ -298,7 +290,7 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
   this->_prepare_directory();
 }
 
-void InfinitNetwork::_on_any_error(meta::MetaClient::Error error, std::string const& err)
+void InfinitNetwork::_on_any_error(plasma::meta::Error error, std::string const& err)
 {
   LOG("Got error while creating the network '",
       elle::iomanip::nosep, this->_description.name,

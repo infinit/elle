@@ -9,7 +9,7 @@
 
 # include <QApplication>
 
-# include "plasma/metaclient/MetaClient.hh"
+# include "plasma/meta/Client.hh"
 
 namespace plasma
 {
@@ -27,10 +27,10 @@ namespace plasma
     class Client : private boost::noncopyable
     {
     public:
-      typedef plasma::metaclient::NetworksResponse NetworksResponse;
+      typedef plasma::meta::NetworksResponse NetworksResponse;
       typedef std::function<void(std::list<std::string> const&)> NetworksCallback;
     private:
-      typedef plasma::metaclient::MetaClient MetaClient;
+      typedef plasma::meta::Client MetaClient;
 
     private:
       MetaClient& _meta;

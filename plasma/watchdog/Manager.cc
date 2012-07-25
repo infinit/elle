@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <elle/log.hh>
+#include <common/common.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
@@ -19,7 +20,7 @@ Manager::Manager(QCoreApplication& app) :
   _commands(new CommandMap()),
   _actions(new ClientActions(*this)),
   _network_manager(new NetworkManager(*this)),
-  _meta(app)
+  _meta(common::meta_host(), common::meta_port())
 {}
 
 Manager::~Manager()
@@ -34,7 +35,7 @@ Manager::~Manager()
 
 void Manager::token(QByteArray const& token)
 {
-  this->_meta.token(token);
+  this->_meta.token(token.constData());
 }
 
 Client& Manager::register_connection(ConnectionPtr& conn)

@@ -9,7 +9,7 @@
 # include <QVariantMap>
 # include <QVariantList>
 
-# include "plasma/metaclient/MetaClient.hh"
+# include "plasma/meta/Client.hh"
 
 namespace plasma
 {
@@ -36,7 +36,7 @@ namespace plasma
       typedef std::function<void(Connection&, Client&, QVariantMap const&)> Command;
       typedef std::unordered_map<std::string, Command> CommandMap;
 
-      typedef plasma::metaclient::MetaClient MetaClient;
+      typedef plasma::meta::Client MetaClient;
 
     private:
       QCoreApplication&   _app;

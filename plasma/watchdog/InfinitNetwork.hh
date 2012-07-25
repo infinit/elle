@@ -6,7 +6,7 @@
 # include <QDir>
 # include <QProcess>
 
-# include "plasma/metaclient/MetaClient.hh"
+# include "plasma/meta/Client.hh"
 
 namespace plasma
 {
@@ -14,7 +14,7 @@ namespace plasma
   {
 
     class Manager;
-    namespace meta = ::plasma::metaclient;
+    namespace meta = ::plasma::meta;
 
     class InfinitNetwork
       : QObject
@@ -41,7 +41,7 @@ namespace plasma
       void _update();
       void _create_network_root_block();
       void _on_got_descriptor(meta::UpdateNetworkResponse const& response);
-      void _on_any_error(meta::MetaClient::Error error,
+      void _on_any_error(meta::Error error,
                          std::string const& reason);
       void _register_device();
       void _on_device_registered(meta::UpdateNetworkResponse const& response);

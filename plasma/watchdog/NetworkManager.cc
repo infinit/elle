@@ -26,9 +26,7 @@ void NetworkManager::update_networks()
 {
   elle::log::debug("Updating networks");
   using namespace std::placeholders;
-  this->_manager.meta().Networks(
-      std::bind(&NetworkManager::_on_networks_update, this, _1)
-  );
+  this->_on_networks_update(this->_manager.meta().networks());
 }
 
 NetworkManager::NetworkMap const& NetworkManager::networks() const
@@ -49,10 +47,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
         {
           visited.insert(*it);
           using namespace std::placeholders;
-          this->_manager.meta().Network(
-              *it,
-              std::bind(&NetworkManager::_on_network_update, this, _1)
-          );
+          this->_on_network_update(this->_manager.meta().network(*it));
         }
     }
 
