@@ -124,7 +124,6 @@ def to_add(lib):
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
 DIR_INSTALL_CLIENT_TEMP = os.path.join(DIR_INSTALL_CLIENT, "temp-app")
-os.makedirs(DIR_INSTALL_CLIENT_TEMP)
 
 
 if which("otool"):
@@ -252,6 +251,7 @@ if os.path.exists(infinit_app):
     print("copy qt_menu.nib dependancy")
     shutil.copytree("/Library/Frameworks/QtGui.framework/Versions/4/Resources/qt_menu.nib", os.path.join(DIR_INSTALL_CLIENT_LIB, "qt_menu.nib"))
     shutil.copytree("/Library/Extensions/fuse4x.kext", os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext"))
+    os.makedirs(DIR_INSTALL_CLIENT_TEMP)
     dst_app = os.path.join(DIR_INSTALL_CLIENT_TEMP, os.path.basename(infinit_app))
 
     print("copy infinit_app to %s" % dst_app)
