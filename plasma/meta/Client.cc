@@ -376,7 +376,10 @@ namespace plasma
       try
         { this->_request(url, "POST", req.repr(), res); }
       catch (std::exception const& err)
-        { throw Exception(Error::network_error, err.what()); }
+        {
+          elle::log::debug("POST", url, req.repr(), "threw an error");
+          throw Exception(Error::network_error, err.what());
+        }
 
       T ret;
 
@@ -402,7 +405,10 @@ namespace plasma
       try
         { this->_request(url, "GET", "", res); }
       catch (std::exception const& err)
-        { throw Exception(Error::network_error, err.what()); }
+        {
+          elle::log::debug("GET", url, "threw an error");
+          throw Exception(Error::network_error, err.what());
+        }
 
       T ret;
 
