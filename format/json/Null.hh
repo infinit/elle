@@ -21,6 +21,7 @@ namespace elle
         using Object::operator ==;
         virtual bool operator ==(Object const& other) const;
         virtual bool operator ==(Null const&) const;
+        Null();
         virtual ~Null();
       };
 
