@@ -205,7 +205,6 @@ class Update(_Page):
         id_ = database.ObjectId(self.data['_id'])
         to_save = self.network(id_)
 
-        print("about to Update network:", to_save, "with", self.data)
         if 'name' in self.data:
             name = self.data['name'].strip()
             try:
@@ -259,7 +258,6 @@ class Update(_Page):
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
 
-        print("Update network:", to_save)
         id_ = database.networks().save(to_save)
         res = {
             'updated_network_id': id_
