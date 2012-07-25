@@ -401,6 +401,12 @@ namespace surface
         throw Exception(gap_no_device_error,
                         "Cannot start infinit without any local device");
 
+      if (this->_api->token().size() == 0 ||
+          this->_api->identity().size() == 0 ||
+          this->_api->email().size() == 0)
+        throw Exception(gap_not_logged_in,
+                        "Cannot start infinit anonymously");
+
       std::string old_watchdog_id;
       try
         {

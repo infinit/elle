@@ -14,6 +14,7 @@ extern "C" {
       gap_internal_error = -3,
       gap_api_error = -4,
       gap_no_device_error = -5,
+      gap_not_logged_in = -6,
     } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
