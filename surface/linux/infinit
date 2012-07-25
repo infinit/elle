@@ -217,6 +217,14 @@ def main(state):
     if not args.no_update:
         update_binaries()
 
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path = [
+        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '..', 'python'),
+    ] + sys.path
+
+    import gap
+    state = gap.State()
     if args.register:
         print("Registering to infinit:")
         register(state)
@@ -227,15 +235,7 @@ def main(state):
     start_shell(state, args)
 
 if __name__ == '__main__':
-    file_dir = os.path.abspath(os.path.dirname(__file__))
-    sys.path = [
-        os.path.join(file_dir, '..', 'gap', 'python'),
-        os.path.join(file_dir, '..', 'python'),
-    ] + sys.path
-
-    import gap
-    state = gap.State()
     try:
-        main(state)
+        main()
     except KeyboardInterrupt:
         del state
