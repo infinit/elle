@@ -55,7 +55,7 @@ namespace surface
     // - State ----------------------------------------------------------------
 
     State::State()
-      : _api(new plasma::meta::Client{common::meta_host(), common::meta_port()})
+      : _api(new plasma::meta::Client{common::meta::host(), common::meta::port()})
       , _users()
       , _files_infos()
       , _networks()
@@ -92,7 +92,7 @@ namespace surface
 
     std::string State::_watchdog_id() const // XXX should be cached
     {
-      boost::filesystem::path wtg_id_path(common::infinit_home());
+      boost::filesystem::path wtg_id_path(common::infinit::home());
       wtg_id_path /= "infinit.wtg";
       std::ifstream file(wtg_id_path.string());
       if (!file.good())
@@ -417,7 +417,7 @@ namespace surface
           elle::log::warn("Couldn't stop the watchdog:", err.what());
         }
 
-      std::string watchdog_binary = common::binary_path("8watchdog");
+      std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
       elle::log::info("Launching binary:", watchdog_binary);
       QProcess p;
@@ -512,7 +512,7 @@ namespace surface
         throw Exception(gap_error,
                         "Cannot find network for path '" + abspath + "'");
 
-      std::string const& access_binary = common::binary_path("8access");
+      std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
       arguments << "--user" << this->_api->email().c_str()
@@ -565,7 +565,7 @@ namespace surface
 
       Network* network = it->second;
 
-      std::string const& access_binary = common::binary_path("8access");
+      std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
       arguments << "--user" << _api->email().c_str()

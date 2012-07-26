@@ -41,7 +41,7 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _process()
   , _mount_point{
       elle::os::path::join(
-        common::infinit_home(),
+        common::infinit::home(),
         "networks",
         _description.name,
         "mnt").c_str()
@@ -89,7 +89,7 @@ void InfinitNetwork::_update()
   LOG("Starting network update.");
   QDir home{
     elle::os::path::join(
-      common::infinit_home(),
+      common::infinit::home(),
       "networks",
       this->_description.name).c_str()
   };
@@ -307,7 +307,7 @@ void InfinitNetwork::_start_process()
     );
 
   QDir home_mnt{
-      elle::os::path::join(common::home_directory(), "Infinit").c_str()
+      elle::os::path::join(common::system::home_directory(), "Infinit").c_str()
   };
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
@@ -340,7 +340,7 @@ void InfinitNetwork::_start_process()
   );
 
   LOG("exec:",
-      common::binary_path("8infinit"),
+      common::infinit::binary_path("8infinit"),
       "-n", this->_description.name.c_str(),
       "-m", this->_mount_point.path().toStdString(),
       "-u", this->_manager.user().c_str()
@@ -353,7 +353,7 @@ void InfinitNetwork::_start_process()
             ;
 
   this->_process.start(
-      common::binary_path("8infinit").c_str(),
+      common::infinit::binary_path("8infinit").c_str(),
       arguments
   );
   ::sleep(3);

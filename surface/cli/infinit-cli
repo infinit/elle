@@ -15,7 +15,7 @@ import stat
 import sys
 
 INFINIT_DEFAULT_HOME = os.path.join(
-    os.path.expanduser('~'), '.config', 'infinit'
+    os.path.expanduser('~'), '.infinit'
 )
 
 INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)

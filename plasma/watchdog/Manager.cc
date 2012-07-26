@@ -20,7 +20,7 @@ Manager::Manager(QCoreApplication& app) :
   _commands(new CommandMap()),
   _actions(new ClientActions(*this)),
   _network_manager(new NetworkManager(*this)),
-  _meta(common::meta_host(), common::meta_port())
+  _meta(common::meta::host(), common::meta::port())
 {}
 
 Manager::~Manager()

@@ -59,7 +59,7 @@ namespace
 
 int Application::exec()
 {
-  QDir homeDirectory(common::infinit_home().c_str());
+  QDir homeDirectory(common::infinit::home().c_str());
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);
