@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from meta import conf
+
 from email.mime.text import MIMEText
 from email.header import Header
 #from email.utils import parseaddr, formataddr
