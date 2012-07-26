@@ -212,8 +212,8 @@ infinit_files = [
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
     ("plasma/watchdog/8watchdog", "bin"),
-    ("surface/linux/infinit", "bin"),
-    ("surface/linux/8chmod", "bin"),
+    ("surface/cli/infinit-cli", "bin"),
+    ("surface/cli/8chmod", "bin"),
     ("surface/gap/libgap." + LIBRARY_EXT, "lib"),
     ("surface/gap/python/_gap.so", "python"),
     ("surface/gap/python/gap.py", "python"),
@@ -283,8 +283,6 @@ server_scripts = [
     "meta-server",
     "meta-tests",
     "creosus-server",
-    "production-meta-server.sh",
-    "production-creosus-server.sh"
 ]
 
 if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
