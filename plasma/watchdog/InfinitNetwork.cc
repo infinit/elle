@@ -21,8 +21,6 @@
 
 #include <elle/idiom/Close.hh>
 
-#include <plasma/common/resources.hh>
-
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 

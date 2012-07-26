@@ -5,7 +5,7 @@
 
 #include <elle/log.hh>
 
-#include <plasma/common/resources.hh>
+#include <common/common.hh>
 
 #include "Connection.hh"
 #include "LocalServer.hh"
@@ -30,19 +30,19 @@ void LocalServer::start(std::string const& watchdogId)
   this->_manager->start(watchdogId);
 
   // Trying to create a listening socket
-  if (!this->listen(WATCHDOG_SERVER_NAME))
+  if (!this->listen(common::watchdog::server_name().c_str()))
     {
       elle::log::warn("Server name already used (maybe previous crash)");
 
       // We try to remove the server instance first
-      if (!QLocalServer::removeServer(WATCHDOG_SERVER_NAME))
-        throw std::runtime_error("Cannot remove previous server instance");
+      if (!QLocalServer::removeServer(common::watchdog::server_name().c_str()))
+        throw std::runtime_error{"Cannot remove previous server instance"};
 
       // Then call listen again, since old socket have been removed
-      if (!this->listen(WATCHDOG_SERVER_NAME))
-        throw std::runtime_error(
-            "Cannot start the local server: " WATCHDOG_SERVER_NAME
-        );
+      if (!this->listen(common::watchdog::server_name().c_str()))
+        throw std::runtime_error{
+            "Cannot start the local server: " + common::watchdog::server_name()
+        };
     }
 
   this->_state = State::Running;

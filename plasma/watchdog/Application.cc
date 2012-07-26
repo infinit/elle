@@ -10,8 +10,6 @@
 
 #include <common/common.hh>
 
-#include <plasma/common/resources.hh>
-
 #include "LocalServer.hh"
 #include "Application.hh"
 
