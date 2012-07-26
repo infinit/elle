@@ -102,6 +102,37 @@ class InfinitShell(cmd.Cmd):
         except Exception as e:
             print(e)
 
+    def do_logout(self, args):
+        try:
+            self._state.logout()
+        except Exception as e:
+            print(e)
+
+    def do_invite(self, args):
+        """
+        invite a user to join a network.
+        usage: invite user network
+        """
+        if len(args.split()) != 2:
+            print("Wrong arguments")
+            return
+
+        user, network = args.split()
+        network_id = None
+        for id_ in self._state.networks():
+            if id_ == network or self._state.network_name(id_) == network:
+                network_id = id_
+                break
+
+        if network_id is None:
+            print("Cannot find any network with the name or id '%s'" % network)
+            return
+
+        try:
+            self._state.network_add_user(network_id, user)
+        except Exception as e:
+            print(e)
+
     def do_create_device(self, args=""):
         """Create local device with specified name or your host name"""
         dev_name = args.strip()
