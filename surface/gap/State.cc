@@ -33,8 +33,6 @@
 
 #include <elle/idiom/Close.hh>
 
-#include <plasma/common/resources.hh>
-
 #include "State.hh"
 
 namespace surface
@@ -61,7 +59,7 @@ namespace surface
       , _networks()
       , _networks_dirty(true)
     {
-      std::ifstream identity_file{common::watchdog_identity_path()};
+      std::ifstream identity_file{common::watchdog::identity_path()};
 
       if (identity_file.good())
         {
@@ -113,7 +111,7 @@ namespace surface
                               elle::format::json::Dictionary* response)
     {
       QLocalSocket conn;
-      conn.connectToServer(WATCHDOG_SERVER_NAME);
+      conn.connectToServer(common::watchdog::server_name().c_str());
       if (conn.waitForConnected(2000))
         {
           json::Dictionary req;
@@ -254,9 +252,8 @@ namespace surface
                           std::string const& password,
                           std::string const& activation_code)
     {
-        {
-          auto res = this->_api->register_(email, fullname, password, activation_code);
-        }
+      this->logout();
+      this->_api->register_(email, fullname, password, activation_code);
       elle::log::debug("Registered new user", fullname, email);
       this->login(email, password);
     }
@@ -360,8 +357,10 @@ namespace surface
 
     void
     State::network_add_user(std::string const& network_id,
-                            std::string const& user_id)
+                            std::string const& user)
     {
+      // makes user we have an id
+      std::string user_id = this->user(user)._id;
       auto res = this->_api->network_add_user(network_id, user_id);
     }
 
@@ -377,7 +376,7 @@ namespace surface
         do {
               {
                 QLocalSocket conn;
-                conn.connectToServer(WATCHDOG_SERVER_NAME);
+                conn.connectToServer(common::watchdog::server_name().c_str());
                 if (!conn.waitForConnected(2000))
                   break;
                 conn.disconnectFromServer();
@@ -429,7 +428,7 @@ namespace surface
       int tries = 0;
       while (tries++ < 5)
         {
-          conn.connectToServer(WATCHDOG_SERVER_NAME);
+          conn.connectToServer(common::watchdog::server_name().c_str());
           elle::log::debug("Trying to connect to the new watchdog");
           if (conn.waitForConnected(2000))
             break;
