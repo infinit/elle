@@ -85,13 +85,21 @@ namespace common
 
   }
 
+  // XXX The watchdog use a local socket for now, but it will be redesigned
+  namespace watchdog
+  {
+    /// The name of the local socket.
+    std::string const& server_name();
+
+    // XXX scheduled for deletion
+    /// Returns the path to the watchdog identity file.
+    std::string const& identity_path();
+  }
+
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
   std::string const& passport_path();
 
-  // XXX scheduled for deletion
-  /// Returns the path to the watchdog identity file.
-  std::string const& watchdog_identity_path();
 
 } // !common
 

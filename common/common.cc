@@ -213,11 +213,25 @@ namespace common
     return path;
   }
 
-  std::string const& watchdog_identity_path()
+  namespace watchdog
   {
-    static std::string const path = elle::os::path::join(infinit::home(),
-                                                         "identity.wtg");
-    return path;
+
+    std::string const& identity_path()
+    {
+      static std::string const path = elle::os::path::join(infinit::home(),
+                                                           "identity.wtg");
+      return path;
+    }
+
+    std::string const& server_name()
+    {
+      // The name is specific to the infinit home, as many instance could be
+      // launched on the same machine.
+      static std::string const name =
+        ::common::infinit::home() + "/WATCHDOG_SERVER_NAME";
+      return name;
+    }
+
   }
 
 }
