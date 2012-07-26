@@ -6,6 +6,7 @@ import web
 
 import metalib
 
+import meta.mail
 from meta.page import Page
 from meta import database, conf
 
@@ -16,9 +17,13 @@ class _Page(Page):
         self.requireLoggedIn()
         network = database.networks().find_one({
             '_id': database.ObjectId(_id),
-            'owner': database.ObjectId(self.user['_id']),
         })
         if not network:
+            raise web.NotFound("Couldn't find any network with this id")
+        if network['owner'] != self.user['_id'] and \
+           self.user['_id'] not in network['users']:
+            print self.user
+            print network
             raise web.Forbidden("This network does not belong to you")
         return network
 
@@ -85,9 +90,12 @@ class AddUser(_Page):
 
     __pattern__ = "/network/add_user"
 
-    def POST(self, _id):
+    def POST(self):
         to_add_user_id = database.ObjectId(self.data['user_id'])
-        network = self.network(_id)
+        network = self.network(self.data['_id'])
+        if network['owner'] != self.user['_id']:
+            raise web.Forbidden("You cannot add a user in a network that does "
+                                "not belong to you")
         #XXX users should invited instead of added
         if to_add_user_id in network['users']:
             return self.error("This user is already in the network")
@@ -101,11 +109,13 @@ class AddUser(_Page):
             }
             subject = NETWORK_INVITATION_SUBJECT % infos
             content = NETWORK_INVITATION_CONTENT % infos
-            meta.mail.send(to_add_user['mail'], subject, content)
+            meta.mail.send(to_add_user['email'], subject, content)
         network['users'].append(to_add_user_id)
         database.networks().save(network)
+        to_add_user['networks'].append(network['_id'])
+        database.users().save(to_add_user)
         return self.success({
-            'updated_network_id': _id,
+            'updated_network_id': network['_id'],
         })
 
 class All(_Page):
@@ -318,7 +328,6 @@ class Create(_Page):
             'root_block': None,
             'root_address': None,
         }
-        print("Create network:", network)
         _id = database.networks().insert(network)
         assert _id is not None
         self.user.setdefault('networks', []).append(_id)
