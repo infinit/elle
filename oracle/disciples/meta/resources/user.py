@@ -136,7 +136,7 @@ class One(Page):
         else:
             user = database.byId(database.users(), id_or_email)
         if not user:
-            return self.error("Couldn't find user for id '%s'" % str(_id))
+            return self.error("Couldn't find user for id '%s'" % str(id_or_email))
         return self.success({
             '_id': user['_id'],
             'email': user['email'],
