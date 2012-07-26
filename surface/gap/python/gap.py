@@ -31,7 +31,9 @@ class State:
             'stop_watchdog',
             'set_permissions',
             'set_device_name',
+            'network_add_user',
             'network_name',
+            'logout',
         ]
 
         def make_method(m):
