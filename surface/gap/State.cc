@@ -392,7 +392,6 @@ namespace surface
           throw Exception(gap_internal_error,
                           "The old watchdog instance does not stop !");
       }
-      this->logout();
     }
 
     void State::launch_watchdog()

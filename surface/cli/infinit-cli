@@ -10,6 +10,7 @@ import argparse
 import cmd
 import getpass
 import os
+import re
 import stat
 import sys
 
@@ -24,6 +25,13 @@ MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
 SHELL_INTRO = """
 Welcome to the infinit shell (type help for a list of commands).
 """
+
+EMAIL_REGEXP = re.compile(
+    r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+    r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+    r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$',
+    re.IGNORECASE
+)
 
 parser = argparse.ArgumentParser(description="Infinit launcher")
 
@@ -130,9 +138,26 @@ def start_shell(state, args):
     else:
         getattr(shell, 'do_' + args.action)('')
 
+def re_input(prompt, pattern=".+", regexp=None, errmsg="Input is not valid", default=None):
+    if default is not None:
+        prompt += " (defaults to %s)" % default
+    prompt += ': '
+    while True:
+        res = input(prompt).strip()
+        if not res and default:
+            res = default
+            break
+        if regexp is not None:
+            if regexp.match(res):
+                break
+        elif re.match('^' + pattern + '$', res):
+            break
+        print(errmsg)
+    return res
+
 def register(state):
-    fullname = input("Enter your fullname: ").strip()
-    email = input("email: ").strip()
+    fullname = re_input("Fullname", pattern='[\w ]{3,64}')
+    email = re_input("Email", regexp=EMAIL_REGEXP)
     while True:
         password = getpass.getpass("password: ")
         password2 = getpass.getpass("confirm password: ")
@@ -143,16 +168,21 @@ def register(state):
         else:
             break
     import socket
-    default_dev_name = socket.gethostname().strip()
-    dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
-    activation_code = input("Activation code: ")
-    if not dev_name:
-        dev_name = default_dev_name
+    dev_name = re_input(
+        "Computer name",
+        pattern="[\w ]{3,64}",
+        default=socket.gethostname().strip(),
+    )
+    activation_code = re_input("Activation code")
     state.register(fullname, email, password, dev_name, activation_code)
 
 def login(state):
-    email = input("email: ").strip()
-    password = getpass.getpass("password: ")
+    email = re_input("email", regexp=EMAIL_REGEXP)
+    while True:
+        password = getpass.getpass("password: ").strip()
+        if password:
+            break
+        print("empty password not allowed")
     state.login(email, password)
 
 def update_binaries():

@@ -44,6 +44,7 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_internal_error", gap_internal_error)
     .value("gap_api_error", gap_api_error)
     .value("gap_no_device_error", gap_no_device_error)
+    .value("gap_not_logged_in", gap_not_logged_in)
     .export_values()
   ;
 
