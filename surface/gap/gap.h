@@ -29,6 +29,9 @@ extern "C" {
     /// Release a state.
     void gap_free(gap_State* state);
 
+    /// Enable debug messages.
+    void gap_enable_debug(gap_State* state);
+
     /// - Services status -----------------------------------------------------
 
     /// Check if meta is alive.

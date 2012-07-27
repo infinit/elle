@@ -8,6 +8,7 @@
 # include <stdexcept>
 
 # include <elle/format/json/fwd.hh>
+# include <elle/log.hh>
 
 namespace plasma
 {
@@ -139,7 +140,8 @@ namespace plasma
     public:
       Client(std::string const& server,
              short port,
-             bool check_errors = true);
+             bool check_errors = true,
+             elle::log::Logger& log = elle::log::default_logger);
       ~Client();
 
     public:

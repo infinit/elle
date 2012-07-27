@@ -7,6 +7,8 @@
 
 #include "Client.hh"
 
+#include <elle/idiom/Close.hh>
+
 #define CRLF "\r\n"
 
 // - API responses serializers ------------------------------------------------
@@ -148,26 +150,38 @@ namespace plasma
 
     struct Client::Impl
     {
-      boost::asio::io_service io_service;
-      std::string server;
-      short port;
-      std::string token;
-      std::string identity;
-      std::string email;
-      bool check_errors;
+      boost::asio::io_service   io_service;
+      std::string               server;
+      short                     port;
+      std::string               token;
+      std::string               identity;
+      std::string               email;
+      bool                      check_errors;
+      elle::log::Logger&        log;
+
+      Impl(std::string const& server,
+           short port,
+           bool check_errors,
+           elle::log::Logger& log)
+        : io_service{}
+        , server{server}
+        , port{port}
+        , token{}
+        , identity{}
+        , email{}
+        , check_errors{check_errors}
+        , log(log)
+      {}
     };
 
     // - Ctor & dtor ----------------------------------------------------------
 
     Client::Client(std::string const& server,
                    short port,
-                   bool check_errors)
-      : _impl(new Impl)
-    {
-      _impl->server = server;
-      _impl->port = port;
-      _impl->check_errors = check_errors;
-    }
+                   bool check_errors,
+                   elle::log::Logger& log)
+      : _impl{new Impl{server, port, check_errors, log}}
+    {}
 
     Client::~Client()
     {
@@ -377,13 +391,13 @@ namespace plasma
         { this->_request(url, "POST", req.repr(), res); }
       catch (std::exception const& err)
         {
-          elle::log::debug("POST", url, req.repr(), "threw an error");
+          _impl->log.debug("POST", url, req.repr(), "threw an error");
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      elle::log::debug("POST", url, req.repr(), "=>", res.str());
+      _impl->log.debug("POST", url, req.repr(), "=>", res.str());
       // deserialize response
       try
         { elle::serialize::InputJSONArchive(res, ret); }
@@ -406,13 +420,13 @@ namespace plasma
         { this->_request(url, "GET", "", res); }
       catch (std::exception const& err)
         {
-          elle::log::debug("GET", url, "threw an error");
+          _impl->log.debug("GET", url, "threw an error");
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      elle::log::debug("GET", url, "=>", res.str());
+      _impl->log.debug("GET", url, "=>", res.str());
 
       // deserialize response
       try

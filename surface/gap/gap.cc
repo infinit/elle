@@ -116,6 +116,12 @@ extern "C"
       delete __TO_CPP(state);
     }
 
+    void gap_enable_debug(gap_State* state)
+    {
+      assert(state != nullptr);
+      __TO_CPP(state)->log.level(elle::log::Logger::Level::debug);
+    }
+
     gap_Status gap_meta_status(gap_State* state)
     {
       return gap_ok;
