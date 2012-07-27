@@ -142,6 +142,5 @@ void ClientActions::_on_status(Connection& conn,
 
   json::Dictionary response;
   response["networks"] = networks;
-  elle::log::debug("Response =", response.repr());
   conn.send_data((response.repr() + "\n").c_str());
 }
