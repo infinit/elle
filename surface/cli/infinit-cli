@@ -67,8 +67,14 @@ class InfinitShell(cmd.Cmd):
         """Print networks."""
         try:
             networks = self._state.networks()
-            for network in networks:
-                print(network, ':', self._state.network_name(network))
+            for network_id in networks:
+                print(self._state.network_name(network_id), '(%s)' % network_id)
+                mnt = None
+                try:
+                    mnt = self._state.network_mount_point(network_id)
+                except:
+                    pass
+                print('\t- mount point:', mnt)
         except Exception as e:
             print(e)
 

@@ -33,6 +33,7 @@ class State:
             'set_device_name',
             'network_add_user',
             'network_name',
+            'network_mount_point',
             'logout',
         ]
 

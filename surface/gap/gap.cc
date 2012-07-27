@@ -257,6 +257,23 @@ extern "C"
       return nullptr;
     }
 
+    char const* gap_network_mount_point(gap_State* state,
+                                        char const* id)
+    {
+      assert(state != nullptr);
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& network_status = __TO_CPP(state)->network_status(id);
+          return network_status.mount_point.c_str();
+        }
+      CATCH_ALL(network_mount_point);
+
+      (void) ret;
+      return nullptr;
+    }
+
     char** gap_network_users(gap_State* state, char const* id)
     {
       assert(state != nullptr);

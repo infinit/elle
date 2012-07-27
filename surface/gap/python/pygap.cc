@@ -76,6 +76,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("networks", &_get_networks);
   py::def("create_network", &gap_create_network);
   py::def("network_name", &gap_network_name, by_value());
+  py::def("network_mount_point", &gap_network_mount_point, by_value());
   py::def("network_add_user", &gap_network_add_user);
 
   //- Users -------------------------------------------------------------------

@@ -90,6 +90,10 @@ extern "C" {
     /// Get the network name from its id.
     char const* gap_network_name(gap_State* state, char const* id);
 
+    /// Get the network mount point.
+    char const* gap_network_mount_point(gap_State* state,
+                                        char const* id);
+
     /// Retreive all users ids from a network. Returns a null-terminated array
     /// of null-terminated strings.
     char** gap_network_users(gap_State* state, char const* id);
