@@ -252,7 +252,9 @@ namespace surface
                           std::string const& password,
                           std::string const& activation_code)
     {
-      this->logout();
+      // Logout first, and ignore errors.
+      try { this->logout(); } catch (plasma::meta::Exception const&) {}
+
       this->_api->register_(email, fullname, password, activation_code);
       elle::log::debug("Registered new user", fullname, email);
       this->login(email, password);
