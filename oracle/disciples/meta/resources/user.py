@@ -151,7 +151,7 @@ class Register(Page):
             'email': "email@pif.net", #required
             'fullname': "The full name", #required
             'password': "password', #required
-            'admin_token': 'admin token', #required
+            'activation_code': dklds
         }
     """
 
