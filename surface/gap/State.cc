@@ -54,10 +54,12 @@ namespace surface
 
     State::State()
       : _api(new plasma::meta::Client{common::meta::host(), common::meta::port()})
-      , _users()
-      , _files_infos()
-      , _networks()
-      , _networks_dirty(true)
+      , _users{}
+      , _files_infos{}
+      , _networks{}
+      , _networks_dirty{true}
+      , _networks_status{}
+      , _networks_status_dirty{true}
     {
       std::ifstream identity_file{common::watchdog::identity_path()};
 
@@ -82,6 +84,7 @@ namespace surface
     {
       this->_send_watchdog_cmd("refresh_networks");
       this->_networks_dirty = true;
+      this->_networks_status_dirty = true;
     }
 
     void State::_reload_networks()
@@ -332,6 +335,7 @@ namespace surface
     {
       auto response = this->_api->create_network(name);
       this->_networks_dirty = true;
+      this->_networks_status_dirty = true;
     }
 
     std::map<std::string, Network*> const&
@@ -430,27 +434,26 @@ namespace surface
     {
       this->_send_watchdog_cmd("stop");
       // Waiting for the old server to be stopped
-      {
-        int tries = 1;
-        int sleep_time = 2;
-        do {
-              {
-                QLocalSocket conn;
-                conn.connectToServer(common::watchdog::server_name().c_str());
-                if (!conn.waitForConnected(2000))
-                  break;
-                conn.disconnectFromServer();
-              }
-            elle::log::debug("Waiting", sleep_time,
-                             "secs for the old watchdog to be stopped (", tries, " / 10 )");
-            ::sleep(sleep_time);
-            sleep_time += 2;
-        } while (++tries < 10);
+      int tries = 1;
+      int sleep_time = 2;
+      do {
+            {
+              QLocalSocket conn;
+              conn.connectToServer(common::watchdog::server_name().c_str());
+              if (!conn.waitForConnected(2000))
+                break;
+              conn.disconnectFromServer();
+            }
+          elle::log::debug("Waiting", sleep_time,
+                           "secs for the old watchdog to be stopped (", tries, " / 10 )");
+          ::sleep(sleep_time);
+          sleep_time += 2;
+      } while (++tries < 10);
 
-        if (tries >= 10)
-          throw Exception(gap_internal_error,
-                          "The old watchdog instance does not stop !");
-      }
+      if (tries >= 10)
+        throw Exception(gap_internal_error,
+                        "The old watchdog instance does not stop !");
+      this->_networks_status_dirty = true;
     }
 
     void
