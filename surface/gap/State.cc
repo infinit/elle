@@ -58,6 +58,8 @@ namespace surface
           new plasma::meta::Client{
               common::meta::host(),
               common::meta::port(),
+              true,
+              log,
           }
       }
       , _users{}

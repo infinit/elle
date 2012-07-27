@@ -83,7 +83,6 @@ void LocalServer::_handle_new_connection(ConnectionPtr& conn)
 
 void LocalServer::_on_client_error(ConnectionPtr conn, std::string const& error)
 {
-  elle::log::error("Client has an error:", error);
   this->_manager->unregister_connection(conn);
 }
 

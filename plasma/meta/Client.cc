@@ -254,6 +254,8 @@ namespace plasma
       return this->_post<UserResponse>("/user/search", request);
     }
 
+    //- Devices ---------------------------------------------------------------
+
     CreateDeviceResponse
     Client::create_device(std::string const& name,
                           std::string const& local_address,
@@ -287,6 +289,8 @@ namespace plasma
       return this->_post<UpdateDeviceResponse>("/device/update", request);
 
     }
+
+    //- Networks --------------------------------------------------------------
 
     NetworksResponse
     Client::networks()
@@ -352,6 +356,8 @@ namespace plasma
       }};
       return this->_post<NetworkAddUserResponse>("/network/add_user", request);
     }
+
+    //- Properties ------------------------------------------------------------
 
     void
     Client::token(std::string const& tok)

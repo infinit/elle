@@ -75,8 +75,7 @@ namespace elle
                 {&std::cerr, false},
                 {&std::cerr, false},
             })
-      {
-      }
+      {}
     };
 
     Logger::Logger(Logger::Level level, std::string const& name)
