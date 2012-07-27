@@ -242,15 +242,17 @@ namespace surface
         }
     }
 
-    void State::logout()
+    void
+    State::logout()
     {
       this->_api->logout();
     }
 
-    void State::register_(std::string const& fullname,
-                          std::string const& email,
-                          std::string const& password,
-                          std::string const& activation_code)
+    void
+    State::register_(std::string const& fullname,
+                     std::string const& email,
+                     std::string const& password,
+                     std::string const& activation_code)
     {
       // Logout first, and ignore errors.
       try { this->logout(); } catch (plasma::meta::Exception const&) {}
@@ -262,7 +264,8 @@ namespace surface
 
     namespace detail
     {
-        std::string get_local_address()
+        std::string
+        get_local_address()
         {
           elle::network::Host::Container hosts;
 
@@ -278,12 +281,14 @@ namespace surface
         }
     }
 
-    bool State::has_device() const
+    bool
+    State::has_device() const
     {
       return fs::exists(common::passport_path());
     }
 
-    void State::update_device(std::string const& name, bool force_create)
+    void
+    State::update_device(std::string const& name, bool force_create)
     {
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
@@ -320,14 +325,17 @@ namespace surface
         throw Exception(gap_internal_error, "Cannot save the passport");
     }
 
+    //- Network management ----------------------------------------------------
 
-    void State::create_network(std::string const& name)
+    void
+    State::create_network(std::string const& name)
     {
       auto response = this->_api->create_network(name);
       this->_networks_dirty = true;
     }
 
-    std::map<std::string, Network*> const& State::networks()
+    std::map<std::string, Network*> const&
+    State::networks()
     {
       if (this->_networks_dirty)
         {
@@ -366,9 +374,59 @@ namespace surface
       auto res = this->_api->network_add_user(network_id, user_id);
     }
 
+    std::map<std::string, NetworkStatus*> const&
+    State::networks_status()
+    {
+      if (this->_networks_status_dirty)
+        {
+          json::Dictionary response;
+          this->_send_watchdog_cmd("status", nullptr, &response);
+
+          auto& networks = response["networks"].as_array();
+          for (size_t i = 0; i < networks.size(); ++i)
+            {
+              auto& network = networks[i].as_dictionary();
+              std::string mount_point = network["mount_point"].as_string();
+              std::string network_id = network["_id"].as_string();
+
+              NetworkStatus* status = nullptr;
+              auto it = this->_networks_status.find(network_id);
+              if (it == this->_networks_status.end())
+                {
+                  status = this->_networks_status[network_id]
+                         = new NetworkStatus;
+                }
+              else
+                {
+                  status = it->second;
+                }
+              assert(status != nullptr);
+              *status = NetworkStatus{
+                  network_id,
+                  mount_point,
+              };
+            }
+          this->_networks_status_dirty = false;
+        }
+      return this->_networks_status;
+    }
+
+    NetworkStatus const&
+    State::network_status(std::string const& id)
+    {
+      auto it = this->networks_status().find(id);
+      if (it == this->networks_status().end())
+        throw Exception{
+            gap_error,
+            "Unknown network id '" + id + "'",
+        };
+      return *(it->second);
+    }
+
     //- Watchdog --------------------------------------------------------------
 
-    void State::stop_watchdog()
+    void
+    State::stop_watchdog()
     {
       this->_send_watchdog_cmd("stop");
       // Waiting for the old server to be stopped
@@ -395,7 +453,8 @@ namespace surface
       }
     }
 
-    void State::launch_watchdog()
+    void
+    State::launch_watchdog()
     {
       if (!fs::exists(common::passport_path()))
         throw Exception(gap_no_device_error,
@@ -475,7 +534,8 @@ namespace surface
 
     /// - File level ----------------------------------------------------------
 
-    FileInfos const& State::file_infos(std::string const& path)
+    FileInfos const&
+    State::file_infos(std::string const& path)
     {
       std::string abspath = elle::os::path::absolute(path, true);
       elle::log::debug("Get file infos of", abspath);
@@ -483,31 +543,24 @@ namespace surface
       if (it != this->_files_infos.end())
         return *(it->second);
 
-
-      json::Dictionary request, response;
-      this->_send_watchdog_cmd("status", nullptr, &response);
-
-      auto& networks = response["networks"].as_array();
-
       std::unique_ptr<FileInfos> infos;
 
-      for (size_t i = 0; i < networks.size(); ++i)
-      {
-        auto& network = networks[i].as_dictionary();
-        std::string mount_point = network["mount_point"].as_string();
-        std::string network_id = network["_id"].as_string();
-        if (boost::algorithm::starts_with(abspath, mount_point))
-          {
-            infos.reset(new FileInfos{
-                mount_point,
-                network_id,
-                abspath,
-                abspath.substr(mount_point.size() + 1),
-                {},
-            });
-            break;
-          }
-      }
+      for (auto const& pair : this->networks_status())
+        {
+          std::string mount_point = pair.second->mount_point;
+
+          if (boost::algorithm::starts_with(abspath, mount_point))
+            {
+              infos.reset(new FileInfos{
+                  mount_point,
+                  pair.first,
+                  abspath,
+                  abspath.substr(mount_point.size() + 1),
+                  {},
+              });
+              break;
+            }
+        }
 
       if (infos.get() == nullptr)
         throw Exception(gap_error,
