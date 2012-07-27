@@ -129,3 +129,20 @@ void Manager::refresh_networks()
 {
   this->_network_manager->update_networks();
 }
+
+void Manager::start_refresh_networks()
+{
+  this->refresh_networks();
+  if (this->_timer.isActive())
+    {
+      elle::log::warn("The timer is already activated");
+      return;
+    }
+  this->connect(&this->_timer, SIGNAL(timeout()), this, SLOT(_on_timeout()));
+  this->_timer.start(30000); // 30 sec
+}
+
+void Manager::_on_timeout()
+{
+  this->refresh_networks();
+}

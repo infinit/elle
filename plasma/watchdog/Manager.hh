@@ -6,6 +6,7 @@
 # include <functional>
 
 # include <QCoreApplication>
+# include <QTimer>
 # include <QVariantMap>
 # include <QVariantList>
 
@@ -26,7 +27,10 @@ namespace plasma
     /// and their connection.
     ///
     class Manager
+      : public QObject
     {
+      Q_OBJECT
+
     public:
       typedef std::shared_ptr<Connection> ConnectionPtr;
       typedef std::unique_ptr<Client> ClientPtr;
@@ -45,6 +49,7 @@ namespace plasma
       ClientActions*      _actions;
       NetworkManager*     _network_manager;
       MetaClient          _meta;
+      QTimer              _timer;
       std::string         _identity;
       std::string         _user;
 
@@ -90,7 +95,15 @@ namespace plasma
       ///
       void start(std::string const& watchdogId);
       void stop();
+
+      /// Start to refresh networks periodically.
+      void start_refresh_networks();
+
+      /// Force network refresh.
       void refresh_networks();
+
+    private Q_SLOTS:
+      void _on_timeout();
     };
 
   }

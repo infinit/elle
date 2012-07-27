@@ -95,7 +95,7 @@ void ClientActions::_on_run(Connection& conn,
         }
       identity_infos.close();
 
-      this->_manager.refresh_networks();
+      this->_manager.start_refresh_networks();
       UNREGISTER(run);
       REGISTER_ALL();
     }
