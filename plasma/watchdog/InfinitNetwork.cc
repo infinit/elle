@@ -297,6 +297,9 @@ void InfinitNetwork::_on_any_error(plasma::meta::Error error, std::string const&
 
 void InfinitNetwork::_start_process()
 {
+  if (this->_process.state() != QProcess::NotRunning)
+    return;
+
   LOG("Starting infinit process");
 
   if (!this->_mount_point.exists() && !_mount_point.mkpath("."))
@@ -354,7 +357,6 @@ void InfinitNetwork::_start_process()
       common::infinit::binary_path("8infinit").c_str(),
       arguments
   );
-  ::sleep(3);
 }
 
 
