@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2011, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2012, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -34,6 +34,7 @@ class Config:
             self.ldflags = []
             self._framework = {}
             self._defines = {}
+            self.__standard = None
         else:
             self.__debug = model.__debug
             self._includes = deepcopy(model._includes)
@@ -46,6 +47,7 @@ class Config:
             self.ldflags = deepcopy(model.ldflags)
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
+            self.__standard = model.__standard
 
     def enable_debug_symbols(self, val = True):
         self.__debug = val
@@ -143,7 +145,33 @@ class Config:
         res.libs += rhs.libs
         res.flags += rhs.flags
         res.ldflags += rhs.ldflags
+        std_s = self.__standard
+        std_o = rhs.__standard
+        if std_s is not None and std_o is not None:
+            if std_s is not std_o:
+                raise Exception(
+                    'merging C++ configurations with incompatible '
+                    'standards: %s and %s' % (std_s, std_o))
+        res.__standard = std_s or std_o
         return res
+
+    class Standard:
+        def __init__(self, name):
+            self.__name = name
+        def __str__(self):
+            return 'C++ %s' % self.__name
+
+    cxx_0x = Standard('0x')
+    cxx_98 = Standard('98')
+
+    @property
+    def standard(self, ):
+        return self.__standard
+
+    @standard.setter
+    def standard(self, value):
+        assert value is None or isinstance(value, Config.Standard)
+        self.__standard = value
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -252,6 +280,15 @@ class GccToolkit(Toolkit):
             res.append('-O2')
         if cfg._Config__debug:
             res.append('-g')
+        std = cfg._Config__standard
+        if std is None:
+            pass
+        elif std is Config.cxx_98:
+            res.append('-std=c++98')
+        elif std is Config.cxx_0x:
+            res.append('-std=c++0x')
+        else:
+            raise Exception('Unknown C++ standard: %s' % std)
         return res
 
     def compile(self, cfg, src, obj, c = False):
