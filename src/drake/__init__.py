@@ -244,7 +244,12 @@ class Path(object):
 
     def __str__(self):
         """The path as a string, adapted to the underlying OS."""
-        return (self.virtual and '//' or '') + self.separator.join(self.__path)
+        prefix = self.virtual and '//' or ''
+        if not self.__path:
+            body = '.'
+        else:
+            body = self.separator.join(self.__path)
+        return prefix + body
 
     def __repr__(self):
         """Python representation."""
@@ -329,7 +334,7 @@ class Path(object):
         >>> Path('foo/bar/baz').dirname()
         Path("foo/bar")
         >>> Path('foo').dirname()
-        Path("")
+        Path(".")
         >>> Path('').dirname()
         Traceback (most recent call last):
             ...
