@@ -1,0 +1,55 @@
+import drake
+import drake.cxx
+
+config = None
+lib = None
+
+def configure(cxx_toolkit, cxx_config):
+
+  global config, lib
+
+  config = drake.cxx.Config()
+  config.add_local_include_path('src/')
+  config.standard = drake.cxx.Config.cxx_0x
+
+  cxx_config = cxx_config + config
+
+  sources = drake.nodes(
+    'src/reactor/signal.cc',
+    'src/reactor/storage.cc',
+    'src/reactor/sleep.cc',
+    'src/reactor/waitable.cc',
+    'src/reactor/exception.cc',
+    'src/reactor/lockable.cc',
+    'src/reactor/rw-mutex.cc',
+    'src/reactor/thread.cc',
+    'src/reactor/backtrace.cc',
+    'src/reactor/backend/pthread/pthread.cc',
+    'src/reactor/backend/coro_io/thread.cc',
+    'src/reactor/backend/coro_io/libcoroutine/context.cc',
+    'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
+    'src/reactor/semaphore.cc',
+    'src/reactor/mutex.cc',
+    'src/reactor/network/udp-server-socket.cc',
+    'src/reactor/network/exception.cc',
+    'src/reactor/network/udp-socket.cc',
+    'src/reactor/network/tcp-socket.cc',
+    'src/reactor/network/resolve.cc',
+    'src/reactor/network/tcp-server.cc',
+    'src/reactor/network/socket.cc',
+    'src/reactor/network/server.cc',
+    'src/reactor/network/udp-server.cc',
+    'src/reactor/operation.cc',
+    'src/reactor/scheduler.cc',
+    'src/reactor/duration.cc',
+    )
+
+  lib = drake.cxx.StaticLib('lib/reactor', sources, cxx_toolkit, cxx_config)
+
+  tests = drake.nodes(
+    'tests/reactor/test.cc',
+    'tests/reactor/backend/test.cc',
+    'tests/reactor/network/test.cc',
+    )
+
+
