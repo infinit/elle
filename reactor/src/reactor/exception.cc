@@ -1,5 +1,6 @@
 #include <iostream>
 #include <reactor/exception.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 namespace reactor

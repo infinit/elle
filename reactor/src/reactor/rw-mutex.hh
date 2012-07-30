@@ -2,7 +2,6 @@
 # define INFINIT_REACTOR_RW_MUTEX_HH
 
 # include <reactor/mutex.hh>
-# include <reactor/signal.hh>
 
 namespace reactor
 {
