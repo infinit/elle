@@ -183,15 +183,15 @@ fi
 if [[ $LINUX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux64"
     (CC="${CC}" CXX="${CXX}" \
-        CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
-        BUILDDIR=build/linux64 gen_build_dir)
+     CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
+     BUILDDIR=build/linux64 gen_build_dir)
 fi
 
 if [[ $MACOSX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/macosx64"
-    (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
-        CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
-        BUILDDIR=build/macosx64 gen_build_dir)
+    (CC="${CC}" CXX="${CXX}" \
+     CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
+     BUILDDIR=build/macosx64 gen_build_dir)
 fi
 
 if [[ $WIN32 = ON ]] ; then
