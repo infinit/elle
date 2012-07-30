@@ -40,7 +40,6 @@ namespace elle
       struct Path
       {
         static Character                Separator;
-        static String                   Home;
         static String                   Root;
         static String                   Current;
       };
