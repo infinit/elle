@@ -26,6 +26,9 @@ namespace elle
       /// removes all symbolic link, '.' and '..' occurences.
       std::string absolute(std::string const& path, bool canonical = false);
 
+      /// Check whether or not a path point to a directory.
+      bool is_directory(std::string const& path);
+
     }
   }
 }
