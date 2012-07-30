@@ -319,7 +319,7 @@ void InfinitNetwork::_start_process()
       link_path += ".lnk";
 #endif
       if (!QFile(this->_mount_point.path()).link(link_path))
-        elle::log::warn("Cannot create links to mount points.");
+        elle::log::debug("Cannot create links to mount points.");
     }
   else
     elle::log::warn("Cannot create mount point directory.");
