@@ -9,6 +9,7 @@
 _OS = __import__('os')
 import hashlib, platform, re, subprocess, sys, threading, time, types, shutil
 import inspect
+import itertools
 from copy import deepcopy
 import drake.debug
 import atexit
@@ -1336,7 +1337,8 @@ class Builder:
         marks[self] = None
 
         print('  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__))
-        for node in self.__sources.values() + self.__dynsrc.values():
+        for node in itertools.chain(self.__sources.values(),
+                                    self.__dynsrc.values()):
             if node.dot(marks):
                 print('  node_%s -> builder_%s' % (node.uid, self.uid))
         return True
