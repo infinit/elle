@@ -117,6 +117,9 @@ extern "C" {
     /// Retrieve user email address.
     char const* gap_user_email(gap_State* state, char const* id);
 
+    /// Retrieve user with its email.
+    char const* gap_user_by_email(gap_State* state, char const* email);
+
     /// - Watchdog ------------------------------------------------------------
 
     /// Launch the watchdog binary.
