@@ -91,13 +91,12 @@ class Config:
 
 
     def add_system_include_path(self, path):
-
+        path = Path(path)
         # Never include those.
         # FIXME: Unix only
         if path == Path('/include') or path == Path('/usr/include'):
             return
-        path = Path(path)
-        if not path.absolute:
+        if not path.absolute():
             path = srctree() / prefix() / path
         self._system_includes[path] = None
         self._includes[path] = None
