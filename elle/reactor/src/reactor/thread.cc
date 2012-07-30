@@ -2,7 +2,6 @@
 
 #include <elle/log.hh>
 
-#include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>

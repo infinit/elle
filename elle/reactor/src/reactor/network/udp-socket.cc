@@ -1,6 +1,5 @@
 #include <boost/lexical_cast.hpp>
 
-#include <reactor/debug.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
@@ -9,6 +8,10 @@
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Reactor.Network.UDPSocket");
 
 namespace reactor
 {
@@ -116,12 +119,11 @@ namespace reactor
     UDPSocket::read_some(Buffer buffer, DurationOpt timeout)
     {
       if (timeout)
-        INFINIT_REACTOR_DEBUG(*this << ": read at most "
-                              << buffer.size() << " bytes with timeout "
-                              << timeout << ".");
+        ELLE_LOG_TRACE("%s: read at most %s bytes with timeout %s",
+                       *this, buffer.size(), timeout);
       else
-        INFINIT_REACTOR_DEBUG(*this << ": read at most "
-                              << buffer.size() << " bytes.");
+        ELLE_LOG_TRACE("%s: read at most %s bytes",
+                       *this, buffer.size());
       UDPRead read(scheduler(), this, buffer);
       if (!read.run(timeout))
         throw TimeOut(scheduler());
@@ -174,9 +176,8 @@ namespace reactor
     void
     UDPSocket::write(Buffer buffer)
     {
-      INFINIT_REACTOR_DEBUG(*this << ": write " << buffer.size()
-                            << " bytes to " << _socket->remote_endpoint()
-                            << ".");
+      ELLE_LOG_TRACE("%s: write %s bytes to %s",
+                     *this, buffer.size(), _socket->remote_endpoint());
       UDPWrite write(scheduler(), this, buffer);
       write.run();
     }

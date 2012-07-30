@@ -109,7 +109,6 @@ ADD_LIBRARY(elle
   reactor/src/reactor/backend/coro_io/thread.cc
   reactor/src/reactor/backend/pthread/pthread.cc
   reactor/src/reactor/backtrace.cc
-  reactor/src/reactor/debug.cc
   reactor/src/reactor/duration.cc
   reactor/src/reactor/exception.cc
   reactor/src/reactor/lockable.cc

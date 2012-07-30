@@ -1,6 +1,5 @@
 #include <elle/log.hh>
 
-#include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 

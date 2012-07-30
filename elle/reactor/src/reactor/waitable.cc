@@ -2,7 +2,6 @@
 
 #include <elle/log.hh>
 
-#include <reactor/debug.hh>
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>
 
