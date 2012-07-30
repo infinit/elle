@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 
+# include <reactor/asio.hh>
 # include <reactor/mutex.hh>
 # include <reactor/network/socket.hh>
 

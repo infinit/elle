@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_UDP_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_UDP_SOCKET_HH
 
+# include <reactor/asio.hh>
 # include <reactor/network/socket.hh>
 # include <reactor/signal.hh>
 

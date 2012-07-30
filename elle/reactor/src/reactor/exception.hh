@@ -4,7 +4,7 @@
 # include <stdexcept>
 
 # include <reactor/backtrace.hh>
-# include <reactor/scheduler.hh>
+# include <reactor/fwd.hh>
 
 #define INFINIT_REACTOR_EXCEPTION(Name)         \
   virtual void raise_and_delete() const         \
