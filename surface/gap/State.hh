@@ -136,7 +136,8 @@ namespace surface
       void
       set_permissions(std::string const& user_id,
                       std::string const& abspath,
-                      int permissions);
+                      int permissions,
+                      bool recursive = false);
 
     ///
     /// Manipulate networks

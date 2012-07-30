@@ -620,7 +620,8 @@ namespace surface
 
     void State::set_permissions(std::string const& user_id,
                                 std::string const& abspath,
-                                int permissions)
+                                int permissions,
+                                bool recursive)
     {
       FileInfos const& infos = this->file_infos(abspath);
       auto it = this->networks().find(infos.network_id);
@@ -655,6 +656,19 @@ namespace surface
       p.start(access_binary.c_str(), arguments);
       if (!p.waitForFinished())
         throw Exception(gap_internal_error, "8access binary failed");
+
+      if (recursive && elle::os::path::is_directory(abspath))
+        {
+          boost::filesystem::directory_iterator it{abspath},
+                                                end{};
+          for (; it != end; ++it)
+            {
+              this->set_permissions(user_id,
+                                    it->path().string(),
+                                    permissions,
+                                    true);
+            }
+        }
     }
 
   }

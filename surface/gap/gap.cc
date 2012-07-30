@@ -396,6 +396,21 @@ extern "C"
       __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
     }
 
+    gap_Status gap_set_permissions_rec(gap_State* state,
+                                       char const* user_id,
+                                       char const* absolute_path,
+                                       int permissions)
+    {
+      assert(user_id != nullptr);
+      assert(absolute_path != nullptr);
+      __WRAP_CPP(state,
+                 set_permissions,
+                 user_id,
+                 absolute_path,
+                 permissions,
+                 true);
+    }
+
     char** gap_file_users(gap_State* state,
                           char const* absolute_path)
     {
