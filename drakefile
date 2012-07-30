@@ -1,0 +1,526 @@
+import drake.cxx
+import drake.cxx.boost
+import drake.cxx.qt
+
+def configure(cxx_toolkit, cxx_config):
+
+  cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config.enable_debug_symbols()
+  # Qt
+  qt = drake.cxx.qt.Qt()
+  cxx_config.define('QT_NO_KEYWORDS')
+  cxx_config += qt.cfg + qt.cfg_network + qt.cfg_gui
+  # Boost
+  boost = drake.cxx.boost.Boost()
+  cxx_config += boost.config_signals()
+  cxx_config += boost.config_system()
+  cxx_config += boost.config_filesystem()
+  # OpenSSL
+  openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h')
+  cxx_config += openssl.config()
+  cxx_config.lib('crypto')
+  # Includes
+  cxx_config.add_local_include_path('.')
+  cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
+  reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
+  cxx_config += reactor.config
+  # Elle
+  elle = drake.include('elle', cxx_toolkit, cxx_config)
+  # Fuse
+  cxx_config.define('_FILE_OFFSET_BITS', 64) # FIXME: only needed for horizon
+
+  # Lune
+  lune_sources = drake.nodes(
+    'lune/Passport.cc',
+    'lune/Map.hxx',
+    'lune/Identity.hh',
+    'lune/Dictionary.cc',
+    'lune/Identity.hxx',
+    'lune/Configuration.cc',
+    'lune/Phrase.cc',
+    'lune/Lune.cc',
+    'lune/Dictionary.hxx',
+    'lune/Dictionary.hh',
+    'lune/Configuration.hh',
+    'lune/Passport.hxx',
+    'lune/Authority.hxx',
+    'lune/Passport.hh',
+    'lune/Descriptor.hxx',
+    'lune/Map.hh',
+    'lune/Set.cc',
+    'lune/Descriptor.hh',
+    'lune/Descriptor.cc',
+    'lune/Phrase.hh',
+    'lune/Lune.hh',
+    'lune/Authority.hh',
+    'lune/Phrase.hxx',
+    'lune/Identity.cc',
+    'lune/Set.hh',
+    'lune/Authority.cc',
+    'lune/Set.hxx',
+    'lune/Log.cc',
+    'lune/Log.hh',
+    'lune/fwd.hh',
+    )
+
+  # Nucleus
+  nucleus_sources = drake.nodes(
+    'nucleus/Derivable.hh',
+    'nucleus/Derivable.cc',
+    'nucleus/Derivable.hxx',
+    'nucleus/Nucleus.cc',
+    'nucleus/neutron/Entry.hh',
+    'nucleus/neutron/Attributes.cc',
+    'nucleus/neutron/Record.hxx',
+    'nucleus/neutron/Trait.hh',
+    'nucleus/neutron/Object.hxx',
+    'nucleus/neutron/Token.hh',
+    'nucleus/neutron/Neutron.hh',
+    'nucleus/neutron/Entry.cc',
+    'nucleus/neutron/Range.hh',
+    'nucleus/neutron/Record.hh',
+    'nucleus/neutron/Catalog.hxx',
+    'nucleus/neutron/Data.hh',
+    'nucleus/neutron/Object.hh',
+    'nucleus/neutron/Subject.hxx',
+    'nucleus/neutron/Trait.cc',
+    'nucleus/neutron/Object.cc',
+    'nucleus/neutron/Permissions.hh',
+    'nucleus/neutron/Token.cc',
+    'nucleus/neutron/Access.hh',
+    'nucleus/neutron/Data.hxx',
+    'nucleus/neutron/Subject.hh',
+    'nucleus/neutron/Access.hxx',
+    'nucleus/neutron/Offset.hh',
+    'nucleus/neutron/Trait.hxx',
+    'nucleus/neutron/Entry.hxx',
+    'nucleus/neutron/Reference.hxx',
+    'nucleus/neutron/Attributes.hxx',
+    'nucleus/neutron/Token.hxx',
+    'nucleus/neutron/Record.cc',
+    'nucleus/neutron/Role.hh',
+    'nucleus/neutron/Reference.hh',
+    'nucleus/neutron/Reference.cc',
+    'nucleus/neutron/Size.hh',
+    'nucleus/neutron/Catalog.cc',
+    'nucleus/neutron/Author.cc',
+    'nucleus/neutron/Data.cc',
+    'nucleus/neutron/Subject.cc',
+    'nucleus/neutron/Index.hh',
+    'nucleus/neutron/Author.hh',
+    'nucleus/neutron/Genre.hh',
+    'nucleus/neutron/Range.hxx',
+    'nucleus/neutron/Catalog.hh',
+    'nucleus/neutron/Author.hxx',
+    'nucleus/neutron/Component.hh',
+    'nucleus/neutron/Access.cc',
+    'nucleus/neutron/fwd.hh',
+    'nucleus/neutron/Attributes.hh',
+    'nucleus/Nucleus.hh',
+    'nucleus/proton/Transcript.hh',
+    'nucleus/proton/OwnerKeyBlock.cc',
+    'nucleus/proton/ImprintBlock.hh',
+    'nucleus/proton/ContentHashBlock.hh',
+    'nucleus/proton/Stamp.hxx',
+    'nucleus/proton/Action.hh',
+    'nucleus/proton/Block.hh',
+    'nucleus/proton/ContentHashBlock.hxx',
+    'nucleus/proton/Base.hxx',
+    'nucleus/proton/OwnerKeyBlock.hxx',
+    'nucleus/proton/Network.hxx',
+    'nucleus/proton/Version.cc',
+    'nucleus/proton/Proton.hh',
+    'nucleus/proton/Block.hxx',
+    'nucleus/proton/Contents.hh',
+    'nucleus/proton/ImprintBlock.hxx',
+    'nucleus/proton/Stamp.hh',
+    'nucleus/proton/Proton.cc',
+    'nucleus/proton/Location.cc',
+    'nucleus/proton/Location.hh',
+    'nucleus/proton/ImprintBlock.cc',
+    'nucleus/proton/Contents.hxx',
+    'nucleus/proton/Transcript.cc',
+    'nucleus/proton/Location.hxx',
+    'nucleus/proton/PublicKeyBlock.hxx',
+    'nucleus/proton/Address.cc',
+    'nucleus/proton/Stamp.cc',
+    'nucleus/proton/PublicKeyBlock.cc',
+    'nucleus/proton/ImmutableBlock.hxx',
+    'nucleus/proton/Family.hh',
+    'nucleus/proton/Address.hxx',
+    'nucleus/proton/ContentHashBlock.cc',
+    'nucleus/proton/Version.hxx',
+    'nucleus/proton/Network.hh',
+    'nucleus/proton/Base.hh',
+    'nucleus/proton/PublicKeyBlock.hh',
+    'nucleus/proton/Block.cc',
+    'nucleus/proton/History.cc',
+    'nucleus/proton/MutableBlock.hxx',
+    'nucleus/proton/State.hh',
+    'nucleus/proton/Version.hh',
+    'nucleus/proton/ImmutableBlock.hh',
+    'nucleus/proton/MutableBlock.cc',
+    'nucleus/proton/History.hxx',
+    'nucleus/proton/Action.cc',
+    'nucleus/proton/Base.cc',
+    'nucleus/proton/Address.hh',
+    'nucleus/proton/Network.cc',
+    'nucleus/proton/ImmutableBlock.cc',
+    'nucleus/proton/MutableBlock.hh',
+    'nucleus/proton/History.hh',
+    'nucleus/proton/fwd.hh',
+    'nucleus/proton/OwnerKeyBlock.hh',
+    'nucleus/fwd.hh',
+    )
+
+  # Comet
+  comet_sources = drake.nodes(
+    'comet/RSA.hh',
+    'comet/RSA.cc',
+    'comet/BN.hh',
+    'comet/Comet.hh',
+    'comet/RAND.cc',
+    'comet/BN.cc',
+    'comet/RAND.hh',
+    )
+
+  # Protocol
+  protocol_sources = drake.nodes(
+    'protocol/ChanneledStream.hh',
+    'protocol/Packet.hh',
+    'protocol/RPC.hxx',
+    'protocol/Packet.cc',
+    'protocol/Stream.hh',
+    'protocol/Serializer.hh',
+    'protocol/Channel.cc',
+    'protocol/RPC.hh',
+    'protocol/ChanneledStream.cc',
+    'protocol/Stream.cc',
+    'protocol/Channel.hh',
+    'protocol/Serializer.cc',
+    'protocol/RPC.cc',
+    'protocol/fwd.hh',
+    )
+
+  # Plasma
+  plasma_sources = drake.nodes(
+    # 'plasma/watchdog/Application.hh',
+    # 'plasma/watchdog/NetworkManager.hh',
+    # 'plasma/watchdog/Client.cc',
+    # 'plasma/watchdog/WatchdogInterface.cc',
+    # 'plasma/watchdog/Manager.hh',
+    # 'plasma/watchdog/Client.hh',
+    # 'plasma/watchdog/LocalServer.hh',
+    # 'plasma/watchdog/WatchdogInterface.hh',
+    # 'plasma/watchdog/Connection.cc',
+    # 'plasma/watchdog/InfinitNetwork.cc',
+    # 'plasma/watchdog/LocalServer.cc',
+    # 'plasma/watchdog/Application.cc',
+    # 'plasma/watchdog/main.cc',
+    # 'plasma/watchdog/InfinitNetwork.hh',
+    # 'plasma/watchdog/Manager.cc',
+    # 'plasma/watchdog/Connection.hh',
+    # 'plasma/watchdog/NetworkManager.cc',
+    # 'plasma/watchdog/ClientActions.cc',
+    'plasma/watchdog/ClientActions.hh',
+    'plasma/meta/Client.cc',
+    'plasma/meta/Client.hh',
+    )
+
+  # Agent
+  agent_sources = drake.nodes(
+    'agent/Agent.hh',
+    'agent/Agent.cc',
+    )
+
+  # Infinit
+  infinit_sources = drake.nodes(
+    'Infinit.cc',
+    'common/common.cc',
+    )
+
+  # Hole
+  hole_sources = drake.nodes(
+    'hole/Hole.cc',
+    'hole/Hole.hh',
+    'hole/Holeable.cc',
+    'hole/Holeable.hh',
+    'hole/Label.cc',
+    'hole/Label.hh',
+    'hole/Label.hxx',
+    'hole/Manifest.hh',
+    'hole/Model.cc',
+    'hole/Model.hh',
+    'hole/Model.hxx',
+    'hole/algorithms/assignment/Assignment.hh',
+    'hole/fwd.hh',
+    'hole/implementations/Implementations.hh',
+    # 'hole/implementations/cirkle/Cirkle.cc',
+    # 'hole/implementations/cirkle/Cirkle.hh',
+    # 'hole/implementations/cirkle/Cluster.cc',
+    # 'hole/implementations/cirkle/Cluster.hh',
+    # 'hole/implementations/cirkle/Cluster.hxx',
+    # 'hole/implementations/cirkle/Implementation.cc',
+    # 'hole/implementations/cirkle/Implementation.hh',
+    # 'hole/implementations/cirkle/Machine.cc',
+    # 'hole/implementations/cirkle/Machine.hh',
+    # 'hole/implementations/cirkle/Manifest.hh',
+    # 'hole/implementations/cirkle/Neighbour.cc',
+    # 'hole/implementations/cirkle/Neighbour.hh',
+    # 'hole/implementations/cirkle/Neighbourhood.cc',
+    # 'hole/implementations/cirkle/Neighbourhood.hh',
+    # 'hole/implementations/cirkle/RoutingTable.cc',
+    # 'hole/implementations/cirkle/RoutingTable.hh',
+    'hole/implementations/local/Implementation.cc',
+    'hole/implementations/local/Implementation.hh',
+    'hole/implementations/local/Local.cc',
+    'hole/implementations/local/Local.hh',
+    'hole/implementations/local/Machine.cc',
+    'hole/implementations/local/Machine.hh',
+    'hole/implementations/local/fwd.hh',
+    'hole/implementations/remote/Client.cc',
+    'hole/implementations/remote/Client.hh',
+    'hole/implementations/remote/Customer.cc',
+    'hole/implementations/remote/Customer.hh',
+    'hole/implementations/remote/Implementation.cc',
+    'hole/implementations/remote/Implementation.hh',
+    'hole/implementations/remote/Machine.cc',
+    'hole/implementations/remote/Machine.hh',
+    'hole/implementations/remote/Manifest.cc',
+    'hole/implementations/remote/Manifest.hh',
+    'hole/implementations/remote/Remote.cc',
+    'hole/implementations/remote/Remote.hh',
+    'hole/implementations/remote/Server.cc',
+    'hole/implementations/remote/Server.hh',
+    'hole/implementations/remote/fwd.hh',
+    'hole/implementations/slug/Bank.cc',
+    'hole/implementations/slug/Bank.hh',
+    'hole/implementations/slug/Host.cc',
+    'hole/implementations/slug/Host.hh',
+    'hole/implementations/slug/Implementation.cc',
+    'hole/implementations/slug/Implementation.hh',
+    'hole/implementations/slug/Machine.cc',
+    'hole/implementations/slug/Machine.hh',
+    'hole/implementations/slug/Manifest.cc',
+    'hole/implementations/slug/Manifest.hh',
+    'hole/implementations/slug/Slug.cc',
+    'hole/implementations/slug/Slug.hh',
+    'hole/implementations/slug/fwd.hh',
+    )
+  hole_lib = drake.cxx.StaticLib('hole/hole', hole_sources,
+                                 cxx_toolkit, cxx_config)
+
+  # 8hole
+  hole_bin = drake.cxx.Executable('hole/8hole',
+                                  drake.nodes('hole/_hole.cc') +
+                                  hole_sources +
+                                  infinit_sources +
+                                  lune_sources +
+                                  nucleus_sources +
+                                  comet_sources +
+                                  plasma_sources +
+                                  protocol_sources +
+                                  agent_sources +
+                                  [elle.lib, reactor.lib],
+                                  cxx_toolkit, cxx_config)
+
+  # Etoile
+  etoile_sources = drake.nodes(
+    'etoile/automaton/Attributes.cc',
+    'etoile/automaton/Automaton.hh',
+    'etoile/automaton/Rights.hh',
+    'etoile/automaton/Object.hh',
+    'etoile/automaton/Object.cc',
+    'etoile/automaton/Contents.hh',
+    'etoile/automaton/Rights.cc',
+    'etoile/automaton/Access.hh',
+    'etoile/automaton/Contents.hxx',
+    'etoile/automaton/File.hh',
+    'etoile/automaton/Directory.cc',
+    'etoile/automaton/File.cc',
+    'etoile/automaton/Link.hh',
+    'etoile/automaton/Directory.hh',
+    'etoile/automaton/Link.cc',
+    'etoile/automaton/Author.cc',
+    'etoile/automaton/Author.hh',
+    'etoile/automaton/Access.cc',
+    'etoile/automaton/Attributes.hh',
+    'etoile/Etoile.hh',
+    'etoile/gear/Chronicle.hh',
+    'etoile/gear/Link.hxx',
+    'etoile/gear/Object.hxx',
+    'etoile/gear/Context.hxx',
+    'etoile/gear/Object.hh',
+    'etoile/gear/Identifier.hxx',
+    'etoile/gear/Context.hh',
+    'etoile/gear/Actor.cc',
+    'etoile/gear/Operation.hh',
+    'etoile/gear/Object.cc',
+    'etoile/gear/Gear.hh',
+    'etoile/gear/Identifier.hh',
+    'etoile/gear/File.hh',
+    'etoile/gear/Guard.hh',
+    'etoile/gear/Directory.cc',
+    'etoile/gear/Context.cc',
+    'etoile/gear/File.cc',
+    'etoile/gear/Nature.hh',
+    'etoile/gear/Link.hh',
+    'etoile/gear/Directory.hh',
+    'etoile/gear/Scope.hh',
+    'etoile/gear/Scope.cc',
+    'etoile/gear/Link.cc',
+    'etoile/gear/Gear.cc',
+    'etoile/gear/Directory.hxx',
+    'etoile/gear/Guard.cc',
+    'etoile/gear/Transaction.hh',
+    'etoile/gear/File.hxx',
+    'etoile/gear/Actor.hh',
+    'etoile/gear/Scope.hxx',
+    'etoile/gear/Identifier.cc',
+    'etoile/gear/fwd.hh',
+    'etoile/wall/Attributes.cc',
+    'etoile/wall/Object.hh',
+    'etoile/wall/Object.cc',
+    'etoile/wall/Wall.hh',
+    'etoile/wall/Access.hh',
+    'etoile/wall/File.hh',
+    'etoile/wall/Directory.cc',
+    'etoile/wall/Path.hh',
+    'etoile/wall/File.cc',
+    'etoile/wall/Link.hh',
+    'etoile/wall/Directory.hh',
+    'etoile/wall/Path.cc',
+    'etoile/wall/Link.cc',
+    'etoile/wall/Access.cc',
+    'etoile/wall/Attributes.hh',
+    'etoile/Manifest.hh',
+    # 'etoile/nest/Nest.cc',
+    # 'etoile/nest/Pod.hh',
+    # 'etoile/nest/Nest.hh',
+    # 'etoile/nest/Pod.cc',
+    # 'etoile/nest/fwd.hh',
+    'etoile/path/Route.cc',
+    'etoile/path/Length.hh',
+    'etoile/path/Route.hxx',
+    'etoile/path/Way.cc',
+    'etoile/path/Venue.hxx',
+    'etoile/path/Slab.hh',
+    'etoile/path/Chemin.cc',
+    'etoile/path/Chemin.hh',
+    'etoile/path/Venue.cc',
+    'etoile/path/Path.hh',
+    'etoile/path/Way.hxx',
+    'etoile/path/Way.hh',
+    'etoile/path/Chemin.hxx',
+    'etoile/path/Path.cc',
+    'etoile/path/Slice.hh',
+    'etoile/path/Venue.hh',
+    'etoile/path/Route.hh',
+    'etoile/path/fwd.hh',
+    'etoile/Etoile.cc',
+    'etoile/portal/Application.hh',
+    'etoile/portal/Portal.hh',
+    'etoile/portal/Manifest.hh',
+    'etoile/portal/Application.cc',
+    'etoile/portal/Wrapper.cc',
+    'etoile/portal/Wrapper.hh',
+    'etoile/portal/Portal.cc',
+    'etoile/portal/fwd.hh',
+    'etoile/journal/Journal.cc',
+    'etoile/journal/Journal.hh',
+    'etoile/miscellaneous/Abstract.hh',
+    'etoile/miscellaneous/Abstract.hxx',
+    'etoile/miscellaneous/Abstract.cc',
+    'etoile/miscellaneous/fwd.hh',
+    'etoile/depot/Depot.hh',
+    'etoile/depot/Depot.cc',
+    'etoile/depot/Depot.hxx',
+    'etoile/shrub/Shrub.cc',
+    'etoile/shrub/Riffle.cc',
+    'etoile/shrub/Riffle.hh',
+    'etoile/shrub/Shrub.hh',
+    'etoile/fwd.hh',
+    )
+
+  # Horizon
+  horizon_sources = drake.nodes(
+    # 'horizon/macosx/MacOSX.cc',
+    # 'horizon/macosx/FUker.hh',
+    # 'horizon/macosx/FUSE.hh',
+    # 'horizon/macosx/Janitor.cc',
+    # 'horizon/macosx/FUker.cc',
+    # 'horizon/macosx/Handle.cc',
+    # 'horizon/macosx/FUSE.cc',
+    # 'horizon/macosx/Crux.hh',
+    # 'horizon/macosx/Janitor.hh',
+    # 'horizon/macosx/Crux.cc',
+    # 'horizon/macosx/Crib.hh',
+    # 'horizon/macosx/MacOSX.hh',
+    # 'horizon/macosx/Handle.hh',
+    # 'horizon/macosx/Crib.cc',
+    # 'horizon/macosx/Janitor.hxx',
+    'horizon/linux/Linux.hh',
+    'horizon/linux/FUker.hh',
+    'horizon/linux/FUSE.hh',
+    'horizon/linux/Janitor.cc',
+    'horizon/linux/FUker.cc',
+    'horizon/linux/Handle.cc',
+    'horizon/linux/FUSE.cc',
+    'horizon/linux/Crux.hh',
+    'horizon/linux/Janitor.hh',
+    'horizon/linux/Crux.cc',
+    'horizon/linux/Crib.hh',
+    'horizon/linux/Handle.hh',
+    'horizon/linux/Linux.cc',
+    'horizon/linux/Crib.cc',
+    'horizon/linux/Janitor.hxx',
+    'horizon/Horizon.hh',
+    'horizon/operations.hh',
+    'horizon/Horizon.cc',
+    # 'horizon/windows/Windows.cc',
+    # 'horizon/windows/Windows.hh',
+    )
+
+  # 8infinit
+  infinit_bin_config = drake.cxx.Config(cxx_config)
+  infinit_bin_config += boost.config_thread()
+  infinit_bin_config.lib('fuse')
+  infinit_bin = drake.cxx.Executable('8infinit',
+                                     drake.nodes('_infinit.cc') +
+                                     hole_sources +
+                                     infinit_sources +
+                                     lune_sources +
+                                     nucleus_sources +
+                                     comet_sources +
+                                     plasma_sources +
+                                     protocol_sources +
+                                     agent_sources +
+                                     etoile_sources +
+                                     horizon_sources +
+                                     [elle.lib, reactor.lib],
+                                     cxx_toolkit, infinit_bin_config)
+
+  # Tests
+  infinit_lib = drake.cxx.StaticLib('infinit',
+                                    hole_sources +
+                                    infinit_sources +
+                                    lune_sources +
+                                    nucleus_sources +
+                                    comet_sources +
+                                    plasma_sources +
+                                    protocol_sources +
+                                    agent_sources +
+                                    etoile_sources +
+                                    horizon_sources,
+                                    cxx_toolkit, cxx_config)
+
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += boost.config_test()
+  tests = ['tests/protocol/rpc.cc']
+  for test in tests:
+    bin_path = drake.Path(test)
+    bin_path.extension = ''
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test) +
+                               [infinit_lib, elle.lib, reactor.lib],
+                               cxx_toolkit, tests_cxx_config)
