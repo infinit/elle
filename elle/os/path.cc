@@ -33,7 +33,7 @@ namespace elle
 
       bool exists(std::string const& path)
       {
-        return fs::exists(fs::path{path});
+        return fs::exists(path);
       }
 
       std::string absolute(std::string const& path, bool canonical)
@@ -42,6 +42,11 @@ namespace elle
           return fs::canonical(path).string();
         else
           return fs::absolute(path).string();
+      }
+
+      bool is_directory(std::string const& path)
+      {
+        return fs::is_directory(path);
       }
 
     }
