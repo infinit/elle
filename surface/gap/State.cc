@@ -196,6 +196,18 @@ namespace surface
       return *(user.release());
     }
 
+    std::map<std::string, User const*>
+    State::search_users(std::string const& text)
+    {
+      std::map<std::string, User const*> result;
+      auto res = this->_api->search_users(text);
+      for (auto const& user_id : res.users)
+        {
+          result[user_id] = &this->user(user_id);
+        }
+      return result;
+    }
+
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
     {
@@ -388,7 +400,9 @@ namespace surface
       assert(it != this->networks().end());
       Network* network = it->second;
       assert(network != nullptr);
-      if (network->users.find(user_id) == network->users.end())
+      if (std::find(network->users.begin(),
+                    network->users.end(),
+                    user_id) == network->users.end())
         network->users.push_back(user_id);
     }
 

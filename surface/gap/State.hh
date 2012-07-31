@@ -98,6 +98,10 @@ namespace surface
       User const&
       user_from_public_key(std::string const& public_key);
 
+      // Search users
+      std::map<std::string, User const*>
+      search_users(std::string const& text);
+
     ///
     /// Launch and stop infinit instances.
     ///

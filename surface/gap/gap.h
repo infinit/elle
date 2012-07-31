@@ -120,6 +120,12 @@ extern "C" {
     /// Retrieve user with its email.
     char const* gap_user_by_email(gap_State* state, char const* email);
 
+    /// Search users.
+    char** gap_search_users(gap_State* state, char const* text);
+
+    /// Free the search users result.
+    void gap_search_users_free(char** users);
+
     /// - Watchdog ------------------------------------------------------------
 
     /// Launch the watchdog binary.

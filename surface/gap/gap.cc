@@ -367,6 +367,31 @@ extern "C"
       return nullptr;
     }
 
+    char** gap_search_users(gap_State* state, char const* text)
+    {
+      assert(state != nullptr);
+      text = ""; //XXX text search not used
+      assert(text != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto users = __TO_CPP(state)->search_users(text);
+          std::list<std::string> result;
+          for (auto const& pair : users)
+            result.push_back(pair.first);
+          return _cpp_stringlist_to_c_stringlist(result);
+        }
+      CATCH_ALL(search_users);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    void gap_search_users_free(char** users)
+    {
+      ::free(users);
+    }
+
     /// - Watchdog ------------------------------------------------------------
 
     gap_Status gap_launch_watchdog(gap_State* state)

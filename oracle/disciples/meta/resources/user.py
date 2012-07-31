@@ -11,9 +11,22 @@ import metalib
 import pythia
 
 class Search(Page):
-    # XXX doc and improve
-
     __pattern__ = "/user/search"
+
+    def POST(self):
+        text = self.data["text"]
+        if len(text):
+            return self.error("Searching text not implemented")
+
+        users = database.users().find(fields=["_id"], limit=100)
+        result = list(user['_id'] for user in users)
+
+        return self.success({
+            'users': result,
+        })
+
+class FromPublicKey(Page):
+    __pattern__ = "/user/from_public_key"
 
     def POST(self):
         user = database.users().find_one({
@@ -28,7 +41,6 @@ class Search(Page):
             'public_key': user['public_key'],
             'fullname': user['fullname'],
         })
-
 
 # TODO use mailchimp templates
 

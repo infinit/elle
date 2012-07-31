@@ -44,6 +44,11 @@ namespace plasma
       std::string public_key;
     };
 
+    struct UsersResponse : Response
+    {
+      std::list<std::string> users;
+    };
+
     struct NetworksResponse : Response
     {
       std::list<std::string> networks;
@@ -163,6 +168,9 @@ namespace plasma
 
       UserResponse
       user_from_public_key(std::string const& public_key);
+
+      UsersResponse
+      search_users(std::string const& key);
 
       CreateDeviceResponse
       create_device(std::string const& name,

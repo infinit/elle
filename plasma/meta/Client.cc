@@ -66,6 +66,11 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("public_key", res.public_key);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::UsersResponse, ar, res)
+{
+  ar & named("users", res.users);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::CreateDeviceResponse, ar, res)
 {
   ar & named("created_device_id", res.created_device_id);
@@ -251,7 +256,15 @@ namespace plasma
         throw std::runtime_error("empty public key!");
       json::Dictionary request;
       request["public_key"] = public_key;
-      return this->_post<UserResponse>("/user/search", request);
+      return this->_post<UserResponse>("/user/from_public_key", request);
+    }
+
+    UsersResponse
+    Client::search_users(std::string const& text)
+    {
+      json::Dictionary request;
+      request["text"] = text;
+      return this->_post<UsersResponse>("/user/search", request);
     }
 
     //- Devices ---------------------------------------------------------------
