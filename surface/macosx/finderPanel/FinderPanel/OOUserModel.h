@@ -11,11 +11,11 @@
 
 @interface OOUserModel : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> 
 {
-    NSString* uid;
-    NSImage* image; 
-    NSString* fullName;
+    NSString*   uid;
+    NSImage*    image; 
+    NSString*   fullName;
 }
-@property NSString* uid;
-@property NSImage* image;
-@property NSString* fullName;
+@property NSString*     uid;
+@property NSImage*      image;
+@property NSString*     fullName;
 @end

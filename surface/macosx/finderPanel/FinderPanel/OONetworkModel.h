@@ -11,11 +11,13 @@
 
 @interface OONetworkModel : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> 
 {
-    NSString* uid;
-    NSImage* image; 
-    NSString* name;
+    NSString*   uid;
+    NSImage*    image; 
+    NSString*   name;
+    NSArray*    members;
 }
 @property NSString* uid;
-@property NSImage* image;
+@property NSImage*  image;
 @property NSString* name;
+@property NSArray*  members;
 @end

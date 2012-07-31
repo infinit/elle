@@ -15,7 +15,7 @@
 {
     [userBrowserViewManager defineStyle];
     [networkBrowserViewManager defineStyle];
-    NSArray* users = [NSArray arrayWithObjects:@"qsdjskbdhqsuiè7T", @"qsdjsdsdskbdhqsuiè7T", nil];
+    NSArray* users = [[OOPhone getInstance] searchUsersWithString:nil];
     if (users)
 	{ 
         // launch import in an independent thread
@@ -40,6 +40,7 @@
         self.isOpen = YES;
     }
 }
+
 - (void)hideView {
     // firstView, secondView are outlets
     NSViewAnimation *theAnim;
@@ -74,6 +75,7 @@
     // Run the animation.
     [theAnim startAnimation];
 }
+
 - (void)showView{
     // firstView, secondView are outlets
     NSViewAnimation *theAnim;
@@ -116,7 +118,8 @@
 //	performDragOperation:sender
 // ------------------------------------------------------------------------- 
 - (IBAction)createNetwork:(id)sender {
-    [[OOPhone getInstance] createNetworkWithName:@"Hello"];
+    NSString *networkName = [networkNameTextField stringValue];
+    [[OOPhone getInstance] createNetworkWithName:networkName];
 }
 
 @end

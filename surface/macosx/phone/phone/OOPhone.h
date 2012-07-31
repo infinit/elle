@@ -39,4 +39,12 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (NSString*)getNetworkNameWithId:(NSString*)arg1;
 
+- (NSArray*)getNetworkUsersWithNetworkId:(NSString*)arg1;
+
+- (void)addUser:(NSString *)arg1 toNetwork:(NSString *)arg2;
+
+- (NSString*)getUserFullNameById:(NSString*)arg1;
+
+- (NSArray*)searchUsersWithString:(NSString*)arg1;
+
 @end

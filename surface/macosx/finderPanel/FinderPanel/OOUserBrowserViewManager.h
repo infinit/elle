@@ -5,7 +5,10 @@
     IBOutlet IKImageBrowserView*    userBrowser;
     NSMutableArray*					users;
     NSMutableArray*					importedUsers;
+    NSMutableArray*					filteredUsers;
 }
 
 - (void)defineStyle;
+- (void)addUsersWithIds:(NSArray*)userIds;
+- (void)setFilteredUsers:(NSArray*)userIds;
 @end

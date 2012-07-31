@@ -1,6 +1,7 @@
 #import "OONetworkBrowserViewManager.h"
 #import "OONetworkBrowserBackgroundLayer.h"
 #import "OONetworkModel.h"
+#import "OOUserModel.h"
 #import "OONetworkAddButton.h"
 #import "OOUserBrowserView.h"
 #import <Phone/OOPhone.h>
@@ -14,7 +15,7 @@
         // The second one contains temporary imported images  for thread safeness.
         networks = [[NSMutableArray alloc] init];
         importedNetworks = [[NSMutableArray alloc] init];
-        [importedNetworks addObject:[[OONetworkAddButton alloc] init]];
+        //[importedNetworks addObject:[[OONetworkAddButton alloc] init]];
     }
     return self;
 }
@@ -72,12 +73,25 @@
     [networks addObjectsFromArray:importedNetworks];
 	
 	// Empty the temporary array.
+    NSMutableArray* usersToAdd = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [importedNetworks count]; i++) {
+        NSArray* members = ((OONetworkModel*)importedNetworks[i]).members;
+        [usersToAdd addObjectsFromArray:members];
+    }
+    [userBrowserViewManager addUsersWithIds:usersToAdd];
     [importedNetworks removeAllObjects];
-    
+    [self updateUsers];
     // Reload the image browser, which triggers setNeedsDisplay.
     [networkBrowser reloadData];
 }
 
+- (void)updateUsers {
+    for (int i = 0; i < [networks count]; i++) {
+        [self updateModel:(OONetworkModel*)networks[i] InfoWithId:((OONetworkModel*)networks[i]).uid];
+        // if selected update filtered users...
+    }
+    
+}
 
 #pragma mark -
 #pragma mark import images from file system
@@ -95,6 +109,20 @@
     return NO; 
 }
 
+- (OONetworkModel*)updateModel:(OONetworkModel*)arg1 InfoWithId:(NSString*)arg2 {
+    arg1.name = [[OOPhone getInstance] getNetworkNameWithId:arg2];
+    arg1.image = [NSImage imageNamed:NSImageNameNetwork];
+    arg1.uid = arg2;
+    arg1.members = [[OOPhone getInstance] getNetworkUsersWithNetworkId:arg2];
+    return arg1;
+}
+
+- (OONetworkModel*)getModelInfoWithId:(NSString*)arg1 {
+    OONetworkModel* p = [[OONetworkModel alloc] init];
+    [self updateModel:p InfoWithId:arg1];
+    return p;
+}
+
 - (void)addNetworkWithId:(NSString*)arg1
 {   
 	BOOL addObject = NO;
@@ -105,10 +133,7 @@
 	
 	if (addObject) {
 		// Add a path to the temporary images array.
-		OONetworkModel* p = [[OONetworkModel alloc] init];
-		p.name = [[OOPhone getInstance] getNetworkNameWithId:arg1];
-        p.image = [NSImage imageNamed:NSImageNameNetwork];
-        p.uid = arg1;
+        OONetworkModel* p = [self getModelInfoWithId:arg1];
 		[importedNetworks addObject:p];
 	}
 }
@@ -189,16 +214,14 @@
 // -------------------------------------------------------------------------
 //	draggingEntered:sender
 // ------------------------------------------------------------------------- 
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
-{
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
     return NSDragOperationNone;
 }
  
 // -------------------------------------------------------------------------
 //	draggingUpdated:sender
 // ------------------------------------------------------------------------- 
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-{
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
     NSPasteboard *pboard;
     id dsource;
     
@@ -207,8 +230,19 @@
     
     if (networkBrowser.dropOperation != IKImageBrowserDropOn)
         return NSDragOperationNone;
-    else if ([dsource isKindOfClass:[OOUserBrowserView class]])
-        return NSDragOperationCopy;
+    else if (dsource == userBrowser) {
+        NSUInteger networkIndex;
+        networkIndex = networkBrowser.indexAtLocationOfDroppedItem;
+        OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:networkIndex] representedItem];
+        NSIndexSet* indexSet = [userBrowser selectionIndexes];
+        if ([indexSet count] > 0){
+            OOUserModel* userModel = [[userBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
+            if (![networkModel.members containsObject:userModel.uid]) {
+                return NSDragOperationCopy;
+            }
+        }
+        return NSDragOperationNone;
+    }
     else if ([[pboard types] containsObject:NSURLPboardType])
         return NSDragOperationCopy;
     else
@@ -218,16 +252,33 @@
 // -------------------------------------------------------------------------
 //	performDragOperation:sender
 // ------------------------------------------------------------------------- 
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-{
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
     NSUInteger networkIndex;
     networkIndex = networkBrowser.indexAtLocationOfDroppedItem;
     OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:networkIndex] representedItem];
     
-    if ([[sender draggingSource] isKindOfClass:[OOUserBrowserView class]]) {
-        
+    if ([sender draggingSource] == userBrowser) {
+        NSIndexSet* indexSet = [userBrowser selectionIndexes];
+        if ([indexSet count] > 0){
+            OOUserModel* userModel = [[userBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
+            [[OOPhone getInstance] addUser:userModel.uid toNetwork:networkModel.uid];
+        }
     }
     
     return YES;
+}
+
+// -------------------------------------------------------------------------
+//	IKImageBrowserDelegate Protocol
+// -------------------------------------------------------------------------
+
+- (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser {
+    NSIndexSet* indexSet = [aBrowser selectionIndexes];
+    if ([indexSet count] > 0){
+        OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
+        [userBrowserViewManager setFilteredUsers:networkModel.members];
+    } else {
+        [userBrowserViewManager setFilteredUsers:nil];
+    }
 }
 @end

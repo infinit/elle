@@ -13,21 +13,30 @@
 @synthesize uid;
 @synthesize image;
 @synthesize name;
+@synthesize members;
 
 - (NSString*)imageRepresentationType {
 	return IKImageBrowserNSImageRepresentationType;
 }
+
 - (id)imageRepresentation {
 	return self.image;
 }
+
 - (NSString*)imageUID {
     return self.uid;
 }
+
 - (NSString*)imageTitle {
     return self.name;
 }
+
 - (NSString*)imageSubtitle {
     return self.name;
+}
+
+- (NSArray*)networkMembers {
+    return self.members;
 }
 
 @end
