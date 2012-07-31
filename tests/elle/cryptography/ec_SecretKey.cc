@@ -5,6 +5,52 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Cipher.hh>
 
+struct A
+{
+  double d;
+  std::string s;
+  float f;
+  bool operator == (A const& other) const
+  {
+    return (
+        this->d == other.d &&
+        this->s == other.s &&
+        this->f == other.f
+    );
+  }
+};
+
+ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
+{
+  archive & value.d;
+  archive & value.s;
+  archive & value.f;
+}
+
+
+struct Virtual
+  : public elle::concept::contract::Serializable<elle::serialize::BufferArchive>
+{
+  std::string base;
+};
+
+ELLE_SERIALIZE_SIMPLE(Virtual, ar, value, version)
+{
+  ar & value.base;
+}
+
+struct Implem
+  : public Virtual
+  , public elle::concept::Serializable<Implem, elle::serialize::BufferArchive>
+{
+  std::string impl;
+};
+
+ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
+{
+  ar & static_cast<Virtual&>(value);
+  ar & value.impl;
+}
 
 int main()
 {
@@ -94,9 +140,39 @@ int main()
     {
       std::string res;
       assert(secret_key.Decrypt(cipher, res) == elle::Status::Ok);
-      std::cout << res << std::endl << secret_string << std::endl;
 
       assert(res == secret_string);
+    }
+
+    {
+      A a{42.0, "hey ho", 12.2f};
+      elle::cryptography::Cipher cipher;
+      assert(secret_key.Encrypt(a, cipher) == elle::Status::Ok);
+
+      A res;
+      assert(secret_key.Decrypt(cipher, res) == elle::Status::Ok);
+
+      assert(res == a);
+    }
+
+    {
+      Implem impl;
+      impl.base = "paf";
+      impl.impl = "pif";
+      Virtual& virt = impl;
+
+      elle::cryptography::Cipher c1, c2, c3;
+      assert(secret_key.Encrypt(impl, c1) == elle::Status::Ok);
+      assert(secret_key.Encrypt(elle::serialize::serializable(impl), c2) == elle::Status::Ok);
+      assert(secret_key.Encrypt(elle::serialize::serializable(virt), c3) == elle::Status::Ok);
+
+      Implem res1, res2, res3;
+      assert(secret_key.Decrypt(c1, res1) == elle::Status::Ok);
+      assert(secret_key.Decrypt(c2, res2) == elle::Status::Ok);
+      assert(secret_key.Decrypt(c3, res3) == elle::Status::Ok);
+      assert(res1.base == "paf" && res1.impl == "pif");
+      assert(res2.base == "paf" && res2.impl == "pif");
+      assert(res3.base == "paf" && res3.impl == "pif");
     }
 
   std::cout << "tests done.\n";
