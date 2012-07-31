@@ -172,7 +172,10 @@ int main()
       assert(secret_key.Decrypt(c1, res1) == elle::Status::Ok);
       assert(secret_key.Decrypt(c2, res2) == elle::Status::Ok);
       assert(secret_key.Decrypt(c3, res3) == elle::Status::Ok);
-      assert(secret_key.Decrypt(c4, res4_ref) == elle::Status::Ok);
+
+      elle::serialize::Serializable<Virtual> s(res4_ref);
+      assert(secret_key.Decrypt(c4, s) == elle::Status::Ok);
+
       assert(res1.base == "paf" && res1.impl == "pif");
       assert(res2.base == "paf" && res2.impl == "pif");
       assert(res3.base == "paf" && res3.impl == "pif");
