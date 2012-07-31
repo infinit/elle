@@ -16,6 +16,8 @@
 #include <elle/io/Piece.hh>
 #include <elle/system/System.hh>
 
+#include <common/common.hh>
+
 #include <Infinit.hh>
 
 namespace lune
@@ -174,20 +176,14 @@ namespace lune
   ///
   elle::Status          Lune::Initialize()
   {
-    elle::String        home =
-      elle::system::System::Path::Home +
-      elle::system::System::Path::Separator +
-      ".config" +
-      elle::system::System::Path::Separator +
-      "infinit";
+    elle::String        home = common::infinit::home();
 
     //
     // create the paths.
     //
     {
       // create the home path pattern.
-      if (Lune::Home.Create(
-            home) == elle::Status::Error)
+      if (Lune::Home.Create(home) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the authority path pattern.

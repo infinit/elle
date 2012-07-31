@@ -87,6 +87,13 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return;
 }
 
+- (void)addUser:(NSString *)arg1 toNetwork:(NSString *)arg2 {
+    gap_network_add_user(self._gap_State,
+                         [arg2 cStringUsingEncoding:NSASCIIStringEncoding],
+                         [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return;
+}
+
 - (NSArray*)getUserNetworks {
     NSMutableArray* returnArray = [[NSMutableArray alloc] init];
     char** networkIds = gap_networks(self._gap_State);
@@ -102,9 +109,32 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return returnArray;
 }
 
+- (NSArray*)getNetworkUsersWithNetworkId:(NSString*)arg1 {
+    NSMutableArray* returnArray = [[NSMutableArray alloc] init];
+    char** usersIds = gap_network_users(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    
+    if (usersIds == NULL) return returnArray;
+    
+    while (*usersIds) {
+        char* p = *usersIds;
+        NSString *myString = [[NSString alloc] initWithUTF8String:p];
+        [returnArray addObject:myString];
+        usersIds++;
+    }
+    return returnArray;
+}
+
+//
+//  GET USER INFO
+//
 - (NSString*)getNetworkNameWithId:(NSString*)arg1 {
     char const* name = gap_network_name(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
     return [[NSString alloc] initWithUTF8String:name];
+}
+
+- (NSURL*)getNetworkMountPointWithId:(NSString*)arg1 {
+    char const* path = gap_network_mount_point(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return [NSURL fileURLWithPath:[[NSString alloc] initWithUTF8String:path]];
 }
 
 - (void)update {
@@ -112,4 +142,27 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     [parser startParse:@"http://download.infinit.im/macosx64/manifest.xml"];
 }
 
+//
+//  GET USER INFO
+//
+- (NSString*)getUserFullNameById:(NSString*)arg1 {
+    char const* fullName = gap_user_fullname(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return [[NSString alloc] initWithUTF8String:fullName];
+}
+
+
+- (NSArray*)searchUsersWithString:(NSString*)arg1 {
+    NSMutableArray* returnArray = [[NSMutableArray alloc] init];
+    char** usersIds =gap_search_users(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    
+    if (usersIds == NULL) return returnArray;
+    
+    while (*usersIds) {
+        char* p = *usersIds;
+        NSString *myString = [[NSString alloc] initWithUTF8String:p];
+        [returnArray addObject:myString];
+        usersIds++;
+    }
+    return returnArray;
+}
 @end

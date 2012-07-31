@@ -106,7 +106,7 @@ def deployClientTarball(package):
         "cd www/infinit.im/downloads",
         "mkdir -p %(dir)s",
         "tar --extract --file=%(tarball)s --strip-components=1 --directory=%(dir)s",
-        "rm %(tarball)s",
+        #"rm %(tarball)s",
         "chmod -R a+rX %(dir)s",
     ]) % {
         'dir': dir_,
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     infos = {
-        'version': '0.2',
+        'version': '0.4',
         'version_name': 'alpha',
         'server_architecture': libpkg.constants.Architectures.AMD64,
         'server_platform': libpkg.constants.Platforms.LINUX,

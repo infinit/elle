@@ -5,6 +5,8 @@
 
 #include <lune/Lune.hh>
 
+#include <common/common.hh>
+
 #include <elle/idiom/Close.hh>
 # include <boost/filesystem.hpp>
 #include <elle/idiom/Open.hh>
@@ -58,28 +60,24 @@ namespace agent
       if (Agent::Identity.Exist(Infinit::User) == elle::Status::False)
         escape("the user identity does not seem to exist");
 
-      // XXX to be improved with security in mind
-      elle::io::Path home;
-      home.Create(lune::Lune::Home);
-      boost::filesystem::path path{home.string()};
-      path /= "identity.wtg";
-
-      std::ifstream identity_file(path.string());
+      std::ifstream identity_file(common::watchdog::identity_path());
       if (identity_file.good())
         {
           std::getline(identity_file, Agent::meta_token);
           std::string clear_identity;
           std::getline(identity_file, clear_identity);
+          elle::log::debug("got token:", Agent::meta_token);
           if (Agent::Identity.Restore(clear_identity) == elle::Status::Error)
             escape("unable to restore the identity");
         }
       else
         {
-          elle::log::warn("Cannot load identity from watchdog ", path.string());
+          elle::log::warn("Cannot load identity from watchdog ",
+                          common::watchdog::identity_path());
           elle::String        pass;
           // prompt the user for the passphrase.
-          /* XXX[to change to a better version where we retrieve the passphrase from
-                 the watchdog]
+          /* XXX[to change to a better version where we retrieve the passphrase
+           * from the watchdog]
           prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
           if (elle::io::Console::Input(

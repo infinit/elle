@@ -25,6 +25,8 @@ extern "C"
         elle::log::error(#_func_ " error:", err.what());                      \
         if (err.code == plasma::meta::Error::network_error)                   \
           ret = gap_network_error;                                            \
+        else if (err.code == plasma::meta::Error::server_error)               \
+          ret = gap_api_error;                                                \
         else                                                                  \
           ret = gap_internal_error;                                           \
     }                                                                         \
@@ -112,6 +114,12 @@ extern "C"
     void gap_free(gap_State* state)
     {
       delete __TO_CPP(state);
+    }
+
+    void gap_enable_debug(gap_State* state)
+    {
+      assert(state != nullptr);
+      __TO_CPP(state)->log.level(elle::log::Logger::Level::debug);
     }
 
     gap_Status gap_meta_status(gap_State* state)
@@ -255,6 +263,23 @@ extern "C"
       return nullptr;
     }
 
+    char const* gap_network_mount_point(gap_State* state,
+                                        char const* id)
+    {
+      assert(state != nullptr);
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& network_status = __TO_CPP(state)->network_status(id);
+          return network_status.mount_point.c_str();
+        }
+      CATCH_ALL(network_mount_point);
+
+      (void) ret;
+      return nullptr;
+    }
+
     char** gap_network_users(gap_State* state, char const* id)
     {
       assert(state != nullptr);
@@ -296,6 +321,7 @@ extern "C"
 
     char const* gap_user_fullname(gap_State* state, char const* id)
     {
+      assert(state != nullptr);
       assert(id != nullptr);
       gap_Status ret;
       try
@@ -311,6 +337,7 @@ extern "C"
 
     char const* gap_user_email(gap_State* state, char const* id)
     {
+      assert(state != nullptr);
       assert(id != nullptr);
       gap_Status ret;
       try
@@ -322,6 +349,47 @@ extern "C"
 
       (void) ret;
       return nullptr;
+    }
+
+    char const* gap_user_by_email(gap_State* state, char const* email)
+    {
+      assert(state != nullptr);
+      assert(email != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& user = __TO_CPP(state)->user(email);
+          return user._id.c_str();
+        }
+      CATCH_ALL(user_by_email);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    char** gap_search_users(gap_State* state, char const* text)
+    {
+      assert(state != nullptr);
+      text = ""; //XXX text search not used
+      assert(text != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto users = __TO_CPP(state)->search_users(text);
+          std::list<std::string> result;
+          for (auto const& pair : users)
+            result.push_back(pair.first);
+          return _cpp_stringlist_to_c_stringlist(result);
+        }
+      CATCH_ALL(search_users);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    void gap_search_users_free(char** users)
+    {
+      ::free(users);
     }
 
     /// - Watchdog ------------------------------------------------------------
@@ -351,6 +419,21 @@ extern "C"
       assert(user_id != nullptr);
       assert(absolute_path != nullptr);
       __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
+    }
+
+    gap_Status gap_set_permissions_rec(gap_State* state,
+                                       char const* user_id,
+                                       char const* absolute_path,
+                                       int permissions)
+    {
+      assert(user_id != nullptr);
+      assert(absolute_path != nullptr);
+      __WRAP_CPP(state,
+                 set_permissions,
+                 user_id,
+                 absolute_path,
+                 permissions,
+                 true);
     }
 
     char** gap_file_users(gap_State* state,

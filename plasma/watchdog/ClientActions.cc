@@ -75,9 +75,7 @@ void ClientActions::_on_run(Connection& conn,
       this->_manager.identity(identity);
       this->_manager.user(user);
 
-      std::ofstream identity_infos{
-          elle::os::path::join(common::infinit_home(), "identity.wtg")
-      };
+      std::ofstream identity_infos{common::watchdog::identity_path()};
 
       if (!identity_infos.good())
         {
@@ -97,7 +95,7 @@ void ClientActions::_on_run(Connection& conn,
         }
       identity_infos.close();
 
-      this->_manager.refresh_networks();
+      this->_manager.start_refresh_networks();
       UNREGISTER(run);
       REGISTER_ALL();
     }
@@ -144,6 +142,5 @@ void ClientActions::_on_status(Connection& conn,
 
   json::Dictionary response;
   response["networks"] = networks;
-  elle::log::debug("Response =", response.repr());
   conn.send_data((response.repr() + "\n").c_str());
 }

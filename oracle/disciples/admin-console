@@ -95,7 +95,7 @@ class DatabaseCommands(type):
             )
             print(records.count(), "%s found" % collection)
             for record in records:
-                print(record)
+                getattr(self, '_' + collection + '_printer')(record)
         return command
 
     @classmethod
@@ -155,6 +155,29 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
         except:
             print("Cannot connect to %s:%d" % (host, port))
         self._update_prompt()
+
+    def _users_printer(self, record):
+        print(record)
+    def _networks_printer(self, network):
+        print('%s (%s)' % (network['name'], network['_id']))
+        print('\t- owner: %s' % network['owner'])
+        print('\t- model:', network['model'])
+        print('\t- has root block:', network['root_block'] is not None)
+        print('\t- has root address:', network['root_address'] is not None)
+        print('\t- has descriptor:', network['descriptor'] is not None)
+        print('\t- devices:')
+        for id_ in network['devices']:
+            print('\t\t* %s' % id_)
+        print('\t- users:')
+        for id_ in network['users']:
+            print('\t\t* %s' % id_)
+
+    def _devices_printer(self, device):
+        print('%s (%s)' % (device['name'], device['_id']))
+        print('\t- owner: %s' % device['owner'])
+        print('\t- local address:', device['local_address'])
+        print('\t- extern address:', device['extern_address'])
+        print('\t- has passport:', device['passport'] is not None)
 
     def do_dbconnect(self, line):
         """usage: connect host:port

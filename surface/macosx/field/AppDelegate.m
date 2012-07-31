@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "OOInjectorHelper.h"
+//#import "OOInjectorHelper.h"
 #import "OOSetupWindowController.h"
 #import "OOSetupWindowDelegate.h"
 #import "OOPreferencesWindowController.h"
@@ -180,7 +180,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     OOPreferencesWindowController* preferencesWindowController = [OOPreferencesWindowController getInstance];
     [preferencesWindowController showWindow:self];
 }
-
+/*
 - (IBAction)installInjectBundle:(id)sender
 {
     [OOInjectorHelper launchFinderHelperTools:YES];
@@ -189,7 +189,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (IBAction)injectBundle:(id)sender
 {
     [OOInjectorHelper launchFinderHelperTools:NO];
-}
+}*/
 
 - (IBAction)launchWebsite:(id)sender
 {

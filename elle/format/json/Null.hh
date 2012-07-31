@@ -1,28 +1,34 @@
-#ifndef ELLE_FORMAT_JSON_nullptr_HH
-# define ELLE_FORMAT_JSON_nullptr_HH
+#ifndef  ELLE_FORMAT_JSON_NULL_HH
+# define ELLE_FORMAT_JSON_NULL_HH
 
 # include "Object.hh"
 
-namespace elle { namespace format { namespace json {
-
-    class Null : public Object
+namespace elle
+{
+  namespace format
+  {
+    namespace json
     {
-    protected:
-      void Save(elle::serialize::OutputJSONArchive& ar) const;
-      std::unique_ptr<Object> Clone() const
-        { return std::unique_ptr<Object>(new Null); }
-    public:
-      using Object::operator ==;
-      virtual bool operator ==(Object const& other) const
-        { return other == *this; }
-      virtual bool operator ==(Null const&) const
-        { return true; }
-    };
 
-    extern Null const null;
+      class Null
+        : public Object
+      {
+      protected:
+        void Save(elle::serialize::OutputJSONArchive& ar) const;
+        std::unique_ptr<Object> Clone() const;
 
-}}} // !namespace elle::format::json
+      public:
+        using Object::operator ==;
+        virtual bool operator ==(Object const& other) const;
+        virtual bool operator ==(Null const&) const;
+        Null();
+        virtual ~Null();
+      };
 
-#endif /* ! nullptr_HH */
+      extern Null const null;
 
+    }
+  }
+} // !namespace elle::format::json
 
+#endif

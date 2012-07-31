@@ -27,7 +27,6 @@ namespace elle
     Character                   System::Path::Separator;
     String                      System::Path::Root;
     String                      System::Path::Current;
-    String                      System::Path::Home;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -49,16 +48,6 @@ namespace elle
 
       System::Path::Current =
         ::QDir::current().canonicalPath().toStdString();
-
-      if (::getenv("INFINIT_HOME") == nullptr)
-        {
-          System::Path::Home =
-            ::QDir::home().canonicalPath().toStdString();
-        }
-      else
-        {
-          System::Path::Home.assign(::getenv("INFINIT_HOME"));
-        }
 
       // define the endianness.
       switch (::QSysInfo::ByteOrder)

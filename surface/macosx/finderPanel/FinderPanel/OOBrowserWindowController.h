@@ -10,6 +10,8 @@
     IBOutlet IKImageBrowserView*            networkBrowser;
     IBOutlet OONetworkBrowserViewManager*   networkBrowserViewManager;
     
+    IBOutlet NSTextField*                   networkNameTextField;
+    
     BOOL isOpen;
 }
 

@@ -8,6 +8,7 @@
 # include <stdexcept>
 
 # include <elle/format/json/fwd.hh>
+# include <elle/log.hh>
 
 namespace plasma
 {
@@ -41,6 +42,11 @@ namespace plasma
       std::string fullname;
       std::string email;
       std::string public_key;
+    };
+
+    struct UsersResponse : Response
+    {
+      std::list<std::string> users;
     };
 
     struct NetworksResponse : Response
@@ -137,7 +143,10 @@ namespace plasma
       Impl* _impl;
 
     public:
-      Client(std::string const& server, short port);
+      Client(std::string const& server,
+             short port,
+             bool check_errors = true,
+             elle::log::Logger& log = elle::log::default_logger);
       ~Client();
 
     public:
@@ -160,6 +169,9 @@ namespace plasma
       UserResponse
       user_from_public_key(std::string const& public_key);
 
+      UsersResponse
+      search_users(std::string const& key);
+
       CreateDeviceResponse
       create_device(std::string const& name,
                     std::string const& local_address,
@@ -179,6 +191,18 @@ namespace plasma
 
       CreateNetworkResponse
       create_network(std::string const& name);
+
+      NetworkNodesResponse
+      network_nodes(std::string const& network_id);
+
+      UpdateNetworkResponse
+      update_network(std::string const& _id,
+                     std::string const* name,
+                     std::list<std::string> const* users,
+                     std::list<std::string> const* devices,
+                     std::string const* root_block,
+                     std::string const* root_address);
+
 
       NetworkAddUserResponse
       network_add_user(std::string const& network_id,

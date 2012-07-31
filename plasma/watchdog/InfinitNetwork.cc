@@ -21,8 +21,6 @@
 
 #include <elle/idiom/Close.hh>
 
-#include <plasma/common/resources.hh>
-
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
@@ -41,7 +39,7 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _process()
   , _mount_point{
       elle::os::path::join(
-        common::infinit_home(),
+        common::infinit::home(),
         "networks",
         _description.name,
         "mnt").c_str()
@@ -89,7 +87,7 @@ void InfinitNetwork::_update()
   LOG("Starting network update.");
   QDir home{
     elle::os::path::join(
-      common::infinit_home(),
+      common::infinit::home(),
       "networks",
       this->_description.name).c_str()
   };
@@ -141,16 +139,14 @@ void InfinitNetwork::_create_network_root_block()
   directory.Save(rootBlock);
   address.Save(rootAddress);
 
-  this->_manager.meta().UpdateNetwork(
+  this->_on_got_descriptor(this->_manager.meta().update_network(
       this->_description._id,
       nullptr,
       nullptr,
       nullptr,
       &rootBlock,
-      &rootAddress,
-      boost::bind(&InfinitNetwork::_on_got_descriptor, this, _1),
-      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-  );
+      &rootAddress
+  ));
 }
 
 /// Prepare the network directory, store root block and network descriptor
@@ -218,25 +214,21 @@ void InfinitNetwork::_register_device()
       LOG("Registering device for this network.");
 
       this->_description.devices.push_back(passport.id);
-      this->_manager.meta().UpdateNetwork(
+      this->_on_device_registered(this->_manager.meta().update_network(
           this->_description._id,
           nullptr,
           nullptr,
           &this->_description.devices,
           nullptr,
-          nullptr,
-          boost::bind(&InfinitNetwork::_on_device_registered, this, _1),
-          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-      );
+          nullptr
+      ));
     }
   else
     {
       LOG("Get network nodes.");
-      this->_manager.meta().NetworkNodes(
-          this->_description._id,
-          boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
-          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-      );
+      this->_on_network_nodes(this->_manager.meta().network_nodes(
+          this->_description._id
+      ));
     }
 }
 
@@ -244,11 +236,9 @@ void InfinitNetwork::_on_device_registered(meta::UpdateNetworkResponse const& re
 {
   LOG("Device successfully registered.");
   assert(response.updated_network_id == this->_description._id);
-  this->_manager.meta().NetworkNodes(
-      this->_description._id,
-      boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
-      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
-  );
+  this->_on_network_nodes(this->_manager.meta().network_nodes(
+      this->_description._id
+  ));
 }
 
 /// Update the network nodes set when everything is good
@@ -298,7 +288,7 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
   this->_prepare_directory();
 }
 
-void InfinitNetwork::_on_any_error(meta::MetaClient::Error error, std::string const& err)
+void InfinitNetwork::_on_any_error(plasma::meta::Error error, std::string const& err)
 {
   LOG("Got error while creating the network '",
       elle::iomanip::nosep, this->_description.name,
@@ -307,6 +297,9 @@ void InfinitNetwork::_on_any_error(meta::MetaClient::Error error, std::string co
 
 void InfinitNetwork::_start_process()
 {
+  if (this->_process.state() != QProcess::NotRunning)
+    return;
+
   LOG("Starting infinit process");
 
   if (!this->_mount_point.exists() && !_mount_point.mkpath("."))
@@ -315,7 +308,7 @@ void InfinitNetwork::_start_process()
     );
 
   QDir home_mnt{
-      elle::os::path::join(common::home_directory(), "Infinit").c_str()
+      elle::os::path::join(common::system::home_directory(), "Infinit").c_str()
   };
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
@@ -326,7 +319,7 @@ void InfinitNetwork::_start_process()
       link_path += ".lnk";
 #endif
       if (!QFile(this->_mount_point.path()).link(link_path))
-        elle::log::warn("Cannot create links to mount points.");
+        elle::log::debug("Cannot create links to mount points.");
     }
   else
     elle::log::warn("Cannot create mount point directory.");
@@ -348,7 +341,7 @@ void InfinitNetwork::_start_process()
   );
 
   LOG("exec:",
-      common::binary_path("8infinit"),
+      common::infinit::binary_path("8infinit"),
       "-n", this->_description.name.c_str(),
       "-m", this->_mount_point.path().toStdString(),
       "-u", this->_manager.user().c_str()
@@ -361,10 +354,9 @@ void InfinitNetwork::_start_process()
             ;
 
   this->_process.start(
-      common::binary_path("8infinit").c_str(),
+      common::infinit::binary_path("8infinit").c_str(),
       arguments
   );
-  ::sleep(3);
 }
 
 

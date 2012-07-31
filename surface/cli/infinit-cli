@@ -10,11 +10,12 @@ import argparse
 import cmd
 import getpass
 import os
+import re
 import stat
 import sys
 
 INFINIT_DEFAULT_HOME = os.path.join(
-    os.path.expanduser('~'), '.config', 'infinit'
+    os.path.expanduser('~'), '.infinit'
 )
 
 INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
@@ -24,6 +25,13 @@ MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
 SHELL_INTRO = """
 Welcome to the infinit shell (type help for a list of commands).
 """
+
+EMAIL_REGEXP = re.compile(
+    r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+    r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+    r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$',
+    re.IGNORECASE
+)
 
 parser = argparse.ArgumentParser(description="Infinit launcher")
 
@@ -59,8 +67,12 @@ class InfinitShell(cmd.Cmd):
         """Print networks."""
         try:
             networks = self._state.networks()
-            for network in networks:
-                print(network, ':', self._state.network_name(network))
+            for network_id in networks:
+                print(self._state.network_name(network_id), '(%s)' % network_id)
+                mnt = None
+                try: mnt = self._state.network_mount_point(network_id)
+                except: pass
+                print('\t- mount point:', mnt)
         except Exception as e:
             print(e)
 
@@ -91,6 +103,37 @@ class InfinitShell(cmd.Cmd):
     def do_stop(self, args):
         try:
             self._state.stop_watchdog()
+        except Exception as e:
+            print(e)
+
+    def do_logout(self, args):
+        try:
+            self._state.logout()
+        except Exception as e:
+            print(e)
+
+    def do_invite(self, args):
+        """
+        invite a user to join a network.
+        usage: invite user network
+        """
+        if len(args.split()) != 2:
+            print("Wrong arguments")
+            return
+
+        user, network = args.split()
+        network_id = None
+        for id_ in self._state.networks():
+            if id_ == network or self._state.network_name(id_) == network:
+                network_id = id_
+                break
+
+        if network_id is None:
+            print("Cannot find any network with the name or id '%s'" % network)
+            return
+
+        try:
+            self._state.network_add_user(network_id, user)
         except Exception as e:
             print(e)
 
@@ -130,9 +173,26 @@ def start_shell(state, args):
     else:
         getattr(shell, 'do_' + args.action)('')
 
+def re_input(prompt, pattern=".+", regexp=None, errmsg="Input is not valid", default=None):
+    if default is not None:
+        prompt += " (defaults to %s)" % default
+    prompt += ': '
+    while True:
+        res = input(prompt).strip()
+        if not res and default:
+            res = default
+            break
+        if regexp is not None:
+            if regexp.match(res):
+                break
+        elif re.match('^' + pattern + '$', res):
+            break
+        print(errmsg)
+    return res
+
 def register(state):
-    fullname = input("Enter your fullname: ").strip()
-    email = input("email: ").strip()
+    fullname = re_input("Fullname", pattern='[\w ]{3,64}')
+    email = re_input("Email", regexp=EMAIL_REGEXP)
     while True:
         password = getpass.getpass("password: ")
         password2 = getpass.getpass("confirm password: ")
@@ -143,16 +203,21 @@ def register(state):
         else:
             break
     import socket
-    default_dev_name = socket.gethostname().strip()
-    dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
-    activation_code = input("Activation code: ")
-    if not dev_name:
-        dev_name = default_dev_name
+    dev_name = re_input(
+        "Computer name",
+        pattern="[\w ]{3,64}",
+        default=socket.gethostname().strip(),
+    )
+    activation_code = re_input("Activation code")
     state.register(fullname, email, password, dev_name, activation_code)
 
 def login(state):
-    email = input("email: ").strip()
-    password = getpass.getpass("password: ")
+    email = re_input("email", regexp=EMAIL_REGEXP)
+    while True:
+        password = getpass.getpass("password: ").strip()
+        if password:
+            break
+        print("empty password not allowed")
     state.login(email, password)
 
 def update_binaries():
@@ -211,12 +276,20 @@ def update_binaries():
         os.chmod(dst_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IEXEC)
 
 
-def main(state):
+def main():
     args = parser.parse_args()
 
     if not args.no_update:
         update_binaries()
 
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path = [
+        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '..', 'python'),
+    ] + sys.path
+
+    import gap
+    state = gap.State()
     if args.register:
         print("Registering to infinit:")
         register(state)
@@ -227,15 +300,7 @@ def main(state):
     start_shell(state, args)
 
 if __name__ == '__main__':
-    file_dir = os.path.abspath(os.path.dirname(__file__))
-    sys.path = [
-        os.path.join(file_dir, '..', 'gap', 'python'),
-        os.path.join(file_dir, '..', 'python'),
-    ] + sys.path
-
-    import gap
-    state = gap.State()
     try:
-        main(state)
+        main()
     except KeyboardInterrupt:
-        del state
+        pass

@@ -1,7 +1,10 @@
 #ifndef ELLE_SERIALIZE_ARCHIVABLECLASS_HH
 # define ELLE_SERIALIZE_ARCHIVABLECLASS_HH
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
     ///
     /// This structure is used to determine the version of a class
@@ -9,21 +12,21 @@ namespace elle { namespace serialize {
     /// specialize this class to set a superior version number.
     ///
     template<typename T> struct ArchivableClass
-      {
-        static unsigned int const version = 0;
-      };
+    {
+      static unsigned int const version = 0;
+    };
 
-}}
+  }
+}
 
 /// Convenient macro to declare the version of a serialized class
-# define ELLE_ARCHIVE_CLASS_VERSION(Class_, version_)                             \
-  namespace elle { namespace serialize {                                          \
-    template<> struct ArchivableClass                                             \
-      {                                                                           \
-        static unsigned int const version = version_;                             \
-      };                                                                          \
-  }}
+# define ELLE_SERIALIZE_CLASS_VERSION(Class, version_)                        \
+  namespace elle { namespace serialize {                                      \
+    template<> struct ArchivableClass<Class>                                  \
+    {                                                                         \
+      static unsigned int const version = version_;                           \
+    };                                                                        \
+  }}                                                                          \
+  /**/
 
 #endif /* ! ARCHIVABLECLASS_HH */
-
-

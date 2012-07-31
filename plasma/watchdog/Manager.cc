@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <elle/log.hh>
+#include <common/common.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
@@ -19,7 +20,7 @@ Manager::Manager(QCoreApplication& app) :
   _commands(new CommandMap()),
   _actions(new ClientActions(*this)),
   _network_manager(new NetworkManager(*this)),
-  _meta(app)
+  _meta(common::meta::host(), common::meta::port())
 {}
 
 Manager::~Manager()
@@ -34,7 +35,7 @@ Manager::~Manager()
 
 void Manager::token(QByteArray const& token)
 {
-  this->_meta.token(token);
+  this->_meta.token(token.constData());
 }
 
 Client& Manager::register_connection(ConnectionPtr& conn)
@@ -127,4 +128,21 @@ void Manager::start(std::string const& watchdogId)
 void Manager::refresh_networks()
 {
   this->_network_manager->update_networks();
+}
+
+void Manager::start_refresh_networks()
+{
+  this->refresh_networks();
+  if (this->_timer.isActive())
+    {
+      elle::log::warn("The timer is already activated");
+      return;
+    }
+  this->connect(&this->_timer, SIGNAL(timeout()), this, SLOT(_on_timeout()));
+  this->_timer.start(30000); // 30 sec
+}
+
+void Manager::_on_timeout()
+{
+  this->refresh_networks();
 }

@@ -16,7 +16,7 @@ class Register(creosus.Page):
         # XXX
         #form.Password('password', validator=form.validators.Regexp(r'^.{6,}$', 'Password too short')),
         #form.Password('password_confirmation'),
-        form.Password('activation_code'),
+        form.Password('activation_code', label="Activation code"),
         form.Submit('register', label="Register", validator=form.validators.NotNull),
     ], validators=[
         # XXX
@@ -24,10 +24,6 @@ class Register(creosus.Page):
         #    lambda f: f['password'] == f['password_confirmation'],
         #    "Passwords didn't match"
         #),
-        form.validators.Validator(
-            lambda f: f['activation_code'] == 'bite666',
-            "Invalid activation code"
-        ),
     ])
 
     @troll.view.exposeWhen('subscribe')
@@ -37,7 +33,8 @@ class Register(creosus.Page):
             res = self.api_admin.post('/register',{
                 'email': form['email'].value,
                 'fullname': form['fullname'].value,
-                'password': '', # form['password'].value, #XXX
+                'password': form['password'].value,
+                'activation_code': form['activation_code'].value,
             })
             if res['success']:
                 raise web.seeother('/')

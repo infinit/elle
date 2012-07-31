@@ -5,13 +5,28 @@ import web
 
 from meta.page import Page
 from meta import conf, database
+import meta.mail
+
 import metalib
 import pythia
 
 class Search(Page):
-    # XXX doc and improve
-
     __pattern__ = "/user/search"
+
+    def POST(self):
+        text = self.data["text"]
+        if len(text):
+            return self.error("Searching text not implemented")
+
+        users = database.users().find(fields=["_id"], limit=100)
+        result = list(user['_id'] for user in users)
+
+        return self.success({
+            'users': result,
+        })
+
+class FromPublicKey(Page):
+    __pattern__ = "/user/from_public_key"
 
     def POST(self):
         user = database.users().find_one({
@@ -27,6 +42,7 @@ class Search(Page):
             'fullname': user['fullname'],
         })
 
+# TODO use mailchimp templates
 
 INVITATION_SUBJECT = "Invitation to test Infinit !"
 INVITATION_CONTENT = """
@@ -66,13 +82,12 @@ class Invite(Page):
             'space': ' ',
         }
         if send_email:
-            self._send_invitation(email, INVITATION_SUBJECT, content)
+            meta.mail.send(email, INVITATION_SUBJECT, content)
         database.invitations().insert({
             'email': email,
             'status': 'pending',
             'code': code,
         })
-
         return self.success()
 
     def _generate_code(self, mail):
@@ -81,22 +96,6 @@ class Invite(Page):
         hash_ = hashlib.md5()
         hash_.update(mail.encode('utf8') + str(time.time()))
         return hash_.hexdigest()
-
-    def _send_invitation(self, mail, subject, content):
-        from email.mime.text import MIMEText
-        from email.header import Header
-        #from email.utils import parseaddr, formataddr
-        import smtplib
-        msg = MIMEText(content, _charset='utf8')
-        msg['Subject'] = Header(subject, 'utf8')
-        msg['From'] = Header("Infinit.io <no-reply@infinit.io>", 'utf8')
-        msg['To'] = Header(mail, 'utf8')
-
-        smtp_server = smtplib.SMTP(conf.MANDRILL_SMTP_HOST, conf.MANDRILL_SMTP_PORT)
-        smtp_server.login(conf.MANDRILL_USERNAME, conf.MANDRILL_PASSWORD)
-        smtp_server.sendmail(msg['From'], [msg['To']], msg.as_string())
-        smtp_server.quit()
-
 
 class Self(Page):
     """
@@ -149,7 +148,7 @@ class One(Page):
         else:
             user = database.byId(database.users(), id_or_email)
         if not user:
-            return self.error("Couldn't find user for id '%s'" % str(_id))
+            return self.error("Couldn't find user for id '%s'" % str(id_or_email))
         return self.success({
             '_id': user['_id'],
             'email': user['email'],
@@ -164,7 +163,7 @@ class Register(Page):
             'email': "email@pif.net", #required
             'fullname': "The full name", #required
             'password': "password', #required
-            'admin_token': 'admin token', #required
+            'activation_code': dklds
         }
     """
 
@@ -210,10 +209,10 @@ class Register(Page):
                 'error': ', '.join(errors),
             })
 
-        user["_id"] = str(database.users().save({}))
+        user["_id"] = database.users().save({})
 
         identity, public_key = metalib.generate_identity(
-            user["_id"],
+            str(user["_id"]),
             user['email'], user['password'],
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD

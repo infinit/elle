@@ -44,6 +44,7 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_internal_error", gap_internal_error)
     .value("gap_api_error", gap_api_error)
     .value("gap_no_device_error", gap_no_device_error)
+    .value("gap_not_logged_in", gap_not_logged_in)
     .export_values()
   ;
 
@@ -58,6 +59,7 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("hash_password", &_hash_password, by_value());
   py::def("login", &gap_login);
+  py::def("logout", &gap_logout);
   py::def("register", &gap_register);
 
   //- Infinit services status -------------------------------------------------
@@ -74,6 +76,8 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("networks", &_get_networks);
   py::def("create_network", &gap_create_network);
   py::def("network_name", &gap_network_name, by_value());
+  py::def("network_mount_point", &gap_network_mount_point, by_value());
+  py::def("network_add_user", &gap_network_add_user);
 
   //- Users -------------------------------------------------------------------
 

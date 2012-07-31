@@ -14,6 +14,7 @@ extern "C" {
       gap_internal_error = -3,
       gap_api_error = -4,
       gap_no_device_error = -5,
+      gap_not_logged_in = -6,
     } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
@@ -27,6 +28,9 @@ extern "C" {
 
     /// Release a state.
     void gap_free(gap_State* state);
+
+    /// Enable debug messages.
+    void gap_enable_debug(gap_State* state);
 
     /// - Services status -----------------------------------------------------
 
@@ -89,6 +93,10 @@ extern "C" {
     /// Get the network name from its id.
     char const* gap_network_name(gap_State* state, char const* id);
 
+    /// Get the network mount point.
+    char const* gap_network_mount_point(gap_State* state,
+                                        char const* id);
+
     /// Retreive all users ids from a network. Returns a null-terminated array
     /// of null-terminated strings.
     char** gap_network_users(gap_State* state, char const* id);
@@ -96,7 +104,7 @@ extern "C" {
     /// Free a previously allocated network users'.
     void gap_network_users_free(char** users);
 
-    /// Invite a user to join a network.
+    /// Invite a user to join a network with its id or email.
     gap_Status gap_network_add_user(gap_State* state,
                                     char const* network_id,
                                     char const* user_id);
@@ -108,6 +116,15 @@ extern "C" {
 
     /// Retrieve user email address.
     char const* gap_user_email(gap_State* state, char const* id);
+
+    /// Retrieve user with its email.
+    char const* gap_user_by_email(gap_State* state, char const* email);
+
+    /// Search users.
+    char** gap_search_users(gap_State* state, char const* text);
+
+    /// Free the search users result.
+    void gap_search_users_free(char** users);
 
     /// - Watchdog ------------------------------------------------------------
 

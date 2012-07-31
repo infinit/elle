@@ -26,6 +26,7 @@ def which(executable):
 DIR_SOURCE = os.environ["DIR_SOURCE"]
 DIR_BUILD = os.environ["DIR_BUILD"]
 DIR_INSTALL = os.environ["DIR_INSTALL"]
+DEBUG = True # XXX use env var
 
 for d in [DIR_SOURCE, DIR_BUILD]:
     if not os.path.isdir(d):
@@ -36,8 +37,6 @@ rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8").strip()
 version = name.split("-")[0]
 major = version.split(".")[0]
 minor = version.split(".")[1]
-
-
 
 DIR_INSTALL_CLIENT = "%s/client" % DIR_INSTALL
 
@@ -124,7 +123,6 @@ def to_add(lib):
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
 DIR_INSTALL_CLIENT_TEMP = os.path.join(DIR_INSTALL_CLIENT, "temp-app")
-os.makedirs(DIR_INSTALL_CLIENT_TEMP)
 
 
 if which("otool"):
@@ -214,8 +212,8 @@ infinit_files = [
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
     ("plasma/watchdog/8watchdog", "bin"),
-    ("surface/linux/infinit", "bin"),
-    ("surface/linux/8chmod", "bin"),
+    ("surface/cli/infinit-cli", "bin"),
+    ("surface/cli/8chmod", "bin"),
     ("surface/gap/libgap." + LIBRARY_EXT, "lib"),
     ("surface/gap/python/_gap.so", "python"),
     ("surface/gap/python/gap.py", "python"),
@@ -235,8 +233,11 @@ for src, node in dependencies.items():
     if not node['is_binary']:
         continue
     os.chmod(dst, stat.S_IRWXU)
-    print("Strip", dst)
-    cmd('strip', dst)
+    if not DEBUG:
+        print("Strip", dst)
+        cmd('strip', dst)
+    else:
+        print("DO NOT STRIP", dst)
     patch_binary(dst, DIR_INSTALL_CLIENT_LIB)
     for child in node['childs']:
         patch_binary_for(
@@ -252,6 +253,7 @@ if os.path.exists(infinit_app):
     print("copy qt_menu.nib dependancy")
     shutil.copytree("/Library/Frameworks/QtGui.framework/Versions/4/Resources/qt_menu.nib", os.path.join(DIR_INSTALL_CLIENT_LIB, "qt_menu.nib"))
     shutil.copytree("/Library/Extensions/fuse4x.kext", os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext"))
+    os.makedirs(DIR_INSTALL_CLIENT_TEMP)
     dst_app = os.path.join(DIR_INSTALL_CLIENT_TEMP, os.path.basename(infinit_app))
 
     print("copy infinit_app to %s" % dst_app)
@@ -281,8 +283,6 @@ server_scripts = [
     "meta-server",
     "meta-tests",
     "creosus-server",
-    "production-meta-server.sh",
-    "production-creosus-server.sh"
 ]
 
 if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built

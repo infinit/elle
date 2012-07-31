@@ -31,6 +31,8 @@
 
 #include <plasma/meta/Client.hh>
 
+#include <common/common.hh>
+
 #include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
@@ -190,7 +192,10 @@ namespace hole
 
           {
             // XXX should be done with a signal
-            plasma::meta::Client client("127.0.0.1", 23456);
+            plasma::meta::Client client{
+                common::meta::host(),
+                common::meta::port(),
+            };
             lune::Passport passport;
             if (passport.Load() != elle::Status::Ok)
               escape("Cannot load passport");

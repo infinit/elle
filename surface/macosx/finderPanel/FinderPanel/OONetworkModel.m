@@ -13,19 +13,25 @@
 @synthesize uid;
 @synthesize image;
 @synthesize name;
+@synthesize members;
+@synthesize mountPoint;
 
 - (NSString*)imageRepresentationType {
 	return IKImageBrowserNSImageRepresentationType;
 }
+
 - (id)imageRepresentation {
 	return self.image;
 }
+
 - (NSString*)imageUID {
     return self.uid;
 }
+
 - (NSString*)imageTitle {
     return self.name;
 }
+
 - (NSString*)imageSubtitle {
     return self.name;
 }

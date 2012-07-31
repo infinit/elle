@@ -17,11 +17,11 @@ int     main(int ac, char* av[])
 {
   plasma::watchdog::Application app(ac, av);
 
-  elle::log::debug("Starting the watchdog !");
 
   try
     {
       _initAll();
+      elle::log::debug("Starting the watchdog !");
       auto res = app.exec();
       return res;
     }
@@ -164,6 +164,10 @@ static void _initAll()
       lune::Lune::Initialize() == elle::Status::Error ||
       nucleus::Nucleus::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
+
+  elle::log::default_logger.name("watchdog");
+  //XXX make logger configurable
+  elle::log::default_logger.level(elle::log::Logger::Level::warn);
 
   // XXX use elle here
 

@@ -16,7 +16,7 @@ namespace plasma
     class InfinitNetwork;
     class Manager;
 
-    namespace meta = ::plasma::metaclient;
+    namespace meta = ::plasma::meta;
 
     ///
     /// This class keep the list of infinit networks instance.

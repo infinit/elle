@@ -1,6 +1,7 @@
 #import "OOUserBrowserViewManager.h"
 #import "OOUserBrowserBackgroundLayer.h"
 #import "OOUserModel.h"
+#import <Phone/OOPhone.h>
 
 @implementation OOUserBrowserViewManager
 
@@ -11,6 +12,7 @@
         // The second one contains temporary imported images  for thread safeness.
         users = [[NSMutableArray alloc] init];
         importedUsers = [[NSMutableArray alloc] init];
+        filteredUsers = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -81,7 +83,20 @@
         if ([str.uid isEqualToString:arg1])
             return YES;
     }
+    for (OOUserModel* str in users) {
+        if ([str.uid isEqualToString:arg1])
+            return YES;
+    }
     return NO; 
+}
+
+- (OOUserModel*)getUserInfoWithId:(NSString*)arg1 {
+    // Add a path to the temporary images array.
+    OOUserModel* p = [[OOUserModel alloc] init];
+    p.fullName =[[OOPhone getInstance] getUserFullNameById:arg1];
+    p.image = [[NSImage alloc] initWithContentsOfFile:@"/Users/charlesguillot/Pictures/avatars/Alice1.jpg"];
+    p.uid = arg1;
+    return p;
 }
 
 - (void)addUserWithId:(NSString*)userId
@@ -93,11 +108,7 @@
 	}
 	
 	if (addObject) {
-		// Add a path to the temporary images array.
-		OOUserModel* p = [[OOUserModel alloc] init];
-		p.fullName = @"Charles Guillot";
-        p.image = [[NSImage alloc] initWithContentsOfFile:@"/Users/charlesguillot/Pictures/avatars/Alice1.jpg"];
-        p.uid = userId;
+        OOUserModel* p = [self getUserInfoWithId:userId];
 		[importedUsers addObject:p];
 	}
 }
@@ -123,17 +134,17 @@
 - (NSUInteger)numberOfItemsInImageBrowser:(IKImageBrowserView*)view
 {
 	// The item count to display is the datadsource item count.
-    return [users count];
+    return [filteredUsers count];
 }
 
 - (id)imageBrowser:(IKImageBrowserView *) view itemAtIndex:(NSUInteger) index
 {
-    return [users objectAtIndex:index];
+    return [filteredUsers objectAtIndex:index];
 }
 
 - (void)imageBrowser:(IKImageBrowserView*)view removeItemsAtIndexes: (NSIndexSet*)indexes
 {
-	[users removeObjectsAtIndexes:indexes];
+	[filteredUsers removeObjectsAtIndexes:indexes];
 }
 
 - (BOOL)imageBrowser:(IKImageBrowserView*)view moveItemsAtIndexes:(NSIndexSet*)indexes toIndex:(unsigned int)destinationIndex
@@ -149,16 +160,16 @@
 		if (index < destinationIndex)
             destinationIndex --;
         
-		id obj = [users objectAtIndex:index];
+		id obj = [filteredUsers objectAtIndex:index];
 		[temporaryArray addObject:obj];
-		[users removeObjectAtIndex:index];
+		[filteredUsers removeObjectAtIndex:index];
 	}
     
 	// Then insert the removed items at the appropriate location.
 	NSInteger n = [temporaryArray count];
 	for (index = 0; index < n; index++)
 	{
-		[users insertObject:[temporaryArray objectAtIndex:index] atIndex:destinationIndex];
+		[filteredUsers insertObject:[temporaryArray objectAtIndex:index] atIndex:destinationIndex];
 	}
     
 	return YES;
@@ -229,5 +240,22 @@
 
     // Accept the drag operation.*/
     return YES;
+}
+
+//
+//
+//
+
+- (void)setFilteredUsers:(NSArray*)userIds {
+    [filteredUsers removeAllObjects];
+    if (userIds == nil) {
+        [filteredUsers addObjectsFromArray:users];
+    } else {
+        for (int i = 0; i < [userIds count]; i ++) {
+            [filteredUsers addObject:[self getUserInfoWithId:userIds[i]]];
+        }
+    }
+    // Reload the image browser, which triggers setNeedsDisplay.
+    [userBrowser reloadData];
 }
 @end

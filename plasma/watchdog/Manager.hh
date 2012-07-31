@@ -6,10 +6,11 @@
 # include <functional>
 
 # include <QCoreApplication>
+# include <QTimer>
 # include <QVariantMap>
 # include <QVariantList>
 
-# include "plasma/metaclient/MetaClient.hh"
+# include "plasma/meta/Client.hh"
 
 namespace plasma
 {
@@ -26,7 +27,10 @@ namespace plasma
     /// and their connection.
     ///
     class Manager
+      : public QObject
     {
+      Q_OBJECT
+
     public:
       typedef std::shared_ptr<Connection> ConnectionPtr;
       typedef std::unique_ptr<Client> ClientPtr;
@@ -36,7 +40,7 @@ namespace plasma
       typedef std::function<void(Connection&, Client&, QVariantMap const&)> Command;
       typedef std::unordered_map<std::string, Command> CommandMap;
 
-      typedef plasma::metaclient::MetaClient MetaClient;
+      typedef plasma::meta::Client MetaClient;
 
     private:
       QCoreApplication&   _app;
@@ -45,6 +49,7 @@ namespace plasma
       ClientActions*      _actions;
       NetworkManager*     _network_manager;
       MetaClient          _meta;
+      QTimer              _timer;
       std::string         _identity;
       std::string         _user;
 
@@ -90,7 +95,15 @@ namespace plasma
       ///
       void start(std::string const& watchdogId);
       void stop();
+
+      /// Start to refresh networks periodically.
+      void start_refresh_networks();
+
+      /// Force network refresh.
       void refresh_networks();
+
+    private Q_SLOTS:
+      void _on_timeout();
     };
 
   }
