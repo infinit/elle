@@ -384,6 +384,12 @@ namespace surface
       // makes user we have an id
       std::string user_id = this->user(user)._id;
       auto res = this->_api->network_add_user(network_id, user_id);
+      auto it = this->networks().find(network_id);
+      assert(it != this->networks().end());
+      Network* network = it->second;
+      assert(network != nullptr);
+      if (network->users.find(user_id) == network->users.end())
+        network->users.push_back(user_id);
     }
 
     std::map<std::string, NetworkStatus*> const&
