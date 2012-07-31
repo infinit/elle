@@ -26,6 +26,7 @@
 		1C7863451566919800F7D2F5 /* 19px-pending-anim-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863061566919800F7D2F5 /* 19px-pending-anim-blue.gif */; };
 		1C7863461566919800F7D2F5 /* 19px-pending-anim-red.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */; };
 		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
+		1C96022015C84941001C864F /* FinderPanel.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 		1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */; };
 		1CC381E715669DB200EA4FAB /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C91566919800F7D2F5 /* 1.png */; };
@@ -158,6 +159,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1C96022015C84941001C864F /* FinderPanel.framework in CopyFiles */,
 				1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
