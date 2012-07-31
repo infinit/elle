@@ -160,7 +160,7 @@ class Coroutine:
 
   def __init__(self, routine, name, scheduler = None, parent = None):
     self.__routine = [routine]
-    self.name = name
+    self.__name = name
     self.__done = False
     self.__exception = None
     self.__traceback = None
@@ -173,6 +173,10 @@ class Coroutine:
     self.__lock_status = threading.Semaphore(1)
     if scheduler is not None:
       scheduler.add(self)
+
+  @property
+  def name(self):
+    return self.__name
 
   def __str__(self):
     return 'coro %s' % self.name
