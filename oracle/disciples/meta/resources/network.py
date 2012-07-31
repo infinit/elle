@@ -318,6 +318,11 @@ class Create(_Page):
                 self.data.get('users', [])
             )
         )
+
+        if self.user['_id'] not in users:
+            assert isinstance(self.user['_id'], database.ObjectId)
+            users.append(self.user['_id'])
+
         network = {
             'name': name,
             'owner': self.user['_id'],
