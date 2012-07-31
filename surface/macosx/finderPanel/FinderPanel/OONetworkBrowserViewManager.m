@@ -114,6 +114,7 @@
     arg1.image = [NSImage imageNamed:NSImageNameNetwork];
     arg1.uid = arg2;
     arg1.members = [[OOPhone getInstance] getNetworkUsersWithNetworkId:arg2];
+    arg1.mountPoint = [[OOPhone getInstance] getNetworkMountPointWithId:arg2];
     return arg1;
 }
 
@@ -281,4 +282,13 @@
         [userBrowserViewManager setFilteredUsers:nil];
     }
 }
+
+- (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasDoubleClickedAtIndex:(NSUInteger) index {
+    NSIndexSet* indexSet = [aBrowser selectionIndexes];
+    if ([indexSet count] > 0){
+        OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
+        [[NSWorkspace sharedWorkspace] openFile:[networkModel.mountPoint absoluteString]];
+    }
+}
+
 @end
