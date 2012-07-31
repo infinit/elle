@@ -161,18 +161,22 @@ int main()
       impl.impl = "pif";
       Virtual& virt = impl;
 
-      elle::cryptography::Cipher c1, c2, c3;
+      elle::cryptography::Cipher c1, c2, c3, c4;
       assert(secret_key.Encrypt(impl, c1) == elle::Status::Ok);
       assert(secret_key.Encrypt(elle::serialize::serializable(impl), c2) == elle::Status::Ok);
       assert(secret_key.Encrypt(elle::serialize::serializable(virt), c3) == elle::Status::Ok);
+      assert(secret_key.Encrypt(elle::serialize::serializable(virt), c4) == elle::Status::Ok);
 
-      Implem res1, res2, res3;
+      Implem res1, res2, res3, res4;
+      Virtual& res4_ref = res4;
       assert(secret_key.Decrypt(c1, res1) == elle::Status::Ok);
       assert(secret_key.Decrypt(c2, res2) == elle::Status::Ok);
       assert(secret_key.Decrypt(c3, res3) == elle::Status::Ok);
+      assert(secret_key.Decrypt(c4, res4_ref) == elle::Status::Ok);
       assert(res1.base == "paf" && res1.impl == "pif");
       assert(res2.base == "paf" && res2.impl == "pif");
       assert(res3.base == "paf" && res3.impl == "pif");
+      assert(res4.base == "paf" && res4.impl == "pif");
     }
 
   std::cout << "tests done.\n";
