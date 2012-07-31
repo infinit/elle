@@ -28,7 +28,6 @@
 		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
 		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 		1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */; };
-		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
 		1CC381E715669DB200EA4FAB /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C91566919800F7D2F5 /* 1.png */; };
 		1CC381E815669DB200EA4FAB /* 10.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862CA1566919800F7D2F5 /* 10.png */; };
 		1CC381E915669DB200EA4FAB /* 11.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862CB1566919800F7D2F5 /* 11.png */; };
@@ -150,7 +149,6 @@
 			dstPath = Contents/Library/LaunchServices;
 			dstSubfolderSpec = 1;
 			files = (
-				1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
