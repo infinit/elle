@@ -404,7 +404,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"/**",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -415,27 +415,26 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../build/macosx64/agent\"",
-					"\"$(SRCROOT)/../../../build/macosx64/comet\"",
-					"\"$(SRCROOT)/../../../build/macosx64/elle\"",
-					"\"$(SRCROOT)/../../../build/macosx64/etoile\"",
-					"\"$(SRCROOT)/../../../build/macosx64/hole\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"",
-					"\"$(SRCROOT)/../../../build/macosx64\"",
-					"\"$(SRCROOT)/../../../build/macosx64/lune\"",
-					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/kickstarter/base\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"",
-					"\"$(SRCROOT)/../../../build/macosx64/protocol\"",
-					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/agent\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/comet\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/elle\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/etoile\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/hole\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/lune\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/protocol\"/**",
+					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"/**",
 				);
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../DerivedData;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -448,7 +447,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"/**",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -459,27 +458,26 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../build/macosx64/agent\"",
-					"\"$(SRCROOT)/../../../build/macosx64/comet\"",
-					"\"$(SRCROOT)/../../../build/macosx64/elle\"",
-					"\"$(SRCROOT)/../../../build/macosx64/etoile\"",
-					"\"$(SRCROOT)/../../../build/macosx64/hole\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"",
-					"\"$(SRCROOT)/../../../build/macosx64\"",
-					"\"$(SRCROOT)/../../../build/macosx64/lune\"",
-					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/kickstarter/base\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"",
-					"\"$(SRCROOT)/../../../build/macosx64/protocol\"",
-					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/agent\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/comet\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/elle\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/etoile\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/hole\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/lune\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/protocol\"/**",
+					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"/**",
 				);
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../DerivedData;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
 			};
