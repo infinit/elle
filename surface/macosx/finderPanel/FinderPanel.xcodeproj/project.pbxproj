@@ -67,6 +67,9 @@
 		1C9451A615A5A5E400370E90 /* OONetworkBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */; };
 		1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */; };
 		1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
+		1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
+		1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973415A2F8DE002F0B1E /* pin.tiff */; };
+		1C96022515C84B4B001C864F /* glossy.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973615A2F8E6002F0B1E /* glossy.png */; };
 		1CB13BDC15B6C1520069FEEF /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C136A7F15B58EA4003D41B9 /* Phone.framework */; };
 		1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
 		1CB8E5CC15A5A13C00DCA443 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
@@ -85,6 +88,21 @@
 			remoteInfo = FinderPanel;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1C96022215C84B3A001C864F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */,
+				1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */,
+				1C96022515C84B4B001C864F /* glossy.png in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1C045BB7159CAA7900162909 /* FinderPanelApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinderPanelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -451,6 +469,7 @@
 				1C30B5AD15B56A280056A382 /* Frameworks */,
 				1C30B5AE15B56A280056A382 /* Headers */,
 				1C30B5AF15B56A280056A382 /* Resources */,
+				1C96022215C84B3A001C864F /* CopyFiles */,
 			);
 			buildRules = (
 			);
