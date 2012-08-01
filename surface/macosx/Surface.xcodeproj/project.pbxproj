@@ -48,7 +48,7 @@
 		1CC381F815669DB200EA4FAB /* 9.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862DA1566919800F7D2F5 /* 9.png */; };
 		1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC9FCB3157CD4DC002C3BE1 /* AddressBook.framework */; };
 		1CD332EB1553E13F00930842 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CD332EA1553E13F00930842 /* infinite-app-icon.icns */; };
-		1CD3B88215C92F2500F28469 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
+		1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9B30BD15529790001EA6EA /* Cocoa.framework */; };
@@ -247,7 +247,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CD3B88215C92F2500F28469 /* FinderPanel.framework in Frameworks */,
+				1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */,
 				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
 				1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */,
 				1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */,
