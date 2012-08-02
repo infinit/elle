@@ -61,7 +61,7 @@ foreach(flag ${CUSTOM_CXX_FLAGS})
 endforeach()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message("CXX flags: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #
 # MSVC CXXFLAGS

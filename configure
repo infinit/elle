@@ -13,8 +13,6 @@ CFLAGS="$CFLAGS -std=c99 -W -Wall -Wstrict-prototypes -pipe"
 CFLAGS="$CFLAGS -Wfloat-equal -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
 CFLAGS="$CFLAGS -Wmissing-prototypes"
-CXXFLAGS="$CXXFLAGS -Wpointer-arith"
-CXXFLAGS="$CXXFLAGS -Wcast-align -Wno-empty-body" #XXX msgpack vomit with -Wold-style-cast
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
 QTCREATOR=0
@@ -153,20 +151,16 @@ CXXFLAGS="${CPPFLAGS} ${CXXFLAGS}"
 
 function gen_build_dir()
 (
-    local infinit_platform
-    infinit_platform=`basename $BUILDDIR`
-    echo "---[ configuration for ${BUILDDIR}:"
+    echo "---[ configure $ROOTDIR in ${BUILDDIR}"
 
     rm -rf "$BUILDDIR"
-    mkdir -p "$BUILDDIR" &&
-    cd "$BUILDDIR" &&
+    mkdir -p "$BUILDDIR" && cd "$BUILDDIR" &&
     cmake \
         -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
         -DCMAKE_COLOR_MAKEFILE=$COLOR \
         -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-        -DINFINIT_PLATFORM="$infinit_platform" \
-        $@ \
         "$CMAKE_GENERATOR" "$ROOTDIR"
+
 )
 
 MACHINE=$(uname -m)
@@ -174,21 +168,18 @@ MACHINE=$(uname -m)
 if [[ $LINUX32 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux32"
     (CC="${CC}" CXX="${CXX}" \
-        CFLAGS="${CFLAGS} -m32" CXXFLAGS="${CXXFLAGS} -m32" \
         BUILDDIR=build/linux32 gen_build_dir)
 fi
 
 if [[ $LINUX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux64"
     (CC="${CC}" CXX="${CXX}" \
-     CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
      BUILDDIR=build/linux64 gen_build_dir)
 fi
 
 if [[ $MACOSX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/macosx64"
     (CC="${CC}" CXX="${CXX}" \
-     CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
      BUILDDIR=build/macosx64 gen_build_dir)
 fi
 
