@@ -72,8 +72,34 @@ parser.add_argument(
 
 
 def dumpReleases(releases):
+    count = 0
     for hash, tarballs in releases.items():
-        print('-', hash, ':', tarballs)
+        count += 1
+        #if count > 30:
+        #    print("Ignoring", len(releases) - count, "releases")
+        #    break
+        date = None
+        client = False
+        server = False
+
+        for tarball, tarball_date in tarballs:
+            tarball_date = tarball_date.strip()
+            if date is not None:
+                print(date, tarball_date)
+            date = tarball_date.strip()
+            if 'client' in tarball:
+                assert client == False
+                client = True
+            elif 'server' in tarball:
+                assert server == False
+                server = True
+            print('- %s (%s): ' % (hash, date),
+                  ' / '.join(s for s in [
+                      client and 'client' or '',
+                      server and 'server' or ''
+                  ] if s))
+
+
 
 def yesno(s, default=False):
     res = None
@@ -148,10 +174,10 @@ def getFarmBuild(infos, args):
         tarballs = libpkg.farm.getTarballs(args.match)
 
     releases = {}
-    for t in tarballs:
-        h = libpkg.farm.getTarballHash(t)
+    for tarball, date in tarballs:
+        h = libpkg.farm.getTarballHash(tarball)
         releases.setdefault(h, [])
-        releases[h].append(t)
+        releases[h].append((tarball, date))
 
 
     to_install = None
@@ -167,7 +193,7 @@ def getFarmBuild(infos, args):
     if not to_install:
         sys.exit(not args.print and 1 or 0)
 
-    return libpkg.FarmBuild(infos, to_install, releases[to_install])
+    return libpkg.FarmBuild(infos, to_install, releases[to_install][0])
 
 def preparePackages(args, build, packagers, build_client, build_server):
     if not os.path.exists(args.dest_dir):

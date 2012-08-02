@@ -52,20 +52,19 @@ def getTarballs(filter=None):
     sys.stdout.flush()
     html = str(_urlget(constants.FARM_BUILDS_URI).read())
     print(" Done")
-    pattern = re.compile(r'href="(infinit-[^"]+\.tbz)"')
+    pattern = re.compile(r'href="(infinit-[^"]+\.tbz)"\S*\s+([\S]+ [\S]+)')
     results = pattern.findall(html)
-
     if filter is not None:
         if isinstance(filter, str):
             filter = [filter]
         for f in filter:
             pattern = re.compile('.*' + f + '.*')
             results = [
-                tarball for tarball in results if pattern.match(tarball)
+                tarball for tarball in results if pattern.match(tarball[0])
             ]
 
 
-    return [str(tarball) for tarball in results]
+    return results
 
 def getLastTarballs(filter=None):
     """Like getTarballs() but return only last ones (last git sha1 by date)"""
