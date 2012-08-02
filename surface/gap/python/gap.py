@@ -25,6 +25,7 @@ class State:
 
         directly_exported_methods = [
             'create_network',
+            'enable_debug',
             'refresh_networks',
             'networks',
             'launch_watchdog',

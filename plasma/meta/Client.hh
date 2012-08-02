@@ -144,7 +144,7 @@ namespace plasma
 
     public:
       Client(std::string const& server,
-             short port,
+             uint16_t port,
              bool check_errors = true,
              elle::log::Logger& log = elle::log::default_logger);
       ~Client();
@@ -175,13 +175,13 @@ namespace plasma
       CreateDeviceResponse
       create_device(std::string const& name,
                     std::string const& local_address,
-                    short port);
+                    uint16_t port);
 
       UpdateDeviceResponse
       update_device(std::string const& _id,
                     std::string const* name,
                     std::string const* local_address,
-                    short port);
+                    uint16_t port);
 
       NetworkResponse
       network(std::string const& _id);

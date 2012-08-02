@@ -33,10 +33,11 @@ static void test_simple()
       assert(false && "Should have been cought before !");
     }
 
+  short fifteen = 15;
+  d["paf"] = fifteen;
+  assert(d["paf"] == 15);
   d["paf"] = 14;
   assert(d["paf"] == 14);
-  d["paf"] = 15;
-  assert(d["paf"] == 15);
     {
       auto o = d["pouf"];
       o = 12;

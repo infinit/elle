@@ -135,12 +135,12 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Infinit");
 
-  hole::Hole::Initialize();
-
   // initialize the Agent library.
   if (agent::Agent::Initialize() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
+
+  hole::Hole::Initialize();
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)
