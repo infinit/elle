@@ -5,6 +5,7 @@
 #include <elle/cryptography/Cipher.hh>
 
 #include <elle/standalone/Log.hh>
+#include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -119,15 +120,17 @@ namespace elle
       // generate a salt.
       ::RAND_pseudo_bytes(salt, sizeof (salt));
 
+      size_t bytes_to_key = ::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
+                                             SecretKey::Algorithms::Digest,
+                                             salt,
+                                             this->region.contents,
+                                             this->region.size,
+                                             1,
+                                             key,
+                                             iv);
       // generate the key and IV based on the salt and password.
-      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                           SecretKey::Algorithms::Digest,
-                           salt,
-                           this->region.contents,
-                           this->region.size,
-                           1,
-                           key,
-                           iv) != sizeof (key))
+      // XXX the test was bytes_to_key != sizeof(key)
+      if (bytes_to_key > sizeof (key))
         escape("the generated key's size does not match the one expected");
 
       struct Scope
@@ -216,16 +219,17 @@ namespace elle
                cipher.region.contents + sizeof (Magic) - 1,
                sizeof (salt));
 
+      size_t bytes_to_key = ::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
+                                             SecretKey::Algorithms::Digest,
+                                             salt,
+                                             this->region.contents,
+                                             this->region.size,
+                                             1,
+                                             key,
+                                             iv);
       // generate the key and IV based on the salt and password.
-      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                           SecretKey::Algorithms::Digest,
-                           salt,
-                           this->region.contents,
-                           this->region.size,
-                           1,
-                           key,
-                           iv) != sizeof (key))
-        escape("the generated key's size does not match the one expected");
+      if (bytes_to_key > sizeof (key)) // XXX the test was bytes_to_key != sizeof(key)
+          escape("the generated key's size does not match the one expected");
 
       struct Scope
       {
