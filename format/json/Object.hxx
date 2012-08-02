@@ -1,9 +1,8 @@
-#ifndef ELLE_FORMAT_JSON_OBJECT_HXX
+#ifndef  ELLE_FORMAT_JSON_OBJECT_HXX
 # define ELLE_FORMAT_JSON_OBJECT_HXX
 
 # include <typeinfo>
 
-# include "fwd.hh"
 # include "_detail.hh"
 
 # include "Float.hh"
@@ -14,58 +13,15 @@
 # include "Dictionary.hh"
 # include "Array.hh"
 
-namespace elle { namespace format { namespace json {
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
-    ///
-    /// This files might be included when using the Load mecanism of an object
-    ///
-
-    namespace detail {
-
-        template<typename T>
-        struct SelectJSONType
-          {
-            typedef typename StaticIf<
-              IsString<T>::value
-            , String
-            , typename StaticIf<
-                std::is_same<T, bool>::value
-              , Bool
-              , typename StaticIf<
-                  std::is_floating_point<T>::value
-                , Float
-                , typename StaticIf<
-                    std::is_integral<T>::value
-                  , Integer
-                  , typename StaticIf<
-                      IsArray<T>::value
-                    , Array
-                    , typename StaticIf<
-                        IsStringMap<T>::value
-                      , Dictionary
-                      , void
-                      >::type
-                    >::type
-                  >::type
-                >::type
-              >::type
-            >::type type;
-          };
-
-    } // !namespace detail
-
-    template<typename T> struct Object::CanLoad
-      {
-        static bool const value = (
-              std::is_arithmetic<T>::value
-          ||  std::is_same<T, std::string>::value
-          ||  std::is_same<T, bool>::value
-          ||  detail::IsArray<T>::value
-        );
-      };
-
-
-    template<typename T> void Object::Load(T& out) const
+      template <typename T>
+      void Object::Load(T& out) const
       {
         static_assert(
             !std::is_base_of<T, Object>::value,
@@ -75,15 +31,16 @@ namespace elle { namespace format { namespace json {
         out = dynamic_cast<SelfType const&>(*this);
       }
 
-    template<typename T>
-    T Object::as() const
-    {
-      T val;
-      this->Load(val);
-      return val;
-    }
+      template <typename T>
+      T Object::as() const
+      {
+        T val;
+        this->Load(val);
+        return val;
+      }
 
-    template<typename T> bool Object::TryLoad(T& out) const
+      template <typename T>
+      bool Object::TryLoad(T& out) const
       {
         typedef typename detail::SelectJSONType<T>::type SelfType;
         if (auto ptr = dynamic_cast<SelfType const*>(this))
@@ -95,26 +52,30 @@ namespace elle { namespace format { namespace json {
       }
 
 
-      template<typename T> typename std::enable_if<
+      template <typename T> typename std::enable_if<
             !std::is_base_of<T, Object>::value
           , bool
       >::type Object::operator ==(T const& other) const
-        {
-          typedef typename detail::SelectJSONType<T>::type SelfType;
-          if (auto self = dynamic_cast<SelfType const*>(this))
-            return *self == SelfType(other);
-          return false;
-        }
+      {
+        typedef typename detail::SelectJSONType<T>::type SelfType;
+        if (auto self = dynamic_cast<SelfType const*>(this))
+          return *self == SelfType(other);
+        return false;
+      }
 
     struct Object::Factory
+    {
+      template <typename T> static inline
+      typename std::enable_if<
+          std::is_same<T, Null>::value
+        , std::unique_ptr<Null>
+      >::type
+      Construct(T const&)
       {
-        template<typename T> static inline typename std::enable_if<
-            std::is_same<T, Null>::value
-          , std::unique_ptr<Null>
-        >::type Construct(T const&)
-          { return std::unique_ptr<Null>(new Null); }
+        return std::unique_ptr<Null>(new Null);
+      }
 
-        template<typename T> static inline typename std::enable_if<
+      template <typename T> static inline typename std::enable_if<
             std::is_same<T , bool>::value
           , std::unique_ptr<Bool>
         >::type Construct(T value)

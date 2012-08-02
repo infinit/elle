@@ -1,28 +1,20 @@
-#ifndef ELLE_FORMAT_JSON_OBJECT_HH
+#ifndef  ELLE_FORMAT_JSON_OBJECT_HH
 # define ELLE_FORMAT_JSON_OBJECT_HH
 
 # include <cstdint>
 # include <memory>
 # include <string>
 
-# include "elle/serialize/fwd.hh"
+# include <elle/serialize/fwd.hh>
 
-namespace elle { namespace format { namespace json {
+# include "fwd.hh"
 
-    namespace detail {
-
-        template<typename T> class BasicObject;
-
-    }
-
-    typedef detail::BasicObject<int32_t>        Integer;
-    typedef detail::BasicObject<bool>           Bool;
-    typedef detail::BasicObject<double>         Float;
-    typedef detail::BasicObject<std::string>    String;
-
-    class Array;
-    class Dictionary;
-    class Null;
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
     /// Root object for all json types
     class Object
@@ -60,11 +52,11 @@ namespace elle { namespace format { namespace json {
       ///
       /// @throws std::bad_cast
       /// @see Object::TryLoad() for an exception safe version
-      template<typename T> void Load(T& out) const;
+      template <typename T> void Load(T& out) const;
 
       /// Convert an object to the type T and return by value.
       /// @throws std::bad_cast
-      template<typename T> T as() const;
+      template <typename T> T as() const;
 
       inline Array&      as_array();
       inline Bool&       as_bool();
@@ -103,7 +95,7 @@ namespace elle { namespace format { namespace json {
       virtual bool operator ==(Integer const&) const    { return false; }
       virtual bool operator ==(Null const&) const       { return false; }
       virtual bool operator ==(String const&) const     { return false; }
-      template<typename T>
+      template <typename T>
       typename std::enable_if<!std::is_base_of<T, Object>::value, bool>::type
       operator ==(T const& other) const;
 
@@ -116,8 +108,8 @@ namespace elle { namespace format { namespace json {
       bool operator !=(Integer const& other) const      { return !(*this == other); }
       bool operator !=(Null const& other) const         { return !(*this == other); }
       bool operator !=(String const& other) const       { return !(*this == other); }
-      template<typename T>
-        bool operator !=(T const& other) const          { return !(*this == other); }
+      template <typename T>
+      bool operator !=(T const& other) const            { return !(*this == other); }
 
       /// Usable as a constant dictionary
       virtual Object const& operator [](std::string const& key) const;
@@ -126,8 +118,10 @@ namespace elle { namespace format { namespace json {
       virtual Object const& operator [](size_t index) const;
     };
 
-}}}
+    }
+  }
+}
+
+# include "Object.hxx"
 
 #endif /* ! OBJECT_HH */
-
-
