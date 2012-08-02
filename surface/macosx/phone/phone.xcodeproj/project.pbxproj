@@ -10,8 +10,6 @@
 		1C0189E715AC891700874685 /* libgap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C0189E615AC891700874685 /* libgap.dylib */; };
 		1C0189F115AC8CB400874685 /* libgap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C0189E615AC891700874685 /* libgap.dylib */; };
 		1C43F610159C5F2600416503 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C43F60F159C5F2600416503 /* gap.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1C568889159AECE600190619 /* OORestResquest.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C568887159AECE600190619 /* OORestResquest.h */; };
-		1C56888A159AECE600190619 /* OORestResquest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C568888159AECE600190619 /* OORestResquest.m */; };
 		1C8C74BD159897DE002A14A8 /* OOManifestParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74BB159897DE002A14A8 /* OOManifestParser.m */; };
 		1C8C74C11598981B002A14A8 /* OOManifestItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C8C74BF1598981B002A14A8 /* OOManifestItem.h */; };
 		1C8C74C21598981B002A14A8 /* OOManifestItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74C01598981B002A14A8 /* OOManifestItem.m */; };
@@ -24,6 +22,7 @@
 		1CB3FF6715946D2400CFDBA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF4F15946D2300CFDBA7 /* Cocoa.framework */; };
 		1CB3FF7015946D2400CFDBA7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FF6E15946D2400CFDBA7 /* InfoPlist.strings */; };
 		1CB3FF7315946D2400CFDBA7 /* phoneTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB3FF7215946D2400CFDBA7 /* phoneTests.m */; };
+		1CE7494915CA87C800F4941B /* OOManifestParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CE7494815CA87C800F4941B /* OOManifestParser.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,8 +51,6 @@
 /* Begin PBXFileReference section */
 		1C0189E615AC891700874685 /* libgap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgap.dylib; path = ../../../build/macosx64/surface/gap/libgap.dylib; sourceTree = "<group>"; };
 		1C43F60F159C5F2600416503 /* gap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../gap/gap.h; sourceTree = "<group>"; };
-		1C568887159AECE600190619 /* OORestResquest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OORestResquest.h; sourceTree = "<group>"; };
-		1C568888159AECE600190619 /* OORestResquest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OORestResquest.m; sourceTree = "<group>"; };
 		1C8C74BB159897DE002A14A8 /* OOManifestParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOManifestParser.m; sourceTree = "<group>"; };
 		1C8C74BF1598981B002A14A8 /* OOManifestItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOManifestItem.h; sourceTree = "<group>"; };
 		1C8C74C01598981B002A14A8 /* OOManifestItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOManifestItem.m; sourceTree = "<group>"; };
@@ -73,6 +70,7 @@
 		1CB3FF6F15946D2400CFDBA7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1CB3FF7115946D2400CFDBA7 /* phoneTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phoneTests.h; sourceTree = "<group>"; };
 		1CB3FF7215946D2400CFDBA7 /* phoneTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = phoneTests.m; sourceTree = "<group>"; };
+		1CE7494815CA87C800F4941B /* OOManifestParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOManifestParser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,11 +142,10 @@
 			children = (
 				1C9A17C515AB14FC00739FB2 /* OOPhone.h */,
 				1C9A17C615AB14FC00739FB2 /* OOPhone.m */,
+				1CE7494815CA87C800F4941B /* OOManifestParser.h */,
 				1C8C74BB159897DE002A14A8 /* OOManifestParser.m */,
 				1C8C74BF1598981B002A14A8 /* OOManifestItem.h */,
 				1C8C74C01598981B002A14A8 /* OOManifestItem.m */,
-				1C568887159AECE600190619 /* OORestResquest.h */,
-				1C568888159AECE600190619 /* OORestResquest.m */,
 				1CB3FF5615946D2300CFDBA7 /* Supporting Files */,
 			);
 			path = phone;
@@ -193,7 +190,7 @@
 				1C43F610159C5F2600416503 /* gap.h in Headers */,
 				1C9A18F815AB14FC00739FB2 /* OOPhone.h in Headers */,
 				1C8C74C11598981B002A14A8 /* OOManifestItem.h in Headers */,
-				1C568889159AECE600190619 /* OORestResquest.h in Headers */,
+				1CE7494915CA87C800F4941B /* OOManifestParser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +304,6 @@
 			files = (
 				1C8C74BD159897DE002A14A8 /* OOManifestParser.m in Sources */,
 				1C8C74C21598981B002A14A8 /* OOManifestItem.m in Sources */,
-				1C56888A159AECE600190619 /* OORestResquest.m in Sources */,
 				1C9A18F915AB14FC00739FB2 /* OOPhone.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

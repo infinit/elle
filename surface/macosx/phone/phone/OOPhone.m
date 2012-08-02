@@ -8,7 +8,6 @@
 
 #import "OOPhone.h"
 #import "OOManifestParser.h"
-#import "OORestResquest.h"
 
 #define countof(X) ( (size_t) ( sizeof(X)/sizeof*(X) ) )
 

@@ -66,6 +66,14 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
     parsing = false;
 }
 
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification
+                                                        object:self
+                                                      userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:-1]
+                                                                                           forKey:@"progress"]];
+}
+
 - (void)parserDidStartDocument:(NSXMLParser *)parser
 {
 	//Create the property map that will be used to check and populate from elements
@@ -120,6 +128,22 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
     for(OOManifestItem *item in allItems) {
 		[item updateWithManager:self.fileManager absoluteLocalPath:[[NSBundle mainBundle] resourcePath] absoluteRemotePath:@"http://download.infinit.im/macosx64"];
     }
+}
+
+- (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError {
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification
+                                                        object:self
+                                                      userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:-2]
+                                                                                           forKey:@"progress"]];
+    
+}
+
+- (void)parser:(NSXMLParser *)parser validationErrorOccurred:(NSError *)validError {
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification
+                                                        object:self
+                                                      userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:-3]
+                                                                                           forKey:@"progress"]];
+    
 }
 
 - (void)downloadingNotification:(NSNotification *)notification {

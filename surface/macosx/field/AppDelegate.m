@@ -154,10 +154,16 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
                                                             name:OOUpdateProgessChangedNotification 
                                                           object:nil];
             [self removePending];
-        }
-        else {
+        } else if ([progress floatValue] >= 0){
             [statusItem setTitle:[NSString stringWithFormat:@"(%00.f%%)", [progress floatValue]*100]];
+        } else {
+            [statusItem setTitle:@"Error when downloading"];
+            [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                            name:OOUpdateProgessChangedNotification
+                                                          object:nil];
+            [self removePending];
         }
+        
     }
 }
 
