@@ -27,4 +27,8 @@ target_link_libraries(_gap
 )
 set_target_properties(_gap PROPERTIES PREFIX "")
 
+if(UNIX)
+	set_target_properties(_gap PROPERTIES SUFFIX ".so")
+endif()
+
 file(COPY gap.py DESTINATION .)

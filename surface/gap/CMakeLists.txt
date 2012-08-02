@@ -11,6 +11,4 @@ target_link_libraries(gap
 	${INFINIT_OPENSSL_SHARED_LIBRARIES}
 )
 
-if("${INFINIT_PLATFORM}" MATCHES "linux*")
-  add_subdirectory(python)
-endif()
+add_subdirectory(python)

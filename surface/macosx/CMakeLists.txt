@@ -7,7 +7,7 @@ if(INFINIT_MACOSX)
   set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif(INFINIT_MACOSX)
 
-file(GLOB_RECURSE surface_srcs 
+file(GLOB_RECURSE surface_srcs
 	*.[mhc]
 	*.xib
 	*.xcodeproj
@@ -17,7 +17,7 @@ file(GLOB_RECURSE surface_srcs
 )
 
 add_custom_target(surface
-	ALL 
+	ALL
   	WORKING_DIRECTORY
   		${CMAKE_CURRENT_SOURCE_DIR}
 	COMMAND
@@ -25,3 +25,5 @@ add_custom_target(surface
     DEPENDS
       ${surface_srcs}
 )
+
+add_dependencies(surface gap)

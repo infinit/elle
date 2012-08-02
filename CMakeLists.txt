@@ -11,17 +11,82 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules"
 set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
+set(CMAKE_BUILD_TYPE Debug)
 
-#
-# configurations
-#
+
+# Platform ####################################################################
 if(APPLE)
   set(INFINIT_MACOSX TRUE)
+  set(INFINIT_PLATFORM macosx)
 elseif(WIN32)
   set(INFINIT_WINDOWS TRUE)
-elseiF(UNIX)
+  set(INFINIT_PLATFORM windows)
+elseif(UNIX)
   set(INFINIT_LINUX TRUE)
+  set(INFINIT_PLATFORM linux)
 endif()
+
+# Architecture ################################################################
+if(CMAKE_SIZEOF_VOID_P MATCHES "8")
+    set(INFINIT_ARCHITECTURE "64")
+else()
+    set(INFINIT_ARCHITECTURE "32")
+endif()
+
+set(INFINIT_PLATFORM "${INFINIT_PLATFORM}${INFINIT_ARCHITECTURE}")
+
+# Compilation flags ###########################################################
+set(CUSTOM_CXX_FLAGS)
+set(CUSTOM_C_FLAGS)
+if (UNIX)
+    list(APPEND CUSTOM_CXX_FLAGS
+        -D_LARGE_FILE
+        -D_FILE_OFFSET_BITS=64
+        -m${INFINIT_ARCHITECTURE}
+        -std=c++0x
+        -Wall
+        -Wextra
+        -Wpointer-arith
+        -Wcast-align
+        -Wno-overloaded-virtual
+        -Wno-empty-body  # for ELLE_LOG_TRACE macro
+        -DQT_NO_KEYWORDS
+    )
+    set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG -UNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
+endif()
+
+foreach(flag ${CUSTOM_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+endforeach()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message("CXX flags: ${CMAKE_CXX_FLAGS}")
+
+#
+# MSVC CXXFLAGS
+#
+# XXX is is still relevant?
+#
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
+endiF(MSVC)
+
+#
+# MACOSX FLAGS
+#
+if(INFINIT_MACOSX)
+  include_directories(/usr/local/include /opt/local/include)
+  link_directories(/usr/local/lib /opt/local/lib)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+endif(INFINIT_MACOSX)
+
+# Workaround to remove '-rdynamic' flag
+# fix scheduled for 2.8.1
+# http://www.itk.org/Bug/view.php?id=9985
+# http://www.itk.org/Bug/view.php?id=5833
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
@@ -89,36 +154,6 @@ set(BUILD_SHARED_LIBS OFF)
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
-
-set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -Wall -Wno-extra -Wno-overloaded-virtual -DQT_NO_KEYWORDS"
-)
-
-#
-# MSVC CXXFLAGS
-#
-# XXX is is still relevant?
-#
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
-endiF(MSVC)
-
-#
-# MACOSX FLAGS
-#
-if(INFINIT_MACOSX)
-  include_directories(/usr/local/include /opt/local/include)
-  link_directories(/usr/local/lib /opt/local/lib)
-
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-endif(INFINIT_MACOSX)
-
-# Workaround to remove '-rdynamic' flag
-# fix scheduled for 2.8.1
-# http://www.itk.org/Bug/view.php?id=9985
-# http://www.itk.org/Bug/view.php?id=5833
-set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 
 add_subdirectory(comet)

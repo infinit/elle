@@ -13,7 +13,7 @@ CFLAGS="$CFLAGS -std=c99 -W -Wall -Wstrict-prototypes -pipe"
 CFLAGS="$CFLAGS -Wfloat-equal -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
 CFLAGS="$CFLAGS -Wmissing-prototypes"
-CXXFLAGS="$CXXFLAGS -std=c++0x -Wall -Wextra -Wpointer-arith -Wabi"
+CXXFLAGS="$CXXFLAGS -Wpointer-arith"
 CXXFLAGS="$CXXFLAGS -Wcast-align -Wno-empty-body" #XXX msgpack vomit with -Wold-style-cast
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
@@ -25,8 +25,6 @@ MACOSX64=OFF
 
 [ -z "${CC}" ] && CC=gcc
 [ -z "${CXX}" ] && CXX=g++
-
-echo "CC=${CC}"
 
 function usage()
 {
