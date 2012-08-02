@@ -193,7 +193,7 @@ def getFarmBuild(infos, args):
     if not to_install:
         sys.exit(not args.print and 1 or 0)
 
-    return libpkg.FarmBuild(infos, to_install, releases[to_install][0])
+    return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
 def preparePackages(args, build, packagers, build_client, build_server):
     if not os.path.exists(args.dest_dir):
@@ -226,8 +226,8 @@ if __name__ == '__main__':
     build_server = build.has_server and not args.only_client
 
     print("Selected build (", build.hash, "):")
-    print("\t- Server build:", build_server)
-    print("\t- Client build:", build_client)
+    print("\t- Server build:", build_server, 'at', build.client_date)
+    print("\t- Client build:", build_client, 'at', build.server_date)
     print("\t- Architecture(s):", ', '.join(build.architectures_strings))
     print("\t- Platform(s):", ', '.join(build.platforms_strings))
     print("\t- Status:", build.is_available and "Working" or "Not working")
