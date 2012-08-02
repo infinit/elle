@@ -61,6 +61,7 @@ int main()
 
   assert(new_.d == 42.0);
 
+  std::cout << "tests done.\n";
   return 0;
 }
 

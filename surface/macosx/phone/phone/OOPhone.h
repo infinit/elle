@@ -37,6 +37,8 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (NSArray*)getUserNetworks;
 
+- (NSURL*)getNetworkMountPointWithId:(NSString*)arg1;
+
 - (NSString*)getNetworkNameWithId:(NSString*)arg1;
 
 - (NSArray*)getNetworkUsersWithNetworkId:(NSString*)arg1;

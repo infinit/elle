@@ -10,13 +10,12 @@
 		1C03F3361575154200966EC3 /* OOSetupWindowDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C03F3351575154200966EC3 /* OOSetupWindowDelegate.m */; };
 		1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C03F3371575265B00966EC3 /* QuartzCore.framework */; };
 		1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE45152AECAB00EFB356 /* MainMenu.xib */; };
-		1C45EE57152AECAB00EFB356 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
 		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
 		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
-		1C48593F15B569C3003ED64A /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C50F8EE1574D50D0082F57C /* OOSetupView.m */; };
 		1C50F8F11574D50D0082F57C /* OOSetupWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8EF1574D50D0082F57C /* OOSetupWindow.xib */; };
 		1C50F8F81574EE030082F57C /* setup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8F71574EE030082F57C /* setup-bg.png */; };
+		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C74C3251598713B009210AC /* OOSetupWindowController.m */; };
 		1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */; };
 		1C7863401566919800F7D2F5 /* 19px-active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863011566919800F7D2F5 /* 19px-active.png */; };
@@ -26,12 +25,11 @@
 		1C7863441566919800F7D2F5 /* 19px-pending-anim-black.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863051566919800F7D2F5 /* 19px-pending-anim-black.gif */; };
 		1C7863451566919800F7D2F5 /* 19px-pending-anim-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863061566919800F7D2F5 /* 19px-pending-anim-blue.gif */; };
 		1C7863461566919800F7D2F5 /* 19px-pending-anim-red.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */; };
+		1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
+		1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 		1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */; };
-		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
-		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
-		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
 		1CC381E715669DB200EA4FAB /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C91566919800F7D2F5 /* 1.png */; };
 		1CC381E815669DB200EA4FAB /* 10.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862CA1566919800F7D2F5 /* 10.png */; };
 		1CC381E915669DB200EA4FAB /* 11.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862CB1566919800F7D2F5 /* 11.png */; };
@@ -52,8 +50,7 @@
 		1CC381F815669DB200EA4FAB /* 9.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862DA1566919800F7D2F5 /* 9.png */; };
 		1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC9FCB3157CD4DC002C3BE1 /* AddressBook.framework */; };
 		1CD332EB1553E13F00930842 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CD332EA1553E13F00930842 /* infinite-app-icon.icns */; };
-		1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
-		1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
+		1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9B30BD15529790001EA6EA /* Cocoa.framework */; };
 		1CD5C44C1552A80C00556CC9 /* OOPreferencesWindows.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CD5C44B1552A80C00556CC9 /* OOPreferencesWindows.xib */; };
 		1CD5C44F1552AFCB00556CC9 /* OOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD5C44E1552AFCB00556CC9 /* OOPreferencesWindowController.m */; };
@@ -100,19 +97,12 @@
 			remoteGlobalIDString = 1C30B5B015B56A280056A382;
 			remoteInfo = FinderPanel;
 		};
-		1C99E16E155AAC7B00426951 /* PBXContainerItemProxy */ = {
+		1C8BBA1A15CA7E5400E8E1DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			containerPortal = 1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
-			remoteInfo = FinderDopant;
-		};
-		1C99E170155AAC7B00426951 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3661644515011A08008A1425;
-			remoteInfo = Nurse;
+			remoteGlobalIDString = 1CB3FF4B15946D2300CFDBA7;
+			remoteInfo = Phone;
 		};
 		1C99E172155AAC7B00426951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -142,27 +132,6 @@
 			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
 			remoteInfo = mach_inject_bundle_stub;
 		};
-		1CD297031528D28A006D1A4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 367BCFF614FE6F4600B41298;
-			remoteInfo = FinderInjectee;
-		};
-		1CD297051528D28A006D1A4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3661644615011A08008A1425;
-			remoteInfo = HelperTools;
-		};
-		1CD48DBF15B5530E00C929BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1CB3FF4B15946D2300CFDBA7;
-			remoteInfo = Phone;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -181,9 +150,6 @@
 			dstPath = Contents/Library/LaunchServices;
 			dstSubfolderSpec = 1;
 			files = (
-				1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */,
-				1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */,
-				1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,7 +159,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */,
+				1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */,
+				1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,7 +223,6 @@
 		1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "infinit-setup.png"; sourceTree = "<group>"; };
 		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
 		1CC9FCB3157CD4DC002C3BE1 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
-		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
 		1CD332EA1553E13F00930842 /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "infinite-app-icon.icns"; sourceTree = "<group>"; };
 		1CD5C44B1552A80C00556CC9 /* OOPreferencesWindows.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OOPreferencesWindows.xib; sourceTree = "<group>"; };
 		1CD5C44E1552AFCB00556CC9 /* OOPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOPreferencesWindowController.m; sourceTree = "<group>"; };
@@ -281,9 +247,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C695E1E15CA837300533738 /* Phone.framework in Frameworks */,
+				1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */,
 				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
-				1C48593F15B569C3003ED64A /* FinderPanel.framework in Frameworks */,
-				1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */,
 				1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */,
 				1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */,
 				1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */,
@@ -464,15 +430,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1CD296FB1528D289006D1A4C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */,
-				1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		1CD5C44A1552A7DC00556CC9 /* preferences */ = {
 			isa = PBXGroup;
 			children = (
@@ -507,7 +464,6 @@
 				1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */,
 				1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */,
 				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
-				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
 				1C45EE44152AECAB00EFB356 /* field */,
 				1C9B30BC15529790001EA6EA /* Frameworks */,
 				36E9F8B714FF7DE8000B9C12 /* products */,
@@ -539,10 +495,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				1CD48DC015B5530E00C929BF /* PBXTargetDependency */,
+				1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */,
 				1C48594115B569CA003ED64A /* PBXTargetDependency */,
-				1C99E16F155AAC7B00426951 /* PBXTargetDependency */,
-				1C99E171155AAC7B00426951 /* PBXTargetDependency */,
 				1C99E173155AAC7B00426951 /* PBXTargetDependency */,
 			);
 			name = Infinit;
@@ -573,10 +527,6 @@
 				{
 					ProductGroup = 1C4858F415B55C75003ED64A /* Products */;
 					ProjectRef = 1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */;
-				},
-				{
-					ProductGroup = 1CD296FB1528D289006D1A4C /* Products */;
-					ProjectRef = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 				},
 				{
 					ProductGroup = 1CB4FB781528EDDA00DDEC99 /* Products */;
@@ -635,20 +585,6 @@
 			fileType = wrapper.cfbundle;
 			path = mach_inject_bundle_stub.bundle;
 			remoteRef = 1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = io.infinit.FinderDopant.bundle;
-			remoteRef = 1CD297031528D28A006D1A4C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = io.infinit.Nurse.helper;
-			remoteRef = 1CD297051528D28A006D1A4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -713,7 +649,6 @@
 			files = (
 				1C45EE59152AECAB00EFB356 /* main.m in Sources */,
 				1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */,
-				1C45EE57152AECAB00EFB356 /* OOInjectorHelper.m in Sources */,
 				1CD5C44F1552AFCB00556CC9 /* OOPreferencesWindowController.m in Sources */,
 				1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */,
 				1C03F3361575154200966EC3 /* OOSetupWindowDelegate.m in Sources */,
@@ -730,25 +665,15 @@
 			name = FinderPanel;
 			targetProxy = 1C48594015B569CA003ED64A /* PBXContainerItemProxy */;
 		};
-		1C99E16F155AAC7B00426951 /* PBXTargetDependency */ = {
+		1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = FinderDopant;
-			targetProxy = 1C99E16E155AAC7B00426951 /* PBXContainerItemProxy */;
-		};
-		1C99E171155AAC7B00426951 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Nurse;
-			targetProxy = 1C99E170155AAC7B00426951 /* PBXContainerItemProxy */;
+			name = Phone;
+			targetProxy = 1C8BBA1A15CA7E5400E8E1DC /* PBXContainerItemProxy */;
 		};
 		1C99E173155AAC7B00426951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = mach_inject_bundle_stub;
 			targetProxy = 1C99E172155AAC7B00426951 /* PBXContainerItemProxy */;
-		};
-		1CD48DC015B5530E00C929BF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Phone;
-			targetProxy = 1CD48DBF15B5530E00C929BF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

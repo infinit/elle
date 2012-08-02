@@ -124,9 +124,17 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return returnArray;
 }
 
+//
+//  GET USER INFO
+//
 - (NSString*)getNetworkNameWithId:(NSString*)arg1 {
     char const* name = gap_network_name(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
     return [[NSString alloc] initWithUTF8String:name];
+}
+
+- (NSURL*)getNetworkMountPointWithId:(NSString*)arg1 {
+    char const* path = gap_network_mount_point(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    return [NSURL fileURLWithPath:[[NSString alloc] initWithUTF8String:path]];
 }
 
 - (void)update {

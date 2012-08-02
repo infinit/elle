@@ -15,9 +15,11 @@
     NSImage*    image; 
     NSString*   name;
     NSArray*    members;
+    NSURL*      mountPoint;
 }
 @property NSString* uid;
 @property NSImage*  image;
 @property NSString* name;
 @property NSArray*  members;
+@property NSURL*    mountPoint;
 @end

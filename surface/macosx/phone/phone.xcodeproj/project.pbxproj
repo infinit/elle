@@ -404,6 +404,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"@executable_path/../Frameworks/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
@@ -412,30 +413,29 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
 				INFOPLIST_FILE = "phone/phone-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LD_DYLIB_INSTALL_NAME = "";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../build/macosx64/agent\"",
-					"\"$(SRCROOT)/../../../build/macosx64/comet\"",
-					"\"$(SRCROOT)/../../../build/macosx64/elle\"",
-					"\"$(SRCROOT)/../../../build/macosx64/etoile\"",
-					"\"$(SRCROOT)/../../../build/macosx64/hole\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"",
-					"\"$(SRCROOT)/../../../build/macosx64\"",
-					"\"$(SRCROOT)/../../../build/macosx64/lune\"",
-					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/kickstarter/base\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"",
-					"\"$(SRCROOT)/../../../build/macosx64/protocol\"",
-					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/agent\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/comet\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/elle\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/etoile\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/hole\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/lune\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/protocol\"/**",
+					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"/**",
 				);
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../DerivedData;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
+				SYMROOT = build;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -448,6 +448,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"@executable_path/../Frameworks/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
@@ -456,30 +457,29 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
 				INFOPLIST_FILE = "phone/phone-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LD_DYLIB_INSTALL_NAME = "";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../build/macosx64/agent\"",
-					"\"$(SRCROOT)/../../../build/macosx64/comet\"",
-					"\"$(SRCROOT)/../../../build/macosx64/elle\"",
-					"\"$(SRCROOT)/../../../build/macosx64/etoile\"",
-					"\"$(SRCROOT)/../../../build/macosx64/hole\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon\"",
-					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"",
-					"\"$(SRCROOT)/../../../build/macosx64\"",
-					"\"$(SRCROOT)/../../../build/macosx64/lune\"",
-					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/kickstarter/base\"",
-					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"",
-					"\"$(SRCROOT)/../../../build/macosx64/protocol\"",
-					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/agent\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/comet\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/elle\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/etoile\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/hole\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/horizon/macosx\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/lune\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/nucleus\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/plasma/metaclient\"/**",
+					"\"$(SRCROOT)/../../../build/macosx64/protocol\"/**",
+					"\"$(SRCROOT)/../../../dependencies/platforms/macosx64/work/lib\"/**",
 				);
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../DerivedData;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
+				SYMROOT = build;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
 			};

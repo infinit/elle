@@ -14,6 +14,7 @@
 @synthesize image;
 @synthesize name;
 @synthesize members;
+@synthesize mountPoint;
 
 - (NSString*)imageRepresentationType {
 	return IKImageBrowserNSImageRepresentationType;
@@ -33,10 +34,6 @@
 
 - (NSString*)imageSubtitle {
     return self.name;
-}
-
-- (NSArray*)networkMembers {
-    return self.members;
 }
 
 @end
