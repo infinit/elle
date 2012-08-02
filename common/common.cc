@@ -46,14 +46,14 @@ namespace
     return it->second;
   }
 
-  short _meta_port()
+  uint16_t _meta_port()
   {
     std::string port_string = elle::os::getenv(
         "INFINIT_META_PORT",
         elle::sprint(COMMON_DEFAULT_META_PORT)
     );
     std::stringstream ss(port_string);
-    short port;
+    uint16_t port;
     ss >> port;
     if (ss.fail())
       throw std::runtime_error{
@@ -145,9 +145,9 @@ namespace common
       return protocol;
     }
 
-    short port()
+    uint16_t port()
     {
-      static short const port = _meta_port();
+      static uint16_t const port = _meta_port();
       return port;
     }
 

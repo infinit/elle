@@ -157,7 +157,7 @@ namespace plasma
     {
       boost::asio::io_service   io_service;
       std::string               server;
-      short                     port;
+      uint16_t                     port;
       std::string               token;
       std::string               identity;
       std::string               email;
@@ -165,7 +165,7 @@ namespace plasma
       elle::log::Logger&        log;
 
       Impl(std::string const& server,
-           short port,
+           uint16_t port,
            bool check_errors,
            elle::log::Logger& log)
         : io_service{}
@@ -182,7 +182,7 @@ namespace plasma
     // - Ctor & dtor ----------------------------------------------------------
 
     Client::Client(std::string const& server,
-                   short port,
+                   uint16_t port,
                    bool check_errors,
                    elle::log::Logger& log)
       : _impl{new Impl{server, port, check_errors, log}}
@@ -272,7 +272,7 @@ namespace plasma
     CreateDeviceResponse
     Client::create_device(std::string const& name,
                           std::string const& local_address,
-                          short port)
+                          uint16_t port)
     {
       json::Dictionary request{std::map<std::string, std::string>{
           {"name", name},
@@ -286,7 +286,7 @@ namespace plasma
     Client::update_device(std::string const& _id,
                           std::string const* name,
                           std::string const* local_address,
-                          short port)
+                          uint16_t port)
     {
       json::Dictionary request{std::map<std::string, std::string>{
             {"_id", _id},

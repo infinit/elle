@@ -68,7 +68,7 @@ namespace common
 
     /// Returns the port of the meta server
     /// Can be overriden by INFINIT_META_PORT.
-    short
+    uint16_t
     port();
 
     /// Returns the url to the meta server. If INFINIT_META_URL is defined, its
