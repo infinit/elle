@@ -1,3 +1,3 @@
 simple_test(Locus "" "tests done." "")
 
-target_link_libraries(test_Locus boost_system)
+target_link_libraries(test_Locus ${Boost_LIBRARIES})

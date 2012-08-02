@@ -33,24 +33,21 @@ class Packager(BasePackager):
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
             shutil.copytree(
-                os.path.join(build_env.directory, 'temp-app', 'Infinit.app'),
+                os.path.join(build_env.directory, 'Infinit.app'),
                 os.path.join(pkgdir, 'Infinit.app'),
+                symlinks=True,
             )
             params = {
                 'architecture': {
                     constants.Architectures.AMD64: 'x86_64',
                     constants.Architectures.I386: 'i386',
                 }[build_env.architecture],
-                'updater_bin': os.path.join(build_env.directory, 'bin', '8updater'),
                 'version_name': build_env.build.infos['version_name'],
                 'version': build_env.build.infos['version'],
             }
             filename = "infinit-%(version_name)s-%(version)s-%(architecture)s.dmg" % params
             path = os.path.join(tempdir, filename)
 
-            print(filename)
-            print(tempdir)
-            print(os.path.join(sys.argv[0], "../.."))
             DIR_SOURCE = os.path.join(os.path.dirname(sys.argv[0]), "libpkg/packagers")
 
             res = os.system('''%(dir_source)s/macosx/dmger/create-dmg \
