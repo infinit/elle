@@ -55,6 +55,8 @@ BOOST_PYTHON_MODULE(_gap)
           py::return_value_policy<py::return_opaque_pointer>());
   py::def("free", &gap_free);
 
+  py::def("enable_debug", &gap_enable_debug);
+
   //- Authentication and registration -----------------------------------------
 
   py::def("hash_password", &_hash_password, by_value());

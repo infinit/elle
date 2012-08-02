@@ -56,6 +56,12 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument(
+    '--debug', '-d',
+    help="Enable debug mode",
+    action="store_true",
+)
+
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
         self._state = state
@@ -290,6 +296,8 @@ def main():
 
     import gap
     state = gap.State()
+    if args.debug:
+        state.enable_debug()
     if args.register:
         print("Registering to infinit:")
         register(state)
