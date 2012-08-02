@@ -40,7 +40,7 @@ class One(Page):
             }
     """
 
-    __pattern__ = "/device/(.+)"
+    __pattern__ = "/device/(.+)/view"
 
     def GET(self, id):
         self.requireLoggedIn()
@@ -90,6 +90,8 @@ class Create(Page):
             'ip': web.ctx.env['REMOTE_ADDR'],
             'port': int(device.get('extern_port', to_save['local_address']['port'])),
         }
+        print("CREATE DEVICE local addr: %s" % to_save['local_address'])
+        print("CREATE DEVICE extern addr: %s" % to_save['extern_address'])
 
         id_ = database.devices().insert(to_save)
         assert id_ is not None
@@ -149,9 +151,12 @@ class Update(Page):
             to_save['local_address']['port'] = device['local_port']
 
         to_save['extern_address'] = {
-            'ip': web.ctx.env.get('HTTP_REFERER'),
+            'ip': web.ctx.env['REMOTE_ADDR'],
             'port': device.get('extern_port', to_save['local_address']['port']),
         }
+
+        print("CREATE DEVICE local addr: %s" % to_save['local_address'])
+        print("CREATE DEVICE extern addr: %s" % to_save['extern_address'])
 
         id_ = database.devices().save(to_save)
         return self.success({
@@ -162,29 +167,31 @@ class Update(Page):
 class Delete(Page):
     """
     Delete a device
-        DELETE /device/id
-            -> {
+        DELETE /device/delete {
+            "_id": "device id to delete",
+        } -> {
                 'success': True,
                 'deleted_device_id': "id",
             }
     """
 
-    __pattern__ = "/device/(.+)"
+    __pattern__ = "/device/delete"
 
-    def DELETE(self, id_):
+    def DELETE(self):
         self.requireLoggedIn()
+        _id = self.data['_id']
         try:
             devices = self.user['devices']
-            idx = devices.index(id_)
+            idx = devices.index(_id)
             devices.pop(idx)
         except:
             return json.dumps({
                 'success': False,
-                'error': "The device '%s' was not found" % (id_),
+                'error': "The device '%s' was not found" % (_id),
             })
         database.users().save(self.user)
         database.devices().find_and_modify({
-            '_id': database.ObjectId(id_),
+            '_id': database.ObjectId(_id),
             'owner': self.user['_id'], #not required
         }, remove=True)
         return self.success({

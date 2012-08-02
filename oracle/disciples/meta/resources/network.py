@@ -180,6 +180,7 @@ class Nodes(_Page):
                 for addr_kind in ['local_address', 'extern_address']:
                     addr = device[addr_kind]
                     if addr['port']:
+                        print("append addr: %s" % str(addr))
                         res['nodes'].append(
                             addr['ip'] + ':' + str(addr['port']),
                         )
