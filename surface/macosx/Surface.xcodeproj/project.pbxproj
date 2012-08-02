@@ -15,6 +15,7 @@
 		1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C50F8EE1574D50D0082F57C /* OOSetupView.m */; };
 		1C50F8F11574D50D0082F57C /* OOSetupWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8EF1574D50D0082F57C /* OOSetupWindow.xib */; };
 		1C50F8F81574EE030082F57C /* setup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8F71574EE030082F57C /* setup-bg.png */; };
+		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C74C3251598713B009210AC /* OOSetupWindowController.m */; };
 		1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */; };
 		1C7863401566919800F7D2F5 /* 19px-active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863011566919800F7D2F5 /* 19px-active.png */; };
@@ -24,6 +25,7 @@
 		1C7863441566919800F7D2F5 /* 19px-pending-anim-black.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863051566919800F7D2F5 /* 19px-pending-anim-black.gif */; };
 		1C7863451566919800F7D2F5 /* 19px-pending-anim-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863061566919800F7D2F5 /* 19px-pending-anim-blue.gif */; };
 		1C7863461566919800F7D2F5 /* 19px-pending-anim-red.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */; };
+		1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
 		1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
@@ -49,8 +51,6 @@
 		1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC9FCB3157CD4DC002C3BE1 /* AddressBook.framework */; };
 		1CD332EB1553E13F00930842 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CD332EA1553E13F00930842 /* infinite-app-icon.icns */; };
 		1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
-		1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
-		1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
 		1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9B30BD15529790001EA6EA /* Cocoa.framework */; };
 		1CD5C44C1552A80C00556CC9 /* OOPreferencesWindows.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CD5C44B1552A80C00556CC9 /* OOPreferencesWindows.xib */; };
 		1CD5C44F1552AFCB00556CC9 /* OOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD5C44E1552AFCB00556CC9 /* OOPreferencesWindowController.m */; };
@@ -97,6 +97,13 @@
 			remoteGlobalIDString = 1C30B5B015B56A280056A382;
 			remoteInfo = FinderPanel;
 		};
+		1C8BBA1A15CA7E5400E8E1DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1CB3FF4B15946D2300CFDBA7;
+			remoteInfo = Phone;
+		};
 		1C99E172155AAC7B00426951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
@@ -125,13 +132,6 @@
 			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
 			remoteInfo = mach_inject_bundle_stub;
 		};
-		1CD48DBF15B5530E00C929BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1CB3FF4B15946D2300CFDBA7;
-			remoteInfo = Phone;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -159,8 +159,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */,
 				1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */,
-				1CD48DC115B553B200C929BF /* Phone.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,9 +247,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C695E1E15CA837300533738 /* Phone.framework in Frameworks */,
 				1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */,
 				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
-				1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */,
 				1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */,
 				1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */,
 				1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */,
@@ -495,7 +495,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				1CD48DC015B5530E00C929BF /* PBXTargetDependency */,
+				1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */,
 				1C48594115B569CA003ED64A /* PBXTargetDependency */,
 				1C99E173155AAC7B00426951 /* PBXTargetDependency */,
 			);
@@ -665,15 +665,15 @@
 			name = FinderPanel;
 			targetProxy = 1C48594015B569CA003ED64A /* PBXContainerItemProxy */;
 		};
+		1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Phone;
+			targetProxy = 1C8BBA1A15CA7E5400E8E1DC /* PBXContainerItemProxy */;
+		};
 		1C99E173155AAC7B00426951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = mach_inject_bundle_stub;
 			targetProxy = 1C99E172155AAC7B00426951 /* PBXContainerItemProxy */;
-		};
-		1CD48DC015B5530E00C929BF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Phone;
-			targetProxy = 1CD48DBF15B5530E00C929BF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

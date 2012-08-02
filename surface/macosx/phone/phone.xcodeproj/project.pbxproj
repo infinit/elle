@@ -404,7 +404,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"/**",
+					"@executable_path/../Frameworks/**",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -412,7 +413,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
 				INFOPLIST_FILE = "phone/phone-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LD_DYLIB_INSTALL_NAME = "";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
@@ -433,7 +434,7 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../DerivedData;
+				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
@@ -447,7 +448,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"/**",
+					"@executable_path/../Frameworks/**",
+					"\"$(SRCROOT)/../../../build/macosx64/surface/macosx/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -455,7 +457,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"";
 				INFOPLIST_FILE = "phone/phone-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LD_DYLIB_INSTALL_NAME = "";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"/**",
@@ -476,7 +478,7 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../DerivedData;
+				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../gap\"/**";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = framework;
