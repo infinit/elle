@@ -47,15 +47,6 @@ foreach(_CURRENT_VERSION 3.2 3.1 3.0)
     foreach(_COMPILATION_FLAGS "" ${_32FLAGS})
         string(REPLACE "." "" _CURRENT_VERSION_NO_DOTS ${_CURRENT_VERSION})
 
-        # Look for the static library in the Python config directory
-        find_library(PYTHON3_LIBRARY
-            NAMES
-                python${_CURRENT_VERSION_NO_DOTS}${_COMPILATION_FLAGS}
-                python${_CURRENT_VERSION}${_COMPILATION_FLAGS}
-            # This is where the static library is usually located
-            PATH_SUFFIXES
-                python${_CURRENT_VERSION}/config
-        )
 
         set(PYTHON_FRAMEWORK_INCLUDES)
         set(PYTHON_FRAMEWORK_LIB)
@@ -69,12 +60,21 @@ foreach(_CURRENT_VERSION 3.2 3.1 3.0)
                 )
             endforeach(dir)
         endif()
+
         find_path(PYTHON3_INCLUDE_DIR
             NAMES
                 Python.h
             PATHS
                 ${PYTHON_FRAMEWORK_INCLUDES}
             NO_CMAKE_SYSTEM_PATH
+        )
+        find_path(PYTHON3_INCLUDE_DIR
+            NAMES
+                Python.h
+            PATH_SUFFIXES
+                python${_CURRENT_VERSION_NO_DOTS}${_COMPILATION_FLAGS}
+                python${_CURRENT_VERSION}${_COMPILATION_FLAGS}
+                python${_CURRENT_VERSION}
         )
         find_library(PYTHON3_LIBRARY
             NAMES
@@ -85,6 +85,14 @@ foreach(_CURRENT_VERSION 3.2 3.1 3.0)
                 ${PYTHON_FRAMEWORK_LIB}
         )
 
+        find_library(PYTHON3_LIBRARY
+            NAMES
+                python${_CURRENT_VERSION_NO_DOTS}${_COMPILATION_FLAGS}
+                python${_CURRENT_VERSION}${_COMPILATION_FLAGS}
+            # This is where the static library is usually located
+            PATH_SUFFIXES
+                python${_CURRENT_VERSION}/config
+        )
     endforeach(_COMPILATION_FLAGS)
 endforeach(_CURRENT_VERSION)
 
