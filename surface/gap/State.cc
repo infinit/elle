@@ -73,9 +73,13 @@ namespace surface
 
       if (identity_file.good())
         {
-          std::string token;
-          std::getline(identity_file, token);
-          this->_api->token(token);
+          std::string str;
+          std::getline(identity_file, str);
+          this->_api->token(str);
+          std::getline(identity_file, str);
+          this->_api->identity(str);
+          std::getline(identity_file, str);
+          this->_api->email(str);
         }
     }
 

@@ -390,10 +390,21 @@ namespace plasma
       return _impl->identity;
     }
 
+    void
+    Client::identity(std::string const& str)
+    {
+      _impl->identity = str;
+    }
+
     std::string const&
     Client::email() const
     {
       return _impl->email;
+    }
+    void
+    Client::email(std::string const& str)
+    {
+      _impl->email = str;
     }
 
     // - Generic http POST and GET --------------------------------------------
