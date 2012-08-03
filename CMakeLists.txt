@@ -54,6 +54,9 @@ if (UNIX)
     )
     set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG -UNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
+
+    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
+    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
 endif()
 
 foreach(flag ${CUSTOM_CXX_FLAGS})

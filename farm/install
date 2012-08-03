@@ -48,6 +48,10 @@ def to_add(lib):
 
     patterns_exclude = {
         'startswith': [
+            "/usr/lib/libstdc++",
+        ],
+
+        'contains': [
             "/lib64/ld-linux-x86-64",
             "/lib/ld-linux-x86-64",
             "libICE",
@@ -58,7 +62,6 @@ def to_add(lib):
             "libffi",
             "libfontconfig",
             "libfreetype",
-            "libgcc",
             "libglib",
             "libgobject",
             "libgthread",
@@ -82,11 +85,6 @@ def to_add(lib):
             "libfuse.so.",
             "libfuse4x",
             "libutil.so",
-        ],
-
-        'contains': [
-            "libstdc.",
-            "libstdc++.",
             "libpthread.",
             "libc.",
             "libm.",
@@ -96,6 +94,12 @@ def to_add(lib):
     }
     patterns_include = {
         'startswith': [
+        ],
+        'contains': [
+            "libgcc_s",
+            "libstdc++",
+            "libpth.",
+            "libz.",
             "libboost",
             "libcrypto",
             "libQt",
@@ -111,10 +115,6 @@ def to_add(lib):
             "_gap.so",
             "libintl.",
             "libiconv.",
-        ],
-        'contains': [
-            "libpth.",
-            "libz.",
         ]
     }
     if any(lib.startswith(p) for p in patterns_exclude['startswith']) or \
@@ -163,12 +163,6 @@ if 'darwin' in sys.platform:
             real_dependency_path,
             start=os.path.dirname(binary)
         )
-        print(
-            "install_name_tool",
-            "-change", dependency,
-            os.path.join(from_, relpath),
-            binary
-        )
         cmd(
             "install_name_tool",
             "-change", dependency,
@@ -213,9 +207,8 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
     for dependency in get_binary_dependencies(binary_path):
         if '@executable_path' in dependency:
             continue
-        filename = os.path.basename(dependency)
         print('-'*indent + '> dep', dependency)
-        if not to_add(filename):
+        if not to_add(dependency):
             #print('-'*indent + '> IGNORE', dependency)
             continue
         childs.add(dependency)
