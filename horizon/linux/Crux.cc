@@ -44,7 +44,7 @@ namespace horizon
 #define error(_text_, _errno_, _identifiers_...)                        \
   do                                                                    \
     {                                                                   \
-      report(_text_);                                                   \
+      log(_text_);                                                      \
                                                                         \
       Janitor::Clear(_identifiers_);                                    \
                                                                         \
