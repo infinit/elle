@@ -15,7 +15,8 @@ class FarmBuild(Build):
     def __init__(self, infos, hash, tarballs):
         Build.__init__(self, infos)
         self._hash = hash
-        self._tarballs = tarballs
+        self._tarballs = list(t[0] for t in tarballs)
+        self._dates = list(t[1] for t in tarballs)
         self._environments = None
 
     @property
@@ -31,6 +32,18 @@ class FarmBuild(Build):
     @property
     def has_server(self):
         return any(farm.isServerTarball(t) for t in self._tarballs)
+
+    @property
+    def client_date(self):
+        for t, d in zip(self._tarballs, self._dates):
+            if farm.isClientTarball(t):
+                return d
+
+    @property
+    def server_date(self):
+        for t, d in zip(self._tarballs, self._dates):
+            if farm.isServerTarball(t):
+                return d
 
     @property
     def architectures(self):

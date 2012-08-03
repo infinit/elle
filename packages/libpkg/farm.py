@@ -72,9 +72,9 @@ def getLastTarballs(filter=None):
     tarballs = getTarballs(filter)
     if not tarballs:
         return []
-    hash = getTarballHash(tarballs[0])
+    hash = getTarballHash(tarballs[0][0])
     return [
-        tarball for tarball in tarballs if getTarballHash(tarball) == hash
+        tarball for tarball in tarballs if getTarballHash(tarball[0]) == hash
     ]
 
 def downloadTarball(tarball):
