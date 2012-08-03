@@ -117,6 +117,7 @@ namespace horizon
         operations.release = Crux::Release;
 
         operations.rename = Crux::Rename;
+        operations.link = Crux::link;
         operations.unlink = Crux::Unlink;
 
         // the following flag being activated prevents the path argument

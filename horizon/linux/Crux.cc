@@ -1966,6 +1966,14 @@ namespace horizon
       return (0);
     }
 
+    int
+    Crux::link(const char* target,
+               const char* source)
+    {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+      return -ENOSYS;
+    }
+
     /// This method removes an existing file.
     int                 Crux::Unlink(const char*                path)
     {

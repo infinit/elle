@@ -121,6 +121,8 @@ namespace horizon
       // objects
       static int        Rename(const char*,
                                const char*);
+      static int        link(const char* target,
+                             const char* source);
       static int        Unlink(const char*);
     };
 
