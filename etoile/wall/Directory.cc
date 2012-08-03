@@ -325,6 +325,9 @@ namespace etoile
       scope = actor->scope;
       reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
       {
+        path::Venue venue(scope->chemin.venue);
+        ELLE_LOG_TRACE("old venue: %s", venue);
+
         ELLE_LOG_TRACE("retrieve the context")
           if (scope->Use(context) == elle::Status::Error)
             escape("unable to retrieve the context");
@@ -345,14 +348,21 @@ namespace etoile
 
         // Create routes for both the _from_ and _to_ since these
         // routes are going to be used below several times.
-        {
-          ELLE_LOG_TRACE("build the route for the previous version of the entry")
-            if (routes.from.Create(scope->chemin.route, from) == elle::Status::Error)
+        ELLE_LOG_TRACE("build the route for the previous version of the entry")
+          {
+            if (routes.from.Create(scope->chemin.route, from) ==
+                elle::Status::Error)
               escape("unable to create the route");
-          ELLE_LOG_TRACE("build the route for the new version of the entry")
-          if (routes.to.Create(scope->chemin.route, to) == elle::Status::Error)
-            escape("unable to create the route");
-        }
+            ELLE_LOG_TRACE("route: %s", routes.from);
+          }
+
+        ELLE_LOG_TRACE("build the route for the new version of the entry")
+          {
+            if (routes.to.Create(scope->chemin.route, to) ==
+                elle::Status::Error)
+              escape("unable to create the route");
+            ELLE_LOG_TRACE("route: %s", routes.to);
+          }
 
         // Update the scopes should some reference the renamed entry.
         //
@@ -367,16 +377,11 @@ namespace etoile
         //
         // For this reason, the scopes must be updated.
         {
-          path::Venue           venue;
           struct
           {
             path::Chemin        from;
             path::Chemin        to;
           }                     chemins;
-
-          ELLE_LOG_TRACE("resolve the old route: %s", routes.from)
-            if (path::Path::Resolve(routes.from, venue) == elle::Status::Error)
-              escape("unable to resolve the route");
 
           if (chemins.from.Create(routes.from, venue) == elle::Status::Error)
             escape("unable to create the chemin");
