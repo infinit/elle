@@ -36,7 +36,7 @@ if(NOT(DEFINED PYTHON3_RESET))
     unset(PYTHON3_LIBRARY CACHE)
 endif()
 
-foreach(_CURRENT_VERSION 3.2 3.1 3.0)
+foreach(_CURRENT_VERSION 3.3 3.2 3.1 3.0)
 
     if(_CURRENT_VERSION GREATER 3.1)
         set(_32FLAGS "m" "u" "mu")
