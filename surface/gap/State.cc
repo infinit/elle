@@ -582,11 +582,17 @@ namespace surface
 
           if (boost::algorithm::starts_with(abspath, mount_point))
             {
+              std::string relpath;
+              if (abspath == mountpoint)
+                relpath = "/";
+              else
+                relpath = abspath.substr(mount_point.size() + 1);
+
               infos.reset(new FileInfos{
                   mount_point,
                   pair.first,
                   abspath,
-                  abspath.substr(mount_point.size() + 1),
+                  relpath,
                   {},
               });
               break;
