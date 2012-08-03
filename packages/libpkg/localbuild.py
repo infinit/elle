@@ -32,6 +32,9 @@ class LocalBuild(Build):
             'win64': constants.Architectures.AMD64,
         }
         self._environments = None
+        # XXX to be improved !
+        self.client_date = "now"
+        self.server_date = "now"
 
     @property
     def is_available(self):

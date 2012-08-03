@@ -55,7 +55,6 @@ def to_add(lib):
             "libX",
             "libaudio",
             "libbz2",
-            "libcrypto",
             "libffi",
             "libfontconfig",
             "libfreetype",
@@ -65,7 +64,6 @@ def to_add(lib):
             "libgthread",
             "libpcre",
             "librt",
-            "libssl",
             "libtinfo",
             "libuuid",
             "libxcb",
@@ -94,17 +92,20 @@ def to_add(lib):
             "libc.",
             "libm.",
             "libdl.",
+            "Cocoa",
         ]
     }
     patterns_include = {
         'startswith': [
             "libboost",
+            "libcrypto",
             "libQt",
             "libexpat",
             "libpng",
             "libqjson",
             "libncurses",
             "libreadline",
+            "libssl",
             "libpython3",
             "Python",
             "libgap",
@@ -134,7 +135,9 @@ if which("otool"):
         deps = deps.split("\n")[:-1]
         if not deps:
             return []
-        return (dep.strip().split(" ")[0] for dep in deps[1:])
+        return (
+            dep.strip().split(" ")[0] for dep in deps[1:]
+        )
 elif which("ldd"):
     def get_binary_dependencies(arg):
         deps = cmd('ldd', arg).decode("utf-8")
@@ -152,19 +155,27 @@ else:
 if 'darwin' in sys.platform:
     if not  which("install_name_tool"):
         raise Exception("You need install_name_tool !")
-    def patch_binary_for(binary, dependency):
+    def patch_binary_for(binary, dependency, from_="@loader_path", real_dependency_path=None):
+        if real_dependency_path is None:
+            real_dependency_path = dependency
         relpath = os.path.relpath(
-            dependency,
+            real_dependency_path,
             start=os.path.dirname(binary)
+        )
+        print(
+            "install_name_tool",
+            "-change", dependency,
+            os.path.join(from_, relpath),
+            binary
         )
         cmd(
             "install_name_tool",
             "-change", dependency,
-            os.path.join('@loader_path', relpath),
+            os.path.join(from_, relpath),
             binary
         )
 else:
-    def patch_binary_for(binary, dependency):
+    def patch_binary_for(*args, **kwargs):
         pass
 
 if 'linux' in sys.platform:
@@ -199,7 +210,8 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
     if not node['is_binary']:
         return
     for dependency in get_binary_dependencies(binary_path):
-        #print('-' * indent, dependency)
+        if '@executable_path' in dependency:
+            continue
         filename = os.path.basename(dependency)
         print('-'*indent + '> dep', dependency)
         if not to_add(filename):
@@ -245,7 +257,8 @@ for src, node in dependencies.items():
     for child in node['childs']:
         patch_binary_for(
             dst,
-            os.path.join(
+            child,
+            real_dependency_path=os.path.join(
                 DIR_INSTALL_CLIENT_LIB,
                 os.path.basename(child)
             )
@@ -261,8 +274,13 @@ if os.path.exists(infinit_app):
 
     shutil.copytree(infinit_app, dst_app, symlinks=True)
 
-    #os.makedirs(os.path.join(dst_app, "Contents/Resources/bin"))
-    #shutil.copytree(DIR_INSTALL_CLIENT_LIB, os.path.join(dst_app, "Contents/Resources/lib"))
+    phone_lib = os.path.join(
+        dst_app,
+        "Contents/Frameworks/Phone.framework/Versions/A/Phone",
+    )
+    rel_gap_lib = os.path.join(DIR_INSTALL_CLIENT, "Infinit.app/Contents/Resources/lib", "libgap.dylib")
+    gap_lib = os.path.join(DIR_BUILD, "surface/gap/libgap.dylib")
+    patch_binary_for(phone_lib, gap_lib, real_dependency_path=rel_gap_lib)
 
 
 print("Prepare the manifest")
