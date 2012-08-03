@@ -261,8 +261,8 @@ if os.path.exists(infinit_app):
 
     shutil.copytree(infinit_app, dst_app, symlinks=True)
 
-    os.makedirs(os.path.join(dst_app, "Contents/Resources/bin"))
-    shutil.copytree(DIR_INSTALL_CLIENT_LIB, os.path.join(dst_app, "Contents/Resources/lib"))
+    #os.makedirs(os.path.join(dst_app, "Contents/Resources/bin"))
+    #shutil.copytree(DIR_INSTALL_CLIENT_LIB, os.path.join(dst_app, "Contents/Resources/lib"))
 
 
 print("Prepare the manifest")

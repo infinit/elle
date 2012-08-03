@@ -37,6 +37,12 @@ class Packager(BasePackager):
                 os.path.join(pkgdir, 'Infinit.app'),
                 symlinks=True,
             )
+            for dir_ in ['lib']:
+                shutil.copytree(
+                    os.path.join(build_env.directory, dir_),
+                    os.path.join(pkgdir, 'Infinit.app/Contents/Resources', dir_),
+                )
+
             params = {
                 'architecture': {
                     constants.Architectures.AMD64: 'x86_64',
