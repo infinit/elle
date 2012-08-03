@@ -610,7 +610,7 @@ namespace surface
       std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
-      arguments << "--user" << this->_api->identity().c_str()
+      arguments << "--user" << this->_api->email().c_str()
                 << "--type" << "user"
                 << "--network" << this->network(infos->network_id).name.c_str()
                 << "--path" << ("/" + infos->relative_path).c_str()
