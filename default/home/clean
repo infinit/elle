@@ -16,8 +16,16 @@ run ()
     "$@"
 }
 
-echo -n "Cleanup networks in $ROOT/.config/infinit (y/n) ? "
-read CONFIRM
+
+case "$1" in
+    (-f)
+        CONFIRM=y
+        ;;
+    (*)
+        echo -n "Cleanup networks in $ROOT/.config/infinit (y/n) ? "
+        read CONFIRM
+        ;;
+esac
 
 case "$CONFIRM" in
     (y*|Y*)
