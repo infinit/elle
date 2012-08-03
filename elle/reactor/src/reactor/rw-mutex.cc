@@ -13,17 +13,25 @@ namespace reactor
 
   RWMutex::WriteMutex::WriteMutex(RWMutex& owner)
     : _owner(owner)
-    , _locked(false)
+    , _locked(0)
+    , _locked_recursive(0)
   {}
 
   bool
   RWMutex::WriteMutex::release()
   {
+    if (_locked_recursive)
+      {
+        ELLE_LOG_TRACE("%s: release one of the %s recursive writing lock",
+                       *this, this->_locked_recursive);
+        --this->_locked_recursive;
+        return false;
+      }
     ELLE_LOG_TRACE_SCOPE("%s: release writing lock", *this);
     assert(_locked);
     if (!_signal_one())
       {
-        _locked = false;
+        _locked = 0;
         int woken = _owner._signal();
         _owner._readers += woken;
         return woken > 0;
@@ -36,6 +44,13 @@ namespace reactor
   RWMutex::WriteMutex::_wait(Thread* thread)
   {
     ELLE_LOG_TRACE_SCOPE("%s: lock for writing by %s", *this, *thread);
+    if (_locked == thread)
+      {
+        ++_locked_recursive;
+        ELLE_LOG_TRACE_SCOPE("%s: already locked for writing by this"
+                             " thread %s times.", *this, _locked_recursive);
+        return false;
+      }
     const bool reading = _owner._readers > 0;
     const bool writing = _locked;
     if (reading || _locked)
@@ -44,12 +59,18 @@ namespace reactor
         ELLE_LOG_TRACE("%s: already locked for reading, waiting.", *this);
       else
         ELLE_LOG_TRACE("%s: already locked for writing, waiting.", *this);
-      return Waitable::_wait(thread);
+      // FIXME: we might be woken up to lock the mutex, but another
+      // thread locks it before we can actually procced. Hence the
+      // while. Not exactly sure this is exact and the best way to
+      // proceed, though.
+      while (_locked)
+        bool res = Waitable::_wait(thread);
+      _locked = thread;
     }
     else
     {
       ELLE_LOG_TRACE("%s: mutex is free, locking", *this);
-      _locked = true;
+      _locked = thread;
       return false;
     }
   }
@@ -69,8 +90,7 @@ namespace reactor
     ELLE_LOG_TRACE_SCOPE("%s: lock for reading by %s", *this, *thread);
     if (_write._locked)
       {
-        ELLE_LOG_TRACE_SCOPE("%s: already locked for writing, waiting",
-                             *this, *thread);
+        ELLE_LOG_TRACE_SCOPE("%s: already locked for writing, waiting", *this);
         return Waitable::_wait(thread);
       }
     else
@@ -91,10 +111,7 @@ namespace reactor
     --_readers;
     if (!_readers)
       if (_write._signal_one())
-      {
-        _write._locked = true;
         return true;
-      }
     return false;
   }
 
