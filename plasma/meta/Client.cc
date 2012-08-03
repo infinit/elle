@@ -246,7 +246,7 @@ namespace plasma
     {
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
-      return this->_get<UserResponse>("/user/" + id);
+      return this->_get<UserResponse>("/user/" + id + "/view");
     }
 
     UserResponse

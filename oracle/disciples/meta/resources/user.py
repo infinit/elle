@@ -140,7 +140,7 @@ class One(Page):
                 'public_key': "public key in base64",
             }
     """
-    __pattern__ = "/user/(.+)"
+    __pattern__ = "/user/(.+)/view"
 
     def GET(self, id_or_email):
         if '@' in id_or_email:
