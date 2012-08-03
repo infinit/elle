@@ -91,7 +91,7 @@ namespace hole
       std::vector<elle::network::Locus>
       Host::_authenticate(lune::Passport const& passport)
       {
-        ELLE_LOG_TRACE("Authenticate");
+        ELLE_LOG_TRACE_SCOPE("Authenticate");
 
         assert(this->_state == State::connected || this->_state == State::authenticating);
 
@@ -114,7 +114,7 @@ namespace hole
       Host::_push(nucleus::proton::Address const& address,
                   nucleus::Derivable& derivable)
       {
-        ELLE_LOG_TRACE_SCOPE("Push");
+        ELLE_LOG_TRACE_SCOPE("Push(%s)", address);
 
         if (this->_state != State::authenticated)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -274,13 +274,13 @@ namespace hole
       Host::_pull(nucleus::proton::Address const& address,
                   nucleus::proton::Version const& version)
       {
+        ELLE_LOG_TRACE_SCOPE("Pull(%s, %s)", address, version);
+
         using nucleus::proton::Block;
         using nucleus::proton::ImmutableBlock;
         using nucleus::proton::MutableBlock;
 
         Block* raw_block;
-
-        ELLE_LOG_TRACE("Pull");
 
         if (this->_state != State::authenticated)
           throw reactor::Exception(elle::concurrency::scheduler(),
