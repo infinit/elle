@@ -11,21 +11,19 @@
 
 #include <elle/print.hh>
 
+ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Directory");
+
 namespace etoile
 {
   namespace automaton
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
     ///
     /// this method creates a directory object within the given context.
     ///
     elle::Status        Directory::Create(
                           gear::Directory&                      context)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
       nucleus::proton::Address address;
 
       context.object = new nucleus::neutron::Object;
@@ -57,6 +55,7 @@ namespace etoile
     elle::Status        Directory::Load(
                           gear::Directory&                      context)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
@@ -83,6 +82,7 @@ namespace etoile
                           const path::Slice&                    name,
                           const nucleus::proton::Address& address)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %s)", __FUNCTION__, context, name, address);
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -144,6 +144,8 @@ namespace etoile
                           const path::Slice&                    name,
                           nucleus::neutron::Entry*& entry)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, name);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -187,6 +189,8 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Entry>& range)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %s, %s)", __FUNCTION__, context, index, size, range);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -224,6 +228,8 @@ namespace etoile
                           const path::Slice&                    from,
                           const path::Slice&                    to)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %s)", __FUNCTION__, context, from, to);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -277,6 +283,8 @@ namespace etoile
                           gear::Directory&                      context,
                           const path::Slice&                    name)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, name);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -329,6 +337,8 @@ namespace etoile
     elle::Status        Directory::Discard(
                           gear::Directory&                      context)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -342,6 +352,8 @@ namespace etoile
     elle::Status        Directory::Destroy(
                           gear::Directory&                      context)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -376,6 +388,8 @@ namespace etoile
     elle::Status        Directory::Store(
                           gear::Directory&                      context)
     {
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // close the contents.
       if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");
