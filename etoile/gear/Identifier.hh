@@ -59,6 +59,8 @@ namespace etoile
       elle::Natural64           value;
     };
 
+    std::ostream&
+    operator << (std::ostream& stream, Identifier const& id);
   }
 }
 
