@@ -90,8 +90,16 @@ namespace reactor
     ELLE_LOG_TRACE_SCOPE("%s: lock for reading by %s", *this, *thread);
     if (_write._locked)
       {
-        ELLE_LOG_TRACE_SCOPE("%s: already locked for writing, waiting", *this);
-        return Waitable::_wait(thread);
+        if (_write._locked == thread)
+          {
+            ++_write._locked_recursive;
+            ELLE_LOG_TRACE("%s: already locked for writing by this thread"
+                           " %s times", *this, _write._locked_recursive);
+            return false;
+          }
+        else
+          ELLE_LOG_TRACE("%s: already locked for writing, waiting", *this)
+            return Waitable::_wait(thread);
       }
     else
     {
@@ -105,6 +113,15 @@ namespace reactor
   bool
   RWMutex::release()
   {
+    if (_write._locked)
+      {
+        ELLE_LOG_TRACE("%s: release one of the %s recursive writing lock",
+                       *this, this->_write._locked_recursive);
+        assert(this->_write._locked_recursive > 0);
+        --this->_write._locked_recursive;
+        return false;
+      }
+
     ELLE_LOG_TRACE_SCOPE("%s: release one reading lock (readers now: %s)",
                          _readers - 1, *this);
     assert(_readers > 0);
