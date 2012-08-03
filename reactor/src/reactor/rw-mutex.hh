@@ -20,7 +20,8 @@ namespace reactor
           virtual bool _wait(Thread* thread);
         private:
           RWMutex& _owner;
-          bool _locked;
+          reactor::Thread* _locked;
+          int _locked_recursive;
           friend class RWMutex;
       };
       WriteMutex& write();
