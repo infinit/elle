@@ -14,7 +14,7 @@ message(STATUS "Boost python library: ${Boost_PYTHON3_LIBRARY}")
 
 include_directories("${PYTHON3_INCLUDE_DIR}")
 
-add_definitions(-fPIC)
+add_definitions(-fPIC -fno-strict-aliasing)
 file(GLOB gap_srcs ../*.cc)
 list(APPEND gap_srcs pygap.cc)
 add_library(_gap SHARED ${gap_srcs})

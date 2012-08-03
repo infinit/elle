@@ -3,6 +3,8 @@ file(GLOB gap_srcs
   State.cc
 )
 
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
+
 add_library(gap SHARED ${gap_srcs})
 
 target_link_libraries(gap

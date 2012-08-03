@@ -82,7 +82,6 @@ def to_add(lib):
             "libfuse.so.",
             "libfuse4x",
             "libutil.so",
-            "libintl."
         ],
 
         'contains': [
@@ -110,6 +109,8 @@ def to_add(lib):
             "Python",
             "libgap",
             "_gap.so",
+            "libintl.",
+            "libiconv.",
         ],
         'contains': [
             "libpth.",
