@@ -45,7 +45,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Lookup()");
+      ELLE_LOG_TRACE_SCOPE("Lookup()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -89,7 +89,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Consult()");
+      ELLE_LOG_TRACE_SCOPE("Consult()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -128,7 +128,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Grant()");
+      ELLE_LOG_TRACE_SCOPE("Grant()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -169,7 +169,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Revoke()");
+      ELLE_LOG_TRACE_SCOPE("Revoke()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

@@ -44,7 +44,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Create()");
+      ELLE_LOG_TRACE_SCOPE("Create()");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -91,7 +91,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Load()");
+      ELLE_LOG_TRACE_SCOPE("Load(%s)", chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -137,7 +137,7 @@ namespace etoile
     elle::Status        Directory::Lock(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Lock()");
+      ELLE_LOG_TRACE_SCOPE("Lock()");
 
       // XXX to implement.
 
@@ -150,7 +150,7 @@ namespace etoile
     elle::Status        Directory::Release(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Release()");
+      ELLE_LOG_TRACE_SCOPE("Release()");
 
       // XXX to implement.
 
@@ -171,7 +171,7 @@ namespace etoile
       gear::Object*     object;
       nucleus::proton::Address address;
 
-      ELLE_LOG_TRACE("Add()");
+      ELLE_LOG_TRACE_SCOPE("Add()");
 
       // select the actor.
       if (gear::Actor::Select(child, actor) == elle::Status::Error)
@@ -231,7 +231,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Lookup()");
+      ELLE_LOG_TRACE_SCOPE("Lookup()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -276,7 +276,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Consult()");
+      ELLE_LOG_TRACE_SCOPE("Consult()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -311,33 +311,30 @@ namespace etoile
                           const path::Slab&                     from,
                           const path::Slab&                     to)
     {
+      ELLE_LOG_TRACE_SCOPE("Rename(%s, %s, %s)", identifier, from, to);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Rename()");
+      ELLE_LOG_TRACE("select the actor")
+        if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
+          escape("unable to select the actor");
 
-      // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
-
-      // retrieve the scope.
+      ELLE_LOG_TRACE("lock the actor's scope for writing.");
       scope = actor->scope;
-
-      // declare a critical section.
       reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
       {
-        // retrieve the context.
-        if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+        ELLE_LOG_TRACE("retrieve the context")
+          if (scope->Use(context) == elle::Status::Error)
+            escape("unable to retrieve the context");
 
-        // apply the rename automaton on the context.
-        if (automaton::Directory::Rename(*context,
-                                         from,
-                                         to) == elle::Status::Error)
-          escape("unable to rename the directory entry");
+        ELLE_LOG_TRACE("apply the rename automaton on the context")
+          if (automaton::Directory::Rename(*context,
+                                           from,
+                                           to) == elle::Status::Error)
+            escape("unable to rename the directory entry");
 
-        // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
 
         struct
@@ -346,36 +343,29 @@ namespace etoile
           path::Route           to;
         }                       routes;
 
-        //
-        // create routes for both the _from_ and _to_ since these
+        // Create routes for both the _from_ and _to_ since these
         // routes are going to be used below several times.
-        //
         {
-          // build the route associated with the previous version of
-          // the renamed entry.
-          if (routes.from.Create(scope->chemin.route, from) == elle::Status::Error)
-            escape("unable to create the route");
-
-          // build the route associated with the new version of
-          // the renamed entry.
+          ELLE_LOG_TRACE("build the route for the previous version of the entry")
+            if (routes.from.Create(scope->chemin.route, from) == elle::Status::Error)
+              escape("unable to create the route");
+          ELLE_LOG_TRACE("build the route for the new version of the entry")
           if (routes.to.Create(scope->chemin.route, to) == elle::Status::Error)
             escape("unable to create the route");
         }
 
+        // Update the scopes should some reference the renamed entry.
         //
-        // update the scopes should some reference the renamed entry.
+        // Indeed, let us imagine the following scenario. a file
+        // /tmp/F1 is created. this file is opened by two actors A and
+        // B. then, actor A renames the file into /tmp/F2.
         //
-        // indeed, let us imagine the following scenario. a file
-        // /tmp/F1 is created. this file is opened by two actors
-        // A and B. then, actor A renames the file into /tmp/F2.
-        //
-        // later one, a actor, say C, re-creates and releases /tmp/F1.
+        // Later one, a actor, say C, re-creates and releases /tmp/F1.
         // then C loads /tmp/F1. since the original scope for /tmp/F1
         // has not been updated and since actors remain, i.e A and B,
         // the original scope is retrieved instead of the new one.
         //
-        // for this reason, the scopes must be updated.
-        //
+        // For this reason, the scopes must be updated.
         {
           path::Venue           venue;
           struct
@@ -384,11 +374,10 @@ namespace etoile
             path::Chemin        to;
           }                     chemins;
 
-          // resolve the old route _routes.from_ to a venue.
-          if (path::Path::Resolve(routes.from, venue) == elle::Status::Error)
-            escape("unable to resolve the route");
+          ELLE_LOG_TRACE("resolve the old route: %s", routes.from)
+            if (path::Path::Resolve(routes.from, venue) == elle::Status::Error)
+              escape("unable to resolve the route");
 
-          // create a chemin based on both the old route and venue.
           if (chemins.from.Create(routes.from, venue) == elle::Status::Error)
             escape("unable to create the chemin");
 
@@ -397,12 +386,13 @@ namespace etoile
           if (chemins.to.Create(routes.to, venue) == elle::Status::Error)
             escape("unable to create the chemin");
 
-          // update the scope so as to update all the scopes
-          // whose chemins are now inconsistent---i.e referencing
-          // the old chemin _chemin.from_.
-          if (gear::Scope::Update(chemins.from,
-                                  chemins.to) == elle::Status::Error)
-            escape("unable to update the scopes");
+          // Update the scope so as to update all the scopes whose
+          // chemins are now inconsistent---i.e referencing the old
+          // chemin _chemin.from_.
+          ELLE_LOG_TRACE("update the scope")
+            if (gear::Scope::Update(chemins.from,
+                                    chemins.to) == elle::Status::Error)
+              escape("unable to update the scopes");
         }
 
         //
@@ -434,7 +424,7 @@ namespace etoile
       gear::Directory*  context;
       path::Route       route;
 
-      ELLE_LOG_TRACE("Remove()");
+      ELLE_LOG_TRACE_SCOPE("Remove()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -486,7 +476,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Discard()");
+      ELLE_LOG_TRACE_SCOPE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -577,7 +567,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  context;
 
-      ELLE_LOG_TRACE("Store()");
+      ELLE_LOG_TRACE_SCOPE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -667,7 +657,7 @@ namespace etoile
       gear::Scope*              scope;
       gear::Directory*          context;
 
-      ELLE_LOG_TRACE("Destroy()");
+      ELLE_LOG_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -754,7 +744,7 @@ namespace etoile
     elle::Status        Directory::Purge(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Purge()");
+      ELLE_LOG_TRACE_SCOPE("Purge()");
 
       // XXX to implement.
 

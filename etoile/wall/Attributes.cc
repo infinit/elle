@@ -36,7 +36,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Set()");
+      ELLE_LOG_TRACE_SCOPE("Set()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -82,7 +82,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Get()");
+      ELLE_LOG_TRACE_SCOPE("Get()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -124,7 +124,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Fetch()");
+      ELLE_LOG_TRACE_SCOPE("Fetch()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -160,7 +160,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Omit()");
+      ELLE_LOG_TRACE_SCOPE("Omit()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

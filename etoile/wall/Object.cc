@@ -44,7 +44,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Load()");
+      ELLE_LOG_TRACE_SCOPE("Load()");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -159,7 +159,7 @@ namespace etoile
     elle::Status        Object::Lock(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Lock()");
+      ELLE_LOG_TRACE_SCOPE("Lock()");
 
       // XXX to implement.
 
@@ -172,7 +172,7 @@ namespace etoile
     elle::Status        Object::Release(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Release()");
+      ELLE_LOG_TRACE_SCOPE("Release()");
 
       // XXX to implement.
 
@@ -191,7 +191,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Information()");
+      ELLE_LOG_TRACE_SCOPE("Information()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -227,7 +227,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Discard()");
+      ELLE_LOG_TRACE_SCOPE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -318,7 +318,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Store()");
+      ELLE_LOG_TRACE_SCOPE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -412,7 +412,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Destroy()");
+      ELLE_LOG_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -503,7 +503,7 @@ namespace etoile
     elle::Status        Object::Purge(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Purge()");
+      ELLE_LOG_TRACE_SCOPE("Purge()");
 
       // XXX to implement.
 
