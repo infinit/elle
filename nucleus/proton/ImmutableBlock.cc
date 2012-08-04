@@ -53,11 +53,10 @@ namespace nucleus
     elle::Status        ImmutableBlock::Load(const Network&     network,
                                              const Address&     address)
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Load(%s)", unique);
 
@@ -80,11 +79,10 @@ namespace nucleus
     elle::Status        ImmutableBlock::Store(const Network&    network,
                                               const Address&    address) const
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Store(%s)", unique);
 
@@ -107,11 +105,10 @@ namespace nucleus
     elle::Status        ImmutableBlock::Erase(const Network&    network,
                                               const Address&    address)
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Erase(%s)", unique);
 
@@ -142,11 +139,10 @@ namespace nucleus
     elle::Status        ImmutableBlock::Exist(const Network&    network,
                                               const Address&    address) const
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Exist(%s)", unique);
 

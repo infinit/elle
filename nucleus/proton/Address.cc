@@ -115,8 +115,7 @@ namespace nucleus
 // ---------- methosd ---------------------------------------------------------
 //
 
-/* XXX[use the Hexadecimal methods for converting the Digest into a string]
-    elle::String
+    elle::String const
     Address::unique() const
     {
       assert(this->digest != nullptr);
@@ -126,9 +125,36 @@ namespace nucleus
       //
       // therefore, this method simply returns a string representation of
       // the digest.
-      return (*this->digest);
+      /* XXX[this does not work because Save() call the serialization which
+             prepends a version number etc. leading to a non-uniform hexadecimal
+             representation]
+         elle::io::Unique unique;
+         this->digest->Save(unique);
+      */
+      /* XXX[likewise for this one which consists in serializing in hexadecimal]
+         std::stringstream ss;
+         elle::serialize::HexadecimalArchive<elle::serialize::ArchiveMode::Output>
+           archive(ss);
+         archive << *this->digest;
+      */
+      elle::Natural32 i;
+      elle::String alphabet("0123456789abcdef");
+      elle::String string;
+
+      for (i = 0; i < this->digest->region.size; i++)
+        {
+          elle::Character hexadecimal[2];
+
+          hexadecimal[0] =
+            alphabet[(this->digest->region.contents[i] >> 4) & 0xf];
+          hexadecimal[1] =
+            alphabet[this->digest->region.contents[i] & 0xf];
+
+          string.append(hexadecimal, 2);
+        }
+
+      return (string);
     }
-*/
 
 //
 // ---------- object ----------------------------------------------------------

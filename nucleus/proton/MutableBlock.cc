@@ -95,12 +95,10 @@ namespace nucleus
                                            const Address&       address,
                                            const Version&       version)
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Load(%s)", unique);
 
@@ -189,12 +187,10 @@ namespace nucleus
                                             const Address&      address)
       const
     {
-      elle::io::Path        file;
-      elle::String      unique;
+      elle::io::Path file;
+      elle::String unique;
 
-
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Store(%s)", unique);
 
@@ -351,12 +347,10 @@ namespace nucleus
     elle::Status        MutableBlock::Erase(const Network&      network,
                                             const Address&      address)
     {
-      elle::io::Unique      unique;
-      elle::io::Path        path;
+      elle::io::Unique unique;
+      elle::io::Path path;
 
-      // turn the block's address into a hexadecimal string.
-      if (address.digest->Save(unique) == elle::Status::Error)
-        escape("unable to convert the address in its hexadecimal form");
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Erase(%s)", unique);
 
@@ -469,14 +463,12 @@ namespace nucleus
                                             const Version&      version)
       const
     {
-      elle::io::Path                path;
-      elle::String              unique;
+      elle::io::Path path;
+      elle::String unique;
+
+      unique = address.unique();
 
       ELLE_LOG_TRACE("Exist(%s)", unique);
-
-      // first, turn the block's address into a hexadecimal string.
-      if (address.digest->Save(unique) == elle::Status::Error)
-        flee("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==

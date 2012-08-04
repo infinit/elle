@@ -138,26 +138,19 @@ namespace satellite
       if (network.Create(name) == elle::Status::Error)
         escape("unable to create the network object");
 
-      network.Dump();
-
       // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::neutron::GenreDirectory,
                            identity.pair.K) == elle::Status::Error)
         escape("unable to create the object directory");
-
-      directory.Dump();
 
       // seal the directory.
       if (directory.Seal(identity.pair.k,
                          nucleus::neutron::Access::Null) == elle::Status::Error)
         escape("unable to seal the object");
 
-      directory.Dump();
-
       // compute the directory's address.
       if (directory.Bind(address) == elle::Status::Error)
         escape("unable to bind the object to an address");
-      address.Dump();
     }
 
     //
