@@ -246,7 +246,7 @@ namespace plasma
     {
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
-      return this->_get<UserResponse>("/user/" + id);
+      return this->_get<UserResponse>("/user/" + id + "/view");
     }
 
     UserResponse
@@ -390,10 +390,21 @@ namespace plasma
       return _impl->identity;
     }
 
+    void
+    Client::identity(std::string const& str)
+    {
+      _impl->identity = str;
+    }
+
     std::string const&
     Client::email() const
     {
       return _impl->email;
+    }
+    void
+    Client::email(std::string const& str)
+    {
+      _impl->email = str;
     }
 
     // - Generic http POST and GET --------------------------------------------

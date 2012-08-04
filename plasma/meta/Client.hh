@@ -212,7 +212,9 @@ namespace plasma
       void token(std::string const& tok);
       std::string const& token() const;
       std::string const& identity() const;
+      void identity(std::string const& str);
       std::string const& email() const;
+      void email(std::string const& str);
 
     private:
       template<typename T>

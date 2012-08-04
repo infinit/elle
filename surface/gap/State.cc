@@ -73,9 +73,13 @@ namespace surface
 
       if (identity_file.good())
         {
-          std::string token;
-          std::getline(identity_file, token);
-          this->_api->token(token);
+          std::string str;
+          std::getline(identity_file, str);
+          this->_api->token(str);
+          std::getline(identity_file, str);
+          this->_api->identity(str);
+          std::getline(identity_file, str);
+          this->_api->email(str);
         }
     }
 
@@ -582,11 +586,17 @@ namespace surface
 
           if (boost::algorithm::starts_with(abspath, mount_point))
             {
+              std::string relpath;
+              if (abspath == mount_point)
+                relpath = "";
+              else
+                relpath = abspath.substr(mount_point.size() + 1);
+
               infos.reset(new FileInfos{
                   mount_point,
                   pair.first,
                   abspath,
-                  abspath.substr(mount_point.size() + 1),
+                  relpath,
                   {},
               });
               break;

@@ -3,7 +3,7 @@
 
 
 """
-Infinit launcher for linux.
+Infinit launcher for unices.
 """
 
 import argparse
@@ -20,7 +20,19 @@ INFINIT_DEFAULT_HOME = os.path.join(
 
 INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
 
-MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
+if 'darwin' in sys.platform.lower():
+    INFINIT_PLATFORM = 'macosx'
+elif 'linux' in sys.platform.lower():
+    INFINIT_PLATFORM = 'linux'
+else:
+    raise Exception("Unsupported platform")
+
+if sys.maxsize > 2**32:
+    INFINIT_PLATFORM += '64'
+else:
+    INFINIT_PLATFORM += '32'
+
+MANIFEST_URI = "http://download.infinit.im/%s/manifest.xml" % INFINIT_PLATFORM
 
 SHELL_INTRO = """
 Welcome to the infinit shell (type help for a list of commands).
@@ -256,7 +268,7 @@ def update_binaries():
 
     # Update binaries.
     for binary in binaries:
-        url = "http://download.infinit.im/linux64/%s" % binary['path']
+        url = "http://download.infinit.im/%s/%s" % (INFINIT_PLATFORM, binary['path'])
         dst_path = os.path.join(INFINIT_HOME, binary['path'])
 
         # Check if the binary is up to date.
@@ -270,6 +282,10 @@ def update_binaries():
                     data = dst.read(4096)
             if md5.hexdigest() == binary['md5sum']:
                 continue
+        try:
+            os.makedirs(os.path.dirname(dst_path))
+        except:
+            pass
 
         # Otherwise we download it.
         with open(dst_path, 'wb') as dst:
