@@ -34,9 +34,6 @@ namespace hole
           dead,
         };
 
-        // Constants
-        static const elle::Natural32            Timeout;
-
       /*-------------.
       | Construction |
       `-------------*/

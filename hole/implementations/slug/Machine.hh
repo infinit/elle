@@ -97,8 +97,6 @@ namespace hole
         _get_latest(nucleus::proton::Address const&);
         std::unique_ptr<nucleus::proton::Block>
         _get_specific(nucleus::proton::Address const&, nucleus::proton::Version const&);
-        void
-        _alone();
 
         /*---------.
         | Dumpable |

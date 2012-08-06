@@ -43,9 +43,6 @@ namespace hole
   {
     namespace slug
     {
-      /// XXX 3 seconds
-      const reactor::Duration Machine::Timeout = boost::posix_time::seconds(3);
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -67,10 +64,13 @@ namespace hole
       {
         std::unique_ptr<Host> host(new Host(*this, std::move(socket), opener));
         auto loci = host->authenticate(Hole::Passport);
-        this->_state = State::attached;
-        if (Hole::Ready() == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to set the hole online");
+        if (this->_state == State::detached)
+          {
+            this->_state = State::attached;
+            if (Hole::Ready() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to set the hole online");
+          }
         for (auto locus: loci)
           if (_hosts.find(locus) == _hosts.end())
             _connect(locus);
@@ -105,12 +105,20 @@ namespace hole
               }
         }
 
-        // Set up the timeout after which the machine will be
-        // considered alone in the network, in other words, the very
-        // first node.
-        elle::concurrency::scheduler().CallLater
-          (boost::bind(&Machine::_alone, this),
-           "Machine::Alone", Machine::Timeout);
+        // If the machine has been neither connected nor authenticated
+        // to existing nodes...
+        if (this->_state == State::detached)
+          {
+            // Then, suppose that the current machine as the only one
+            // in the network.  Thus, it can be implicitly considered
+            // as authenticated in a network composed of itself alone.
+            this->_state = State::attached;
+
+            // Set the hole as ready to receive requests.
+            if (Hole::Ready() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to set the hole online");
+          }
 
         // Finally, listen for incoming connections.
         {
@@ -956,27 +964,6 @@ namespace hole
                                                      "request operations on the storage layer",
                                                      this->_state));
             }
-          }
-      }
-
-      void
-      Machine::_alone()
-      {
-        ELLE_TRACE("alone");
-
-        // If the machine has been neither connected nor authenticated
-        // to existing nodes...
-        if (this->_state == State::detached)
-          {
-            // Then, suppose that the current machine as the only one
-            // in the network.  Thus, it can be implicitly considered
-            // as authenticated in a network composed of itself alone.
-            this->_state = State::attached;
-
-            // Set the hole as ready to receive requests.
-            if (Hole::Ready() == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to set the hole online");
           }
       }
 

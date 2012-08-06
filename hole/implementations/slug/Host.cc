@@ -26,10 +26,6 @@ namespace hole
   {
     namespace slug
     {
-      /// XXX 2 sec
-      const elle::Natural32             Host::Timeout = 1000;
-
-
       /*-------------.
       | Construction |
       `-------------*/
