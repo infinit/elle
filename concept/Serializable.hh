@@ -141,7 +141,7 @@ namespace elle
   /**/
 
 # define __ECS_LOG_ACTION(action, ptr)                                        \
-    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
+    ELLE_LOG_COMPONENT("elle.concept");                                 \
     ELLE_LOG_TRACE_SCOPE((#action " %p using type %s"),                       \
                          ptr, ELLE_PRETTY_OBJECT_TYPE(ptr))                   \
 

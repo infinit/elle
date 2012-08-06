@@ -11,7 +11,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Network.UDPSocket");
+ELLE_LOG_COMPONENT("Reactor.Network.UDPSocket");
 
 namespace reactor
 {

@@ -7,7 +7,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Network.UDPServerSocket");
+ELLE_LOG_COMPONENT("Reactor.Network.UDPServerSocket");
 
 namespace reactor
 {

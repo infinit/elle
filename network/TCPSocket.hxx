@@ -43,7 +43,7 @@ namespace elle
     void
     TCPSocket::send(const I inputs, infinit::protocol::Stream& channel)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+      ELLE_LOG_COMPONENT("Infinit.Network");
       ELLE_LOG_TRACE_SCOPE("%s: send packet %s", *this, inputs.tag);
 
       Data body;
@@ -68,7 +68,7 @@ namespace elle
     Status
     TCPSocket::receive(infinit::protocol::Stream& channel, O outputs)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+      ELLE_LOG_COMPONENT("Infinit.Network");
       ELLE_LOG_TRACE_SCOPE("%s: wait for answer.", *this);
 
       infinit::protocol::Packet packet(channel.read());
@@ -130,7 +130,7 @@ namespace elle
     Status              TCPSocket::Call(const I                 inputs,
                                         O                       outputs)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+      ELLE_LOG_COMPONENT("Infinit.Network");
 
       infinit::protocol::Channel channel(*_channels);
 

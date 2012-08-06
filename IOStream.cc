@@ -4,7 +4,7 @@
 #include <elle/log.hh>
 #include <elle/IOStream.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Elle.IOStream");
+ELLE_LOG_COMPONENT("Elle.IOStream");
 
 namespace elle
 {

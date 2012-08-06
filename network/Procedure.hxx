@@ -72,7 +72,7 @@ namespace elle
         template<typename T1, typename ...T>
         Status Load(T1& v1, T&... values)
         {
-          ELLE_LOG_TRACE_COMPONENT("elle.network.Procedure");
+          ELLE_LOG_COMPONENT("elle.network.Procedure");
           ELLE_LOG_TRACE("Skeleton extract %p", &v1)
           try
             {

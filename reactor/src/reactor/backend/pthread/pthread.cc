@@ -6,7 +6,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Backend.Threads");
+ELLE_LOG_COMPONENT("Reactor.Backend.Threads");
 
 namespace reactor
 {

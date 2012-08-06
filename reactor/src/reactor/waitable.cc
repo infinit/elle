@@ -5,7 +5,7 @@
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
+ELLE_LOG_COMPONENT("Reactor.Thread");
 
 namespace reactor
 {

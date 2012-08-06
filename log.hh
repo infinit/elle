@@ -16,9 +16,9 @@ namespace elle
 
     extern elle::log::Logger default_logger;
 
-# define ELLE_LOG_TRACE_COMPONENT(component)                                  \
-    static ::elle::log::detail::TraceComponent                                \
-        __trace_component__(component)                                        \
+# define ELLE_LOG_COMPONENT(component)                                  \
+    static ::elle::log::detail::TraceComponent                          \
+    __trace_component__(component)                                      \
 
 # define ETC_LOG_FUNCTION __PRETTY_FUNCTION__
 
