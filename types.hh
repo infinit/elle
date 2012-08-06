@@ -47,6 +47,8 @@ namespace elle {
     enum class Null { Nil };
     extern Null const none;
 
+    std::ostream& operator <<(std::ostream& out, elle::Large const& value);
+    std::ostream& operator <<(std::ostream& out, elle::Null);
 
     ///
     /// this enumeration represents a return status.
@@ -95,8 +97,5 @@ namespace elle {
           return s == Status::True;
       }
 }
-
-std::ostream& operator <<(std::ostream& out, elle::Large const& value);
-std::ostream& operator <<(std::ostream& out, elle::Null);
 
 #endif
