@@ -71,11 +71,12 @@ namespace elle
 
       size_t old_size = this->_size;
       this->Size(this->_size + size);
-      std::uninitialized_copy(
-        static_cast<elle::Byte const*>(data),
-        static_cast<elle::Byte const*>(data) + size,
-        this->_contents + old_size
-                              );
+      // std::cerr << "COPY: " << (void*)data << " (" << size << ") to " << (void*)(this->_contents + old_size) << std::endl;
+      memmove(this->_contents + old_size, data, size);
+      // std::uninitialized_copy(
+      //   static_cast<elle::Byte const*>(data),
+      //   static_cast<elle::Byte const*>(data) + size,
+      //   this->_contents + old_size
     }
 
     void Buffer::Size(size_t size)
