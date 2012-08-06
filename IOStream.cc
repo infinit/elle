@@ -93,10 +93,10 @@ namespace elle
   PlainStreamBuffer::read_buffer()
   {
     static const int max_size = _bufsize;
-    ELLE_LOG_TRACE("read at most %s bytes", max_size)
+    ELLE_TRACE("read at most %s bytes", max_size)
       {
         ssize_t size = read(_ibuf, max_size);
-        ELLE_LOG_TRACE("got %s bytes", size);
+        ELLE_TRACE("got %s bytes", size);
         return Buffer(_ibuf, size);
       }
   }
@@ -110,7 +110,7 @@ namespace elle
   void
   PlainStreamBuffer::flush(unsigned int size)
   {
-    ELLE_LOG_TRACE("write %s bytes", size)
+    ELLE_TRACE("write %s bytes", size)
       write(_obuf, size);
   }
 }

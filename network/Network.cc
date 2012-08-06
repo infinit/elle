@@ -33,7 +33,7 @@ namespace elle
     Status
     Network::Register(Tag i, const Function& f)
     {
-      ELLE_LOG_TRACE("register procedure for tag %s.", i);
+      ELLE_TRACE("register procedure for tag %s.", i);
       assert(f);
       std::pair<Network::Iterator, Boolean>     result;
 

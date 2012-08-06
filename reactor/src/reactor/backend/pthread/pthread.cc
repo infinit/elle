@@ -64,7 +64,7 @@ namespace reactor
         , _mutex()
         , _caller(0)
       {
-        ELLE_LOG_TRACE("%s: spawn", this->_name);
+        ELLE_TRACE("%s: spawn", this->_name);
         boost::unique_lock<boost::mutex> lock(_manager._mutex);
         _thread = boost::thread(boost::bind(&Thread::_run, this));
         _manager._cond.wait(lock);
@@ -80,12 +80,12 @@ namespace reactor
         , _mutex()
         , _caller(0)
       {
-        ELLE_LOG_TRACE("%s: spawn", this->_name);
+        ELLE_TRACE("%s: spawn", this->_name);
       }
 
       Thread::~Thread()
       {
-        ELLE_LOG_TRACE("%s: die", this->_name);
+        ELLE_TRACE("%s: die", this->_name);
         assert(_status == status::done || this == &_manager._self);
       }
 
@@ -125,7 +125,7 @@ namespace reactor
         _caller = current;
         _manager._current = this;
         boost::unique_lock<boost::mutex> lock(current->_mutex);
-        ELLE_LOG_TRACE("%s: step from %s", this->_name, _caller->_name);
+        ELLE_TRACE("%s: step from %s", this->_name, _caller->_name);
         {
           boost::unique_lock<boost::mutex> lock(_mutex);
           _cond.notify_one();
@@ -148,7 +148,7 @@ namespace reactor
             boost::unique_lock<boost::mutex> lock(_manager._mutex);
             _manager._cond.notify_one();
           }
-          ELLE_LOG_TRACE("%s: ready to go", this->_name);
+          ELLE_TRACE("%s: ready to go", this->_name);
           _cond.wait(lock);
         }
         _status = status::running;
@@ -172,7 +172,7 @@ namespace reactor
         Thread* caller = _caller;
         _caller = 0;
         _status = status::done;
-        ELLE_LOG_TRACE("%s: done", this->_name);
+        ELLE_TRACE("%s: done", this->_name);
         _manager._current = caller;
         {
           boost::unique_lock<boost::mutex> lock(caller->_mutex);
@@ -188,7 +188,7 @@ namespace reactor
         boost::unique_lock<boost::mutex> lock(_mutex);
         _status = status::waiting;
         _manager._current = _caller;
-        ELLE_LOG_TRACE("%s: yield back to %s",
+        ELLE_TRACE("%s: yield back to %s",
                        this->_name, _manager._current->_name);
         _caller = 0;
         {

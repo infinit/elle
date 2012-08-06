@@ -22,12 +22,12 @@ namespace reactor
   {
     if (_locked_recursive)
       {
-        ELLE_LOG_TRACE("%s: release one of the %s recursive writing lock",
+        ELLE_TRACE("%s: release one of the %s recursive writing lock",
                        *this, this->_locked_recursive);
         --this->_locked_recursive;
         return false;
       }
-    ELLE_LOG_TRACE_SCOPE("%s: release writing lock", *this);
+    ELLE_TRACE_SCOPE("%s: release writing lock", *this);
     assert(_locked);
     if (!_signal_one())
       {
@@ -43,11 +43,11 @@ namespace reactor
   bool
   RWMutex::WriteMutex::_wait(Thread* thread)
   {
-    ELLE_LOG_TRACE_SCOPE("%s: lock for writing by %s", *this, *thread);
+    ELLE_TRACE_SCOPE("%s: lock for writing by %s", *this, *thread);
     if (_locked == thread)
       {
         ++_locked_recursive;
-        ELLE_LOG_TRACE_SCOPE("%s: already locked for writing by this"
+        ELLE_TRACE_SCOPE("%s: already locked for writing by this"
                              " thread %s times.", *this, _locked_recursive);
         return false;
       }
@@ -56,9 +56,9 @@ namespace reactor
     if (reading || writing)
     {
       if (reading)
-        ELLE_LOG_TRACE("%s: already locked for reading, waiting.", *this);
+        ELLE_TRACE("%s: already locked for reading, waiting.", *this);
       else
-        ELLE_LOG_TRACE("%s: already locked for writing, waiting.", *this);
+        ELLE_TRACE("%s: already locked for writing, waiting.", *this);
       // FIXME: we might be woken up to lock the mutex, but another
       // thread locks it before we can actually procced. Hence the
       // while. Not exactly sure this is exact and the best way to
@@ -72,7 +72,7 @@ namespace reactor
     }
     else
     {
-      ELLE_LOG_TRACE("%s: mutex is free, locking", *this);
+      ELLE_TRACE("%s: mutex is free, locking", *this);
       _locked = thread;
       return false;
     }
@@ -90,24 +90,24 @@ namespace reactor
   bool
   RWMutex::_wait(Thread* thread)
   {
-    ELLE_LOG_TRACE_SCOPE("%s: lock for reading by %s", *this, *thread);
+    ELLE_TRACE_SCOPE("%s: lock for reading by %s", *this, *thread);
     if (_write._locked)
       {
         if (_write._locked == thread)
           {
             ++_write._locked_recursive;
-            ELLE_LOG_TRACE("%s: already locked for writing by this thread"
+            ELLE_TRACE("%s: already locked for writing by this thread"
                            " %s times", *this, _write._locked_recursive);
             return false;
           }
         else
-          ELLE_LOG_TRACE("%s: already locked for writing, waiting", *this)
+          ELLE_TRACE("%s: already locked for writing, waiting", *this)
             return Waitable::_wait(thread);
       }
     else
     {
       ++_readers;
-      ELLE_LOG_TRACE("%s: mutex is free, locking (readers now: %s)",
+      ELLE_TRACE("%s: mutex is free, locking (readers now: %s)",
                      *this, _readers);
       return false;
     }
@@ -118,14 +118,14 @@ namespace reactor
   {
     if (_write._locked)
       {
-        ELLE_LOG_TRACE("%s: release one of the %s recursive writing lock",
+        ELLE_TRACE("%s: release one of the %s recursive writing lock",
                        *this, this->_write._locked_recursive);
         assert(this->_write._locked_recursive > 0);
         --this->_write._locked_recursive;
         return false;
       }
 
-    ELLE_LOG_TRACE_SCOPE("%s: release one reading lock (readers now: %s)",
+    ELLE_TRACE_SCOPE("%s: release one reading lock (readers now: %s)",
                          _readers - 1, *this);
     assert(_readers > 0);
     --_readers;

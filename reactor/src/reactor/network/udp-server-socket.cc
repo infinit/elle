@@ -51,16 +51,16 @@ namespace reactor
     Size
     UDPServerSocket::read_some(Buffer buffer, DurationOpt timeout)
     {
-      ELLE_LOG_TRACE("%s: read at most %s bytes", *this, buffer.size());
+      ELLE_TRACE("%s: read at most %s bytes", *this, buffer.size());
       if (_read_buffer_size == 0)
       {
-        ELLE_LOG_TRACE("%s: wait for data from server.", *this);
+        ELLE_TRACE("%s: wait for data from server.", *this);
         if (!scheduler().current()->wait(_read_ready, timeout))
           throw TimeOut(scheduler());
       }
       assert(_read_buffer_size > 0);
       Size size = std::min(buffer.size(), _read_buffer_size);
-      ELLE_LOG_TRACE("%s: read %s bytes", *this, size);
+      ELLE_TRACE("%s: read %s bytes", *this, size);
       memmove(buffer.data(), _read_buffer, size);
       if (size != _read_buffer_size)
         memmove(_read_buffer, _read_buffer + size, _read_buffer_size - size);

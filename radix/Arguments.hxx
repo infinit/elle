@@ -2452,7 +2452,7 @@ namespace elle
               typedef typename TypeAt<sizeof...(T) - N, T...>::type ElementType;
 
               ELLE_LOG_COMPONENT("Infinit.Serialize");
-              ELLE_LOG_TRACE("%s Argument #%u: %p",
+              ELLE_TRACE("%s Argument #%u: %p",
                              Archive::mode == elle::serialize::ArchiveMode::Input ? "Loading" : "Saving",
                              sizeof...(T) - N,
                              &value)

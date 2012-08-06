@@ -36,7 +36,7 @@ std::string Parser<T>::Error::_getString(StreamType& in)
 template<typename T>
 typename Parser<T>::ObjectPtr Parser<T>::Parse(StreamType& input)
 {
-  ELLE_LOG_TRACE_SCOPE("Parsing json from stream");
+  ELLE_TRACE_SCOPE("Parsing json from stream");
   ObjectPtr res;
   if (!_ReadJSONValue(input, res))
     throw std::runtime_error("Couldn't read any JSON value");
