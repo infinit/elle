@@ -22,7 +22,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     static OOPhone *singleton;
     @synchronized(self){
         if (!singleton){
-            // Le singleton n'a pas encore été instancié
+            // Singleton has not been instancied
             singleton = [[OOPhone alloc] init];
         }
         return singleton;

@@ -7,12 +7,13 @@
 //
 
 #import "AppDelegate.h"
-//#import "OOInjectorHelper.h"
+#import "OOInjectorHelper.h"
 #import "OOSetupWindowController.h"
 #import "OOSetupWindowDelegate.h"
 #import "OOPreferencesWindowController.h"
 #import <Phone/OOPhone.h>
 #import <FinderPanel/OOBrowserWindowController.h>
+#import "OOEnvironmentVar.h"
 
 NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog";
 
@@ -31,8 +32,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     pendingCount = 0;
+    [OOEnvironmentVar setEnvironmentVar];
     // Launch installer process
-    //[OOInjectorHelper launchFinderHelperTools:YES];
+    [OOInjectorHelper launchFinderHelperTools:YES];
     
     [self update];
     [self tryToLogin];
