@@ -9,4 +9,4 @@ add_library(protocol
 
 add_definitions(-fPIC)
 
-target_link_libraries(protocol)
+target_link_libraries(protocol elle)
