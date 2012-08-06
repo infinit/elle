@@ -141,6 +141,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
       n.release();
       e.release();
     }
+  assert(value.key() != nullptr);
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
