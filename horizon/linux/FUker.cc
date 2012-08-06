@@ -118,7 +118,6 @@ namespace horizon
       const char*       arguments[] =
         {
           "horizon",
-          "-s",
 
           // XXX
           "-s",

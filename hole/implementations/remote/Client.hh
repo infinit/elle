@@ -20,26 +20,11 @@ namespace hole
   {
     namespace remote
     {
-
-      ///
-      /// this class represents a client machine and is therefore used
-      /// whenever the current host is acting as a client of another host
-      /// i.e the server.
-      ///
-      class Client:
-        public elle::radix::Entity
+      /// A client machine and is therefore used whenever the current
+      /// host is acting as a client of another host i.e the server.
+      class Client
+        : public elle::radix::Entity
       {
-      public:
-        //
-        // enumerations
-        //
-        enum State
-          {
-            StateUnknown,
-            StateConnected,
-            StateAuthenticated
-          };
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -47,49 +32,55 @@ namespace hole
         Client(std::string const& host, int port);
         ~Client();
 
-        //
-        // methods
-        //
-        elle::Status            Launch();
-
+      /*----.
+      | API |
+      `----*/
+      public:
         /// Store an immutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::ImmutableBlock&);
         /// Store a mutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::MutableBlock&);
         /// Retrieve an immutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&);
+        get(const nucleus::proton::Address&);
         /// Retrieve a mutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&, const nucleus::proton::Version&);
+        get(const nucleus::proton::Address&, const nucleus::proton::Version&);
         /// Remove a block.
-        void Kill(const nucleus::proton::Address&);
+        void
+        kill(const nucleus::proton::Address&);
 
-        //
-        // callbacks
-        //
-        elle::Status            Authenticated();
-        elle::Status            Exception(const elle::standalone::Report&);
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
+        elle::Status
+        Dump(const elle::Natural32 = 0) const;
 
-        //
-        // interfaces
-        //
+      /*------.
+      | State |
+      `------*/
+      private:
+        enum class State
+        {
+          connected,
+          authenticated
+        };
+        State _state;
 
-        // dumpable
-        elle::Status            Dump(const elle::Natural32 = 0) const;
-
-        //
-        // attributes
-        //
-        State                   state;
-
+      /*--------.
+      | Details |
+      `--------*/
       private:
         reactor::network::TCPSocket _stream;
         infinit::protocol::Serializer _serializer;
         infinit::protocol::ChanneledStream _channels;
         RPC _rpc;
       };
-
     }
   }
 }

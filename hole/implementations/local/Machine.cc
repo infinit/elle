@@ -131,7 +131,8 @@ namespace hole
             // store the block.
             if (block.Store(Hole::Implementation->network,
                             address) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(), "unable to store the block");
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to store the block");
           }
 
         ELLE_LOG_TRACE("Block %p successfully stored", &block);
@@ -149,16 +150,19 @@ namespace hole
 
         // Does the block exist.
         if (block->Exist(Hole::Implementation->network, address) == elle::Status::False)
-          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the block does not seem to exist");
 
         // Load the block.
         if (block->Load(Hole::Implementation->network,
                        address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "unable to load the block");
 
         // Validate the block.
         if (block->Validate(address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the block seems to be invalid");
 
         return std::unique_ptr<nucleus::proton::Block>(block);
       }
@@ -177,12 +181,14 @@ namespace hole
         // does the block exist.
         if (block->Exist(Hole::Implementation->network,
                         address, version) == elle::Status::False)
-          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the block does not seem to exist");
 
         // load the block.
         if (block->Load(Hole::Implementation->network,
                        address, version) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "unable to load the block");
 
         // validate the block, depending on its component.
         //
@@ -211,7 +217,8 @@ namespace hole
 
                   // Validate the object.
                   if (object->Validate(address, *access) == elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "unable to validate the object");
                 }
               else
                 {
@@ -219,16 +226,9 @@ namespace hole
                   if (object->Validate(
                         address,
                         nucleus::neutron::Access::Null) == elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "unable to validate the object");
                 }
-
-              break;
-            }
-          default:
-            {
-              // validate the block through the common interface.
-              if (block->Validate(address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
 
               break;
             }
@@ -237,6 +237,15 @@ namespace hole
               throw reactor::Exception(elle::concurrency::scheduler(),
                                        elle::sprintf("unknown component '%u'",
                                                      address.component));
+            }
+          default:
+            {
+              // validate the block through the common interface.
+              if (block->Validate(address) == elle::Status::Error)
+                throw reactor::Exception(elle::concurrency::scheduler(),
+                                         "the block seems to be invalid");
+
+              break;
             }
           }
         return std::unique_ptr<nucleus::proton::Block>(block);

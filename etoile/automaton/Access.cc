@@ -41,12 +41,8 @@ namespace etoile
       if (context.access != nullptr)
         return elle::Status::Ok;
 
-      // allocate an access block.
-      context.access = new nucleus::neutron::Access;
-      printf("XXX: no new required\n");
-
       // if an access block is referenced in the object.
-      if (context.object->meta.access != nucleus::Address::Null)
+      if (context.object->meta.access != nucleus::proton::Address::Null)
         {
           // retrieve the access block.
           try
@@ -62,9 +58,7 @@ namespace etoile
             }
         }
       else
-        {
-          // otherwise the block is left empty.
-        }
+        context.access = new nucleus::neutron::Access;
 
       return elle::Status::Ok;
     }
@@ -287,7 +281,7 @@ namespace etoile
         {
           // create the record.
           auto record = std::unique_ptr<nucleus::neutron::Record>(
-            new nucleus::neutron::Record(context.object.meta.owner.record));
+            new nucleus::neutron::Record(context.object->meta.owner.record));
 
           // add the record to the range.
           if (range.Add(record.get()) == elle::Status::Error)
@@ -343,7 +337,7 @@ namespace etoile
           // update the permissions.
           if (context.object->Administrate(
                 context.object->meta.attributes,
-                nucleus::PermissionNone) == elle::Status::Error)
+                nucleus::neutron::PermissionNone) == elle::Status::Error)
             escape("unable to administrate the object");
         }
       else
@@ -481,7 +475,7 @@ namespace etoile
             context.object->data.contents,
             context.object->data.size,
             context.object->meta.access,
-            nucleus::Token::Null) == elle::Status::Error)
+            nucleus::neutron::Token::Null) == elle::Status::Error)
         escape("unable to update the object");
 
       // determine the rights over the object.
@@ -511,7 +505,7 @@ namespace etoile
                           gear::Object&                         context)
     {
       // if the block is present.
-      if (context.object->meta.access != nucleus::Address::Null)
+      if (context.object->meta.access != nucleus::proton::Address::Null)
         {
           // mark the access block for removal.
           if (context.transcript.Wipe(
@@ -589,7 +583,7 @@ namespace etoile
                 context.object->author,
                 context.object->data.contents,
                 context.object->data.size,
-                nucleus::Address::Null,
+                nucleus::proton::Address::Null,
                 context.object->meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
         }

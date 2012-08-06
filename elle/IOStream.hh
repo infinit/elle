@@ -1,6 +1,8 @@
 #ifndef ELLE_IO_STREAM_HH
 # define ELLE_IO_STREAM_HH
 
+# include <iostream>
+
 # include <elle/Buffer.hh>
 
 namespace elle

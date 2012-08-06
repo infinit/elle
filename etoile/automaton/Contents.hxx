@@ -33,10 +33,6 @@ namespace etoile
       if (context.contents != nullptr)
         return elle::Status::Ok;
 
-      // otherwise create a new contents according to the context's type.
-      context.contents = new nucleus::proton::Contents<typename T::C>;
-      printf("XXX: no new required\n");
-
       // check if there exists a contents. if so, load the block.
       if (context.object->data.contents != nucleus::proton::Address::Null)
         {
@@ -45,8 +41,9 @@ namespace etoile
             {
               // XXX[the context should make use of unique_ptr instead
               //     of releasing here.]
-              context.contents = depot::Depot::pull<T>(
-                                  context.object->data.contents).release();
+              context.contents =
+                depot::Depot::pull<nucleus::proton::Contents<typename T::C>>(
+                context.object->data.contents).release();
             }
           catch (std::runtime_error& e)
             {
@@ -69,6 +66,8 @@ namespace etoile
         }
       else
         {
+          // otherwise create a new contents according to the context's type.
+          context.contents = new nucleus::proton::Contents<typename T::C>;
           // otherwise, create an empty contents.
           if (context.contents->Create() == elle::Status::Error)
             escape("unable to create the contents");

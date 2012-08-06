@@ -1069,8 +1069,8 @@ namespace etoile
           escape("unable to load the object");
 
         // check if the loaded object is indeed newer.
-        if (context->object.version >
-            static_cast<T*>(this->context)->object.version)
+        if (context->object->version >
+            static_cast<T*>(this->context)->object->version)
           {
             //
             // in this case, a newer version exists which has been loaded.

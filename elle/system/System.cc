@@ -43,11 +43,11 @@ namespace elle
 
       System::Path::Separator = '/';
 
-      System::Path::Root =
-        ::QDir::root().canonicalPath().toStdString();
+      System::Path::Root = "/";
+      //::QDir::root().canonicalPath().toStdString();
 
-      System::Path::Current =
-        ::QDir::current().canonicalPath().toStdString();
+      System::Path::Current = "/home/mefyl/dev/infinit/infinit/build/linux64";
+      //::QDir::current().canonicalPath().toStdString();
 
       // define the endianness.
       switch (::QSysInfo::ByteOrder)

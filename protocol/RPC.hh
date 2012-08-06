@@ -1,10 +1,12 @@
 #ifndef INFINIT_PROTOCOL_RPC_HH
 # define INFINIT_PROTOCOL_RPC_HH
 
-# include <functional>
 # include <iostream>
 # include <memory>
 # include <unordered_map>
+
+# include <boost/function.hpp>
+# include <boost/noncopyable.hpp>
 
 # include <protocol/fwd.hh>
 
@@ -13,7 +15,7 @@ namespace infinit
   namespace protocol
   {
     template <typename ISerializer, typename OSerializer>
-    class BaseProcedure
+    class BaseProcedure: public boost::noncopyable
     {
     public:
       virtual ~BaseProcedure();
@@ -29,6 +31,8 @@ namespace infinit
               typename ... Args>
     class Procedure: public BaseProcedure<ISerializer, OSerializer>
     {
+    public:
+      virtual ~Procedure();
     protected:
       virtual void _call(ISerializer& in, OSerializer& out);
     private:
@@ -36,10 +40,10 @@ namespace infinit
       friend class RPC;
       Procedure(RPC<ISerializer, OSerializer>& owner,
                 uint32_t id,
-                std::function<R (Args...)> const& f);
+                boost::function<R (Args...)> const& f);
       uint32_t _id;
       RPC<ISerializer, OSerializer>& _owner;
-      std::function<R (Args...)> const& _function;
+      boost::function<R (Args...)> _function;
     };
 
     class BaseRPC
@@ -52,13 +56,13 @@ namespace infinit
                 typename OSerializer,
                 typename R,
                 typename ... Args>
-      friend class RemoteProcedure;
+      friend class Procedure;
       ChanneledStream& _channels;
       uint32_t _id;
     };
 
     template <typename ISerializer, typename OSerializer>
-    class RPC: public BaseRPC
+    class RPC: public BaseRPC, public boost::noncopyable
     {
     public:
       template <typename R, typename ... Args>
@@ -67,7 +71,7 @@ namespace infinit
       public:
         RemoteProcedure(RPC<ISerializer, OSerializer>& owner);
         R operator() (Args ...);
-        void operator = (std::function<R (Args...)> const& implem);
+        void operator = (boost::function<R (Args...)> const& implem);
       private:
         template <typename I, typename O>
         friend class RPC;
@@ -83,12 +87,13 @@ namespace infinit
       add();
       template <typename R, typename ... Args>
       RemoteProcedure<R, Args...>
-      add(std::function<R (Args...)> const& f);
+      add(boost::function<R (Args...)> const& f);
       void add(BaseRPC& rpc);
       virtual void run();
     protected:
       typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;
-      std::unordered_map<uint32_t, std::unique_ptr<LocalProcedure>> _procedures;
+      // FIXME: unique_ptr
+      std::unordered_map<uint32_t, LocalProcedure*> _procedures;
       std::vector<BaseRPC*> _rpcs;
     };
   }

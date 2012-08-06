@@ -1,8 +1,11 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 
-# include <elle/types.hh>
+# include <unordered_map>
+
+# include <elle/network/Locus.hh>
 # include <elle/radix/Entity.hh>
+# include <elle/types.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <reactor/network/fwd.hh>
@@ -14,8 +17,6 @@
 # include <lune/fwd.hh>
 
 # include <hole/implementations/slug/fwd.hh>
-# include <hole/implementations/slug/Guestlist.hh>
-# include <hole/implementations/slug/Neighbourhood.hh>
 
 namespace hole
 {
@@ -31,31 +32,54 @@ namespace hole
         public elle::radix::Entity
       {
       public:
-        //
         // constants
-        //
         static const reactor::Duration  Timeout;
 
-        //
-        // enumerations
-        //
-        enum State
-        {
-          StateDetached,
-          StateAttached
-        };
-
-        //
-        // constructors & destructors
-        //
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
         Machine();
         ~Machine();
 
-        //
-        // methods
-        //
-        elle::Status            Launch();
+      /*------.
+      | State |
+      `------*/
+      public:
+        enum class State
+        {
+          detached,
+          attached
+        };
+      private:
+        State _state;
 
+      /*------.
+      | Hosts |
+      `------*/
+      public:
+        std::vector<elle::network::Locus> loci();
+        std::vector<Host*> hosts();
+      private:
+        std::unordered_map<elle::network::Locus, Host*> _hosts;
+        void _connect(elle::network::Locus const& locus);
+        void _connect(std::unique_ptr<reactor::network::Socket> socket,
+                      elle::network::Locus const& locus, bool opener);
+
+      /*-------.
+      | Server |
+      `-------*/
+      public:
+        elle::network::Port port() const;
+      private:
+        elle::network::Port _port;
+        void _accept();
+        std::unique_ptr<reactor::network::TCPServer> _server;
+
+      /*----.
+      | API |
+      `----*/
+      public:
         /// Store an immutable block.
         void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
         /// Store a mutable block.
@@ -68,46 +92,23 @@ namespace hole
         Get(const nucleus::proton::Address&, const nucleus::proton::Version&);
         /// Remove a block.
         void Kill(const nucleus::proton::Address&);
-
-        //
-        // callbacks
-        //
-        elle::Status            Alone();
-
-        elle::Status            Authenticate(const lune::Passport&,
-                                             const elle::network::Port&);
-        elle::Status            Authenticated(const Cluster&);
-
-        elle::Status            Sweep(Host*);
-        elle::Status            Synchronised();
-
-        elle::Status            Push(const nucleus::proton::Address&,
-                                     const nucleus::Derivable&);
-        elle::Status            Pull(const nucleus::proton::Address&,
-                                     const nucleus::proton::Version&);
-        elle::Status            Wipe(const nucleus::proton::Address&);
-
-        //
-        // interfaces
-        //
-
-        // dumpable
-        elle::Status            Dump(const elle::Natural32 = 0) const;
-
-        //
-        // attributes
-        //
-        State                   state;
-        elle::network::Port     port;
-
-        Guestlist               guestlist;
-        Neighbourhood           neighbourhood;
-
       private:
-        void                            _accept();
-        reactor::network::TCPServer*    _server;
+        std::unique_ptr<nucleus::proton::Block>
+        _get_latest(nucleus::proton::Address const&);
+        std::unique_ptr<nucleus::proton::Block>
+        _get_specific(nucleus::proton::Address const&, nucleus::proton::Version const&);
+        void
+        _alone();
+
+        /*---------.
+        | Dumpable |
+        `---------*/
+      public:
+        elle::Status            Dump(const elle::Natural32 = 0) const;
       };
 
+      std::ostream&
+      operator << (std::ostream& stream, Machine::State state);
     }
   }
 }

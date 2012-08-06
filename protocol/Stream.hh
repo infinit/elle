@@ -19,6 +19,7 @@ namespace infinit
     `-------------*/
     public:
       Stream(reactor::Scheduler& scheduler);
+      virtual ~Stream();
 
     /*-----------.
     | Properties |

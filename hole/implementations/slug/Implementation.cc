@@ -39,10 +39,6 @@ namespace hole
       {
         // allocate the machine.
         Slug::Computer = new Machine;
-
-        // launch it.
-        if (Slug::Computer->Launch() == elle::Status::Error)
-          throw std::runtime_error("unable to launch the computer");
       }
 
       ///

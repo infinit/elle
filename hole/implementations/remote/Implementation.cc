@@ -60,7 +60,7 @@ namespace hole
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        Remote::Computer->client->Put(address, block);
+        Remote::Computer->client->put(address, block);
       }
 
       void
@@ -70,7 +70,7 @@ namespace hole
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        Remote::Computer->client->Put(address, block);
+        Remote::Computer->client->put(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -79,7 +79,7 @@ namespace hole
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        return Remote::Computer->client->Get(address);
+        return Remote::Computer->client->get(address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -89,7 +89,7 @@ namespace hole
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        return Remote::Computer->client->Get(address, version);
+        return Remote::Computer->client->get(address, version);
       }
 
       void
@@ -98,16 +98,13 @@ namespace hole
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        Remote::Computer->client->Kill(address);
+        Remote::Computer->client->kill(address);
       }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+      /*---------.
+      | Dumpable |
+      `---------*/
 
-      ///
-      /// this method dumps the implementation.
-      ///
       elle::Status      Implementation::Dump(const elle::Natural32 margin)
         const
       {

@@ -1,7 +1,11 @@
 #ifndef ETOILE_DEPOT_DEPOT_HH
 # define ETOILE_DEPOT_DEPOT_HH
 
+# include <memory>
+
 # include <elle/types.hh>
+
+# include <nucleus/neutron/Object.hh>
 # include <nucleus/proton/fwd.hh>
 
 namespace etoile
@@ -29,20 +33,20 @@ namespace etoile
                                      const nucleus::proton::Block&);
 
       /// XXX
-      std::unique_ptr<nucleus::neutron::Object>
-      Depot::pull_object(nucleus::proton::Address const& address,
-                         nucleus::proton::Version const & version);
+      static std::unique_ptr<nucleus::neutron::Object>
+      pull_object(nucleus::proton::Address const& address,
+                  nucleus::proton::Version const & version);
 
       /// XXX
-      std::unique_ptr<nucleus::neutron::Access>
-      Depot::pull_access(nucleus::proton::Address const& address);
+      static std::unique_ptr<nucleus::neutron::Access>
+      pull_access(nucleus::proton::Address const& address);
 
       /// XXX
       template <typename T>
-      std::unique_ptr<T>
-      Depot::pull(nucleus::proton::Address const& address,
-                  nucleus::proton::Version const& version =
-                    nucleus::proton::Version::Latests);
+      static std::unique_ptr<T>
+      pull(nucleus::proton::Address const& address,
+           nucleus::proton::Version const& version =
+           nucleus::proton::Version::Last);
 
       static elle::Status       Wipe(const nucleus::proton::Address&);
     };

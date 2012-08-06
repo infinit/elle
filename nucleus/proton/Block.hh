@@ -67,6 +67,7 @@ namespace nucleus
             elle::serialize::BufferArchive
         >
       , public elle::concept::Fileable<>
+      , public elle::io::Dumpable
     {
     public:
       //

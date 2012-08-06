@@ -16,6 +16,13 @@ namespace reactor
   Exception::~Exception() throw ()
   {}
 
+  std::ostream&
+  operator << (std::ostream& s, Exception const& e)
+  {
+    s << e.what();
+    return s;
+  }
+
   Backtrace const&
   Exception::backtrace() const
   {

@@ -108,10 +108,6 @@ namespace etoile
 
       Journal::_scopes.erase(scope);
 
-      // bury the scope i.e a scope may have recorded itself; thus bury
-      // it in order to avoid problems.
-      bury(scope);
-
       return elle::Status::Ok;
     }
 

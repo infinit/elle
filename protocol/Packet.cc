@@ -89,7 +89,7 @@ namespace infinit
                   assert(_packet._data);
                   return elle::Buffer(_packet._data, _packet._data_size);
                 }
-            case Mode::write:
+            default:
               std::abort();
           }
       }
@@ -122,7 +122,7 @@ namespace infinit
 
     Packet::~Packet()
     {
-      delete [] _data;
+      free(_data);
     }
 
     /*-----------.

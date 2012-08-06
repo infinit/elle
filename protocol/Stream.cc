@@ -18,6 +18,9 @@ namespace infinit
       : _scheduler(scheduler)
     {}
 
+    Stream::~Stream()
+    {}
+
     /*-----------.
     | Properties |
     `-----------*/

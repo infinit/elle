@@ -1,6 +1,8 @@
 #ifndef INFINIT_PROTOCOL_RPC_HXX
 # define INFINIT_PROTOCOL_RPC_HXX
 
+# include <lune/Passport.hh> // FIXME
+
 # include <type_traits>
 
 # include <elle/printf.hh>
@@ -18,9 +20,17 @@ namespace infinit
               typename R,
               typename ... Args>
     Procedure<ISerializer, OSerializer, R, Args ...>::
+    ~Procedure()
+    {}
+
+    template <typename ISerializer,
+              typename OSerializer,
+              typename R,
+              typename ... Args>
+    Procedure<ISerializer, OSerializer, R, Args ...>::
     Procedure (RPC<ISerializer, OSerializer>& owner,
                uint32_t id,
-               std::function<R (Args...)> const& f)
+               boost::function<R (Args...)> const& f)
       : _owner(owner)
       , _id(id)
       , _function(f)
@@ -45,13 +55,15 @@ namespace infinit
     template <typename R, typename ... Args>
     void
     RPC<ISerializer, OSerializer>::RemoteProcedure<R, Args ...>::
-    operator = (std::function<R (Args...)> const& f)
+    operator = (boost::function<R (Args...)> const& f)
     {
       auto proc = _owner._procedures.find(_id);
       assert(proc != _owner._procedures.end());
       assert(proc->second == nullptr);
       typedef Procedure<ISerializer, OSerializer, R, Args...> Proc;
-      _owner._procedures[_id] = std::unique_ptr<Proc>(new Proc(_owner, _id, f));
+      Proc* res = new Proc(_owner, _id, f);
+      _owner._procedures[_id] = res;
+      BaseProcedure<ISerializer, OSerializer>* fuck = res;
     }
 
     template <typename OSerializer>
@@ -72,6 +84,7 @@ namespace infinit
     {
       R res;
       input >> res;
+      return res;
     }
 
     // template <typename OSerializer, typename T, typename ...Args>
@@ -132,7 +145,7 @@ namespace infinit
     struct Call<Input, R>
     {
       template <typename S, typename ... Given>
-      static R call(Input&, S const& f, Given... args)
+      static R call(Input&, S const& f, Given&... args)
       {
         return f(args...);
       }
@@ -164,7 +177,7 @@ namespace infinit
     template <typename ISerializer, typename OSerializer>
     template <typename R, typename ... Args>
     RPC<ISerializer, OSerializer>::RemoteProcedure<R, Args...>
-    RPC<ISerializer, OSerializer>::add(std::function<R (Args...)> const& f)
+    RPC<ISerializer, OSerializer>::add(boost::function<R (Args...)> const& f)
     {
       uint32_t id = _id++;
       typedef Procedure<ISerializer, OSerializer, R, Args...> Proc;

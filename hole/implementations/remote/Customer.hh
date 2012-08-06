@@ -1,11 +1,20 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 
-# include <elle/types.hh>
-# include <elle/radix/Entity.hh>
+# include <boost/noncopyable.hpp>
 
 # include <elle/concurrency/Signal.hh>
 # include <elle/network/fwd.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/types.hh>
+
+# include <reactor/network/socket.hh>
+
+# include <protocol/ChanneledStream.hh>
+# include <protocol/Serializer.hh>
+
+# include <hole/implementations/remote/fwd.hh>
+# include <hole/implementations/remote/Manifest.hh>
 
 namespace hole
 {
@@ -13,64 +22,82 @@ namespace hole
   {
     namespace remote
     {
-
-      ///
-      /// this class represents a client being connected to the server
-      /// i.e the machine.
-      ///
-      class Customer:
-        public elle::radix::Entity
+      /// A client connected to the server i.e the machine.
+      class Customer
+        : public elle::radix::Entity
+        , public boost::noncopyable
       {
+      /*----------.
+      | Constants |
+      `----------*/
       public:
-        //
-        // constants
-        //
+        /// The time after which a customer should have authenticated.
         static const elle::Natural32            Timeout;
 
-        //
-        // enumerations
-        //
-        enum State
-          {
-            StateUnknown,
-            StateConnected,
-            StateAuthenticated,
-            StateDead
-          };
-
-        //
-        // constructors & destructors
-        //
-        Customer(elle::network::TCPSocket* socket);
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
         ~Customer();
+      private:
+        Customer(Server& server,
+                 std::unique_ptr<reactor::network::Socket> socket);
 
-        //
-        // interfaces
-        //
-
-        // dumpable
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
         elle::Status            Dump(const elle::Natural32 = 0) const;
 
-        //
-        // signals
-        //
-        struct
-        {
-          elle::concurrency::Signal<
-            elle::radix::Parameters<
-              Customer*
-              >
-            >                   dead;
-        }                       signal;
+      /*----.
+      | API |
+      `----*/
+      public:
+        bool
+        challenge(lune::Passport const& passport);
+        bool
+        push(const nucleus::proton::Address& address,
+             nucleus::Derivable const& derivable);
+        nucleus::Derivable
+        pull(const nucleus::proton::Address& address,
+             const nucleus::proton::Version& version);
+        bool
+        wipe(const nucleus::proton::Address&);
 
-        //
-        // attributes
-        //
-        State                   state;
+      /*----------------.
+      | Pretty printing |
+      `----------------*/
+      public:
+        void print(std::ostream& s) const;
 
-        elle::network::TCPSocket*        socket;
+      /*------.
+      | State |
+      `------*/
+      private:
+        enum class State
+          {
+            authenticated,
+            connected,
+          };
+        State _state;
+        void _state_check_authenticated() const;
+
+
+      /*--------.
+      | Details |
+      `--------*/
+      private:
+        Server& _server;
+        friend class Server;
+        void _run();
+        std::unique_ptr<reactor::network::Socket> _socket;
+        infinit::protocol::Serializer _serializer;
+        infinit::protocol::ChanneledStream _channels;
+        RPC _rpcs;
+        reactor::Thread* _runner;
       };
 
+      std::ostream& operator << (std::ostream& s, Customer const& c);
     }
   }
 }
