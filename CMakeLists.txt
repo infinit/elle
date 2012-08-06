@@ -15,6 +15,8 @@ set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROP
 
 ADD_LIBRARY(elle
 
+  assert.cc
+
   Buffer.cc
   IOStream.cc
 
