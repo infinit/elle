@@ -165,12 +165,10 @@ namespace plasma
       std::string               identity;
       std::string               email;
       bool                      check_errors;
-      elle::log::Logger&        log;
 
       Impl(std::string const& server,
            uint16_t port,
-           bool check_errors,
-           elle::log::Logger& log)
+           bool check_errors)
         : io_service{}
         , server{server}
         , port{port}
@@ -178,7 +176,6 @@ namespace plasma
         , identity{}
         , email{}
         , check_errors{check_errors}
-        , log(log)
       {}
     };
 
@@ -186,9 +183,8 @@ namespace plasma
 
     Client::Client(std::string const& server,
                    uint16_t port,
-                   bool check_errors,
-                   elle::log::Logger& log)
-      : _impl{new Impl{server, port, check_errors, log}}
+                   bool check_errors)
+      : _impl{new Impl{server, port, check_errors}}
     {}
 
     Client::~Client()
