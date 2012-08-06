@@ -141,9 +141,12 @@ namespace infinit
 
     Packet::Packet(elle::Size data_size)
       : elle::IOStream(_streambuffer = new StreamBuffer(*this))
-      , _data(new Byte[data_size])
+      , _data(reinterpret_cast<Byte*>(malloc(data_size)))
       , _data_size(data_size)
-    {}
+    {
+      if (!_data)
+        throw std::bad_alloc();
+    }
 
     /*----------------.
     | Pretty printing |
