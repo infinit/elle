@@ -3,6 +3,8 @@
 
 # include <iostream>
 
+# include <reactor/mutex.hh>
+
 # include <protocol/Stream.hh>
 
 namespace infinit
@@ -40,6 +42,8 @@ namespace infinit
     `--------*/
     private:
       std::iostream& _stream;
+      reactor::Mutex _lock_write;
+      reactor::Mutex _lock_read;
     };
   }
 }

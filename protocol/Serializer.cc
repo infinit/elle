@@ -28,6 +28,8 @@ namespace infinit
     Serializer::Serializer(reactor::Scheduler& scheduler, std::iostream& stream)
       : Super(scheduler)
       , _stream(stream)
+      , _lock_write()
+      , _lock_read()
     {}
 
     /*----------.
@@ -37,6 +39,7 @@ namespace infinit
     Packet
     Serializer::read()
     {
+      reactor::Lock lock(scheduler(), _lock_read);
       ELLE_LOG_TRACE("%s: read packet", *this)
         {
           uint32_t size(_uint32_get(_stream));
@@ -54,6 +57,7 @@ namespace infinit
     void
     Serializer::write(Packet& packet)
     {
+      reactor::Lock lock(scheduler(), _lock_write);
       ELLE_LOG_TRACE("%s: send packet of size %s",
                      *this, packet._data_size)
         {
