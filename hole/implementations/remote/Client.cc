@@ -40,7 +40,7 @@ namespace hole
         , _channels(elle::concurrency::scheduler(), _serializer, true)
         , _rpc(_channels)
       {
-        ELLE_LOG_TRACE("Authenticate to the server")
+        ELLE_TRACE("Authenticate to the server")
           if (_rpc.challenge(Hole::Passport))
             _state = State::authenticated;
       }
@@ -59,7 +59,7 @@ namespace hole
         nucleus::Derivable derivable(address.component, block,
                                      nucleus::Derivable::Kind::output);
 
-        ELLE_LOG_TRACE("Put[Immutable]")
+        ELLE_TRACE("Put[Immutable]")
           this->_rpc.push(address, derivable);
       }
 
@@ -68,7 +68,7 @@ namespace hole
                   const nucleus::proton::MutableBlock& block)
       {
         nucleus::Derivable derivable(address.component, block);
-        ELLE_LOG_TRACE("Put[Mutable]")
+        ELLE_TRACE("Put[Mutable]")
           this->_rpc.push(address, derivable);
       }
 
@@ -76,7 +76,7 @@ namespace hole
       std::unique_ptr<nucleus::proton::Block>
       Client::get(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE("Get[Immutable]")
+        ELLE_TRACE("Get[Immutable]")
           return this->_rpc.pull(address, nucleus::proton::Version::Any).release();
       }
 
@@ -84,14 +84,14 @@ namespace hole
       Client::get(const nucleus::proton::Address& address,
                   const nucleus::proton::Version& version)
       {
-        ELLE_LOG_TRACE("Get[Mutable]")
+        ELLE_TRACE("Get[Mutable]")
           return this->_rpc.pull(address, version).release();
       }
 
       void
       Client::kill(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE("Kill")
+        ELLE_TRACE("Kill")
           this->_rpc.wipe(address);
       }
 

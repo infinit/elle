@@ -73,7 +73,7 @@ namespace elle
         Status Load(T1& v1, T&... values)
         {
           ELLE_LOG_COMPONENT("elle.network.Procedure");
-          ELLE_LOG_TRACE("Skeleton extract %p", &v1)
+          ELLE_TRACE("Skeleton extract %p", &v1)
           try
             {
               _archive >> v1;
@@ -81,7 +81,7 @@ namespace elle
             }
           catch (std::exception const& err)
             {
-              ELLE_LOG_TRACE(
+              ELLE_TRACE(
                 "An exception occured while extracting skeleton: %s",
                 err.what());
               return Status::Error;

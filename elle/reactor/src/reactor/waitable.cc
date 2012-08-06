@@ -91,7 +91,7 @@ namespace reactor
   bool
   Waitable::_wait(Thread* t)
   {
-    ELLE_LOG_TRACE("%s: wait %s", *t, *this);
+    ELLE_TRACE("%s: wait %s", *t, *this);
     assert(_threads.find(t) == _threads.end());
     _threads.insert(t);
     return true;
@@ -100,7 +100,7 @@ namespace reactor
   void
   Waitable::_unwait(Thread* t)
   {
-    ELLE_LOG_TRACE("%s: unwait %s", *t, *this);
+    ELLE_TRACE("%s: unwait %s", *t, *this);
     assert(_threads.find(t) != _threads.end());
     _threads.erase(t);
   }

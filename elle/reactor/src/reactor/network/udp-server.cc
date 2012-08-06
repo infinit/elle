@@ -51,16 +51,16 @@ namespace reactor
     UDPServerSocket*
     UDPServer::accept()
     {
-      ELLE_LOG_TRACE("%s: accept", *this);
+      ELLE_TRACE("%s: accept", *this);
       if (_accepted.empty())
       {
-        ELLE_LOG_TRACE("%s: wait for incoming connection", *this);
+        ELLE_TRACE("%s: wait for incoming connection", *this);
         scheduler().current()->wait(_accept);
       }
       assert(!_accepted.empty());
       UDPServerSocket* res = _accepted.back();
       _accepted.pop_back();
-      // ELLE_LOG_TRACE("%s: got client: %s", *this, *res);
+      // ELLE_TRACE("%s: got client: %s", *this, *res);
       return res;
     }
 
@@ -97,7 +97,7 @@ namespace reactor
         std::cerr << error << std::endl;
         std::abort();
       }
-      ELLE_LOG_TRACE("%s: %s bytes available from %s",
+      ELLE_TRACE("%s: %s bytes available from %s",
                      *this, bytes, this->_peer);
       Clients::iterator elt = _clients.find(_peer);
       UDPServerSocket* socket = 0;
@@ -107,7 +107,7 @@ namespace reactor
         static const Size buffer_size = 512;
         socket->_read_buffer = new Byte[buffer_size];
         socket->_read_buffer_capacity = buffer_size;
-        ELLE_LOG_TRACE("%s: new client: %s", *this, *socket);
+        ELLE_TRACE("%s: new client: %s", *this, *socket);
         _clients[_peer] = socket;
         _accepted.push_back(socket);
         _accept.signal();
@@ -115,13 +115,13 @@ namespace reactor
       else
       {
         socket = elt->second;
-        ELLE_LOG_TRACE("%s: client: %s", *this, socket);
+        ELLE_TRACE("%s: client: %s", *this, socket);
       }
       // Grow buffer if needed.
       Size free = socket->_read_buffer_capacity - socket->_read_buffer_size;
       while (bytes > free)
       {
-        ELLE_LOG_TRACE("%s: grow client buffer (free: %s)",
+        ELLE_TRACE("%s: grow client buffer (free: %s)",
                        *this, free);
         socket->_read_buffer = reinterpret_cast<Byte*>
           (realloc(socket->_read_buffer, socket->_read_buffer_capacity * 2));
@@ -129,7 +129,7 @@ namespace reactor
         free = socket->_read_buffer_capacity - socket->_read_buffer_size;
       }
       // Copy data
-      ELLE_LOG_TRACE("%s: post client data", *this);
+      ELLE_TRACE("%s: post client data", *this);
       memmove(socket->_read_buffer + socket->_read_buffer_size,
               _buffer, bytes);
       socket->_read_buffer_size += bytes;

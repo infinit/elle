@@ -53,7 +53,7 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Create(elle::cryptography::PublicKey const& owner)
     {
-      ELLE_LOG_TRACE("Creating an ImprintBlock %p", this)
+      ELLE_TRACE("Creating an ImprintBlock %p", this)
       {
         // retrieve the current time.
         if (this->stamp.Current() == elle::Status::Error)
@@ -83,7 +83,7 @@ namespace nucleus
     elle::Status        ImprintBlock::Bind(Address&             address)
       const
     {
-      ELLE_LOG_TRACE("Binding an ImprintBlock %p", this)
+      ELLE_TRACE("Binding an ImprintBlock %p", this)
       {
         assert(this->owner.K.key() != nullptr);
         // compute the address.
@@ -106,7 +106,7 @@ namespace nucleus
       const
     {
       Address           self;
-      ELLE_LOG_TRACE("Validating an ImprintBlock address %p", this)
+      ELLE_TRACE("Validating an ImprintBlock address %p", this)
       {
         assert(this->owner.K.key() != nullptr);
         //

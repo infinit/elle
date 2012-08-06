@@ -138,7 +138,7 @@ namespace reactor
     void
     PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint)
     {
-      ELLE_LOG_TRACE("%s: connecting to %s", *this, endpoint);
+      ELLE_TRACE("%s: connecting to %s", *this, endpoint);
       _socket = new AsioSocket(this->scheduler().io_service());
       Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
       try

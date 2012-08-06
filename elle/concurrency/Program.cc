@@ -46,7 +46,7 @@ namespace elle
     void
     Program::Exit()
     {
-      ELLE_LOG_TRACE_SCOPE("Exit");
+      ELLE_TRACE_SCOPE("Exit");
 
       _exit.signal();
     }
@@ -54,7 +54,7 @@ namespace elle
     void
     Program::Launch()
     {
-      ELLE_LOG_TRACE_SCOPE("Launch");
+      ELLE_TRACE_SCOPE("Launch");
 
       concurrency::scheduler().current()->wait(_exit);
     }
@@ -64,7 +64,7 @@ namespace elle
     ///
     Void                Program::Exception(int                  signal)
     {
-      ELLE_LOG_TRACE_SCOPE("Exception");
+      ELLE_TRACE_SCOPE("Exception");
 
       // stop the program depending on the signal.
       switch (signal)

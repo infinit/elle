@@ -31,7 +31,7 @@ namespace etoile
     {
       if (context.rights.role != nucleus::neutron::RoleUnknown)
         {
-          ELLE_LOG_TRACE("Rights have already been determined !")
+          ELLE_TRACE("Rights have already been determined !")
           return elle::Status::Ok;
         }
 
@@ -61,7 +61,7 @@ namespace etoile
 
           // set the record for ease purpose. XXX I see what you did there
           context.rights.record = context.object->meta.owner.record;
-          ELLE_LOG_TRACE("Rights have been determined according to the subject record.");
+          ELLE_TRACE("Rights have been determined according to the subject record.");
         }
       else
         {
@@ -107,7 +107,7 @@ namespace etoile
 
               // finally, set the record for ease purpose.
               context.rights.record = *record;
-              ELLE_LOG_TRACE("Rights have been determined from its own context (referenced in the access block).");
+              ELLE_TRACE("Rights have been determined from its own context (referenced in the access block).");
             }
           else
             {
@@ -122,7 +122,7 @@ namespace etoile
 
               // set the permissions.
               context.rights.permissions = nucleus::neutron::PermissionNone;
-              ELLE_LOG_TRACE("Rights default to Vassal role and permissions");
+              ELLE_TRACE("Rights default to Vassal role and permissions");
             }
         }
 

@@ -22,20 +22,31 @@ namespace elle
 
 # define ETC_LOG_FUNCTION __PRETTY_FUNCTION__
 
-#define ELLE_LOG_TRACE_SCOPE(...)                                       \
+
+#define ELLE_LOG_LEVEL_SCOPE(Level, ...)                                \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
       ::elle::log::detail::TraceContext                                 \
-      (__trace_component__,                                             \
+      (elle::Logger::Level::Level,                                      \
+       __trace_component__,                                             \
        __FILE__, __LINE__, ETC_LOG_FUNCTION,                            \
        elle::sprintf(__VA_ARGS__))                                      \
 
-# define ELLE_LOG_TRACE(...)                                            \
-    if (ELLE_LOG_TRACE_SCOPE(__VA_ARGS__))                              \
-    {                                                                   \
+#define ELLE_LOG_LEVEL(Level, ...)                                      \
+    if (ELLE_LOG_LEVEL_SCOPE(Level, __VA_ARGS__))                       \
+      {                                                                 \
       elle::unreachable();                                              \
     }                                                                   \
     else                                                                \
 
+#define ELLE_LOG_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(log, __VA_ARGS__)
+#define ELLE_TRACE_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(trace, __VA_ARGS__)
+#define ELLE_DEBUG_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(debug, __VA_ARGS__)
+#define ELLE_DUMP_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(dump, __VA_ARGS__)
+
+#define ELLE_LOG(...)  ELLE_LOG_LEVEL(log, __VA_ARGS__)
+#define ELLE_TRACE(...) ELLE_LOG_LEVEL(trace, __VA_ARGS__)
+#define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, __VA_ARGS__)
+#define ELLE_DUMP(...)  ELLE_LOG_LEVEL(dump, __VA_ARGS__)
 
     namespace detail
     {

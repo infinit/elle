@@ -37,7 +37,7 @@ namespace etoile
     {
       nucleus::neutron::Record* r;
 
-      ELLE_LOG_TRACE("Access::Lookup()");
+      ELLE_TRACE("Access::Lookup()");
 
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
@@ -67,7 +67,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Record> r;
 
-      ELLE_LOG_TRACE("Access::Consult()");
+      ELLE_TRACE("Access::Consult()");
 
       // forward the call to wall.
       if (wall::Access::Consult(identifier,
@@ -97,7 +97,7 @@ namespace etoile
     {
       nucleus::neutron::Trait* t;
 
-      ELLE_LOG_TRACE("Attributes::Get()");
+      ELLE_TRACE("Attributes::Get()");
 
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
@@ -125,7 +125,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Trait> r;
 
-      ELLE_LOG_TRACE("Attributes::Fetch()");
+      ELLE_TRACE("Attributes::Fetch()");
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
@@ -153,7 +153,7 @@ namespace etoile
     {
       nucleus::neutron::Entry* e;
 
-      ELLE_LOG_TRACE("Directory::Lookup()");
+      ELLE_TRACE("Directory::Lookup()");
 
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
@@ -183,7 +183,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Entry> r;
 
-      ELLE_LOG_TRACE("Directory::Consult()");
+      ELLE_TRACE("Directory::Consult()");
 
       // forward the call to wall.
       if (wall::Directory::Consult(identifier,

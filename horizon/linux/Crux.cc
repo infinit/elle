@@ -60,7 +60,7 @@ namespace horizon
     int                 Crux::Getattr(const char*               path,
                                       struct ::stat*            stat)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
@@ -112,7 +112,7 @@ namespace horizon
                                        struct ::stat*           stat,
                                        struct ::fuse_file_info* info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       Handle*                           handle;
       etoile::miscellaneous::Abstract   abstract;
@@ -287,7 +287,7 @@ namespace horizon
     int                 Crux::Utimens(const char*               path,
                                       const struct ::timespec[2])
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, ...)", __FUNCTION__, path);
+      ELLE_TRACE_SCOPE("%s(%s, ...)", __FUNCTION__, path);
 
       // Xxx not supported: do something about it
 
@@ -298,7 +298,7 @@ namespace horizon
     int                 Crux::Opendir(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
@@ -331,7 +331,7 @@ namespace horizon
                                       off_t                     offset,
                                       struct ::fuse_file_info*  info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
+      ELLE_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
                            __FUNCTION__, path, buffer, filler,
                            static_cast<elle::Natural64>(offset), info);
 
@@ -418,7 +418,7 @@ namespace horizon
     int                 Crux::Releasedir(const char*            path,
                                          struct ::fuse_file_info* info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       // Set the handle pointer to the file handle that has been
       // filled by Opendir().
@@ -441,7 +441,7 @@ namespace horizon
     int                 Crux::Mkdir(const char*                 path,
                                     mode_t                      mode)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
+      ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
       nucleus::neutron::Permissions permissions =
         nucleus::neutron::PermissionNone;
@@ -526,7 +526,7 @@ namespace horizon
     /// This method removes a directory.
     int                 Crux::Rmdir(const char*                 path)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);
@@ -625,7 +625,7 @@ namespace horizon
     int                 Crux::Access(const char*                path,
                                      int                        mask)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
+      ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
       etoile::gear::Identifier          identifier;
       etoile::miscellaneous::Abstract   abstract;
@@ -766,7 +766,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::neutron::Subject subject;
 
-      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
+      ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
       // Note that this method ignores both the group and other
       // permissions.
@@ -906,7 +906,7 @@ namespace horizon
                                     uid_t                       uid,
                                     gid_t                       gid)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %d)", __FUNCTION__, path, uid, gid);
+      ELLE_TRACE_SCOPE("%s(%s, %d, %d)", __FUNCTION__, path, uid, gid);
 
       // Xxx to implement.
 
@@ -923,7 +923,7 @@ namespace horizon
                                        size_t                   size,
                                        int                      flags)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)",
+      ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)",
                            __FUNCTION__, path, name, value, size, flags);
 
       etoile::gear::Identifier          identifier;
@@ -986,7 +986,7 @@ namespace horizon
                                        char*                    value,
                                        size_t                   size)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
+      ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
@@ -1042,7 +1042,7 @@ namespace horizon
                                         char*                   list,
                                         size_t                  size)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
+      ELLE_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
 
       etoile::gear::Identifier                  identifier;
       etoile::path::Way                         way(path);
@@ -1115,7 +1115,7 @@ namespace horizon
     int                 Crux::Removexattr(const char*           path,
                                           const char*           name)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
 
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
@@ -1174,7 +1174,7 @@ namespace horizon
     int                 Crux::Symlink(const char*               target,
                                       const char*               source)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
 
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  link;
@@ -1252,7 +1252,7 @@ namespace horizon
                                        char*                    buffer,
                                        size_t                   size)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer,
+      ELLE_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer,
                            static_cast<elle::Natural64>(size));
 
       etoile::gear::Identifier  identifier;
@@ -1314,7 +1314,7 @@ namespace horizon
                                      mode_t                     mode,
                                      struct ::fuse_file_info*   info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
+      ELLE_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
 
       nucleus::neutron::Permissions permissions =
         nucleus::neutron::PermissionNone;
@@ -1449,7 +1449,7 @@ namespace horizon
     int                 Crux::Open(const char*                  path,
                                    struct ::fuse_file_info*     info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
@@ -1480,7 +1480,7 @@ namespace horizon
                                     off_t                       offset,
                                     struct ::fuse_file_info*    info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
+      ELLE_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                            __FUNCTION__, path, buffer,
                            static_cast<elle::Natural64>(size),
                            static_cast<elle::Natural64>(offset), info);
@@ -1530,7 +1530,7 @@ namespace horizon
                                    off_t                        offset,
                                    struct ::fuse_file_info*     info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
+      ELLE_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                            __FUNCTION__, path, buffer,
                            static_cast<elle::Natural64>(size),
                            static_cast<elle::Natural64>(offset), info);
@@ -1575,7 +1575,7 @@ namespace horizon
     int                 Crux::Truncate(const char*              path,
                                        off_t                    size)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %d)", __FUNCTION__, path,
+      ELLE_TRACE_SCOPE("%s(%s, %d)", __FUNCTION__, path,
                            static_cast<elle::Natural64>(size));
 
       etoile::gear::Identifier  identifier;
@@ -1620,7 +1620,7 @@ namespace horizon
                                         off_t                   size,
                                         struct ::fuse_file_info* info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path,
+      ELLE_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path,
                            static_cast<elle::Natural64>(size), info);
 
       Handle*           handle;
@@ -1657,7 +1657,7 @@ namespace horizon
     int                 Crux::Release(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+      ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       etoile::path::Way way(path);
       Handle*           handle;
@@ -1723,7 +1723,7 @@ namespace horizon
     int                 Crux::Rename(const char*                source,
                                      const char*                target)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, source, target);
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, source, target);
 
       etoile::path::Slab        f;
       etoile::path::Way         from(etoile::path::Way(source), f);
@@ -1741,18 +1741,18 @@ namespace horizon
           nucleus::neutron::Entry* entry;
           nucleus::neutron::Record* record;
 
-          ELLE_LOG_TRACE("resolve the source directory path")
+          ELLE_TRACE("resolve the source directory path")
             if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
               error("unable to resolve the path",
                     -ENOENT);
 
-          ELLE_LOG_TRACE("load source directory")
+          ELLE_TRACE("load source directory")
             if (etoile::wall::Directory::Load(chemin,
                                               directory) == elle::Status::Error)
               error("unable to load the directory",
                   -ENOENT);
 
-          ELLE_LOG_TRACE("retrieve the subject's permissions on the object")
+          ELLE_TRACE("retrieve the subject's permissions on the object")
             if (etoile::wall::Access::Lookup(directory,
                                              agent::Agent::Subject,
                                              record) == elle::Status::Error)
@@ -1760,7 +1760,7 @@ namespace horizon
                     -EPERM,
                     directory);
 
-          ELLE_LOG_TRACE("check the record")
+          ELLE_TRACE("check the record")
             if (!((record != nullptr) &&
                   ((record->permissions & nucleus::neutron::PermissionWrite) ==
                    nucleus::neutron::PermissionWrite)))
@@ -1769,7 +1769,7 @@ namespace horizon
                     -EACCES,
                     directory);
 
-          ELLE_LOG_TRACE("lookup for the target name")
+          ELLE_TRACE("lookup for the target name")
             if (etoile::wall::Directory::Lookup(directory,
                                                 t,
                                                 entry) == elle::Status::Error)
@@ -1787,7 +1787,7 @@ namespace horizon
               // Unlink the object, assuming it is either a file or a
               // link.  Note that the Crux's method is called in order
               // not to have to deal with the target's genre.
-              ELLE_LOG_TRACE("unlink the existing target %s", target)
+              ELLE_TRACE("unlink the existing target %s", target)
                 if ((result = Crux::Unlink(target)) < 0)
                   error("unable to unlink the target object which is "
                         "about to get overwritte",
@@ -1795,14 +1795,14 @@ namespace horizon
                         directory);
             }
 
-          ELLE_LOG_TRACE("rename the entry from %s to %s", f, t)
+          ELLE_TRACE("rename the entry from %s to %s", f, t)
             if (etoile::wall::Directory::Rename(directory, f, t) ==
                 elle::Status::Error)
               error("unable to rename a directory entry",
                     -EPERM,
                     directory);
 
-          ELLE_LOG_TRACE("store the directory")
+          ELLE_TRACE("store the directory")
             if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
               error("unable to store the directory",
                     -EPERM);
@@ -1970,14 +1970,14 @@ namespace horizon
     Crux::link(const char* target,
                const char* source)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
       return -ENOSYS;
     }
 
     /// This method removes an existing file.
     int                 Crux::Unlink(const char*                path)
     {
-      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);

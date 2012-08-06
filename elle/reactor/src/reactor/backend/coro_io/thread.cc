@@ -78,7 +78,7 @@ namespace reactor
       Thread::~Thread()
       {
         assert(status() == status::done || status() == status::starting || this == &_manager._self);
-        ELLE_LOG_TRACE("%s: die", this->_name);
+        ELLE_TRACE("%s: die", this->_name);
         if (_coro)
           {
             Coro_free(_coro);
@@ -125,9 +125,9 @@ namespace reactor
           _manager._current = this;
           _coro = Coro_new();
           assert(_coro);
-          ELLE_LOG_TRACE("%s: start %s", current->_name , this->_name);
+          ELLE_TRACE("%s: start %s", current->_name , this->_name);
           Coro_startCoro_(_caller->_coro, _coro, this, &starter);
-          ELLE_LOG_TRACE("%s: back from %s", current->_name, _name);
+          ELLE_TRACE("%s: back from %s", current->_name, _name);
         }
         else
         {
@@ -136,7 +136,7 @@ namespace reactor
           Thread* current = _manager._current;
           _caller = current;
           _manager._current = this;
-          ELLE_LOG_TRACE("%s: step from %s", this->_name, _caller->_name);
+          ELLE_TRACE("%s: step from %s", this->_name, _caller->_name);
           Coro_switchTo_(current->_coro, _coro);
         }
       }
@@ -171,7 +171,7 @@ namespace reactor
         _caller = 0;
         _status = status::done;
         _manager._current = caller;
-        ELLE_LOG_TRACE("%s: done", this->_name);
+        ELLE_TRACE("%s: done", this->_name);
         Coro_switchTo_(_coro, caller->_coro);
       }
 
@@ -182,7 +182,7 @@ namespace reactor
         assert(_status == status::running);
         _status = status::waiting;
         _manager._current = _caller;
-        ELLE_LOG_TRACE("%s: yield back to %s",
+        ELLE_TRACE("%s: yield back to %s",
                        this->_name, _manager._current->_name);
         _caller = 0;
         Coro_switchTo_(_coro, _manager._current->_coro);

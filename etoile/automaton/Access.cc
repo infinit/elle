@@ -214,7 +214,7 @@ namespace etoile
           // return the record.
           record = &context.rights.record;
 
-          ELLE_LOG_TRACE("Access lookup found record %p from context.rights", record);
+          ELLE_TRACE("Access lookup found record %p from context.rights", record);
         }
       else
         {
@@ -235,7 +235,7 @@ namespace etoile
               // return the record.
               record = &context.object->meta.owner.record;
 
-              ELLE_LOG_TRACE("Access lookup found record %p from context.object.meta.owner", record);
+              ELLE_TRACE("Access lookup found record %p from context.object.meta.owner", record);
             }
           else
             {
@@ -254,7 +254,7 @@ namespace etoile
                                          record) == elle::Status::Error)
                 escape("unable to lookup in the access object");
 
-              ELLE_LOG_TRACE("Access lookup found record %p from context.access", record);
+              ELLE_TRACE("Access lookup found record %p from context.access", record);
             }
         }
 

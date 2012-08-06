@@ -93,22 +93,22 @@ namespace elle
         {
           while (true)
             {
-              ELLE_LOG_TRACE("%s: wait for channel.", *this);
+              ELLE_TRACE("%s: wait for channel.", *this);
               infinit::protocol::Channel channel = this->_channels->accept();
-              ELLE_LOG_TRACE("%s: got new channel %s, read packet.", *this, channel.id());
+              ELLE_TRACE("%s: got new channel %s, read packet.", *this, channel.id());
               _dispatch_packet(channel.read(), channel);
             }
         }
       catch (const reactor::network::ConnectionClosed& err)
         {
-          ELLE_LOG_TRACE("%s: connection closed: %s", *this, err.what());
+          ELLE_TRACE("%s: connection closed: %s", *this, err.what());
           // Nothing.
         }
       catch (const std::runtime_error& e)
         {
           // Any error with the peer. Consider him alienated and
           // disconnect from him.
-          ELLE_LOG_TRACE("%s: fatal protocol error: %s", *this, e.what());
+          ELLE_TRACE("%s: fatal protocol error: %s", *this, e.what());
         }
     }
 
@@ -123,14 +123,14 @@ namespace elle
         }
       catch (const reactor::network::ConnectionClosed& err)
         {
-          ELLE_LOG_TRACE("%s: connection closed: %s", *this, err.what());
+          ELLE_TRACE("%s: connection closed: %s", *this, err.what());
           // Nothing.
         }
       catch (const std::runtime_error& e)
         {
           // Any error with the peer. Consider him alienated and
           // disconnect from him.
-          ELLE_LOG_TRACE("%s: fatal protocol error: %s", *this, e.what());
+          ELLE_TRACE("%s: fatal protocol error: %s", *this, e.what());
         }
     }
 
@@ -138,16 +138,16 @@ namespace elle
     TCPSocket::_read_parcel(infinit::protocol::Packet& packet)
     {
       Parcel* parcel = new Parcel;
-      ELLE_LOG_TRACE("%s: got packet, read parcel.", *this)
+      ELLE_TRACE("%s: got packet, read parcel.", *this)
         {
           serialize::InputBinaryArchive input(packet);
 
           // Extract the header.
-          ELLE_LOG_TRACE("%s: read tag.", *this)
+          ELLE_TRACE("%s: read tag.", *this)
             input >> parcel->header->tag;
 
           // Extract the data.
-          ELLE_LOG_TRACE("%s: read data.", *this)
+          ELLE_TRACE("%s: read data.", *this)
             input >> *parcel->data;
         }
       return parcel;
@@ -159,7 +159,7 @@ namespace elle
     {
       Parcel* parcel = _read_parcel(packet);
       Tag tag = parcel->header->tag;
-      ELLE_LOG_TRACE("%s: received RPC with tag %s.", *this, tag);
+      ELLE_TRACE("%s: received RPC with tag %s.", *this, tag);
       auto it = Network::Procedures.find(tag);
 
       if (it == Network::Procedures.end())
@@ -167,7 +167,7 @@ namespace elle
           // Display error messages
           if (tag == TagError)
             {
-              ELLE_LOG_TRACE("%s: RPC is an error.", *this);
+              ELLE_TRACE("%s: RPC is an error.", *this);
               // FIXME: restore error messages extraction
               // standalone::Report  report;
               // extract the error message.
@@ -180,14 +180,14 @@ namespace elle
               // // log the error.
               // log("an error message has been received "
               //     "with no registered procedure");
-              // ELLE_LOG_TRACE("%s: an error message has been "
+              // ELLE_TRACE("%s: an error message has been "
               //                "received with no registered "
               //                "procedure", *this)
               return;
             }
           else
             {
-              ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
+              ELLE_TRACE("%s: fatal: unrecognized RPC.", *this);
               throw std::runtime_error
                 (elle::sprintf("unrecognized RPC tag: %s.", tag));
             }
@@ -207,7 +207,7 @@ namespace elle
           Status::Error)
         return;
       assert(it->second);
-      ELLE_LOG_TRACE("%s: call procedure.", *this);
+      ELLE_TRACE("%s: call procedure.", *this);
       if (it->second(this, l, channel, *parcel) == Status::Error)
         // FIXME
         // escape("an error occured while processing the event");

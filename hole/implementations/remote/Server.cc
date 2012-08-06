@@ -59,7 +59,7 @@ namespace hole
         while (true)
           {
             std::unique_ptr<reactor::network::Socket> socket(_server->accept());
-            ELLE_LOG_TRACE_SCOPE("accept");
+            ELLE_TRACE_SCOPE("accept");
             auto result = this->_customers.insert(new Customer(*this, std::move(socket)));
             assert(result.second);
           }
@@ -78,7 +78,7 @@ namespace hole
       Server::put(const nucleus::proton::Address& address,
                   const nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
+        ELLE_TRACE_SCOPE("Put[Immutable]");
 
         // does the block already exist.
         if (block.Exist(Hole::Implementation->network,
@@ -95,7 +95,7 @@ namespace hole
       Server::put(const nucleus::proton::Address& address,
                   const nucleus::proton::MutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
+        ELLE_TRACE_SCOPE("Put[Mutable]");
 
         // Validate the block, depending on its component.
         //
@@ -163,7 +163,7 @@ namespace hole
       Server::get(const nucleus::proton::Address& address,
                   nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
+        ELLE_TRACE_SCOPE("Get[Immutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
@@ -185,7 +185,7 @@ namespace hole
                   const nucleus::proton::Version& version,
                   nucleus::proton::MutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
+        ELLE_TRACE_SCOPE("Get[Mutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
@@ -258,7 +258,7 @@ namespace hole
       void
       Server::kill(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE_SCOPE("Kill");
+        ELLE_TRACE_SCOPE("Kill");
 
         // treat the request depending on the nature of the block which
         // the addres indicates.

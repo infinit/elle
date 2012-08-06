@@ -75,7 +75,7 @@ namespace etoile
     {
       elle::network::Port port;
 
-      ELLE_LOG_TRACE("register the messages");
+      ELLE_TRACE("register the messages");
 
       // register the messages.
       {
@@ -511,7 +511,7 @@ namespace etoile
 
       try
         {
-          ELLE_LOG_TRACE("set up the server and allocator");
+          ELLE_TRACE("set up the server and allocator");
 
           // allocate the server and acceptor for handling incoming connections.
           Portal::server =
@@ -525,7 +525,7 @@ namespace etoile
           Portal::server->listen();
           port = Portal::server->local_endpoint().port();
 
-          ELLE_LOG_TRACE("listening on %u", port);
+          ELLE_TRACE("listening on %u", port);
         }
       catch (std::runtime_error& e)
         {
@@ -695,7 +695,7 @@ namespace etoile
           {
             reactor::network::TCPSocket* socket = Portal::server->accept();
 
-            ELLE_LOG_TRACE("new connection accepted");
+            ELLE_TRACE("new connection accepted");
 
             // allocate a new guest application.
             auto application = std::unique_ptr<Application>(new Application);
@@ -724,7 +724,7 @@ namespace etoile
     {
       Application*      application;
 
-      ELLE_LOG_TRACE("Authenticate()");
+      ELLE_TRACE("Authenticate()");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(elle::network::current_context().socket,

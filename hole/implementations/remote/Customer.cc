@@ -72,7 +72,7 @@ namespace hole
           }
         catch (reactor::Exception& e)
           {
-            ELLE_LOG_TRACE("%s: %s", *this, e);
+            ELLE_TRACE("%s: %s", *this, e);
             _server._remove(this);
           }
       }
@@ -84,7 +84,7 @@ namespace hole
       bool
       Customer::challenge(lune::Passport const& passport)
       {
-        ELLE_LOG_TRACE_SCOPE("%s: challenge", *this);
+        ELLE_TRACE_SCOPE("%s: challenge", *this);
         if (passport.Validate(Infinit::Authority) == elle::Status::Error)
           {
             _server._remove(this);
@@ -101,7 +101,7 @@ namespace hole
       Customer::push(nucleus::proton::Address const& address,
                      nucleus::Derivable const& derivable)
       {
-        ELLE_LOG_TRACE_SCOPE("Push");
+        ELLE_TRACE_SCOPE("Push");
 
         _state_check_authenticated();
 
@@ -144,7 +144,7 @@ namespace hole
       Customer::pull(const nucleus::proton::Address& address,
                      const nucleus::proton::Version& version)
       {
-        ELLE_LOG_TRACE_SCOPE("Pull");
+        ELLE_TRACE_SCOPE("Pull");
         _state_check_authenticated();
         nucleus::proton::Block* block = 0;
         // Build the block according to the component.
@@ -188,7 +188,7 @@ namespace hole
       bool
       Customer::wipe(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE_SCOPE("Wipe");
+        ELLE_TRACE_SCOPE("Wipe");
         _state_check_authenticated();
         _server.kill(address);
         return true;

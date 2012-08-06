@@ -424,13 +424,13 @@ namespace plasma
         { this->_request(url, "POST", req.repr(), res); }
       catch (std::exception const& err)
         {
-          ELLE_LOG_TRACE("POST %s %s threw an error", url, req.repr());
+          ELLE_TRACE("POST %s %s threw an error", url, req.repr());
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      ELLE_LOG_TRACE("POST %s %s => %s", url, req.repr(), res.str());
+      ELLE_TRACE("POST %s %s => %s", url, req.repr(), res.str());
       // deserialize response
       try
         { elle::serialize::InputJSONArchive(res, ret); }
@@ -453,13 +453,13 @@ namespace plasma
         { this->_request(url, "GET", "", res); }
       catch (std::exception const& err)
         {
-          ELLE_LOG_TRACE("GET %s threw an error", url);
+          ELLE_TRACE("GET %s threw an error", url);
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      ELLE_LOG_TRACE("GET %s => %s", url, res.str());
+      ELLE_TRACE("GET %s => %s", url, res.str());
 
       // deserialize response
       try

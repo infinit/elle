@@ -36,7 +36,7 @@ namespace reactor
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
-    ELLE_LOG_TRACE("Scheduler: done");
+    ELLE_TRACE("Scheduler: done");
     assert(_frozen.empty());
   }
 
@@ -50,13 +50,13 @@ namespace reactor
       _starting.clear();
     }
     Threads running(_running);
-    ELLE_LOG_TRACE("Scheduler: new round with %s jobs", running.size());
+    ELLE_TRACE("Scheduler: new round with %s jobs", running.size());
     BOOST_FOREACH (Thread* t, running)
     {
-      ELLE_LOG_TRACE("Scheduler: schedule %s", *t);
+      ELLE_TRACE("Scheduler: schedule %s", *t);
       _step(t);
     }
-    ELLE_LOG_TRACE("Scheduler: run asio callbacks");
+    ELLE_TRACE("Scheduler: run asio callbacks");
     _io_service.reset();
     _io_service.poll();
     if (_running.empty() && _starting.empty())
@@ -66,7 +66,7 @@ namespace reactor
         else
           while (_running.empty() && _starting.empty())
             {
-              ELLE_LOG_TRACE("Scheduler: nothing to do, "
+              ELLE_TRACE("Scheduler: nothing to do, "
                                     "polling asio in a blocking fashion");
               _io_service.reset();
               boost::system::error_code err;
@@ -110,7 +110,7 @@ namespace reactor
     _current = previous;
     if (thread->state() == Thread::state::done)
       {
-        ELLE_LOG_TRACE("Scheduler: cleanup %s", *thread);
+        ELLE_TRACE("Scheduler: cleanup %s", *thread);
         _running.erase(thread);
         if (thread->_dispose)
           delete thread;
@@ -185,7 +185,7 @@ namespace reactor
   Scheduler::_terminate(Thread* thread)
   {
     ELLE_LOG_COMPONENT("Reactor.Thread");
-    ELLE_LOG_TRACE("%s: terminate", *thread);
+    ELLE_TRACE("%s: terminate", *thread);
     if (current() == thread)
       throw Terminate(*this);
     // If the underlying coroutine was never run, nothing to do.

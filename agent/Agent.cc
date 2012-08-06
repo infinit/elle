@@ -69,13 +69,13 @@ namespace agent
           std::getline(identity_file, Agent::meta_token);
           std::string clear_identity;
           std::getline(identity_file, clear_identity);
-          ELLE_LOG_TRACE("got token: %s", Agent::meta_token);
+          ELLE_TRACE("got token: %s", Agent::meta_token);
           if (Agent::Identity.Restore(clear_identity) == elle::Status::Error)
             escape("unable to restore the identity");
         }
       else
         {
-          ELLE_LOG_TRACE("Cannot load identity from watchdog %s",
+          ELLE_TRACE("Cannot load identity from watchdog %s",
                          common::watchdog::identity_path());
           elle::String        pass;
           // prompt the user for the passphrase.

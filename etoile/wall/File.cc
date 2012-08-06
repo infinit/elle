@@ -39,7 +39,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Create()");
+      ELLE_TRACE_SCOPE("Create()");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -86,7 +86,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Load()");
+      ELLE_TRACE_SCOPE("Load()");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -132,7 +132,7 @@ namespace etoile
     elle::Status        File::Lock(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE_SCOPE("Lock()");
+      ELLE_TRACE_SCOPE("Lock()");
 
       // XXX to implement.
 
@@ -145,7 +145,7 @@ namespace etoile
     elle::Status        File::Release(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE_SCOPE("Release()");
+      ELLE_TRACE_SCOPE("Release()");
 
       // XXX to implement.
 
@@ -164,7 +164,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Write()");
+      ELLE_TRACE_SCOPE("Write()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -206,7 +206,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Read()");
+      ELLE_TRACE_SCOPE("Read()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -244,7 +244,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Adjust()");
+      ELLE_TRACE_SCOPE("Adjust()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -283,7 +283,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Discard()");
+      ELLE_TRACE_SCOPE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -374,7 +374,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Store()");
+      ELLE_TRACE_SCOPE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -464,7 +464,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_LOG_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -551,7 +551,7 @@ namespace etoile
     elle::Status        File::Purge(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE_SCOPE("Purge()");
+      ELLE_TRACE_SCOPE("Purge()");
 
       // XXX to implement.
 

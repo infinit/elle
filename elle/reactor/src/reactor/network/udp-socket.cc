@@ -119,10 +119,10 @@ namespace reactor
     UDPSocket::read_some(Buffer buffer, DurationOpt timeout)
     {
       if (timeout)
-        ELLE_LOG_TRACE("%s: read at most %s bytes with timeout %s",
+        ELLE_TRACE("%s: read at most %s bytes with timeout %s",
                        *this, buffer.size(), timeout);
       else
-        ELLE_LOG_TRACE("%s: read at most %s bytes",
+        ELLE_TRACE("%s: read at most %s bytes",
                        *this, buffer.size());
       UDPRead read(scheduler(), this, buffer);
       if (!read.run(timeout))
@@ -176,7 +176,7 @@ namespace reactor
     void
     UDPSocket::write(Buffer buffer)
     {
-      ELLE_LOG_TRACE("%s: write %s bytes to %s",
+      ELLE_TRACE("%s: write %s bytes to %s",
                      *this, buffer.size(), _socket->remote_endpoint());
       UDPWrite write(scheduler(), this, buffer);
       write.run();

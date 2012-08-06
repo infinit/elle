@@ -86,7 +86,7 @@ namespace hole
         locus = *Hole::Set.loci.begin();
 
         // try to connect to the server's host.
-        ELLE_LOG_TRACE("try starting as a client")
+        ELLE_TRACE("try starting as a client")
           try
             {
               std::string host;
@@ -100,14 +100,14 @@ namespace hole
             }
           catch (reactor::network::Exception& e)
             {
-              ELLE_LOG_TRACE("network error while starting as a client: %s", e.what());
+              ELLE_TRACE("network error while starting as a client: %s", e.what());
             }
 
         // purge the error messages.
         purge();
 
         // if the client did not succeed, create a server a wait for a client.
-        ELLE_LOG_TRACE("start as a server")
+        ELLE_TRACE("start as a server")
         {
           this->server = new Server(locus.port);
           this->role = Machine::RoleServer;

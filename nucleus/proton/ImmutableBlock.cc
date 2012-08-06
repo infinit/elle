@@ -58,7 +58,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Load(%s)", unique);
+      ELLE_TRACE("Load(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -84,7 +84,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Store(%s)", unique);
+      ELLE_TRACE("Store(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -110,7 +110,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Erase(%s)", unique);
+      ELLE_TRACE("Erase(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -144,7 +144,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Exist(%s)", unique);
+      ELLE_TRACE("Exist(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==

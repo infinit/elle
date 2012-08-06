@@ -84,7 +84,7 @@ namespace hole
                   (elle::concurrency::scheduler()))
       {
         elle::network::Locus     locus;
-        ELLE_LOG_TRACE_SCOPE("launch");
+        ELLE_TRACE_SCOPE("launch");
 
         // Connect to hosts from the descriptor.
         {
@@ -95,12 +95,12 @@ namespace hole
           for (elle::network::Locus& locus: Hole::Set.loci)
             try
               {
-                ELLE_LOG_TRACE("try connecting to %s", locus)
+                ELLE_TRACE("try connecting to %s", locus)
                   _connect(locus);
               }
             catch (reactor::network::Exception& err)
               {
-                ELLE_LOG_TRACE("ignore host %s", locus);
+                ELLE_TRACE("ignore host %s", locus);
                 continue;
               }
         }
@@ -136,7 +136,7 @@ namespace hole
                   }
                 catch (std::exception const& err)
                   {
-                    ELLE_LOG_TRACE("Cannot update device port: %s",
+                    ELLE_TRACE("Cannot update device port: %s",
                                    err.what()); // XXX[to improve]
                   }
               }
@@ -147,7 +147,7 @@ namespace hole
             }
           catch (reactor::Exception& e)
             {
-              ELLE_LOG_TRACE("unable to listen: %s", e.what());
+              ELLE_TRACE("unable to listen: %s", e.what());
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
@@ -197,7 +197,7 @@ namespace hole
           {
             std::unique_ptr<reactor::network::TCPSocket> socket(_server->accept());
 
-            ELLE_LOG_TRACE_SCOPE("accept connection from %s", socket->peer());
+            ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
 
             // Depending on the machine's state.
             switch (this->_state)
@@ -216,7 +216,7 @@ namespace hole
                 default:
                 {
                   // FIXME: Why not listening only when we're attached ?
-                  ELLE_LOG_TRACE("not attached, ignore %s", socket->peer());
+                  ELLE_TRACE("not attached, ignore %s", socket->peer());
                   break;
                 }
               }
@@ -231,7 +231,7 @@ namespace hole
       Machine::Put(const nucleus::proton::Address&    address,
                    const nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_LOG_TRACE("Put[Immutable]");
+        ELLE_TRACE("Put[Immutable]");
 
         // depending on the machine's state.
         switch (this->_state)
@@ -289,7 +289,7 @@ namespace hole
       Machine::Put(const nucleus::proton::Address&    address,
                    const nucleus::proton::MutableBlock& block)
       {
-        ELLE_LOG_TRACE("Put[Mutable]");
+        ELLE_TRACE("Put[Mutable]");
 
         // depending on the machine's state.
         switch (this->_state)
@@ -400,7 +400,7 @@ namespace hole
       std::unique_ptr<nucleus::proton::Block>
       Machine::Get(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE("Get[Immutable]");
+        ELLE_TRACE("Get[Immutable]");
 
         // depending on the machine's state.
         switch (this->_state)
@@ -454,7 +454,7 @@ namespace hole
                       else
                         {
                           // XXX
-                          ELLE_LOG_TRACE("unable to validate the immutable block");
+                          ELLE_TRACE("unable to validate the immutable block");
                           address.Dump();
                           block->Dump();
                           host->Dump();
@@ -862,7 +862,7 @@ namespace hole
       Machine::Get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Version&    version)
       {
-        ELLE_LOG_TRACE("Get[Mutable]");
+        ELLE_TRACE("Get[Mutable]");
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
@@ -882,7 +882,7 @@ namespace hole
       void
       Machine::Kill(const nucleus::proton::Address&   address)
       {
-        ELLE_LOG_TRACE("Kill");
+        ELLE_TRACE("Kill");
 
         // depending on the machine's state.
         switch (this->_state)
@@ -962,7 +962,7 @@ namespace hole
       void
       Machine::_alone()
       {
-        ELLE_LOG_TRACE("alone");
+        ELLE_TRACE("alone");
 
         // If the machine has been neither connected nor authenticated
         // to existing nodes...

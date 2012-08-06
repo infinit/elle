@@ -77,7 +77,7 @@ namespace infinit
     Packet
     ChanneledStream::_read(Channel* channel)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
+      ELLE_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
       int requested_channel = channel->_id;
       reactor::Thread* current = scheduler().current();
       while (true)
@@ -86,15 +86,15 @@ namespace infinit
             {
               // FIXME: use helper to pop
               Packet packet(std::move(channel->_packets.front()));
-              ELLE_LOG_TRACE("%s: %s available.", *this, packet);
+              ELLE_TRACE("%s: %s available.", *this, packet);
               channel->_packets.pop_front();
               return packet;
             }
-          ELLE_LOG_TRACE("%s: no packet available.", *this);
+          ELLE_TRACE("%s: no packet available.", *this);
           if (!_reading)
             _read(false, requested_channel);
           else
-            ELLE_LOG_TRACE("%s: reader already present, waiting.", *this)
+            ELLE_TRACE("%s: reader already present, waiting.", *this)
               current->wait(channel->_available);
         }
     }
@@ -102,7 +102,7 @@ namespace infinit
     void
     ChanneledStream::_read(bool channel, int requested_channel)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: reading packets.", *this);
+      ELLE_TRACE_SCOPE("%s: reading packets.", *this);
       while (true)
         {
           _reading = true;
@@ -110,7 +110,7 @@ namespace infinit
           int channel_id = _uint32_get(p);
           // FIXME: The size of the packet isn't
           // adjusted. This is cosmetic though.
-          ELLE_LOG_TRACE("%s: received %s on channel %s.", *this, p, channel_id);
+          ELLE_TRACE("%s: received %s on channel %s.", *this, p, channel_id);
           auto it = _channels.find(channel_id);
           if (it != _channels.end())
             {
@@ -142,15 +142,15 @@ namespace infinit
     Channel
     ChanneledStream::accept()
     {
-      ELLE_LOG_TRACE_SCOPE("%s: wait for incoming channel", *this);
+      ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
       while (_channels_new.empty())
         {
-          ELLE_LOG_TRACE_SCOPE("%s: no channel available, waiting", *this);
+          ELLE_TRACE_SCOPE("%s: no channel available, waiting", *this);
           if (!_reading)
             _read(true, 0);
           else
             {
-              ELLE_LOG_TRACE_SCOPE("%s: reader already present, waiting.", *this);
+              ELLE_TRACE_SCOPE("%s: reader already present, waiting.", *this);
               reactor::Thread* current = scheduler().current();
               current->wait(this->_channel_available);
             }
@@ -159,7 +159,7 @@ namespace infinit
       // FIXME: use helper to pop
       Channel res = std::move(_channels_new.front());
       _channels_new.pop_front();
-      ELLE_LOG_TRACE_SCOPE("%s: got channel %s", *this, res);
+      ELLE_TRACE_SCOPE("%s: got channel %s", *this, res);
       return res;
     }
 
@@ -176,7 +176,7 @@ namespace infinit
     void
     ChanneledStream::_write(Packet& packet, int id)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
+      ELLE_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
 
       Packet backend_packet;
       _uint32_put(backend_packet, id);

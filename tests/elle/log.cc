@@ -5,14 +5,14 @@ ELLE_LOG_COMPONENT("test_log");
 
 void g()
 {
-  ELLE_LOG_TRACE("Me too!");
+  ELLE_TRACE("Me too!");
 }
 
 void f()
 {
-  ELLE_LOG_TRACE("This is usefull!")
+  ELLE_TRACE("This is usefull!")
   {
-    ELLE_LOG_TRACE("This is usefull inner");
+    ELLE_TRACE("This is usefull inner");
     g();
   }
 }

@@ -70,7 +70,7 @@ namespace hole
               // a referenced access block.
               if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  ELLE_LOG_TRACE(
+                  ELLE_TRACE(
                     "Put nucleus::Object MutableBlock %p"
                     " with a referenced access block",
                     this
@@ -91,7 +91,7 @@ namespace hole
                 }
               else
                 {
-                  ELLE_LOG_TRACE(
+                  ELLE_TRACE(
                       "Put nucleus::Object MutableBlock %p"
                       " with a Null access block",
                       this
@@ -109,7 +109,7 @@ namespace hole
             }
           default:
             {
-              ELLE_LOG_TRACE("Put common MutableBlock %p", &block)
+              ELLE_TRACE("Put common MutableBlock %p", &block)
                 {
                   // validate the block through the common interface.
                   if (block.Validate(address) == elle::Status::Error)
@@ -126,7 +126,7 @@ namespace hole
             }
           }
 
-        ELLE_LOG_TRACE("Store the block %p", &block)
+        ELLE_TRACE("Store the block %p", &block)
           {
             // store the block.
             if (block.Store(Hole::Implementation->network,
@@ -135,7 +135,7 @@ namespace hole
                                        "unable to store the block");
           }
 
-        ELLE_LOG_TRACE("Block %p successfully stored", &block);
+        ELLE_TRACE("Block %p successfully stored", &block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
