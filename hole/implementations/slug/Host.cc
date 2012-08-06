@@ -18,7 +18,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Hole.Slug.Host");
+ELLE_LOG_COMPONENT("infinit.hole.slug.Host");
 
 namespace hole
 {
@@ -91,7 +91,7 @@ namespace hole
       std::vector<elle::network::Locus>
       Host::_authenticate(lune::Passport const& passport)
       {
-        ELLE_TRACE_SCOPE("Authenticate");
+        ELLE_TRACE_SCOPE("%s: authenticate peer with %s", *this, passport);
 
         assert(this->_state == State::connected || this->_state == State::authenticating);
 
@@ -114,7 +114,7 @@ namespace hole
       Host::_push(nucleus::proton::Address const& address,
                   nucleus::Derivable& derivable)
       {
-        ELLE_TRACE_SCOPE("Push(%s)", address);
+        ELLE_TRACE_SCOPE("%s: receive block at address %s", *this, address);
 
         if (this->_state != State::authenticated)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -127,12 +127,12 @@ namespace hole
           {
             case nucleus::proton::FamilyContentHashBlock:
             {
+              ELLE_DEBUG("%s: block is immutable", *this);
+
               assert(dynamic_cast<nucleus::proton::ImmutableBlock*>(
                        block.get()));
               nucleus::proton::ImmutableBlock const& ib =
                 static_cast<nucleus::proton::ImmutableBlock const&>(*block);
-
-              ELLE_TRACE("Push immutable block");
 
               if (ib.Exist(Hole::Implementation->network,
                            address) == elle::Status::True)
@@ -153,7 +153,7 @@ namespace hole
               nucleus::proton::MutableBlock const* mb =
                 static_cast<nucleus::proton::MutableBlock const*>(block.get());
 
-              ELLE_TRACE("pushing mutable block")
+              ELLE_DEBUG("%s: block is mutable", *this);
               {
                 // Validate the block, depending on its component.
                 // Indeed, the Object component requires as additional
@@ -166,7 +166,7 @@ namespace hole
                       nucleus::neutron::Object const* object =
                         static_cast<nucleus::neutron::Object const*>(mb);
 
-                      ELLE_TRACE("validating the object mutable block");
+                      ELLE_DEBUG("%s: validate the object block", *this);
 
                       // Validate the object according to the presence
                       // of a referenced access block.
@@ -181,7 +181,7 @@ namespace hole
                             throw reactor::Exception(elle::concurrency::scheduler(),
                                                      "expected an access block");
 
-                          ELLE_TRACE("retrieving the access block");
+                          ELLE_DEBUG("%s: retrieve the access block", *this);
 
                           // Validate the object, providing the
                           if (object->Validate(address,
@@ -203,7 +203,7 @@ namespace hole
                     }
                   default:
                     {
-                      ELLE_TRACE("validating the mutable block");
+                      ELLE_TRACE("%s: validate the mutable block", *this);
 
                       // Validate the block through the common interface.
                       if (mb->Validate(address) == elle::Status::Error)
@@ -227,9 +227,9 @@ namespace hole
                   {
                     nucleus::proton::MutableBlock* current;
 
-                    ELLE_TRACE("the mutable block seems to exist "
-                                   "locally, make sure it derives the "
-                                   "current version");
+                    ELLE_DEBUG("%s: the mutable block exists "
+                               "locally, make sure it derives the "
+                               "current version", *this);
 
                     // build a block according to the component.
                     if (nucleus::Nucleus::Factory.Build(
@@ -252,7 +252,7 @@ namespace hole
                              "the current version");
                   }
 
-                ELLE_TRACE("now storing the validated mutable block locally");
+                ELLE_TRACE("%s: store the validated mutable block locally", *this);
 
                 // store the block.
                 if (mb->Store(Hole::Implementation->network,
@@ -274,7 +274,8 @@ namespace hole
       Host::_pull(nucleus::proton::Address const& address,
                   nucleus::proton::Version const& version)
       {
-        ELLE_TRACE_SCOPE("Pull(%s, %s)", address, version);
+        ELLE_TRACE_SCOPE("%s: retreive block at address %s for version %s",
+                         *this, address, version);
 
         using nucleus::proton::Block;
         using nucleus::proton::ImmutableBlock;
@@ -302,7 +303,7 @@ namespace hole
             {
               ImmutableBlock* ib;
 
-              ELLE_TRACE("pulling immutable block");
+              ELLE_DEBUG("%s: block is immutable", *this);
 
               // Cast to an immutable block.
               assert(dynamic_cast<ImmutableBlock*>(block.get()) != nullptr);
@@ -333,7 +334,7 @@ namespace hole
             {
               MutableBlock* mb;
 
-              ELLE_TRACE("pulling mutable block");
+              ELLE_TRACE("%s: block is mutable", *this);
 
               assert(dynamic_cast<MutableBlock*>(block.get()) != nullptr);
               mb = static_cast<MutableBlock*>(block.get());
@@ -426,7 +427,7 @@ namespace hole
       bool
       Host::_wipe(nucleus::proton::Address const& address)
       {
-        ELLE_TRACE_SCOPE("Wipe");
+        ELLE_TRACE_SCOPE("%s: wipe block at address %s", *this, address);
 
         // check the host's state.
         if (this->_state != State::authenticated)
