@@ -10,7 +10,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.TCPSocket");
+ELLE_LOG_COMPONENT("Reactor.TCPSocket");
 
 namespace reactor
 {

@@ -14,7 +14,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.agent.Agent");
+ELLE_LOG_COMPONENT("infinit.agent.Agent");
 
 namespace agent
 {

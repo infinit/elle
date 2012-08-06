@@ -21,7 +21,7 @@ namespace nucleus
       {
         static void update(nucleus::neutron::Object& value)
         {
-          ELLE_LOG_TRACE_COMPONENT("nucleus.neutron.Object");
+          ELLE_LOG_COMPONENT("nucleus.neutron.Object");
           ELLE_LOG_TRACE("Compute owner record")
             {
               if (value.meta.owner.record.Update(

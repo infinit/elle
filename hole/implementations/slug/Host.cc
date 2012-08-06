@@ -18,7 +18,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Host");
+ELLE_LOG_COMPONENT("Infinit.Hole.Slug.Host");
 
 namespace hole
 {

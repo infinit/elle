@@ -11,7 +11,7 @@
 
 #include <elle/print.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Directory");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Directory");
 
 namespace etoile
 {

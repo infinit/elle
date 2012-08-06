@@ -3,7 +3,7 @@
 #include <reactor/rw-mutex.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_TRACE_COMPONENT("reactor.RWMutex");
+ELLE_LOG_COMPONENT("reactor.RWMutex");
 
 namespace reactor
 {

@@ -4,7 +4,7 @@
 
 #include <protocol/Stream.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Protocol");
+ELLE_LOG_COMPONENT("Infinit.Protocol");
 
 namespace infinit
 {

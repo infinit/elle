@@ -21,7 +21,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("etoile.wall.Directory");
+ELLE_LOG_COMPONENT("etoile.wall.Directory");
 
 namespace etoile
 {

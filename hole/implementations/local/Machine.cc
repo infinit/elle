@@ -21,7 +21,7 @@ namespace hole
     namespace local
     {
 
-      ELLE_LOG_TRACE_COMPONENT("hole.implementation.local.Machine");
+      ELLE_LOG_COMPONENT("hole.implementation.local.Machine");
 //
 // ---------- holeable --------------------------------------------------------
 //

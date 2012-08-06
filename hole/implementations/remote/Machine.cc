@@ -11,7 +11,7 @@
 # include <boost/format.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Machine");
+ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Machine");
 
 namespace hole
 {

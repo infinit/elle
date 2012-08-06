@@ -22,7 +22,7 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Load(elle::io::Path const& path)
     {
-      ELLE_LOG_TRACE_COMPONENT("elle.concept");
+      ELLE_LOG_COMPONENT("elle.concept");
       ELLE_LOG_TRACE("Load(%s)", path.string())
         {
           ELLE_LOG_TRACE("Open file %s in read mode", path.string());
@@ -63,7 +63,7 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Store(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("elle.concept");
+      ELLE_LOG_COMPONENT("elle.concept");
       ELLE_LOG_TRACE_SCOPE("Store(%s)", path.string());
 
       if (elle::io::File::Dig(path) == elle::Status::Error)
@@ -103,7 +103,7 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Erase(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("elle.concept");
+      ELLE_LOG_COMPONENT("elle.concept");
       ELLE_LOG_TRACE_SCOPE("Erase(%s)", path.string());
 
       if (elle::io::File::Erase(path) == elle::Status::Error)
@@ -115,7 +115,7 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Boolean Fileable<Archive>::Exists(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("elle.concept");
+      ELLE_LOG_COMPONENT("elle.concept");
       ELLE_LOG_TRACE_SCOPE("Exists(%s)", path.string());
 
       if (elle::io::File::Exist(path) == elle::Status::Error)

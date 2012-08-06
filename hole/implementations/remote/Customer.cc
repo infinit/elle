@@ -16,7 +16,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Server");
+ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Server");
 
 namespace hole
 {

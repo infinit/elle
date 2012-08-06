@@ -32,7 +32,7 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.horizon.Crux");
+ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
 namespace horizon
 {

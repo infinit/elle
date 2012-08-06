@@ -1,7 +1,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("test_log");
+ELLE_LOG_COMPONENT("test_log");
 
 void g()
 {
@@ -19,7 +19,7 @@ void f()
 
 int main()
 {
-  ELLE_LOG_TRACE_COMPONENT("test_log.biet");
+  ELLE_LOG_COMPONENT("test_log.biet");
   elle::log::debug("BIET");
   elle::log::info("BIET");
   elle::log::warn("BIET");

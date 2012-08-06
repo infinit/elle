@@ -8,7 +8,7 @@
 
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Nucleus.Proton");
+ELLE_LOG_COMPONENT("Nucleus.Proton");
 
 namespace nucleus
 {

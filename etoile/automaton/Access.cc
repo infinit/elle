@@ -26,7 +26,7 @@ namespace etoile
   namespace automaton
   {
 
-    ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Access");
+    ELLE_LOG_COMPONENT("etoile.automaton.Access");
 
     ///
     /// this method opens the access block by loading it if necessary i.e

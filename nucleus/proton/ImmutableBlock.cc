@@ -15,7 +15,7 @@ namespace nucleus
   namespace proton
   {
 
-    ELLE_LOG_TRACE_COMPONENT("nucleus.proton.ImmutableBlock");
+    ELLE_LOG_COMPONENT("nucleus.proton.ImmutableBlock");
 
     ///
     /// default constructor.

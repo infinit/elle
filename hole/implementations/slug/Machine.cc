@@ -35,7 +35,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
+ELLE_LOG_COMPONENT("Infinit.Hole.Slug.Machine");
 
 namespace hole
 {

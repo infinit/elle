@@ -5,7 +5,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Backend");
+ELLE_LOG_COMPONENT("Reactor.Backend");
 
 namespace reactor
 {

@@ -27,7 +27,7 @@
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.FUSE");
+ELLE_LOG_COMPONENT("Infinit.FUSE");
 
 namespace horizon
 {

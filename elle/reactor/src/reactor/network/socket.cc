@@ -8,7 +8,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Socket");
+ELLE_LOG_COMPONENT("Reactor.Socket");
 
 namespace reactor
 {

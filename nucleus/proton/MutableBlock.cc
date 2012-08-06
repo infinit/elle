@@ -19,7 +19,7 @@
 # include <boost/lexical_cast.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("nucleus.proton.MutableBlock");
+ELLE_LOG_COMPONENT("nucleus.proton.MutableBlock");
 
 namespace nucleus
 {

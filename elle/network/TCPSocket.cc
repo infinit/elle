@@ -15,7 +15,7 @@
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+ELLE_LOG_COMPONENT("Infinit.Network");
 
 namespace elle
 {

@@ -116,7 +116,7 @@ namespace elle
     //  >::type
     //  BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
     //  {
-    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+    //    ELLE_LOG_COMPONENT("elle.serialize");
     //    ELLE_LOG_TRACE(
     //        "Saving %p from its virtual type %s",
     //        this, ELLE_PRETTY_OBJECT_TYPE(this)
@@ -164,7 +164,7 @@ namespace elle
     //  >::type
     //  BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
     //  {
-    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+    //    ELLE_LOG_COMPONENT("elle.serialize");
     //    ELLE_LOG_TRACE(
     //        "Loading %p from its virtual type %s",
     //        this, ELLE_PRETTY_OBJECT_TYPE(this)
@@ -186,7 +186,7 @@ namespace elle
         //if (StoreClassVersion<T>::value == true)
         //  Access::Load(this->self(), classVersion);
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
-        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+        ELLE_LOG_COMPONENT("elle.serialize");
         ELLE_LOG_TRACE(
             "Load construct %p with its concrete type %s",
             this, ELLE_PRETTY_TYPE(T)

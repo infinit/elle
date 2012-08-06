@@ -6,7 +6,7 @@
 # include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+ELLE_LOG_COMPONENT("Infinit.Network");
 
 namespace elle
 {

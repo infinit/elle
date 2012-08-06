@@ -7,7 +7,7 @@
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
+ELLE_LOG_COMPONENT("Reactor.Thread");
 
 namespace reactor
 {

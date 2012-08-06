@@ -12,7 +12,7 @@
 
 #define CRLF "\r\n"
 
-ELLE_LOG_TRACE_COMPONENT("infinit.plasma.meta.Client");
+ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
 
 // - API responses serializers ------------------------------------------------
 
