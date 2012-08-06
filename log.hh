@@ -2,6 +2,7 @@
 # define ELLE_LOG_HH
 
 # include <elle/log/Logger.hh>
+# include <elle/assert.hh>
 
 namespace elle
 {
@@ -31,7 +32,9 @@ namespace elle
 
 # define ELLE_LOG_TRACE(...)                                            \
     if (ELLE_LOG_TRACE_SCOPE(__VA_ARGS__))                              \
-      { /* Nothing */ }                                                 \
+    {                                                                   \
+      elle::unreachable();                                              \
+    }                                                                   \
     else                                                                \
 
 
