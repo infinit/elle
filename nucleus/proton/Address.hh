@@ -93,6 +93,8 @@ namespace nucleus
       elle::cryptography::Digest* digest;
     };
 
+    std::ostream&
+    operator << (std::ostream& stream, const Address& addr);
   }
 }
 
