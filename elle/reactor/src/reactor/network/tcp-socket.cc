@@ -223,7 +223,7 @@ namespace reactor
     void
     TCPSocket::print(std::ostream& s) const
     {
-      s << "reactor::network::TCPSocket(" << peer() << ")";
+      s << "TCPSocket(" << peer() << ")";
     }
   }
 }
