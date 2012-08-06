@@ -42,7 +42,7 @@ namespace hole
         , _channels(elle::concurrency::scheduler(), _serializer, opener)
         , _rpcs(_channels)
         , _rpcs_handler(elle::concurrency::scheduler(),
-                        elle::sprintf("RPCs handler for %s", *this),
+                        elle::sprintf("RPC %s", *this),
                         boost::bind(&RPC::run, &_rpcs))
       {
         _rpcs.authenticate = boost::bind(&Host::_authenticate, this, _1);
@@ -62,6 +62,7 @@ namespace hole
       Host::push(nucleus::proton::Address const& address,
                  nucleus::proton::Block const& block)
       {
+        ELLE_TRACE_SCOPE("%s: push block at address %s", *this, address);
         nucleus::Derivable derivable(address.component, block);
         return _rpcs.push(address, derivable);
       }
@@ -70,6 +71,7 @@ namespace hole
       Host::pull(nucleus::proton::Address const& address,
                  nucleus::proton::Version const& version)
       {
+        ELLE_TRACE_SCOPE("%s: pull block at address %s with version %s", *this, address, version);
         std::unique_ptr<nucleus::proton::Block> block(_rpcs.pull(address, version).release());
         assert(dynamic_cast<nucleus::proton::MutableBlock*>(block.get()));
         return std::unique_ptr<nucleus::proton::MutableBlock>(static_cast<nucleus::proton::MutableBlock*>(block.release()));
@@ -78,12 +80,14 @@ namespace hole
       bool
       Host::wipe(nucleus::proton::Address const& address)
       {
+        ELLE_TRACE_SCOPE("%s: wipe address %s", *this, address);
         return _rpcs.wipe(address);
       }
 
       std::vector<elle::network::Locus>
       Host::authenticate(lune::Passport& passport)
       {
+        ELLE_TRACE_SCOPE("%s: authenticate with %s", *this, passport);
         _state = State::authenticating;
         return _rpcs.authenticate(passport);
       }
@@ -91,7 +95,7 @@ namespace hole
       std::vector<elle::network::Locus>
       Host::_authenticate(lune::Passport const& passport)
       {
-        ELLE_TRACE_SCOPE("%s: authenticate peer with %s", *this, passport);
+        ELLE_TRACE_SCOPE("%s: peer authenticates with %s", *this, passport);
 
         assert(this->_state == State::connected || this->_state == State::authenticating);
 
@@ -114,7 +118,7 @@ namespace hole
       Host::_push(nucleus::proton::Address const& address,
                   nucleus::Derivable& derivable)
       {
-        ELLE_TRACE_SCOPE("%s: receive block at address %s", *this, address);
+        ELLE_TRACE_SCOPE("%s: peer pushes block at address %s", *this, address);
 
         if (this->_state != State::authenticated)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -274,7 +278,7 @@ namespace hole
       Host::_pull(nucleus::proton::Address const& address,
                   nucleus::proton::Version const& version)
       {
-        ELLE_TRACE_SCOPE("%s: retreive block at address %s for version %s",
+        ELLE_TRACE_SCOPE("%s: peer retreives block at address %s for version %s",
                          *this, address, version);
 
         using nucleus::proton::Block;
@@ -427,7 +431,7 @@ namespace hole
       bool
       Host::_wipe(nucleus::proton::Address const& address)
       {
-        ELLE_TRACE_SCOPE("%s: wipe block at address %s", *this, address);
+        ELLE_TRACE_SCOPE("%s: peer wipes block at address %s", *this, address);
 
         // check the host's state.
         if (this->_state != State::authenticated)

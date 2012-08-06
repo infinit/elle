@@ -35,7 +35,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Hole.Slug.Machine");
+ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 namespace hole
 {
@@ -100,7 +100,7 @@ namespace hole
               }
             catch (reactor::network::Exception& err)
               {
-                ELLE_TRACE("ignore host %s", locus);
+                ELLE_TRACE("ignore host %s: %s", locus, err.what());
                 continue;
               }
         }
