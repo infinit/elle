@@ -32,7 +32,7 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon.Crux");
+ELLE_LOG_TRACE_COMPONENT("infinit.horizon.Crux");
 
 namespace horizon
 {
@@ -1787,25 +1787,25 @@ namespace horizon
               // Unlink the object, assuming it is either a file or a
               // link.  Note that the Crux's method is called in order
               // not to have to deal with the target's genre.
-              if ((result = Crux::Unlink(target)) < 0)
-                error("unable to unlink the target object which is "
-                      "about to get overwritte",
-                      result,
-                      directory);
+              ELLE_LOG_TRACE("unlink the existing target %s", target)
+                if ((result = Crux::Unlink(target)) < 0)
+                  error("unable to unlink the target object which is "
+                        "about to get overwritte",
+                        result,
+                        directory);
             }
 
-          // Rename the entry from _f_ to _t_.
-          if (etoile::wall::Directory::Rename(directory,
-                                              f,
-                                              t) == elle::Status::Error)
-            error("unable to rename a directory entry",
-                  -EPERM,
-                  directory);
+          ELLE_LOG_TRACE("rename the entry from %s to %s", f, t)
+            if (etoile::wall::Directory::Rename(directory, f, t) ==
+                elle::Status::Error)
+              error("unable to rename a directory entry",
+                    -EPERM,
+                    directory);
 
-          // Store the directory.
-          if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-            error("unable to store the directory",
-                  -EPERM);
+          ELLE_LOG_TRACE("store the directory")
+            if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
+              error("unable to store the directory",
+                    -EPERM);
         }
       else
         {
