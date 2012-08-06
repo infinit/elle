@@ -15,7 +15,7 @@
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("etoile.portal.Wrapper");
+ELLE_LOG_COMPONENT("infinit.etoile.portal.Wrapper");
 
 namespace etoile
 {

@@ -7,7 +7,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_COMPONENT("etoile.wall.Path");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Path");
 
 namespace etoile
 {

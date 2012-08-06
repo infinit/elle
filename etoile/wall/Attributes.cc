@@ -13,7 +13,7 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("etoile.wall.Attributes");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Attributes");
 
 namespace etoile
 {

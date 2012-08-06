@@ -12,7 +12,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("etoile.automaton.Rights");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Rights");
 
 namespace etoile
 {

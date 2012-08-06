@@ -38,7 +38,7 @@
 
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("etoile.portal.Portal");
+ELLE_LOG_COMPONENT("infinit.etoile.portal.Portal");
 
 namespace etoile
 {

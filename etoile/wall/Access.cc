@@ -17,7 +17,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_COMPONENT("etoile.wall.Access");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Access");
 
 namespace etoile
 {
