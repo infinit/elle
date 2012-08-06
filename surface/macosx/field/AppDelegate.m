@@ -78,10 +78,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [statusItem setHighlightMode:YES];
 }
 
-- (void)launch8infinit
+- (void)launch8Watchdog
 {
-    NSString *installerPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/bin/8updater"];
-    [NSTask launchedTaskWithLaunchPath:installerPath arguments:[NSArray arrayWithObjects:nil]];
+    [[OOPhone getInstance] launchWatchdog];
 }
 
 - (void)tryToLogin
@@ -121,7 +120,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     else {
         [statusItem setMenu:statusMenu];
         [self removePending];
-        
+        [self launch8Watchdog];
         OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
         [aaa showWindow:self];
     }

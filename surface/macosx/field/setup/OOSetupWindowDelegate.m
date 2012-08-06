@@ -116,8 +116,9 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 {
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
+    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.loginViewEmail stringValue] andClearPassword:[self.loginViewPassword stringValue]];
     [pref setObject:[self.loginViewEmail stringValue]  forKey:@"Email"];
-    [pref setObject:[[self.loginViewPassword stringValue] sha1]  forKey:@"Password"];
+    [pref setObject:hashPassword  forKey:@"Password"];
     [pref setObject:[self.loginViewComputerName stringValue]  forKey:@"ComputerName"];
     [pref setObject:[self.loginViewRememberMe stringValue]  forKey:@"RememberMe"];
     [pref synchronize];
@@ -157,9 +158,10 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 {
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
+    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.registerViewEmail stringValue] andClearPassword:[self.registerViewPassword stringValue]];
     [pref setObject:[self.registerViewFullName stringValue] forKey:@"FullName"];
     [pref setObject:[self.registerViewEmail stringValue] forKey:@"Email"];
-    [pref setObject:[[self.registerViewPassword stringValue] sha1] forKey:@"Password"];
+    [pref setObject:hashPassword forKey:@"Password"];
     [pref setObject:[self.registerViewComputerName stringValue] forKey:@"ComputerName"];
     [pref setObject:[self.registerViewActivationCode stringValue] forKey:@"ActivationCode"];
     [pref setObject:(([self.registerViewTermOfService state] == NSOnState) ? @"YES" : @"NO") forKey:@"RememberMe"];

@@ -26,7 +26,6 @@
 		1C7863451566919800F7D2F5 /* 19px-pending-anim-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863061566919800F7D2F5 /* 19px-pending-anim-blue.gif */; };
 		1C7863461566919800F7D2F5 /* 19px-pending-anim-red.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */; };
 		1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
-		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
 		1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 		1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */; };
@@ -653,7 +652,6 @@
 				1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */,
 				1C03F3361575154200966EC3 /* OOSetupWindowDelegate.m in Sources */,
 				1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */,
-				1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

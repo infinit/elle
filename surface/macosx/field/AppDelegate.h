@@ -28,7 +28,7 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
 @property(assign)   NSTimer             *animTimer;
 @property           BOOL                isPending;
 
-- (void)launch8infinit;
+- (void)launch8Watchdog;
 
 - (void)addPending;
 - (void)removePending;
