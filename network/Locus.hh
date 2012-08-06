@@ -27,10 +27,12 @@ namespace elle
       //
       static const Locus                Null;
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
       Locus();
+      Locus(std::string const& hostname, int port);
 
       //
       // methods
@@ -61,6 +63,8 @@ namespace elle
 
   }
 }
+
+
 
 #include <elle/network/Locus.hxx>
 

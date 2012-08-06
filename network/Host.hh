@@ -48,10 +48,12 @@ namespace elle
       //
       static Status     Hosts(Container&);
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
       Host();
+      Host(Type type);
 
       //
       // methods

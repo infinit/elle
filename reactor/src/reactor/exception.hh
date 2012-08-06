@@ -29,6 +29,8 @@ namespace reactor
     Backtrace _backtrace;
   };
 
+  std::ostream& operator << (std::ostream& s, Exception const& e);
+
   class Terminate: public Exception
   {
   public:

@@ -69,17 +69,20 @@ namespace elle
       return Status::Ok;
     }
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-    ///
-    /// the default constructor initializes the object to Null.
-    ///
-    Host::Host():
-      type(TypeNull)
+    Host::Host()
+      : type(TypeNull)
+    {}
+
+    Host::Host(Type type)
+      : Host()
     {
+      Create(type);
     }
+
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -222,7 +225,7 @@ namespace elle
       String            alignment(margin, ' ');
 
       std::cout << alignment << "[Host]" << std::endl;
- 
+
       std::cout << alignment << io::Dumpable::Shift << "[Type] "
                 << this->type << std::endl;
 

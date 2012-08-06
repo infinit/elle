@@ -10,25 +10,26 @@ namespace elle
   namespace network
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
     ///
     /// the definition of a Null locus.
     ///
     const Locus                 Locus::Null;
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-    ///
-    /// default constructor.
-    ///
-    Locus::Locus():
-      port(0)
+    Locus::Locus()
+      : port(0)
+    {}
+
+
+    Locus::Locus(std::string const& hostname, int port)
+      : Locus()
     {
+      Host h;
+      h.Create(hostname);
+      Create(h, port);
     }
 
 //

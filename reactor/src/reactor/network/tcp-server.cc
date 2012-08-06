@@ -1,7 +1,11 @@
+#include <elle/printf.hh>
+#include <elle/idiom/Close.hh>
+
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
+#include <elle/idiom/Close.hh>
 
 namespace reactor
 {
@@ -81,6 +85,8 @@ namespace reactor
     TCPSocket*
     TCPServer::accept()
     {
+      // FIXME: server should listen in ctor to avoid this crappy state ?
+      assert(_acceptor);
       TCPAccept accept(scheduler(), *_acceptor);
       accept.run();
       TCPSocket* socket = new TCPSocket(scheduler(), accept.socket());
@@ -94,8 +100,16 @@ namespace reactor
     void
     TCPServer::listen(const EndPoint& end_point)
     {
-      _acceptor = new boost::asio::ip::tcp::acceptor(scheduler().io_service(),
-                                                     end_point);
+      try
+        {
+          _acceptor = new boost::asio::ip::tcp::acceptor(scheduler().io_service(),
+                                                         end_point);
+        }
+      catch (boost::system::system_error& e)
+        {
+          throw Exception(scheduler(),
+                          elle::sprintf("unable to listen on %s: %s", end_point, e));
+        }
     }
 
     void

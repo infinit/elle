@@ -1,8 +1,7 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hh"
-
-#include "Null.hh"
+#include <elle/serialize/JSONArchive.hh>
+#include <elle/format/json/Null.hh>
 
 namespace elle
 {
