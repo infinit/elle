@@ -507,6 +507,18 @@ namespace hole
         return elle::Status::Ok;
       }
 
+      void
+      Host::print(std::ostream& stream) const
+      {
+        stream << "Host " << *_socket;
+      }
+
+      std::ostream&
+      operator << (std::ostream& stream, const Host& host)
+      {
+        host.print(stream);
+        return stream;
+      }
     }
   }
 }

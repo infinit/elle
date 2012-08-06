@@ -78,15 +78,21 @@ namespace hole
         bool
         _wipe(nucleus::proton::Address const&);
 
-
       /*---------.
       | Dumpable |
       `---------*/
       public:
         elle::Status    Dump(const elle::Natural32 = 0) const;
 
+      /*-------------.
+      | Pretty print |
+      `-------------*/
+      public:
+        void print(std::ostream& stream) const;
       };
 
+      std::ostream&
+      operator << (std::ostream& stream, const Host& host);
     }
   }
 }
