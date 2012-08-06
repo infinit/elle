@@ -24,29 +24,11 @@ namespace elle
 
     namespace detail
     {
-      template<typename... T>
-      TraceContext::TraceContext(TraceComponent const& component,
-                                 char const* file,
-                                 unsigned int line,
-                                 char const* function,
-                                 T const&... values)
-        : _component(component)
+      inline
+      TraceContext::operator bool() const
       {
-        _indent();
-        this->send(file, line, function, values...);
-      }
-
-
-      template<typename... T>
-      bool TraceContext::send(char const* file,
-                              unsigned int line,
-                              char const* function,
-                              T const&... values)
-      {
-        this->_send(file, line, function, elle::sprintf(values...));
         return false;
       }
-
     }
 
   }

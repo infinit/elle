@@ -129,12 +129,14 @@ namespace elle
         Components::instance().enable(this->name);
       }
 
-
-
-      TraceContext::TraceContext(TraceComponent const& component)
+      TraceContext::TraceContext(TraceComponent const& component,
+                                 char const* file,
+                                 unsigned int line,
+                                 char const* function,
+                                 std::string const& message)
         : _component(component)
       {
-        _indent();
+        this->_send(file, line, function, message);
       }
 
       TraceContext::~TraceContext()

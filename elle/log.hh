@@ -3,6 +3,7 @@
 
 # include <elle/log/Logger.hh>
 # include <elle/assert.hh>
+# include <elle/printf.hh>
 
 namespace elle
 {
@@ -26,7 +27,7 @@ namespace elle
       ::elle::log::detail::TraceContext                                 \
       (__trace_component__,                                             \
        __FILE__, __LINE__, ETC_LOG_FUNCTION,                            \
-       ##__VA_ARGS__)                                                   \
+       elle::sprintf(__VA_ARGS__))                                      \
 
 # define ELLE_LOG_TRACE(...)                                            \
     if (ELLE_LOG_TRACE_SCOPE(__VA_ARGS__))                              \
@@ -48,21 +49,13 @@ namespace elle
       struct TraceContext
       {
       public:
-        TraceContext(TraceComponent const& component);
-        template<typename... T>
         TraceContext(TraceComponent const& component,
                      char const* file,
                      unsigned int line,
                      char const* function,
-                     T const&... values);
+                     std::string const& message);
         ~TraceContext();
-        template<typename... T>
-        bool
-        send(char const* file,
-             unsigned int line,
-             char const* function,
-             T const&... values);
-        operator bool() const { return false;}
+        operator bool() const;
       private:
         TraceComponent const& _component;
         void _send(char const* file,
