@@ -14,8 +14,6 @@ namespace elle
     void debug(std::string const& msg);
     void dump(std::string const& msg);
 
-    extern elle::log::Logger default_logger;
-
 # define ELLE_LOG_COMPONENT(component)                                  \
     static ::elle::log::detail::TraceComponent                          \
     __trace_component__(component)                                      \
@@ -23,30 +21,30 @@ namespace elle
 # define ETC_LOG_FUNCTION __PRETTY_FUNCTION__
 
 
-#define ELLE_LOG_LEVEL_SCOPE(Level, ...)                                \
+# define ELLE_LOG_LEVEL_SCOPE(Lvl, ...)                                 \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
       ::elle::log::detail::TraceContext                                 \
-      (elle::Logger::Level::Level,                                      \
+      (elle::log::Logger::Level::Lvl,                                   \
        __trace_component__,                                             \
        __FILE__, __LINE__, ETC_LOG_FUNCTION,                            \
        elle::sprintf(__VA_ARGS__))                                      \
 
-#define ELLE_LOG_LEVEL(Level, ...)                                      \
+# define ELLE_LOG_LEVEL(Level, ...)                                     \
     if (ELLE_LOG_LEVEL_SCOPE(Level, __VA_ARGS__))                       \
       {                                                                 \
-      elle::unreachable();                                              \
-    }                                                                   \
+        elle::unreachable();                                            \
+      }                                                                 \
     else                                                                \
 
-#define ELLE_LOG_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(log, __VA_ARGS__)
-#define ELLE_TRACE_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(trace, __VA_ARGS__)
-#define ELLE_DEBUG_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(debug, __VA_ARGS__)
-#define ELLE_DUMP_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(dump, __VA_ARGS__)
+# define ELLE_LOG_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(log, __VA_ARGS__)
+# define ELLE_TRACE_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(trace, __VA_ARGS__)
+# define ELLE_DEBUG_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(debug, __VA_ARGS__)
+# define ELLE_DUMP_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(dump, __VA_ARGS__)
 
-#define ELLE_LOG(...)  ELLE_LOG_LEVEL(log, __VA_ARGS__)
-#define ELLE_TRACE(...) ELLE_LOG_LEVEL(trace, __VA_ARGS__)
-#define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, __VA_ARGS__)
-#define ELLE_DUMP(...)  ELLE_LOG_LEVEL(dump, __VA_ARGS__)
+# define ELLE_LOG(...)  ELLE_LOG_LEVEL(log, __VA_ARGS__)
+# define ELLE_TRACE(...) ELLE_LOG_LEVEL(trace, __VA_ARGS__)
+# define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, __VA_ARGS__)
+# define ELLE_DUMP(...)  ELLE_LOG_LEVEL(dump, __VA_ARGS__)
 
     namespace detail
     {
@@ -60,7 +58,8 @@ namespace elle
       struct TraceContext
       {
       public:
-        TraceContext(TraceComponent const& component,
+        TraceContext(elle::log::Logger::Level level,
+                     TraceComponent const& component,
                      char const* file,
                      unsigned int line,
                      char const* function,
@@ -69,11 +68,13 @@ namespace elle
         operator bool() const;
       private:
         TraceComponent const& _component;
-        void _send(char const* file,
+        void _send(elle::log::Logger::Level level,
+                   char const* file,
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
-        void _send(std::string const& msg);
+        void _send(elle::log::Logger::Level level,
+                   std::string const& msg);
         void _indent();
         void _unindent();
       };

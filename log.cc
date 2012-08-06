@@ -20,8 +20,34 @@ namespace elle
 {
   namespace log
   {
-    elle::log::Logger default_logger{
-        elle::log::Logger::Level::trace
+    Logger::Level
+    logLevel()
+    {
+      const char* env = ::getenv("ELLE_LOG_LEVEL");
+      if (env)
+        {
+          const std::string level(env);
+          if (level == "LOG")
+            return Logger::Level::log;
+          else if (level == "TRACE")
+            return Logger::Level::trace;
+          else if (level == "DEBUG")
+            return Logger::Level::debug;
+          else if (level == "DUMP")
+            return Logger::Level::dump;
+          else
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     elle::sprintf("invalid log level: %s", level));
+        }
+      else
+        return Logger::Level::log;
+    }
+
+
+    elle::log::Logger& default_logger()
+    {
+      static elle::log::Logger logger(logLevel());
+      return logger;
     };
 
     namespace detail
@@ -129,14 +155,16 @@ namespace elle
         Components::instance().enable(this->name);
       }
 
-      TraceContext::TraceContext(TraceComponent const& component,
+      TraceContext::TraceContext(elle::log::Logger::Level level,
+                                 TraceComponent const& component,
                                  char const* file,
                                  unsigned int line,
                                  char const* function,
                                  std::string const& message)
         : _component(component)
       {
-        this->_send(file, line, function, message);
+        _indent();
+        this->_send(level, file, line, function, message);
       }
 
       TraceContext::~TraceContext()
@@ -145,7 +173,8 @@ namespace elle
       }
 
       void
-      TraceContext::_send(char const* file,
+      TraceContext::_send(elle::log::Logger::Level level,
+                          char const* file,
                           unsigned int line,
                           char const* function,
                           const std::string& msg)
@@ -154,10 +183,10 @@ namespace elle
         if (location)
           {
             static boost::format fmt("%s:%s: %s (%s)");
-            this->_send(str(fmt % file % line % msg % function));
+            this->_send(level, str(fmt % file % line % msg % function));
           }
         else
-          this->_send(msg);
+          this->_send(level, msg);
       }
 
       static int thread_id(reactor::Thread* t)
@@ -181,7 +210,7 @@ namespace elle
 
 
       void
-      TraceContext::_send(std::string const& msg)
+      TraceContext::_send(elle::log::Logger::Level level, std::string const& msg)
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
@@ -203,11 +232,11 @@ namespace elle
           time = boost::posix_time::second_clock::universal_time();
         else
           time = boost::posix_time::second_clock::local_time();
-        static boost::format model("%s: [%s] [%s]%s%s");
+        static boost::format model("%s: [%s] [%s] %s%s");
         boost::format fmt(model);
         reactor::Thread* t = elle::concurrency::scheduler().current();
         fmt % time % s % (t ? t->name() : std::string(" ")) % align % msg;
-        default_logger.trace(str(fmt));
+        default_logger().message(level, str(fmt));
       }
 
       void
