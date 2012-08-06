@@ -169,6 +169,8 @@ namespace elle
            static_cast<Byte*>(::realloc(this->contents, capacity))) == nullptr)
         escape("%s", ::strerror(errno));
 
+      // std::cerr << "REGION ALLOCATED: " << (void*)contents << " (" << capacity << ")" << std::endl;
+
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
       this->size = 0;

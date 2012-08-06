@@ -18,14 +18,10 @@ namespace elle
     public:
       enum class Level
       {
-        trace = 0,
+        log = 0,
+        trace,
         debug,
-        info,
-        warn,
-        error,
-        fatal,
-
-        _max_value,
+        dump,
       };
 
     private:
@@ -37,13 +33,11 @@ namespace elle
       ~Logger();
 
     public:
-      template<typename... T> void message(Level level, T const&... values);
-      template<typename... T> void trace(T const&... values);
-      template<typename... T> void debug(T const&... values);
-      template<typename... T> void info(T const&... values);
-      template<typename... T> void warn(T const&... values);
-      template<typename... T> void error(T const&... values);
-      template<typename... T> void fatal(T const&... values);
+      void message(Level level, std::string const& values);
+      void log(std::string const& msg);
+      void trace(std::string const& msg);
+      void debug(std::string const& msg);
+      void dump(std::string const& msg);
 
       /// properties
     public:
@@ -52,13 +46,6 @@ namespace elle
 
       Level level() const;
       void level(Level level_);
-
-      /// Set the out stream for a specific level
-      void stream(Level level, std::ostream& out);
-      void stream(Level level, std::unique_ptr<std::ostream>&& out);
-
-      /// Set the out stream for all level
-      void stream(std::ostream& out);
 
     protected:
       void _message(Level level, std::string const& message);

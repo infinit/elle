@@ -201,10 +201,11 @@ namespace elle
           time = boost::posix_time::second_clock::universal_time();
         else
           time = boost::posix_time::second_clock::local_time();
-        boost::format fmt("%s: [%s] [%s]");
+        static boost::format model("%s: [%s] [%s]%s%s");
+        boost::format fmt(model);
         reactor::Thread* t = elle::concurrency::scheduler().current();
-        fmt % time % s % (t ? t->name() : std::string(" "));
-        default_logger.trace(str(fmt), align, msg);
+        fmt % time % s % (t ? t->name() : std::string(" ")) % align % msg;
+        default_logger.trace(str(fmt));
       }
 
       void

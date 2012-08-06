@@ -465,6 +465,7 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::SaveBinary(void const* data, std::streamsize size)
         {
+          // std::cerr << "REGION SERIALIZED: " << data << " (" << size << ")" << std::endl;
           this->stream().write(static_cast<char const*>(data), size);
         }
 

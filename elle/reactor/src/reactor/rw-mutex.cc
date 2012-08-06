@@ -53,7 +53,7 @@ namespace reactor
       }
     const bool reading = _owner._readers > 0;
     const bool writing = _locked;
-    if (reading || _locked)
+    if (reading || writing)
     {
       if (reading)
         ELLE_LOG_TRACE("%s: already locked for reading, waiting.", *this);
@@ -63,9 +63,12 @@ namespace reactor
       // thread locks it before we can actually procced. Hence the
       // while. Not exactly sure this is exact and the best way to
       // proceed, though.
+      bool res;
+      assert(_locked);
       while (_locked)
-        bool res = Waitable::_wait(thread);
+        res = Waitable::_wait(thread);
       _locked = thread;
+      return res;
     }
     else
     {

@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 
+#include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/serialize/JSONArchive.hh>
 #include <elle/format/json/Dictionary.hxx>
@@ -10,6 +11,8 @@
 #include <elle/idiom/Close.hh>
 
 #define CRLF "\r\n"
+
+ELLE_LOG_TRACE_COMPONENT("infinit.plasma.meta.Client");
 
 // - API responses serializers ------------------------------------------------
 
@@ -421,13 +424,13 @@ namespace plasma
         { this->_request(url, "POST", req.repr(), res); }
       catch (std::exception const& err)
         {
-          _impl->log.debug("POST", url, req.repr(), "threw an error");
+          ELLE_LOG_TRACE("POST %s %s threw an error", url, req.repr());
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      _impl->log.debug("POST", url, req.repr(), "=>", res.str());
+      ELLE_LOG_TRACE("POST %s %s => %s", url, req.repr(), res.str());
       // deserialize response
       try
         { elle::serialize::InputJSONArchive(res, ret); }
@@ -450,13 +453,13 @@ namespace plasma
         { this->_request(url, "GET", "", res); }
       catch (std::exception const& err)
         {
-          _impl->log.debug("GET", url, "threw an error");
+          ELLE_LOG_TRACE("GET %s threw an error", url);
           throw Exception(Error::network_error, err.what());
         }
 
       T ret;
 
-      _impl->log.debug("GET", url, "=>", res.str());
+      ELLE_LOG_TRACE("GET %s => %s", url, res.str());
 
       // deserialize response
       try

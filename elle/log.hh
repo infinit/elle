@@ -8,12 +8,10 @@ namespace elle
 {
   namespace log
   {
-
-    template<typename... T> void debug(T const&...);
-    template<typename... T> void info(T const&...);
-    template<typename... T> void warn(T const&...);
-    template<typename... T> void error(T const&...);
-    template<typename... T> void fatal(T const&...);
+    void log(std::string const& msg);
+    void trace(std::string const& msg);
+    void debug(std::string const& msg);
+    void dump(std::string const& msg);
 
     extern elle::log::Logger default_logger;
 
