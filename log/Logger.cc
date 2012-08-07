@@ -113,7 +113,7 @@ namespace elle
     void
     Logger::_message(Level level, std::string const& message)
     {
-      std::cerr << "[" << level << "] " << message << std::endl;
+      std::cerr << message << std::endl;
     }
 
     std::string const&
