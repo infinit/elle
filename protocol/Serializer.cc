@@ -10,17 +10,6 @@ namespace infinit
 {
   namespace protocol
   {
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    static std::ostream&
-    operator << (std::ostream& s, Serializer const& ps)
-    {
-      s << "infinit::protocol::Serializer(" << &ps << ")";
-      return s;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -66,6 +55,16 @@ namespace infinit
                         packet._data_size);
         }
       _stream.flush();
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Serializer::print(std::ostream& stream) const
+    {
+      stream << "Serializer " << this;
     }
   }
 }

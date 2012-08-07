@@ -82,11 +82,5 @@ namespace infinit
     {
       _backend._write(packet, _id);
     }
-
-    std::ostream& operator << (std::ostream& s, Channel const& channel)
-    {
-      channel.print(s);
-      return s;
-    }
   }
 }

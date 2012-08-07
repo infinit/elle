@@ -14,17 +14,6 @@ namespace infinit
 {
   namespace protocol
   {
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    static std::ostream&
-    operator << (std::ostream& s, ChanneledStream const& stream)
-    {
-      s << "infinit::protocol::ChanneledStream(" << &stream << ")";
-      return s;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -183,6 +172,16 @@ namespace infinit
       backend_packet.write(packet._data, packet.size());
       backend_packet.flush();
       _backend.write(backend_packet);
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    ChanneledStream::print(std::ostream& stream) const
+    {
+      stream << "ChanneledStream " << this;
     }
   }
 }

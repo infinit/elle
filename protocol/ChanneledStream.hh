@@ -53,6 +53,12 @@ namespace infinit
     private:
       void _write(Packet& packet, int id);
 
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual void print(std::ostream& stream) const;
+
     /*--------.
     | Details |
     `--------*/

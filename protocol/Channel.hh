@@ -1,6 +1,8 @@
 #ifndef INFINIT_PROTOCOL_CHANNEL_HH
 # define INFINIT_PROTOCOL_CHANNEL_HH
 
+# include <elle/Printable.hh>
+
 # include <reactor/signal.hh>
 
 # include <protocol/Stream.hh>
@@ -10,7 +12,8 @@ namespace infinit
 {
   namespace protocol
   {
-    class Channel: public Stream
+    class Channel
+      : public Stream
     {
     /*------.
     | Types |
@@ -29,11 +32,11 @@ namespace infinit
     private:
       Channel(ChanneledStream& backend, int id);
 
-    /*---------.
-    | Printing |
-    `---------*/
+    /*----------.
+    | Printable |
+    `----------*/
     public:
-      void print(std::ostream& s) const;
+      virtual void print(std::ostream& s) const;
 
     /*-----------.
     | Properties |
@@ -63,9 +66,6 @@ namespace infinit
       std::list<Packet> _packets;
       reactor::Signal _available;
     };
-
-    // FIXME: printable interface
-    std::ostream& operator << (std::ostream& s, Channel const& channel);
   }
 }
 

@@ -37,6 +37,12 @@ namespace infinit
     public:
       void write(Packet& packet);
 
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual void print(std::ostream& stream) const;
+
     /*--------.
     | Details |
     `--------*/
