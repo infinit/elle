@@ -1,0 +1,22 @@
+#include <boost/lexical_cast.hpp>
+
+#include <elle/Printable.hh>
+
+namespace elle
+{
+  Printable::~Printable()
+  {}
+
+  std::string
+  Printable::toString() const
+  {
+    return boost::lexical_cast<std::string>(*this);
+  }
+
+  std::ostream&
+  operator << (std::ostream& stream, Printable const& o)
+  {
+    o.print(stream);
+    return stream;
+  }
+}

@@ -19,6 +19,7 @@ ADD_LIBRARY(elle
 
   Buffer.cc
   IOStream.cc
+  Printable.cc
 
   standalone/Log.cc
   standalone/Morgue.cc
