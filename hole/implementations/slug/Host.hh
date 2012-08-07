@@ -59,8 +59,13 @@ namespace hole
         std::unique_ptr<reactor::network::Socket> _socket;
         infinit::protocol::Serializer _serializer;
         infinit::protocol::ChanneledStream _channels;
+      /*----.
+      | RPC |
+      `----*/
+      private:
+        void _rpc_run();
         RPC _rpcs;
-        reactor::Thread _rpcs_handler;
+        reactor::Thread* _rpcs_handler;
 
       /*----.
       | API |

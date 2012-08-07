@@ -4,6 +4,8 @@
 #include <elle/standalone/Morgue.hh>
 #include <elle/network/TCPSocket.hh>
 
+#include <reactor/network/exception.hh>
+
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
@@ -41,9 +43,10 @@ namespace hole
         , _serializer(elle::concurrency::scheduler(), *_socket)
         , _channels(elle::concurrency::scheduler(), _serializer, opener)
         , _rpcs(_channels)
-        , _rpcs_handler(elle::concurrency::scheduler(),
-                        elle::sprintf("RPC %s", *this),
-                        boost::bind(&RPC::run, &_rpcs))
+        , _rpcs_handler(new reactor::Thread(elle::concurrency::scheduler(),
+                                            elle::sprintf("RPC %s", *this),
+                                            boost::bind(&Host::_rpc_run, this),
+                                            true))
       {
         _rpcs.authenticate = boost::bind(&Host::_authenticate, this, _1);
         _rpcs.push = boost::bind(&Host::_push, this, _1, _2);
@@ -62,6 +65,24 @@ namespace hole
       Host::locus() const
       {
         return this->_locus;
+      }
+
+      /*-----.
+      | RPCs |
+      `-----*/
+
+      void
+      Host::_rpc_run()
+      {
+        try
+          {
+            this->_rpcs.run();
+          }
+        catch (reactor::network::Exception& e)
+          {
+            ELLE_LOG("%s: discarded: %s", *this, e.what());
+            this->_machine._remove(this);
+          }
       }
 
       /*----.

@@ -61,10 +61,12 @@ namespace hole
         std::vector<elle::network::Locus> loci();
         std::vector<Host*> hosts();
       private:
+        friend class Host;
         std::unordered_map<elle::network::Locus, Host*> _hosts;
         void _connect(elle::network::Locus const& locus);
         void _connect(std::unique_ptr<reactor::network::Socket> socket,
                       elle::network::Locus const& locus, bool opener);
+        void _remove(Host* host);
 
       /*-------.
       | Server |

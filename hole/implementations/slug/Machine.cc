@@ -78,6 +78,15 @@ namespace hole
         _hosts[locus] = host.release();
       }
 
+      void
+      Machine::_remove(Host* host)
+      {
+        elle::network::Locus locus(host->locus());
+        assert(this->_hosts.find(locus) != this->_hosts.end());
+        this->_hosts.erase(locus);
+        delete host;
+      }
+
       Machine::Machine()
         : _state(State::detached)
         , _port(0)
