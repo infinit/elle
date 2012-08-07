@@ -153,5 +153,16 @@ namespace elle
       return Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Locus::print(std::ostream& stream) const
+    {
+      std::string host;
+      this->host.Convert(host);
+      stream << host << ":" << this->port;
+    }
   }
 }
