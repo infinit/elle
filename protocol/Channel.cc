@@ -40,6 +40,8 @@ namespace infinit
       , _available(std::move(source._available))
     {
       source._id = 0;
+      assert(_backend._channels.find(_id) != _backend._channels.end());
+      _backend._channels[_id] = this;
     }
 
     Channel::~Channel()
