@@ -8,7 +8,7 @@
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Protocol");
+ELLE_LOG_COMPONENT("infinit.protocol.Channel");
 
 namespace infinit
 {
