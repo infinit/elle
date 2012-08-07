@@ -30,8 +30,12 @@ namespace hole
       | Construction |
       `-------------*/
 
-      Host::Host(Machine& machine, std::unique_ptr<reactor::network::Socket> socket, bool opener)
-        : _machine(machine)
+      Host::Host(Machine& machine,
+                 elle::network::Locus const& locus,
+                 std::unique_ptr<reactor::network::Socket> socket,
+                 bool opener)
+        : _locus(locus)
+        , _machine(machine)
         , _state(State::connected)
         , _socket(std::move(socket))
         , _serializer(elle::concurrency::scheduler(), *_socket)
@@ -49,6 +53,16 @@ namespace hole
 
       Host::~Host()
       {}
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+
+      elle::network::Locus
+      Host::locus() const
+      {
+        return this->_locus;
+      }
 
       /*----.
       | API |
@@ -511,7 +525,7 @@ namespace hole
       void
       Host::print(std::ostream& stream) const
       {
-        stream << "Host " << *_socket;
+        stream << "Host " << _locus;
       }
 
       std::ostream&

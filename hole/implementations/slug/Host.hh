@@ -38,8 +38,21 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Host(Machine& machine, std::unique_ptr<reactor::network::Socket> socket, bool opener);
+        Host(Machine& machine,
+             elle::network::Locus const& locus,
+             std::unique_ptr<reactor::network::Socket> socket,
+             bool opener);
         ~Host();
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+
+      public:
+        elle::network::Locus locus() const;
+      private:
+        elle::network::Locus _locus;
+
       private:
         Machine& _machine;
         State _state;
