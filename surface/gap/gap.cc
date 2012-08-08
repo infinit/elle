@@ -11,6 +11,8 @@
 #include "gap.h"
 #include "State.hh"
 
+ELLE_LOG_COMPONENT("infinit.surface.gap");
+
 extern "C"
 {
 
@@ -22,7 +24,7 @@ extern "C"
 # define CATCH_ALL(_func_)                                                    \
     catch (plasma::meta::Exception const& err)                                \
     {                                                                         \
-        elle::log::error(#_func_ " error:", err.what());                      \
+        ELLE_ERR(#_func_ " error: %s", err.what());                           \
         if (err.code == plasma::meta::Error::network_error)                   \
           ret = gap_network_error;                                            \
         else if (err.code == plasma::meta::Error::server_error)               \
@@ -32,12 +34,12 @@ extern "C"
     }                                                                         \
     catch (surface::gap::Exception const& err)                                \
     {                                                                         \
-      elle::log::error(#_func_ " error:", err.what());                        \
+      ELLE_ERR(#_func_ " error: %s", err.what());                             \
       ret = err.code;                                                         \
     }                                                                         \
     catch (std::exception const& err)                                         \
     {                                                                         \
-        elle::log::error(#_func_ " error:", err.what());                      \
+        ELLE_ERR(#_func_ " error: %s", err.what());                           \
         ret = gap_internal_error;                                             \
     }                                                                         \
   /**/
@@ -95,7 +97,7 @@ extern "C"
 #include <elle/idiom/Open.hh>
               show();
 #include <elle/idiom/Close.hh>
-              elle::log::error("Cannot initialize root components");
+              ELLE_ERR("Cannot initialize root components");
               return nullptr;
             }
         }
@@ -106,7 +108,7 @@ extern "C"
         }
       catch (std::exception const& err)
         {
-          elle::log::error("Cannot initialize gap state:", err.what());
+          ELLE_ERR("Cannot initialize gap state: %s", err.what());
           return nullptr;
         }
     }
@@ -119,10 +121,11 @@ extern "C"
     void gap_enable_debug(gap_State* state)
     {
       assert(state != nullptr);
-      __TO_CPP(state)->log.level(elle::log::Logger::Level::debug);
+      // FIXME
+      //__TO_CPP(state)->log.level(elle::log::Logger::Level::debug);
     }
 
-    gap_Status gap_meta_status(gap_State* state)
+    gap_Status gap_meta_status(gap_State*)
     {
       return gap_ok;
     }
@@ -144,7 +147,7 @@ extern "C"
       }
       catch (std::exception const& err)
       {
-        elle::log::error("Couldn't hash the password:", err.what());
+        ELLE_ERR("Couldn't hash the password: %s", err.what());
       }
       return nullptr;
     }
@@ -202,12 +205,12 @@ extern "C"
         }
       catch (surface::gap::Exception const& err)
         {
-          elle::log::error("Couldn't check the device:", err.what());
+          ELLE_ERR("Couldn't check the device: %s", err.what());
           return err.code;
         }
       catch (std::exception const& err)
         {
-          elle::log::error("Couldn't check the device:", err.what());
+          ELLE_ERR("Couldn't check the device: %s", err.what());
         }
       return gap_internal_error;
     }

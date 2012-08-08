@@ -12,6 +12,8 @@
 #include "Manager.hh"
 #include "NetworkManager.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 Manager::Manager(QCoreApplication& app) :
@@ -44,7 +46,7 @@ Client& Manager::register_connection(ConnectionPtr& conn)
   auto it = this->_clients->find(conn);
   if (it != this->_clients->end())
     {
-      elle::log::warn("The connection", conn.get(), "is already registered.");
+      ELLE_WARN("the connection %s is already registered", conn.get());
       return *(it->second);
     }
   auto res = this->_clients->insert(
@@ -59,7 +61,7 @@ void Manager::unregister_connection(ConnectionPtr& conn)
 {
   auto it = this->_clients->find(conn);
   if (it == this->_clients->end())
-      elle::log::warn("The connection", conn.get(), "is not registered.");
+    ELLE_WARN("the connection %s is not registered", conn.get());
   else
     this->_clients->erase(it);
 }
@@ -97,7 +99,7 @@ void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
 {
   if (cmd["_id"].toString() != this->_actions->watchdogId())
     {
-      elle::log::warn("Invalid given watchdog id:",
+      ELLE_WARN("Invalid given watchdog id: %s",
                       cmd["_id"].toString().toStdString());
       return;
     }
@@ -105,7 +107,7 @@ void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
   auto it = this->_commands->find(cmd["command"].toString().toStdString());
   if (it == this->_commands->end())
     {
-      elle::log::warn("command not found:",
+      ELLE_WARN("command not found: %s",
                       cmd["command"].toString().toStdString());
       return;
     }
@@ -115,7 +117,7 @@ void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
 
 void Manager::stop()
 {
-  elle::log::debug("Shutting down the watchdog");
+  ELLE_DEBUG("Shutting down the watchdog");
   this->_network_manager->stop();
   this->_app.quit();
 }
@@ -135,7 +137,7 @@ void Manager::start_refresh_networks()
   this->refresh_networks();
   if (this->_timer.isActive())
     {
-      elle::log::warn("The timer is already activated");
+      ELLE_WARN("the timer is already activated");
       return;
     }
   this->connect(&this->_timer,

@@ -20,14 +20,10 @@ void f()
 int main()
 {
   ELLE_LOG_COMPONENT("test_log.biet");
-  elle::log::debug("BIET");
-  elle::log::info("BIET");
-  elle::log::warn("BIET");
-  elle::log::error("BIET");
-  elle::log::fatal("BIET");
-  elle::log::info("Salut", "les", 12, "copains");
-  elle::log::default_logger.name("LOGGER_NAME_IS_STUPID");
-  elle::log::info("tests done.");
+  ELLE_LOG("BIET");
+  ELLE_TRACE("BIET");
+  ELLE_DEBUG("BIET");
+  ELLE_DUMP("BIET");
   f();
   return 0;
 }

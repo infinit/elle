@@ -4,6 +4,8 @@
 
 #include "Connection.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 Connection::Connection(QLocalSocketPtr&& socket) :
@@ -18,7 +20,7 @@ Connection::~Connection()
 
 void Connection::connect(Cmdback cmdback, Errback errback)
 {
-  elle::log::debug("Connecting !");
+  ELLE_DEBUG("Connecting !");
   this->_cmdback = cmdback;
   this->_errback = errback;
   assert(this->_cmdback != nullptr && this->_errback != nullptr);
@@ -31,7 +33,7 @@ void Connection::connect(Cmdback cmdback, Errback errback)
       this->_socket.get(), SIGNAL(readyRead()),
       this, SLOT(_on_ready_read())
   );
-  elle::log::debug("Connected !");
+  ELLE_DEBUG("Connected !");
 }
 
 void Connection::_raise(std::string const& error)
@@ -51,7 +53,7 @@ void Connection::_on_ready_read()
   while (this->_socket->canReadLine())
     {
       QByteArray line = this->_socket->readLine();
-      elle::log::debug("Got client command:", QString(line).toStdString());
+      ELLE_DEBUG("Got client command: %s", QString(line).toStdString());
       this->_cmdback(line);
     }
 }

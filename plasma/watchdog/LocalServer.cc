@@ -11,6 +11,8 @@
 #include "LocalServer.hh"
 #include "Manager.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 LocalServer::LocalServer(QCoreApplication& app) :
@@ -32,7 +34,7 @@ void LocalServer::start(std::string const& watchdogId)
   // Trying to create a listening socket
   if (!this->listen(common::watchdog::server_name().c_str()))
     {
-      elle::log::warn("Server name already used (maybe previous crash)");
+      ELLE_WARN("Server name already used (maybe previous crash)");
 
       // We try to remove the server instance first
       if (!QLocalServer::removeServer(common::watchdog::server_name().c_str()))
@@ -59,13 +61,13 @@ void LocalServer::_on_new_connection()
 
   while ((new_socket = this->nextPendingConnection()) != nullptr)
   {
-    elle::log::debug("New socket:", new_socket);
+    ELLE_DEBUG("New socket: %s", new_socket);
     ConnectionPtr conn{
       new Connection{
         std::unique_ptr<QLocalSocket>{new_socket}
       }
     };
-    elle::log::debug("New connection:", conn.get());
+    ELLE_DEBUG("New connection: %s", conn.get());
     this->_handle_new_connection(conn);
   }
 }
@@ -92,9 +94,9 @@ void LocalServer::_on_client_command(ConnectionPtr conn, QByteArray const& data)
   bool result;
   QVariantMap cmd = parser.parse(data, &result).toMap();
   if (!result)
-    elle::log::warn("Got invalid command:", QString(data).toStdString());
+    ELLE_WARN("Got invalid command: %s", QString(data).toStdString());
   else if (!cmd.contains("_id"))
-    elle::log::warn("The command has to contain an _id.");
+    ELLE_WARN("The command has to contain an _id.");
   else
     this->_manager->execute_command(conn, cmd);
 }

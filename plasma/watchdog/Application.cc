@@ -13,6 +13,8 @@
 #include "LocalServer.hh"
 #include "Application.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 Application::Application(int ac, char* av[]) :
@@ -61,14 +63,14 @@ int Application::exec()
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);
-  elle::log::debug("New watchdog id:", watchdogId);
+  ELLE_DEBUG("New watchdog id: %s");
 
   // Saving watchdog id
   {
     QFile f(homeDirectory.filePath("infinit.wtg"));
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate))
       {
-        elle::log::fatal("Cannot open file:", f.fileName().toStdString());
+        ELLE_ERR("Cannot open file: %s", f.fileName().toStdString());
         return EXIT_FAILURE;
       }
     f.write(watchdogId.c_str());

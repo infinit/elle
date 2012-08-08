@@ -35,6 +35,8 @@
 
 #include "State.hh"
 
+ELLE_LOG_COMPONENT("infinit.surface.gap");
+
 namespace surface
 {
   namespace gap
@@ -53,13 +55,11 @@ namespace surface
     // - State ----------------------------------------------------------------
 
     State::State()
-      : log{elle::log::Logger::Level::warn, "gap"}
-      , _api{
+      : _api{
           new plasma::meta::Client{
               common::meta::host(),
               common::meta::port(),
               true,
-              log,
           }
       }
       , _users{}
@@ -134,13 +134,13 @@ namespace surface
           req["command"] = cmd;
           if (kwargs != nullptr)
             req.update(*kwargs);
-          this->log.debug("Send watchdog command:", req.repr());
+          ELLE_DEBUG("Send watchdog command: %s", req.repr());
           conn.write(req.repr().c_str());
           conn.write("\n");
           if (!conn.waitForBytesWritten(2000))
               throw Exception(gap_internal_error,
                               "Couldn't send the command '" + cmd + "'");
-          this->log.debug("Command sent");
+          ELLE_DEBUG("Command sent");
 
           if (response != nullptr)
             {
@@ -237,7 +237,7 @@ namespace surface
       this->_api->token("");
       auto res = this->_api->login(email, password);
 
-      this->log.debug("Logged in as", email, "token =", res.token);
+      ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
 
       std::string identity_clear;
 
@@ -285,7 +285,7 @@ namespace surface
       try { this->logout(); } catch (plasma::meta::Exception const&) {}
 
       this->_api->register_(email, fullname, password, activation_code);
-      this->log.debug("Registered new user", fullname, email);
+      ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
       this->login(email, password);
     }
 
@@ -318,7 +318,7 @@ namespace surface
     State::update_device(std::string const& name, bool force_create)
     {
       std::string local_address = detail::get_local_address();
-      this->log.debug("Registering new device", name, "for host:", local_address);
+      ELLE_DEBUG("Registering new device %s for host: %s", name, local_address);
 
       std::string passport_string;
 
@@ -326,7 +326,7 @@ namespace surface
         {
           auto res = this->_api->create_device(name, local_address, 0);
           passport_string = res.passport;
-          this->log.debug("Created device id:", res.created_device_id);
+          ELLE_DEBUG("Created device id: %s", res.created_device_id);
         }
       else
         {
@@ -335,7 +335,7 @@ namespace surface
           if (passport.Load() == elle::Status::Error)
             throw Exception(gap_internal_error, "Cannot load the passport");
 
-          this->log.debug("Passport id:", passport.id);
+          ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_api->update_device(
               passport.id,
               &name,
@@ -476,8 +476,8 @@ namespace surface
                 break;
               conn.disconnectFromServer();
             }
-          this->log.debug("Waiting", sleep_time,
-                           "secs for the old watchdog to be stopped (", tries, " / 10 )");
+            ELLE_DEBUG("Waiting %s secs for the old watchdog to be stopped (%s / 10 )",
+                       sleep_time, tries);
           ::sleep(sleep_time);
           sleep_time += 2;
       } while (++tries < 10);
@@ -509,12 +509,12 @@ namespace surface
         }
       catch (std::exception const& err)
         {
-          this->log.warn("Couldn't stop the watchdog:", err.what());
+          ELLE_WARN("Couldn't stop the watchdog: %s", err.what());
         }
 
       std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
-      this->log.info("Launching binary:", watchdog_binary);
+      ELLE_WARN("Launching binary: %s", watchdog_binary);
       QProcess p;
       if (p.execute(watchdog_binary.c_str()) < 0)
         throw Exception(gap_internal_error, "Cannot start the watchdog !");
@@ -525,16 +525,16 @@ namespace surface
       while (tries++ < 5)
         {
           conn.connectToServer(common::watchdog::server_name().c_str());
-          this->log.debug("Trying to connect to the new watchdog");
+          ELLE_DEBUG("Trying to connect to the new watchdog");
           if (conn.waitForConnected(2000))
             break;
-          this->log.debug("Retrying to connect (", tries, ")");
+          ELLE_DEBUG("Retrying to connect (%s)", tries);
           ::sleep(1);
         }
       if (!conn.isValid())
         throw Exception(gap_internal_error, "Couldn't connect to the new watchdog instance");
 
-      this->log.debug("Connected to the watchdog");
+      ELLE_DEBUG("Connected to the watchdog");
 
       // Getting the new watchdog id
       // When connected, the watchdog id file should exists
@@ -545,11 +545,11 @@ namespace surface
           try { new_watchdog_id = this->_watchdog_id(); }
           catch (std::exception const& err)
             {
-              this->log.warn("Cannot read the new watchdog id:", err.what());
+              ELLE_WARN("Cannot read the new watchdog id: %s", err.what());
             }
           if (new_watchdog_id.size() && old_watchdog_id != new_watchdog_id)
             {
-              this->log.debug("Found new watchdog id:", new_watchdog_id);
+              ELLE_DEBUG("Found new watchdog id: %s", new_watchdog_id);
               break;
             }
       } while (++tries < 10);
@@ -573,7 +573,7 @@ namespace surface
     State::file_infos(std::string const& path)
     {
       std::string abspath = elle::os::path::absolute(path, true);
-      this->log.debug("Get file infos of", abspath);
+      ELLE_DEBUG("Get file infos of %s", abspath);
       auto it = this->_files_infos.find(abspath);
       if (it != this->_files_infos.end())
         return *(it->second);
@@ -618,7 +618,7 @@ namespace surface
                 ;
 
       QProcess p;
-      this->log.debug("LAUNCH:", access_binary, arguments.join(" ").toStdString());
+      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
       p.start(access_binary.c_str(), arguments);
       if (!p.waitForFinished()) // .8 sec
         throw Exception(gap_internal_error, "8access binary failed");
@@ -676,10 +676,10 @@ namespace surface
       if (permissions & gap_write)
         arguments << "--write";
 
-      this->log.debug("LAUNCH:", access_binary, arguments.join(" ").toStdString());
+      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
 
       if (permissions & gap_exec)
-        this->log.warn(
+        ELLE_WARN(
           "XXX: setting executable permissions not yet implemented");
 
       QProcess p;

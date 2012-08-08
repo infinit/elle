@@ -9,11 +9,6 @@ namespace elle
 {
   namespace log
   {
-    void log(std::string const& msg);
-    void trace(std::string const& msg);
-    void debug(std::string const& msg);
-    void dump(std::string const& msg);
-
 # define ELLE_LOG_COMPONENT(component)                                  \
     static ::elle::log::detail::TraceComponent                          \
     __trace_component__(component)                                      \
@@ -41,6 +36,8 @@ namespace elle
 # define ELLE_DEBUG_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(debug, __VA_ARGS__)
 # define ELLE_DUMP_SCOPE(...)  ELLE_LOG_LEVEL_SCOPE(dump, __VA_ARGS__)
 
+# define ELLE_WARN(...)  ELLE_LOG(__VA_ARGS__)
+# define ELLE_ERR(...)  ELLE_LOG(__VA_ARGS__)
 # define ELLE_LOG(...)  ELLE_LOG_LEVEL(log, __VA_ARGS__)
 # define ELLE_TRACE(...) ELLE_LOG_LEVEL(trace, __VA_ARGS__)
 # define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, __VA_ARGS__)
