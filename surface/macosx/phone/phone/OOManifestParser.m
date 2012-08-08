@@ -154,7 +154,29 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
         downloaded += [item.downloadedSize floatValue];
     }
     float percent = (float)downloaded / total;
-    [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification 
+    if (percent == 1) {
+        NSLog(@"percent = 1");
+        NSError *error; 
+        NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:500] forKey:NSFilePosixPermissions];
+        NSString* binPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"bin"];
+        NSArray *subPaths = [fileManager subpathsAtPath:binPath];
+        for (NSString *aPath in subPaths) {
+            NSLog(@"bin path = %@", subPaths);
+            BOOL isDirectory;
+            [fileManager fileExistsAtPath:aPath isDirectory:&isDirectory];
+            if (!isDirectory) {
+                NSLog(@"ecex path = %@", aPath);
+                // Change the permissions on the directory here
+                NSError *error = nil;
+                [fileManager setAttributes:attr ofItemAtPath:[binPath stringByAppendingPathComponent:aPath] error:&error];
+                if (error) {
+                    NSLog(@"error = %@", error.description);
+                }
+            }
+        }
+        
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification
                                                         object:self 
                                                       userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:percent] 
                                                                                            forKey:@"progress"]];
