@@ -254,13 +254,14 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    std::ostream&
-    operator << (std::ostream& stream, const Address& addr)
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Address::print(std::ostream& stream) const
     {
-      elle::String unique;
-      addr.digest->Save(unique);
-      stream << unique;
-      return stream;
+      stream << this->unique();
     }
 
   }

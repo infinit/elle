@@ -5,6 +5,7 @@
 # include <elle/concept/Serializable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/Family.hh>
 
@@ -34,6 +35,7 @@ namespace nucleus
     ///
     class Address
       : public elle::radix::Object
+      , public elle::Printable
       , public elle::concept::MakeFileable<Address>
       , public elle::concept::MakeUniquable<Address>
     {
@@ -71,7 +73,7 @@ namespace nucleus
       /// this method returns a unique representation of the address.
       elle::String const
       unique() const;
-
+      
       //
       // interfaces
       //
@@ -84,6 +86,10 @@ namespace nucleus
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
+      // printable
+      virtual void
+      print(std::ostream& stream) const;
+
       //
       // attributes
       //
@@ -93,8 +99,6 @@ namespace nucleus
       elle::cryptography::Digest* digest;
     };
 
-    std::ostream&
-    operator << (std::ostream& stream, const Address& addr);
   }
 }
 
