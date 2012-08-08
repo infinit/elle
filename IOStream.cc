@@ -74,7 +74,7 @@ namespace elle
   }
 
   void
-  StreamBuffer::flush(unsigned int size)
+  StreamBuffer::flush(unsigned int)
   {}
 
   /*------------------.
