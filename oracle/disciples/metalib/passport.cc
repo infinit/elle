@@ -66,7 +66,7 @@ static lune::Passport create_passport(elle::String const& id,
   return passport;
 }
 
-extern "C" PyObject* metalib_generate_passport(PyObject* self, PyObject* args)
+extern "C" PyObject* metalib_generate_passport(PyObject*, PyObject* args)
 {
   PyObject* ret = nullptr;
   char const* id = nullptr,

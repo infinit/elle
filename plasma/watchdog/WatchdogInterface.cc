@@ -30,7 +30,7 @@ WatchdogInterface::WatchdogInterface(Application& app) :
 // ---------- methods  --------------------------------------------------------
 //
 
-std::vector<WatchdogInterface::Directory> WatchdogInterface::DirListing(std::string const& abspath)
+std::vector<WatchdogInterface::Directory> WatchdogInterface::DirListing(std::string const&)
 {
   return std::vector<Directory>();
 }

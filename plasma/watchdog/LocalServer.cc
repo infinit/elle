@@ -83,7 +83,7 @@ void LocalServer::_handle_new_connection(ConnectionPtr& conn)
   this->_manager->register_connection(conn);
 }
 
-void LocalServer::_on_client_error(ConnectionPtr conn, std::string const& error)
+void LocalServer::_on_client_error(ConnectionPtr conn, std::string const&)
 {
   this->_manager->unregister_connection(conn);
 }

@@ -62,8 +62,8 @@ ClientActions::ClientActions(Manager& manager) :
 ClientActions::~ClientActions()
 {}
 
-void ClientActions::_on_run(Connection& conn,
-                            Client& client,
+void ClientActions::_on_run(Connection&,
+                            Client&,
                             QVariantMap const& args)
 {
   ELLE_DEBUG("Starting watchdog monitoring.");
@@ -105,8 +105,8 @@ void ClientActions::_on_run(Connection& conn,
     ELLE_WARN("The token was not provided (cannot start monitoring).");
 }
 
-void ClientActions::_on_stop(Connection& conn,
-                            Client& client,
+void ClientActions::_on_stop(Connection&,
+                            Client&,
                             QVariantMap const& args)
 {
   CHECK_ID(args);
@@ -115,8 +115,8 @@ void ClientActions::_on_stop(Connection& conn,
 }
 
 
-void ClientActions::_on_refresh_networks(Connection& conn,
-                                         Client& client,
+void ClientActions::_on_refresh_networks(Connection&,
+                                         Client&,
                                          QVariantMap const& args)
 {
   CHECK_ID(args);
@@ -125,7 +125,7 @@ void ClientActions::_on_refresh_networks(Connection& conn,
 
 
 void ClientActions::_on_status(Connection& conn,
-                               Client& client,
+                               Client&,
                                QVariantMap const& args)
 {
   namespace json = elle::format::json;

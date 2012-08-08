@@ -76,7 +76,7 @@ generate_network_descriptor(elle::String const& id,
 }
 
 
-extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObject* args)
+extern "C" PyObject* metalib_generate_network_descriptor(PyObject*, PyObject* args)
 {
   char const* network_id = nullptr,
             * network_name = nullptr,
@@ -155,7 +155,7 @@ static bool check_root_block_signature(elle::io::Unique const& root_block,
 }
 
 
-extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject* args)
+extern "C" PyObject* metalib_check_root_block_signature(PyObject*, PyObject* args)
 {
   char const* root_block = nullptr;
   char const* root_address = nullptr;
