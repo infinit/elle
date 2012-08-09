@@ -155,26 +155,7 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
     }
     float percent = (float)downloaded / total;
     if (percent == 1) {
-        NSLog(@"percent = 1");
-        NSError *error; 
-        NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:500] forKey:NSFilePosixPermissions];
-        NSString* binPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"bin"];
-        NSArray *subPaths = [fileManager subpathsAtPath:binPath];
-        for (NSString *aPath in subPaths) {
-            NSLog(@"bin path = %@", subPaths);
-            BOOL isDirectory;
-            [fileManager fileExistsAtPath:aPath isDirectory:&isDirectory];
-            if (!isDirectory) {
-                NSLog(@"ecex path = %@", aPath);
-                // Change the permissions on the directory here
-                NSError *error = nil;
-                [fileManager setAttributes:attr ofItemAtPath:[binPath stringByAppendingPathComponent:aPath] error:&error];
-                if (error) {
-                    NSLog(@"error = %@", error.description);
-                }
-            }
-        }
-        
+        [self setExecRight];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:OOUpdateProgessChangedNotification
                                                         object:self 
@@ -182,4 +163,24 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
                                                                                            forKey:@"progress"]];
 }
 
+- (void)setExecRight {
+    NSError *error;
+    NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:500] forKey:NSFilePosixPermissions];
+    NSString* binPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"bin"];
+    NSArray *subPaths = [fileManager subpathsAtPath:binPath];
+    for (NSString *aPath in subPaths) {
+        BOOL isDirectory;
+        [fileManager fileExistsAtPath:aPath isDirectory:&isDirectory];
+        if (!isDirectory) {
+            // Change the permissions on the directory here
+            NSError *error = nil;
+            [fileManager setAttributes:attr ofItemAtPath:[binPath stringByAppendingPathComponent:aPath] error:&error];
+            if (error) {
+                NSLog(@"error = %@", error.description);
+            }
+        }
+    }
+    
+    
+}
 @end
