@@ -122,7 +122,7 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
                                                                                            forKey:@"progress"]];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(downloadingNotification:) 
-                                                 name:OODownloadingNotification 
+                                                 name:OODownloadingNotification
                                                object:nil];
     
     for(OOManifestItem *item in allItems) {
