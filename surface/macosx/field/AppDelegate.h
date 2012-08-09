@@ -20,13 +20,17 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
     NSTimer *animTimer;
     NSImage *defaultIcon;
     int     pendingCount;
-    BOOL     isPending;
+    BOOL    isPending;
+    BOOL    isUpdating;
+    BOOL    isLoginIn;
 }
 
 @property(assign)   IBOutlet NSWindow   *window;
 @property(assign)   NSInteger           currentFrame;
 @property(assign)   NSTimer             *animTimer;
 @property           BOOL                isPending;
+@property           BOOL                isUpdating;
+@property           BOOL                isLoginIn;
 
 - (void)launch8Watchdog;
 

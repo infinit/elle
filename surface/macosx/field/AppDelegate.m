@@ -33,9 +33,10 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 {
     pendingCount = 0;
     [OOEnvironmentVar setEnvironmentVar];
+    self.isUpdating = YES;
+    self.isLoginIn = YES;
     // Launch installer process
     [OOInjectorHelper launchFinderHelperTools:YES];
-    
     [self update];
     [self tryToLogin];
 }
@@ -73,7 +74,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)setDefaultStatusIcon {
     if (defaultIcon == nil) {
-        defaultIcon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active",currentFrame]];
+        defaultIcon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active", currentFrame]];
     }
     [defaultIcon setTemplate:YES];
     [statusItem setImage:defaultIcon];
@@ -120,11 +121,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         [self showSetupWindow];
     }
     else {
-        [statusItem setMenu:statusMenu];
+        self.isLoginIn = NO;
         [self removePending];
-        [self launch8Watchdog];
-        OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
-        [aaa showWindow:self];
+        [self readyToStartInfinit];
     }
 }
 
@@ -146,15 +145,26 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [[OOPhone getInstance] update];
 }
 
+- (void)readyToStartInfinit {
+    if (!self.isLoginIn && !self.isUpdating) {
+        [statusItem setMenu:statusMenu];
+        [self launch8Watchdog];
+        OOBrowserWindowController* browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
+        [browserWindowController showWindow:self];
+    }
+}
+
 - (void)updateProgessChangedNotification:(NSNotification *)notification {
     if ([notification name] == OOUpdateProgessChangedNotification) {
         NSNumber* progress = [[notification userInfo] objectForKey:@"progress"];
         if ([progress floatValue] == 1) {
+            self.isUpdating = NO;
             [statusItem setTitle:nil];
             [[NSNotificationCenter defaultCenter] removeObserver:self
                                                             name:OOUpdateProgessChangedNotification 
                                                           object:nil];
             [self removePending];
+            [self readyToStartInfinit];
         } else if ([progress floatValue] >= 0){
             [statusItem setTitle:[NSString stringWithFormat:@"(%00.f%%)", [progress floatValue]*100]];
         } else {

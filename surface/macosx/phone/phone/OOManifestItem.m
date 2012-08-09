@@ -32,7 +32,7 @@
             self.downloadedSize = self.size;
             [[NSNotificationCenter defaultCenter] postNotificationName:OODownloadingNotification
                                                                 object:self];
-            NSLog(@"%@",@"download not needed");
+            NSLog(@"download not needed");
             return;
         }
     }
