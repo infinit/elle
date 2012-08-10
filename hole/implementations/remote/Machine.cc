@@ -93,8 +93,7 @@ namespace hole
               locus.host.Convert(host);
               auto client = std::unique_ptr<Client>(new Client(host, locus.port));
               this->role = Machine::RoleClient;
-              if (Hole::Ready() == elle::Status::Error)
-                throw std::runtime_error("unable to set the hole online");
+              Hole::ready();
               this->client = client.release();
               return;
             }

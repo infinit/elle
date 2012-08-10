@@ -68,9 +68,7 @@ namespace hole
         if (this->_state == State::detached)
           {
             this->_state = State::attached;
-            if (Hole::Ready() == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to set the hole online");
+            Hole::ready();
           }
         for (auto locus: loci)
           if (_hosts.find(locus) == _hosts.end())
@@ -125,9 +123,7 @@ namespace hole
             this->_state = State::attached;
 
             // Set the hole as ready to receive requests.
-            if (Hole::Ready() == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to set the hole online");
+            Hole::ready();
           }
 
         // Finally, listen for incoming connections.

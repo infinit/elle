@@ -260,15 +260,9 @@ namespace horizon
       return nullptr;
     }
 
-    ///
-    /// this method is triggered so as to launch the FUSE-specific thread.
-    ///
-    elle::Status        FUker::Run()
+    void
+    FUker::run()
     {
-      // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
-        escape("unable to create the FUSE-specific thread");
-
       // XXX[race conditions exist here:
       //     1) the FUSE thread calls Program::Exit() before our event loop
       //        is entered.
@@ -276,8 +270,9 @@ namespace horizon
       //        is a bad idea since teardown() could have been called, still
       //        the pointer would not be nullptr. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
-
-      return elle::Status::Ok;
+      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to create the FUSE-specific thread");
     }
 
     ///

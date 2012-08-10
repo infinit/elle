@@ -44,9 +44,7 @@ namespace hole
         // allocate the machine.
         Local::Computer = new Machine;
 
-        // set the hole as ready to receive requests.
-        if (Hole::Ready() == elle::Status::Error)
-          throw std::runtime_error("unable to set the hole online");
+        Hole::ready();
       }
 
       ///

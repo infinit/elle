@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <hole/Hole.hh>
 #include <hole/Holeable.hh>
 #include <hole/implementations/local/Implementation.hh>
@@ -14,6 +16,8 @@
 #include <elle/idiom/Close.hh>
 # include <boost/format.hpp>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
 namespace hole
 {
@@ -52,12 +56,7 @@ namespace hole
   ///
   Hole::State                   Hole::state = Hole::StateOffline;
 
-  ///
-  /// XXX[to replace by a new signal]
-  ///
-  elle::concurrency::Signal<
-    elle::radix::Parameters<>
-    >                           Hole::ready;
+  boost::signal<void ()> Hole::_ready;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -200,21 +199,21 @@ namespace hole
     return elle::Status::Ok;
   }
 
-  ///
-  /// this method can be called to signal the other components that the
-  /// network layer is ready to receive requests.
-  ///
-  elle::Status          Hole::Ready()
+  void
+  Hole::ready()
   {
-    if (Hole::state == Hole::StateOnline)
-      return elle::Status::Ok;
+    ELLE_LOG_SCOPE("ready");
+    if (Hole::state != Hole::StateOnline)
+      {
+        Hole::_ready();
+        Hole::state = Hole::StateOnline;
+      }
+  }
 
-    if (Hole::ready.Emit() == elle::Status::Error)
-      escape("unable to emit the signal");
-
-    Hole::state = Hole::StateOnline;
-
-    return elle::Status::Ok;
+  void
+  Hole::readyHook(boost::function<void ()> const& f)
+  {
+    Hole::_ready.connect(f);
   }
 
   ///
