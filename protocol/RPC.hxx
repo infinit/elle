@@ -87,14 +87,6 @@ namespace infinit
       return res;
     }
 
-    // template <typename OSerializer, typename T, typename ...Args>
-    // static void
-    // put_args(OSerializer& output, T a, Args ... args)
-    // {
-    //   output << a;
-    //   put_args<OSerializer, Args...>(output, args...);
-    // }
-
     template <typename ISerializer, typename OSerializer>
     template <typename R, typename ... Args>
     R
@@ -116,27 +108,6 @@ namespace infinit
         return get_res<ISerializer, R>(input);
       }
     }
-
-    // template <typename ISerializer, typename OSerializer>
-    // template <typename ... Args>
-    // void
-    // RPC<ISerializer, OSerializer>::RemoteProcedure<void, Args...>::
-    // operator () (Args ... args)
-    // {
-    //   Channel channel(_owner._channels);
-    //   {
-    //     Packet question;
-    //     OSerializer output(question);
-    //     output << _id;
-    //     put_args<OSerializer, Args...>(output, args...);
-    //     question.flush();
-    //     channel.write(question);
-    //   }
-    //   {
-    //     Packet response(channel.read());
-    //     ISerializer input(response);
-    //   }
-    // }
 
     template <typename Input, typename R, typename ... Types>
     struct Call;
