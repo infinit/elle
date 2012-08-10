@@ -139,9 +139,13 @@ namespace elle
       // the information has been extracted. this step ensures that
       // the archive does not contain more variables that extracted.
       if (archive.Stream().BytesLeft() > 0)
-        escape((
-            "the archive seems to contain additional information: " +
-            elle::sprint(archive.Stream().BytesLeft(), "bytes left")).c_str());
+        {
+          std::string msg(
+            elle::sprintf("the archive seems to contain additional "
+                          "information: %s bytes left",
+                          archive.Stream().BytesLeft()));
+          escape("%s", msg.c_str());
+        }
 
       // at this point, an Arguments is created which references both
       // the inputs and outputs. thus no copy is made while the
