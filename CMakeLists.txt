@@ -138,7 +138,7 @@ ADD_LIBRARY(elle
 
 add_definitions(-fPIC)
 target_link_libraries(elle
-        protocol
+        protocol # XXX[why?]
 	${INFINIT_OPENSSL_STATIC_LIBRARIES}
 	${INFINIT_MSGPACK_STATIC_LIBRARIES}
 	${INFINIT_JSONCPP_STATIC_LIBRARIES}

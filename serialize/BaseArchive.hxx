@@ -279,6 +279,10 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int64_t val)
         {
+          ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+
+          ELLE_LOG_TRACE("Save int64_t '%s'", val);
+
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
 # else
@@ -304,6 +308,10 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int64_t& val)
         {
+          ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+
+          ELLE_LOG_TRACE("Load int64_t '%s'", val);
+
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
 # else
