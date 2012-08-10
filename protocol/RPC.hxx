@@ -1,10 +1,9 @@
 #ifndef INFINIT_PROTOCOL_RPC_HXX
 # define INFINIT_PROTOCOL_RPC_HXX
 
-# include <lune/Passport.hh> // FIXME
-
 # include <type_traits>
 
+# include <elle/concurrency/Scheduler.hh>
 # include <elle/printf.hh>
 
 # include <protocol/Channel.hh>
@@ -80,12 +79,25 @@ namespace infinit
 
 
     template <typename ISerializer, typename R>
-    static R get_res(ISerializer& input)
+    struct GetRes
     {
-      R res;
-      input >> res;
-      return res;
-    }
+      static inline R get_res(ISerializer& input)
+      {
+        R res;
+        input >> res;
+        return res;
+      }
+    };
+
+    template <typename ISerializer>
+    struct GetRes<ISerializer, void>
+    {
+      static inline void get_res(ISerializer& input)
+      {
+        char c;
+        input >> c;
+      }
+    };
 
     template <typename ISerializer, typename OSerializer>
     template <typename R, typename ... Args>
@@ -105,7 +117,17 @@ namespace infinit
       {
         Packet response(channel.read());
         ISerializer input(response);
-        return get_res<ISerializer, R>(input);
+        bool res;
+        input >> res;
+        if (res)
+          return GetRes<ISerializer, R>::get_res(input);
+        else
+          {
+            std::string error;
+            throw reactor::Exception(
+              elle::concurrency::scheduler(), // FIXME: modularity
+              elle::sprintf("remote procedure failed: %s", error));
+          }
       }
     }
 
@@ -134,6 +156,39 @@ namespace infinit
       }
     };
 
+    namespace
+    {
+      template <typename ISerializer,
+                typename OSerializer,
+                typename R,
+                typename ... Args>
+      struct VoidSwitch
+      {
+        static void call(ISerializer& in, OSerializer& out,
+                      boost::function<R (Args...)> const& f)
+        {
+          R res(Call<ISerializer, R, Args...>::template call<>(in, f));
+          out << true;
+          out << res;
+        }
+      };
+
+      template <typename ISerializer,
+                typename OSerializer,
+                typename ... Args>
+      struct VoidSwitch<ISerializer, OSerializer, void, Args ...>
+      {
+        static void call(ISerializer& in, OSerializer& out,
+                         boost::function<void (Args...)> const& f)
+        {
+          Call<ISerializer, void, Args...>::template call<>(in, f);
+          out << true;
+          unsigned char c(42);
+          out << c;
+        }
+      };
+    }
+
     template <typename ISerializer,
               typename OSerializer,
               typename R,
@@ -142,7 +197,27 @@ namespace infinit
     Procedure<ISerializer, OSerializer, R, Args...>::
     _call(ISerializer& in, OSerializer& out)
     {
-      out << Call<ISerializer, R, Args...>::template call<>(in, _function);
+      std::string err;
+      try
+        {
+          VoidSwitch<ISerializer, OSerializer, R, Args ...>::call(
+            in, out, _function);
+        }
+      catch (reactor::Exception& e)
+        {
+          // FIXME: backtrace
+          err = e.what();
+        }
+      catch (std::exception& e)
+        {
+          err = e.what();
+        }
+      catch (...)
+        {
+          err = "unknown error";
+        }
+      out << false;
+      out << err;
     }
 
     template <typename ISerializer, typename OSerializer>

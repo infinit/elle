@@ -37,6 +37,11 @@ std::string concat(std::string const& left, std::string const& right)
   return left + right;
 }
 
+void except()
+{
+  throw std::runtime_error("blablabla");
+}
+
 struct DummyRPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
                                                elle::serialize::OutputBinaryArchive>
 {
@@ -46,11 +51,13 @@ struct DummyRPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchi
     , answer(*this)
     , square(*this)
     , concat(*this)
+    , raise (*this)
   {}
 
   RemoteProcedure<int> answer;
   RemoteProcedure<int, int> square;
   RemoteProcedure<std::string, std::string const&, std::string const&> concat;
+  RemoteProcedure<void> raise;
 };
 
 void caller()
@@ -64,6 +71,7 @@ void caller()
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
   BOOST_CHECK_EQUAL(rpc.square(8), 64);
   BOOST_CHECK_EQUAL(rpc.concat("foo", "bar"), "foobar");
+  BOOST_CHECK_THROW(rpc.raise(), std::runtime_error);
 }
 
 void runner()
@@ -79,6 +87,7 @@ void runner()
   rpc.answer = &answer;
   rpc.square = &square;
   rpc.concat = &concat;
+  rpc.raise  = &except;
   try
     {
       rpc.run();
