@@ -69,62 +69,55 @@ namespace elle
 
     } // !anonymous
 
-    struct Logger::Impl
-    {
-      Level       level;
-      std::string name;
-      Impl(Level level, std::string const& name)
-        : level(level)
-        , name(name)
-      {}
-    };
+    // struct Logger::Impl
+    // {
+    //   Level       level;
+    //   std::string name;
+    //   Impl(Level level, std::string const& name)
+    //     : level(level)
+    //     , name(name)
+    //   {}
+    // };
 
     Logger::Logger(Logger::Level level, std::string const& name)
-      : _impl(nullptr)
-    {
-      this->_impl = new Impl{
-        level,
-        name,
-      };
-    }
+      : _level(level)
+      , _name(name)
+    {}
 
     Logger::~Logger()
-    {
-      delete this->_impl;
-      this->_impl = nullptr;
-    }
+    {}
 
     void
     Logger::_message(Level level,
                      elle::log::Logger::Type type,
                      std::string const& message)
     {
-      if (level <= _impl->level)
+      if (level <= _level)
         std::cerr << message << std::endl;
     }
 
     std::string const&
     Logger::name() const
     {
-      return this->_impl->name;
+      return this->_name;
     }
 
     void
     Logger::name(std::string const& name_)
     {
-      this->_impl->name = name_;
+      this->_name = name_;
     }
 
     Logger::Level
     Logger::level() const
     {
-      return this->_impl->level;
+      return this->_level;
     }
 
     void
     Logger::level(Level level_)
     {
-      this->_impl->level = level_;
+      this->_level = level_;
     }
 
   }
