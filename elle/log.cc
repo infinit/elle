@@ -177,26 +177,6 @@ namespace elle
           this->_send(level, msg);
       }
 
-      static int thread_id(reactor::Thread* t)
-      {
-        if (!t)
-          return 0;
-
-        static int i = 1;
-        typedef std::unordered_map<reactor::Thread*, int> Ids;
-        static Ids ids;
-
-        auto elt = ids.find(t);
-        if (elt == ids.end())
-          {
-            ids[t] = i;
-            return i++;
-          }
-        else
-          return ids[t];
-      }
-
-
       void
       TraceContext::_send(elle::log::Logger::Level level, std::string const& msg)
       {

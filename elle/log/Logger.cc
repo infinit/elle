@@ -6,26 +6,6 @@ namespace elle
 {
   namespace log
   {
-    static std::ostream& operator << (std::ostream& stream, Logger::Level lvl)
-    {
-      switch (lvl)
-        {
-          case Logger::Level::log:
-            stream << " LOG ";
-            break;
-          case Logger::Level::trace:
-            stream << "TRACE";
-            break;
-          case Logger::Level::debug:
-            stream << "DEBUG";
-            break;
-          case Logger::Level::dump:
-            stream << "DUMP ";
-            break;
-        }
-      return stream;
-    }
-
     void
     Logger::message(Level level, std::string const& msg)
     {

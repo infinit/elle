@@ -38,7 +38,7 @@ namespace nucleus
            scoutor != element.container.end();
            scoutor++)
         {
-          T*                    item;
+          T* item = nullptr;
 
           // copy the item depending on the options.
           switch (this->options)

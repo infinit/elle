@@ -30,8 +30,8 @@ namespace infinit
     Procedure (RPC<ISerializer, OSerializer>& owner,
                uint32_t id,
                boost::function<R (Args...)> const& f)
-      : _owner(owner)
-      , _id(id)
+      : _id(id)
+      , _owner(owner)
       , _function(f)
     {}
 
@@ -46,8 +46,8 @@ namespace infinit
     template <typename R, typename ... Args>
     RPC<ISerializer, OSerializer>::RemoteProcedure<R, Args ...>::
     RemoteProcedure(RPC<ISerializer, OSerializer>& owner, uint32_t id)
-      : _owner(owner)
-      , _id(id)
+      : _id(id)
+      , _owner(owner)
     {}
 
     template <typename ISerializer, typename OSerializer>
@@ -62,7 +62,6 @@ namespace infinit
       typedef Procedure<ISerializer, OSerializer, R, Args...> Proc;
       Proc* res = new Proc(_owner, _id, f);
       _owner._procedures[_id] = res;
-      BaseProcedure<ISerializer, OSerializer>* fuck = res;
     }
 
     template <typename OSerializer>
