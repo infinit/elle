@@ -47,7 +47,7 @@ namespace infinit
     Serializer::write(Packet& packet)
     {
       reactor::Lock lock(scheduler(), _lock_write);
-      ELLE_TRACE("%s: send s", *this, packet)
+      ELLE_TRACE("%s: send %s", *this, packet)
         {
           _uint32_put(_stream, packet._data_size);
           _stream.write(reinterpret_cast<char*>(packet._data),
