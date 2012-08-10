@@ -1481,9 +1481,10 @@ namespace horizon
                                     struct ::fuse_file_info*    info)
     {
       ELLE_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
-                           __FUNCTION__, path, buffer,
-                           static_cast<elle::Natural64>(size),
-                           static_cast<elle::Natural64>(offset), info);
+                       __FUNCTION__, path,
+                       reinterpret_cast<const void*>(buffer),
+                       static_cast<elle::Natural64>(size),
+                       static_cast<elle::Natural64>(offset), info);
 
       Handle*           handle;
       elle::standalone::Region      region;
