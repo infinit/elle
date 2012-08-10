@@ -282,22 +282,16 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // XXX[to replace by the new signal mechanism]
       switch (hole::Hole::state)
         {
         case hole::Hole::StateOffline:
           {
-            if (hole::Hole::ready.Subscribe(
-                  elle::concurrency::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
-              escape("unable to subscribe to the signal");
-
+            hole::Hole::readyHook(&FUker::run);
             break;
           }
         case hole::Hole::StateOnline:
           {
-            if (FUker::Run() == elle::Status::Error)
-              escape("unable to run the FUker thread");
-
+            FUker::run();
             break;
           }
         }

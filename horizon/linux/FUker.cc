@@ -258,7 +258,6 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // XXX[to replace by the new signal mechanism]
       switch (hole::Hole::state)
         {
         case hole::Hole::StateOffline:
