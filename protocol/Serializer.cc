@@ -32,10 +32,10 @@ namespace infinit
       ELLE_TRACE("%s: read packet", *this)
         {
           uint32_t size(_uint32_get(_stream));
-          ELLE_TRACE("%s: packet size: %s, reading body", *this, size);
+          ELLE_DEBUG("%s: packet size: %s, reading body", *this, size);
           Packet res(size);
           _stream.read(reinterpret_cast<char*>(res._data), size);
-          ELLE_TRACE("%s: got full packet", *this);
+          ELLE_TRACE("%s: got %s", *this, res);
           return res;
         }
     }
@@ -47,8 +47,7 @@ namespace infinit
     Serializer::write(Packet& packet)
     {
       reactor::Lock lock(scheduler(), _lock_write);
-      ELLE_TRACE("%s: send packet of size %s",
-                     *this, packet._data_size)
+      ELLE_TRACE("%s: send s", *this, packet)
         {
           _uint32_put(_stream, packet._data_size);
           _stream.write(reinterpret_cast<char*>(packet._data),

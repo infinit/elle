@@ -75,15 +75,15 @@ namespace infinit
             {
               // FIXME: use helper to pop
               Packet packet(std::move(channel->_packets.front()));
-              ELLE_TRACE("%s: %s available.", *this, packet);
               channel->_packets.pop_front();
+              ELLE_TRACE("%s: %s available.", *this, packet);
               return packet;
             }
-          ELLE_TRACE("%s: no packet available.", *this);
+          ELLE_DEBUG("%s: no packet available.", *this);
           if (!_reading)
             _read(false, requested_channel);
           else
-            ELLE_TRACE("%s: reader already present, waiting.", *this)
+            ELLE_DEBUG("%s: reader already present, waiting.", *this)
               current->wait(channel->_available);
         }
     }
@@ -91,7 +91,7 @@ namespace infinit
     void
     ChanneledStream::_read(bool channel, int requested_channel)
     {
-      ELLE_TRACE_SCOPE("%s: reading packets.", *this);
+      ELLE_DEBUG_SCOPE("%s: reading packets.", *this);
       while (true)
         {
           _reading = true;
@@ -99,7 +99,7 @@ namespace infinit
           int channel_id = _uint32_get(p);
           // FIXME: The size of the packet isn't
           // adjusted. This is cosmetic though.
-          ELLE_TRACE("%s: received %s on channel %s.", *this, p, channel_id);
+          ELLE_DEBUG("%s: received %s on channel %s.", *this, p, channel_id);
           auto it = _channels.find(channel_id);
           if (it != _channels.end())
             {
@@ -134,12 +134,12 @@ namespace infinit
       ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
       while (_channels_new.empty())
         {
-          ELLE_TRACE_SCOPE("%s: no channel available, waiting", *this);
+          ELLE_DEBUG("%s: no channel available, waiting", *this);
           if (!_reading)
             _read(true, 0);
           else
             {
-              ELLE_TRACE_SCOPE("%s: reader already present, waiting.", *this);
+              ELLE_DEBUG("%s: reader already present, waiting.", *this);
               reactor::Thread* current = scheduler().current();
               current->wait(this->_channel_available);
             }
@@ -148,7 +148,7 @@ namespace infinit
       // FIXME: use helper to pop
       Channel res = std::move(_channels_new.front());
       _channels_new.pop_front();
-      ELLE_TRACE_SCOPE("%s: got channel %s", *this, res);
+      ELLE_TRACE("%s: got channel %s", *this, res);
       return res;
     }
 

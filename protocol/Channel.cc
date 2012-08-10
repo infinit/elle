@@ -19,7 +19,7 @@ namespace infinit
       , _backend(backend)
       , _id(backend._id_generate()) // FIXME: overflow
     {
-      ELLE_TRACE_SCOPE("%s: open %s", _backend, *this);
+      ELLE_DEBUG_SCOPE("%s: open %s", _backend, *this);
       _backend._channels[_id] = this;
     }
 
@@ -28,7 +28,7 @@ namespace infinit
       , _backend(backend)
       , _id(id)
     {
-      ELLE_TRACE_SCOPE("%s: open %s", _backend, *this);
+      ELLE_DEBUG_SCOPE("%s: open %s", _backend, *this);
       _backend._channels[_id] = this;
     }
 
@@ -49,7 +49,7 @@ namespace infinit
       assert(_packets.empty());
       if (_id != 0)
         {
-          ELLE_TRACE_SCOPE("%s: close %s", _backend, *this);
+          ELLE_DEBUG_SCOPE("%s: close %s", _backend, *this);
           assert(_backend._channels.find(_id) != _backend._channels.end());
           _backend._channels.erase(_id);
         }
