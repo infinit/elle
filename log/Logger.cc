@@ -67,17 +67,7 @@ namespace elle
         }
       };
 
-    } // !anonymous
-
-    // struct Logger::Impl
-    // {
-    //   Level       level;
-    //   std::string name;
-    //   Impl(Level level, std::string const& name)
-    //     : level(level)
-    //     , name(name)
-    //   {}
-    // };
+    }
 
     Logger::Logger(Logger::Level level, std::string const& name)
       : _level(level)
