@@ -98,14 +98,12 @@ namespace hole
         return _rpcs.push(address, derivable);
       }
 
-      std::unique_ptr<nucleus::proton::MutableBlock>
+      std::unique_ptr<nucleus::proton::Block>
       Host::pull(nucleus::proton::Address const& address,
                  nucleus::proton::Version const& version)
       {
         ELLE_TRACE_SCOPE("%s: pull block at address %s with version %s", *this, address, version);
-        std::unique_ptr<nucleus::proton::Block> block(_rpcs.pull(address, version).release());
-        assert(dynamic_cast<nucleus::proton::MutableBlock*>(block.get()));
-        return std::unique_ptr<nucleus::proton::MutableBlock>(static_cast<nucleus::proton::MutableBlock*>(block.release()));
+        return _rpcs.pull(address, version).release();
       }
 
       bool

@@ -73,7 +73,7 @@ namespace hole
       public:
         std::vector<elle::network::Locus>
         authenticate(lune::Passport& passport);
-        std::unique_ptr<nucleus::proton::MutableBlock>
+        std::unique_ptr<nucleus::proton::Block>
         pull(nucleus::proton::Address const& address,
              nucleus::proton::Version const& version);
         bool

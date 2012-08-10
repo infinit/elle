@@ -20,6 +20,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/Derivable.hh>
 
+#include <elle/cast.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
@@ -418,6 +419,8 @@ namespace hole
       {
         ELLE_TRACE("Get[Immutable]");
 
+        using nucleus::proton::ImmutableBlock;
+
         // depending on the machine's state.
         switch (this->_state)
           {
@@ -455,14 +458,13 @@ namespace hole
                   for (auto neighbour: this->_hosts)
                     {
                       Host* host = neighbour.second;
-                      std::unique_ptr<nucleus::proton::MutableBlock> block(
+                      auto iblock = elle::cast<ImmutableBlock>::runtime(
                         host->pull(address, nucleus::proton::Version::Any));
-
                       // validate the block.
-                      if (block->Validate(address) == elle::Status::Ok)
+                      if (iblock->Validate(address) == elle::Status::Ok)
                         {
                           // finally, store it locally.
-                          if (block->Store(Hole::Implementation->network,
+                          if (iblock->Store(Hole::Implementation->network,
                                       address) == elle::Status::Ok)
                             found = true;
                             break;
@@ -472,7 +474,7 @@ namespace hole
                           // XXX
                           ELLE_TRACE("unable to validate the immutable block");
                           address.Dump();
-                          block->Dump();
+                          iblock->Dump();
                           host->Dump();
                           show();
                           assert(false);
@@ -526,7 +528,8 @@ namespace hole
         for (auto neighbour: this->_hosts)
           {
             Host* host = neighbour.second;
-            Ptr<MutableBlock> block(host->pull(address, Version::Last));
+            auto block = elle::cast<MutableBlock>::runtime(
+              host->pull(address, Version::Last));
 
             // Validate the block, depending on its component.
             // Indeed, the Object component requires as additional
@@ -706,7 +709,7 @@ namespace hole
                 nucleus::Derivable derivable;
 
                 // request the host.
-                Ptr<nucleus::proton::MutableBlock> block(
+                auto block = elle::cast<MutableBlock>::runtime(
                   host->pull(address, version));
 
                 // validate the block, depending on its
