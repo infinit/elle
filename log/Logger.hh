@@ -32,8 +32,8 @@ namespace elle
       };
 
     private:
-      struct Impl;
-      Impl* _impl;
+      Level       _level;
+      std::string _name;
 
     public:
       Logger(Level lvl, std::string const& name = "");
