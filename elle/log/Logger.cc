@@ -29,46 +29,6 @@ namespace elle
     ELLE_LOG_LEVEL_MESSAGE(dump);
 #undef ELLE_LOG_LEVEL_MESSAGE
 
-    namespace
-    {
-      struct OutStream
-      {
-        std::ostream* out;
-        bool          owned;
-        OutStream(std::ostream* out, bool owned) : out(out), owned(owned) {}
-        OutStream(OutStream&& other) : out(other.out), owned(other.owned)
-        {
-          other.out = nullptr;
-          other.owned = false;
-        }
-        OutStream& operator =(OutStream&& other)
-        {
-          if (this != &other)
-            {
-              if (this->owned)
-                {
-                  delete this->out;
-                  this->out = nullptr;
-                }
-              this->out = other.out;
-              this->owned = other.owned;
-              other.out = nullptr;
-              other.owned = false;
-            }
-          return *this;
-        }
-        ~OutStream()
-        {
-          if (this->owned)
-            {
-              delete this->out;
-              this->out = nullptr;
-            }
-        }
-      };
-
-    }
-
     Logger::Logger(Logger::Level level, std::string const& name)
       : _level(level)
       , _name(name)
