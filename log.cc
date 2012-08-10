@@ -63,7 +63,7 @@ namespace elle
       struct Components
       {
       private:
-        std::vector<std::string>*     _patterns;
+        std::vector<std::string> _patterns;
         std::map<std::string, bool>   _enabled;
 
       public:
@@ -74,16 +74,25 @@ namespace elle
 
       private:
         Components()
-          : _patterns(nullptr)
+          : _patterns()
           , _enabled()
           , _max_string_size(0)
-        {}
+        {
+          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
+          if (components_str == nullptr)
+            this->_patterns.push_back("*");
+          else
+            {
+              boost::algorithm::split(this->_patterns, components_str,
+                                      boost::algorithm::is_any_of(","),
+                                      boost::algorithm::token_compress_on);
+              for (auto& pattern: this->_patterns)
+                boost::algorithm::trim(pattern);
+            }
+        }
 
         ~Components()
-        {
-          delete this->_patterns;
-          this->_patterns = nullptr;
-        }
+        {}
 
       public:
         static Components& instance()
@@ -123,28 +132,7 @@ namespace elle
       private:
         std::vector<std::string> const& patterns()
         {
-          if (this->_patterns != nullptr)
-            return *this->_patterns;
-          this->_patterns = new std::vector<std::string>();
-
-          std::vector<std::string> res;
-          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
-          if (components_str == nullptr)
-              return *this->_patterns;
-
-          boost::algorithm::split(
-              res, components_str,
-              boost::algorithm::is_any_of(","),
-              boost::algorithm::token_compress_on
-          );
-
-          for (auto& el: res)
-            {
-              boost::algorithm::trim(el);
-              if (el.size())
-                  this->_patterns->push_back(el);
-            }
-          return *this->_patterns;
+          return this->_patterns;
         }
       };
 
