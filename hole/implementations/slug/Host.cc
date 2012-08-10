@@ -80,7 +80,7 @@ namespace hole
           }
         catch (reactor::network::Exception& e)
           {
-            ELLE_LOG("%s: discarded: %s", *this, e.what());
+            ELLE_WARN("%s: discarded: %s", *this, e.what());
             this->_machine._remove(this);
           }
       }

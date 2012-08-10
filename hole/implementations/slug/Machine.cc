@@ -73,6 +73,7 @@ namespace hole
         for (auto locus: loci)
           if (_hosts.find(locus) == _hosts.end())
             _connect(locus);
+        ELLE_LOG("%s: add host: %s", *this, *host);
         _hosts[locus] = host.release();
       }
 
@@ -81,6 +82,7 @@ namespace hole
       {
         elle::network::Locus locus(host->locus());
         assert(this->_hosts.find(locus) != this->_hosts.end());
+        ELLE_LOG("%s: remove host: %s", *this, *host);
         this->_hosts.erase(locus);
         delete host;
       }
@@ -161,7 +163,7 @@ namespace hole
             }
           catch (reactor::Exception& e)
             {
-              ELLE_TRACE("unable to listen: %s", e.what());
+              ELLE_ERR("unable to listen: %s", e.what());
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
