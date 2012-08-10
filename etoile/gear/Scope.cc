@@ -5,6 +5,7 @@
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Link.hh>
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Group.hh>
 #include <etoile/gear/Chronicle.hh>
 
 #include <Infinit.hh>
@@ -1015,6 +1016,51 @@ namespace etoile
 
                 break;
               }
+            case NatureGroup:
+              {
+                gear::Group* context =
+                  static_cast<gear::Group*>(this->context);
+                assert(dynamic_cast<gear::Group*>(this->context) != nullptr);
+
+                // depending on the closing operation...
+                switch (this->context->operation)
+                  {
+                  case OperationDiscard:
+                    {
+                      // call the shutdown method.
+                      if (gear::Group::A::Discard(
+                            *context) == elle::Status::Error)
+                        escape("an error occured in the shutdown method");
+
+                      break;
+                    }
+                  case OperationStore:
+                    {
+                      // call the shutdown method.
+                      if (gear::Group::A::Store(
+                            *context) == elle::Status::Error)
+                        escape("an error occured in the shutdown method");
+
+                      break;
+                    }
+                  case OperationDestroy:
+                    {
+                      // call the shutdown method.
+                      if (gear::Group::A::Destroy(
+                            *context) == elle::Status::Error)
+                        escape("an error occured in the shutdown method");
+
+                      break;
+                    }
+                  case OperationUnknown:
+                    {
+                      escape("unknown operation '%u'\n",
+                             this->context->operation);
+                    }
+                  }
+
+                break;
+              }
             case NatureUnknown:
             default:
               {
@@ -1267,6 +1313,12 @@ namespace etoile
 
                   escape("unknown context nature");
                 }
+              case NatureGroup:
+                {
+                  printf("[XXX] to handle\n");
+
+                  break;
+                }
               case NatureObject:
                 {
                   // refresh the scope.
@@ -1343,6 +1395,12 @@ namespace etoile
                   this->state = Scope::StateNone;
 
                   escape("unknown context nature");
+                }
+              case NatureGroup:
+                {
+                  printf("[XXX] to handle\n");
+
+                  break;
                 }
               case NatureObject:
                 {

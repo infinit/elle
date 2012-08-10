@@ -42,7 +42,7 @@ namespace etoile
       this->genre = object.meta.genre;
 
       // set the stamps.
-      this->stamps.creation = object.stamp;
+      this->stamps.creation = object.stamp();
       this->stamps.modification =
         object.data.stamp < object.meta.stamp ?
         object.meta.stamp :
@@ -52,14 +52,14 @@ namespace etoile
       this->size = object.data.size;
 
       // set the owner.
-      this->keys.owner = object.owner.K;
+      this->keys.owner = object.owner_K();
 
       // set the author depending on the mode.
       switch (object.author.role)
         {
         case nucleus::neutron::RoleOwner:
           {
-            this->keys.author = object.owner.K;
+            this->keys.author = object.owner_K();
 
             break;
           }

@@ -16,7 +16,8 @@ namespace etoile
         NatureObject,
         NatureFile,
         NatureDirectory,
-        NatureLink
+        NatureLink,
+        NatureGroup
       };
 
   }

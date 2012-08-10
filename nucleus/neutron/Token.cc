@@ -60,55 +60,6 @@ namespace nucleus
     }
 
 //
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method creates or update the token.
-    ///
-    elle::Status        Token::Update(elle::cryptography::SecretKey const&    key,
-                                      elle::cryptography::PublicKey const&    K)
-    {
-      // delete the previous code.
-      if (this->code != nullptr)
-        delete this->code;
-
-      // if the secret key is null, reinitialize to the default null token.
-      if (key == elle::cryptography::SecretKey::Null)
-        {
-          this->code = nullptr;
-        }
-      else
-        {
-          // allocate a new code.
-          this->code = new elle::cryptography::Code;
-
-          // encrypt the given secret key with the given public key.
-          if (K.Encrypt(key, *this->code) == elle::Status::Error)
-            escape("unable to encrypt the key");
-        }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method extracts the secret key from the token.
-    ///
-    elle::Status        Token::Extract(elle::cryptography::PrivateKey const&  k,
-                                       elle::cryptography::SecretKey&         key) const
-    {
-      // check the code.
-      if (this->code == nullptr)
-        escape("unable to retrieve the key out of a null token");
-
-      // decrypt the code.
-      if (k.Decrypt(*this->code, key) == elle::Status::Error)
-        escape("unable to decrypt the token's content");
-
-      return elle::Status::Ok;
-    }
-
-//
 // ---------- object ----------------------------------------------------------
 //
 

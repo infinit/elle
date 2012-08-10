@@ -61,13 +61,13 @@ namespace nucleus
         {
           // create the token with the public key of the user or the
           // group owner, depending on the subject.
-          switch (subject.type)
+          switch (subject.type())
             {
             case Subject::TypeUser:
               {
                 // create the token with the user's public key.
                 if (this->token.Update(key,
-                                       *subject.user) == elle::Status::Error)
+                                       subject.user()) == elle::Status::Error)
                   escape("unable to create the token");
 
                 break;
@@ -146,7 +146,7 @@ namespace nucleus
     ///
     /// this function dumps a record.
     ///
-    elle::Status        Record::Dump(elle::Natural32            margin) const
+    elle::Status        Record::Dump(const elle::Natural32 margin) const
     {
       elle::String      alignment(margin, ' ');
 

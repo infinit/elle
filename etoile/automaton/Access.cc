@@ -21,12 +21,12 @@
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
+ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Access");
+
 namespace etoile
 {
   namespace automaton
   {
-
-    ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Access");
 
     ///
     /// this method opens the access block by loading it if necessary i.e
@@ -80,7 +80,7 @@ namespace etoile
                "the access permissions");
 
       // update the accesses depending on the subject.
-      if (subject == context.object.owner.subject)
+      if (subject == context.object.owner_subject())
         {
           //
           // in this case, the subject represents the object's owner.
@@ -221,7 +221,7 @@ namespace etoile
           //
 
           // perform the lookup according to the subject.
-          if (subject == context.object.owner.subject)
+          if (subject == context.object.owner_subject())
             {
               //
               // if the target subject is the object owner, retrieve the
@@ -327,7 +327,7 @@ namespace etoile
                "access permissions");
 
       // update the access block or object according to the subject.
-      if (subject == context.object.owner.subject)
+      if (subject == context.object.owner_subject())
         {
           //
           // in this case, the subject represents the object's owner.
@@ -413,7 +413,7 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      if (token.Update(key, context.object.owner.K) == elle::Status::Error)
+      if (token.Update(key, context.object.owner_K()) == elle::Status::Error)
         escape("unable to update the owner's token");
 
       // update the object with the new owner token.

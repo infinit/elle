@@ -166,7 +166,7 @@ namespace nucleus
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
       if (this->meta.owner.record.Update(
-            this->owner.subject,
+            this->owner_subject(),
             this->meta.owner.permissions,
             this->meta.owner.token) == elle::Status::Error)
         escape("unable to create the owner access record");
@@ -190,12 +190,13 @@ namespace nucleus
           this->data.version += 1;
 
           // sign the archive with the author key.
-          if (k.Sign(elle::serialize::make_tuple(this->data.contents,
-                                     this->data.size,
-                                     this->data.stamp,
-                                     this->data.version,
-                                     this->meta.owner.token,
-                                     this->meta.access),
+          if (k.Sign(elle::serialize::make_tuple(
+                       this->data.contents,
+                       this->data.size,
+                       this->data.stamp,
+                       this->data.version,
+                       this->meta.owner.token,
+                       this->meta.access),
                      this->data.signature) == elle::Status::Error)
             escape("unable to sign the data archive");
 
@@ -236,12 +237,13 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
-              if (k.Sign(elle::serialize::make_tuple(this->meta.owner.permissions,
-                                         this->meta.genre,
-                                         this->meta.stamp,
-                                         this->meta.attributes,
-                                         this->meta.version,
-                                         fingerprint),
+              if (k.Sign(elle::serialize::make_tuple(
+                           this->meta.owner.permissions,
+                           this->meta.genre,
+                           this->meta.stamp,
+                           this->meta.attributes,
+                           this->meta.version,
+                           fingerprint),
                          this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
@@ -253,11 +255,12 @@ namespace nucleus
               //
 
               // sign the meta data.
-              if (k.Sign(elle::serialize::make_tuple(this->meta.owner.permissions,
-                                         this->meta.genre,
-                                         this->meta.stamp,
-                                         this->meta.attributes,
-                                         this->meta.version),
+              if (k.Sign(elle::serialize::make_tuple(
+                           this->meta.owner.permissions,
+                           this->meta.genre,
+                           this->meta.stamp,
+                           this->meta.attributes,
+                           this->meta.version),
                          this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
@@ -300,7 +303,7 @@ namespace nucleus
                                          const Access&          access)
       const
     {
-      elle::cryptography::PublicKey   author;
+      elle::cryptography::PublicKey author;
 
       // (i)
       {
@@ -326,24 +329,28 @@ namespace nucleus
               escape("unable to compute the access block fingerprint");
 
             // verify the meta part, including the access fingerprint.
-            if (this->owner.K.Verify(this->meta.signature,
-                                     elle::serialize::make_tuple(this->meta.owner.permissions,
-                                                     this->meta.genre,
-                                                     this->meta.stamp,
-                                                     this->meta.attributes,
-                                                     this->meta.version,
-                                                     fingerprint)) == elle::Status::Error)
+            if (this->owner_K().Verify(
+                  this->meta.signature,
+                  elle::serialize::make_tuple(
+                    this->meta.owner.permissions,
+                    this->meta.genre,
+                    this->meta.stamp,
+                    this->meta.attributes,
+                    this->meta.version,
+                    fingerprint)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
         else
           {
             // verify the meta part.
-            if (this->owner.K.Verify(this->meta.signature,
-                                     elle::serialize::make_tuple(this->meta.owner.permissions,
-                                                     this->meta.genre,
-                                                     this->meta.stamp,
-                                                     this->meta.attributes,
-                                                     this->meta.version)) == elle::Status::Error)
+            if (this->owner_K().Verify(
+                  this->meta.signature,
+                  elle::serialize::make_tuple(
+                    this->meta.owner.permissions,
+                    this->meta.genre,
+                    this->meta.stamp,
+                    this->meta.attributes,
+                    this->meta.version)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
       }
@@ -355,7 +362,7 @@ namespace nucleus
           case RoleOwner:
             {
               // copy the public key.
-              author = this->owner.K;
+              author = this->owner_K();
 
               //
               // note that the owner's permission to write the object
@@ -402,14 +409,14 @@ namespace nucleus
                        "the permission to modify this object");
 
               // check that the subject is indeed a user.
-              if (record->subject.type != Subject::TypeUser)
+              if (record->subject.type() != Subject::TypeUser)
                 escape("the author references an access record which is "
                        "not related to a user");
 
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = *record->subject.user;
+              author = record->subject.user();
 
               break;
             }

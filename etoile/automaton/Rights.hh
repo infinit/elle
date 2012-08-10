@@ -25,6 +25,11 @@ namespace etoile
       static elle::Status       Update(gear::Object&,
                                        const nucleus::neutron::Permissions&);
 
+      // XXX
+      static
+      elle::Status
+      Determine(gear::Group&);
+
       static elle::Status       Operate(gear::Object&,
                                         const gear::Operation&);
     };

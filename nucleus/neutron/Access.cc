@@ -184,7 +184,7 @@ namespace nucleus
             continue;
 
           // depending on the subject's type.
-          switch (record->subject.type)
+          switch (record->subject.type())
             {
             case Subject::TypeUser:
               {
@@ -194,10 +194,10 @@ namespace nucleus
                 // capable of decrypting it.
                 //
 
-                elle::cryptography::PublicKey*        K = record->subject.user;
+                elle::cryptography::PublicKey const& K = record->subject.user();
 
                 // update the token.
-                if (record->token.Update(key, *K) == elle::Status::Error)
+                if (record->token.Update(key, K) == elle::Status::Error)
                   escape("unable to update the token");
 
                 break;

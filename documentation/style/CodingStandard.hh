@@ -215,8 +215,8 @@ namespace package
       ///
       /// One must note that the prototype below is a bit specific as
       /// spanning three lines. Indeed, the method qualifiers (static, inline,
-      /// etc.) must be placed on their own line. The same is true for the
-      /// return type and the method name.
+      /// virtual, etc.) must be placed on their own line. The same is true
+      /// for the return type and the method name.
       static
       CodingStandard*
       generate();

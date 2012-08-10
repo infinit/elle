@@ -8,8 +8,8 @@
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
+# include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Component.hh>
-# include <nucleus/neutron/Subject.hh>
 
 namespace nucleus
 {
@@ -35,52 +35,74 @@ namespace nucleus
     /// hash in order to prevent conflicts i.e several ImprintBlocks
     /// being created by the same user at the same time.
     ///
-    class ImprintBlock
-      : public MutableBlock
-      , public elle::concept::Serializable<ImprintBlock>
+    class ImprintBlock:
+      public MutableBlock,
+      public elle::concept::Serializable<ImprintBlock>
     {
-    public:
       //
       // constructors & destructors
       //
+    public:
       ImprintBlock();
-      ImprintBlock(const neutron::Component);
+      ImprintBlock(neutron::Component const);
+      ImprintBlock(neutron::Component const,
+                   elle::cryptography::PublicKey const&);
+      ~ImprintBlock();
 
       //
       // methods
       //
-      elle::Status      Create(elle::cryptography::PublicKey const&);
-
-      elle::Status      Bind(Address&) const;
-      elle::Status      Validate(const Address&) const;
+    public:
+      /// XXX
+      elle::Status
+      Create(elle::cryptography::PublicKey const&);
+      /// XXX
+      elle::Status
+      Bind(Address&) const;
+      /// XXX
+      elle::Status
+      Validate(Address const&) const;
+      /// XXX
+      elle::utility::Time const&
+      stamp() const;
+      /// XXX
+      elle::cryptography::PublicKey const&
+      owner_K() const;
+      /// XXX
+      neutron::Subject const&
+      owner_subject();
 
       //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(ImprintBlock);
 #include <elle/idiom/Close.hh>
 
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
-      // fileable
+      // serializable
       ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
+
+      ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 
       //
       // attributes
       //
-      elle::utility::Time       stamp;
-      elle::Natural64           salt;
+    private:
+      elle::utility::Time _stamp;
+      elle::Natural64 _salt;
 
       struct
       {
         elle::cryptography::PublicKey K;
 
-        neutron::Subject        subject;
-      }                         owner;
+        neutron::Subject* subject;
+      } _owner;
     };
 
   }

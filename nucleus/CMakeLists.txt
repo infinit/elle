@@ -5,6 +5,7 @@ add_definitions(-fPIC)
 ADD_LIBRARY(nucleus
   Nucleus.cc
   Derivable.cc
+  Exception.cc
 
   proton/Action.cc
   proton/Address.cc
@@ -30,7 +31,10 @@ ADD_LIBRARY(nucleus
   neutron/Author.cc
   neutron/Catalog.cc
   neutron/Data.cc
+  neutron/Ensemble.cc
   neutron/Entry.cc
+  neutron/Fellow.cc
+  neutron/Group.cc
   neutron/Object.cc
   neutron/Record.cc
   neutron/Reference.cc

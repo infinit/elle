@@ -1,6 +1,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/automaton/Access.hh>
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Group.hh>
 
 #include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Token.hh>
@@ -12,7 +13,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Rights");
+ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Rights");
 
 namespace etoile
 {
@@ -29,19 +30,25 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
+      ELLE_LOG_TRACE_SCOPE("determine the user's rights over the "
+                           "object context");
+
       if (context.rights.role != nucleus::neutron::RoleUnknown)
         {
-          ELLE_LOG_TRACE("Rights have already been determined !")
+          ELLE_LOG_TRACE("rights have already been determined")
+
           return elle::Status::Ok;
         }
 
       // determine the rights according to the subject.
-      if (agent::Agent::Subject == context.object.owner.subject)
+      if (agent::Agent::Subject == context.object.owner_subject())
         {
           //
           // if the user is the object's owner, retrieve the user's
           // permissions, token etc. from the object's meta section.
           //
+
+          ELLE_LOG_TRACE_SCOPE("the user is the object owner");
 
           // set the role.
           context.rights.role = nucleus::neutron::RoleOwner;
@@ -61,7 +68,6 @@ namespace etoile
 
           // set the record for ease purpose. XXX I see what you did there
           context.rights.record = context.object.meta.owner.record;
-          ELLE_LOG_TRACE("Rights have been determined according to the subject record.");
         }
       else
         {
@@ -70,6 +76,8 @@ namespace etoile
           // retrieve the permissions, token etc. from the access record
           // associated with the subject.
           //
+
+          ELLE_LOG_TRACE_SCOPE("the user is _not_ the object owner");
 
           // open the access.
           if (Access::Open(context) == elle::Status::Error)
@@ -83,6 +91,8 @@ namespace etoile
               // is considered a lord.
               //
               nucleus::neutron::Record* record;
+
+              ELLE_LOG_TRACE_SCOPE("the object reference an Access block");
 
               // retrieve the record associated with this subject.
               if (context.access->Lookup(agent::Agent::Subject,
@@ -107,7 +117,6 @@ namespace etoile
 
               // finally, set the record for ease purpose.
               context.rights.record = *record;
-              ELLE_LOG_TRACE("Rights have been determined from its own context (referenced in the access block).");
             }
           else
             {
@@ -117,12 +126,13 @@ namespace etoile
               // a token.
               //
 
+              ELLE_LOG_TRACE_SCOPE("the object does not reference an Access block");
+
               // set the role.
               context.rights.role = nucleus::neutron::RoleVassal;
 
               // set the permissions.
               context.rights.permissions = nucleus::neutron::PermissionNone;
-              ELLE_LOG_TRACE("Rights default to Vassal role and permissions");
             }
         }
 
@@ -164,6 +174,45 @@ namespace etoile
       context.rights.record.permissions = permissions;
 
       return elle::Status::Ok;
+    }
+
+    elle::Status
+    Rights::Determine(gear::Group& context)
+    {
+      ELLE_LOG_TRACE_SCOPE("determine the user's rights over the group context");
+
+      if (context.rights.role != nucleus::neutron::RoleUnknown)
+        {
+          ELLE_LOG_TRACE("rights have already been determined")
+
+          return elle::Status::Ok;
+        }
+
+      // determine the rights according to the subject.
+      if (agent::Agent::Subject == context.group->owner_subject())
+        {
+          //
+          // if the user is the group's owner, retrieve the user's
+          // token.
+          //
+
+          ELLE_LOG_TRACE_SCOPE("the user is the group owner");
+
+          // set the role.
+          context.rights.role = nucleus::neutron::RoleOwner;
+        }
+      else
+        {
+          //
+          // if the user is not the owner, leave the role as unknown.
+          //
+
+          ELLE_LOG_TRACE_SCOPE("the user is _not_ the group owner");
+
+          context.rights.role = nucleus::neutron::RoleUnknown;
+        }
+
+      return (elle::Status::Ok);
     }
 
     ///

@@ -27,12 +27,16 @@ namespace nucleus
           , elle::serialize::BufferArchive
         >
     {
-    public:
-      typedef proton::ContentHashBlock SuperClass;
-
+      //
+      // constants
+      //
     public:
       static const Access               Null;
 
+      //
+      // construction
+      //
+    public:
       Access();
 
       //
@@ -43,7 +47,7 @@ namespace nucleus
       elle::Status      Lookup(const Subject&,
                                Record*&) const;
       elle::Status      Lookup(const Subject&,
-                               Index&) const;
+                               Index&) const; // XXX[rename to seek()]
       elle::Status      Lookup(const Index&,
                                Record*&) const;
       template <typename T>

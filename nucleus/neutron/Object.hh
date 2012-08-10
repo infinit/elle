@@ -48,13 +48,14 @@ namespace nucleus
     /// make it as easy to manipulate the owner entry as for other access
     /// records. thus, this attribute is never serialized.
     ///
-    class Object
-      : public proton::ImprintBlock
-      , public elle::concept::Serializable<Object>
-      , public elle::concept::Serializable<
-            Object, elle::serialize::BufferArchive
-        >
-      , public elle::concept::MakeUniquable<Object>
+    class Object:
+      public proton::ImprintBlock,
+      public elle::concept::Serializable<Object>,
+      public elle::concept::Serializable<
+        Object,
+        elle::serialize::BufferArchive
+      >,
+      public elle::concept::MakeUniquable<Object>
     {
     public:
       //
@@ -95,6 +96,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // serialize
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object);
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 

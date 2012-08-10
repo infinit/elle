@@ -23,22 +23,27 @@ namespace nucleus
       //
       // constants
       //
-      static const Token                Null;
+      static const Token Null;
 
       //
       // constructors & destructors
       //
       Token();
+      template <typename T>
+      Token(elle::cryptography::PublicKey const& K,
+            T const& secret);
       Token(const Token&);
       ~Token();
 
       //
       // methods
       //
-      elle::Status      Update(elle::cryptography::SecretKey const&,
+      template <typename T>
+      elle::Status      Update(T const&,
                                elle::cryptography::PublicKey const&);
+      template <typename T>
       elle::Status      Extract(elle::cryptography::PrivateKey const&,
-                                elle::cryptography::SecretKey&) const;
+                                T&) const;
 
       //
       // interfaces
@@ -56,7 +61,7 @@ namespace nucleus
       //
       // attributes
       //
-      elle::cryptography::Code*       code;
+      elle::cryptography::Code* code;
     };
 
   }

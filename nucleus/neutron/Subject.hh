@@ -3,9 +3,10 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
-# include <elle/cryptography/fwd.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/User.hh>
+# include <nucleus/neutron/Group.hh>
 
 namespace nucleus
 {
@@ -16,8 +17,8 @@ namespace nucleus
     /// this class is used to represents a subject i.e an entity which
     /// can be granted access such as a user or a group.
     ///
-    class Subject
-      : public elle::radix::Object
+    class Subject:
+      public elle::radix::Object
     {
     public:
       //
@@ -38,8 +39,8 @@ namespace nucleus
       //
       struct Descriptor
       {
-        Type            type;
-        elle::String    name;
+        Type type;
+        elle::String name;
       };
 
       //
@@ -59,14 +60,26 @@ namespace nucleus
       // constructors & destructors
       //
       Subject();
-      Subject(const Subject&);
+      Subject(typename User::Identity const& identity);
+      Subject(typename Group::Identity const& identity);
+      Subject(Subject const& other);
       ~Subject();
 
       //
       // methods
       //
-      elle::Status      Create(elle::cryptography::PublicKey const&);
-      elle::Status      Create(const proton::Address&);
+      elle::Status      Create(typename User::Identity const& identity);
+      elle::Status      Create(typename Group::Identity const& identity);
+
+      /// XXX
+      Type
+      type() const;
+      /// XXX
+      typename User::Identity const&
+      user() const;
+      /// XXX
+      typename Group::Identity const&
+      group() const;
 
       //
       // interfaces
@@ -81,15 +94,19 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Subject);
+
       //
       // attributes
       //
-      Type                      type;
+    private:
+      Type _type;
 
       union
       {
-        elle::cryptography::PublicKey*        user;
-        proton::Address*        group;
+        typename User::Identity* _user;
+        typename Group::Identity* _group;
       };
     };
 

@@ -7,6 +7,8 @@
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Reference.hh>
 #include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Group.hh>
+#include <nucleus/neutron/Ensemble.hh>
 
 namespace nucleus
 {
@@ -54,6 +56,14 @@ namespace nucleus
 
       if (Nucleus::Factory.Register< neutron::Access >
           (neutron::ComponentAccess) == elle::Status::Error)
+        escape("unable to register the factory product");
+
+      if (Nucleus::Factory.Register< neutron::Group >
+          (neutron::ComponentGroup) == elle::Status::Error)
+        escape("unable to register the factory product");
+
+      if (Nucleus::Factory.Register< neutron::Ensemble >
+          (neutron::ComponentEnsemble) == elle::Status::Error)
         escape("unable to register the factory product");
     }
 

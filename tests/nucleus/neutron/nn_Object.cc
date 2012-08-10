@@ -49,12 +49,10 @@ int main()
       blk_copy.Dump();
 
       CHECK(blk_copy.Validate(addr, nucleus::neutron::Access::Null));
-      assert(blk.owner.subject == blk_copy.owner.subject);
+      assert(blk.owner_subject() == blk_copy.owner_subject());
 
     }
 
   std::cout << "tests done.\n";
   return 0;
 }
-
-

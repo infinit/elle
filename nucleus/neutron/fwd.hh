@@ -19,7 +19,10 @@ namespace nucleus
     class Author;
     class Catalog;
     class Data;
+    class Ensemble;
     class Entry;
+    class Fellow;
+    class Group;
     class Object;
     template <typename T>
     class Range;
@@ -28,6 +31,7 @@ namespace nucleus
     class Subject;
     class Token;
     class Trait;
+    class User;
 
   }
 }

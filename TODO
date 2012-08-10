@@ -6,6 +6,12 @@
  - quand on copier infinit-new, il n'arrive pas a copier les attributs
  - virer Broker dans elle: plus necessaire
 
+groups:
+ - coder les groups
+ - modifier le subject, author etc.
+ - faire que si le author gets its right permission removed, the owner generates a Voucher stating that the author had the permission at the time.
+ - trouver un autre nom pour Members et Member
+
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.
  - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
@@ -20,7 +26,6 @@ general:
  - ajouter le nombre d'entrees par repertoire, et le propager up to the root
  - si on garde sur disque les blocs non chiffres, alors il faut les supprimer si on quitte Infinit.
  - faire une methode avec callback genre Fill qui appelle le callback pour chaque value
->>>>>>> fuse
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta
@@ -70,8 +75,6 @@ New Blocks
 Existing Blocks
   Nest::Load
   Next::Unload
-
----
 
 - dans le nest: discard (si plus de place) les blocs non modifies
 

@@ -14,6 +14,7 @@ namespace etoile
     class Context;
     class Directory;
     class File;
+    class Group;
     class Guard;
     class Identifier;
     class Link;
