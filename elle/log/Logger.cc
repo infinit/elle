@@ -7,16 +7,20 @@ namespace elle
   namespace log
   {
     void
-    Logger::message(Level level, std::string const& msg)
+    Logger::message(Level level,
+                    elle::log::Logger::Type type,
+                    std::string const& msg)
     {
-      this->_message(level, msg);
+      this->_message(level, type, msg);
     }
 
 #define ELLE_LOG_LEVEL_MESSAGE(Lvl)                     \
     void                                                \
     Logger::Lvl(std::string const& msg)                 \
     {                                                   \
-      return this->message(Logger::Level::Lvl, msg);    \
+    return this->message(Logger::Level::Lvl,            \
+                         Logger::Type::info,            \
+                         msg);                          \
     }                                                   \
 
     ELLE_LOG_LEVEL_MESSAGE(log);
@@ -91,7 +95,9 @@ namespace elle
     }
 
     void
-    Logger::_message(Level level, std::string const& message)
+    Logger::_message(Level level,
+                     elle::log::Logger::Type type,
+                     std::string const& message)
     {
       if (level <= _impl->level)
         std::cerr << message << std::endl;

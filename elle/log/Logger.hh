@@ -24,6 +24,13 @@ namespace elle
         dump,
       };
 
+      enum class Type
+      {
+        info,
+        warning,
+        error,
+      };
+
     private:
       struct Impl;
       Impl* _impl;
@@ -33,7 +40,7 @@ namespace elle
       ~Logger();
 
     public:
-      void message(Level level, std::string const& values);
+      void message(Level level, elle::log::Logger::Type type, std::string const& values);
       void log(std::string const& msg);
       void trace(std::string const& msg);
       void debug(std::string const& msg);
@@ -48,7 +55,9 @@ namespace elle
       void level(Level level_);
 
     protected:
-      void _message(Level level, std::string const& message);
+      void _message(Level level,
+                    elle::log::Logger::Type type,
+                    std::string const& message);
     };
 
   }
