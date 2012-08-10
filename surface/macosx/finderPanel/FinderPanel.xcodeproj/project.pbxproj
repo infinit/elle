@@ -52,6 +52,8 @@
 		1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB8E5CA15A5A13C00DCA443 /* OONetworkModel.h */; };
 		1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90973A15A43630002F0B1E /* OOUserModel.h */; };
 		1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */; };
+		1C486ED115D2B4EF008AFCE3 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BCE159CAA7900162909 /* OOAppDelegate.m */; };
+		1C486ED415D2B4FE008AFCE3 /* OOAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C045BCD159CAA7900162909 /* OOAppDelegate.h */; };
 		1C49943E15B6F32E00BADF60 /* OONetworkAddButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C49943C15B6F32E00BADF60 /* OONetworkAddButton.h */; };
 		1C49943F15B6F32E00BADF60 /* OONetworkAddButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */; };
 		1C49944015B6F32E00BADF60 /* OONetworkAddButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */; };
@@ -457,6 +459,7 @@
 				1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */,
 				1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */,
 				1C49943E15B6F32E00BADF60 /* OONetworkAddButton.h in Headers */,
+				1C486ED415D2B4FE008AFCE3 /* OOAppDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,6 +679,7 @@
 				1C30B5CB15B56A490056A382 /* OOBrowserWindowController.m in Sources */,
 				1C30B5CC15B56A490056A382 /* OOBrowserUtilities.m in Sources */,
 				1C49944015B6F32E00BADF60 /* OONetworkAddButton.m in Sources */,
+				1C486ED115D2B4EF008AFCE3 /* OOAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

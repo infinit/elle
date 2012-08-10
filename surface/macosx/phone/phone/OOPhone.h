@@ -21,6 +21,8 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (void)metaIsRespondingWithPerformSelector:(SEL)arg1 forObject:(id)arg2;
 
+- (NSString *)getHashPasswordWithEmail:(NSString*)arg1 andClearPassword:(NSString*)arg2;
+
 - (void)loginWithEmail:(NSString*)arg1 password:(NSString*)arg2 performSelector:(SEL)arg3 forObject:(id)arg4;
 
 - (void)registerWithFullName:(NSString*)arg1 
@@ -48,5 +50,7 @@ extern NSString *OOUpdateProgessChangedNotification;
 - (NSString*)getUserFullNameById:(NSString*)arg1;
 
 - (NSArray*)searchUsersWithString:(NSString*)arg1;
+
+- (void)launchWatchdog;
 
 @end

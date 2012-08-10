@@ -1,0 +1,333 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1C437376156A7C6500A7FFD5 /* OONurseFuser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C437375156A7C6500A7FFD5 /* OONurseFuser.m */; };
+		1C437381156A938A00A7FFD5 /* OONurseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C437380156A938A00A7FFD5 /* OONurseManager.m */; };
+		1C8522E61528D94E00051605 /* OONurseAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* OONurseAssistant.m */; };
+		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
+		368C77E0150C10C4009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DE150C10BA009E8FC4 /* Cocoa.framework */; };
+		368C77EA150D02B5009E8FC4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1C437374156A7C6500A7FFD5 /* OONurseFuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OONurseFuser.h; sourceTree = "<group>"; };
+		1C437375156A7C6500A7FFD5 /* OONurseFuser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONurseFuser.m; sourceTree = "<group>"; };
+		1C43737F156A938A00A7FFD5 /* OONurseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OONurseManager.h; sourceTree = "<group>"; };
+		1C437380156A938A00A7FFD5 /* OONurseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONurseManager.m; sourceTree = "<group>"; };
+		1C85229E1528D78200051605 /* OONurseAssistant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OONurseAssistant.h; sourceTree = "<group>"; };
+		1C85229F1528D78200051605 /* OONurseAssistant.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OONurseAssistant.m; sourceTree = "<group>"; };
+		1C8522A21528D78200051605 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1C8522A41528D78200051605 /* Nurse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Info.plist"; sourceTree = "<group>"; };
+		1C8522A51528D78200051605 /* Nurse-Launchd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Launchd.plist"; sourceTree = "<group>"; };
+		3628ABF3151B855B0093312B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		3661644615011A08008A1425 /* io.infinit.Nurse.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.Nurse.helper; sourceTree = BUILT_PRODUCTS_DIR; };
+		367BCFD014FE6D4200B41298 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		367BCFD114FE6D4200B41298 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		368C77DE150C10BA009E8FC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		610CC0B514FEC5B300623642 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3661644315011A08008A1425 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				368C77E0150C10C4009E8FC4 /* Cocoa.framework in Frameworks */,
+				368C77EA150D02B5009E8FC4 /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1C85229C1528D78200051605 /* nurse */ = {
+			isa = PBXGroup;
+			children = (
+				1C85229D1528D78200051605 /* helper */,
+				1C437374156A7C6500A7FFD5 /* OONurseFuser.h */,
+				1C437375156A7C6500A7FFD5 /* OONurseFuser.m */,
+				1C43737F156A938A00A7FFD5 /* OONurseManager.h */,
+				1C437380156A938A00A7FFD5 /* OONurseManager.m */,
+				1C8522A21528D78200051605 /* main.m */,
+				1C8522A31528D78200051605 /* supportingFiles */,
+			);
+			path = nurse;
+			sourceTree = "<group>";
+		};
+		1C85229D1528D78200051605 /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				1C85229E1528D78200051605 /* OONurseAssistant.h */,
+				1C85229F1528D78200051605 /* OONurseAssistant.m */,
+			);
+			path = helper;
+			sourceTree = "<group>";
+		};
+		1C8522A31528D78200051605 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1C8522A41528D78200051605 /* Nurse-Info.plist */,
+				1C8522A51528D78200051605 /* Nurse-Launchd.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		367BCFBE14FE6D4200B41298 = {
+			isa = PBXGroup;
+			children = (
+				1C85229C1528D78200051605 /* nurse */,
+				367BCFCC14FE6D4200B41298 /* frameworks */,
+				367BCFCA14FE6D4200B41298 /* products */,
+			);
+			sourceTree = "<group>";
+		};
+		367BCFCA14FE6D4200B41298 /* products */ = {
+			isa = PBXGroup;
+			children = (
+				3661644615011A08008A1425 /* io.infinit.Nurse.helper */,
+			);
+			name = products;
+			sourceTree = "<group>";
+		};
+		367BCFCC14FE6D4200B41298 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3628ABF3151B855B0093312B /* Quartz.framework */,
+				367BCFD014FE6D4200B41298 /* AppKit.framework */,
+				368C77DE150C10BA009E8FC4 /* Cocoa.framework */,
+				367BCFCF14FE6D4200B41298 /* Other Frameworks */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+		367BCFCF14FE6D4200B41298 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				610CC0B514FEC5B300623642 /* ScriptingBridge.framework */,
+				367BCFD114FE6D4200B41298 /* CoreData.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3661644515011A08008A1425 /* Nurse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3661645115011A08008A1425 /* Build configuration list for PBXNativeTarget "Nurse" */;
+			buildPhases = (
+				3661644215011A08008A1425 /* Sources */,
+				3661644315011A08008A1425 /* Frameworks */,
+				36742C75150A46F900051D01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Nurse;
+			productName = InfinitHelperTool;
+			productReference = 3661644615011A08008A1425 /* io.infinit.Nurse.helper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		367BCFC014FE6D4200B41298 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = OO;
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 367BCFC314FE6D4200B41298 /* Build configuration list for PBXProject "medecine" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+				Japanese,
+			);
+			mainGroup = 367BCFBE14FE6D4200B41298;
+			productRefGroup = 367BCFCA14FE6D4200B41298 /* products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3661644515011A08008A1425 /* Nurse */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		36742C75150A46F900051D01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3661644215011A08008A1425 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8522E61528D94E00051605 /* OONurseAssistant.m in Sources */,
+				1C8522E81528D94E00051605 /* main.m in Sources */,
+				1C437376156A7C6500A7FFD5 /* OONurseFuser.m in Sources */,
+				1C437381156A938A00A7FFD5 /* OONurseManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3661645215011A08008A1425 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = io.infinit;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"nurse/supportingFiles/Nurse-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"nurse/supportingFiles/Nurse-Launchd.plist",
+				);
+				PRODUCT_NAME = io.infinit.Nurse.helper;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				SYMROOT = ../DerivedData;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		3661645315011A08008A1425 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = io.infinit;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"nurse/supportingFiles/Nurse-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"nurse/supportingFiles/Nurse-Launchd.plist",
+				);
+				PRODUCT_NAME = io.infinit.Nurse.helper;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				SYMROOT = ../DerivedData;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+		367BCFE514FE6D4200B41298 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx;
+				SYMROOT = /Library/InfinitHelperTools;
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		367BCFE614FE6D4200B41298 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx;
+				SYMROOT = /Library/InfinitHelperTools;
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3661645115011A08008A1425 /* Build configuration list for PBXNativeTarget "Nurse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3661645215011A08008A1425 /* Debug */,
+				3661645315011A08008A1425 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		367BCFC314FE6D4200B41298 /* Build configuration list for PBXProject "medecine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				367BCFE514FE6D4200B41298 /* Debug */,
+				367BCFE614FE6D4200B41298 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 367BCFC014FE6D4200B41298 /* Project object */;
+}

@@ -26,7 +26,13 @@
     if ([arg1 fileExistsAtPath:[destPath absoluteString]]) {
         NSInputStream* iStream = [[NSInputStream alloc] initWithFileAtPath:[destPath absoluteString]];
         [iStream open];
-        if ([self base64md5FromStream:iStream] == self.md5sum) {
+        NSString* oldMD5 = [self base64md5FromStream:iStream];
+        NSString* newMD5 = self.md5sum;
+        if ([oldMD5 isEqualToString:newMD5]) {
+            self.downloadedSize = self.size;
+            [[NSNotificationCenter defaultCenter] postNotificationName:OODownloadingNotification
+                                                                object:self];
+            NSLog(@"download not needed");
             return;
         }
     }

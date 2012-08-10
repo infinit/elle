@@ -78,6 +78,8 @@ def to_add(lib):
             "ApplicationServices",
             "Security",
             "CoreServices",
+            "CoreText",
+            "ImageIO",
             "Carbon",
             "AppKit",
             "libobjc",

@@ -27,18 +27,19 @@
     NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
     OONurseManager *proxy = (OONurseManager *)[c rootProxy];
     
-    NSString *currentDir = [[NSBundle mainBundle] bundlePath];//[[NSFileManager defaultManager] currentDirectoryPath];
+    NSString *currentDir = [[NSBundle mainBundle] bundlePath];
     
     NSLog(@"launch helper for : %@", currentDir);
     BOOL returnValue = [proxy manage:currentDir];
+    
     if (returnValue) {
         NSLog(@"Helper launched");
     }
     else {
         NSLog(@"Helper failled to launch");
     }
+    
     return returnValue;
-
 }
 
 + (BOOL)blessHelperWithLabel:(NSString *)label error:(NSError **)error

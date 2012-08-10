@@ -22,7 +22,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     static OOPhone *singleton;
     @synchronized(self){
         if (!singleton){
-            // Le singleton n'a pas encore été instancié
+            // Singleton has not been instancied
             singleton = [[OOPhone alloc] init];
         }
         return singleton;
@@ -62,7 +62,16 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     }];
 }
 
-- (void)registerWithFullName:(NSString*)arg1 
+- (NSString *)getHashPasswordWithEmail:(NSString*)arg1 andClearPassword:(NSString*)arg2 {
+    char* hashPassword = gap_hash_password(self._gap_State,
+                            [arg1 cStringUsingEncoding:NSASCIIStringEncoding],
+                            [arg2 cStringUsingEncoding:NSASCIIStringEncoding]);
+    NSString* returnValue = [[NSString alloc] initWithUTF8String:hashPassword];
+    gap_hash_free(hashPassword);
+    return returnValue;
+}
+
+- (void)registerWithFullName:(NSString*)arg1
                        email:(NSString*)arg2 
                     password:(NSString*)arg3 
                  machineName:(NSString*)arg4 
@@ -133,6 +142,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 - (NSURL*)getNetworkMountPointWithId:(NSString*)arg1 {
     char const* path = gap_network_mount_point(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    if (path == nil)return nil;
     return [NSURL fileURLWithPath:[[NSString alloc] initWithUTF8String:path]];
 }
 
@@ -152,7 +162,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 - (NSArray*)searchUsersWithString:(NSString*)arg1 {
     NSMutableArray* returnArray = [[NSMutableArray alloc] init];
-    char** usersIds =gap_search_users(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    char** usersIds = gap_search_users(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
     
     if (usersIds == NULL) return returnArray;
     
@@ -163,5 +173,12 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
         usersIds++;
     }
     return returnArray;
+}
+
+//
+//  Launch watchdog
+//
+- (void)launchWatchdog {
+    gap_launch_watchdog(self._gap_State);
 }
 @end

@@ -1,0 +1,5 @@
+'compat' directory contains code or workarounds for different functions/data structures that
+are unavailable or differ across MacOSX versions:
+
+ * tree.h - rbtree implementation copied from OpenBSD. SDK has this header only starting from version 10.7.
+ * exchange - exchange vnop is not a part of public kernel API, so we mimic its implementation
