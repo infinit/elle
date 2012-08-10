@@ -4,7 +4,7 @@
 
 #include <protocol/Serializer.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Protocol");
+ELLE_LOG_COMPONENT("infinit.protocol.Serializer");
 
 namespace infinit
 {
