@@ -30,6 +30,8 @@ struct A
 
 ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
 {
+  assert(version == 0);
+
   archive & value.d;
   archive & value.s;
   archive & value.f;
@@ -44,6 +46,8 @@ struct Virtual
 
 ELLE_SERIALIZE_SIMPLE(Virtual, ar, value, version)
 {
+  assert(version == 0);
+
   ar & value.base;
 }
 
@@ -56,6 +60,8 @@ struct Implem
 
 ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
 {
+  assert(version == 0);
+
   ar & static_cast<Virtual&>(value);
   ar & value.impl;
 }
