@@ -92,8 +92,29 @@ namespace elle
                      elle::log::Logger::Type type,
                      std::string const& message)
     {
+      switch (type)
+        {
+          case Type::info:
+            break;
+          case Type::warning:
+            // Yellow
+            std::cerr << "[33;01;33m";
+            break;
+          case Type::error:
+            // Red
+            std::cerr << "[33;01;31m";
+        }
       if (level <= _level)
         std::cerr << message << std::endl;
+      switch (type)
+        {
+          case Type::info:
+            break;
+          case Type::warning:
+          case Type::error:
+            std::cerr << "[0m";
+            break;
+        }
     }
 
     std::string const&
