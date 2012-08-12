@@ -99,7 +99,7 @@ namespace nucleus
     elle::Status        Range<T>::Add(T*                        item)
     {
       // check if another item exists with this symbol.
-      if (this->Exist(item->Symbol()) == true)
+      if (this->Exist(item->symbol()) == true)
         escape("an item with this symbol already exist");
 
       // add the item to the container.
@@ -197,7 +197,7 @@ namespace nucleus
           T*                    item = *s;
 
           // if found...
-          if (item->Symbol() == symbol)
+          if (item->symbol() == symbol)
             {
               // return the scoutor.
               scoutor = s;
@@ -228,7 +228,7 @@ namespace nucleus
           T*                    item = *i;
 
           // if found...
-          if (item->Symbol() == symbol)
+          if (item->symbol() == symbol)
             {
               // return the iterator.
               iterator = i;

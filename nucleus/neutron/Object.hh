@@ -84,6 +84,10 @@ namespace nucleus
       elle::Status      Validate(const proton::Address&,
                                  const Access&) const;
 
+      /// The owner's access record.
+      Record const&
+      owner_record() const;
+
       //
       // interfaces
       //
@@ -103,7 +107,8 @@ namespace nucleus
       //
       // attributes
       //
-      Author                    author;
+    private:
+      Author _author;
 
       struct
       {
@@ -111,39 +116,38 @@ namespace nucleus
 
         struct
         {
-          Permissions           permissions;
-          Token                 token;
+          Permissions permissions;
+          Token token;
+          Record* record;
+        } owner;
 
-          Record                record;
-        }                       owner;
+        Genre genre;
+        elle::utility::Time stamp;
 
-        Genre                   genre;
-        elle::utility::Time              stamp;
+        Attributes attributes;
 
-        Attributes              attributes;
+        proton::Address access;
 
-        proton::Address         access;
+        proton::Version version;
+        elle::cryptography::Signature signature;
 
-        proton::Version         version;
-        elle::cryptography::Signature         signature;
-
-        proton::State           state;
-      }                         meta;
+        proton::State state;
+      } _meta;
 
       struct
       {
         // XXX to implement: proton::Base               base;
 
-        proton::Address         contents;
+        proton::Address contents;
 
-        Size                    size;
-        elle::utility::Time              stamp;
+        Size size;
+        elle::utility::Time stamp;
 
-        proton::Version         version;
-        elle::cryptography::Signature         signature;
+        proton::Version version;
+        elle::cryptography::Signature signature;
 
-        proton::State           state;
-      }                         data;
+        proton::State state;
+      } _data;
     };
 
   }

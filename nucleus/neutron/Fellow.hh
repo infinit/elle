@@ -12,7 +12,10 @@ namespace nucleus
   namespace neutron
   {
 
-    /// XXX[represent a member in a group]
+    /// This class represents a group member and is defined by
+    /// a subject (which can be either a user or a group i.e a subgroup),
+    /// and a token which is the encrypted version of the group's private
+    /// pass.
     class Fellow:
       public elle::io::Dumpable
     {
@@ -20,12 +23,15 @@ namespace nucleus
       // types
       //
     public:
-      typedef Subject S;
+      /// This type is used by the Range class for determining the type of
+      /// the items' differenciable elements i.e kind of keys.
+      typedef Subject Symbol;
 
       //
       // constants
       //
     public:
+      /// This constant defines a null/empty/unused fellow.
       static const Fellow Null;
 
       //
@@ -39,16 +45,16 @@ namespace nucleus
       // methods
       //
     public:
-      /// XXX
+      /// Returns the subject.
       Subject const&
       subject() const;
-      /// XXX
+      /// Returns the subject.
       Subject&
       subject();
-      /// XXX
+      /// Returns the token.
       Token const&
       token() const;
-      /// XXX
+      /// Specifies a new token.
       void
       token(Token const& token);
 
@@ -65,7 +71,7 @@ namespace nucleus
 
       // rangeable
       Subject&
-      Symbol();
+      symbol();
 
       //
       // attributes

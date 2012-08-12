@@ -16,8 +16,8 @@ namespace nucleus
   namespace neutron
   {
 
-    /// XXX[represents the list of users in a group]
-    /// XXX[needs to rely on Porcupine]
+    /// An Ensemble block contains the list of the members of a
+    /// group, known as the fellows.
     class Ensemble:
       public proton::ContentHashBlock,
       public elle::concept::Serializable<Ensemble>,
@@ -44,40 +44,41 @@ namespace nucleus
       // methods
       //
     public:
-      /// XXX
+      /// Adds a fellow to the ensemble. Note that the ownership is taken
+      /// over the fellow.
       void
       add(std::unique_ptr<Fellow>&& fellow);
-      /// XXX
+      /// Returns true if the ensemble is empty.
       elle::Boolean
       empty() const;
-      /// XXX
+      /// Returns true if the given subject belongs to the ensemble.
       elle::Boolean
       exists(Subject const& subject) const;
-      /// XXX
-      Fellow const*
+      /// Returns a reference on the fellow associated with the given subject.
+      Fellow const&
       locate(Subject const& subject) const;
-      /// XXX
-      Fellow const*
+      /// Returns a reference on the fellow associated with the given index.
+      Fellow const&
       locate(Index const& index) const;
-      /// XXX
+      /// Returns an index associated with the given subject.
       Index
       seek(Subject const& subject) const;
-      /// XXX
+      /// Returns a Range of _size_ fellows from the ensemble, starting
+      /// at _index_.
       Range<Fellow> const
       consult(Index const& index,
               Size const& size) const;
-      /// XXX
+      /// Updates the tokens of the ensemble's fellows with the given
+      /// pass private key.
       void
-      update(elle::cryptography::PrivateKey const& k);
-      /// XXX
+      update(elle::cryptography::PrivateKey const& pass);
+      /// Removes the given subject from the ensemble.
       void
       remove(Subject const& subject);
 
     private:
-      /// XXX
       Scoutor const
       _locate(Subject const& subject) const;
-      /// XXX
       Iterator const
       _locate(Subject const& subject);
 

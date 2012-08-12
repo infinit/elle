@@ -27,10 +27,11 @@ namespace nucleus
     void
     Ensemble::add(std::unique_ptr<Fellow>&& fellow)
     {
-      ELLE_LOG_TRACE_SCOPE("add(%s)", fellow);
+      ELLE_LOG_TRACE_SCOPE("[%p] add(%s)", this, fellow);
 
       if (this->exists(fellow->subject()) == true)
-        throw Exception("a fellow with this subject already exists"); // XXX[remove in the future]
+        throw Exception("a fellow with this subject already exists");
+        // XXX[remove in the future]
 
       this->_container.push_back(fellow.release());
 
@@ -48,7 +49,7 @@ namespace nucleus
     {
       Ensemble::Scoutor scoutor;
 
-      ELLE_LOG_TRACE_SCOPE("exists(%s)", subject);
+      ELLE_LOG_TRACE_SCOPE("[%p] exists(%s)", this, subject);
 
       try
         {
@@ -68,9 +69,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Fellow* fellow;
 
-      ELLE_LOG_TRACE_SCOPE("locate(%s)", subject);
-
-      // XXX[consider the owner]
+      ELLE_LOG_TRACE_SCOPE("[%p] locate(%s)", this, subject);
 
       scoutor = this->_locate(subject);
       fellow = *scoutor;
@@ -84,9 +83,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Index i(0);
 
-      ELLE_LOG_TRACE_SCOPE("locate(%s)", index);
-
-      // XXX[consider the owner]
+      ELLE_LOG_TRACE_SCOPE("[%p] locate(%s)", this, index);
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -110,9 +107,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Index i(0);
 
-      ELLE_LOG_TRACE_SCOPE("seek(%s)", subject);
-
-      // XXX[consider the owner]
+      ELLE_LOG_TRACE_SCOPE("[%p] seek(%s)", this, subject);
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -140,10 +135,9 @@ namespace nucleus
 
       ELLE_LOG_TRACE_SCOPE("consult(%s, %s)", index, size);
 
-      // XXX[add the owner to the list]
-
       if (range.Detach() == elle::Status::Error)
-        throw Exception("unable to detach the data from the range"); // XXX[to remove in the future]
+        throw Exception("unable to detach the data from the range");
+        // XXX[to remove in the future]
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -151,14 +145,12 @@ namespace nucleus
         {
           Fellow* fellow = *scoutor;
 
-          // XXX
-          printf("FELLOW TO CONSULT\n");
-
-          // if this record lies in the selected range [index, index + size[
+          // If this record lies in the selected range [index, index + size[.
           if ((i >= index) && (i < (index + size)))
             {
               if (range.Add(fellow) == elle::Status::Error)
-                throw Exception("unable to add the record to the given range"); // XXX[to remove in the future]
+                throw Exception("unable to add the record to the given range");
+                // XXX[to remove in the future]
             }
         }
 
@@ -166,11 +158,11 @@ namespace nucleus
     }
 
     void
-    Ensemble::update(elle::cryptography::PrivateKey const& k)
+    Ensemble::update(elle::cryptography::PrivateKey const& pass)
     {
       Ensemble::Iterator iterator;
 
-      ELLE_LOG_TRACE_SCOPE("update(%s)", k);
+      ELLE_LOG_TRACE_SCOPE("[%p] update(%s)", this, pass);
 
       for (iterator = this->_container.begin();
            iterator != this->_container.end();
@@ -182,7 +174,7 @@ namespace nucleus
             {
             case Subject::TypeUser:
               {
-                Token token(fellow->subject().user(), k);
+                Token token(fellow->subject().user(), pass);
 
                 ELLE_LOG_TRACE_SCOPE("update fellow user '%s'", fellow->subject());
 

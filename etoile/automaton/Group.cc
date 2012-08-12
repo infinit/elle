@@ -99,9 +99,6 @@ namespace etoile
           context.ensemble->add(
             std::move(std::unique_ptr<nucleus::neutron::Fellow>(
               new nucleus::neutron::Fellow(subject))));
-
-          // XXX
-          context.ensemble->Dump();
         }
       catch (...)
         {

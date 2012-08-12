@@ -77,7 +77,7 @@ namespace nucleus
 //
 
     Subject&
-    Fellow::Symbol()
+    Fellow::symbol()
     {
       return (this->_subject);
     }

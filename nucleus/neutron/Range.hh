@@ -21,7 +21,7 @@ namespace nucleus
     /// a range must be parameterised with a type providing two things:
     ///  1) a type T::S which defines the key type used to differenciate
     ///     items.
-    ///  2) a Symbol() method which must returns a T::S&, this method
+    ///  2) a symbol() method which must returns a T::S&, this method
     ///     being used to retrieve the key value of a given item.
     ///
     template <typename T>
@@ -47,7 +47,7 @@ namespace nucleus
       //
       // types
       //
-      typedef typename T::S                             S;
+      typedef typename T::Symbol                        Symbol;
 
       typedef std::list<T*>                             Container;
       typedef typename Container::iterator              Iterator;

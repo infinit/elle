@@ -30,7 +30,7 @@ namespace nucleus
       //
       // types
       //
-      typedef Subject                   S;
+      typedef Subject                   Symbol;
 
       //
       // constructors & destructors
@@ -64,7 +64,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // rangeable
-      Subject&          Symbol();
+      Subject&
+      symbol();
 
       //
       // attributes

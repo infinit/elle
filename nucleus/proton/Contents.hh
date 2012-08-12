@@ -14,7 +14,8 @@ namespace nucleus
 
     ///
     /// this class abstracts the data, catalog or reference by embedding
-    /// it since the contents is always encrypted. XXX[to rewrite]
+    /// it since the contents is always encrypted. XXX[will soon be overwritten
+    /// by the porcupine code]
     ///
     /// therefore, once a contents is retrieved from the storage, the Extract()
     /// method is called which basically extracts an archive i.e the encrypted

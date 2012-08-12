@@ -33,20 +33,6 @@ namespace nucleus
 // ---------- methods ---------------------------------------------------------
 //
 
-    elle::cryptography::PublicKey const&
-    Group::pass() const
-    {
-      assert(this->_pass != nullptr);
-
-      return (*this->_pass);
-    }
-
-    proton::Address const&
-    Group::ensemble() const
-    {
-      return (this->_ensemble);
-    }
-
     void
     Group::upgrade(proton::Address const& ensemble,
                    elle::cryptography::PublicKey const& pass)
@@ -100,11 +86,27 @@ namespace nucleus
                 throw Exception("unable to sign the group"); // XXX[to remove in the future]
             }
 
-          // set the mutable block's version.
+          // Increase the mutable block's version.
           this->version += 1;
         }
 
+      // Now that the group has been sealed, the block can be considered
+      // as consistent.
       this->state = proton::StateConsistent;
+    }
+
+    elle::cryptography::PublicKey const&
+    Group::pass() const
+    {
+      assert(this->_pass != nullptr);
+
+      return (*this->_pass);
+    }
+
+    proton::Address const&
+    Group::ensemble() const
+    {
+      return (this->_ensemble);
     }
 
 //

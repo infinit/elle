@@ -150,47 +150,16 @@ namespace nucleus
 // ---------- fileable --------------------------------------------------------
 //
 
-// XXX Factoriser ca avec nucleus/proton/ImmutableBlock
-# define STRINGIFY_ADDRESS(address, unique)                                   \
-    do {                                                                      \
-      try                                                                     \
-        {                                                                     \
-          elle::utility::WeakBuffer buf(                                      \
-              address.digest->region.contents,                                \
-              address.digest->region.size                                     \
-          );                                                                  \
-          buf.Save(unique);                                                   \
-        }                                                                     \
-      catch (std::exception const& err)                                       \
-        {                                                                     \
-          escape("%s", err.what());                                           \
-        }                                                                     \
-    } while (false)                                                           \
-
-    namespace
-      {
-
-        // XXX[why this function if there is a macro-function?]
-        elle::Status StringifyAddress(Address const& address,
-                                      elle::String unique)
-        {
-          STRINGIFY_ADDRESS(address, unique);
-          return elle::Status::Ok;
-        }
-
-      }
-
-
     ///
     /// this method loads a history.
     ///
     elle::Status        History::Load(const Network&            network,
                                       const Address&            address)
     {
-      elle::io::Path       path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      unique = address.unique();
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
@@ -211,10 +180,10 @@ namespace nucleus
     elle::Status        History::Store(const Network&           network,
                                        const Address&           address) const
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      unique = address.unique();
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
@@ -235,10 +204,10 @@ namespace nucleus
     elle::Status        History::Erase(const Network&           network,
                                        const Address&           address) const
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      unique = address.unique();
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
@@ -267,10 +236,10 @@ namespace nucleus
     elle::Status        History::Exist(const Network&           network,
                                        const Address&           address) const
     {
-      elle::io::Path        path;
-      elle::String      unique;
+      elle::io::Path path;
+      elle::String unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      unique = address.unique();
 
       // first, turn the block's address into a hexadecimal string.
       if (StringifyAddress(address, unique) == elle::Status::Error)

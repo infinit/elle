@@ -11,23 +11,23 @@ namespace nucleus
   namespace neutron
   {
 
-    ///
-    /// a token is a secret key enabling a user to access encrypted
-    /// data. however, in order to allow only the proper user to
-    /// use this key, it is encrypted with the user's public key.
-    ///
+    /// A token is a secret information enabling a user to access encrypted
+    /// data. However, in order to allow only the proper user to
+    /// use this secret information, it is encrypted with the user's public key.
     class Token:
       public elle::radix::Object
     {
-    public:
       //
       // constants
       //
+    public:
+      /// Defines an empty/unused token.
       static const Token Null;
 
       //
       // constructors & destructors
       //
+    public:
       Token();
       template <typename T>
       Token(elle::cryptography::PublicKey const& K,
@@ -38,17 +38,26 @@ namespace nucleus
       //
       // methods
       //
+    public:
+      /// XXX[to rename]
       template <typename T>
-      elle::Status      Update(T const&,
-                               elle::cryptography::PublicKey const&);
+      elle::Status
+      Update(T const&,
+             elle::cryptography::PublicKey const&);
+      /// Extracts the secret information from the token by decrypting
+      /// the code with the given private key which only the user has.
       template <typename T>
-      elle::Status      Extract(elle::cryptography::PrivateKey const&,
-                                T&) const;
+      elle::Status
+      Extract(elle::cryptography::PrivateKey const&,
+              T&) const;
+      /// Returns the code pointer.
+      elle::cryptography::Code const*
+      code() const;
 
       //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(Token);
@@ -58,10 +67,14 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Token);
+
       //
       // attributes
       //
-      elle::cryptography::Code* code;
+    public:
+      elle::cryptography::Code* _code;
     };
 
   }
