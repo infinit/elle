@@ -32,6 +32,7 @@ namespace nucleus
       //
       this->_meta.state = proton::StateClean;
       this->_meta.owner.permissions = PermissionNone;
+      this->_meta.owner.record = nullptr;
       this->_meta.genre = GenreUnknown;
       this->_meta.version = 0;
 
@@ -164,6 +165,8 @@ namespace nucleus
 
       // make sure the owner's record is computed.
       this->_owner_record();
+
+      assert(this->_meta.owner.record != nullptr);
 
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order

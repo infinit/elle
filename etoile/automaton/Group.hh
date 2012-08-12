@@ -13,7 +13,7 @@ namespace etoile
   namespace automaton
   {
 
-    /// XXX
+    /// This class provides methods for manipulating group contexts.
     class Group
     {
     public:

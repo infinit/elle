@@ -13,7 +13,7 @@ namespace etoile
   namespace wall
   {
 
-    /// XXX
+    /// This class provides methods for manipulating groups.
     class Group
     {
     public:

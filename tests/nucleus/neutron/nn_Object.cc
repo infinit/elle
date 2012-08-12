@@ -13,7 +13,6 @@
 
 int main()
 {
-
   CHECK(elle::Elle::Initialize());
   CHECK(nucleus::Nucleus::Initialize());
 
@@ -23,9 +22,15 @@ int main()
 
   nucleus::neutron::Object blk;
 
+  printf("HERE\n");
+
   CHECK(blk.Create(nucleus::neutron::GenreDirectory, kp.K));
 
+  printf("HERE\n");
+
   CHECK(blk.Seal(kp.k, nucleus::neutron::Access::Null));
+
+  printf("HERE\n");
 
   nucleus::proton::Address addr;
 

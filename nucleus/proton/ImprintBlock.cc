@@ -80,7 +80,7 @@ namespace nucleus
     elle::Status
     ImprintBlock::Bind(Address& address) const
     {
-      ELLE_LOG_TRACE_SCOPE("[%p] Bind() this(%p)", this);
+      ELLE_LOG_TRACE_SCOPE("[%p] Bind()", this);
 
       // Compute the address of the block by hashing the following
       // elements: network, family, component, stamp, salt and owner.K..

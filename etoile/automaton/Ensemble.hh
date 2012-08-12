@@ -10,7 +10,8 @@ namespace etoile
   namespace automaton
   {
 
-    /// XXX
+    /// This class provides methods for manipulating ensembles
+    /// related to a group context.
     class Ensemble
     {
     public:

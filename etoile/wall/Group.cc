@@ -280,7 +280,6 @@ namespace etoile
         if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
-        /* XXX[check if the current user is the group owner
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
         // allowed.
@@ -289,7 +288,6 @@ namespace etoile
               gear::OperationDiscard) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "discarding this group");
-        */
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationDiscard) == elle::Status::Error)
@@ -368,7 +366,6 @@ namespace etoile
         if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
-        /* XXX[check if the current user is the group owner
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
         // allowed.
@@ -377,7 +374,6 @@ namespace etoile
               gear::OperationStore) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "storing this group");
-        */
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationStore) == elle::Status::Error)
@@ -457,7 +453,6 @@ namespace etoile
         if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
-        /* XXX[check if the current user is the group owner
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
         // allowed.
@@ -466,7 +461,6 @@ namespace etoile
               gear::OperationDestroy) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "destroying this group");
-        */
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationDestroy) == elle::Status::Error)

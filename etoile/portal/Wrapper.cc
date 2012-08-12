@@ -241,22 +241,12 @@ namespace etoile
       ELLE_LOG_TRACE_SCOPE("Group::Consult(%s, %s, %s, %s)",
                            identifier, index, size, range);
 
-      // XXX
-      printf("WRAPPER CONSULT\n");
-      identifier.Dump();
-      std::cout << index << std::endl;
-      std::cout << size << std::endl;
-
       // forward the call to wall.
       if (wall::Group::Consult(identifier,
                                index,
                                size,
                                r) == elle::Status::Error)
         escape("unable to consult the given group fellows");
-
-      // XXX
-      printf("RANGE\n");
-      r.Dump();
 
       // copy the range, duplicating every entry in it.
       range = r;

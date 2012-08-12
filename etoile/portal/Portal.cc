@@ -56,7 +56,6 @@ namespace etoile
     ///
     Portal::Container Portal::applications;
 
-    // XXX
     reactor::network::TCPServer* Portal::server = nullptr;
     reactor::Thread* Portal::acceptor = nullptr;
 

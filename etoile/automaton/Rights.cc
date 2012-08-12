@@ -66,7 +66,7 @@ namespace etoile
                 escape("unable to extract the secret key from the token");
             }
 
-          // set the record for ease purpose. XXX I see what you did there
+          // set the record for ease purpose.
           context.rights.record = context.object.owner_record();
         }
       else
@@ -213,68 +213,6 @@ namespace etoile
         }
 
       return (elle::Status::Ok);
-    }
-
-    ///
-    /// this method checks whether the user has the necessary permissions
-    /// and eventually the required role to perform the given operation.
-    ///
-    elle::Status        Rights::Operate(
-                          gear::Object&                         context,
-                          const gear::Operation&                operation)
-    {
-      // depending on the operation.
-      switch (operation)
-        {
-        case gear::OperationUnknown:
-          {
-            escape("unable to check the rights for a unknown operation");
-          }
-        case gear::OperationDiscard:
-          {
-            //
-            // nothing to check since discarding does not require
-            // special privileges.
-            //
-
-            break;
-          }
-        case gear::OperationStore:
-          {
-            //
-            // in this case, the user must have had the permission to write
-            // the object.
-            //
-            // however, the permission checking process would have been
-            // performed once the modifying operation such as Add() for
-            // a directory would have been invoked.
-            //
-            // therefore, no special check is performed here.
-            //
-
-            break;
-          }
-        case gear::OperationDestroy:
-          {
-            //
-            // in this case, the user must be the object's owner in order
-            // to destroy it.
-            //
-
-            // determine the user's rights on this context.
-            if (Rights::Determine(context) == elle::Status::Error)
-              escape("unable to determine the rights");
-
-            // check if the current user has the given role.
-            if (context.rights.role != nucleus::neutron::RoleOwner)
-              escape("the user does not seem to have the permission to "
-                     "perform the requested operation");
-
-            break;
-          }
-        }
-
-      return elle::Status::Ok;
     }
 
   }

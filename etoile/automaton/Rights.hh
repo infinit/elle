@@ -25,16 +25,21 @@ namespace etoile
       static elle::Status       Update(gear::Object&,
                                        const nucleus::neutron::Permissions&);
 
-      // XXX
+      /// XXX
       static
       elle::Status
       Determine(gear::Group&);
-
-      static elle::Status       Operate(gear::Object&,
-                                        const gear::Operation&);
+      /// XXX
+      template <typename T>
+      static
+      elle::Status
+      Operate(T&,
+              const gear::Operation&);
     };
 
   }
 }
+
+# include <etoile/automaton/Rights.hxx>
 
 #endif

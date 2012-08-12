@@ -7,12 +7,11 @@
  - virer Broker dans elle: plus necessaire
 
 groups:
- - modifier le subject, author etc.
  - faire que si le author gets its right permission removed, the owner generates a Voucher stating that the author had the permission at the time.
- - commenter le code
  - gerer le owner comme etant membre
  - changer mics::abstract en abstract::object et abstract::group et rajouter methode group::information
  - integrer au controle d'acces, mais que en lecture (refuser de donner le droit a un groupe en ecriture)
+ - changer les scopes pour integrer les groups: wall::Group(XXX)
 
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.
