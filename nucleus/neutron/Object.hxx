@@ -15,22 +15,22 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
 
   archive & static_cast<nucleus::proton::ImprintBlock&>(value);
 
-  archive & value.author;
+  archive & value._author;
 
-  archive & value.meta.owner.permissions;
-  archive & value.meta.owner.token;
-  archive & value.meta.genre;
-  archive & value.meta.stamp;
-  archive & value.meta.attributes;
-  archive & value.meta.access;
-  archive & value.meta.version;
-  archive & value.meta.signature;
+  archive & value._meta.owner.permissions;
+  archive & value._meta.owner.token;
+  archive & value._meta.genre;
+  archive & value._meta.stamp;
+  archive & value._meta.attributes;
+  archive & value._meta.access;
+  archive & value._meta.version;
+  archive & value._meta.signature;
 
-  archive & value.data.contents;
-  archive & value.data.size;
-  archive & value.data.stamp;
-  archive & value.data.version;
-  archive & value.data.signature;
+  archive & value._data.contents;
+  archive & value._data.size;
+  archive & value._data.stamp;
+  archive & value._data.version;
+  archive & value._data.signature;
 }
 
 #endif

@@ -29,7 +29,7 @@ namespace etoile
                                       const nucleus::neutron::Permissions&);
       static elle::Status       Lookup(gear::Object&,
                                        const nucleus::neutron::Subject&,
-                                       nucleus::neutron::Record*&);
+                                       nucleus::neutron::Record const*&);
       static elle::Status       Consult(gear::Object&,
                                         const nucleus::neutron::Index&,
                                         const nucleus::neutron::Size&,

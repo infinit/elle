@@ -283,7 +283,7 @@ namespace horizon
           }
         case nucleus::neutron::GenreFile:
           {
-            nucleus::neutron::Trait* trait;
+            nucleus::neutron::Trait const* trait;
 
             stat->st_mode = S_IFREG;
 
@@ -432,7 +432,7 @@ namespace horizon
     {
       Handle*           handle;
       off_t             next;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -580,7 +580,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  subdirectory;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -678,7 +678,7 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // debug.
@@ -787,7 +787,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -842,7 +842,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreFile:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -861,7 +861,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreLink:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -1209,7 +1209,7 @@ namespace horizon
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Trait* trait;
+      nucleus::neutron::Trait const* trait;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1434,7 +1434,7 @@ namespace horizon
       etoile::path::Way         from(etoile::path::Way(source), name);
       etoile::path::Way         to(target);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1522,7 +1522,7 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
       etoile::path::Way         target;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1598,7 +1598,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  file;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1782,7 +1782,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1843,7 +1843,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1954,7 +1954,7 @@ namespace horizon
                                         struct ::fuse_file_info* info)
     {
       Handle*           handle;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -2102,8 +2102,8 @@ namespace horizon
           //
           etoile::path::Chemin          chemin;
           etoile::gear::Identifier      directory;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           // resolve the path.
           if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -2191,8 +2191,8 @@ namespace horizon
             etoile::gear::Identifier    from;
             etoile::gear::Identifier    to;
           }                             identifier;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           // resolve the path.
           if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -2360,7 +2360,7 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // debug.

@@ -63,7 +63,7 @@ namespace nucleus
       return (true);
     }
 
-    Fellow const*
+    Fellow const&
     Ensemble::locate(Subject const& subject) const
     {
       Ensemble::Scoutor scoutor;
@@ -74,10 +74,10 @@ namespace nucleus
       scoutor = this->_locate(subject);
       fellow = *scoutor;
 
-      return (fellow);
+      return (*fellow);
     }
 
-    Fellow const*
+    Fellow const&
     Ensemble::locate(Index const& index) const
     {
       Ensemble::Scoutor scoutor;
@@ -92,7 +92,7 @@ namespace nucleus
           Fellow* fellow = *scoutor;
 
           if (index == i)
-            return (fellow);
+            return (*fellow);
         }
 
       throw Exception(

@@ -26,7 +26,7 @@ namespace nucleus
 //
 
     elle::Status
-    Subject::Convert(const elle::String& name,
+    Subject::Convert(elle::String const& name,
                      Type& type)
     {
       elle::String string(name);
@@ -39,10 +39,10 @@ namespace nucleus
       for (i = 0; i < Subject::Types; i++)
         {
           // Is this the name we are looking for?
-          if (Subject::Descriptors[i].name == string)
+          if (Subject::_descriptors[i].name == string)
             {
               // Set the type.
-              type = Subject::Descriptors[i].type;
+              type = Subject::_descriptors[i].type;
 
               return elle::Status::Ok;
             }
@@ -52,7 +52,7 @@ namespace nucleus
     }
 
     elle::Status
-    Subject::Convert(const Type type,
+    Subject::Convert(Type const type,
                      elle::String& name)
     {
       elle::Natural32   i;
@@ -60,10 +60,10 @@ namespace nucleus
       for (i = 0; i < Subject::Types; i++)
         {
           // Is this the type we are looking for?
-          if (Subject::Descriptors[i].type == type)
+          if (Subject::_descriptors[i].type == type)
             {
               // Set the name.
-              name = Subject::Descriptors[i].name;
+              name = Subject::_descriptors[i].name;
 
               return elle::Status::Ok;
             }

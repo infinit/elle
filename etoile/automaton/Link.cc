@@ -60,7 +60,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a link.
-      if (context.object.meta.genre != nucleus::neutron::GenreLink)
+      if (context.object.genre() != nucleus::neutron::GenreLink)
         escape("this object does not seem to be a link");
 
       // set the context's state.
@@ -108,11 +108,11 @@ namespace etoile
 
       // update the object.
       if (context.object.Update(
-            context.object.author,
-            context.object.data.contents,
+            context.object.author(),
+            context.object.contents(),
             size,
-            context.object.meta.access,
-            context.object.meta.owner.token) == elle::Status::Error)
+            context.object.access(),
+            context.object.owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.

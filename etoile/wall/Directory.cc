@@ -225,7 +225,7 @@ namespace etoile
     elle::Status        Directory::Lookup(
                           const gear::Identifier&               identifier,
                           const path::Slab&                     name,
-                          nucleus::neutron::Entry*& entry)
+                          nucleus::neutron::Entry const*& entry)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

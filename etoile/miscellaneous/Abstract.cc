@@ -39,23 +39,23 @@ namespace etoile
     elle::Status        Abstract::Create(const nucleus::neutron::Object& object)
     {
       // set the genre.
-      this->genre = object.meta.genre;
+      this->genre = object.genre();
 
       // set the stamps.
       this->stamps.creation = object.stamp();
       this->stamps.modification =
-        object.data.stamp < object.meta.stamp ?
-        object.meta.stamp :
-        object.data.stamp;
+        object.data_stamp() < object.meta_stamp() ?
+        object.meta_stamp() :
+        object.data_stamp();
 
       // set the size
-      this->size = object.data.size;
+      this->size = object.size();
 
       // set the owner.
       this->keys.owner = object.owner_K();
 
       // set the author depending on the mode.
-      switch (object.author.role)
+      switch (object.author().role)
         {
         case nucleus::neutron::RoleOwner:
           {
@@ -70,11 +70,11 @@ namespace etoile
         }
 
       // set the permissions.
-      this->permissions.owner = object.meta.owner.permissions;
+      this->permissions.owner = object.owner_permissions();
 
       // set the versions.
-      this->versions.meta = object.meta.version;
-      this->versions.data = object.data.version;
+      this->versions.meta = object.meta_version();
+      this->versions.data = object.data_version();
 
       return elle::Status::Ok;
     }

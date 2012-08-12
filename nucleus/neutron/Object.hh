@@ -57,15 +57,16 @@ namespace nucleus
       >,
       public elle::concept::MakeUniquable<Object>
     {
-    public:
       //
       // constructors & destructors
       //
+    public:
       Object();
 
       //
       // methods
       //
+    public:
       elle::Status      Create(const Genre,
                                elle::cryptography::PublicKey const&);
 
@@ -83,15 +84,58 @@ namespace nucleus
       elle::Status      Validate(const proton::Address&) const;
       elle::Status      Validate(const proton::Address&,
                                  const Access&) const;
-
-      /// The owner's access record.
+      /// Returns the address of the referenced Access block.
+      proton::Address const&
+      access() const;
+      /// Returns owner's access record.
       Record const&
-      owner_record() const;
+      owner_record();
+      /// Returns the owner's access token.
+      Token const&
+      owner_token() const;
+      /// Returns the owner's access permissions.
+      Permissions const&
+      owner_permissions() const;
+      /// Returns the object's genre: file, directory or link.
+      Genre const&
+      genre() const;
+      /// Returns the object's author i.e last writer.
+      Author const&
+      author() const;
+      /// Returns the address of the contents block.
+      proton::Address const&
+      contents() const;
+      /// Returns the attributes associated with the object.
+      Attributes const&
+      attributes() const;
+      /// Returns the attributes associated with the object.
+      Attributes&
+      attributes();
+      /// Returns the size of the object's content.
+      Size const&
+      size() const;
+      /// Returns the stamp associated with the data section.
+      elle::utility::Time const&
+      data_stamp() const;
+      /// Returns the stamp associated with the meta section.
+      elle::utility::Time const&
+      meta_stamp() const;
+      /// Returns the version associated with the data section.
+      proton::Version const&
+      data_version() const;
+      /// Returns the version associated with the meta section.
+      proton::Version const&
+      meta_version() const;
+
+    private:
+      /// Computes the owner's record, if necessary.
+      void
+      _owner_record();
 
       //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(Object);
@@ -101,6 +145,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Object);
+
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object);
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 

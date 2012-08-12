@@ -29,7 +29,7 @@ namespace nucleus
       elle::Status      Add(Trait*);
       elle::Status      Exist(const elle::String&) const;
       elle::Status      Lookup(const elle::String&,
-                               Trait*&) const;
+                               Trait const*&) const;
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Trait>&) const;

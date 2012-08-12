@@ -84,7 +84,7 @@ namespace nucleus
     /// this method returns the entry corresponding to the given name.
     ///
     elle::Status        Catalog::Lookup(const elle::String&     name,
-                                        Entry*&                 entry) const
+                                        Entry const*& entry) const
     {
       // look in the range.
       if (this->range.Lookup(name, entry) == elle::Status::Error)
@@ -159,7 +159,7 @@ namespace nucleus
     elle::Status        Catalog::Rename(const elle::String&     from,
                                         const elle::String&     to)
     {
-      Entry*            entry;
+      Entry* entry;
 
       // if _from_ and _to_ are identical, return.
       if (from == to)

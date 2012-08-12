@@ -116,7 +116,7 @@ namespace etoile
           Chemin                chemin;
           Slice                 slice;
           gear::Identifier      identifier;
-          nucleus::neutron::Entry* entry;
+          nucleus::neutron::Entry const* entry;
 
           // extract the slice/version from the current slab.
           if (Path::Parse(*scoutor,

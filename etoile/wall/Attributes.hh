@@ -27,7 +27,7 @@ namespace etoile
                                     const elle::String&);
       static elle::Status       Get(const gear::Identifier&,
                                     const elle::String&,
-                                    nucleus::neutron::Trait*&);
+                                    nucleus::neutron::Trait const*&);
       static elle::Status       Fetch(const gear::Identifier&,
                                       nucleus::neutron::Range<
                                         nucleus::neutron::Trait>&);

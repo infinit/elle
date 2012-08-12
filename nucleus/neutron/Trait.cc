@@ -96,7 +96,8 @@ namespace nucleus
     ///
     /// this method returns the symbol of a trait i.e the name.
     ///
-    elle::String&       Trait::Symbol()
+    elle::String&
+    Trait::symbol()
     {
       return (this->name);
     }

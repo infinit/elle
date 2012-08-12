@@ -25,7 +25,7 @@ namespace etoile
                                     const elle::String&);
       static elle::Status       Get(gear::Object&,
                                     const elle::String&,
-                                    nucleus::neutron::Trait*&);
+                                    nucleus::neutron::Trait const*&);
       static elle::Status       Fetch(gear::Object&,
                                       nucleus::neutron::Range<
                                         nucleus::neutron::Trait>&);

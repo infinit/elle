@@ -125,7 +125,7 @@ namespace etoile
       // XXX[remove try/catch]
       try
         {
-          fellow = context.ensemble->locate(subject);
+          fellow = &context.ensemble->locate(subject);
         }
       catch (...)
         {

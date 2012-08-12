@@ -72,7 +72,7 @@ namespace etoile
 
           // Depending on the object's genre, a context is allocated
           // for the scope.
-          switch (object.meta.genre)
+          switch (object.genre())
             {
             case nucleus::neutron::GenreFile:
               {
@@ -103,7 +103,8 @@ namespace etoile
               }
             default:
               {
-                // XXX
+                // XXX[this whole code should probably be put within the
+                //     critical section?]
                 printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
                 object.Dump();
 

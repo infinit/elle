@@ -38,7 +38,7 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record& record)
     {
-      nucleus::neutron::Record* r;
+      nucleus::neutron::Record const* r;
 
       ELLE_LOG_TRACE_SCOPE("Access::Lookup()");
 
@@ -98,7 +98,7 @@ namespace etoile
                           const elle::String&                   name,
                           nucleus::neutron::Trait& trait)
     {
-      nucleus::neutron::Trait* t;
+      nucleus::neutron::Trait const* t;
 
       ELLE_LOG_TRACE_SCOPE("Attributes::Get()");
 
@@ -154,7 +154,7 @@ namespace etoile
                           const path::Slab&                     slab,
                           nucleus::neutron::Entry& entry)
     {
-      nucleus::neutron::Entry* e;
+      nucleus::neutron::Entry const* e;
 
       ELLE_LOG_TRACE_SCOPE("Directory::Lookup()");
 

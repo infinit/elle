@@ -241,10 +241,6 @@ namespace nucleus
 
       unique = address.unique();
 
-      // first, turn the block's address into a hexadecimal string.
-      if (StringifyAddress(address, unique) == elle::Status::Error)
-        flee("unable to convert the address in its hexadecimal form");
-
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
           elle::Status::Error)

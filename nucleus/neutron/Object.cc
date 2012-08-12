@@ -105,7 +105,7 @@ namespace nucleus
 
     {
       // set the author.
-      this->author = author;
+      this->_author = author;
 
       //
       // update the elements in the data section.
@@ -162,10 +162,13 @@ namespace nucleus
       // mark the section as dirty.
       this->_meta.state = proton::StateDirty;
 
+      // make sure the owner's record is computed.
+      this->_owner_record();
+
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
-      if (this->_meta.owner.record.Update(
+      if (this->_meta.owner.record->Update(
             this->owner_subject(),
             this->_meta.owner.permissions,
             this->_meta.owner.token) == elle::Status::Error)
@@ -357,7 +360,7 @@ namespace nucleus
 
       // (iii)
       {
-        switch (this->author.role)
+        switch (this->_author.role)
           {
           case RoleOwner:
             {
@@ -389,7 +392,7 @@ namespace nucleus
             }
           case RoleLord:
             {
-              Record*           record;
+              Record* record;
 
               // check that an access block has been provided.
               if (access == Access::Null)
@@ -398,7 +401,7 @@ namespace nucleus
 
               // retrieve the access record corresponding to the author's
               // index.
-              if (access.Lookup(this->author.lord.index,
+              if (access.Lookup(this->_author.lord.index,
                                 record) == elle::Status::Error)
                 escape("unable to retrieve the access record");
 
@@ -429,7 +432,7 @@ namespace nucleus
           default:
             {
               escape("unexpected author's role '%u'",
-                     this->author.role);
+                     this->_author.role);
             }
           }
       }
@@ -458,20 +461,104 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    proton::Address const&
+    Object::access() const
+    {
+      return (this->_meta.access);
+    }
+
     Record const&
-    Object::owner_record() const
+    Object::owner_record()
+    {
+      _owner_record();
+
+      return (*this->_meta.owner.record);
+    }
+
+    Token const&
+    Object::owner_token() const
+    {
+      return (this->_meta.owner.token);
+    }
+
+    Permissions const&
+    Object::owner_permissions() const
+    {
+      return (this->_meta.owner.permissions);
+    }
+
+    Genre const&
+    Object::genre() const
+    {
+      return (this->_meta.genre);
+    }
+
+    Author const&
+    Object::author() const
+    {
+      return (this->_author);
+    }
+
+    proton::Address const&
+    Object::contents() const
+    {
+      return (this->_data.contents);
+    }
+
+    Attributes const&
+    Object::attributes() const
+    {
+      return (this->_meta.attributes);
+    }
+
+    Attributes&
+    Object::attributes()
+    {
+      return (this->_meta.attributes);
+    }
+
+    Size const&
+    Object::size() const
+    {
+      return (this->_data.size);
+    }
+
+    elle::utility::Time const&
+    Object::data_stamp() const
+    {
+      return (this->_data.stamp);
+    }
+
+    elle::utility::Time const&
+    Object::meta_stamp() const
+    {
+      return (this->_meta.stamp);
+    }
+
+    proton::Version const&
+    Object::data_version() const
+    {
+      return (this->_data.version);
+    }
+
+    proton::Version const&
+    Object::meta_version() const
+    {
+      return (this->_meta.version);
+    }
+
+    void
+    Object::_owner_record()
     {
       // Create the record corresponding to the object owner, if necessary.
       // Note that this record will never be serialized but is used to ease
       // the process of access control since most method return a record.
-      if (this->_owner.record == nullptr)
-        this->_owner.record = new Record(this->owner_subject(),
-                                         this->meta.owner.permissions,
-                                         this->meta.owner.token);
+      if (this->_meta.owner.record == nullptr)
+        this->_meta.owner.record = new Record(this->owner_subject(),
+                                              this->_meta.owner.permissions,
+                                              this->_meta.owner.token);
 
-      assert (this->_owner.record != nullptr);
-
-      return (*this->_owner.record);
+      assert (this->_meta.owner.record != nullptr);
     }
 
 //
@@ -501,7 +588,7 @@ namespace nucleus
         escape("unable to dump the underlying owner key block");
 
       // dump the author part.
-      if (this->author.Dump(margin + 2) == elle::Status::Error)
+      if (this->_author.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the author");
 
       // dump the meta part.

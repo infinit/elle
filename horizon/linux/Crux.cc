@@ -217,7 +217,7 @@ namespace horizon
           }
         case nucleus::neutron::GenreFile:
           {
-            nucleus::neutron::Trait* trait;
+            nucleus::neutron::Trait const* trait;
 
             stat->st_mode = S_IFREG;
 
@@ -333,7 +333,7 @@ namespace horizon
     {
       Handle*           handle;
       off_t             next;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
                      __FUNCTION__, path, buffer, filler, static_cast<elle::Natural64>(offset), info);
@@ -447,7 +447,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  subdirectory;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
@@ -532,7 +532,7 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
@@ -628,7 +628,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
@@ -678,7 +678,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreFile:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -697,7 +697,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreLink:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -987,7 +987,7 @@ namespace horizon
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Trait* trait;
+      nucleus::neutron::Trait const* trait;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
 
@@ -1178,7 +1178,7 @@ namespace horizon
       etoile::path::Way         from(etoile::path::Way(source), name);
       etoile::path::Way         to(target);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
 
@@ -1254,7 +1254,7 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
       etoile::path::Way         target;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1318,7 +1318,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  file;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
 
@@ -1479,7 +1479,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                      __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
@@ -1527,7 +1527,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                      __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
@@ -1613,7 +1613,7 @@ namespace horizon
                                         struct ::fuse_file_info* info)
     {
       Handle*           handle;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path, static_cast<elle::Natural64>(size), info);
 
@@ -1729,8 +1729,8 @@ namespace horizon
           // since the source and target directory are identical.
           etoile::path::Chemin          chemin;
           etoile::gear::Identifier      directory;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           // Resolve the path.
           if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -1813,8 +1813,8 @@ namespace horizon
             etoile::gear::Identifier    from;
             etoile::gear::Identifier    to;
           }                             identifier;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           // Resolve the path.
           if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1971,7 +1971,7 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);

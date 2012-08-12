@@ -49,7 +49,7 @@ namespace nucleus
       /// Converts a string into a subject type.
       static
       elle::Status
-      Convert(elle::String& const,
+      Convert(elle::String const&,
               Type&);
       /// Converts a subject type into a string.
       static

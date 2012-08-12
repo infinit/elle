@@ -45,6 +45,8 @@ namespace nucleus
       elle::Status      Add(Record*);
       elle::Status      Exist(const Subject&) const;
       elle::Status      Lookup(const Subject&,
+                               Record const*&) const;
+      elle::Status      Lookup(const Subject&,
                                Record*&) const;
       elle::Status      Lookup(const Subject&,
                                Index&) const; // XXX[rename to seek()]

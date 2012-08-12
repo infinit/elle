@@ -24,7 +24,7 @@ namespace etoile
       //
       static elle::Status       Lookup(const gear::Identifier&,
                                        const nucleus::neutron::Subject&,
-                                       nucleus::neutron::Record*&);
+                                       nucleus::neutron::Record const*&);
       static elle::Status       Consult(const gear::Identifier&,
                                         const nucleus::neutron::Index&,
                                         const nucleus::neutron::Size&,

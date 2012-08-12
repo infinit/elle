@@ -22,7 +22,7 @@ namespace nucleus
     template <typename T>
     Token::Token(elle::cryptography::PublicKey const& K,
                  T const& secret):
-      code(nullptr)
+      _code(nullptr)
     {
       // XXX[la methode update devrait etre viree et un token devrait etre
       //     cree via le constructeur a chaque fois OU renommer Update()]

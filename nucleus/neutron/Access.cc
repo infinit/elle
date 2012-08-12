@@ -68,7 +68,17 @@ namespace nucleus
     /// this method returns the record corresponding to the given subject.
     ///
     elle::Status        Access::Lookup(const Subject&           subject,
-                                       Record*&                 record) const
+                                       Record const*& record) const
+    {
+      // look in the range.
+      if (this->range.Lookup(subject, record) == elle::Status::Error)
+        escape("unable to retrieve the record");
+
+      return elle::Status::Ok;
+    }
+
+    elle::Status        Access::Lookup(const Subject&           subject,
+                                       Record*& record) const
     {
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::Status::Error)

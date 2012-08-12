@@ -335,12 +335,12 @@ namespace hole
 
                       // validate the object according to the presence of
                       // a referenced access block.
-                      if (object->meta.access != nucleus::proton::Address::Null)
+                      if (object->access() != nucleus::proton::Address::Null)
                         {
                           nucleus::neutron::Access access;
 
                           // load the access block.
-                          if (Hole::Pull(object->meta.access,
+                          if (Hole::Pull(object->access(),
                                          nucleus::proton::Version::Last,
                                          access) == elle::Status::Error)
                             escape("unable to load the access block");
@@ -606,14 +606,14 @@ namespace hole
 
                                 // validate the object according to the
                                 // presence of a referenced access block.
-                                if (object.meta.access !=
+                                if (object.access() !=
                                     nucleus::proton::Address::Null)
                                   {
                                     nucleus::neutron::Access access;
 
                                     // load the access block.
                                     if (Hole::Pull(
-                                          object.meta.access,
+                                          object.access(),
                                           nucleus::proton::Version::Last,
                                           access) == elle::Status::Error)
                                       escape("unable to load the access "
@@ -707,12 +707,12 @@ namespace hole
 
                             // validate the object according to the presence of
                             // a referenced access block.
-                            if (object->meta.access != nucleus::proton::Address::Null)
+                            if (object->access() != nucleus::proton::Address::Null)
                               {
                                 nucleus::neutron::Access access;
 
                                 // load the access block.
-                                if (Hole::Pull(object->meta.access,
+                                if (Hole::Pull(object->access(),
                                                nucleus::proton::Version::Last,
                                                access) == elle::Status::Error)
                                   escape("unable to load the access block");
@@ -803,14 +803,14 @@ namespace hole
 
                                     // validate the object according to the
                                     // presence of a referenced access block.
-                                    if (object.meta.access !=
+                                    if (object.access() !=
                                         nucleus::proton::Address::Null)
                                       {
                                         nucleus::neutron::Access access;
 
                                         // load the access block.
                                         if (Hole::Pull(
-                                              object.meta.access,
+                                              object.access(),
                                               nucleus::proton::Version::Last,
                                               access) == elle::Status::Error)
                                           escape("unable to load the access "
@@ -920,13 +920,13 @@ namespace hole
 
                             // validate the object according to the presence of
                             // a referenced access block.
-                            if (object->meta.access !=
+                            if (object->access() !=
                                 nucleus::proton::Address::Null)
                               {
                                 nucleus::neutron::Access access;
 
                                 // load the access block.
-                                if (Hole::Pull(object->meta.access,
+                                if (Hole::Pull(object->access(),
                                                nucleus::proton::Version::Last,
                                                access) == elle::Status::Error)
                                   escape("unable to load the access block");
@@ -1420,14 +1420,14 @@ namespace hole
 
                       // validate the object according to the presence of
                       // a referenced access block.
-                      if (object->meta.access != nucleus::proton::Address::Null)
+                      if (object->access() != nucleus::proton::Address::Null)
                         {
                           nucleus::neutron::Access access;
 
                           ELLE_LOG_TRACE("retrieving the access block");
 
                           // load the access block.
-                          if (Hole::Pull(object->meta.access,
+                          if (Hole::Pull(object->access(),
                                          nucleus::proton::Version::Last,
                                          access) == elle::Status::Error)
                             escape("unable to load the access block");
@@ -1614,13 +1614,13 @@ namespace hole
 
                         // validate the object according to the presence of
                         // a referenced access block.
-                        if (object->meta.access !=
+                        if (object->access() !=
                             nucleus::proton::Address::Null)
                           {
                             nucleus::neutron::Access access;
 
                             // load the access block.
-                            if (Hole::Pull(object->meta.access,
+                            if (Hole::Pull(object->access(),
                                            nucleus::proton::Version::Last,
                                            access) == elle::Status::Error)
                               escape("unable to load the access block");

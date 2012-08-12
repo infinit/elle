@@ -19,7 +19,7 @@ namespace nucleus
                                        const Permissions&       permissions,
                                        const T&                 stuff)
     {
-      Record*           record;
+      Record* record;
 
       // retrieve the record.
       if (this->Lookup(subject, record) == elle::Status::Error)
