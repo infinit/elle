@@ -23,7 +23,8 @@ namespace common
     home();
 
     /// Returns binary path from its name.
-    /// Defaults to ${INFINIT_HOME}/bin/binary_name but if INFINIT_BUILD_DIR is
+    /// Default is ${INFINIT_HOME}/bin/binary_name but if INFINIT_BUILD_DIR or 
+    /// INFINIT_BINARY_DIR with INFINIT_BUILD_DIR > INFINIT_BINARY_DIR is
     /// exported, it will return the accurate binary path inside the build
     /// directory.
     /// Raises an exception when ensure is true and the path does not refer to a

@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <FinderPanel/OOBrowserWindowController.h>
 
 extern NSString *OOOpenSetupWindowAndStopWatchdog;
 
@@ -23,6 +24,7 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
     BOOL    isPending;
     BOOL    isUpdating;
     BOOL    isLoginIn;
+    OOBrowserWindowController *browserWindowController;
 }
 
 @property(assign)   IBOutlet NSWindow   *window;
@@ -31,6 +33,7 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
 @property           BOOL                isPending;
 @property           BOOL                isUpdating;
 @property           BOOL                isLoginIn;
+@property           OOBrowserWindowController                *browserWindowController;
 
 - (void)launch8Watchdog;
 

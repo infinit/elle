@@ -148,7 +148,7 @@ static bool check_root_block_signature(elle::io::Unique const& root_block,
   if (directory.Validate(address, access) != elle::Status::Ok)
     return false;
 
-  if (directory.owner.K != K)
+  if (directory.owner_K() != K)
     return false;
 
   return true;

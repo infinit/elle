@@ -12,7 +12,6 @@
 #import "OOSetupWindowDelegate.h"
 #import "OOPreferencesWindowController.h"
 #import <Phone/OOPhone.h>
-#import <FinderPanel/OOBrowserWindowController.h>
 #import "OOEnvironmentVar.h"
 
 NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog";
@@ -23,7 +22,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize currentFrame;
 @synthesize animTimer;
 @synthesize isPending;
-
+@synthesize browserWindowController;
 - (void)dealloc
 {
     [super dealloc];
@@ -84,6 +83,11 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (void)launch8Watchdog
 {
     [[OOPhone getInstance] launchWatchdog];
+}
+
+- (void)stop8Watchdog
+{
+    [[OOPhone getInstance] stopWatchdog];
 }
 
 - (void)tryToLogin
@@ -149,9 +153,14 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     if (!self.isLoginIn && !self.isUpdating) {
         [statusItem setMenu:statusMenu];
         [self launch8Watchdog];
-        OOBrowserWindowController* browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
-        [browserWindowController showWindow:self];
+        self.browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
+        [self.browserWindowController showWindow:self];
     }
+}
+
+- (void)stopInfinit {
+    [self stop8Watchdog];
+    [self.browserWindowController close];
 }
 
 - (void)updateProgessChangedNotification:(NSNotification *)notification {
