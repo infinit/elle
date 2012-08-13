@@ -55,21 +55,21 @@ namespace elle
         /// @throws std::bad_cast
         template <typename T> T as() const;
 
-        inline Array&      as_array();
-        inline Bool&       as_bool();
-        inline Dictionary& as_dictionary();
-        inline Float&      as_float();
-        inline Integer&    as_integer();
-        inline Null&       as_null();
-        inline String&     as_string();
+        Array&      as_array();
+        Bool&       as_bool();
+        Dictionary& as_dictionary();
+        Float&      as_float();
+        Integer&    as_integer();
+        Null&       as_null();
+        String&     as_string();
 
-        inline Array const&      as_array() const;
-        inline Bool const&       as_bool() const;
-        inline Dictionary const& as_dictionary() const;
-        inline Float const&      as_float() const;
-        inline Integer const&    as_integer() const;
-        inline Null const&       as_null() const;
-        inline String const&     as_string() const;
+        Array const&      as_array() const;
+        Bool const&       as_bool() const;
+        Dictionary const& as_dictionary() const;
+        Float const&      as_float() const;
+        Integer const&    as_integer() const;
+        Null const&       as_null() const;
+        String const&     as_string() const;
 
         /// Same as Load(), but instead of throwing an exception,
         /// it returns false when conversion cannot be done.
