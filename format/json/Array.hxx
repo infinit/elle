@@ -1,6 +1,8 @@
 #ifndef ELLE_FORMAT_JSON_ARRAY_HXX
 # define ELLE_FORMAT_JSON_ARRAY_HXX
 
+# include "Factory.hh"
+
 namespace elle
 {
   namespace format
@@ -24,7 +26,7 @@ namespace elle
       void
       Array::push_back(T const& value)
       {
-        _value.push_back(Object::Factory::Construct(value).release());
+        _value.push_back(Factory::construct(value).release());
       }
 
       // XXX should be "sequence" convertible, not just list
@@ -45,6 +47,11 @@ namespace elle
         return *_value.at(index);
       }
 
+      size_t
+      Array::size() const
+      {
+        return _value.size();
+      }
     }
   }
 }

@@ -16,54 +16,53 @@ namespace elle
 
       class Null;
 
-      class Array : public Object
+      class Array:
+        public Object
       {
       private:
         std::vector<Object*> _value;
 
       public:
-        Array() {}
-
-        template<typename Container>
+        Array();
+        template <typename Container>
         Array(Container const& container);
+        ~Array();
 
-        ~Array()
-        {
-          for (auto it = _value.begin(), end = _value.end(); it != end; ++it)
-            delete (*it);
-          _value.clear();
-        }
+      public:
+        template <typename T>
+        inline
+        void
+        push_back(T const& value);
 
-        template<typename T> inline void push_back(T const& value);
-        inline void push_back(std::unique_ptr<Object>&& value)
-          {
-            assert(value.get() != nullptr);
-            _value.push_back(value.get());
-            value.release();
-          }
+        void
+        push_back(std::unique_ptr<Object>&& value);
 
-        size_t size() const { return _value.size(); }
+      public:
+        inline
+        size_t
+        size() const;
 
-        std::unique_ptr<Object> Clone() const;
+        std::unique_ptr<Object>
+        Clone() const;
+
       protected:
-        void Save(elle::serialize::OutputJSONArchive& ar) const;
+        void
+        Save(elle::serialize::OutputJSONArchive& ar) const;
 
       public:
         using Object::operator ==;
-        inline Object& operator[] (size_t index) const;
 
-        virtual bool operator ==(Object const& other) const
-          { return other == *this; }
+        inline
+        Object&
+        operator[] (size_t index) const;
 
-        virtual bool operator ==(Array const& other) const
-          {
-            if (this->size() != other.size())
-              return false;
-            for (size_t i = 0; i < this->size(); ++i)
-              if (*_value[i] != *other._value[i])
-                return false;
-            return true;
-          }
+        virtual
+        bool
+        operator ==(Object const& other) const;
+
+        virtual
+        bool
+        operator ==(Array const& other) const;
 
         template<typename T>
         operator std::list<T>() const;
