@@ -108,7 +108,8 @@ namespace reactor
       catch (boost::system::system_error& e)
         {
           throw Exception(scheduler(),
-                          elle::sprintf("unable to listen on %s: %s", end_point, e));
+                          elle::sprintf("unable to listen on %s: %s",
+                                        end_point, e.what()));
         }
     }
 
