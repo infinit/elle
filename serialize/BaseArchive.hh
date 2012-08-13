@@ -11,66 +11,18 @@
 # include <boost/noncopyable.hpp>
 # include <boost/call_traits.hpp>
 
+# include "fwd.hh"
 
-# include <elle/serialize/fwd.hh>
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
+# include "NamedValue.hh"
 # include "StoreClassVersion.hh"
 # include "Serializable.hh"
 
-namespace elle { namespace serialize {
-
-    ///
-    /// Using a NamedValue wrapper for each serialized variable, serialization
-    /// process is also available for JSON, XML, ...
-    ///
-    /// @see elle::serialize::named() for an helper
-    ///
-    template<typename T> struct NamedValue
-      {
-        std::string name;
-        T& value;
-
-        NamedValue(std::string const& name, T& value) :
-          name(name), value(value)
-        {}
-        NamedValue(NamedValue&& o) :
-          name(std::move(o.name)),
-          value(o.value)
-        {}
-      };
-
-    namespace detail
-    {
-      // assume clean type
-      template<typename T> struct IsNamedValue
-        { static bool const value = false; };
-      template<typename T> struct IsNamedValue<NamedValue<T>>
-        { static bool const value = true;  };
-
-    }
-
-    /// Check whether or not the type T could be expressed as NamedValue<K>.
-    template<typename T> struct IsNamedValue
-      {
-        static bool const value = detail::IsNamedValue<
-            typename std::remove_cv<
-              typename std::remove_reference<T>::type
-            >::type
-        >::value;
-      };
-
-    /// Helper to infer the right NamedValue<T> type.
-    template<typename T> static inline
-      NamedValue<T> named(std::string const& name, T& value)
-      {
-        return NamedValue<T>(name, value);
-      }
-    template<typename T> static inline
-      NamedValue<T const> named(std::string const& name, T const& value)
-      {
-        return NamedValue<T const>(name, value);
-      }
+namespace elle
+{
+  namespace serialize
+  {
 
     ///
     /// Strong typed unsigned short representing the class version for
@@ -423,7 +375,10 @@ namespace elle { namespace serialize {
       //  { this->self().Save(std::wstring(val)); }
     };
 
-}} // !namespace elle::serialize
+  }
+} // !namespace elle::serialize
+
+# include "BaseArchive.hxx"
 
 #endif
 
