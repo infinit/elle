@@ -28,8 +28,9 @@ namespace hole
       ///
       /// XXX represents the current host
       ///
-      class Machine:
-        public elle::radix::Entity
+      class Machine
+        : public elle::radix::Entity
+        , public elle::Printable
       {
       public:
         // constants
@@ -100,9 +101,15 @@ namespace hole
         std::unique_ptr<nucleus::proton::Block>
         _get_specific(nucleus::proton::Address const&, nucleus::proton::Version const&);
 
-        /*---------.
-        | Dumpable |
-        `---------*/
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        virtual void print(std::ostream& s) const;
+
+      /*---------.
+      | Dumpable |
+      `---------*/
       public:
         elle::Status            Dump(const elle::Natural32 = 0) const;
       };

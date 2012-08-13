@@ -164,7 +164,7 @@ namespace hole
             }
           catch (reactor::Exception& e)
             {
-              ELLE_ERR("unable to listen: %s", e.what());
+              ELLE_ERR("unable to accept incoming connections: %s", e.what());
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
@@ -976,6 +976,16 @@ namespace hole
                                                      this->_state));
             }
           }
+      }
+
+      /*----------.
+      | Printable |
+      `----------*/
+
+      void
+      Machine::print(std::ostream& stream) const
+      {
+        stream << elle::sprintf("Slug machine %s", this->_port);
       }
 
       /*---------.
