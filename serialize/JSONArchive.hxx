@@ -128,14 +128,14 @@ namespace elle { namespace serialize {
       }
 
       template<typename T> inline typename std::enable_if<
-          json::Object::CanLoad<T>::value
+          json::detail::ObjectCanLoad<T>::value
       >::type Load(json::Object const& obj, T& value)
         {
           obj.Load(value);
         }
 
       template<typename T> inline typename std::enable_if<
-          !json::Object::CanLoad<T>::value
+          !json::detail::ObjectCanLoad<T>::value
       >::type Load(json::Object const& obj, T& value)
         {
           json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);
