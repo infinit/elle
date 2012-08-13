@@ -26,7 +26,7 @@ namespace lune
   Configuration::Default::Etoile::Gear::Containment = 2000;
 
   const elle::Boolean
-  Configuration::Default::Etoile::Shrub::Status = false;
+  Configuration::Default::Etoile::Shrub::Status = true;
   const elle::Natural32
   Configuration::Default::Etoile::Shrub::Capacity = 1024;
   const elle::Natural32
