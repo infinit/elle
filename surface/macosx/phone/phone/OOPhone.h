@@ -53,4 +53,6 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (void)launchWatchdog;
 
+- (void)stopWatchdog;
+
 @end
