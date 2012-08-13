@@ -6,7 +6,6 @@
 # include <boost/noncopyable.hpp>
 
 # include <elle/IOStream.hh>
-# include <elle/Size.hh>
 
 namespace infinit
 {
