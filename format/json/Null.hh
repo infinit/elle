@@ -1,7 +1,7 @@
 #ifndef  ELLE_FORMAT_JSON_NULL_HH
 # define ELLE_FORMAT_JSON_NULL_HH
 
-# include "Object.hh"
+# include "fwd.hh"
 
 namespace elle
 {
