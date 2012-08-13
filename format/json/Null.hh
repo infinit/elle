@@ -1,7 +1,7 @@
 #ifndef  ELLE_FORMAT_JSON_NULL_HH
 # define ELLE_FORMAT_JSON_NULL_HH
 
-# include "fwd.hh"
+# include "Object.hh"
 
 namespace elle
 {
@@ -10,19 +10,23 @@ namespace elle
     namespace json
     {
 
-      class Null
-        : public Object
+      class Null:
+        public Object
       {
-      protected:
-        void Save(elle::serialize::OutputJSONArchive& ar) const;
-        std::unique_ptr<Object> Clone() const;
+      public:
+        Null();
+        virtual ~Null();
 
       public:
         using Object::operator ==;
         virtual bool operator ==(Object const& other) const;
         virtual bool operator ==(Null const&) const;
-        Null();
-        virtual ~Null();
+
+      protected:
+        void
+        Save(elle::serialize::OutputJSONArchive& ar) const;
+        std::unique_ptr<Object>
+        Clone() const;
       };
 
       extern Null const null;

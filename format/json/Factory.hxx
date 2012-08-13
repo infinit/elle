@@ -1,6 +1,9 @@
 #ifndef  ELLE_FORMAT_JSON_FACTORY_HXX
 # define ELLE_FORMAT_JSON_FACTORY_HXX
 
+# include "Object.hh"
+# include "_detail.hh"
+
 namespace elle
 {
   namespace format

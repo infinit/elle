@@ -1,9 +1,7 @@
 #ifndef ELLE_SERIALIZE_JSONARCHIVE_HXX
 # define ELLE_SERIALIZE_JSONARCHIVE_HXX
 
-# include <elle/format/json/Object.hh>
-# include <elle/format/json/Parser.hh>
-# include <elle/format/json/Dictionary.hh>
+# include <elle/format/json.hh>
 
 # include "JSONArchive.hh"
 # include "BaseArchive.hxx"
