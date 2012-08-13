@@ -4,7 +4,7 @@
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 
-# include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Object.hh>
 # include <nucleus/neutron/Index.hh>
 
 # include <elle/idiom/Open.hh>
@@ -53,7 +53,10 @@ namespace nucleus
       //
       // attributes
       //
-      Role              role;
+
+      // XXX[nucleus::neutron:: can be removed when Author no longer derive
+      //     radix::Object]
+      nucleus::neutron::Object::Role role;
 
       union
       {

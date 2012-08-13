@@ -1,7 +1,6 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/gear/Nature.hh>
 
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
 #include <elle/idiom/Open.hh>
@@ -25,7 +24,7 @@ namespace etoile
       ensemble(nullptr)
     {
       // initialize the rights structure.
-      this->rights.role = nucleus::neutron::RoleUnknown;
+      this->rights.role = nucleus::neutron::Group::RoleUnknown;
     }
 
     ///

@@ -62,20 +62,33 @@ namespace nucleus
       typedef proton::Address Identity;
 
       //
+      // enumerations
+      //
+    public:
+      /// This defines the role a user can play on a group.
+      enum Role
+        {
+          RoleUnknown = 0,
+          RoleManager,
+          RoleNone,
+
+          // This is an alias for simplifying manipulating objects
+          // or groups since both have similar roles.
+          RoleOwner = RoleManager
+        };
+
+      //
       // constants
       //
     public:
-      struct Constants
-      {
-        static const elle::Natural32 keypair_length;
-      };
+      static const elle::Natural32 keypair_length;
 
       //
       // construction
       //
     public:
       Group();
-      Group(elle::cryptography::PublicKey const& owner_K,
+      Group(elle::cryptography::PublicKey const& manager_K,
             elle::String const& description);
 
       //
@@ -92,10 +105,10 @@ namespace nucleus
       /// block. The pass is therefore no longer used.
       void
       downgrade();
-      /// Seals the block by signing its content with the given owner's
+      /// Seals the block by signing its content with the given manager's
       /// private key.
       void
-      seal(elle::cryptography::PrivateKey const& owner_k);
+      seal(elle::cryptography::PrivateKey const& manager_k);
       /// Returns the group's public pass.
       elle::cryptography::PublicKey const&
       pass() const;

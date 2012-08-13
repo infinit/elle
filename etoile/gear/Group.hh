@@ -6,7 +6,6 @@
 
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
-# include <nucleus/neutron/Role.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
@@ -42,6 +41,8 @@ namespace etoile
                   >
                 >                               S;
 
+      typedef nucleus::neutron::Group::Role Role;
+
       //
       // constructors & destructors
       //
@@ -65,7 +66,7 @@ namespace etoile
 
       struct
       {
-        nucleus::neutron::Role role;
+        nucleus::neutron::Group::Role role;
       } rights;
     };
 

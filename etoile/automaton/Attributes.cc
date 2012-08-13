@@ -2,11 +2,11 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/gear/Object.hh>
 
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Object.hh>
 
 #include <elle/idiom/Close.hh>
 # include <limits>
@@ -34,7 +34,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 
@@ -121,7 +121,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 

@@ -13,6 +13,24 @@ namespace etoile
   {
 
     ///
+    /// this method is triggered whenever the user's rights need to be
+    /// recomputed.
+    ///
+    template <typename T>
+    elle::Status
+    Rights::Recompute(T& context)
+    {
+      // reset the role in order to make sure the Determine() method
+      // will carry on.
+      context.rights.role = T::Role::RoleUnknown;
+
+      if (Rights::Determine(context) == elle::Status::Error)
+        escape("unable to determine the rights");
+
+      return elle::Status::Ok;
+    }
+
+    ///
     /// this method checks whether the user has the necessary permissions
     /// and eventually the required role to perform the given operation.
     ///
@@ -64,7 +82,7 @@ namespace etoile
               escape("unable to determine the rights");
 
             // check if the current user has the given role.
-            if (context.rights.role != nucleus::neutron::RoleOwner)
+            if (context.rights.role != T::Role::RoleOwner)
               escape("the user does not seem to have the permission to "
                      "perform the requested operation");
 

@@ -11,7 +11,6 @@
 # include <nucleus/proton/Version.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Genre.hh>
-# include <nucleus/neutron/Author.hh>
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
@@ -58,10 +57,25 @@ namespace nucleus
       public elle::concept::MakeUniquable<Object>
     {
       //
+      // enumerations
+      //
+    public:
+      /// This defines the roles that a user can play on an object.
+      enum Role
+        {
+          RoleUnknown = 0,
+          RoleOwner,
+          RoleLord,
+          RoleVassal,
+          RoleNone
+        };
+
+      //
       // constructors & destructors
       //
     public:
       Object();
+      ~Object();
 
       //
       // methods
@@ -154,7 +168,7 @@ namespace nucleus
       // attributes
       //
     private:
-      Author _author;
+      Author* _author;
 
       struct
       {

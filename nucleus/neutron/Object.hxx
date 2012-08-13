@@ -6,6 +6,8 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
+# include <nucleus/neutron/Author.hh>
+
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
                       archive,
                       value,
@@ -15,7 +17,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
 
   archive & static_cast<nucleus::proton::ImprintBlock&>(value);
 
-  archive & value._author;
+  archive & elle::serialize::alive_pointer(value._author);
 
   archive & value._meta.owner.permissions;
   archive & value._meta.owner.token;

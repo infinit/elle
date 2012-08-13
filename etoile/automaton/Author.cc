@@ -4,9 +4,9 @@
 #include <etoile/gear/Object.hh>
 
 #include <nucleus/neutron/Author.hh>
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Object.hh>
 
 #include <agent/Agent.hh>
 
@@ -36,7 +36,7 @@ namespace etoile
       // build the author object according to the subject's role.
       switch (context.rights.role)
         {
-        case nucleus::neutron::RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
             // create an owner author.
             if (context.author.Create() == elle::Status::Error)
@@ -44,7 +44,7 @@ namespace etoile
 
             break;
           }
-        case nucleus::neutron::RoleLord:
+        case nucleus::neutron::Object::RoleLord:
           {
             nucleus::neutron::Index      index;
 

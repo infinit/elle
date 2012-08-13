@@ -85,24 +85,48 @@ namespace etoile
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
-      // check if the current user is the owner of the group.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
-        escape("the user does not seem to be the group owner");
+      // check if the current user is the manager of the group.
+      if (context.rights.role != nucleus::neutron::Group::RoleManager)
+        escape("the user does not seem to be the group manager");
 
-      // open the ensemble.
-      if (Ensemble::Open(context) == elle::Status::Error)
-        escape("unable to open the ensemble");
-
-      // XXX[remove try/catch]
-      try
+      // update the group depending on the subject.
+      if (subject == context.group->owner_subject())
         {
-          context.ensemble->add(
-            std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-              new nucleus::neutron::Fellow(subject))));
+          //
+          // in this case, the subject represents the group's manager.
+          //
+
+          escape("unable to add the group's manager to the group");
         }
-      catch (...)
+      else
         {
-          escape("unable to add the subject to the ensemble");
+          //
+          // otherwise, the subject represents another user or group.
+          //
+
+          // open the ensemble.
+          if (Ensemble::Open(context) == elle::Status::Error)
+            escape("unable to open the ensemble block");
+
+          // XXX[remove try/catch]
+          try
+            {
+              context.ensemble->add(
+                std::move(std::unique_ptr<nucleus::neutron::Fellow>(
+                  new nucleus::neutron::Fellow(subject))));
+            }
+          catch (...)
+            {
+              escape("unable to add the subject to the ensemble");
+            }
+        }
+
+      // is the target subject the user i.e the group manager in this case.
+      if (agent::Agent::Subject == subject)
+        {
+          // recompute the context rights.
+          if (Rights::Recompute(context) == elle::Status::Error)
+            escape("unable to recompute the rights");
         }
 
       // set the context's state.
@@ -171,9 +195,9 @@ namespace etoile
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
-      // check if the current user is the owner of the group.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
-        escape("the user does not seem to be the group owner");
+      // check if the current user is the manager of the group.
+      if (context.rights.role != nucleus::neutron::Group::RoleManager)
+        escape("the user does not seem to be the group manager");
 
       // open the ensemble.
       if (Ensemble::Open(context) == elle::Status::Error)
@@ -215,9 +239,9 @@ namespace etoile
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
-      // check if the current user is the group owner.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
-        escape("the user does not seem to be the group owner");
+      // check if the current user is the group manager.
+      if (context.rights.role != nucleus::neutron::Group::RoleManager)
+        escape("the user does not seem to be the group manager");
 
       // open the ensemble.
       if (Ensemble::Open(context) == elle::Status::Error)

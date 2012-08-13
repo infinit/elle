@@ -345,7 +345,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this directory");
 

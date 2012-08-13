@@ -8,7 +8,6 @@
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/Ensemble.hh>
 # include <nucleus/neutron/Group.hh>
-# include <nucleus/neutron/Role.hh>
 
 ELLE_SERIALIZE_SIMPLE(etoile::gear::Group,
                       archive,

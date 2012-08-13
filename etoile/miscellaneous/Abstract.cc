@@ -1,6 +1,5 @@
 #include <etoile/miscellaneous/Abstract.hh>
 #include <nucleus/neutron/Object.hh>
-#include <nucleus/neutron/Role.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -57,7 +56,7 @@ namespace etoile
       // set the author depending on the mode.
       switch (object.author().role)
         {
-        case nucleus::neutron::RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
             this->keys.author = object.owner_K();
 

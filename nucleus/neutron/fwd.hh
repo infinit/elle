@@ -6,7 +6,6 @@
 # include <nucleus/neutron/Index.hh>
 # include <nucleus/neutron/Offset.hh>
 # include <nucleus/neutron/Permissions.hh>
-# include <nucleus/neutron/Role.hh>
 # include <nucleus/neutron/Size.hh>
 
 namespace nucleus

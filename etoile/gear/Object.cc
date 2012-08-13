@@ -1,8 +1,8 @@
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Nature.hh>
 
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Object.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -24,7 +24,7 @@ namespace etoile
       access(nullptr)
     {
       // initialize the rights structure.
-      this->rights.role = nucleus::neutron::RoleUnknown;
+      this->rights.role = nucleus::neutron::Object::RoleUnknown;
       this->rights.permissions = nucleus::neutron::PermissionNone;
     }
 
@@ -37,7 +37,7 @@ namespace etoile
       access(nullptr)
     {
       // initialize the rights structure.
-      this->rights.role = nucleus::neutron::RoleUnknown;
+      this->rights.role = nucleus::neutron::Object::RoleUnknown;
       this->rights.permissions = nucleus::neutron::PermissionNone;
     }
 

@@ -21,14 +21,17 @@ namespace etoile
       // static methods
       //
       static elle::Status       Determine(gear::Object&);
-      static elle::Status       Recompute(gear::Object&);
       static elle::Status       Update(gear::Object&,
                                        const nucleus::neutron::Permissions&);
-
       /// XXX
       static
       elle::Status
       Determine(gear::Group&);
+      /// XXX
+      template <typename T>
+      static
+      elle::Status
+      Recompute(T&);
       /// XXX
       template <typename T>
       static

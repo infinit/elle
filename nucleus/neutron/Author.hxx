@@ -16,12 +16,12 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Author,
 
   switch (value.role)
     {
-    case nucleus::neutron::RoleOwner:
+    case nucleus::neutron::Object::RoleOwner:
       break;
-    case nucleus::neutron::RoleLord:
+    case nucleus::neutron::Object::RoleLord:
       archive & value.lord.index;
       break;
-    case nucleus::neutron::RoleVassal:
+    case nucleus::neutron::Object::RoleVassal:
       throw std::runtime_error("not implemented yet"); // XXX
     default:
       throw std::runtime_error("unknown role");

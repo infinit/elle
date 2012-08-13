@@ -11,12 +11,12 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Permissions.hh>
 #include <nucleus/neutron/Subject.hh>
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Token.hh>
+#include <nucleus/neutron/Object.hh>
 
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
@@ -75,7 +75,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to modify "
                "the access permissions");
 
@@ -322,7 +322,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to revoke "
                "access permissions");
 
@@ -655,7 +655,7 @@ namespace etoile
       // depending on the current author's role.
       switch (context.object.author().role)
         {
-        case nucleus::neutron::RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
             //
             // nothing to do in this case: the owner is changing the
@@ -666,7 +666,7 @@ namespace etoile
 
             break;
           }
-        case nucleus::neutron::RoleLord:
+        case nucleus::neutron::Object::RoleLord:
           {
             //
             // in this case however, the author is a lord.
@@ -711,11 +711,17 @@ namespace etoile
 
             break;
           }
-        case nucleus::neutron::RoleVassal:
+        case nucleus::neutron::Object::RoleVassal:
           {
             // XXX to implement.
 
             break;
+          }
+        case nucleus::neutron::Object::RoleUnknown:
+        case nucleus::neutron::Object::RoleNone:
+        default:
+          {
+            escape("invalid role '%u'", context.object.author().role);
           }
         }
 

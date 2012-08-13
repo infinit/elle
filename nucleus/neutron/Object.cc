@@ -4,6 +4,7 @@
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Author.hh>
 
 #include <elle/cryptography/Digest.hh>
 #include <elle/serialize/TupleSerializer.hxx>
@@ -24,7 +25,9 @@ namespace nucleus
     /// this method initializes the object.
     ///
     Object::Object():
-      proton::ImprintBlock(ComponentObject)
+      proton::ImprintBlock(ComponentObject),
+
+      _author(new Author)
     {
       //
       // the attributes below are initialized in the constructor body
@@ -39,6 +42,11 @@ namespace nucleus
       this->_data.state = proton::StateClean;
       this->_data.size = 0;
       this->_data.version = 0;
+    }
+
+    Object::~Object()
+    {
+      delete this->_author;
     }
 
 //
@@ -106,7 +114,7 @@ namespace nucleus
 
     {
       // set the author.
-      this->_author = author;
+      *this->_author = author;
 
       //
       // update the elements in the data section.
@@ -363,9 +371,9 @@ namespace nucleus
 
       // (iii)
       {
-        switch (this->_author.role)
+        switch (this->_author->role)
           {
-          case RoleOwner:
+          case Object::RoleOwner:
             {
               // copy the public key.
               author = this->owner_K();
@@ -393,7 +401,7 @@ namespace nucleus
 
               break;
             }
-          case RoleLord:
+          case Object::RoleLord:
             {
               Record* record;
 
@@ -404,7 +412,7 @@ namespace nucleus
 
               // retrieve the access record corresponding to the author's
               // index.
-              if (access.Lookup(this->_author.lord.index,
+              if (access.Lookup(this->_author->lord.index,
                                 record) == elle::Status::Error)
                 escape("unable to retrieve the access record");
 
@@ -426,7 +434,7 @@ namespace nucleus
 
               break;
             }
-          case RoleVassal:
+          case Object::RoleVassal:
             {
               // XXX to implement.
 
@@ -435,7 +443,7 @@ namespace nucleus
           default:
             {
               escape("unexpected author's role '%u'",
-                     this->_author.role);
+                     this->_author->role);
             }
           }
       }
@@ -499,7 +507,9 @@ namespace nucleus
     Author const&
     Object::author() const
     {
-      return (this->_author);
+      assert(this->_author != nullptr);
+
+      return (*this->_author);
     }
 
     proton::Address const&
@@ -591,7 +601,7 @@ namespace nucleus
         escape("unable to dump the underlying owner key block");
 
       // dump the author part.
-      if (this->_author.Dump(margin + 2) == elle::Status::Error)
+      if (this->_author->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the author");
 
       // dump the meta part.
