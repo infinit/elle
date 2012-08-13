@@ -5,15 +5,6 @@
 
 # include "_detail.hh"
 
-# include "Float.hh"
-# include "String.hh"
-# include "Integer.hh"
-# include "Bool.hh"
-# include "Null.hh"
-# include "Dictionary.hh"
-# include "Array.hh"
-# include "Null.hh"
-
 namespace elle
 {
   namespace format

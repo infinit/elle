@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "elle/format/json/Bool.hh"
+#include <elle/format/json/Bool.hh>
 
 namespace json = elle::format::json;
 
