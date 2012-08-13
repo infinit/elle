@@ -37,6 +37,9 @@ namespace horizon
       static elle::Status       Remove(const elle::String&);
 
       static elle::Status       Show(const elle::Natural32 = 0);
+      static
+      void
+      rename(const char* source, const char* target);
 
       //
       // static attributes

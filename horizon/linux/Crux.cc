@@ -1990,6 +1990,10 @@ namespace horizon
                   -EPERM);
         }
 
+      // FIXME
+      if (Crib::Exist(source) == elle::Status::True)
+        Crib::rename(source, target);
+
       return (0);
     }
 
