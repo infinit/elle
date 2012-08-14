@@ -157,6 +157,10 @@ namespace etoile
                 escape("unable to destroy the ensemble block");
             }
 
+          // XXX
+          context.group->Dump();
+          escape("XXX");
+
           /* XXX[in theory, a new pass should be generated but for now,
                  we decided to use the same pass throughout the group's
                  history, which is less secure, but enough for now]

@@ -151,6 +151,7 @@ namespace lune
   elle::Status          Descriptor::Dump(const elle::Natural32  margin) const
   {
     elle::String        alignment(margin, ' ');
+    elle::io::Unique unique;
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
@@ -168,8 +169,11 @@ namespace lune
     if (this->root.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
+    if (this->everybody.Save(unique) == elle::Status::Error)
+      escape("unable to save the address");
+
     std::cout << alignment << elle::io::Dumpable::Shift
-              << "[Everybody] " << std::endl;
+              << "[Everybody] " << unique << std::endl;
 
     if (this->everybody.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");

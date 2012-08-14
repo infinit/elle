@@ -64,6 +64,9 @@ namespace nucleus
       // methods
       //
       elle::Status      Add(T*);
+      /// XXX
+      elle::Status
+      Add(Range<T> const& other);
       elle::Status      Exist(const Symbol&) const;
       elle::Status      Lookup(const Symbol&,
                                T const*& = Trash) const;

@@ -211,10 +211,6 @@ namespace etoile
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
 
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-
       // If the index starts with 0, include the manager by creating
       // a record for him.
       if (index == 0)
@@ -229,7 +225,9 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              range = context.ensemble->consult(index, size - 1);
+              if (range.Add(context.ensemble->consult(index, size - 1)) ==
+                  elle::Status::Error)
+                escape("unable to add the consulted range to the final range");
             }
           catch (...)
             {
@@ -252,6 +250,10 @@ namespace etoile
               escape("unable to consult the ensemble");
             }
         }
+
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }
