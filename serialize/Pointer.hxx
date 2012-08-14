@@ -7,7 +7,60 @@
 
 # include <elle/serialize/Pointer.hh>
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
+
+    template<typename T>
+    class Pointer
+    {
+      friend class ArchiveSerializer<Pointer<T>>;
+    private:
+      T*& _ptr;
+    public:
+      Pointer(T*& ptr)
+        : _ptr(ptr)
+      {}
+
+      Pointer(Pointer&& other)
+        : _ptr(other._ptr)
+      {}
+    };
+
+    template<typename T>
+    class AlivePointer
+    {
+      friend class ArchiveSerializer<AlivePointer<T>>;
+    private:
+      T*& _ptr;
+    public:
+      AlivePointer(T*& ptr)
+        : _ptr(ptr)
+      {}
+
+      AlivePointer(AlivePointer&& other)
+        : _ptr(other._ptr)
+      {}
+
+      AlivePointer(AlivePointer const& other)
+        : _ptr(other._ptr)
+      {}
+    };
+
+    template<typename T> inline
+    Pointer<T>
+    pointer(T*& ptr)
+    {
+      return Pointer<T>(ptr);
+    }
+
+    template<typename T> inline
+    AlivePointer<T>
+    alive_pointer(T*& ptr)
+    {
+      return AlivePointer<T>(ptr);
+    }
 
     //
     // We do not use macros here because of the special requirements of the

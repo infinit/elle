@@ -19,7 +19,10 @@ namespace elle
   }
 } // !namespace elle::serialize
 
-std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode);
+/// Makes archive mode enum is printable.
+std::ostream&
+operator <<(std::ostream& out,
+            elle::serialize::ArchiveMode mode);
 
 #endif /* ! ARCHIVEMODE_HH */
 

@@ -11,9 +11,12 @@ ELSEIF(INFINIT_WINDOWS)
     utility/Unicode-win32.cc)
 ENDIF()
 
-set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE C)
+set_property(
+    SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
+    PROPERTY LANGUAGE C
+)
 
-ADD_LIBRARY(elle
+add_library(elle
 
   Buffer.cc
   IOStream.cc
@@ -81,14 +84,15 @@ ADD_LIBRARY(elle
   format/ini/Section.cc
   format/ini/File.cc
 
-  format/json/Null.cc
-  format/json/Bool.cc
-  format/json/Float.cc
-  format/json/Parser.cc
-  format/json/Dictionary.cc
   format/json/Array.cc
-  format/json/Object.cc
+  format/json/Bool.cc
+  format/json/Dictionary.cc
+  format/json/Factory.cc
+  format/json/Float.cc
   format/json/Integer.cc
+  format/json/Null.cc
+  format/json/Object.cc
+  format/json/Parser.cc
   format/json/String.cc
 
   serialize/ArchiveMode.cc
@@ -138,7 +142,8 @@ ADD_LIBRARY(elle
 
 add_definitions(-fPIC)
 target_link_libraries(elle
-        protocol # XXX[why?]
+    protocol
+    ${Boost_LIBRARIES}
 	${INFINIT_OPENSSL_STATIC_LIBRARIES}
 	${INFINIT_MSGPACK_STATIC_LIBRARIES}
 	${INFINIT_JSONCPP_STATIC_LIBRARIES}

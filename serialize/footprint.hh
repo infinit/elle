@@ -1,7 +1,7 @@
 #ifndef  ELLE_SERIALIZE_FOOTPRINT_HH
 # define ELLE_SERIALIZE_FOOTPRINT_HH
 
-# include <elle/serialize/BinaryArchive.hh>
+# include "BinaryArchive.hh"
 
 namespace elle
 {
@@ -16,6 +16,6 @@ namespace elle
   }
 }
 
-# include <elle/serialize/footprint.hxx>
+# include "footprint.hxx"
 
 #endif

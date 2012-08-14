@@ -8,12 +8,12 @@ namespace elle { namespace format { namespace json {
       struct Dictionary::_DictProxy
         {
         private:
-          Dictionary::MapType&  _map;
+          internal::Dictionary& _map;
           std::string           _key;
           Object*               _value;
 
         public:
-          _DictProxy(Dictionary::MapType& map, std::string&& key)
+          _DictProxy(internal::Dictionary& map, std::string&& key)
             : _map(map)
             , _key(key)
             , _value(nullptr)
@@ -23,7 +23,7 @@ namespace elle { namespace format { namespace json {
               _value = it->second;
           }
 
-          _DictProxy(Dictionary::MapType& map, std::string const& key)
+          _DictProxy(internal::Dictionary& map, std::string const& key)
             : _map(map)
             , _key(key)
             , _value(nullptr)
