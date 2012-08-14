@@ -58,6 +58,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
         gap_Status response =  gap_login(self._gap_State,
                                          [arg1 cStringUsingEncoding:NSASCIIStringEncoding],
                                          [arg2 cStringUsingEncoding:NSASCIIStringEncoding]);
+        
         [arg4 performSelectorOnMainThread:arg3 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
 }
@@ -180,5 +181,11 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 //
 - (void)launchWatchdog {
     gap_launch_watchdog(self._gap_State);
+}
+//
+//  Stop watchdog
+//
+- (void)stopWatchdog {
+    gap_stop_watchdog(self._gap_State);
 }
 @end

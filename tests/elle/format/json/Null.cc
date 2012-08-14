@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "elle/format/json/Null.hh"
+#include <elle/format/json/Null.hh>
 
 int main()
 {

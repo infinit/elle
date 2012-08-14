@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "elle/format/json/Integer.hh"
+#include <elle/format/json/Integer.hh>
 
 namespace json = elle::format::json;
 

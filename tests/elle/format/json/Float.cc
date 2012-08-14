@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "elle/format/json/Float.hh"
+#include <elle/format/json/Float.hh>
 
 int main()
 {

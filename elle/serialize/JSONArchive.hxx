@@ -1,9 +1,7 @@
 #ifndef ELLE_SERIALIZE_JSONARCHIVE_HXX
 # define ELLE_SERIALIZE_JSONARCHIVE_HXX
 
-# include <elle/format/json/Object.hxx>
-# include <elle/format/json/Parser.hh>
-# include <elle/format/json/Dictionary.hh>
+# include <elle/format/json.hh>
 
 # include "JSONArchive.hh"
 # include "BaseArchive.hxx"
@@ -128,14 +126,14 @@ namespace elle { namespace serialize {
       }
 
       template<typename T> inline typename std::enable_if<
-          json::Object::CanLoad<T>::value
+          json::detail::ObjectCanLoad<T>::value
       >::type Load(json::Object const& obj, T& value)
         {
           obj.Load(value);
         }
 
       template<typename T> inline typename std::enable_if<
-          !json::Object::CanLoad<T>::value
+          !json::detail::ObjectCanLoad<T>::value
       >::type Load(json::Object const& obj, T& value)
         {
           json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);

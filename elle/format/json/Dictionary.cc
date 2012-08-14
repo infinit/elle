@@ -6,6 +6,10 @@
 
 using namespace elle::format::json;
 
+Dictionary::Dictionary(internal::Dictionary&& value):
+  _map{value}
+{}
+
 void Dictionary::Save(elle::serialize::OutputJSONArchive& ar) const
 {
   auto it = _map.begin(),

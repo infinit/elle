@@ -1,6 +1,8 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
+# include <elle/types.hh>
+
 namespace elle
 {
   /* An array of bytes and its size.

@@ -11,8 +11,8 @@
 @implementation OOEnvironmentVar
 
 + (void)setEnvironmentVar {
-    NSString* appRessourcePath = [[NSBundle mainBundle] resourcePath];
-    setenv("INFINIT_BIN_DIR", [appRessourcePath cStringUsingEncoding:NSASCIIStringEncoding] , 1);
+    NSString* appRessourcePath = [[NSBundle mainBundle] resourcePath]; // append bin
+    setenv("INFINIT_BINARY_DIR", [appRessourcePath cStringUsingEncoding:NSASCIIStringEncoding] , 1);
 }
 
 @end

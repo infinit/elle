@@ -20,8 +20,8 @@
   std::string(typeid(object).name())                                          \
   /**/
 
-namespace elle {
-
+namespace elle
+{
     typedef int8_t                        Integer8;
     typedef int16_t                       Integer16;
     typedef int32_t                       Integer32;
@@ -47,6 +47,7 @@ namespace elle {
     enum class Null { Nil };
     extern Null const none;
 
+    typedef unsigned int                  Size;
 
     ///
     /// this enumeration represents a return status.

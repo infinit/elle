@@ -11,20 +11,21 @@ namespace elle
     {
       namespace detail
       {
-        template<typename T>
+        template <typename T>
         class BasicObject;
       }
 
-      typedef detail::BasicObject<int32_t> Integer;
-      typedef detail::BasicObject<bool> Bool;
-      typedef detail::BasicObject<double> Float;
-      typedef detail::BasicObject<std::string> String;
+      typedef detail::BasicObject<int32_t>      Integer;
+      typedef detail::BasicObject<bool>         Bool;
+      typedef detail::BasicObject<double>       Float;
+      typedef detail::BasicObject<std::string>  String;
 
       class Object;
       class Array;
       class Dictionary;
       class Null;
-      template<typename StringType>
+
+      template <typename StringType>
       class Parser;
 
     }
