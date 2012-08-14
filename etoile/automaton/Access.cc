@@ -264,7 +264,7 @@ namespace etoile
     /// this method returns a subset---i.e a range---of the access block.
     ///
     elle::Status        Access::Consult(
-                          gear::Object&                         context,
+                          gear::Object& context,
                           const nucleus::neutron::Index& index,
                           const nucleus::neutron::Size& size,
                           nucleus::neutron::Range<
@@ -278,34 +278,31 @@ namespace etoile
       // a record for him.
       if (index == 0)
         {
-          // create the record.
-          auto record = std::unique_ptr<nucleus::neutron::Record>(
-            new nucleus::neutron::Record(context.object.owner_record()));
-
           // add the record to the range.
-          if (range.Add(record.get()) == elle::Status::Error)
+          if (range.Add(&context.object.owner_record()) == elle::Status::Error)
             escape("unable to add the owner record");
-
-          // waive.
-          record.release();
 
           // consult the access object by taking care of consulting one
           // record less.
           if (context.access->Consult(index,
                                       size - 1,
                                       range) == elle::Status::Error)
-            escape("unable to consult the access object");
+            escape("unable to consult the access");
         }
       else
         {
           // consult the access object by taking care of starting the
           // consultation one index before since the owner record, which
           // is not located in the access block, counts as one record.
-          if (context.access->Consult(index - 1 ,
+          if (context.access->Consult(index - 1,
                                       size,
                                       range) == elle::Status::Error)
-            escape("unable to consult the access object");
+            escape("unable to consult the ensemble");
         }
+
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }

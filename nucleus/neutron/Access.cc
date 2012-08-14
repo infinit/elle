@@ -151,10 +151,6 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-
       // go through the records.
       for (scoutor = this->range.container.begin(), i = 0;
            scoutor != this->range.container.end();

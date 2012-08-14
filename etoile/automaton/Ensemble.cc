@@ -1,7 +1,4 @@
 #include <etoile/automaton/Ensemble.hh>
-#include <etoile/automaton/Rights.hh>
-#include <etoile/automaton/Author.hh>
-#include <etoile/automaton/Access.hh>
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
 
@@ -9,7 +6,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/neutron/Ensemble.hh>
-#include <nucleus/neutron/Size.hh>
 
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/log.hh>
@@ -161,9 +157,24 @@ namespace etoile
                 escape("unable to destroy the ensemble block");
             }
 
+          // XXX
+          context.group->Dump();
+          escape("XXX");
+
+          /* XXX[in theory, a new pass should be generated but for now,
+                 we decided to use the same pass throughout the group's
+                 history, which is less secure, but enough for now]
           // generate the new pass.
           if (pass.Generate() == elle::Status::Error)
             escape("unable to generate the pass");
+          */
+          /* XXX[instead we must make sure to generate a key pair when
+                 necessary] */
+          {
+            printf("FIX HERE: decrypt token\n");
+            //if (context.group->ensemble() == nucleus::proton::Address::Null)
+            // XXX si ensemble + si publickey == null => generate
+          }
 
           // upgrade the ensemble's tokens with the new pass.
           // XXX[remove try/catch]
@@ -188,7 +199,7 @@ namespace etoile
                                       context.ensemble) == elle::Status::Error)
             escape("unable to record the ensemble for storing");
 
-          // update the group.
+          // ugrade the group.
           // XXX[remove try/catch]
           try
             {

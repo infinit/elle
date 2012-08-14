@@ -40,6 +40,8 @@ namespace nucleus
     public:
       Fellow();
       Fellow(Subject const& subject);
+      Fellow(Subject const& subject,
+             Token const& token);
 
       //
       // methods

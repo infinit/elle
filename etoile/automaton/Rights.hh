@@ -20,9 +20,15 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status       Determine(gear::Object&);
-      static elle::Status       Update(gear::Object&,
-                                       const nucleus::neutron::Permissions&);
+      /// XXX
+      static
+      elle::Status
+      Determine(gear::Object&);
+      /// XXX
+      static
+      elle::Status
+      Update(gear::Object&,
+             const nucleus::neutron::Permissions&);
       /// XXX
       static
       elle::Status

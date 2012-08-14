@@ -57,7 +57,8 @@ namespace satellite
     lune::Identity      identity;
     nucleus::neutron::Object directory;
     nucleus::proton::Network    network;
-    nucleus::proton::Address    address;
+    nucleus::proton::Address directory_address;
+    nucleus::proton::Address group_address;
 
     //
     // test the arguments.
@@ -130,14 +131,40 @@ namespace satellite
         escape("unable to decrypt the identity");
     }
 
+    // create the network object.
+    if (network.Create(name) == elle::Status::Error)
+      escape("unable to create the network object");
+
+    //
+    // create an "everybody" group.
+    //
+    {
+      nucleus::neutron::Group group(identity.pair.K,
+                                    "everybody");
+
+      // XXX[remove try/catch in the future]
+      try
+        {
+          group.seal(identity.pair.k);
+        }
+      catch (...)
+        {
+          escape("unable to seal the group");
+        }
+
+      if (group.Bind(group_address) == elle::Status::Error)
+        escape("unable to bind the group");
+
+      if (group.MutableBlock::Store(
+            network,
+            group_address) == elle::Status::Error)
+        escape("unable to store the block");
+    }
+
     //
     // create the root directory.
     //
     {
-      // create the network object.
-      if (network.Create(name) == elle::Status::Error)
-        escape("unable to create the network object");
-
       // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::neutron::GenreDirectory,
                            identity.pair.K) == elle::Status::Error)
@@ -149,8 +176,14 @@ namespace satellite
         escape("unable to seal the object");
 
       // compute the directory's address.
-      if (directory.Bind(address) == elle::Status::Error)
+      if (directory.Bind(directory_address) == elle::Status::Error)
         escape("unable to bind the object to an address");
+
+      // store the block.
+      if (directory.MutableBlock::Store(
+            network,
+            directory_address) == elle::Status::Error)
+        escape("unable to store the block");
     }
 
     //
@@ -162,7 +195,8 @@ namespace satellite
             identifier,
             name,
             model,
-            address,
+            directory_address,
+            group_address,
             lune::Descriptor::History,
             lune::Descriptor::Extent,
             lune::Descriptor::Contention,
@@ -176,16 +210,6 @@ namespace satellite
       // store the descriptor.
       if (descriptor.Store(name) == elle::Status::Error)
         escape("unable to store the descriptor file");
-    }
-
-    //
-    // store the root directory block now that the network exists.
-    //
-    {
-      // store the block.
-      if (directory.MutableBlock::Store(network,
-                          address) == elle::Status::Error)
-        escape("unable to store the block");
     }
 
     return elle::Status::Ok;

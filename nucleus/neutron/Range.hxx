@@ -108,6 +108,22 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    template <typename T>
+    elle::Status
+    Range<T>::Add(Range<T> const& other)
+    {
+      if (this->options != other.options)
+        escape("unable to merge ranges with different options");
+
+      for (T* item: other.container)
+        {
+          if (this->Add(item) == elle::Status::Error)
+            escape("unable to add the item");
+        }
+
+      return elle::Status::Ok;
+    }
+
     ///
     /// this method returns true if an item for the given symbol exists.
     ///

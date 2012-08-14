@@ -90,7 +90,7 @@ namespace etoile
         escape("the user does not seem to be the group manager");
 
       // update the group depending on the subject.
-      if (subject == context.group->owner_subject())
+      if (subject == context.group->manager_subject())
         {
           //
           // in this case, the subject represents the group's manager.
@@ -142,18 +142,58 @@ namespace etoile
     {
       ELLE_LOG_TRACE_SCOPE("Lookup()");
 
-      // open the ensemble.
-      if (Ensemble::Open(context) == elle::Status::Error)
-        escape("unable to open the ensemble");
+      // Ty to make the best of this call.
+      if (agent::Agent::Subject == subject)
+        {
+          // Indeed, if the target subject is the current user, determine
+          // the user's rights so that this is not to be done later.
 
-      // XXX[remove try/catch]
-      try
-        {
-          fellow = &context.ensemble->locate(subject);
+          ELLE_LOG_TRACE("The target subject is the current user");
+
+          if (Rights::Determine(context) == elle::Status::Error)
+            escape("unable to determine the user's rights");
+
+          fellow = &context.group->manager_fellow();
         }
-      catch (...)
+      else
         {
-          escape("unable to lookup the subject in the ensemble");
+          // Otherwise, proceed normally.
+
+          ELLE_LOG_TRACE("The target subject is _not_ the current user");
+
+          // Perform the lookup according to the subject.
+          if (subject == context.group->manager_subject())
+            {
+              ELLE_LOG_TRACE("The target subject is the group manager");
+
+              // If the target subject is the object owner, retrieve the
+              // access record from the owner's meta section. Note that
+              // this record is not part of the object but has been generated
+              // automatically when the object was extracted.
+
+              fellow = &context.group->manager_fellow();
+            }
+          else
+            {
+              // If we are dealing with a fellow, open the ensemble block
+              // and look in it.
+
+              ELLE_LOG_TRACE("The target subject is _not_ a group manager: try "
+                             "to look in the ensemble");
+
+              if (Ensemble::Open(context) == elle::Status::Error)
+                escape("unable to open the ensemble block");
+
+              // XXX[remove try/catch]
+              try
+                {
+                  fellow = &context.ensemble->locate(subject);
+                }
+              catch (...)
+                {
+                  escape("unable to lookup the subject in the ensemble");
+                }
+            }
         }
 
       return elle::Status::Ok;
@@ -168,19 +208,52 @@ namespace etoile
       ELLE_LOG_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
                            context, index, size, range);
 
-      // open the ensemble.
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
 
-      // XXX[remove try/catch]
-      try
+      // If the index starts with 0, include the manager by creating
+      // a record for him.
+      if (index == 0)
         {
-          range = context.ensemble->consult(index, size);
+          // Add the manager's fellow to the range.
+          if (range.Add(&context.group->manager_fellow()) == elle::Status::Error)
+            escape("unable to add the owner record");
+
+          // Consult the ensemble by taking care of consulting one fellow
+          // less i.e the manager's.
+
+          // XXX[remove try/catch]
+          try
+            {
+              if (range.Add(context.ensemble->consult(index, size - 1)) ==
+                  elle::Status::Error)
+                escape("unable to add the consulted range to the final range");
+            }
+          catch (...)
+            {
+              escape("unable to consult the ensemble");
+            }
         }
-      catch (...)
+      else
         {
-          escape("unable to consult the ensemble");
+          // Consult the ensemble by taking care of starting the consultation
+          // one index before since the manager's fellow, which is not located
+          // in the ensemble block, counts as one fellow.
+
+          // XXX[remove try/catch]
+          try
+            {
+              range = context.ensemble->consult(index - 1, size);
+            }
+          catch (...)
+            {
+              escape("unable to consult the ensemble");
+            }
         }
+
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }
@@ -199,18 +272,42 @@ namespace etoile
       if (context.rights.role != nucleus::neutron::Group::RoleManager)
         escape("the user does not seem to be the group manager");
 
-      // open the ensemble.
-      if (Ensemble::Open(context) == elle::Status::Error)
-        escape("unable to open the ensemble");
+      // update the group depending on the subject.
+      if (subject == context.group->manager_subject())
+        {
+          //
+          // in this case, the subject represents the group's manager.
+          //
 
-      // XXX[remove try/catch]
-      try
-        {
-          context.ensemble->remove(subject);
+          escape("unable to remove the group's manager from the group");
         }
-      catch (...)
+      else
         {
-          escape("unable to remove the subject from the ensemble");
+          //
+          // otherwise, the subject represents another user or group.
+          //
+
+          // open the ensemble.
+          if (Ensemble::Open(context) == elle::Status::Error)
+            escape("unable to open the ensemble block");
+
+          // XXX[remove try/catch]
+          try
+            {
+              context.ensemble->remove(subject);
+            }
+          catch (...)
+            {
+              escape("unable to remove the subject from the ensemble");
+            }
+        }
+
+      // is the target subject the user i.e the group manager in this case.
+      if (agent::Agent::Subject == subject)
+        {
+          // recompute the context rights.
+          if (Rights::Recompute(context) == elle::Status::Error)
+            escape("unable to recompute the rights");
         }
 
       // set the context's state.

@@ -57,20 +57,23 @@ namespace lune
   ///
   /// this method creates a descriptor.
   ///
-  elle::Status          Descriptor::Create(const elle::String id,
-                                           const elle::String&  name,
-                                           const hole::Model&   model,
-                                           const nucleus::proton::Address& root,
-                                           const elle::Boolean  history,
-                                           const elle::Natural32 extent,
-                                           const elle::Real&    contention,
-                                           const elle::Real&    balancing)
+  elle::Status
+  Descriptor::Create(const elle::String id,
+                     const elle::String&  name,
+                     const hole::Model&   model,
+                     const nucleus::proton::Address& root,
+                     nucleus::neutron::Group::Identity const& everybody,
+                     const elle::Boolean  history,
+                     const elle::Natural32 extent,
+                     const elle::Real&    contention,
+                     const elle::Real&    balancing)
   {
     // set the attributes.
     this->_id = id;
     this->name = name;
     this->model = model;
     this->root = root;
+    this->everybody = everybody;
     this->history = history;
     this->extent = extent;
     this->contention = contention;
@@ -85,15 +88,18 @@ namespace lune
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
     // sign the attributesr with the authority.
-    if (authority.k->Sign(elle::serialize::make_tuple(this->_id,
-                                                      this->name,
-                                                      this->model,
-                                                      this->root,
-                                                      this->history,
-                                                      this->extent,
-                                                      this->contention,
-                                                      this->balancing),
-                          this->signature) == elle::Status::Error)
+    if (authority.k->Sign(
+          elle::serialize::make_tuple(
+            this->_id,
+            this->name,
+            this->model,
+            this->root,
+            this->everybody,
+            this->history,
+            this->extent,
+            this->contention,
+            this->balancing),
+          this->signature) == elle::Status::Error)
       escape("unable to sign the attributes with the authority");
 
     return elle::Status::Ok;
@@ -106,15 +112,18 @@ namespace lune
     const
   {
     // verify the signature.
-    if (authority.K.Verify(this->signature,
-                           elle::serialize::make_tuple(this->_id,
-                                                       this->name,
-                                                       this->model,
-                                                       this->root,
-                                                       this->history,
-                                                       this->extent,
-                                                       this->contention,
-                                                       this->balancing)) == elle::Status::Error)
+    if (authority.K.Verify(
+          this->signature,
+          elle::serialize::make_tuple(
+            this->_id,
+            this->name,
+            this->model,
+            this->root,
+            this->everybody,
+            this->history,
+            this->extent,
+            this->contention,
+            this->balancing)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
@@ -142,6 +151,7 @@ namespace lune
   elle::Status          Descriptor::Dump(const elle::Natural32  margin) const
   {
     elle::String        alignment(margin, ' ');
+    elle::io::Unique unique;
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
@@ -157,6 +167,15 @@ namespace lune
               << "[Root] " << std::endl;
 
     if (this->root.Dump(margin + 4) == elle::Status::Error)
+      escape("unable to dump the address");
+
+    if (this->everybody.Save(unique) == elle::Status::Error)
+      escape("unable to save the address");
+
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Everybody] " << unique << std::endl;
+
+    if (this->everybody.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
     std::cout << alignment << elle::io::Dumpable::Shift << "[History] "

@@ -6,6 +6,7 @@
 
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Group.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>

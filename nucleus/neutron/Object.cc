@@ -478,7 +478,7 @@ namespace nucleus
       return (this->_meta.access);
     }
 
-    Record const&
+    Record&
     Object::owner_record()
     {
       _owner_record();
