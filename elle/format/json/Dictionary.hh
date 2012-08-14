@@ -35,21 +35,13 @@ namespace elle
         internal::Dictionary _map;
 
       public:
-        Dictionary() {}
-
-        template<typename Container>
-          Dictionary(Container const& container);
-
+        Dictionary();
+        template <typename Container>
+        Dictionary(Container const& container);
         Dictionary(internal::Dictionary&& value);
+        ~Dictionary();
 
-        ~Dictionary()
-        {
-          for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
-            delete it->second;
-          _map.clear();
-        }
-
-        /// Set or update key/value pairs from other.
+        /// Set or update key/value pairs from another dictionary.
         void update(Dictionary const& other);
 
         ///
@@ -65,63 +57,51 @@ namespace elle
         /// cast to a JSON Object. That latter cast will throw if the key is not
         /// found, or not yet assigned.
         ///
-        /// @see contains() to know is the key is really present
+        /// @see contains() to know if the key is really present
         ///
-        inline _DictProxy operator [](std::string const& key);
-        inline Object const& operator [](std::string const& key) const
-        {
-          auto it = _map.find(key);
-          if (it == _map.end())
-            throw KeyError(key);
-          return *(it->second);
-        }
+        _DictProxy
+        operator [](std::string const& key);
+        Object const&
+        operator [](std::string const& key) const;
 
         ///
         /// Check if the dictionary contains a key.
         /// While you might want to do something with the value
         /// if it exists, this function returns a pointer to it.
         ///
-        Object const* contains(std::string const& key) const
-          {
-            auto it = _map.find(key);
-            if (it != _map.end())
-              return it->second;
-            return nullptr;
-          }
+        Object const*
+        contains(std::string const& key) const;
 
-        size_t size() const { return _map.size(); }
+        /// Returns the number of key/value pair.
+        inline
+        size_t
+        size() const;
 
-        std::unique_ptr<Object> Clone() const;
-      protected:
-        void Save(OutputJSONArchive& ar) const;
+        /// Duplicate the current the Dictionary.
+        virtual
+        std::unique_ptr<Object>
+        clone() const;
 
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
+
+        /// Comparable implementation.
       public:
         using Object::operator ==;
-
-        virtual bool operator ==(Object const& other) const
-          { return other == *this; }
-
-        virtual bool operator ==(Dictionary const& other) const
-          {
-            if (this->size() != other.size())
-              return false;
-            auto it = _map.begin(),
-                 end = _map.end();
-            for (; it != end; ++it)
-              {
-                auto other_it = other._map.find(it->first);
-                if (other_it == other._map.end() ||
-                    *other_it->second != *it->second)
-                  return false;
-              }
-            return true;
-          }
+        virtual
+        bool
+        operator ==(Object const& other) const;
+        virtual
+        bool
+        operator ==(Dictionary const& other) const;
       };
 
     }
   }
 } // !namespace elle::format::json
 
+# include "Dictionary.hxx"
+
 #endif /* ! DICT_HH */
-
-

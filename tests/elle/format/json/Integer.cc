@@ -11,7 +11,7 @@ int main()
 
   assert(i == 0);
     {
-      auto clone_ptr = i.Clone();
+      auto clone_ptr = i.clone();
       auto casted = static_cast<json::Integer*>(clone_ptr.get());
       assert(casted != nullptr);
       assert(*casted == 0);
@@ -24,7 +24,7 @@ int main()
 
   assert(i == 2);
     {
-      auto clone_ptr = i.Clone();
+      auto clone_ptr = i.clone();
       auto casted = static_cast<json::Integer*>(clone_ptr.get());
       assert(*casted == 2);
       assert(casted->repr() == "2");

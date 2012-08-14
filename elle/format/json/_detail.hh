@@ -27,7 +27,6 @@ namespace elle
           typedef Else type;
         };
 
-
         template <typename T>
         struct FastConst
         {
@@ -102,13 +101,13 @@ namespace elle
             return _value == other._value;
           }
 
-          std::unique_ptr<Object> Clone() const
+          std::unique_ptr<Object> clone() const
           {
             return std::unique_ptr<Object>(new BasicObject(_value));
           }
 
-        protected:
-          void Save(elle::serialize::OutputJSONArchive& ar) const;
+          using Object::repr;
+          virtual void repr(std::ostream& out) const;
         };
 
         template <typename T>
@@ -194,28 +193,6 @@ namespace elle
           );
         };
 
-      }
-    }
-  }
-} // !namespace elle::format::json::detail
-
-# include "Float.hh"
-# include "String.hh"
-# include "Integer.hh"
-# include "Bool.hh"
-# include "Null.hh"
-# include "Dictionary.hh"
-# include "Null.hh"
-# include "Array.hh"
-
-namespace elle
-{
-  namespace format
-  {
-    namespace json
-    {
-      namespace detail
-      {
         template<typename T>
         struct SelectJSONType
         {
@@ -245,11 +222,10 @@ namespace elle
             >::type
           >::type type;
         };
+
       }
     }
   }
 } // !namespace elle::format::json::detail
-
-# include "Object.hxx"
 
 #endif /* ! _DETAIL_HH */

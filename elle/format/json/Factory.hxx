@@ -78,7 +78,7 @@ namespace elle
           template <typename T>
           static inline
           typename std::enable_if<
-              detail::IsArray<T>::value
+              detail::IsArray<T>::value && !detail::IsString<T>::value
             , std::unique_ptr<Array>
           >::type
           construct(T const& value)
@@ -117,7 +117,7 @@ namespace elle
           >::type
           construct(T const& value)
           {
-            Object* ptr = value.Clone().release();
+            Object* ptr = value.clone().release();
             assert(dynamic_cast<T*>(ptr) != nullptr);
             return std::unique_ptr<T>(static_cast<T*>(ptr));
           }

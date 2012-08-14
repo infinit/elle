@@ -19,14 +19,22 @@ namespace elle
 
       public:
         using Object::operator ==;
-        virtual bool operator ==(Object const& other) const;
-        virtual bool operator ==(Null const&) const;
+        virtual
+        bool
+        operator ==(Object const& other) const;
+        virtual
+        bool
+        operator ==(Null const&) const;
+
+      public:
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
 
       protected:
-        void
-        Save(elle::serialize::OutputJSONArchive& ar) const;
         std::unique_ptr<Object>
-        Clone() const;
+        clone() const;
       };
 
       extern Null const null;
