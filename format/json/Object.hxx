@@ -13,7 +13,8 @@ namespace elle
     {
 
       template <typename T>
-      void Object::Load(T& out) const
+      void
+      Object::Load(T& out) const
       {
         static_assert(
             !std::is_base_of<T, Object>::value,
@@ -24,7 +25,8 @@ namespace elle
       }
 
       template <typename T>
-      T Object::as() const
+      T
+      Object::as() const
       {
         T val;
         this->Load(val);
@@ -32,7 +34,8 @@ namespace elle
       }
 
       template <typename T>
-      bool Object::TryLoad(T& out) const
+      bool
+      Object::TryLoad(T& out) const
       {
         typedef typename detail::SelectJSONType<T>::type SelfType;
         if (auto ptr = dynamic_cast<SelfType const*>(this))
@@ -44,15 +47,81 @@ namespace elle
       }
 
 
-      template <typename T> typename std::enable_if<
-            !std::is_base_of<T, Object>::value
-          , bool
-      >::type Object::operator ==(T const& other) const
+      template <typename T>
+      typename std::enable_if<
+          !std::is_base_of<T, Object>::value
+        , bool
+      >::type
+      Object::operator ==(T const& other) const
       {
         typedef typename detail::SelectJSONType<T>::type SelfType;
         if (auto self = dynamic_cast<SelfType const*>(this))
           return *self == SelfType(other);
         return false;
+      }
+
+      inline
+      bool
+      Object::operator !=(Object const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Array const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Bool const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Dictionary const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Float const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Integer const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(Null const& other) const
+      {
+        return !(*this == other);
+      }
+
+      inline
+      bool
+      Object::operator !=(String const& other) const
+      {
+        return !(*this == other);
+      }
+
+      template <typename T>
+      inline
+      bool
+      Object::operator !=(T const& other) const
+      {
+        return !(*this == other);
       }
 
     }

@@ -78,7 +78,14 @@ namespace elle
         size() const;
 
         /// Duplicate the current the Dictionary.
-        std::unique_ptr<Object> Clone() const;
+        virtual
+        std::unique_ptr<Object>
+        Clone() const;
+
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
 
       protected:
         void Save(OutputJSONArchive& ar) const;

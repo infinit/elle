@@ -27,27 +27,28 @@ namespace elle
       }
 
       void
+      Dictionary::repr(std::ostream& out) const
+      {
+        out << '{';
+        bool first{true};
+        for (auto const& pair : _map)
+          {
+            if (first)
+              first = false;
+            else
+              out << ',';
+
+            String(pair.first).repr(out);
+            out << ':';
+            pair.second->repr(out);
+          }
+        out << '}';
+      }
+
+      void
       Dictionary::Save(elle::serialize::OutputJSONArchive& ar) const
       {
-        auto it = _map.begin(),
-             end = _map.end();
-        ar.stream() << '{';
-        if (it != end)
-          {
-            ar << it->first;
-            ar.stream() << ':';
-            assert(it->second != nullptr);
-            it->second->Save(ar);
-            ++it;
-            for (; it != end; ++it)
-              {
-                ar.stream() << ',';
-                ar << it->first;
-                ar.stream() << ':';
-                it->second->Save(ar);
-              }
-          }
-        ar.stream() << '}';
+        this->repr(ar.stream());
       }
 
       std::unique_ptr<Object>
