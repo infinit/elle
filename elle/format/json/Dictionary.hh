@@ -87,9 +87,6 @@ namespace elle
         void
         repr(std::ostream& out) const;
 
-      protected:
-        void Save(OutputJSONArchive& ar) const;
-
         /// Comparable implementation.
       public:
         using Object::operator ==;

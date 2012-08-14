@@ -23,12 +23,6 @@ namespace elle
         out << "null";
       }
 
-      void
-      Null::Save(elle::serialize::OutputJSONArchive& ar) const
-      {
-        ar.stream() << "null";
-      }
-
       std::unique_ptr<Object>
       Null::Clone() const
       {
