@@ -173,25 +173,24 @@ namespace etoile
         }
 
       // determine the rights according to the subject.
-      if (agent::Agent::Subject == context.group->owner_subject())
+      if (agent::Agent::Subject == context.group->manager_subject())
         {
           //
-          // if the user is the group's owner, retrieve the user's
+          // if the user is the group's manager, retrieve the user's
           // token.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the user is the group owner");
+          ELLE_LOG_TRACE_SCOPE("the user is the group manager");
 
-          // set the role.
-          context.rights.role = nucleus::neutron::Group::RoleOwner;
+          context.rights.role = nucleus::neutron::Group::RoleManager;
         }
       else
         {
           //
-          // if the user is not the owner, leave the role as unknown.
+          // if the user is not the manager, leave the role as unknown.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the user is _not_ the group owner");
+          ELLE_LOG_TRACE_SCOPE("the user is _not_ the group manager");
 
           context.rights.role = nucleus::neutron::Group::RoleNone;
         }

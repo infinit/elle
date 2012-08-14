@@ -101,8 +101,9 @@ namespace nucleus
       /// Returns the address of the referenced Access block.
       proton::Address const&
       access() const;
-      /// Returns owner's access record.
-      Record const&
+      /// Returns the record associated with the object owner.
+      /// XXX[the const on the return type needs to be added]
+      Record&
       owner_record();
       /// Returns the owner's access token.
       Token const&

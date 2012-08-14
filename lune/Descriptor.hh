@@ -1,12 +1,16 @@
 #ifndef LUNE_DESCRIPTOR_HH
 # define LUNE_DESCRIPTOR_HH
 
-# include <nucleus/proton/Address.hh>
-# include <hole/Model.hh>
-# include <lune/fwd.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/cryptography/Signature.hh>
 # include <elle/idiom/Open.hh>
+
+# include <lune/fwd.hh>
+
+# include <hole/Model.hh>
+
+# include <nucleus/proton/Address.hh>
+# include <nucleus/neutron/Group.hh>
 
 namespace lune
 {
@@ -17,10 +21,10 @@ namespace lune
   /// note that the network name is supposed to be unique as it plays the
   /// role of identifier.
   ///
-  class Descriptor
-    : public elle::radix::Object
-    , public elle::concept::MakeFileable<Descriptor>
-    , public elle::concept::MakeUniquable<Descriptor>
+  class Descriptor:
+    public elle::radix::Object,
+    public elle::concept::MakeFileable<Descriptor>,
+    public elle::concept::MakeUniquable<Descriptor>
   {
   public:
     //
@@ -36,14 +40,16 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::String id,
-                               const elle::String&,
-                               const hole::Model&,
-                               const nucleus::proton::Address&,
-                               const elle::Boolean,
-                               const elle::Natural32,
-                               const elle::Real&,
-                               const elle::Real&);
+    elle::Status
+    Create(const elle::String id,
+           const elle::String&,
+           const hole::Model&,
+           const nucleus::proton::Address& root,
+           nucleus::neutron::Group::Identity const& everybody,
+           const elle::Boolean,
+           const elle::Natural32,
+           const elle::Real&,
+           const elle::Real&);
 
     elle::Status        Seal(const Authority&);
     elle::Status        Validate(const Authority&) const;
@@ -75,6 +81,7 @@ namespace lune
     elle::String        name;
     hole::Model         model;
     nucleus::proton::Address root;
+    nucleus::neutron::Group::Identity everybody;
     elle::Boolean       history;
     elle::Natural32     extent;
     elle::Real          contention;

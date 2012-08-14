@@ -1,5 +1,7 @@
 #include <nucleus/neutron/Fellow.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -21,6 +23,13 @@ namespace nucleus
 
     Fellow::Fellow(Subject const& subject):
       _subject(subject)
+    {
+    }
+
+    Fellow::Fellow(Subject const& subject,
+                   Token const& token):
+      _subject(subject),
+      _token(token)
     {
     }
 

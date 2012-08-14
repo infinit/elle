@@ -10,6 +10,8 @@
 
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Address.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Token.hh>
 
 namespace nucleus
 {
@@ -116,6 +118,21 @@ namespace nucleus
       /// list of the group fellows.
       proton::Address const&
       ensemble() const;
+      /// Returns the subject associated with the group manager.
+      Subject const&
+      manager_subject();
+      /// Returns the token associated with the group manager.
+      Token const&
+      manager_token() const;
+      /// Returns the fellow associated with the group manager.
+      /// XXX[put the const back on the return type]
+      Fellow&
+      manager_fellow();
+
+    private:
+      /// Computes the manager's fellow, if necessary.
+      void
+      _manager_fellow();
 
       //
       // interfaces
@@ -140,6 +157,13 @@ namespace nucleus
       /// an Ensemble block, the pass becomes useless.
       elle::cryptography::PublicKey* _pass;
       proton::Address _ensemble;
+
+      struct
+      {
+        Token token;
+        Fellow* fellow;
+      } _manager;
+
       elle::cryptography::Signature _signature;
     };
 

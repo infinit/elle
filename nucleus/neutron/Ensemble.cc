@@ -4,6 +4,8 @@
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/log.hh>
 
+#include <elle/idiom/Open.hh>
+
 ELLE_LOG_TRACE_COMPONENT("infinit.nucleus.neutron.Ensemble");
 
 namespace nucleus
@@ -134,10 +136,6 @@ namespace nucleus
       Index i(0);
 
       ELLE_LOG_TRACE_SCOPE("consult(%s, %s)", index, size);
-
-      if (range.Detach() == elle::Status::Error)
-        throw Exception("unable to detach the data from the range");
-        // XXX[to remove in the future]
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
