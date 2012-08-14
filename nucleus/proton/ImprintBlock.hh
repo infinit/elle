@@ -62,7 +62,7 @@ namespace nucleus
       Validate(Address const& address) const;
       /// The timestamp associated with the creating of the block.
       elle::utility::Time const&
-      stamp() const;
+      creation_stamp() const;
       /// The public key of the block's owner.
       elle::cryptography::PublicKey const&
       owner_K() const;
@@ -93,7 +93,7 @@ namespace nucleus
       //
     private:
       /// The block creation timestamp.
-      elle::utility::Time _stamp;
+      elle::utility::Time _creation_stamp;
       /// A random salt so as to differentiate two ImprintBlocks being
       /// created by the same user at the exact same time.
       elle::Natural64 _salt;

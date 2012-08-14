@@ -116,6 +116,38 @@ namespace etoile
     }
 
     elle::Status
+    Group::Information(gear::Identifier const& identifier,
+                       abstract::Group& abstract)
+    {
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Group* context;
+
+      ELLE_LOG_TRACE("Information()");
+
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
+        escape("unable to select the actor");
+
+      scope = actor->scope;
+
+      // declare a critical section.
+      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+      {
+        // retrieve the context.
+        if (scope->Use(context) == elle::Status::Error)
+          escape("unable to retrieve the context");
+
+        // apply the information automaton on the context.
+        if (automaton::Group::Information(*context,
+                                          abstract) == elle::Status::Error)
+          escape("unable to retrieve general information on the group");
+      }
+
+      return elle::Status::Ok;
+    }
+
+    elle::Status
     Group::Add(gear::Identifier const& identifier,
                nucleus::neutron::Subject const& subject)
     {

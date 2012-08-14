@@ -117,8 +117,23 @@ namespace nucleus
 
       for (T* item: other.container)
         {
-          if (this->Add(item) == elle::Status::Error)
-            escape("unable to add the item");
+          switch (this->options)
+            {
+            case Range<T>::OptionNone:
+              {
+                if (this->Add(new T(*item)) == elle::Status::Error)
+                  escape("unable to add the item");
+
+                break;
+              }
+            case Range<T>::OptionDetach:
+              {
+                if (this->Add(item) == elle::Status::Error)
+                  escape("unable to add the item");
+
+                break;
+              }
+            }
         }
 
       return elle::Status::Ok;

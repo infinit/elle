@@ -12,6 +12,7 @@ groups:
  - changer mics::abstract en abstract::object et abstract::group et rajouter methode group::information
  - integrer au controle d'acces, mais que en lecture (refuser de donner le droit a un groupe en ecriture)
  - changer les scopes pour integrer les groups: wall::Group(XXX)
+ - donner le droit sur le rep root au group everybody, dans 8network (mais avant, ne le faire que si bonne policy)
 
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.

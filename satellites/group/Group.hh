@@ -25,6 +25,7 @@ namespace satellite
       {
         OperationUnknown = 0,
 
+        OperationInformation,
         OperationCreate,
         OperationAdd,
         OperationLookup,
@@ -44,6 +45,10 @@ namespace satellite
     static
     elle::Status
     Display(nucleus::neutron::Fellow const& fellow);
+    // XXX
+    static
+    elle::Status
+    Information(typename nucleus::neutron::Group::Identity const& identity);
     /// XXX
     static
     elle::Status

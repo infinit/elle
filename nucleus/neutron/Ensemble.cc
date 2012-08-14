@@ -137,6 +137,9 @@ namespace nucleus
 
       ELLE_LOG_TRACE_SCOPE("consult(%s, %s)", index, size);
 
+      if (range.Detach() == elle::Status::Error)
+        throw Exception("unable to detach the data from the range"); // XXX[to remove in the future]
+
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
            ++scoutor)
@@ -217,6 +220,12 @@ namespace nucleus
       this->_container.erase(iterator);
 
       this->state = proton::StateDirty;
+    }
+
+    Size
+    Ensemble::size() const
+    {
+      return (static_cast<Size>(this->_container.size()));
     }
 
     Ensemble::Scoutor const

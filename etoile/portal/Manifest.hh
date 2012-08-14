@@ -7,7 +7,7 @@
 # include <elle/network/Range.hh>
 # include <etoile/path/fwd.hh>
 # include <etoile/gear/fwd.hh>
-# include <etoile/miscellaneous/fwd.hh>
+# include <etoile/abstract/fwd.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>
 
@@ -135,6 +135,8 @@ namespace etoile
         TagGroupCreate,
         TagGroupIdentity,
         TagGroupLoad,
+        TagGroupInformation,
+        TagGroupAbstract,
         TagGroupAdd,
         TagGroupLookup,
         TagGroupFellow,
@@ -181,7 +183,7 @@ message(etoile::portal::TagObjectLoad,
 message(etoile::portal::TagObjectInformation,
         parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagObjectAbstract,
-        parameters(etoile::miscellaneous::Abstract&));
+        parameters(etoile::abstract::Object&));
 message(etoile::portal::TagObjectDiscard,
        parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagObjectStore,
@@ -316,6 +318,10 @@ message(etoile::portal::TagGroupIdentity,
                    etoile::gear::Identifier&));
 message(etoile::portal::TagGroupLoad,
         parameters(typename nucleus::neutron::Group::Identity&));
+message(etoile::portal::TagGroupInformation,
+        parameters(etoile::gear::Identifier&));
+message(etoile::portal::TagGroupAbstract,
+        parameters(etoile::abstract::Group&));
 message(etoile::portal::TagGroupAdd,
         parameters(etoile::gear::Identifier&,
                    nucleus::neutron::Subject&));

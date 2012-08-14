@@ -10,7 +10,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/journal/Journal.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/proton/Location.hh>
 #include <nucleus/neutron/Object.hh>
@@ -181,7 +181,7 @@ namespace etoile
     ///
     elle::Status        Object::Information(
                           const gear::Identifier&               identifier,
-                          miscellaneous::Abstract&              abstract)
+                          abstract::Object&              abstract)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

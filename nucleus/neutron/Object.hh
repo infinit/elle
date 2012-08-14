@@ -131,10 +131,10 @@ namespace nucleus
       size() const;
       /// Returns the stamp associated with the data section.
       elle::utility::Time const&
-      data_stamp() const;
+      data_modification_stamp() const;
       /// Returns the stamp associated with the meta section.
       elle::utility::Time const&
-      meta_stamp() const;
+      meta_modification_stamp() const;
       /// Returns the version associated with the data section.
       proton::Version const&
       data_version() const;
@@ -183,7 +183,7 @@ namespace nucleus
         } owner;
 
         Genre genre;
-        elle::utility::Time stamp;
+        elle::utility::Time modification_stamp;
 
         Attributes attributes;
 
@@ -202,7 +202,7 @@ namespace nucleus
         proton::Address contents;
 
         Size size;
-        elle::utility::Time stamp;
+        elle::utility::Time modification_stamp;
 
         proton::Version version;
         elle::cryptography::Signature signature;

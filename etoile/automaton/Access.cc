@@ -274,6 +274,10 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
+
       // if the index starts with 0, include the owner by creating
       // a record for him.
       if (index == 0)
@@ -299,10 +303,6 @@ namespace etoile
                                       range) == elle::Status::Error)
             escape("unable to consult the ensemble");
         }
-
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }

@@ -75,6 +75,9 @@ namespace nucleus
       /// Removes the given subject from the ensemble.
       void
       remove(Subject const& subject);
+      /// Returns the number of fellows in the ensemble.
+      Size
+      size() const;
 
     private:
       Scoutor const

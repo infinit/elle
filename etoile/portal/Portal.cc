@@ -22,7 +22,8 @@
 #include <etoile/path/Chemin.hh>
 #include <etoile/path/Path.hh>
 #include <etoile/gear/Identifier.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
+#include <etoile/abstract/Group.hh>
 #include <etoile/portal/Manifest.hh>
 
 #include <etoile/wall/Object.hh>
@@ -530,6 +531,15 @@ namespace etoile
                 elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupInformation,
+                                       TagGroupAbstract>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Information),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+         escape("unable to register the callback");
 
         if (elle::network::Network::Register(
               elle::network::Procedure<TagGroupAdd,

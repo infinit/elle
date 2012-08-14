@@ -10,6 +10,8 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/log.hh>
 
+#include <agent/Agent.hh>
+
 #include <hole/Hole.hh>
 
 ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Ensemble");
@@ -157,10 +159,6 @@ namespace etoile
                 escape("unable to destroy the ensemble block");
             }
 
-          // XXX
-          context.group->Dump();
-          escape("XXX");
-
           /* XXX[in theory, a new pass should be generated but for now,
                  we decided to use the same pass throughout the group's
                  history, which is less secure, but enough for now]
@@ -169,18 +167,42 @@ namespace etoile
             escape("unable to generate the pass");
           */
           /* XXX[instead we must make sure to generate a key pair when
-                 necessary] */
+                 necessary i.e for the first version of the group. otherwise,
+                 create a pass, based on the current public and private pass.] */
+          // XXX
           {
-            printf("FIX HERE: decrypt token\n");
-            //if (context.group->ensemble() == nucleus::proton::Address::Null)
-            // XXX si ensemble + si publickey == null => generate
+            if (context.group->version == 1)
+              {
+                if (pass.Generate() == elle::Status::Error)
+                  escape("unable to generate the pass");
+              }
+            else
+              {
+                nucleus::neutron::Token token(context.group->manager_token());
+                elle::cryptography::PrivateKey k;
+
+                if (token.Extract(agent::Agent::Identity.pair.k,
+                                  k) == elle::Status::Error)
+                  escape("unable to extract the token");
+
+                pass.K = context.group->pass();
+                pass.k = k;
+              }
           }
+          // XXX
 
           // upgrade the ensemble's tokens with the new pass.
+          // besides, update the group's size with the number
+          // of elements in the ensemble.
           // XXX[remove try/catch]
           try
             {
               context.ensemble->update(pass.k);
+
+              // The group size equals the number of fellows in the
+              // ensemble plus the group manager. This is why one is
+              // added to the size.
+              context.group->size(context.ensemble->size() + 1);
             }
           catch (...)
             {
@@ -203,12 +225,16 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              context.group->upgrade(address, pass.K);
+              context.group->upgrade(address, pass.K, pass.k);
             }
           catch (...)
             {
               escape("unable to update the object");
             }
+
+          // XXX
+          context.ensemble->Dump();
+          context.group->Dump();
         }
 
       return elle::Status::Ok;

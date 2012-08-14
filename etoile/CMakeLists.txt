@@ -45,7 +45,8 @@ add_library(etoile
   portal/Portal.cc
   portal/Wrapper.cc
 
-  miscellaneous/Abstract.cc
+  abstract/Object.cc
+  abstract/Group.cc
 
   journal/Journal.cc
 

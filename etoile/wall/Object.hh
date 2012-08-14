@@ -5,7 +5,7 @@
 
 # include <etoile/path/fwd.hh>
 # include <etoile/gear/fwd.hh>
-# include <etoile/miscellaneous/fwd.hh>
+# include <etoile/abstract/fwd.hh>
 
 namespace etoile
 {
@@ -30,7 +30,7 @@ namespace etoile
       static elle::Status       Lock(const gear::Identifier&);
       static elle::Status       Release(const gear::Identifier&);
       static elle::Status       Information(const gear::Identifier&,
-                                            miscellaneous::Abstract&);
+                                            abstract::Object&);
 
       static elle::Status       Discard(const gear::Identifier&);
       static elle::Status       Store(const gear::Identifier&);

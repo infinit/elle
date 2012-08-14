@@ -1,7 +1,7 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Access.hh>
 #include <etoile/gear/Object.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 #include <etoile/depot/Depot.hh>
 
 #include <nucleus/proton/Address.hh>
@@ -52,7 +52,7 @@ namespace etoile
     ///
     elle::Status        Object::Information(
                           gear::Object&                         context,
-                          miscellaneous::Abstract&              abstract)
+                          abstract::Object&              abstract)
     {
       // generate the abstract based on the object.
       if (abstract.Create(context.object) == elle::Status::Error)

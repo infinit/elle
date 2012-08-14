@@ -13,6 +13,7 @@
 
 #include <etoile/gear/Identifier.hh>
 #include <etoile/portal/Manifest.hh>
+#include <etoile/abstract/Group.hh>
 
 #include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Range.hh>
@@ -21,6 +22,8 @@
 
 #include <lune/Lune.hh>
 #include <lune/Phrase.hh>
+
+#include <hole/Hole.hh>
 
 #include <elle/idiom/Close.hh>
 # include <boost/foreach.hpp>
@@ -120,6 +123,61 @@ namespace satellite
       escape("unable to authenticate to Etoile");
 
     return (elle::Status::Ok);
+  }
+
+  elle::Status
+  Group::Information(typename nucleus::neutron::Group::Identity const& identity)
+  {
+    etoile::gear::Identifier identifier;
+    etoile::abstract::Group abstract;
+
+    // connect to Etoile.
+    if (Group::Connect() == elle::Status::Error)
+      goto _error;
+
+    // load the object.
+    if (Group::socket->Call(
+          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
+          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+        elle::Status::Error)
+      goto _error;
+
+    // retrieve the group abstract.
+    if (Group::socket->Call(
+          elle::network::Inputs<etoile::portal::TagGroupInformation>(
+            identifier),
+          elle::network::Outputs<etoile::portal::TagGroupAbstract>(abstract)) ==
+        elle::Status::Error)
+      goto _error;
+
+    // discard the group.
+    if (Group::socket->Call(
+          elle::network::Inputs<etoile::portal::TagGroupDiscard>(identifier),
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
+      goto _error;
+
+    // dump the abstract.
+    if (abstract.Dump() == elle::Status::Error)
+      goto _error;
+
+    return elle::Status::Ok;
+
+  _error:
+    // release the object.
+    if (Group::socket != nullptr)
+      {
+        Group::socket->send(
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
+            identifier));
+      }
+
+    // expose the potential errors.
+    expose();
+
+    // exit the program.
+    elle::concurrency::Program::Exit();
+
+    return elle::Status::Ok;
   }
 
   elle::Status
@@ -499,6 +557,15 @@ namespace satellite
 
     // register the options.
     if (Infinit::Parser->Register(
+          "Information",
+          'x',
+          "information",
+          "display information on a group",
+          elle::utility::Parser::KindNone) == elle::Status::Error)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
           "Create",
           'c',
           "create",
@@ -566,7 +633,7 @@ namespace satellite
           'g',
           "group",
           "indicate the group base64 identity on which to operate",
-          elle::utility::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindOptional) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -621,8 +688,12 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
+    // initialize hole.
+    hole::Hole::Initialize();
+
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
+    if ((Infinit::Parser->Test("Information") == elle::Status::True) &&
+        (Infinit::Parser->Test("Create") == elle::Status::True) &&
         (Infinit::Parser->Test("Add") == elle::Status::True) &&
         (Infinit::Parser->Test("Lookup") == elle::Status::True) &&
         (Infinit::Parser->Test("Consult") == elle::Status::True) &&
@@ -632,11 +703,14 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the create, add, lookup, consult, remove and destroy "
-               "options are mutually exclusive");
+        escape("the information, create, add, lookup, consult, remove and "
+               "destroy options are mutually exclusive");
       }
 
     // test the options.
+    if (Infinit::Parser->Test("Information") == elle::Status::True)
+      operation = Group::OperationInformation;
+
     if (Infinit::Parser->Test("Create") == elle::Status::True)
       operation = Group::OperationCreate;
 
@@ -658,6 +732,34 @@ namespace satellite
     // trigger the operation.
     switch (operation)
       {
+      case Group::OperationInformation:
+        {
+          elle::String string;
+          typename nucleus::neutron::Group::Identity group;
+
+          // retrieve the group.
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
+            escape("unable to retrieve the group identity");
+
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
+
+          if (Group::Information(group) == elle::Status::Error)
+            escape("unable to retrieve information on the group");
+
+          break;
+        }
       case Group::OperationCreate:
         {
           elle::String description;
@@ -680,12 +782,22 @@ namespace satellite
           nucleus::neutron::Subject subject;
 
           // retrieve the group.
-          if (Infinit::Parser->Value("Group", string) == elle::Status::Error)
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
             escape("unable to retrieve the group identity");
 
-          // convert the string into a group identity.
-          if (group.Restore(string) == elle::Status::Error)
-            escape("unable to convert the string into a group identity");
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
@@ -746,12 +858,22 @@ namespace satellite
           nucleus::neutron::Subject subject;
 
           // retrieve the group.
-          if (Infinit::Parser->Value("Group", string) == elle::Status::Error)
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
             escape("unable to retrieve the group identity");
 
-          // convert the string into a group identity.
-          if (group.Restore(string) == elle::Status::Error)
-            escape("unable to convert the string into a group identity");
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
@@ -810,12 +932,22 @@ namespace satellite
           typename nucleus::neutron::Group::Identity group;
 
           // retrieve the group.
-          if (Infinit::Parser->Value("Group", string) == elle::Status::Error)
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
             escape("unable to retrieve the group identity");
 
-          // convert the string into a group identity.
-          if (group.Restore(string) == elle::Status::Error)
-            escape("unable to convert the string into a group identity");
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
 
           if (Group::Consult(group) == elle::Status::Error)
             escape("unable to consult the group's fellows");
@@ -830,12 +962,22 @@ namespace satellite
           nucleus::neutron::Subject subject;
 
           // retrieve the group.
-          if (Infinit::Parser->Value("Group", string) == elle::Status::Error)
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
             escape("unable to retrieve the group identity");
 
-          // convert the string into a group identity.
-          if (group.Restore(string) == elle::Status::Error)
-            escape("unable to convert the string into a group identity");
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
@@ -894,12 +1036,22 @@ namespace satellite
           typename nucleus::neutron::Group::Identity group;
 
           // retrieve the group.
-          if (Infinit::Parser->Value("Group", string) == elle::Status::Error)
+          if (Infinit::Parser->Value("Group",
+                                     string,
+                                     elle::String()) == elle::Status::Error)
             escape("unable to retrieve the group identity");
 
-          // convert the string into a group identity.
-          if (group.Restore(string) == elle::Status::Error)
-            escape("unable to convert the string into a group identity");
+          // if no group is provided, use the "everybody" group of the network.
+          if (string.empty() == false)
+            {
+              // convert the string into a group identity.
+              if (group.Restore(string) == elle::Status::Error)
+                escape("unable to convert the string into a group identity");
+            }
+          else
+            {
+              group = hole::Hole::Descriptor.everybody;
+            }
 
           if (Group::Destroy(group) == elle::Status::Error)
             escape("unable to destroy the group");
@@ -919,6 +1071,9 @@ namespace satellite
     // delete the parser.
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
+
+    // clean hole.
+    hole::Hole::Clean();
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)

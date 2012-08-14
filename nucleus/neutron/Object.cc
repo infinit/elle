@@ -121,7 +121,7 @@ namespace nucleus
       //
       {
         // set the last update time.
-        if (this->_data.stamp.Current() == elle::Status::Error)
+        if (this->_data.modification_stamp.Current() == elle::Status::Error)
           escape("unable to set the last update time");
 
         // set the address.
@@ -159,7 +159,7 @@ namespace nucleus
                                              const Permissions& permissions)
     {
       // set the last management time.
-      if (this->_meta.stamp.Current() == elle::Status::Error)
+      if (this->_meta.modification_stamp.Current() == elle::Status::Error)
         escape("unable to set the last management time");
 
       // set the attributes.
@@ -207,7 +207,7 @@ namespace nucleus
           if (k.Sign(elle::serialize::make_tuple(
                        this->_data.contents,
                        this->_data.size,
-                       this->_data.stamp,
+                       this->_data.modification_stamp,
                        this->_data.version,
                        this->_meta.owner.token,
                        this->_meta.access),
@@ -254,7 +254,7 @@ namespace nucleus
               if (k.Sign(elle::serialize::make_tuple(
                            this->_meta.owner.permissions,
                            this->_meta.genre,
-                           this->_meta.stamp,
+                           this->_meta.modification_stamp,
                            this->_meta.attributes,
                            this->_meta.version,
                            fingerprint),
@@ -272,7 +272,7 @@ namespace nucleus
               if (k.Sign(elle::serialize::make_tuple(
                            this->_meta.owner.permissions,
                            this->_meta.genre,
-                           this->_meta.stamp,
+                           this->_meta.modification_stamp,
                            this->_meta.attributes,
                            this->_meta.version),
                          this->_meta.signature) == elle::Status::Error)
@@ -348,7 +348,7 @@ namespace nucleus
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
-                    this->_meta.stamp,
+                    this->_meta.modification_stamp,
                     this->_meta.attributes,
                     this->_meta.version,
                     fingerprint)) == elle::Status::Error)
@@ -362,7 +362,7 @@ namespace nucleus
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
-                    this->_meta.stamp,
+                    this->_meta.modification_stamp,
                     this->_meta.attributes,
                     this->_meta.version)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
@@ -455,7 +455,7 @@ namespace nucleus
                           elle::serialize::make_tuple(
                             this->_data.contents,
                             this->_data.size,
-                            this->_data.stamp,
+                            this->_data.modification_stamp,
                             this->_data.version,
                             this->_meta.owner.token,
                             this->_meta.access)) == elle::Status::Error)
@@ -537,15 +537,15 @@ namespace nucleus
     }
 
     elle::utility::Time const&
-    Object::data_stamp() const
+    Object::data_modification_stamp() const
     {
-      return (this->_data.stamp);
+      return (this->_data.modification_stamp);
     }
 
     elle::utility::Time const&
-    Object::meta_stamp() const
+    Object::meta_modification_stamp() const
     {
-      return (this->_meta.stamp);
+      return (this->_meta.modification_stamp);
     }
 
     proton::Version const&
@@ -628,8 +628,8 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Stamp] " << std::endl;
-      if (this->_meta.stamp.Dump(margin + 6) == elle::Status::Error)
+                << "[Modification Stamp] " << std::endl;
+      if (this->_meta.modification_stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta stamp");
 
       if (this->_meta.attributes.Dump(margin + 4) == elle::Status::Error)
@@ -670,8 +670,8 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Stamp]" << std::endl;
-      if (this->_data.stamp.Dump(margin + 6) == elle::Status::Error)
+                << "[Modification Stamp]" << std::endl;
+      if (this->_data.modification_stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data stamp");
 
       if (this->_data.version.Dump(margin + 4) == elle::Status::Error)

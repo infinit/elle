@@ -20,8 +20,10 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
 
   archive >> value._description;
   archive >> elle::serialize::pointer(value._pass);
+  archive >> value._size;
+  archive >> value._modification_stamp;
   archive >> value._ensemble;
-  archive >> value._manager.token;
+  archive >> elle::serialize::pointer(value._manager.token);
   archive >> value._signature;
 }
 
@@ -42,8 +44,15 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
   elle::cryptography::PublicKey* pk(value._pass);
   archive << elle::serialize::pointer(pk);
 
+  archive << value._size;
+  archive << value._modification_stamp;
   archive << value._ensemble;
-  archive << value._manager.token;
+
+  // XXX[hack because the serialization mechanism does not support pointer
+  //     on const pointers]
+  nucleus::neutron::Token* t(value._manager.token);
+  archive << elle::serialize::pointer(t);
+
   archive << value._signature;
 }
 

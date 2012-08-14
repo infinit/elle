@@ -64,7 +64,7 @@ namespace nucleus
       ELLE_LOG_TRACE_SCOPE("[%p] Create(%s)", this, owner_K);
 
       // Compute the creation timestamp.
-      if (this->_stamp.Current() == elle::Status::Error)
+      if (this->_creation_stamp.Current() == elle::Status::Error)
         escape("unable to retrieve the current time");
 
       // Generate a random number for the salt.
@@ -88,7 +88,7 @@ namespace nucleus
                          this->network,
                          this->family,
                          this->component,
-                         this->_stamp, this->_salt, this->_owner.K) ==
+                         this->_creation_stamp, this->_salt, this->_owner.K) ==
           elle::Status::Error)
         escape("unable to compute the imprint address");
 
@@ -110,7 +110,7 @@ namespace nucleus
                       this->network,
                       this->family,
                       this->component,
-                      this->_stamp, this->_salt, this->_owner.K) ==
+                      this->_creation_stamp, this->_salt, this->_owner.K) ==
           elle::Status::Error)
         escape("unable to compute the imprint address");
 
@@ -123,9 +123,9 @@ namespace nucleus
     }
 
     elle::utility::Time const&
-    ImprintBlock::stamp() const
+    ImprintBlock::creation_stamp() const
     {
-      return (this->_stamp);
+      return (this->_creation_stamp);
     }
 
     elle::cryptography::PublicKey const&
@@ -163,9 +163,9 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Stamp]" << std::endl;
+                << "[Creation Stamp]" << std::endl;
 
-      if (this->_stamp.Dump(margin + 4) == elle::Status::Error)
+      if (this->_creation_stamp.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the stamp");
 
       std::cout << alignment << elle::io::Dumpable::Shift

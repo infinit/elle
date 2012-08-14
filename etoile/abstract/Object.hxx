@@ -1,12 +1,12 @@
-#ifndef  ETOILE_MISCELLANEOUS_ABSTRACT_HXX
-# define ETOILE_MISCELLANEOUS_ABSTRACT_HXX
+#ifndef ETOILE_ABSTRACT_OBJECT_HXX
+# define ETOILE_ABSTRACT_OBJECT_HXX
 
 # include <cassert>
 
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/utility/Time.hh>
 
-ELLE_SERIALIZE_SIMPLE(etoile::miscellaneous::Abstract,
+ELLE_SERIALIZE_SIMPLE(etoile::abstract::Object,
                       archive,
                       value,
                       version)

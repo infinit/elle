@@ -1,5 +1,5 @@
-#ifndef ETOILE_MISCELLANEOUS_ABSTRACT_HH
-# define ETOILE_MISCELLANEOUS_ABSTRACT_HH
+#ifndef ETOILE_ABSTRACT_OBJECT_HH
+# define ETOILE_ABSTRACT_OBJECT_HH
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
@@ -8,32 +8,27 @@
 # include <nucleus/proton/Version.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Genre.hh>
-# include <nucleus/neutron/Offset.hh>
+# include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 
 # include <elle/idiom/Open.hh>
 
 namespace etoile
 {
-  namespace miscellaneous
+  namespace abstract
   {
 
     ///
     /// this class describes an object's meta data.
     ///
-    class Abstract:
+    class Object:
       public elle::radix::Object
     {
     public:
       //
-      // constants
-      //
-      static const Abstract             Null;
-
-      //
       // constructors & destructors
       //
-      Abstract();
+      Object();
 
       //
       // method
@@ -45,8 +40,9 @@ namespace etoile
       //
 
       // object
-      declare(Abstract);
-      elle::Boolean     operator==(const Abstract&) const;
+      declare(Object);
+      // XXX[useless: to remove]
+      elle::Boolean     operator==(const Object&) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -62,7 +58,7 @@ namespace etoile
         elle::utility::Time modification;
       } stamps;
 
-      nucleus::neutron::Offset size;
+      nucleus::neutron::Size size;
 
       struct
       {
@@ -85,6 +81,6 @@ namespace etoile
   }
 }
 
-# include <etoile/miscellaneous/Abstract.hxx>
+# include <etoile/abstract/Object.hxx>
 
 #endif
