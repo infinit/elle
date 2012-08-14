@@ -4,7 +4,7 @@
 #include <list>
 #include <set>
 
-#include "elle/format/json/Array.hxx"
+#include <elle/format/json/Array.hh>
 
 namespace json = elle::format::json;
 

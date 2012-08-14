@@ -182,6 +182,40 @@ namespace elle
           );
         };
 
+
+        template <typename T>
+        struct ObjectCanLoad
+        {
+          static bool const value = (
+                std::is_arithmetic<T>::value
+            ||  std::is_same<T, std::string>::value
+            ||  std::is_same<T, bool>::value
+            ||  detail::IsArray<T>::value
+          );
+        };
+
+      }
+    }
+  }
+} // !namespace elle::format::json::detail
+
+# include "Float.hh"
+# include "String.hh"
+# include "Integer.hh"
+# include "Bool.hh"
+# include "Null.hh"
+# include "Dictionary.hh"
+# include "Null.hh"
+# include "Array.hh"
+
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
+      namespace detail
+      {
         template<typename T>
         struct SelectJSONType
         {
@@ -211,21 +245,11 @@ namespace elle
             >::type
           >::type type;
         };
-
-        template <typename T>
-        struct ObjectCanLoad
-        {
-          static bool const value = (
-                std::is_arithmetic<T>::value
-            ||  std::is_same<T, std::string>::value
-            ||  std::is_same<T, bool>::value
-            ||  detail::IsArray<T>::value
-          );
-        };
-
       }
     }
   }
 } // !namespace elle::format::json::detail
+
+# include "Object.hxx"
 
 #endif /* ! _DETAIL_HH */

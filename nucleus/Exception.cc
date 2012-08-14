@@ -1,6 +1,6 @@
 #include <nucleus/Exception.hh>
 
-#include <elle/concurrency/scheduler.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 namespace nucleus
 {

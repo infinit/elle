@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "elle/format/json/String.hh"
+#include <elle/format/json/String.hh>
 
 namespace json = elle::format::json;
 
