@@ -14,12 +14,6 @@ namespace elle
       {
 
         template<>
-        void Float::Save(elle::serialize::OutputJSONArchive& ar) const
-        {
-          ar << _value;
-        }
-
-        template<>
         void
         Float::repr(std::ostream& out) const
         {

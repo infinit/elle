@@ -6,8 +6,6 @@
 # include <memory>
 # include <string>
 
-# include <elle/serialize/fwd.hh>
-
 # include "fwd.hh"
 
 namespace elle
@@ -21,26 +19,9 @@ namespace elle
       class Object
       {
       public:
-        typedef elle::serialize::OutputJSONArchive OutputJSONArchive;
-        typedef elle::serialize::InputJSONArchive  InputJSONArchive;
-
-        // The json archive can save objects.
-        friend class elle::serialize::OutputJSONArchive;
-        friend class elle::serialize::InputJSONArchive;
-
-        // Array and Dictionary class may save children objects.
-        friend class Dictionary;
-        friend class Array;
-
-      public:
         virtual
         ~Object()
         {}
-
-      protected:
-        virtual
-        void
-        Save(OutputJSONArchive& ar) const = 0;
 
       public:
         /// Get the value of an object value, when the object value
@@ -178,6 +159,10 @@ namespace elle
         /// Usable as a constant array
         virtual Object const& operator [](size_t index) const;
 
+      protected:
+        // Array and Dictionary class may save children objects.
+        friend class Dictionary;
+        friend class Array;
       };
 
     }

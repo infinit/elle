@@ -17,13 +17,6 @@ namespace elle
 
         template<>
         void
-        String::Save(elle::serialize::OutputJSONArchive& ar) const
-        {
-          ar << _value;
-        }
-
-        template<>
-        void
         String::repr(std::ostream& out) const
         {
           out << '"';

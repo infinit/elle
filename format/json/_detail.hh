@@ -108,9 +108,6 @@ namespace elle
 
           using Object::repr;
           virtual void repr(std::ostream& out) const;
-
-        protected:
-          void Save(elle::serialize::OutputJSONArchive& ar) const;
         };
 
         template <typename T>

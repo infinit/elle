@@ -65,7 +65,7 @@ namespace elle { namespace serialize {
         std::is_base_of<json::Object, T>::value
     >::type OutputJSONArchive::Save(T const& value)
     {
-      static_cast<json::Object const&>(value).Save(*this);
+      static_cast<json::Object const&>(value).repr(this->stream());
     }
 
     template<typename T> inline typename std::enable_if<

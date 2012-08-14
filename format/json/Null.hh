@@ -33,8 +33,6 @@ namespace elle
         repr(std::ostream& out) const;
 
       protected:
-        void
-        Save(elle::serialize::OutputJSONArchive& ar) const;
         std::unique_ptr<Object>
         Clone() const;
       };

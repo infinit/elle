@@ -45,12 +45,6 @@ namespace elle
         out << '}';
       }
 
-      void
-      Dictionary::Save(elle::serialize::OutputJSONArchive& ar) const
-      {
-        this->repr(ar.stream());
-      }
-
       std::unique_ptr<Object>
       Dictionary::Clone() const
       {

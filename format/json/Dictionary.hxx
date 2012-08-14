@@ -1,6 +1,8 @@
 #ifndef ELLE_FORMAT_JSON_DICT_HXX
 # define ELLE_FORMAT_JSON_DICT_HXX
 
+# include <cassert>
+
 # include "Factory.hh"
 # include "Object.hxx"
 

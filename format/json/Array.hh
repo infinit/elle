@@ -51,10 +51,6 @@ namespace elle
         void
         repr(std::ostream& out) const;
 
-      protected:
-        void
-        Save(elle::serialize::OutputJSONArchive& ar) const;
-
       public:
         using Object::operator ==;
 

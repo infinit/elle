@@ -15,13 +15,6 @@ namespace elle
 
         template<>
         void
-        Integer::Save(elle::serialize::OutputJSONArchive& ar) const
-        {
-          ar << _value;
-        }
-
-        template<>
-        void
         Integer::repr(std::ostream& out) const
         {
           out << _value;
