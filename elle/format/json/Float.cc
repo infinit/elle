@@ -4,13 +4,29 @@
 
 #include "Float.hh"
 
-namespace elle { namespace format { namespace json { namespace detail {
-
-    template<>
-    void Float::Save(elle::serialize::OutputJSONArchive& ar) const
+namespace elle
+{
+  namespace format
+  {
+    namespace json
     {
-      ar << _value;
+      namespace detail
+      {
+
+        template<>
+        void Float::Save(elle::serialize::OutputJSONArchive& ar) const
+        {
+          ar << _value;
+        }
+
+        template<>
+        void
+        Float::repr(std::ostream& out) const
+        {
+          out << _value;
+        }
+
+      }
     }
-
-}}}}
-
+  }
+}

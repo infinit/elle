@@ -36,21 +36,25 @@ namespace elle
       }
 
       void
+      Array::repr(std::ostream& out) const
+      {
+        out << '[';
+        bool first{true};
+        for (Object const* element : _value)
+          {
+            if (first)
+              first = false;
+            else
+              out << ',';
+            element->repr(out);
+          }
+        out << ']';
+      }
+
+      void
       Array::Save(elle::serialize::OutputJSONArchive& ar) const
       {
-        ar.stream() << '[';
-        auto it = _value.begin(), end = _value.end();
-        if (it != end)
-          {
-            (*it)->Save(ar);
-            ++it;
-            for (; it != end; ++it)
-              {
-                ar.stream() << ',';
-                (*it)->Save(ar);
-              }
-          }
-        ar.stream() << ']';
+        this->repr(ar.stream());
       }
 
       std::unique_ptr<Object>

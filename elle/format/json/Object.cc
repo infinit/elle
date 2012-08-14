@@ -1,8 +1,6 @@
 #include <sstream>
-#include <string>
 
-#include <elle/serialize/JSONArchive.hxx>
-
+#include "Array.hh"
 #include "Dictionary.hh"
 #include "Object.hh"
 
@@ -16,9 +14,8 @@ namespace elle
       std::string
       Object::repr() const
       {
-        std::ostringstream ss;
-
-        elle::serialize::OutputJSONArchive ar(ss, *this);
+        std::stringstream ss;
+        this->repr(ss);
         return ss.str();
       }
 
@@ -76,7 +73,6 @@ namespace elle
         return dynamic_cast<String&>(*this);
       }
 
-
       Array const&
       Object::as_array() const
       {
@@ -117,6 +113,48 @@ namespace elle
       Object::as_string() const
       {
         return dynamic_cast<String const&>(*this);
+      }
+
+      bool
+      Object::operator ==(Array const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(Bool const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(Dictionary const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(Float const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(Integer const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(Null const&) const
+      {
+        return false;
+      }
+
+      bool
+      Object::operator ==(String const&) const
+      {
+        return false;
       }
 
     }

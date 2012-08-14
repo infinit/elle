@@ -19,8 +19,18 @@ namespace elle
 
       public:
         using Object::operator ==;
-        virtual bool operator ==(Object const& other) const;
-        virtual bool operator ==(Null const&) const;
+        virtual
+        bool
+        operator ==(Object const& other) const;
+        virtual
+        bool
+        operator ==(Null const&) const;
+
+      public:
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
 
       protected:
         void

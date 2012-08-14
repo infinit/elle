@@ -18,6 +18,12 @@ namespace elle
       {}
 
       void
+      Null::repr(std::ostream& out) const
+      {
+        out << "null";
+      }
+
+      void
       Null::Save(elle::serialize::OutputJSONArchive& ar) const
       {
         ar.stream() << "null";

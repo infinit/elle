@@ -27,7 +27,6 @@ namespace elle
           typedef Else type;
         };
 
-
         template <typename T>
         struct FastConst
         {
@@ -106,6 +105,9 @@ namespace elle
           {
             return std::unique_ptr<Object>(new BasicObject(_value));
           }
+
+          using Object::repr;
+          virtual void repr(std::ostream& out) const;
 
         protected:
           void Save(elle::serialize::OutputJSONArchive& ar) const;
