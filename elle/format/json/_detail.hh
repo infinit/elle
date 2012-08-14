@@ -101,7 +101,7 @@ namespace elle
             return _value == other._value;
           }
 
-          std::unique_ptr<Object> Clone() const
+          std::unique_ptr<Object> clone() const
           {
             return std::unique_ptr<Object>(new BasicObject(_value));
           }
@@ -193,28 +193,6 @@ namespace elle
           );
         };
 
-      }
-    }
-  }
-} // !namespace elle::format::json::detail
-
-//# include "Float.hh"
-//# include "String.hh"
-//# include "Integer.hh"
-//# include "Bool.hh"
-//# include "Null.hh"
-//# include "Dictionary.hh"
-//# include "Null.hh"
-//# include "Array.hh"
-
-namespace elle
-{
-  namespace format
-  {
-    namespace json
-    {
-      namespace detail
-      {
         template<typename T>
         struct SelectJSONType
         {
@@ -244,11 +222,10 @@ namespace elle
             >::type
           >::type type;
         };
+
       }
     }
   }
 } // !namespace elle::format::json::detail
-
-//# include "Object.hxx"
 
 #endif /* ! _DETAIL_HH */

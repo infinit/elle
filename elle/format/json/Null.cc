@@ -1,7 +1,5 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hh"
-
 #include "Null.hh"
 
 namespace elle
@@ -24,7 +22,7 @@ namespace elle
       }
 
       std::unique_ptr<Object>
-      Null::Clone() const
+      Null::clone() const
       {
         return std::unique_ptr<Object>(new Null);
       }

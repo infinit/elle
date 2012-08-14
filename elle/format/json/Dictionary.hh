@@ -80,7 +80,7 @@ namespace elle
         /// Duplicate the current the Dictionary.
         virtual
         std::unique_ptr<Object>
-        Clone() const;
+        clone() const;
 
         using Object::repr;
         virtual

@@ -57,7 +57,7 @@ namespace elle
         {
           delete _value;
           _value = nullptr;
-          _value = val.Clone().release();
+          _value = val.clone().release();
           assert(_value != nullptr);
           _map[_key] = _value;
           return *this;
@@ -99,11 +99,11 @@ namespace elle
         template <typename T>
         inline
         void
-        Load(T& val) const
+        load(T& val) const
         {
           if (_value == nullptr)
             throw Dictionary::KeyError(_key);
-          return _value->Load(val);
+          return _value->load(val);
         }
 
         template <typename T>

@@ -32,13 +32,13 @@ namespace elle
         /// @see Object::TryLoad() for an exception safe version.
         template <typename T>
         void
-        Load(T& out) const;
+        load(T& out) const;
 
         /// Same as Load(), but instead of throwing an exception,
         /// it returns false when conversion cannot be done.
         template <typename T>
         bool
-        TryLoad(T& out) const;
+        try_load(T& out) const;
 
         /// Convert an object to the type T and return by value.
         /// @throws std::bad_cast
@@ -81,7 +81,7 @@ namespace elle
         /// Cloning a JSON Object
         virtual
         std::unique_ptr<Object>
-        Clone() const = 0;
+        clone() const = 0;
 
         /// Returns the JSON representation of this object
         std::string

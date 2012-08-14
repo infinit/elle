@@ -3,6 +3,7 @@
 
 # include <cassert>
 # include <list>
+# include <vector>
 
 # include "Object.hh"
 # include "_internal.hh"
@@ -13,8 +14,6 @@ namespace elle
   {
     namespace json
     {
-
-      class Null;
 
       class Array:
         public Object
@@ -44,7 +43,7 @@ namespace elle
         size() const;
 
         std::unique_ptr<Object>
-        Clone() const;
+        clone() const;
 
         using Object::repr;
         virtual
@@ -66,6 +65,8 @@ namespace elle
         bool
         operator ==(Array const& other) const;
 
+        template<typename T>
+        operator std::vector<T>() const;
         template<typename T>
         operator std::list<T>() const;
       };

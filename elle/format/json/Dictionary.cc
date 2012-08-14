@@ -46,13 +46,13 @@ namespace elle
       }
 
       std::unique_ptr<Object>
-      Dictionary::Clone() const
+      Dictionary::clone() const
       {
         auto res = std::unique_ptr<Dictionary>(new Dictionary);
         for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
           {
             assert(it->second != nullptr);
-            res->_map[it->first] = it->second->Clone().release();
+            res->_map[it->first] = it->second->clone().release();
           }
         return std::unique_ptr<Object>(res.release());
       }
@@ -62,7 +62,7 @@ namespace elle
       {
         for (auto const& pair: other._map)
           {
-            this->_map[pair.first] = pair.second->Clone().release();
+            this->_map[pair.first] = pair.second->clone().release();
           }
       }
 

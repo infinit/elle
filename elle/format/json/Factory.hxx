@@ -117,7 +117,7 @@ namespace elle
           >::type
           construct(T const& value)
           {
-            Object* ptr = value.Clone().release();
+            Object* ptr = value.clone().release();
             assert(dynamic_cast<T*>(ptr) != nullptr);
             return std::unique_ptr<T>(static_cast<T*>(ptr));
           }

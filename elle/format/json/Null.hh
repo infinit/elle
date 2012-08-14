@@ -34,7 +34,7 @@ namespace elle
 
       protected:
         std::unique_ptr<Object>
-        Clone() const;
+        clone() const;
       };
 
       extern Null const null;
