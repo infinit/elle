@@ -30,6 +30,17 @@ namespace elle
       }
 
       // XXX should be "sequence" convertible, not just list
+      // XXX should implace back
+      template <typename T>
+      Array::operator std::vector<T>() const
+      {
+        std::vector<T> result;
+        for (Object* obj : _value)
+        {
+          result.push_back(obj->as<T>());
+        }
+        return result;
+      }
       template <typename T>
       Array::operator std::list<T>() const
       {

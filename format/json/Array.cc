@@ -52,13 +52,13 @@ namespace elle
       }
 
       std::unique_ptr<Object>
-      Array::Clone() const
+      Array::clone() const
       {
         auto res = std::unique_ptr<Array>(new Array);
         for (auto it = _value.begin(), end = _value.end(); it != end; ++it)
           {
             res->_value.push_back(
-              (*it)->Clone().release()
+              (*it)->clone().release()
             );
           }
         return std::unique_ptr<Object>(res.release());

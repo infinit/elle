@@ -1,8 +1,6 @@
 #ifndef  ELLE_FORMAT_JSON_OBJECT_HXX
 # define ELLE_FORMAT_JSON_OBJECT_HXX
 
-# include <typeinfo>
-
 # include "_detail.hh"
 
 namespace elle
@@ -14,7 +12,7 @@ namespace elle
 
       template <typename T>
       void
-      Object::Load(T& out) const
+      Object::load(T& out) const
       {
         static_assert(
             !std::is_base_of<T, Object>::value,
@@ -29,13 +27,13 @@ namespace elle
       Object::as() const
       {
         T val;
-        this->Load(val);
+        this->load(val);
         return val;
       }
 
       template <typename T>
       bool
-      Object::TryLoad(T& out) const
+      Object::try_load(T& out) const
       {
         typedef typename detail::SelectJSONType<T>::type SelfType;
         if (auto ptr = dynamic_cast<SelfType const*>(this))

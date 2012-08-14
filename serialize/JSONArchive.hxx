@@ -105,7 +105,7 @@ namespace elle { namespace serialize {
 
       template<typename T> _DictStream& operator >>(NamedValue<T> const& pair)
       {
-        this->Load(_dict[pair.name], pair.value);
+        this->load(_dict[pair.name], pair.value);
         return *this;
       }
 
@@ -116,7 +116,7 @@ namespace elle { namespace serialize {
 
       template<typename T> _DictStream& operator >>(NamedValue<T>&& pair)
       {
-        this->Load(_dict[pair.name], pair.value);
+        this->load(_dict[pair.name], pair.value);
         return *this;
       }
 
@@ -127,14 +127,14 @@ namespace elle { namespace serialize {
 
       template<typename T> inline typename std::enable_if<
           json::detail::ObjectCanLoad<T>::value
-      >::type Load(json::Object const& obj, T& value)
+      >::type load(json::Object const& obj, T& value)
         {
-          obj.Load(value);
+          obj.load(value);
         }
 
       template<typename T> inline typename std::enable_if<
           !json::detail::ObjectCanLoad<T>::value
-      >::type Load(json::Object const& obj, T& value)
+      >::type load(json::Object const& obj, T& value)
         {
           json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);
           if (dict == nullptr)

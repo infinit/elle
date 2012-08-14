@@ -1,7 +1,5 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hxx"
-
 #include "String.hh"
 
 using namespace elle::format::json;
