@@ -78,7 +78,7 @@ namespace elle
           template <typename T>
           static inline
           typename std::enable_if<
-              detail::IsArray<T>::value
+              detail::IsArray<T>::value && !detail::IsString<T>::value
             , std::unique_ptr<Array>
           >::type
           construct(T const& value)

@@ -199,14 +199,14 @@ namespace elle
   }
 } // !namespace elle::format::json::detail
 
-# include "Float.hh"
-# include "String.hh"
-# include "Integer.hh"
-# include "Bool.hh"
-# include "Null.hh"
-# include "Dictionary.hh"
-# include "Null.hh"
-# include "Array.hh"
+//# include "Float.hh"
+//# include "String.hh"
+//# include "Integer.hh"
+//# include "Bool.hh"
+//# include "Null.hh"
+//# include "Dictionary.hh"
+//# include "Null.hh"
+//# include "Array.hh"
 
 namespace elle
 {
@@ -250,6 +250,6 @@ namespace elle
   }
 } // !namespace elle::format::json::detail
 
-# include "Object.hxx"
+//# include "Object.hxx"
 
 #endif /* ! _DETAIL_HH */

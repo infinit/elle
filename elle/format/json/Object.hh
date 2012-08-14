@@ -119,4 +119,6 @@ namespace elle
   }
 }
 
+# include "Object.hxx"
+
 #endif /* ! OBJECT_HH */

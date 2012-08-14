@@ -5,8 +5,8 @@
 #include <vector>
 #include <list>
 
-#include <elle/format/json/Dictionary.hxx>
-#include <elle/format/json/Array.hxx>
+#include <elle/format/json/Dictionary.hh>
+#include <elle/format/json/Array.hh>
 
 namespace json = elle::format::json;
 
