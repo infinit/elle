@@ -3,6 +3,7 @@
 #include <elle/serialize/JSONArchive.hh>
 
 #include "Array.hh"
+#include "Null.hh"
 
 namespace elle
 {
