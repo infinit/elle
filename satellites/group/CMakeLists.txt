@@ -1,7 +1,11 @@
-PROJECT(group CXX)
+project(group CXX)
 
-ADD_EXECUTABLE(8group
+add_executable(8group
   Group.cc
 )
 
-TARGET_LINK_LIBRARIES(8group infinit elle lune etoile agent hole ${Boost_LIBRARIES})
+target_link_libraries(
+    8group
+    infinit lune etoile hole
+    ${Boost_LIBRARIES}
+)

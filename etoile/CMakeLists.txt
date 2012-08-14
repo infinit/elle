@@ -1,6 +1,6 @@
-PROJECT(Etoile CXX)
+project(Etoile CXX)
 
-ADD_LIBRARY(etoile
+add_library(etoile
   path/Path.cc
   path/Route.cc
   path/Chemin.cc
@@ -58,4 +58,4 @@ ADD_LIBRARY(etoile
   Etoile.cc
 )
 
-TARGET_LINK_LIBRARIES(etoile nucleus lune agent)
+target_link_libraries(etoile nucleus lune agent)
