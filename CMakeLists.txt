@@ -84,14 +84,15 @@ add_library(elle
   format/ini/Section.cc
   format/ini/File.cc
 
-  format/json/Null.cc
-  format/json/Bool.cc
-  format/json/Float.cc
-  format/json/Parser.cc
-  format/json/Dictionary.cc
   format/json/Array.cc
-  format/json/Object.cc
+  format/json/Bool.cc
+  format/json/Dictionary.cc
+  format/json/Factory.cc
+  format/json/Float.cc
   format/json/Integer.cc
+  format/json/Null.cc
+  format/json/Object.cc
+  format/json/Parser.cc
   format/json/String.cc
 
   serialize/ArchiveMode.cc

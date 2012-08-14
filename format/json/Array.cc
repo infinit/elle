@@ -15,6 +15,10 @@ namespace elle
         _value{}
       {}
 
+      Array::Array(std::vector<Object*>&& value):
+        _value{value}
+      {}
+
       Array::~Array()
       {
         for (auto it = _value.begin(), end = _value.end(); it != end; ++it)

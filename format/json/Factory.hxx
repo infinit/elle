@@ -22,7 +22,7 @@ namespace elle
           >::type
           construct(T const&)
           {
-            return std::unique_ptr<Null>(new Null);
+            return Factory::construct_null();
           }
 
           // Bool
@@ -34,7 +34,7 @@ namespace elle
           >::type
           construct(T value)
           {
-            return std::unique_ptr<Bool>(new Bool(value));
+            return Factory::construct_bool(value);
           }
 
           // Integer
@@ -47,7 +47,7 @@ namespace elle
           >::type
           construct(T value)
           {
-            return std::unique_ptr<Integer>(new Integer(value));
+            return Factory::construct_integer(value);
           }
 
           // Float
@@ -59,7 +59,7 @@ namespace elle
           >::type
           construct(T value)
           {
-            return std::unique_ptr<Float>(new Float(value));
+            return Factory::construct_float(value);
           }
 
           // String
@@ -71,7 +71,7 @@ namespace elle
           >::type
           construct(T const& value)
           {
-            return std::unique_ptr<String>(new String(value));
+            return Factory::construct_string(value);
           }
 
           // Array
@@ -83,7 +83,10 @@ namespace elle
           >::type
           construct(T const& value)
           {
-            return std::unique_ptr<Array>(new Array(value));
+            internal::Array objects;
+            for (auto const& element : value)
+              objects.push_back(Factory::construct(element).release());
+            return Factory::construct_array(std::move(objects));
           }
 
           // Dictionary
@@ -95,7 +98,13 @@ namespace elle
           >::type
           construct(T const& value)
           {
-            return std::unique_ptr<Dictionary>(new Dictionary(value));
+            internal::Dictionary objects;
+            for (auto const& pair : value)
+              objects.insert(internal::Dictionary::value_type{
+                  pair.first,
+                  Factory::construct(pair.second).release()
+              });
+            return Factory::construct_dictionary(std::move(objects));
           }
 
           // A not null object

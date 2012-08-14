@@ -2,10 +2,10 @@
 # define ELLE_FORMAT_JSON_ARRAY_HH
 
 # include <cassert>
-# include <vector>
 # include <list>
 
 # include "Object.hh"
+# include "_internal.hh"
 
 namespace elle
 {
@@ -20,12 +20,13 @@ namespace elle
         public Object
       {
       private:
-        std::vector<Object*> _value;
+        internal::Array _value;
 
       public:
         Array();
         template <typename Container>
         Array(Container const& container);
+        Array(internal::Array&& value);
         ~Array();
 
       public:

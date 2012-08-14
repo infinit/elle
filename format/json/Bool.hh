@@ -3,16 +3,22 @@
 
 # include "Object.hh"
 # include "_detail.hh"
+# include "_internal.hh"
 
-namespace elle { namespace format { namespace json {
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
-    typedef detail::BasicObject<bool> Bool;
+      typedef detail::BasicObject<internal::Bool> Bool;
 
-    extern Bool const true_;
-    extern Bool const false_;
+      extern Bool const true_;
+      extern Bool const false_;
 
-}}} // !namespace elle::format::json
+    }
+  }
+} // !namespace elle::format::json
 
 #endif /* ! BOOL_HH */
-
-
