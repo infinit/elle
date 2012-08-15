@@ -18,5 +18,9 @@
     return fuseInstalled;
 }
 
+- (void)quit
+{
+    kill(getpid(), SIGTERM);
+}
 
 @end

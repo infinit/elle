@@ -58,7 +58,7 @@ generate_network_descriptor(elle::String const& id,
   if (address.Restore(root_address) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore root address");
 
-  if (descriptor.Create(id, name, model, address,
+  if (descriptor.Create(id, name, model, address, nucleus::proton::Address::Null,
                         lune::Descriptor::History,
                         lune::Descriptor::Extent,
                         lune::Descriptor::Contention,

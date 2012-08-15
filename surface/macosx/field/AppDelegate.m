@@ -23,8 +23,10 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize animTimer;
 @synthesize isPending;
 @synthesize browserWindowController;
+
 - (void)dealloc
 {
+    [self stop8Watchdog];
     [super dealloc];
 }
 
@@ -73,7 +75,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)setDefaultStatusIcon {
     if (defaultIcon == nil) {
-        defaultIcon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active", currentFrame]];
+        defaultIcon = [NSImage imageNamed:@"19px-active"];
     }
     [defaultIcon setTemplate:YES];
     [statusItem setImage:defaultIcon];
@@ -97,7 +99,16 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     pref=[NSUserDefaults standardUserDefaults];
     NSString* email = [pref objectForKey:@"Email"];
     NSString* password = [pref objectForKey:@"Password"];
+    NSString* machineName = [pref objectForKey:@"ComputerName"];
     BOOL rememberMe = [[pref objectForKey:@"RememberMe"] boolValue];
+    
+    if (email == nil || password == nil || machineName == nil) {
+        [self loginResult:[NSNumber numberWithInt:1]];
+        return;
+    } else if ([email length] * [password length] * [machineName length] == 0 ) {
+        [self loginResult:[NSNumber numberWithInt:1]];
+        return;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     
@@ -105,6 +116,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         [self addPending];
         [[OOPhone getInstance] loginWithEmail:email 
                                      password:password
+                                  machineName:machineName
                               performSelector:@selector(loginResult:) 
                                     forObject:self];
     } else {
@@ -144,7 +156,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [self addPending];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(updateProgessChangedNotification:) 
-                                                 name:OOUpdateProgessChangedNotification 
+                                                 name:OOUpdateProgessChangedNotification
                                                object:nil];
     [[OOPhone getInstance] update];
 }
@@ -191,14 +203,15 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 {
     //get the image for the current frame
     currentFrame = (++currentFrame % 18) + 1;
-    NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%d",currentFrame]];
+    NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%ld",currentFrame]];
     [image setTemplate:YES];
     [statusItem setImage:image];
 }
 
 - (IBAction)openInfinitNeworks:(id)sender
 {
-    [[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
+    [[browserWindowController window] makeKeyAndOrderFront:self];
+    //[[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
 }
 
 - (IBAction)openPreferenceWindow:(id)sender

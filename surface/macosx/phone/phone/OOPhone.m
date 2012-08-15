@@ -33,6 +33,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 - (id)init {
     if (self = [super init]) {
         self._gap_State = gap_new();
+        gap_enable_debug(self._gap_State);
     }
     return self;
 }
@@ -51,15 +52,17 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 }
 
 - (void)loginWithEmail:(NSString*)arg1 
-              password:(NSString*)arg2 
-       performSelector:(SEL)arg3 
-             forObject:(id)arg4 {
+              password:(NSString*)arg2
+           machineName:(NSString*)arg3
+       performSelector:(SEL)arg4
+             forObject:(id)arg5 {
     [self addOperationWithBlock:^(void) {
+        gap_logout(self._gap_State);
         gap_Status response =  gap_login(self._gap_State,
                                          [arg1 cStringUsingEncoding:NSASCIIStringEncoding],
                                          [arg2 cStringUsingEncoding:NSASCIIStringEncoding]);
-        
-        [arg4 performSelectorOnMainThread:arg3 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
+        [self registerDeviceWithDeviceName:arg3];
+        [arg5 performSelectorOnMainThread:arg4 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
 }
 
@@ -87,8 +90,15 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
                                            [arg3 cStringUsingEncoding:NSASCIIStringEncoding],
                                            [arg4 cStringUsingEncoding:NSASCIIStringEncoding],
                                            [arg5 cStringUsingEncoding:NSASCIIStringEncoding]);
+        [self registerDeviceWithDeviceName:arg4];
         [arg7 performSelectorOnMainThread:arg6 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
+}
+
+- (void)registerDeviceWithDeviceName:(NSString*)arg1 {
+    if (gap_device_status(self._gap_State) != gap_ok) {
+        gap_set_device_name(self._gap_State, [arg1 cStringUsingEncoding:NSASCIIStringEncoding]);
+    }
 }
 
 - (void)createNetworkWithName:(NSString *)arg1 {
