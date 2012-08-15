@@ -41,6 +41,7 @@ namespace elle
         }
         return result;
       }
+      // XXX should be factorized.
       template <typename T>
       Array::operator std::list<T>() const
       {
@@ -63,6 +64,7 @@ namespace elle
       {
         return _value.size();
       }
+
     }
   }
 }

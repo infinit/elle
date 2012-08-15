@@ -1,7 +1,5 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hh"
-
 #include "Bool.hh"
 
 namespace elle

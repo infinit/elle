@@ -18,5 +18,4 @@ namespace elle
   }
 } // !namespace elle::format::json
 
-
 #endif /* ! JSON_INT_HH */

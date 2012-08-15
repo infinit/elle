@@ -127,39 +127,42 @@ namespace surface
     {
       QLocalSocket conn;
       conn.connectToServer(common::watchdog::server_name().c_str());
-      if (conn.waitForConnected(2000))
-        {
-          json::Dictionary req;
-          req["_id"] = this->_watchdog_id();
-          req["command"] = cmd;
-          if (kwargs != nullptr)
-            req.update(*kwargs);
-          this->log.debug("Send watchdog command:", req.repr());
-          conn.write(req.repr().c_str());
-          conn.write("\n");
-          if (!conn.waitForBytesWritten(2000))
-              throw Exception(gap_internal_error,
-                              "Couldn't send the command '" + cmd + "'");
-          this->log.debug("Command sent");
+      if (!conn.waitForConnected(2000))
+        throw Exception{
+            gap_internal_error,
+            "Couldn't connect to the watchdog"
+        };
 
-          if (response != nullptr)
-            {
-              if (!conn.waitForReadyRead(2000))
-                throw Exception(gap_internal_error,
-                              "Couldn't read response of '" + cmd + "' command");
-              QByteArray response_data = conn.readLine();
-              std::stringstream ss{
-                  std::string{
-                      response_data.data(),
-                      static_cast<size_t>(response_data.size()),
-                  },
-              };
-              auto ptr = json::Parser<>{}.Parse(ss);
-              response->update(dynamic_cast<json::Dictionary const&>(*ptr));
-            }
-        }
-      else
-        throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
+      json::Dictionary req;
+      req["_id"] = this->_watchdog_id();
+      req["command"] = cmd;
+      if (kwargs != nullptr)
+        req.update(*kwargs);
+      this->log.debug("Send watchdog command:", req.repr());
+      conn.write(req.repr().c_str());
+      conn.write("\n");
+      if (!conn.waitForBytesWritten(2000))
+          throw Exception(gap_internal_error,
+                          "Couldn't send the command '" + cmd + "'");
+      this->log.debug("Command sent");
+
+      if (response == nullptr)
+        return;
+
+      if (!conn.waitForReadyRead(2000))
+        throw Exception{
+            gap_internal_error,
+            "Couldn't read response of '" + cmd + "' command"
+        };
+      QByteArray response_data = conn.readLine();
+      std::stringstream ss{
+          std::string{
+              response_data.data(),
+              static_cast<size_t>(response_data.size()),
+          },
+      };
+      auto ptr = json::parse(ss);
+      response->update(ptr->as_dictionary());
     }
 
     User const& State::user(std::string const& id)
