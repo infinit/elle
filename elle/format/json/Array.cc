@@ -1,7 +1,5 @@
 #include <ostream>
 
-#include <elle/serialize/JSONArchive.hh>
-
 #include "Array.hh"
 #include "Null.hh"
 

@@ -1,7 +1,6 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hxx"
-
+#include "Array.hh"
 #include "Dictionary.hh"
 
 namespace elle
