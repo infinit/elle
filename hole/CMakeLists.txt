@@ -1,4 +1,3 @@
-
 add_definitions(-fPIC)
 
 add_library(hole
@@ -35,6 +34,7 @@ add_library(hole
   Holeable.cc
   Label.cc
   Model.cc
+  Openness.cc
 )
 
 target_link_libraries(hole

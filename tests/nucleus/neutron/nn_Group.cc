@@ -66,7 +66,9 @@ void test_group()
 
   ELLE_LOG_TRACE("Upgrade the group")
     {
-      group.upgrade(ensemble_address, pass.K, pass.k);
+      nucleus::neutron::Token manager_token(group.manager_K(), pass.k);
+
+      group.upgrade(ensemble_address, pass.K, manager_token);
 
       assert(group.state == nucleus::proton::StateDirty);
     }

@@ -128,6 +128,10 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
+              // The group size equals one i.e the group manager in this
+              // case since no ensemble is referenced.
+              context.group->size(1);
+
               context.group->downgrade();
             }
           catch (...)
@@ -163,31 +167,26 @@ namespace etoile
                  we decided to use the same pass throughout the group's
                  history, which is less secure, but enough for now]
           // generate the new pass.
-          if (pass.Generate() == elle::Status::Error)
+          if (pass.Generate() == elle::Status::Error) // XXX[use specific length]
             escape("unable to generate the pass");
           */
-          /* XXX[instead we must make sure to generate a key pair when
-                 necessary i.e for the first version of the group. otherwise,
-                 create a pass, based on the current public and private pass.] */
+          /* XXX[instead the Group has been modified such that a keypair has
+                 been generation at the construction. thus the group already
+                 has a public pass while the manager already has a valid token.
+                 these can be used to retrieve the previous pass and emulate
+                 the process of updating the group with the same public/private
+                 pass, as show below.] */
           // XXX
           {
-            if (context.group->version == 1)
-              {
-                if (pass.Generate() == elle::Status::Error)
-                  escape("unable to generate the pass");
-              }
-            else
-              {
-                nucleus::neutron::Token token(context.group->manager_token());
-                elle::cryptography::PrivateKey k;
+            nucleus::neutron::Token token(context.group->manager_token());
+            elle::cryptography::PrivateKey k;
 
-                if (token.Extract(agent::Agent::Identity.pair.k,
-                                  k) == elle::Status::Error)
-                  escape("unable to extract the token");
+            if (token.Extract(agent::Agent::Identity.pair.k,
+                              k) == elle::Status::Error)
+              escape("unable to extract the token");
 
-                pass.K = context.group->pass();
-                pass.k = k;
-              }
+            pass.K = context.group->pass();
+            pass.k = k;
           }
           // XXX
 
@@ -198,11 +197,6 @@ namespace etoile
           try
             {
               context.ensemble->update(pass.k);
-
-              // The group size equals the number of fellows in the
-              // ensemble plus the group manager. This is why one is
-              // added to the size.
-              context.group->size(context.ensemble->size() + 1);
             }
           catch (...)
             {
@@ -225,16 +219,22 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              context.group->upgrade(address, pass.K, pass.k);
+              // The group size equals the number of fellows in the
+              // ensemble plus the group manager. This is why one is
+              // added to the size.
+              context.group->size(context.ensemble->size() + 1);
+
+              // Regenerate the group manager's token.
+              nucleus::neutron::Token manager_token(
+                context.group->manager_subject().user(),
+                pass.k);
+
+              context.group->upgrade(address, pass.K, manager_token);
             }
           catch (...)
             {
-              escape("unable to update the object");
+              escape("unable to upgrade the group");
             }
-
-          // XXX
-          context.ensemble->Dump();
-          context.group->Dump();
         }
 
       return elle::Status::Ok;

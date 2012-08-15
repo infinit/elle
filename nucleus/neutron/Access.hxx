@@ -17,7 +17,8 @@ namespace nucleus
     template <typename T>
     elle::Status        Access::Update(const Subject&           subject,
                                        const Permissions&       permissions,
-                                       const T&                 stuff)
+                                       const T&                 stuff,
+                                       elle::cryptography::PublicKey const& K)
     {
       Record* record;
 
@@ -28,7 +29,8 @@ namespace nucleus
       // update the record with the new permissions and stuff.
       if (record->Update(subject,
                          permissions,
-                         stuff) == elle::Status::Error)
+                         stuff,
+                         K) == elle::Status::Error)
         escape("unable to update the record");
 
       // set the block as dirty.

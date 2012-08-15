@@ -43,12 +43,17 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               elle::cryptography::SecretKey const&);
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               const Token&);
+      /// XXX
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             elle::cryptography::SecretKey const& secret,
+             elle::cryptography::PublicKey const& K);
+      /// XXX
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
 
       //
       // interfaces
@@ -70,9 +75,9 @@ namespace nucleus
       //
       // attributes
       //
-      Subject           subject;
-      Permissions       permissions;
-      Token             token;
+      Subject subject;
+      Permissions permissions;
+      Token token;
     };
 
   }

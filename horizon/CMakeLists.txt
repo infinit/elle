@@ -2,6 +2,7 @@ PROJECT(Horizon CXX)
 
 ADD_LIBRARY(horizon
   Horizon.cc
+  Policy.cc
 )
 
 IF(INFINIT_LINUX)

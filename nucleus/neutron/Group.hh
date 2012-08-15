@@ -103,7 +103,7 @@ namespace nucleus
       void
       upgrade(proton::Address const& ensemble,
               elle::cryptography::PublicKey const& pass_K,
-              elle::cryptography::PrivateKey const& pass_k);
+              Token const& manager_token);
       /// Indicates that the group no longer references an Ensemble
       /// block. The pass is therefore no longer used.
       void
@@ -171,16 +171,14 @@ namespace nucleus
       //
     private:
       elle::String _description;
-      /// The public pass is a pointer because, should the Group not reference
-      /// an Ensemble block, the pass becomes useless.
-      elle::cryptography::PublicKey* _pass;
+      elle::cryptography::PublicKey _pass;
       Size _size;
       elle::utility::Time _modification_stamp;
       proton::Address _ensemble;
 
       struct
       {
-        Token* token;
+        Token token;
         Fellow* fellow;
       } _manager;
 

@@ -84,11 +84,11 @@ namespace nucleus
       elle::Status      Create(const Genre,
                                elle::cryptography::PublicKey const&);
 
-      elle::Status      Update(const Author&,
-                               const proton::Address&,
-                               const Size&,
-                               const proton::Address&,
-                               const Token&);
+      elle::Status      Update(const Author& author,
+                               const proton::Address& contents,
+                               const Size& size,
+                               const proton::Address& access,
+                               const Token& owner_token);
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
