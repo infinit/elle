@@ -57,9 +57,7 @@ namespace elle
         auto res = std::unique_ptr<Array>(new Array);
         for (auto it = _value.begin(), end = _value.end(); it != end; ++it)
           {
-            res->_value.push_back(
-              (*it)->clone().release()
-            );
+            res->_value.push_back((*it)->clone().release());
           }
         return std::unique_ptr<Object>(res.release());
       }
@@ -80,6 +78,7 @@ namespace elle
             return false;
         return true;
       }
+
     }
   }
 }
