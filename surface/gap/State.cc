@@ -154,8 +154,8 @@ namespace surface
                       static_cast<size_t>(response_data.size()),
                   },
               };
-              auto ptr = json::Parser<>{}.Parse(ss);
-              response->update(dynamic_cast<json::Dictionary const&>(*ptr));
+              auto ptr = json::parse(ss);
+              response->update(ptr->as_dictionary());
             }
         }
       else

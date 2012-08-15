@@ -10,9 +10,7 @@
 # include <elle/format/json/Dictionary.hh>
 # include <elle/format/json/Null.hh>
 # include <elle/format/json/Array.hh>
-# include <elle/format/json/Dictionary.hxx>
 # include <elle/format/json/Object.hh>
-# include <elle/format/json/Object.hxx>
 
 #endif
 
