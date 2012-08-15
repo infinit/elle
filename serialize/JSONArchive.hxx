@@ -157,11 +157,15 @@ namespace elle { namespace serialize {
     template<typename T> void InputJSONArchive::Load(T& val)
     {
       auto parser = json::Parser<std::string>();
-      auto obj = parser.Parse(this->stream());
+      auto obj = parser.parse(this->stream());
       assert(obj.get() != nullptr);
-      json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(obj.get());
+      json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(
+          obj.get()
+      );
       if (dict == nullptr)
-        throw std::runtime_error("Cannot convert '"+ obj->repr() +"' to a dictionary");
+        throw std::runtime_error{
+          "Cannot convert '"+ obj->repr() +"' to a dictionary"
+        };
       _DictStream dstream(*this, *dict);
 
       unsigned int version = 0;

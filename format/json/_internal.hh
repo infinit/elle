@@ -13,6 +13,9 @@ namespace elle
   {
     namespace json
     {
+
+      class Object;
+
       namespace internal
       {
         ///

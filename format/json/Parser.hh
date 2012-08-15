@@ -6,63 +6,84 @@
 
 # include "Object.hh"
 
-namespace elle { namespace format { namespace json {
-
-    enum class ParserOption : int
+namespace elle
+{
+  namespace format
+  {
+    namespace json
     {
-      None = 0x00,
-    };
 
-    template<typename StringType_ = std::string>
-    class Parser
-    {
-    private:
-      typedef StringType_                       StringType;
-      typedef typename StringType::value_type   CharType;
-      typedef std::basic_istream<CharType>      StreamType;
-      typedef std::unique_ptr<json::Object>     ObjectPtr;
-    public:
-      class Error : public std::runtime_error
+      /// Parser behavior may be influenced with these flags.
+      enum class ParserOption : int
       {
-      public:
-        Error(StreamType& in, std::string const& error) :
-          std::runtime_error(error + ": " + _getString(in))
-        {}
-      private:
-        static std::string _getString(StreamType& in);
+        None = 0x00,
       };
 
+      /// Convenient method to construct a json object from stream.
+      ///
+      /// It will construct a parser with the given options and parse the
+      /// stream.
+      /// @throws Parser::Error.
+      template<typename CharType = std::string::value_type>
+      std::unique_ptr<Object>
+      parse(std::basic_istream<CharType>& in,
+            ParserOption flags = ParserOption::None);
 
-    private:
-      static StringType const _whitespaces;
-      static StringType const _trueString;
-      static StringType const _falseString;
-      static StringType const _nullString;
+      template <typename StringType_ = std::string>
+      class Parser
+      {
+      private:
+        typedef StringType_                       StringType;
+        typedef typename StringType::value_type   CharType;
+        typedef std::basic_istream<CharType>      StreamType;
+        typedef std::unique_ptr<json::Object>     ObjectPtr;
+      public:
+        class Error;
 
-    private:
-      int _options;
+      private:
+        static StringType const _whitespaces;
+        static StringType const _trueString;
+        static StringType const _falseString;
+        static StringType const _nullString;
 
-    public:
-      Parser(int options = 0) : _options(options) {}
-      ObjectPtr Parse(StreamType& input);
+      private:
+        ParserOption _options;
 
-    private:
-      bool _ReadJSONValue(StreamType& in,   ObjectPtr& out);
-      bool _ReadJSONBool(StreamType& in,    ObjectPtr& out);
-      bool _ReadJSONNull(StreamType& in,    ObjectPtr& out);
-      bool _ReadJSONInt(StreamType& in,     ObjectPtr& out);
-      bool _ReadJSONFloat(StreamType& in,   ObjectPtr& out);
-      bool _ReadJSONString(StreamType& in,  ObjectPtr& out);
-      bool _ReadJSONArray(StreamType& in,   ObjectPtr& out);
-      bool _ReadJSONDict(StreamType& in,    ObjectPtr& out);
+      public:
+        Parser(ParserOption options = ParserOption::None):
+          _options(options)
+        {}
+        ObjectPtr
+        parse(StreamType& input);
 
-      bool _ReadChar(StreamType& in, CharType val);
-      bool _ReadString(StreamType& in, StringType const& val);
-      void _Skip(StreamType& in, StringType const& chars = _whitespaces);
-    };
+      private:
+        // XXX internal methods should be lower cased
+        bool _ReadJSONValue(StreamType& in,
+                            ObjectPtr& out);
+        bool _ReadJSONBool(StreamType& in,
+                           ObjectPtr& out);
+        bool _ReadJSONNull(StreamType& in,
+                           ObjectPtr& out);
+        bool _ReadJSONInt(StreamType& in,
+                          ObjectPtr& out);
+        bool _ReadJSONFloat(StreamType& in,
+                            ObjectPtr& out);
+        bool _ReadJSONString(StreamType& in,
+                             ObjectPtr& out);
+        bool _ReadJSONArray(StreamType& in,
+                            ObjectPtr& out);
+        bool _ReadJSONDict(StreamType& in,
+                           ObjectPtr& out);
+        bool _ReadChar(StreamType& in,
+                       CharType val);
+        bool _ReadString(StreamType& in,
+                         StringType const& val);
+        void _Skip(StreamType& in,
+                   StringType const& chars = _whitespaces);
+      };
 
-}}} // !namespace elle::format::json
+    }
+  }
+} // !namespace elle::format::json
 
 #endif /* ! PARSER_HH */
-
-
