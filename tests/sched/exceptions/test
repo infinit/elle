@@ -3,8 +3,6 @@
 import drake, drake.sched
 import traceback
 
-SCHED = drake.sched.Scheduler(1)
-
 class Beacon(Exception):
   pass
 
@@ -15,19 +13,21 @@ beacon_main_2 = False
 beacon_sub_1 = False
 beacon_sub_2 = False
 
+SCHED = drake.sched.Scheduler()
+
 def main():
   global beacon_main_1, beacon_main_2
   beacon_main_1 = True
-  drake.sched.coro_recurse((yield sub()))
+  sub()
   beacon_main_2 = True
 
 def sub():
   global beacon_sub_1, beacon_sub_2
   beacon_sub_1 = True
-  yield
+  drake.sched.coro_yield()
   beacon_sub_2 = True
 
-drake.sched.Coroutine(main(), "main", SCHED)
+drake.sched.Coroutine(main, "main", SCHED)
 SCHED.run()
 assert beacon_main_1
 assert beacon_main_2
@@ -45,7 +45,7 @@ def main():
   global beacon_main_1, beacon_main_2
   try:
     beacon_main_1 = True
-    drake.sched.coro_recurse((yield sub()))
+    sub()
     assert False
   finally:
     beacon_main_2 = True
@@ -53,13 +53,13 @@ def main():
 def sub():
   global beacon_sub_1, beacon_sub_2
   beacon_sub_1 = True
-  yield
+  drake.sched.coro_yield()
   beacon_sub_2 = True
   raise Beacon("test.")
-  yield
+  drake.sched.coro_yield()
   assert False
 
-drake.sched.Coroutine(main(), "main", SCHED)
+drake.sched.Coroutine(main, "main", SCHED)
 try:
   SCHED.run()
 except Beacon:
@@ -83,17 +83,17 @@ beacon_sub_2 = False
 def main():
   global beacon_main_1, beacon_main_2
   beacon_main_1 = True
-  yield drake.sched.Coroutine(sub(), "sub", SCHED)
+  sub()
   beacon_main_2 = True
 
 def sub():
   global beacon_sub_1, beacon_sub_2
   beacon_sub_1 = True
-  yield
+  drake.sched.coro_yield()
   beacon_sub_2 = True
   assert not beacon_main_2
 
-drake.sched.Coroutine(main(), "main", SCHED)
+drake.sched.Coroutine(main, "main", SCHED)
 SCHED.run()
 
 assert beacon_main_1
@@ -113,8 +113,9 @@ def main():
   global beacon_main_1, beacon_main_2
   try:
     beacon_main_1 = True
-    drake.sched.coro_recurse((yield drake.sched.Coroutine(sub(), "sub",
-                                                          SCHED, parent = SCHED.coroutine())))
+    c = drake.sched.Coroutine(sub, "sub", SCHED,
+                              parent = drake.sched.Coroutine.current)
+    drake.sched.coro_wait(c)
     assert False
   finally:
     beacon_main_2 = True
@@ -122,12 +123,12 @@ def main():
 def sub():
   global beacon_sub_1, beacon_sub_2
   beacon_sub_1 = True
-  yield
+  drake.sched.coro_yield()
   beacon_sub_2 = True
   assert not beacon_main_2
   raise Beacon("test.")
 
-drake.sched.Coroutine(main(), "main", SCHED)
+drake.sched.Coroutine(main, "main", SCHED)
 try:
   SCHED.run()
 except Beacon:

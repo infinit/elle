@@ -38,7 +38,6 @@ sub2 = drake.Rule('sub2', [node])
 
 root = drake.Rule('root', [sub1, sub2])
 
-sched = drake.sched.Scheduler(1)
-drake._SCHEDULER = sched
-drake.sched.Coroutine(root.build_coro(), 'main', sched)
+sched = drake.sched.Scheduler()
+drake.sched.Coroutine(root.build, 'main', sched)
 sched.run()

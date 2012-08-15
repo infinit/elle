@@ -34,8 +34,8 @@ class DynBuilder(drake.Builder):
 
   def dependencies(self):
 
-    yield
     global deps
+    import sys
     deps = True
     if add:
       self.src = DynNode('src')
@@ -95,7 +95,5 @@ def test():
   add = False
   dst.build()
 
-test()
-drake._SCHEDULER = drake.sched.Scheduler(2)
 test()
 

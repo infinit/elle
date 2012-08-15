@@ -16,12 +16,14 @@ import atexit
 import stat
 from drake.sched import Coroutine, Scheduler
 
+def _scheduled():
+    return Coroutine.current and Coroutine.current._Coroutine__scheduler
+
 
 class Profile:
 
     def __init__(self, name):
         self.__calls = 0
-        self.__lock  = threading.Semaphore(1)
         self.__name = name
         self.__time = 0
         atexit.register(self.show)
@@ -46,10 +48,9 @@ class ProfileInstance:
         self.__time = time.time()
 
     def __exit__(self, *args):
-        with self.__parent._Profile__lock:
-            self.__parent._Profile__calls += 1
-            t = time.time() - self.__time
-            self.__parent._Profile__time  += t
+        self.__parent._Profile__calls += 1
+        t = time.time() - self.__time
+        self.__parent._Profile__time  += t
 
 
 class Exception(Exception):
@@ -720,23 +721,20 @@ class BaseNode(object, metaclass = _BaseNodeType):
         Take necessary action to ensure this node is up to date. That
         is, roughly, run this node runner.
         """
-
-        assert not _scheduler().running()
-        c = Coroutine(self.build_coro(), str(self), _scheduler())
-        _scheduler().run()
-
-    def build_coro(self):
-        """Coroutine to build this node."""
-        debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-        with debug.indentation():
-            if self.builder is None:
-                self.polish()
-                return
-            sched.coro_recurse((yield self.builder.run()))
-        self.polish()
+        if not _scheduled():
+            Coroutine(self.build, str(self), _scheduler())
+            _scheduler().run()
+        else:
+            debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+            with debug.indentation():
+                if self.builder is None:
+                    self.polish()
+                    return
+                self.builder.run()
+            self.polish()
 
     def polish(self):
-        """A hook called with a node has been built.
+        """A hook called when a node has been built.
 
         Called when a node has been built, that is, when all its
         dependencies have been built and the builder run. Default
@@ -841,8 +839,8 @@ class Node(BaseNode):
         """
         return not self.path().exists()
 
-    def build_coro(self):
-        """Coroutine that builds this node.
+    def build(self):
+        """Builds this node.
 
         Building a Node raises an error if the associated file does
         not exist and it has no builder.
@@ -873,15 +871,19 @@ class Node(BaseNode):
             ...
         drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
         """
-        debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-        with debug.indentation():
-            if self.builder is None:
-                if self.missing():
-                    raise NoBuilder(self)
-                self.polish()
-                return
-            sched.coro_recurse((yield self.builder.run()))
-        self.polish()
+        if not _scheduled():
+            Coroutine(self.build, str(self), _scheduler())
+            _scheduler().run()
+        else:
+            debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+            with debug.indentation():
+                if self.builder is None:
+                    if self.missing():
+                        raise NoBuilder(self)
+                    self.polish()
+                    return
+                self.builder.run()
+            self.polish()
 
     def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
@@ -974,7 +976,7 @@ def _can_skip_node(node):
         else:
             return True
     else:
-        return node.builder._Builder__built
+        return node.builder._Builder__executed
 
 class Builder:
 
@@ -1016,9 +1018,9 @@ class Builder:
         self._depfiles = {}
         self._depfile = DepFile(self, 'drake')
         self.__depfile_builder = DepFile(self, 'drake.Builder')
-        self.__built = False
-        self.__built_exception = None
-        self.__building_semaphore = None
+        self.__executed = False
+        self.__executed_exception = None
+        self.__executed_signal = None
         self.__dynsrc = {}
 
     def sources_dynamic(self):
@@ -1079,7 +1081,7 @@ class Builder:
         Reimplemented by subclasses. This implementation returns an
         empty list.
         """
-        yield
+        pass
 
 
     def depfile(self, name):
@@ -1099,191 +1101,181 @@ class Builder:
         """Return the node type with the given name."""
         return _BaseNodeTypeType.node_types[tname]
 
-    __built_semaphore = threading.Semaphore(1)
-
     def run(self):
         """Build sources recursively, check if our target are up to date, and executed if needed."""
         debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
 
-        # If we were already executed, just skip
-        blocker = None
-        with self.__built_semaphore:
-            if self.__built:
-                if self.__built_exception is not None:
-                    debug.debug('Already built in this run, with an exception.', debug.DEBUG_TRACE_PLUS)
-                    raise self.__built_exception
-                debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
-                return
-            elif _SCHEDULER.jobs() > 1 and self.__building_semaphore is None:
-                self.__building_semaphore = _SCHEDULER.coroutine()
+        if not self.__executed:
+            # If someone is already executing this builder, wait.
+            if self.__executed_signal is not None:
+                debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
+                sched.coro_wait(self.__executed_signal)
+            # Otherwise, build it ourselves
             else:
-                blocker = self.__building_semaphore
-        if blocker is not None:
-            debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
-            sched.coro_recurse((yield blocker))
+                self.__executed_signal = sched.Waitable()
+
+        # If we were already executed, just skip
+        if self.__executed:
+            if self.__executed_exception is not None:
+                debug.debug('Already built in this run, with an exception.', debug.DEBUG_TRACE_PLUS)
+                raise self.__executed_exception
+            debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
             return
 
-        # The list of static dependencies is now fixed
-        for path in self.__sources:
-            self._depfile.register(self.__sources[path])
+        try:
+            # The list of static dependencies is now fixed
+            for path in self.__sources:
+                self._depfile.register(self.__sources[path])
 
-        # See Whether we need to execute or not
-        execute = False
+            # See Whether we need to execute or not
+            execute = False
 
-        # Reload dynamic dependencies
-        if not execute:
-            for f in _OS.listdir(str(self.cachedir())):
-                if f in ['drake', 'drake.Builder', 'stdout']:
-                    continue
-                debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
-                depfile = self.depfile(f)
-                depfile.read()
-                handler = self._deps_handlers[f]
+            # Reload dynamic dependencies
+            if not execute:
+                for f in _OS.listdir(str(self.cachedir())):
+                    if f in ['drake', 'drake.Builder', 'stdout']:
+                        continue
+                    debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
+                    depfile = self.depfile(f)
+                    depfile.read()
+                    handler = self._deps_handlers[f]
 
-                with debug.indentation():
-                    for path in depfile.sha1s():
+                    with debug.indentation():
+                        for path in depfile.sha1s():
 
-                        if path in self.__sources or path in self.__dynsrc:
-                            debug.debug('File %s is already in our sources.' % path, debug.DEBUG_DEPS)
-                            continue
+                            if path in self.__sources or path in self.__dynsrc:
+                                debug.debug('File %s is already in our sources.' % path, debug.DEBUG_DEPS)
+                                continue
 
-                        if path in Node.nodes:
-                            node = Node.nodes[path]
-                        else:
-                            debug.debug('File %s is unknown, calling handler.' % path, debug.DEBUG_DEPS)
-                            node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
+                            if path in Node.nodes:
+                                node = Node.nodes[path]
+                            else:
+                                debug.debug('File %s is unknown, calling handler.' % path, debug.DEBUG_DEPS)
+                                node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
 
-                        debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
-                        self.add_dynsrc(f, node, None)
+                            debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
+                            self.add_dynsrc(f, node, None)
 
 
-        coroutines_static = []
-        coroutines_dynamic = []
+            coroutines_static = []
+            coroutines_dynamic = []
 
-        # Build static dependencies
-        debug.debug('Build static dependencies')
-        with debug.indentation():
-            for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
-                if _can_skip_node(node):
-                    continue
-                if _SCHEDULER.jobs() == 1:
-                    sched.coro_recurse((yield node.build_coro()))
-                else:
-                    coroutines_static.append(Coroutine(node.build_coro(), str(node), _scheduler()))
+            # Build static dependencies
+            debug.debug('Build static dependencies')
+            with debug.indentation():
+                for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
+                    if _can_skip_node(node):
+                        continue
+                    coroutines_static.append(
+                        Coroutine(node.build, str(node), _scheduler(),
+                                  sched.Coroutine.current))
 
-        # Build dynamic dependencies
-        debug.debug('Build dynamic dependencies')
-        with debug.indentation():
-            for path in self.__dynsrc:
-                try:
+            # Build dynamic dependencies
+            debug.debug('Build dynamic dependencies')
+            with debug.indentation():
+                for path in self.__dynsrc:
                     node = self.__dynsrc[path]
                     if _can_skip_node(node):
                         continue
-                    if _SCHEDULER.jobs() == 1:
-                        sched.coro_recurse((yield node.build_coro()))
-                    else:
-                        coroutines_dynamic.append(Coroutine(node.build_coro(), str(node),
-                                                            _scheduler(), parent = _scheduler().coroutine()))
-                except Exception as e:
-                    debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
-                    execute = True
+                    coroutines_dynamic.append(
+                        Coroutine(node.build, str(node), _scheduler(),
+                                  sched.Coroutine.current))
 
-        if _SCHEDULER.jobs() != 1:
             for coro in coroutines_static:
-                sched.coro_recurse((yield coro))
+                sched.coro_wait(coro)
 
-        if _SCHEDULER.jobs() != 1:
             for coro in coroutines_dynamic:
                 try:
-                    sched.coro_recurse((yield coro))
+                    sched.coro_wait(coro)
                 except Exception as e:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
-        # If any non-virtual target is missing, we must rebuild.
-        if not execute:
-            for dst in self.__targets:
-                if dst.missing():
-                    debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
-                    execute = True
-
-        # Load static dependencies
-        self._depfile.read()
-
-        # If a new dependency appeared, we must rebuild.
-        if not execute:
-            for p in self.__sources:
-                path = self.__sources[p].name()
-                if str(path) not in self._depfile.sha1s():
-                    debug.debug('Execution needed because a new dependency appeared: %s.' % path, debug.DEBUG_DEPS)
-                    execute = True
-                    break
-
-        # Check if we are up to date wrt to the builder itself
-        self.__builder_hash = self.hash()
-        depfile_builder = self.cachedir() / _DEPFILE_BUILDER
-        if not execute:
-            if self.__builder_hash is not None:
-                if depfile_builder.exists():
-                    with open(str(depfile_builder), 'r') as f:
-                        if self.__builder_hash != f.read():
-                            debug.debug('Execution needed because the hash for the builder is outdated.', debug.DEBUG_DEPS)
-                            execute = True
-                else:
-                    debug.debug('Execution needed because the hash for the builder is unkown.', debug.DEBUG_DEPS)
-                    execute = True
-
-        # Check if we are up to date wrt all dependencies
-        if not execute:
-            if not self._depfile.up_to_date():
-                execute = True
-            for f in self._depfiles:
-                if not self._depfiles[f].up_to_date():
-                    execute = True
-
-
-        if execute:
-            debug.debug('Executing builder %s' % self, debug.DEBUG_TRACE)
-
-            # Regenerate dynamic dependencies
-            self.__dynsrc = {}
-            self._depfiles = {}
-            debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
-            with debug.indentation():
-                sched.coro_recurse((yield self.dependencies()))
-
-            debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
-            with debug.indentation():
-                for node in self.__dynsrc.values():
-                    # FIXME: parallelize
-                    sched.coro_recurse((yield node.build_coro()))
-
-            if not self.execute():
-                with self.__built_semaphore:
-                    self.__built = True
-                    self.__built_exception = Exception('%s failed' % self)
-                    raise self.__built_exception
-
-            # Check every non-virtual target was built.
-            for dst in self.__targets:
-                if isinstance(dst, Node):
+            # If any non-virtual target is missing, we must rebuild.
+            if not execute:
+                for dst in self.__targets:
                     if dst.missing():
-                        raise Exception('%s wasn\'t created by %s' % (dst, self))
-                    dst._Node__hash = None
+                        debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
+                        execute = True
 
-            # Update depfiles
-            self._depfile.update()
-            if self.__builder_hash is None:
-                depfile_builder.remove()
+            # Load static dependencies
+            self._depfile.read()
+
+            # If a new dependency appeared, we must rebuild.
+            if not execute:
+                for p in self.__sources:
+                    path = self.__sources[p].name()
+                    if str(path) not in self._depfile.sha1s():
+                        debug.debug('Execution needed because a new dependency appeared: %s.' % path, debug.DEBUG_DEPS)
+                        execute = True
+                        break
+
+            # Check if we are up to date wrt to the builder itself
+            self.__builder_hash = self.hash()
+            depfile_builder = self.cachedir() / _DEPFILE_BUILDER
+            if not execute:
+                if self.__builder_hash is not None:
+                    if depfile_builder.exists():
+                        with open(str(depfile_builder), 'r') as f:
+                            if self.__builder_hash != f.read():
+                                debug.debug('Execution needed because the hash for the builder is outdated.', debug.DEBUG_DEPS)
+                                execute = True
+                    else:
+                        debug.debug('Execution needed because the hash for the builder is unkown.', debug.DEBUG_DEPS)
+                        execute = True
+
+            # Check if we are up to date wrt all dependencies
+            if not execute:
+                if not self._depfile.up_to_date():
+                    execute = True
+                for f in self._depfiles:
+                    if not self._depfiles[f].up_to_date():
+                        execute = True
+
+
+            if execute:
+                debug.debug('Executing builder %s' % self, debug.DEBUG_TRACE)
+
+                # Regenerate dynamic dependencies
+                self.__dynsrc = {}
+                self._depfiles = {}
+                debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
+                with debug.indentation():
+                    self.dependencies()
+
+                debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
+                with debug.indentation():
+                    for node in self.__dynsrc.values():
+                        # FIXME: parallelize
+                        node.build()
+
+                if not self.execute():
+                    self.__executed = True
+                    self.__executed_exception = Exception('%s failed' % self)
+                    raise self.__executed_exception
+
+                # Check every non-virtual target was built.
+                for dst in self.__targets:
+                    if isinstance(dst, Node):
+                        if dst.missing():
+                            raise Exception('%s wasn\'t created by %s' % (dst, self))
+                        dst._Node__hash = None
+
+                # Update depfiles
+                self._depfile.update()
+                if self.__builder_hash is None:
+                    depfile_builder.remove()
+                else:
+                    with open(str(depfile_builder), 'w') as f:
+                        print(self.__builder_hash, file = f, end = '')
+                for name in self._depfiles:
+                    self._depfiles[name].update()
+                self.__executed = True
             else:
-                with open(str(depfile_builder), 'w') as f:
-                    print(self.__builder_hash, file = f, end = '')
-            for name in self._depfiles:
-                self._depfiles[name].update()
-            self.__built = True
-        else:
-            self.__built = True
-            debug.debug('Everything is up to date.', debug.DEBUG_TRACE_PLUS)
+                self.__executed = True
+                debug.debug('Everything is up to date.', debug.DEBUG_TRACE_PLUS)
+        finally:
+            self.__executed_signal.signal()
 
 
     def execute(self):
@@ -1744,13 +1736,8 @@ def _register_commands():
             nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
         coroutines = []
         for node in nodes:
-            coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
-
-        if _scheduler().jobs() == 1:
-            for c in coroutines:
-                c.run()
-        else:
-            _scheduler().run()
+            coroutines.append(Coroutine(node.build, str(node), _scheduler()))
+        _scheduler().run()
     command_add('build', build)
 
     def clean(nodes):
@@ -1778,18 +1765,16 @@ def _register_commands():
 _register_commands()
 
 _JOBS = 1
-_SCHEDULER = None
 
 def _scheduler():
-    global _JOBS, _SCHEDULER
-    if _SCHEDULER is None:
-        _SCHEDULER = Scheduler(_JOBS)
-        debug._SCHEDULER = _SCHEDULER
-    return _SCHEDULER
+    res = Scheduler.scheduler()
+    if res is None:
+        return Scheduler()
+    else:
+        return res
 
 def _jobs_set(n):
-    global _JOBS, _SCHEDULER
-    assert _SCHEDULER is None
+    global _JOBS
     _JOBS = int(n)
 
 _ARG_DOC_RE = re.compile('\\s*(\\w+)\\s*--\\s*(.*)')
