@@ -62,7 +62,25 @@ namespace elle
       {
         for (auto const& pair: other._map)
           {
-            this->_map[pair.first] = pair.second->clone().release();
+            auto it = _map.find(pair.first);
+            if (it == _map.end())
+              {
+                internal::Dictionary::value_type value{
+                    pair.first,
+                    pair.second->clone().release()
+                };
+                if (_map.insert(value).second == false)
+                  {
+                    delete value.second;
+                    throw std::bad_alloc();
+                  }
+              }
+            else
+              {
+                Object* clone = pair.second->clone().release();
+                delete it->second;
+                it->second = clone;
+              }
           }
       }
 
