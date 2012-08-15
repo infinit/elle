@@ -4,7 +4,6 @@
 # include <cassert>
 
 # include "Factory.hh"
-# include "Object.hxx"
 
 namespace elle
 {
@@ -12,6 +11,15 @@ namespace elle
   {
     namespace json
     {
+
+      class Dictionary::KeyError:
+        public std::runtime_error
+      {
+      public:
+        KeyError(std::string const& key):
+          std::runtime_error("KeyError: '" + key + "'")
+        {}
+      };
 
       struct Dictionary::_DictProxy
       {
