@@ -13,33 +13,32 @@ from . import VirtualNode, cmd_output, Path
 
 class Git(VirtualNode):
 
-    """An iterable node with information on a git repository."""
+    """An iterable node with information on a git repository.
 
     # With the following dummy git repository.
-
-    # >>> path = Path('/tmp/.drake.git')
-    # >>> path.remove()
-    # >>> git = 'git --git-dir=%s/.git --work-tree=%s' % (path, path)
-    # >>> os.environ['GIT_AUTHOR_NAME'] = 'mefyl'
-    # >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
-    # >>> os.system('git init %s' % path)
-    # 0
-    # >>> (path / 'somefile').touch()
-    # >>> os.system('%s add somefile' % git)
-    # 0
-    # >>> os.system('%s commit -m "Commit message."' % git)
-    # 0
-
-
-
-    # >>> node = GitVersion(path)
+    >>> git = 'git'
+    >>> os.chdir('/tmp')
+    >>> path = Path('.drake.git')
+    >>> path.remove()
+    >>> os.environ['GIT_AUTHOR_NAME'] = 'mefyl'
+    >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
+    >>> del os.environ['GIT_DIR']
+    >>> os.system('git init %s' % path)
+    0
+    >>> os.chdir(str(path))
+    >>> Path('somefile').touch()
+    >>> os.system('%s add somefile' % git)
+    0
+    >>> os.system('%s commit -m "Commit message."' % git)
+    0
+    >>> node = Git(path)
 
     # >>> d = node.author_date().split(' ')[0]
     # >>> today = date.today()
     # >>> assert d == '%i-%02i-%i' % (today.year, today.month, today.day)
 
     # >>> node.description()
-
+    """
     def __init__(self, path = None):
         """Create a GitVersion.
 
@@ -48,8 +47,8 @@ class Git(VirtualNode):
         if path is None:
             self.__path = drake.path_src('.')
         else:
-            self.__path = Path(path)
-        VirtualNode.__init__(self, 'git/version')
+            self.__path = drake.path_src(path)
+        VirtualNode.__init__(self, Path('git/version') / self.__path)
         self.__author_date = None
         self.__revision    = None
         self.__description = None
