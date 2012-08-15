@@ -21,9 +21,9 @@ namespace elle
       private:
         internal::Array _value;
 
-        ///
-        /// Construction.
-        ///
+        //
+        // Construction.
+        //
       public:
         /// Default constructor makes an empty array.
         Array();
@@ -39,9 +39,9 @@ namespace elle
         /// dtor.
         ~Array();
 
-        ///
-        /// Behave like an std::vector.
-        ///
+        //
+        // Behave like an std::vector.
+        //
       public:
         /// Add an arbitrary value.
         template <typename T>
@@ -64,19 +64,19 @@ namespace elle
         size_t
         size() const;
 
-        /// Representation.
+        // Representation.
       public:
         using Object::repr;
         virtual
         void
         repr(std::ostream& out) const;
 
-        /// Clonable.
+        // Clonable.
       public:
         std::unique_ptr<Object>
         clone() const;
 
-        /// Comparable.
+        // Comparable.
       public:
         using Object::operator ==;
         virtual
@@ -86,7 +86,7 @@ namespace elle
         bool
         operator ==(Object const& other) const;
 
-        /// Convertible to std::list and std::vector.
+        // Convertible to std::list and std::vector.
       public:
         template<typename T>
         operator std::vector<T>() const;
@@ -98,6 +98,6 @@ namespace elle
   }
 } // !namespace elle::format::json
 
-#include "Array.hxx"
+# include "Array.hxx"
 
 #endif /* ! ARRAY_HH */

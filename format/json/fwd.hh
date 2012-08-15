@@ -1,7 +1,7 @@
 #ifndef ELLE_FORMAT_JSON_FWD_HH
 # define ELLE_FORMAT_JSON_FWD_HH
 
-# include <string>
+# include "_internal.hh"
 
 namespace elle
 {
@@ -15,10 +15,10 @@ namespace elle
         class BasicObject;
       }
 
-      typedef detail::BasicObject<int32_t>      Integer;
-      typedef detail::BasicObject<bool>         Bool;
-      typedef detail::BasicObject<double>       Float;
-      typedef detail::BasicObject<std::string>  String;
+      typedef detail::BasicObject<internal::Integer>      Integer;
+      typedef detail::BasicObject<internal::Bool>         Bool;
+      typedef detail::BasicObject<internal::Float>        Float;
+      typedef detail::BasicObject<internal::String>       String;
 
       class Object;
       class Array;
