@@ -26,7 +26,7 @@ namespace nucleus
     {
       // XXX[la methode update devrait etre viree et un token devrait etre
       //     cree via le constructeur a chaque fois OU renommer Update()]
-      if (this->Update(secret, K) == elle::Status::Error)
+      if (this->Update(K, secret) == elle::Status::Error)
         throw Exception("unable to construct the token");
     }
 
@@ -35,27 +35,17 @@ namespace nucleus
 //
 
     template <typename T>
-    elle::Status Token::Update(T const& secret,
-                               elle::cryptography::PublicKey const& K)
+    elle::Status Token::Update(elle::cryptography::PublicKey const& K,
+                               T const& secret)
     {
       delete this->_code;
 
-      // if the secret key is null, reinitialize to the default null token.
-      if (secret == T::Null)
-        {
-          assert(false && "[XXX] another method should be introduced");
+      // allocate a new code.
+      this->_code = new elle::cryptography::Code;
 
-          this->_code = nullptr;
-        }
-      else
-        {
-          // allocate a new code.
-          this->_code = new elle::cryptography::Code;
-
-          // encrypt the given secret with the given public key.
-          if (K.Encrypt(secret, *this->_code) == elle::Status::Error)
-            escape("unable to encrypt the secret");
-        }
+      // encrypt the given secret with the given public key.
+      if (K.Encrypt(secret, *this->_code) == elle::Status::Error)
+        escape("unable to encrypt the secret");
 
       return elle::Status::Ok;
     }

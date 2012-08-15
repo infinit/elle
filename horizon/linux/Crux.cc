@@ -19,7 +19,7 @@
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Path.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Record.hh>
@@ -113,7 +113,7 @@ namespace horizon
                                        struct ::fuse_file_info* info)
     {
       Handle*                           handle;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       elle::String*                     name;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
@@ -531,7 +531,7 @@ namespace horizon
       etoile::path::Chemin              chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
@@ -625,7 +625,7 @@ namespace horizon
                                      int                        mask)
     {
       etoile::gear::Identifier          identifier;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
       nucleus::neutron::Record const* record;
@@ -762,7 +762,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
@@ -925,7 +925,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)", __FUNCTION__, path, name, value, size, flags);
@@ -1116,7 +1116,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
@@ -1970,7 +1970,7 @@ namespace horizon
       }                                 chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 

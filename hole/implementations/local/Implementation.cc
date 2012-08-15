@@ -3,11 +3,7 @@
 #include <hole/implementations/local/Machine.hh>
 #include <hole/Hole.hh>
 
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
-#include <nucleus/proton/ImmutableBlock.hh>
-#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/fwd.hh>
 
 #include <elle/idiom/Open.hh>
 

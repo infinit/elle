@@ -42,14 +42,14 @@ namespace nucleus
       /// XXX[to rename]
       template <typename T>
       elle::Status
-      Update(T const&,
-             elle::cryptography::PublicKey const&);
+      Update(elle::cryptography::PublicKey const& K,
+             T const& secret);
       /// Extracts the secret information from the token by decrypting
       /// the code with the given private key which only the user has.
       template <typename T>
       elle::Status
-      Extract(elle::cryptography::PrivateKey const&,
-              T&) const;
+      Extract(elle::cryptography::PrivateKey const& k,
+              T& secret) const;
       /// Returns the code pointer.
       elle::cryptography::Code const*
       code() const;

@@ -3,6 +3,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
+#include <etoile/abstract/Group.hh>
 
 #include <nucleus/neutron/Group.hh>
 
@@ -71,6 +72,17 @@ namespace etoile
 
       // set the context's state.
       context.state = gear::Context::StateLoaded;
+
+      return elle::Status::Ok;
+    }
+
+    elle::Status
+    Group::Information(gear::Group& context,
+                       abstract::Group& abstract)
+    {
+      // generate the abstract based on the group.
+      if (abstract.Create(*context.group) == elle::Status::Error)
+        escape("unable to generate the abstract");
 
       return elle::Status::Ok;
     }
@@ -211,6 +223,10 @@ namespace etoile
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
 
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
+
       // If the index starts with 0, include the manager by creating
       // a record for him.
       if (index == 0)
@@ -225,8 +241,11 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              if (range.Add(context.ensemble->consult(index, size - 1)) ==
-                  elle::Status::Error)
+              nucleus::neutron::Range<nucleus::neutron::Fellow> r;
+
+              r = context.ensemble->consult(index, size - 1);
+
+              if (range.Add(r) == elle::Status::Error)
                 escape("unable to add the consulted range to the final range");
             }
           catch (...)
@@ -250,10 +269,6 @@ namespace etoile
               escape("unable to consult the ensemble");
             }
         }
-
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }
@@ -363,6 +378,14 @@ namespace etoile
     Group::Store(gear::Group& context)
     {
       ELLE_LOG_TRACE_SCOPE("Store()");
+
+      // determine the rights.
+      if (Rights::Determine(context) == elle::Status::Error)
+        escape("unable to determine the rights");
+
+      // check if the current user is the group manager.
+      if (context.rights.role != nucleus::neutron::Group::RoleManager)
+        escape("the user does not seem to be the group manager");
 
       // close the ensemble.
       if (Ensemble::Close(context) == elle::Status::Error)

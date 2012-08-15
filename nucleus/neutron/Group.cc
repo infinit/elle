@@ -3,6 +3,9 @@
 #include <nucleus/Exception.hh>
 
 #include <elle/cryptography/KeyPair.hh>
+#include <elle/cryptography/PrivateKey.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -16,7 +19,7 @@ namespace nucleus
     Group::Group():
       ImprintBlock::ImprintBlock(ComponentGroup),
 
-      _pass(nullptr)
+      _size(1)
     {
       this->_manager.fellow = nullptr;
     }
@@ -26,11 +29,23 @@ namespace nucleus
       ImprintBlock::ImprintBlock(ComponentGroup, owner_K),
 
       _description(description),
-      _pass(nullptr)
+      _size(1)
     {
       this->_manager.fellow = nullptr;
 
       this->state = proton::StateDirty;
+
+      /* XXX[this is a hack which consists in generating a unique pass
+             which will not evolve over time. */
+      {
+        elle::cryptography::KeyPair pass;
+
+        if (pass.Generate() == elle::Status::Error)
+          throw Exception("unable to generate the pass"); // XXX[to remove in the future]
+
+        Token token(this->manager_subject().user(), pass.k);
+        this->upgrade(proton::Address::Null, pass.K, token);
+      }
     }
 
 //
@@ -39,12 +54,16 @@ namespace nucleus
 
     void
     Group::upgrade(proton::Address const& ensemble,
-                   elle::cryptography::PublicKey const& pass)
+                   elle::cryptography::PublicKey const& pass_K,
+                   Token const& manager_token)
     {
-      delete this->_pass;
-      this->_pass = new elle::cryptography::PublicKey(pass);
+      this->_pass = pass_K;
+
+      if (this->_modification_stamp.Current() == elle::Status::Error)
+        throw Exception("unable to set the last management time"); // XXX[to remove later]
 
       this->_ensemble = ensemble;
+      this->_manager.token = manager_token;
 
       this->state = proton::StateDirty;
     }
@@ -52,8 +71,8 @@ namespace nucleus
     void
     Group::downgrade()
     {
-      delete this->_pass;
-      this->_pass = nullptr;
+      if (this->_modification_stamp.Current() == elle::Status::Error)
+        throw Exception("unable to set the last management time"); // XXX[to remove later]
 
       this->_ensemble = proton::Address::Null;
 
@@ -63,39 +82,35 @@ namespace nucleus
     void
     Group::seal(elle::cryptography::PrivateKey const& owner_k)
     {
-      if ((this->_ensemble != proton::Address::Null) &&
-          (this->_pass == nullptr))
-        throw Exception("unable to seal a group referencing an ensemble but "
-                        "which does not embed a pass");
-
-      if (this->state == proton::StateDirty)
+      switch (this->state)
         {
-          // XXX[can this be improved with a single make_tuple()
-          //     and elle::serialize::pointer()?]
-          if (this->_pass != nullptr)
-            {
-              // XXX manager's token
+        case proton::StateClean:
+        // XXX[duplicate case for now] case proton::StateConsistent:
+          {
+            // Nothing to do, the group is already valid.
 
-              if (owner_k.Sign(elle::serialize::make_tuple(
-                                 this->_description,
-                                 *this->_pass,
-                                 this->_ensemble),
-                               this->_signature) == elle::Status::Error)
-                throw Exception("unable to sign the group"); // XXX[to remove in the future]
-            }
-          else
-            {
-              // XXX delete manager's token
+            break;
+          }
+        case proton::StateDirty:
+          {
+            // XXX[can this be improved with a single make_tuple()
+            //     and elle::serialize::pointer()? though we do not have
+            //     pointers left here!]
+            if (owner_k.Sign(elle::serialize::make_tuple(
+                               this->_description,
+                               this->_pass,
+                               this->_size,
+                               this->_modification_stamp,
+                               this->_ensemble,
+                               this->_manager.token),
+                             this->_signature) == elle::Status::Error)
+              throw Exception("unable to sign the group"); // XXX[to remove in the future]
 
-              if (owner_k.Sign(elle::serialize::make_tuple(
-                                 this->_description,
-                                 this->_ensemble),
-                               this->_signature) == elle::Status::Error)
-                throw Exception("unable to sign the group"); // XXX[to remove in the future]
-            }
+            // Increase the mutable block's version.
+            this->version += 1;
 
-          // Increase the mutable block's version.
-          this->version += 1;
+            break;
+          }
         }
 
       // Now that the group has been sealed, the block can be considered
@@ -103,18 +118,28 @@ namespace nucleus
       this->state = proton::StateConsistent;
     }
 
+    elle::String const&
+    Group::description() const
+    {
+      return (this->_description);
+    }
+
     elle::cryptography::PublicKey const&
     Group::pass() const
     {
-      assert(this->_pass != nullptr);
-
-      return (*this->_pass);
+      return (this->_pass);
     }
 
     proton::Address const&
     Group::ensemble() const
     {
       return (this->_ensemble);
+    }
+
+    elle::cryptography::PublicKey const&
+    Group::manager_K() const
+    {
+      return (this->owner_K());
     }
 
     Subject const&
@@ -129,6 +154,8 @@ namespace nucleus
     Token const&
     Group::manager_token() const
     {
+      assert(this->_manager.token != Token::Null);
+
       return (this->_manager.token);
     }
 
@@ -153,6 +180,24 @@ namespace nucleus
       assert (this->_manager.fellow != nullptr);
     }
 
+    Size const&
+    Group::size() const
+    {
+      return (this->_size);
+    }
+
+    void
+    Group::size(Size const& size)
+    {
+      this->_size = size;
+    }
+
+    elle::utility::Time const&
+    Group::modification_stamp() const
+    {
+      return (this->_modification_stamp);
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -170,17 +215,17 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Description] " << this->_description << std::endl;
 
-      if (this->_pass != nullptr)
-        {
-          if (this->_pass->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the public pass");
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << elle::io::Dumpable::Shift << "[Pass] "
-                    << elle::none << std::endl;
-        }
+      if (this->_pass.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the public pass");
+
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Size] " << std::dec << this->_size << std::endl;
+
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Modifcation Time]" << std::endl;
+
+      if (this->_modification_stamp.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the stamp");
 
       if (this->_ensemble.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the ensemble's address");

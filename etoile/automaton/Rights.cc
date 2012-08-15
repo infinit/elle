@@ -92,7 +92,8 @@ namespace etoile
               //
               nucleus::neutron::Record* record;
 
-              ELLE_LOG_TRACE_SCOPE("the object reference an Access block");
+              ELLE_LOG_TRACE_SCOPE("the subject seems to be present in "
+                                   "the Access block");
 
               // retrieve the record associated with this subject.
               if (context.access->Lookup(agent::Agent::Subject,
@@ -126,15 +127,94 @@ namespace etoile
               // a token.
               //
 
-              ELLE_LOG_TRACE_SCOPE("the object does not reference an Access block");
+              ELLE_LOG_TRACE_SCOPE("the subject does _not_ seem to be present "
+                                   "in the Access block, start looking in the "
+                                   "groups");
 
-              // set the role.
-              context.rights.role = nucleus::neutron::Object::RoleVassal;
+              /* XXX
+              for (auto record: *context.access)
+                {
+                  if (record->subject.type() == nucleus::neutron::Subject::TypeGroup)
+                    {
+                      nucleus::neutron::Group group;
 
-              // set the permissions.
-              context.rights.permissions = nucleus::neutron::PermissionNone;
+                      // Retrieve the group block.
+                      if (depot::Depot::Pull(record->subject.group(),
+                                             nucleus::neutron::Version::Last,
+                                             group) == elle::Status::Error)
+                        escape("unable to pull the group block");
 
-              // XXX[if not a vassal, set the role as RoleNone]
+                      // Check if the subject is actually the group manager.
+                      if (agent::Agent::Subject == group.manager_subject())
+                        {
+                          ELLE_LOG_TRACE_SCOPE("the subject is the manager of "
+                                               "the group '%s'",
+                                               record->subject.group());
+
+                          context.rights.role = nucleus::neutron::Object::RoleVassal;
+                          context.rights.permissions = record->permissions;
+
+                          // Compute a token with the appropriate information taken
+                          // from the group and the access record.
+                          nucleus::neutron::Record record(group.manager_subject(),
+                                                          record->permissions,
+                                                          group.manager_token());
+                          context.rights.record = record;
+
+                          // Finally, extract the key from the record.
+                          {
+XXX
+                            group.manager_fellow();
+                          if (record->token != nucleus::neutron::Token::Null)
+                            {
+                              // extract the secret key from the token.
+                              if (record->token.Extract(
+                                    agent::Agent::Identity.pair.k,
+                                    context.rights.key) == elle::Status::Error)
+                                escape("unable to extract the secret key from the token");
+                            }
+                        }
+                      else
+                        {
+                          if (group.ensemble() != nucleus::proton::Address::Null)
+                            {
+                              nucleus::neutron::Ensemble ensemble;
+
+                              // Retrieve the ensemble which contains the list of
+                              // the subjects belonging to the group.
+                              if (depot::Depot::Pull(record->subject.group(),
+                                                     nucleus::neutron::Version::Last,
+                                                     group) == elle::Status::Error)
+                                escape("unable to pull the group block");
+
+                              // Look for the user's subject in the ensemble.
+                              // XXX[remove the try/catch later]
+                              try
+                                {
+
+XXX
+
+                              context.rights.role = nucleus::neutron::Object::RoleVassal;
+                              context.rights.permissions = record->permissions;
+                                }
+                              catch (std::exception const& e)
+                                {
+                                  escape("%s", e.what());
+                                }
+                            }
+                        }
+                    }
+                }
+              */
+
+              // if the system failed at defining the user's role, one can
+              // conclude that the user has no role and no permission over
+              // the object.
+              if (context.rights.role == nucleus::neutron::Object::RoleUnknown)
+                {
+                  context.rights.role = nucleus::neutron::Object::RoleNone;
+                  context.rights.permissions = nucleus::neutron::PermissionNone;
+                }
             }
         }
 

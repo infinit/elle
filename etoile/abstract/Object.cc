@@ -1,21 +1,12 @@
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 #include <nucleus/neutron/Object.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace etoile
 {
-  namespace miscellaneous
+  namespace abstract
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this defines a empty, unused hence null abstract.
-    ///
-    const Abstract                      Abstract::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -24,7 +15,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Abstract::Abstract()
+    Object::Object()
     {
     }
 
@@ -35,17 +26,17 @@ namespace etoile
     ///
     /// this method generates the abstract according to the given object.
     ///
-    elle::Status        Abstract::Create(const nucleus::neutron::Object& object)
+    elle::Status        Object::Create(const nucleus::neutron::Object& object)
     {
       // set the genre.
       this->genre = object.genre();
 
       // set the stamps.
-      this->stamps.creation = object.stamp();
+      this->stamps.creation = object.creation_stamp();
       this->stamps.modification =
-        object.data_stamp() < object.meta_stamp() ?
-        object.meta_stamp() :
-        object.data_stamp();
+        object.data_modification_stamp() < object.meta_modification_stamp() ?
+        object.meta_modification_stamp() :
+        object.data_modification_stamp();
 
       // set the size
       this->size = object.size();
@@ -85,7 +76,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean       Abstract::operator==(const Abstract&    element)
+    elle::Boolean       Object::operator==(const Object&    element)
       const
     {
       // check the address as this may actually be the same object.
@@ -110,7 +101,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Abstract, _());
+    embed(Object, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -119,11 +110,11 @@ namespace etoile
     ///
     /// this method dumps the abstract object.
     ///
-    elle::Status        Abstract::Dump(const elle::Natural32    margin) const
+    elle::Status        Object::Dump(const elle::Natural32    margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Abstract]" << std::endl;
+      std::cout << alignment << "[Object]" << std::endl;
 
       // dump the genre.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Genre] "

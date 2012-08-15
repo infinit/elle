@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ImprintBlock,
   assert(version == 0);
 
   archive & static_cast<nucleus::proton::MutableBlock&>(value);
-  archive & value._stamp;
+  archive & value._creation_stamp;
   archive & value._salt;
   archive & value._owner.K;
 }

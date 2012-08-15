@@ -102,7 +102,8 @@ namespace nucleus
       /// pass with the given one.
       void
       upgrade(proton::Address const& ensemble,
-              elle::cryptography::PublicKey const& pass);
+              elle::cryptography::PublicKey const& pass_K,
+              Token const& manager_token);
       /// Indicates that the group no longer references an Ensemble
       /// block. The pass is therefore no longer used.
       void
@@ -111,6 +112,9 @@ namespace nucleus
       /// private key.
       void
       seal(elle::cryptography::PrivateKey const& manager_k);
+      /// Returns the group description.
+      elle::String const&
+      description() const;
       /// Returns the group's public pass.
       elle::cryptography::PublicKey const&
       pass() const;
@@ -118,6 +122,9 @@ namespace nucleus
       /// list of the group fellows.
       proton::Address const&
       ensemble() const;
+      /// Returns the public key of the group manager.
+      elle::cryptography::PublicKey const&
+      manager_K() const;
       /// Returns the subject associated with the group manager.
       Subject const&
       manager_subject();
@@ -128,6 +135,17 @@ namespace nucleus
       /// XXX[put the const back on the return type]
       Fellow&
       manager_fellow();
+      /// Returns the size of the group i.e the number of fellows
+      /// composing the group, including the manager.
+      Size const&
+      size() const;
+      /// Update the group's size, following the addition/removal
+      /// of fellows in the referenced ensemble for instance.
+      void
+      size(Size const& size);
+      /// Returns the modification stamp.
+      elle::utility::Time const&
+      modification_stamp() const;
 
     private:
       /// Computes the manager's fellow, if necessary.
@@ -153,9 +171,9 @@ namespace nucleus
       //
     private:
       elle::String _description;
-      /// The public pass is a pointer because, should the Group not reference
-      /// an Ensemble block, the pass becomes useless.
-      elle::cryptography::PublicKey* _pass;
+      elle::cryptography::PublicKey _pass;
+      Size _size;
+      elle::utility::Time _modification_stamp;
       proton::Address _ensemble;
 
       struct

@@ -134,7 +134,8 @@ namespace etoile
                   if (context.access->Update(
                         subject,
                         permissions,
-                        context.rights.key) == elle::Status::Error)
+                        context.rights.key,
+                        subject.user()) == elle::Status::Error)
                     escape("unable to update the access");
                 }
             }
@@ -147,7 +148,8 @@ namespace etoile
               // create the new record.
               if (record->Update(subject,
                                  permissions,
-                                 context.rights.key) == elle::Status::Error)
+                                 context.rights.key,
+                                 subject.user()) == elle::Status::Error)
                 escape("unable to create the new record");
 
               // add the record to the access object.
@@ -274,6 +276,10 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
+
       // if the index starts with 0, include the owner by creating
       // a record for him.
       if (index == 0)
@@ -299,10 +305,6 @@ namespace etoile
                                       range) == elle::Status::Error)
             escape("unable to consult the ensemble");
         }
-
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
 
       return elle::Status::Ok;
     }
@@ -410,7 +412,7 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      if (token.Update(key, context.object.owner_K()) == elle::Status::Error)
+      if (token.Update(context.object.owner_K(), key) == elle::Status::Error)
         escape("unable to update the owner's token");
 
       // update the object with the new owner token.

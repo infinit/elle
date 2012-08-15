@@ -55,7 +55,8 @@ namespace nucleus
       template <typename T>
       elle::Status      Update(const Subject&,
                                const Permissions&,
-                               const T&);
+                               const T&,
+                               elle::cryptography::PublicKey const& K);
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Record>&) const;
@@ -64,6 +65,13 @@ namespace nucleus
       elle::Status      Remove(const Subject&);
       elle::Status      Capacity(Size&) const;
       elle::Status      Fingerprint(elle::cryptography::Digest&) const;
+
+      /// XXX
+      typename Range<Record>::Scoutor
+      begin() const;
+      /// XXX
+      typename Range<Record>::Scoutor
+      end() const;
 
       //
       // interfaces

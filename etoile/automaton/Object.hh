@@ -2,7 +2,7 @@
 # define ETOILE_AUTOMATON_OBJECT_HH
 
 # include <elle/types.hh>
-# include <etoile/miscellaneous/fwd.hh>
+# include <etoile/abstract/fwd.hh>
 # include <etoile/gear/fwd.hh>
 
 namespace etoile
@@ -26,7 +26,7 @@ namespace etoile
       static elle::Status       Load(gear::Object&);
 
       static elle::Status       Information(gear::Object&,
-                                            miscellaneous::Abstract&);
+                                            abstract::Object&);
 
       static elle::Status       Discard(gear::Object&);
       static elle::Status       Destroy(gear::Object&);

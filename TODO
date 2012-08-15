@@ -8,10 +8,10 @@
 
 groups:
  - faire que si le author gets its right permission removed, the owner generates a Voucher stating that the author had the permission at the time.
- - gerer le owner comme etant membre
- - changer mics::abstract en abstract::object et abstract::group et rajouter methode group::information
- - integrer au controle d'acces, mais que en lecture (refuser de donner le droit a un groupe en ecriture)
+    -> ca a l'air d'etre le cas. verifier le voucher. j'imagine que le owner resigne simplement pour l'instant.
  - changer les scopes pour integrer les groups: wall::Group(XXX)
+ - virer Access::Upgrade et iterer dans automaton/Access.cc
+ - virer le context.rights.record car utilise qu'une seule fois dans automaton/Access.cc
 
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.

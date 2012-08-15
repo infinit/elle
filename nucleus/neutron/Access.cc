@@ -151,6 +151,10 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
+      // first detach the data from the range.
+      if (range.Detach() == elle::Status::Error)
+        escape("unable to detach the data from the range");
+
       // go through the records.
       for (scoutor = this->range.container.begin(), i = 0;
            scoutor != this->range.container.end();
@@ -200,10 +204,9 @@ namespace nucleus
                 // capable of decrypting it.
                 //
 
-                elle::cryptography::PublicKey const& K = record->subject.user();
-
                 // update the token.
-                if (record->token.Update(key, K) == elle::Status::Error)
+                if (record->token.Update(record->subject.user(),
+                                         key) == elle::Status::Error)
                   escape("unable to update the token");
 
                 break;
@@ -218,6 +221,9 @@ namespace nucleus
                 //
 
                 // XXX to implement.
+                // XXX here, we need the group's pass. since we cannot load,
+                //     we should rather transform access into a container with
+                //     begin() and end()
 
                 break;
               }
@@ -316,6 +322,18 @@ namespace nucleus
         escape("unable to hash the set of archived tuples");
 
       return elle::Status::Ok;
+    }
+
+    typename Range<Record>::Scoutor
+    Access::begin() const
+    {
+      return (this->range.container.begin());
+    }
+
+    typename Range<Record>::Scoutor
+    Access::end() const
+    {
+      return (this->range.container.end());
     }
 
 //

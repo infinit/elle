@@ -7,6 +7,7 @@
 # include <nucleus/neutron/Group.hh>
 
 # include <etoile/gear/fwd.hh>
+# include <etoile/abstract/fwd.hh>
 
 namespace etoile
 {
@@ -31,6 +32,11 @@ namespace etoile
       elle::Status
       Load(typename nucleus::neutron::Group::Identity const& identity,
            gear::Identifier& identifier);
+      /// XXX
+      static
+      elle::Status
+      Information(const gear::Identifier& identifier,
+                  abstract::Group& abstract);
       /// XXX
       static
       elle::Status

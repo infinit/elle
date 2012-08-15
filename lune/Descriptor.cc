@@ -61,23 +61,27 @@ namespace lune
   Descriptor::Create(const elle::String id,
                      const elle::String&  name,
                      const hole::Model&   model,
+                     hole::Openness const& openness,
                      const nucleus::proton::Address& root,
                      nucleus::neutron::Group::Identity const& everybody,
                      const elle::Boolean  history,
                      const elle::Natural32 extent,
                      const elle::Real&    contention,
-                     const elle::Real&    balancing)
+                     const elle::Real&    balancing,
+                     horizon::Policy const& policy)
   {
     // set the attributes.
     this->_id = id;
     this->name = name;
     this->model = model;
+    this->_openness = openness;
     this->root = root;
     this->everybody = everybody;
     this->history = history;
     this->extent = extent;
     this->contention = contention;
     this->balancing = balancing;
+    this->_policy = policy;
 
     return elle::Status::Ok;
   }
@@ -93,12 +97,14 @@ namespace lune
             this->_id,
             this->name,
             this->model,
+            this->_openness,
             this->root,
             this->everybody,
             this->history,
             this->extent,
             this->contention,
-            this->balancing),
+            this->balancing,
+            this->_policy),
           this->signature) == elle::Status::Error)
       escape("unable to sign the attributes with the authority");
 
@@ -118,15 +124,41 @@ namespace lune
             this->_id,
             this->name,
             this->model,
+            this->_openness,
             this->root,
             this->everybody,
             this->history,
             this->extent,
             this->contention,
-            this->balancing)) == elle::Status::Error)
+            this->balancing,
+            this->_policy)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
+  }
+
+  elle::String const&
+  Descriptor::id() const
+  {
+    return (this->_id);
+  }
+
+  void
+  Descriptor::id(elle::String const& id)
+  {
+    this->_id = id;
+  }
+
+  hole::Openness const&
+  Descriptor::openness() const
+  {
+    return (this->_openness);
+  }
+
+  horizon::Policy const&
+  Descriptor::policy() const
+  {
+    return (this->_policy);
   }
 
 //
@@ -164,6 +196,9 @@ namespace lune
       escape("unable to dump the model");
 
     std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Openness] " << this->_openness << std::endl;
+
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Root] " << std::endl;
 
     if (this->root.Dump(margin + 4) == elle::Status::Error)
@@ -189,6 +224,9 @@ namespace lune
 
     std::cout << alignment << elle::io::Dumpable::Shift << "[Balancing] "
               << this->balancing << std::endl;
+
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Policy] " << this->_policy << std::endl;
 
     if (this->signature.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the signature");

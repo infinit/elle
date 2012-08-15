@@ -46,67 +46,40 @@ namespace nucleus
     ///
     /// this method creates/updates a record.
     ///
-    elle::Status        Record::Update(const Subject&           subject,
-                                       const Permissions&       permissions,
-                                       elle::cryptography::SecretKey const&   key)
+    elle::Status
+    Record::Update(Subject const& subject,
+                   Permissions permissions,
+                   elle::cryptography::SecretKey const& key,
+                   elle::cryptography::PublicKey const& K)
     {
-      // set the subject.
-      this->subject = subject;
-
-      // set the permissions.
-      this->permissions = permissions;
+      Token token;
 
       // then, if the subject has the read permission, create a token.
       if ((this->permissions & PermissionRead) == PermissionRead)
         {
-          // create the token with the public key of the user or the
-          // group owner, depending on the subject.
-          switch (subject.type())
-            {
-            case Subject::TypeUser:
-              {
-                // create the token with the user's public key.
-                if (this->token.Update(key,
-                                       subject.user()) == elle::Status::Error)
-                  escape("unable to create the token");
-
-                break;
-              }
-            case Subject::TypeGroup:
-              {
-                // XXX to implement.
-
-                break;
-              }
-            default:
-              {
-                escape("unknown subject type");
-              }
-            }
+          // create the token with the given public key K.
+          if (token.Update(K, key) == elle::Status::Error)
+            escape("unable to create the token");
         }
       else
         {
           // reinitialize the token.
-          this->token = Token::Null;
+          token = Token::Null;
         }
 
-      return elle::Status::Ok;
+      return (this->Update(subject, permissions, token));
     }
 
     ///
     /// this method creates/updates a record with a ready-to-be-used token.
     ///
-    elle::Status        Record::Update(const Subject&           subject,
-                                       const Permissions&       permissions,
-                                       const Token&             token)
+    elle::Status
+    Record::Update(Subject const& subject,
+                   Permissions permissions,
+                   Token const& token)
     {
-      // set the subject.
       this->subject = subject;
-
-      // set the permissions.
       this->permissions = permissions;
-
-      // set the token.
       this->token = token;
 
       return elle::Status::Ok;
