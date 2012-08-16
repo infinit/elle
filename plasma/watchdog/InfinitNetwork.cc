@@ -116,43 +116,101 @@ void InfinitNetwork::_update()
 void InfinitNetwork::_create_network_root_block()
 {
   LOG("Creating the network descriptor.");
-
-  lune::Identity                identity;
-  nucleus::neutron::Object      directory;
-  nucleus::proton::Address      address;
+  // XXX this value depends on the network policy and openness.
+  static nucleus::neutron::Permissions permissions =
+    nucleus::neutron::PermissionRead;
 
   auto e              = elle::Status::Error;
   auto genreDirectory = nucleus::neutron::GenreDirectory;
-  auto access         = nucleus::neutron::Access::Null;
 
-  if (identity.Restore(this->_manager.identity())             == e ||
-      directory.Create(genreDirectory, identity.pair.K)       == e ||
-      directory.Seal(identity.pair.k, access)                 == e ||
-      directory.Bind(address)                                 == e)
-    {
-      throw std::runtime_error("Couldn't create the root block.");
-    }
+  //- identity ----------------------------------------------------------------
+  lune::Identity                identity;
+  if (identity.Restore(this->_manager.identity())             == e)
+    throw std::runtime_error("Couldn't restore the identity.");
 
-  elle::io::Unique              rootBlock;
-  elle::io::Unique              rootAddress;
+  //- group -------------------------------------------------------------------
+  nucleus::neutron::Group group(identity.pair.K, "everybody");
+  group.seal(identity.pair.k);
 
-  directory.Save(rootBlock);
-  address.Save(rootAddress);
+  //- group address -----------------------------------------------------------
+  nucleus::proton::Address      group_address;
+  if (group.Bind(group_address) == elle::Status::Error)
+    throw std::runtime_error("unable to bind the group");
 
-  this->_on_got_descriptor(this->_manager.meta().update_network(
-      this->_description._id,
-      nullptr,
-      nullptr,
-      nullptr,
-      &rootBlock,
-      &rootAddress
-  ));
+  //- subject -----------------------------------------------------------------
+  nucleus::neutron::Subject subject;
+  if (subject.Create(group_address) == elle::Status::Error)
+    throw std::runtime_error("unable to create the group subject");
+
+  //- access-------------------------------------------------------------------
+  nucleus::neutron::Access access;
+  if (access.Add(new nucleus::neutron::Record{
+        subject,
+        permissions,
+        nucleus::neutron::Token::Null
+        }) == elle::Status::Error)
+    throw std::runtime_error("unable to add the record to the access");
+
+  //- access address ----------------------------------------------------------
+  nucleus::proton::Address      access_address;
+  if (access.Bind(access_address) == elle::Status::Error)
+    throw std::runtime_error("unable to bind the access");
+
+  //- directory ---------------------------------------------------------------
+  nucleus::neutron::Object      directory;
+  if (directory.Create(genreDirectory, identity.pair.K)       == e)
+    throw std::runtime_error("Couldn't create the root block.");
+
+  if (directory.Update(directory.author(),
+                       directory.contents(),
+                       directory.size(),
+                       access_address,
+                       directory.owner_token()) == e)
+    throw std::runtime_error("unable to update the directory");
+
+  if (directory.Seal(identity.pair.k, access)                 == e)
+    throw std::runtime_error("Cannot seal the access");
+
+  //- directory address -------------------------------------------------------
+  nucleus::proton::Address      directory_address;
+  if (directory.Bind(directory_address)                       == e)
+    throw std::runtime_error("Couldn't bind the address.");
+
+  {
+    elle::io::Unique root_block_;
+    directory.Save(root_block_);
+    elle::io::Unique root_address_;
+    directory_address.Save(root_address_);
+
+    elle::io::Unique access_block_;
+    access.Save(access_block_);
+    elle::io::Unique access_address_;
+    access_address.Save(access_address_);
+
+    elle::io::Unique group_block_;
+    group.Save(group_block_);
+    elle::io::Unique group_address_;
+    group_address.Save(group_address_);
+
+    this->_on_got_descriptor(this->_manager.meta().update_network(
+          this->_description._id,
+          nullptr,
+          nullptr,
+          nullptr,
+          &root_block_,
+          &root_address_,
+          &access_block_,
+          &access_address_,
+          &group_block_,
+          &group_address_
+    ));
+  }
 }
 
 /// Prepare the network directory, store root block and network descriptor
 void InfinitNetwork::_prepare_directory()
 {
-  LOG("Dumping root block.");
+  LOG("Prepare network directory.");
 
   assert(this->_description.root_block.size());
   assert(this->_description.descriptor.size());
@@ -181,6 +239,20 @@ void InfinitNetwork::_prepare_directory()
 #include <elle/idiom/Close.hh>
       throw std::runtime_error("Couldn't store the root block.");
     }
+
+  nucleus::neutron::Access access;
+  nucleus::proton::Address access_address;
+  if (access.Restore(this->_description.access_block) == e ||
+      access_address.Restore(this->_description.access_address) == e ||
+      access.Store(network, access_address) == e)
+    throw std::runtime_error("Couldn't store the access block");
+
+  nucleus::neutron::Group group;
+  nucleus::proton::Address group_address;
+  if (group.Restore(this->_description.group_block) == e ||
+      group_address.Restore(this->_description.group_address) == e ||
+      group.Store(network, group_address) == e)
+    throw std::runtime_error("Couldn't store the group block");
 
   LOG("Root block stored.");
 
@@ -219,6 +291,10 @@ void InfinitNetwork::_register_device()
           nullptr,
           nullptr,
           &this->_description.devices,
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
           nullptr,
           nullptr
       ));
@@ -279,11 +355,9 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
           this->_description._id + "'"
       );
     }
+  this->_description = this->_manager.meta().network(this->_description._id);
   LOG("Got descriptor for", this->_description.name,
-      "(", this->_description._id, ") :", response.descriptor);
-
-  this->_description.root_block = response.root_block;
-  this->_description.descriptor = response.descriptor;
+      "(", this->_description._id, ") :", this->_description.descriptor);
 
   this->_prepare_directory();
 }

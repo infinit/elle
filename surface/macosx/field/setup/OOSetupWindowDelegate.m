@@ -124,6 +124,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     [pref synchronize];
     [[OOPhone getInstance] loginWithEmail:[pref objectForKey:@"Email"]
                                  password:[pref objectForKey:@"Password"]
+                              machineName:[pref objectForKey:@"ComputerName"]
                           performSelector:@selector(loginResult:) 
                                 forObject:self];
 }

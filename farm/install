@@ -262,10 +262,10 @@ for src, node in dependencies.items():
 
 infinit_app = os.path.join(DIR_BUILD, "surface/macosx/Infinit.app")
 if os.path.exists(infinit_app):
-    shutil.copytree(
-        "/Library/Extensions/fuse4x.kext",
-        os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext")
-    )
+    #shutil.copytree(
+    #    "/Library/Extensions/fuse4x.kext",
+    #    os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext")
+    #)
     dst_app = os.path.join(DIR_INSTALL_CLIENT, os.path.basename(infinit_app))
 
     shutil.copytree(infinit_app, dst_app, symlinks=True)

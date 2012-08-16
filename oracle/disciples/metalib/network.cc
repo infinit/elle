@@ -31,17 +31,22 @@
 #include "network.hh"
 
 
-static elle::io::Unique
+static
+elle::io::Unique
 generate_network_descriptor(elle::String const& id,
                             elle::String const& name,
                             elle::String const& model_name,
-                            elle::io::Unique const& root_address,
+                            elle::io::Unique const& directory_address_,
+                            elle::io::Unique const& group_address_,
                             elle::String const& authority_file,
                             elle::String const& authority_password)
 {
+  // XXX should be configurable.
+  static horizon::Policy policy = horizon::Policy::accessible;
+  static hole::Openness openness = hole::Openness::closed;
+
   lune::Descriptor descriptor;
   hole::Model model;
-  nucleus::proton::Address address;
   lune::Authority authority;
   elle::io::Path authority_path;
 
@@ -57,18 +62,25 @@ generate_network_descriptor(elle::String const& id,
   if (model.Create(model_name) != elle::Status::Ok)
     throw std::runtime_error("unable to create model");
 
-  if (address.Restore(root_address) != elle::Status::Ok)
-    throw std::runtime_error("Unable to restore root address");
+  nucleus::proton::Address directory_address;
+  if (directory_address.Restore(directory_address_) != elle::Status::Ok)
+    throw std::runtime_error("Unable to restore directory address");
 
-  if (descriptor.Create(id, name, model,
-                        hole::Openness::closed, // XXX[should not be hardcoded]
-                        address,
-                        nucleus::proton::Address::Null, // XXX[to change with everybody's address]
+  nucleus::proton::Address group_address;
+  if (group_address.Restore(group_address_) != elle::Status::Ok)
+    throw std::runtime_error("Unable to restore access address");
+
+  if (descriptor.Create(id,
+                        name,
+                        model,
+                        openness,
+                        directory_address,
+                        group_address,
                         lune::Descriptor::History,
                         lune::Descriptor::Extent,
                         lune::Descriptor::Contention,
                         lune::Descriptor::Balancing,
-                        horizon::Policy::confidential /* XXX[should not be hardcoded] */) != elle::Status::Ok)
+                        policy) != elle::Status::Ok)
     throw std::runtime_error("Unable to create the network descriptor");
 
   if (descriptor.Seal(authority) != elle::Status::Ok)
@@ -82,19 +94,28 @@ generate_network_descriptor(elle::String const& id,
 }
 
 
-extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObject* args)
+extern "C"
+PyObject*
+metalib_generate_network_descriptor(PyObject* self, PyObject* args)
 {
+  (void) self;
   char const* network_id = nullptr,
             * network_name = nullptr,
             * network_model = nullptr,
-            * root_address = nullptr,
+            * directory_address = nullptr,
+            * access_address = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "ssssss:check_root_block_signature",
-                        &network_id, &network_name, &network_model, &root_address,
-                        &authority_file, &authority_password))
+  if (!PyArg_ParseTuple(args, "sssssss:generate_network_descriptor",
+                        &network_id,
+                        &network_name,
+                        &network_model,
+                        &directory_address,
+                        &access_address,
+                        &authority_file,
+                        &authority_password))
     return nullptr;
 
   PyThreadState *_save;
@@ -103,8 +124,13 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
   try
     {
       elle::io::Unique descriptor = generate_network_descriptor(
-          network_id, network_name, network_model, root_address,
-          authority_file, authority_password
+          network_id,
+          network_name,
+          network_model,
+          directory_address,
+          access_address,
+          authority_file,
+          authority_password
       );
 
       // WARNING: restore state before setting exception !
@@ -116,11 +142,6 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
     {
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
-      std::cout << "############################################################\n";
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);
     }
@@ -129,47 +150,99 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
 }
 
 
-static bool check_root_block_signature(elle::io::Unique const& root_block,
-                                       elle::io::Unique const& root_address,
-                                       elle::io::Unique const& public_key)
+static
+bool
+check_root_directory_signature(elle::io::Unique const& root_block_,
+                               elle::io::Unique const& root_address_,
+                               elle::io::Unique const& access_block_,
+                               elle::io::Unique const& access_address_,
+                               elle::io::Unique const& group_block_,
+                               elle::io::Unique const& group_address_,
+                               elle::io::Unique const& public_key)
 {
-  nucleus::neutron::Object directory;
-  nucleus::proton::Address address;
   elle::cryptography::PublicKey       K;
-
-  std::cerr << "GOT pub key: " << public_key << "\n"
-            << "GOT root block: " << root_block << "\n"
-            << "GOT root address: " << root_address << "\n";
 
   if (K.Restore(public_key) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore public key");
 
-  if (address.Restore(root_address) == elle::Status::Error)
-    throw std::runtime_error("Unable to restore root address");
+  // access block -------------------------------------------------------------
+  nucleus::neutron::Access access_block;
+  {
+    nucleus::proton::Address access_address;
+    if (access_address.Restore(access_address_) == elle::Status::Error)
+      throw std::runtime_error("Unable to restore access address");
 
-  if (directory.Restore(root_block) == elle::Status::Error)
-    throw std::runtime_error("Unable to restore root block: <" + root_block + ">");
+    if (access_block.Restore(access_block_) == elle::Status::Error)
+      throw std::runtime_error("Cannot restore access block");
 
-  auto access = nucleus::neutron::Access::Null;
-  if (directory.Validate(address, access) != elle::Status::Ok)
-    return false;
+    if (access_block.Validate(access_address) != elle::Status::Ok)
+      return false;
+  }
 
-  if (directory.owner_K() != K)
-    return false;
+  // root block ---------------------------------------------------------------
+  {
+    nucleus::proton::Address root_address;
+    if (root_address.Restore(root_address_) == elle::Status::Error)
+      throw std::runtime_error("Unable to restore root address");
+
+    nucleus::neutron::Object root_block;
+    if (root_block.Restore(root_block_) == elle::Status::Error)
+      throw std::runtime_error("Unable to restore root block: <" + root_block_ + ">");
+
+    if (root_block.Validate(root_address, access_block) != elle::Status::Ok)
+      return false;
+
+    if (root_block.owner_K() != K)
+      return false;
+  }
+
+
+  // group block -------------------------------------------------------------
+  {
+    nucleus::proton::Address group_address;
+    if (group_address.Restore(group_address_) == elle::Status::Error)
+      throw std::runtime_error("Unable to restore group address");
+
+    nucleus::neutron::Group group_block;
+    if (group_block.Restore(group_block_) == elle::Status::Error)
+      throw std::runtime_error("Cannot restore group block");
+
+    if (group_block.Validate(group_address) != elle::Status::Ok)
+      return false;
+
+    if (group_block.owner_K() != K)
+      return false;
+  }
+
 
   return true;
 }
 
 
-extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject* args)
+extern "C"
+PyObject*
+metalib_check_root_directory_signature(PyObject* self,
+                                       PyObject* args)
 {
+  (void) self;
+
   char const* root_block = nullptr;
   char const* root_address = nullptr;
+  char const* access_block = nullptr;
+  char const* access_address = nullptr;
+  char const* group_block = nullptr;
+  char const* group_address = nullptr;
   char const* public_key = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "sss:check_root_block_signature",
-                        &root_block, &root_address, &public_key))
+  if (!PyArg_ParseTuple(args, "sssssss:check_root_directory_signature",
+                        &root_block,
+                        &root_address,
+                        &access_block,
+                        &access_address,
+                        &group_block,
+                        &group_address,
+                        &public_key))
     return nullptr;
 
   if (!root_block || !public_key)
@@ -180,9 +253,13 @@ extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject
 
   try
     {
-      bool result = check_root_block_signature(
+      bool result = check_root_directory_signature(
           root_block,
           root_address,
+          access_block,
+          access_address,
+          group_block,
+          group_address,
           public_key
       );
       // WARNING: restore state before setting exception !
@@ -194,11 +271,6 @@ extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject
     {
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
-      std::cout << "############################################################\n";
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);
     }

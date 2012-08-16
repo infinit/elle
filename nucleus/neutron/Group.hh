@@ -52,7 +52,8 @@ namespace nucleus
       public elle::concept::Serializable<
         Group,
         elle::serialize::BufferArchive
-        >
+      >,
+      public elle::concept::MakeUniquable<Group>
     {
       //
       // types
