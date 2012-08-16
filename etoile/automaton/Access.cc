@@ -885,6 +885,7 @@ namespace etoile
         case nucleus::neutron::Object::RoleVassal:
           {
             // XXX to implement.
+            assert(false && "not supported yet");
 
             break;
           }
