@@ -1103,179 +1103,181 @@ class Builder:
 
     def run(self):
         """Build sources recursively, check if our target are up to date, and executed if needed."""
+
         debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
+        with debug.indentation():
 
-        if not self.__executed:
-            # If someone is already executing this builder, wait.
-            if self.__executed_signal is not None:
-                debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
-                sched.coro_wait(self.__executed_signal)
-            # Otherwise, build it ourselves
-            else:
-                self.__executed_signal = sched.Waitable()
-
-        # If we were already executed, just skip
-        if self.__executed:
-            if self.__executed_exception is not None:
-                debug.debug('Already built in this run, with an exception.', debug.DEBUG_TRACE_PLUS)
-                raise self.__executed_exception
-            debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
-            return
-
-        try:
-            # The list of static dependencies is now fixed
-            for path in self.__sources:
-                self._depfile.register(self.__sources[path])
-
-            # See Whether we need to execute or not
-            execute = False
-
-            # Reload dynamic dependencies
-            if not execute:
-                for f in _OS.listdir(str(self.cachedir())):
-                    if f in ['drake', 'drake.Builder', 'stdout']:
-                        continue
-                    debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
-                    depfile = self.depfile(f)
-                    depfile.read()
-                    handler = self._deps_handlers[f]
-
-                    with debug.indentation():
-                        for path in depfile.sha1s():
-
-                            if path in self.__sources or path in self.__dynsrc:
-                                debug.debug('File %s is already in our sources.' % path, debug.DEBUG_DEPS)
-                                continue
-
-                            if path in Node.nodes:
-                                node = Node.nodes[path]
-                            else:
-                                debug.debug('File %s is unknown, calling handler.' % path, debug.DEBUG_DEPS)
-                                node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
-
-                            debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
-                            self.add_dynsrc(f, node, None)
-
-
-            coroutines_static = []
-            coroutines_dynamic = []
-
-            # Build static dependencies
-            debug.debug('Build static dependencies')
-            with debug.indentation():
-                for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
-                    if _can_skip_node(node):
-                        continue
-                    coroutines_static.append(
-                        Coroutine(node.build, str(node), _scheduler(),
-                                  sched.Coroutine.current))
-
-            # Build dynamic dependencies
-            debug.debug('Build dynamic dependencies')
-            with debug.indentation():
-                for path in self.__dynsrc:
-                    node = self.__dynsrc[path]
-                    if _can_skip_node(node):
-                        continue
-                    coroutines_dynamic.append(
-                        Coroutine(node.build, str(node), _scheduler(),
-                                  sched.Coroutine.current))
-
-            for coro in coroutines_static:
-                sched.coro_wait(coro)
-
-            for coro in coroutines_dynamic:
-                try:
-                    sched.coro_wait(coro)
-                except Exception as e:
-                    debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
-                    execute = True
-
-            # If any non-virtual target is missing, we must rebuild.
-            if not execute:
-                for dst in self.__targets:
-                    if dst.missing():
-                        debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
-                        execute = True
-
-            # Load static dependencies
-            self._depfile.read()
-
-            # If a new dependency appeared, we must rebuild.
-            if not execute:
-                for p in self.__sources:
-                    path = self.__sources[p].name()
-                    if str(path) not in self._depfile.sha1s():
-                        debug.debug('Execution needed because a new dependency appeared: %s.' % path, debug.DEBUG_DEPS)
-                        execute = True
-                        break
-
-            # Check if we are up to date wrt to the builder itself
-            self.__builder_hash = self.hash()
-            depfile_builder = self.cachedir() / _DEPFILE_BUILDER
-            if not execute:
-                if self.__builder_hash is not None:
-                    if depfile_builder.exists():
-                        with open(str(depfile_builder), 'r') as f:
-                            if self.__builder_hash != f.read():
-                                debug.debug('Execution needed because the hash for the builder is outdated.', debug.DEBUG_DEPS)
-                                execute = True
-                    else:
-                        debug.debug('Execution needed because the hash for the builder is unkown.', debug.DEBUG_DEPS)
-                        execute = True
-
-            # Check if we are up to date wrt all dependencies
-            if not execute:
-                if not self._depfile.up_to_date():
-                    execute = True
-                for f in self._depfiles:
-                    if not self._depfiles[f].up_to_date():
-                        execute = True
-
-
-            if execute:
-                debug.debug('Executing builder %s' % self, debug.DEBUG_TRACE)
-
-                # Regenerate dynamic dependencies
-                self.__dynsrc = {}
-                self._depfiles = {}
-                debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
-                with debug.indentation():
-                    self.dependencies()
-
-                debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
-                with debug.indentation():
-                    for node in self.__dynsrc.values():
-                        # FIXME: parallelize
-                        node.build()
-
-                if not self.execute():
-                    self.__executed = True
-                    self.__executed_exception = Exception('%s failed' % self)
-                    raise self.__executed_exception
-
-                # Check every non-virtual target was built.
-                for dst in self.__targets:
-                    if isinstance(dst, Node):
-                        if dst.missing():
-                            raise Exception('%s wasn\'t created by %s' % (dst, self))
-                        dst._Node__hash = None
-
-                # Update depfiles
-                self._depfile.update()
-                if self.__builder_hash is None:
-                    depfile_builder.remove()
+            if not self.__executed:
+                # If someone is already executing this builder, wait.
+                if self.__executed_signal is not None:
+                    debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
+                    sched.coro_wait(self.__executed_signal)
+                # Otherwise, build it ourselves
                 else:
-                    with open(str(depfile_builder), 'w') as f:
-                        print(self.__builder_hash, file = f, end = '')
-                for name in self._depfiles:
-                    self._depfiles[name].update()
-                self.__executed = True
-            else:
-                self.__executed = True
-                debug.debug('Everything is up to date.', debug.DEBUG_TRACE_PLUS)
-        finally:
-            self.__executed_signal.signal()
+                    self.__executed_signal = sched.Waitable()
+
+            # If we were already executed, just skip
+            if self.__executed:
+                if self.__executed_exception is not None:
+                    debug.debug('Already built in this run, with an exception.', debug.DEBUG_TRACE_PLUS)
+                    raise self.__executed_exception
+                debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
+                return
+
+            try:
+                # The list of static dependencies is now fixed
+                for path in self.__sources:
+                    self._depfile.register(self.__sources[path])
+
+                # See Whether we need to execute or not
+                execute = False
+
+                # Reload dynamic dependencies
+                if not execute:
+                    for f in _OS.listdir(str(self.cachedir())):
+                        if f in ['drake', 'drake.Builder', 'stdout']:
+                            continue
+                        debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
+                        depfile = self.depfile(f)
+                        depfile.read()
+                        handler = self._deps_handlers[f]
+
+                        with debug.indentation():
+                            for path in depfile.sha1s():
+
+                                if path in self.__sources or path in self.__dynsrc:
+                                    debug.debug('File %s is already in our sources.' % path, debug.DEBUG_DEPS)
+                                    continue
+
+                                if path in Node.nodes:
+                                    node = Node.nodes[path]
+                                else:
+                                    debug.debug('File %s is unknown, calling handler.' % path, debug.DEBUG_DEPS)
+                                    node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
+
+                                debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
+                                self.add_dynsrc(f, node, None)
+
+
+                coroutines_static = []
+                coroutines_dynamic = []
+
+                # Build static dependencies
+                debug.debug('Build static dependencies')
+                with debug.indentation():
+                    for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
+                        if _can_skip_node(node):
+                            continue
+                        coroutines_static.append(
+                            Coroutine(node.build, str(node), _scheduler(),
+                                      sched.Coroutine.current))
+
+                # Build dynamic dependencies
+                debug.debug('Build dynamic dependencies')
+                with debug.indentation():
+                    for path in self.__dynsrc:
+                        node = self.__dynsrc[path]
+                        if _can_skip_node(node):
+                            continue
+                        coroutines_dynamic.append(
+                            Coroutine(node.build, str(node), _scheduler(),
+                                      sched.Coroutine.current))
+
+                for coro in coroutines_static:
+                    sched.coro_wait(coro)
+
+                for coro in coroutines_dynamic:
+                    try:
+                        sched.coro_wait(coro)
+                    except Exception as e:
+                        debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                        execute = True
+
+                # If any non-virtual target is missing, we must rebuild.
+                if not execute:
+                    for dst in self.__targets:
+                        if dst.missing():
+                            debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
+                            execute = True
+
+                # Load static dependencies
+                self._depfile.read()
+
+                # If a new dependency appeared, we must rebuild.
+                if not execute:
+                    for p in self.__sources:
+                        path = self.__sources[p].name()
+                        if str(path) not in self._depfile.sha1s():
+                            debug.debug('Execution needed because a new dependency appeared: %s.' % path, debug.DEBUG_DEPS)
+                            execute = True
+                            break
+
+                # Check if we are up to date wrt to the builder itself
+                self.__builder_hash = self.hash()
+                depfile_builder = self.cachedir() / _DEPFILE_BUILDER
+                if not execute:
+                    if self.__builder_hash is not None:
+                        if depfile_builder.exists():
+                            with open(str(depfile_builder), 'r') as f:
+                                if self.__builder_hash != f.read():
+                                    debug.debug('Execution needed because the hash for the builder is outdated.', debug.DEBUG_DEPS)
+                                    execute = True
+                        else:
+                            debug.debug('Execution needed because the hash for the builder is unkown.', debug.DEBUG_DEPS)
+                            execute = True
+
+                # Check if we are up to date wrt all dependencies
+                if not execute:
+                    if not self._depfile.up_to_date():
+                        execute = True
+                    for f in self._depfiles:
+                        if not self._depfiles[f].up_to_date():
+                            execute = True
+
+
+                if execute:
+                    debug.debug('Executing builder %s' % self, debug.DEBUG_TRACE)
+
+                    # Regenerate dynamic dependencies
+                    self.__dynsrc = {}
+                    self._depfiles = {}
+                    debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
+                    with debug.indentation():
+                        self.dependencies()
+
+                    debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
+                    with debug.indentation():
+                        for node in self.__dynsrc.values():
+                            # FIXME: parallelize
+                            node.build()
+
+                    if not self.execute():
+                        self.__executed = True
+                        self.__executed_exception = Exception('%s failed' % self)
+                        raise self.__executed_exception
+
+                    # Check every non-virtual target was built.
+                    for dst in self.__targets:
+                        if isinstance(dst, Node):
+                            if dst.missing():
+                                raise Exception('%s wasn\'t created by %s' % (dst, self))
+                            dst._Node__hash = None
+
+                    # Update depfiles
+                    self._depfile.update()
+                    if self.__builder_hash is None:
+                        depfile_builder.remove()
+                    else:
+                        with open(str(depfile_builder), 'w') as f:
+                            print(self.__builder_hash, file = f, end = '')
+                    for name in self._depfiles:
+                        self._depfiles[name].update()
+                    self.__executed = True
+                else:
+                    self.__executed = True
+                    debug.debug('Everything is up to date.', debug.DEBUG_TRACE_PLUS)
+            finally:
+                self.__executed_signal.signal()
 
 
     def execute(self):
