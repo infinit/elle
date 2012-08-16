@@ -67,8 +67,11 @@ namespace elle
       /// Properties for the size and the buffer contents
       void                Size(size_t size);
       size_t              Size() const { return this->_size; }
+      void                size(size_t size) { this->Size(size); }
+      size_t              size() const { return this->Size(); }
       Byte const*   Contents() const { return this->_contents; }
       Byte*         MutableContents() { return this->_contents; }
+      Byte*         mutable_contents() { return this->_contents; }
 
       /// Reset the size to zero.
       void                Reset() { this->Size(0); }

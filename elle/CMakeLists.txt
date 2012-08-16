@@ -81,6 +81,8 @@ add_library(elle
   utility/Settings.cc
   utility/Time.cc
 
+  format/hexadecimal.cc
+
   format/ini/Section.cc
   format/ini/File.cc
 
