@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <hole/Openness.hh>
 
 # include <iostream>
