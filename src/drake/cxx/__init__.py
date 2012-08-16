@@ -487,7 +487,7 @@ def mkdeps(res, n, lvl, config, marks,
         return
     marks[str(path)] = True
 
-#    debug.debug('%smkdeps: %s' % (idt, path))
+    # debug.debug('%smkdeps: %s' % (idt, path))
 
     f_init(res, n)
 
@@ -498,35 +498,38 @@ def mkdeps(res, n, lvl, config, marks,
         return new
 
 
-    yield n.build_coro()
+    n.build()
     for line in open(str(path), 'r'):
 
         line = line.strip()
         match = include_re.match(line)
         if match:
             include = match.group(2)
+            search = config.local_include_path()
+            if match.group(1) == '"':
+                search += [Path('.')]
             found = None
-            for include_path in config.local_include_path():
+            for include_path in search:
 
                 name = include_path / include
                 test = name
+
                 if str(test) in Node.nodes:
                     # Check this is not an old cached dependency from cxx.inclusions.
                     # Not sure of myself though.
                     if test.is_file() or node(str(test)).builder is not None:
                         found = unique(include, found, node(test))
-#                        debug.debug('%sfound node: %s' % (idt, test))
+                        # debug.debug('%sfound node: %s' % (idt, test))
 
-
-                test = srctree() / test
-                # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
-                if test.is_file():
-#                    debug.debug('%sfound file: %s' % (idt, test))
-                    found = unique(include, found, node(name, Header))
+                if not found or srctree() != Path('.'):
+                    test = srctree() / test
+                    if test.is_file():
+                        # debug.debug('%sfound file: %s' % (idt, test))
+                        found = unique(include, found, node(name, Header))
 
             if found is not None:
                 rec = []
-                yield mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
+                mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
                 f_add(res, found, rec)
 
 
@@ -550,10 +553,10 @@ class Compiler(Builder):
     def dependencies(self):
 
         deps = []
-        yield mkdeps(deps, self.src, 0, self.config, {},
-                     f_init = lambda res, n: res.append(n),
-                     f_submarks = lambda d: d,
-                     f_add = lambda res, node, sub: res.extend(sub))
+        mkdeps(deps, self.src, 0, self.config, {},
+               f_init = lambda res, n: res.append(n),
+               f_submarks = lambda d: d,
+               f_add = lambda res, node, sub: res.extend(sub))
 
         for dep in deps:
             if dep != self.src:
@@ -610,7 +613,6 @@ class Linker(Builder):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
-        yield
 
     def __init__(self, objs, exe, tk, cfg):
 
@@ -659,7 +661,6 @@ class DynLibLinker(Builder):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
-        yield
 
     def __init__(self, objs, lib, tk, cfg):
 
@@ -690,7 +691,6 @@ class StaticLibLinker(ShellCommand):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
-        yield
 
     def __init__(self, objs, lib, tk, cfg):
 
