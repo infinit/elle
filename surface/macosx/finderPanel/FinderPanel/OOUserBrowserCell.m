@@ -100,10 +100,10 @@ static CGImageRef pinImage()
 		[layer addSublayer:glossyLayer];
 		
 		//add a pin icon
-		CALayer *pinLayer = [CALayer layer];
-		[pinLayer setContents:(__bridge id)pinImage()];
-		pinLayer.frame = CGRectMake((frame.size.width/2)-5, frame.size.height - 17, 24, 30);
-		[layer addSublayer:pinLayer];
+		//CALayer *pinLayer = [CALayer layer];
+		//[pinLayer setContents:(__bridge id)pinImage()];
+		//pinLayer.frame = CGRectMake((frame.size.width/2)-5, frame.size.height - 17, 24, 30);
+		//[layer addSublayer:pinLayer];
 		
 		return layer;
 	}

@@ -24,7 +24,7 @@
         }
     }
     // Connect
-    NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
+    NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil];
     OONurseManager *proxy = (OONurseManager *)[c rootProxy];
     
     NSString *currentDir = [[NSBundle mainBundle] bundlePath];
