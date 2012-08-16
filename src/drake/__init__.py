@@ -2333,3 +2333,6 @@ class Version:
         else:
             return self.__major > rhs.__major
 
+
+def reset():
+    BaseNode.nodes = {}
