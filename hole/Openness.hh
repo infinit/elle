@@ -1,7 +1,7 @@
 #ifndef HOLE_OPENNESS_HH
 # define HOLE_OPENNESS_HH
 
-# include <iostream>
+# include <iosfwd>
 
 namespace hole
 {
