@@ -71,7 +71,7 @@ namespace nucleus
       /// Updates the tokens of the ensemble's fellows with the given
       /// pass private key.
       void
-      update(elle::cryptography::PrivateKey const& pass);
+      update(elle::cryptography::PrivateKey const& pass_k);
       /// Removes the given subject from the ensemble.
       void
       remove(Subject const& subject);
@@ -104,8 +104,6 @@ namespace nucleus
       //
     private:
       Container _container;
-
-      // XXX[add the owner's token, with a pointer]
     };
 
   }

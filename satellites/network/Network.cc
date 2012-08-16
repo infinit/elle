@@ -194,7 +194,15 @@ namespace satellite
               {
                 permissions = nucleus::neutron::PermissionWrite;
 
+                // XXX
                 assert(false && "not yet supported");
+
+                break;
+              }
+            case horizon::Policy::confidential:
+              {
+                // Nothing else to do in this case, the file system object
+                // remains private to its owner.
 
                 break;
               }

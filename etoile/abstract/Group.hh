@@ -59,7 +59,7 @@ namespace etoile
       nucleus::neutron::Size size;
       elle::cryptography::PublicKey manager;
       nucleus::proton::Version version;
-      elle::cryptography::PublicKey* pass;
+      elle::cryptography::PublicKey pass_K;
     };
 
   }

@@ -1,4 +1,3 @@
-
 #include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
 #include <elle/types.hh>
@@ -16,6 +15,9 @@
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
 
+#include <hole/Openness.hh>
+
+#include <horizon/Policy.hh>
 
 // XXX When Qt is out, remove this
 #ifdef slots

@@ -18,7 +18,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
   archive >> static_cast<nucleus::proton::ImprintBlock&>(value);
 
   archive >> value._description;
-  archive >> value._pass;
+  archive >> value._pass_K;
   archive >> value._size;
   archive >> value._modification_stamp;
   archive >> value._ensemble;
@@ -37,7 +37,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
   archive << static_cast<nucleus::proton::ImprintBlock const&>(value);
 
   archive << value._description;
-  archive << value._pass;
+  archive << value._pass_K;
   archive << value._size;
   archive << value._modification_stamp;
   archive << value._ensemble;

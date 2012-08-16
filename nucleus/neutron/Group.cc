@@ -57,7 +57,7 @@ namespace nucleus
                    elle::cryptography::PublicKey const& pass_K,
                    Token const& manager_token)
     {
-      this->_pass = pass_K;
+      this->_pass_K = pass_K;
 
       if (this->_modification_stamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
@@ -98,7 +98,7 @@ namespace nucleus
             //     pointers left here!]
             if (owner_k.Sign(elle::serialize::make_tuple(
                                this->_description,
-                               this->_pass,
+                               this->_pass_K,
                                this->_size,
                                this->_modification_stamp,
                                this->_ensemble,
@@ -125,9 +125,9 @@ namespace nucleus
     }
 
     elle::cryptography::PublicKey const&
-    Group::pass() const
+    Group::pass_K() const
     {
-      return (this->_pass);
+      return (this->_pass_K);
     }
 
     proton::Address const&
@@ -215,7 +215,7 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Description] " << this->_description << std::endl;
 
-      if (this->_pass.Dump(margin + 2) == elle::Status::Error)
+      if (this->_pass_K.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the public pass");
 
       std::cout << alignment << elle::io::Dumpable::Shift

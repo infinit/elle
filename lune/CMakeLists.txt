@@ -15,4 +15,4 @@ add_library(lune
 
 add_definitions(-fPIC)
 
-target_link_libraries(lune nucleus common horizon hole)
+target_link_libraries(lune hole nucleus common horizon)

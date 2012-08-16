@@ -118,7 +118,7 @@ namespace nucleus
       description() const;
       /// Returns the group's public pass.
       elle::cryptography::PublicKey const&
-      pass() const;
+      pass_K() const;
       /// Returns the address of the Ensemble block which contains the
       /// list of the group fellows.
       proton::Address const&
@@ -172,7 +172,7 @@ namespace nucleus
       //
     private:
       elle::String _description;
-      elle::cryptography::PublicKey _pass;
+      elle::cryptography::PublicKey _pass_K;
       Size _size;
       elle::utility::Time _modification_stamp;
       proton::Address _ensemble;

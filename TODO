@@ -12,6 +12,14 @@ groups:
  - changer les scopes pour integrer les groups: wall::Group(XXX)
  - virer Access::Upgrade et iterer dans automaton/Access.cc
  - virer le context.rights.record car utilise qu'une seule fois dans automaton/Access.cc
+ - revoir etoile::automaton::Rights::Determine() car la methode est trop longue.
+ - scenarios:
+  - create with fistouille, lauch with mycure ; ls YYY/ => error
+  - create with fistouille, add mycure to everybody ; lauch with mycure ; ls YYY/ => ok
+  - create with fistouille, add mycure to everybody ; lauch with fistouille ; cp -R identity XXX/ ; launch with mycure ; ls YYY/ => ok
+  - create with fistouille, add mycure to everybody ; lauch with fistouille ; cp -R identity XXX/ ; launch with mycure ; ls -R YYY/ => error
+  - [same as above but with Crux being patched to grant access to everybody on created objects]
+ - rajouter des options a 8network pour policy et openness
 
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.

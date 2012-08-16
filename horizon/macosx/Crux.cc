@@ -3,6 +3,7 @@
 #include <horizon/macosx/Janitor.hh>
 #include <horizon/macosx/Handle.hh>
 #include <horizon/macosx/Crib.hh>
+#include <horizon/Policy.hh>
 
 #include <agent/Agent.hh>
 
@@ -29,6 +30,8 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
+
+#include <hole/Hole.hh>
 
 namespace horizon
 {
@@ -341,7 +344,7 @@ namespace horizon
         default:
           {
             error("unknown genre",
-                  -EPERM);
+                  -EIO);
           }
         }
 
@@ -637,6 +640,45 @@ namespace horizon
         error("unable to update the access record",
               -EPERM,
               subdirectory, directory);
+
+      /* XXX[coming soon...]
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  subdirectory,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    subdirectory, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  subdirectory, directory);
+          }
+        }
+      */
 
       // add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
