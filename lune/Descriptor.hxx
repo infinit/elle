@@ -19,7 +19,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
   archive & value.model;
   archive & value._openness;
   archive & value.root;
-  archive & value.everybody;
+  archive & value._everybody.identity;
   archive & value.history;
   archive & value.extent;
   archive & value.contention;

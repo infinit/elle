@@ -396,15 +396,78 @@ namespace etoile
                           gear::Object&                         context,
                           elle::cryptography::SecretKey const&                key)
     {
-      nucleus::neutron::Token token;
-
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access");
 
-      // upgrate the access block's records.
-      if (context.access->Upgrade(key) == elle::Status::Error)
-        escape("unable to upgrade the access records");
+      // XXX[all this loop was originally part of the Access class. it has
+      //     however been extracted because, in order to encrypt the key
+      //     for a group, it is necessary to load the group block.
+      //     unfortunately, nucleus has no notion of loading/unloading blocks.
+      //     one way would have been to provide a function pointer. for example
+      //     a Depot class could be introduced in nucleus with virtual methods
+      //     for pulling/pushing/wiping blocks.
+      //     likewise for Downgrade() below, the loop was in a method in
+      //     nucleus::neutron::Access.]
+
+      // Go through the access block's records.
+      for (auto record: *context.access)
+        {
+          // Ignore records which relate to subjects which do not have
+          // the read permission; these ones do not have a token.
+          if ((record->permissions & nucleus::neutron::PermissionRead) !=
+              nucleus::neutron::PermissionRead)
+            continue;
+
+          switch (record->subject.type())
+            {
+            case nucleus::neutron::Subject::TypeUser:
+              {
+                // If the subject is a user, encrypt the key with the
+                // user's public key so that she will be the only one
+                // capable of decrypting it.
+
+                // XXX[remove try/catch later]
+                try
+                  {
+                    record->token =
+                      nucleus::neutron::Token(record->subject.user(), key);
+                  }
+                catch (std::exception const& e)
+                  {
+                    escape("%s", e.what());
+                  }
+
+                break;
+              }
+            case nucleus::neutron::Subject::TypeGroup:
+              {
+                // If the subject is a group, the key is encrypted with the
+                // group's public pass. This way, the group members will be
+                // able to decrypt it since they have been distributed the
+                // private pass.
+
+                nucleus::neutron::Group group;
+
+                if (depot::Depot::Pull(record->subject.group(),
+                                       nucleus::proton::Version::Last,
+                                       group) == elle::Status::Error)
+                  escape("unable to pull the group block");
+
+                record->token =
+                  nucleus::neutron::Token(group.pass_K(), key);
+
+                break;
+              }
+            default:
+              {
+                escape("the access block contains unknown entries");
+              }
+            }
+
+          // Set the access block as dirty.
+          context.access->state = nucleus::proton::StateDirty;
+        }
 
       // then, create a new object's owner token.
       //
@@ -412,8 +475,7 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      if (token.Update(context.object.owner_K(), key) == elle::Status::Error)
-        escape("unable to update the owner's token");
+      nucleus::neutron::Token token(context.object.owner_K(), key);
 
       // update the object with the new owner token.
       //
@@ -463,9 +525,20 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access");
 
-      // downgrade the access block's records.
-      if (context.access->Downgrade() == elle::Status::Error)
-        escape("unable to downgrade the access records");
+      // Go through the Access records.
+      for (auto record: *context.access)
+        {
+          // Check if the subject has the proper permissions.
+          if ((record->permissions & nucleus::neutron::PermissionRead) !=
+              nucleus::neutron::PermissionRead)
+            continue;
+
+          // Reset the token.
+          record->token = nucleus::neutron::Token::Null;
+        }
+
+      // Set the access block as being dirty.
+      context.access->state = nucleus::proton::StateDirty;
 
       // also update the owner's token.
       if (context.object.Update(

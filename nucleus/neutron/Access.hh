@@ -19,13 +19,13 @@ namespace nucleus
   {
 
     /// This class represents an access control list.
-    class Access
-      : public proton::ContentHashBlock
-      , public elle::concept::Serializable<Access>
-      , public elle::concept::Serializable<
-            Access
-          , elle::serialize::BufferArchive
-        >
+    class Access:
+      public proton::ContentHashBlock,
+      public elle::concept::Serializable<Access>,
+      public elle::concept::Serializable<
+        Access,
+        elle::serialize::BufferArchive
+      >
     {
       //
       // constants
@@ -60,8 +60,6 @@ namespace nucleus
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Record>&) const;
-      elle::Status      Upgrade(elle::cryptography::SecretKey const&);
-      elle::Status      Downgrade();
       elle::Status      Remove(const Subject&);
       elle::Status      Capacity(Size&) const;
       elle::Status      Fingerprint(elle::cryptography::Digest&) const;

@@ -8,6 +8,9 @@
 #include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Subject.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -51,6 +54,20 @@ namespace lune
   const elle::Real              Descriptor::Balancing = 0.2;
 
 //
+// ---------- construction ----------------------------------------------------
+//
+
+  Descriptor::Descriptor()
+  {
+    this->_everybody.subject = nullptr;
+  }
+
+  Descriptor::~Descriptor()
+  {
+    delete this->_everybody.subject;
+  }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -76,7 +93,7 @@ namespace lune
     this->model = model;
     this->_openness = openness;
     this->root = root;
-    this->everybody = everybody;
+    this->_everybody.identity = everybody;
     this->history = history;
     this->extent = extent;
     this->contention = contention;
@@ -99,7 +116,7 @@ namespace lune
             this->model,
             this->_openness,
             this->root,
-            this->everybody,
+            this->_everybody.identity,
             this->history,
             this->extent,
             this->contention,
@@ -126,7 +143,7 @@ namespace lune
             this->model,
             this->_openness,
             this->root,
-            this->everybody,
+            this->_everybody.identity,
             this->history,
             this->extent,
             this->contention,
@@ -159,6 +176,33 @@ namespace lune
   Descriptor::policy() const
   {
     return (this->_policy);
+  }
+
+  nucleus::neutron::Group::Identity const&
+  Descriptor::everybody_identity() const
+  {
+    return (this->_everybody.identity);
+  }
+
+  nucleus::neutron::Subject const&
+  Descriptor::everybody_subject()
+  {
+    this->_everybody_subject();
+
+    return (*this->_everybody.subject);
+  }
+
+  void
+  Descriptor::_everybody_subject()
+  {
+    // Create the subject corresponding to the everybody group, if necessary.
+    // Note that this subject will never be serialized but is used to ease
+    // the process of access control since most method manipulate subjects.
+    if (this->_everybody.subject == nullptr)
+      this->_everybody.subject =
+        new nucleus::neutron::Subject(this->_everybody.identity);
+
+    assert(this->_everybody.subject != nullptr);
   }
 
 //
@@ -204,13 +248,13 @@ namespace lune
     if (this->root.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
-    if (this->everybody.Save(unique) == elle::Status::Error)
+    if (this->_everybody.identity.Save(unique) == elle::Status::Error)
       escape("unable to save the address");
 
     std::cout << alignment << elle::io::Dumpable::Shift
               << "[Everybody] " << unique << std::endl;
 
-    if (this->everybody.Dump(margin + 4) == elle::Status::Error)
+    if (this->_everybody.identity.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
     std::cout << alignment << elle::io::Dumpable::Shift << "[History] "

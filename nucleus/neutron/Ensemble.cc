@@ -159,11 +159,11 @@ namespace nucleus
     }
 
     void
-    Ensemble::update(elle::cryptography::PrivateKey const& pass)
+    Ensemble::update(elle::cryptography::PrivateKey const& pass_k)
     {
       Ensemble::Iterator iterator;
 
-      ELLE_LOG_TRACE_SCOPE("[%p] update(%s)", this, pass);
+      ELLE_LOG_TRACE_SCOPE("[%p] update(%s)", this, pass_k);
 
       for (iterator = this->_container.begin();
            iterator != this->_container.end();
@@ -175,7 +175,7 @@ namespace nucleus
             {
             case Subject::TypeUser:
               {
-                Token token(fellow->subject().user(), pass);
+                Token token(fellow->subject().user(), pass_k);
 
                 ELLE_LOG_TRACE_SCOPE("update fellow user '%s'", fellow->subject());
 

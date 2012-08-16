@@ -185,7 +185,7 @@ namespace etoile
                               k) == elle::Status::Error)
               escape("unable to extract the token");
 
-            pass.K = context.group->pass();
+            pass.K = context.group->pass_K();
             pass.k = k;
           }
           // XXX

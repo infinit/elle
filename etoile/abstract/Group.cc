@@ -15,8 +15,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Group::Group():
-      pass(nullptr)
+    Group::Group()
     {
     }
 
@@ -40,11 +39,7 @@ namespace etoile
 
       this->version = group.version;
 
-      if (group.ensemble() != nucleus::proton::Address::Null)
-        {
-          delete this->pass;
-          this->pass = new elle::cryptography::PublicKey(group.pass());
-        }
+      this->pass_K = group.pass_K();
 
       return elle::Status::Ok;
     }
@@ -70,7 +65,7 @@ namespace etoile
           (this->size != element.size) ||
           (this->manager != element.manager) ||
           (this->version != element.version) ||
-          (this->pass != element.pass))
+          (this->pass_K != element.pass_K))
         return false;
 
       return true;
@@ -135,20 +130,11 @@ namespace etoile
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Version] " << std::dec << this->version << std::endl;
 
-      if (this->pass != nullptr)
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Pass]" << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Pass K]" << std::endl;
 
-          if (this->pass->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the pass");
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << elle::io::Dumpable::Shift
-                    << "[Pass] " << elle::none << std::endl;
-        }
+      if (this->pass_K.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the pass");
 
       return elle::Status::Ok;
     }

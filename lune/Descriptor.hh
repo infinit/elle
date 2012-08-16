@@ -11,6 +11,7 @@
 # include <hole/fwd.hh>
 
 # include <nucleus/proton/Address.hh>
+# include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>
 
 # include <horizon/Policy.hh>
@@ -29,10 +30,10 @@ namespace lune
     public elle::concept::MakeFileable<Descriptor>,
     public elle::concept::MakeUniquable<Descriptor>
   {
-  public:
     //
     // constants
     //
+  public:
     static const elle::String           Extension;
 
     static const elle::Boolean          History;
@@ -41,8 +42,16 @@ namespace lune
     static const elle::Real             Balancing;
 
     //
+    // construction
+    //
+  public:
+    Descriptor();
+    ~Descriptor();
+
+    //
     // methods
     //
+  public:
     elle::Status
     Create(const elle::String id,
            const elle::String&,
@@ -71,11 +80,22 @@ namespace lune
     /// XXX
     horizon::Policy const&
     policy() const;
+    /// XXX
+    nucleus::neutron::Group::Identity const&
+    everybody_identity() const;
+    /// XXX
+    nucleus::neutron::Subject const&
+    everybody_subject();
+
+  private:
+    /// XXX
+    void
+    _everybody_subject();
 
     //
     // interfaces
     //
-
+  public:
     // object
     declare(Descriptor);
 
@@ -104,7 +124,11 @@ namespace lune
     hole::Model         model;
     hole::Openness _openness;
     nucleus::proton::Address root;
-    nucleus::neutron::Group::Identity everybody;
+    struct
+    {
+      nucleus::neutron::Group::Identity identity;
+      nucleus::neutron::Subject* subject;
+    } _everybody;
     elle::Boolean       history;
     elle::Natural32     extent;
     elle::Real          contention;

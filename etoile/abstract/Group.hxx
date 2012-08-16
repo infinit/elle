@@ -3,7 +3,6 @@
 
 # include <cassert>
 
-# include <elle/serialize/Pointer.hh>
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/utility/Time.hh>
 
@@ -20,7 +19,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Group,
   archive & value.size;
   archive & value.manager;
   archive & value.version;
-  archive & elle::serialize::pointer(value.pass);
+  archive & value.pass_K;
 }
 
 #endif

@@ -1,4 +1,3 @@
-
 #include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
 #include <elle/types.hh>
@@ -16,6 +15,9 @@
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
 
+#include <hole/Openness.hh>
+
+#include <horizon/Policy.hh>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -58,11 +60,15 @@ generate_network_descriptor(elle::String const& id,
   if (address.Restore(root_address) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore root address");
 
-  if (descriptor.Create(id, name, model, address,
+  if (descriptor.Create(id, name, model,
+                        hole::Openness::closed, // XXX[should not be hardcoded]
+                        address,
+                        nucleus::proton::Address::Null, // XXX[to change with everybody's address]
                         lune::Descriptor::History,
                         lune::Descriptor::Extent,
                         lune::Descriptor::Contention,
-                        lune::Descriptor::Balancing) != elle::Status::Ok)
+                        lune::Descriptor::Balancing,
+                        horizon::Policy::confidential /* XXX[should not be hardcoded] */) != elle::Status::Ok)
     throw std::runtime_error("Unable to create the network descriptor");
 
   if (descriptor.Seal(authority) != elle::Status::Ok)
