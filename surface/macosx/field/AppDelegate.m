@@ -94,6 +94,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)tryToLogin
 {
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    [[NSUserDefaults standardUserDefaults]synchronize ];
     [statusItem setMenu:statusLoginMenu];
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
@@ -122,7 +125,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     } else {
         [self loginResult:[NSNumber numberWithInt:1]];
     }
-    
 }
 
 - (void)showSetupWindow {
@@ -134,6 +136,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (void)loginResult:(NSNumber *)arg1 {
     int error = [arg1 intValue];
     if (error != 0) {
+        NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+        [[NSUserDefaults standardUserDefaults]synchronize ];
         [self showSetupWindow];
     }
     else {
@@ -238,6 +243,10 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (IBAction)launchHelpCenter:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io/help"]];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [self stop8Watchdog];
 }
 
 @end

@@ -3,11 +3,15 @@
 import os
 import shutil
 import sys
+import subprocess
 
 from libpkg import constants
 from libpkg import tools
 from libpkg.buildenv import BuildEnv
 from libpkg.packager import Packager as BasePackager
+
+def cmd(*args, **kwargs):
+    return subprocess.check_output(list(args), **kwargs)
 
 class Packager(BasePackager):
     """MacOSX dmg packager.
@@ -42,6 +46,15 @@ class Packager(BasePackager):
                     os.path.join(build_env.directory, dir_),
                     os.path.join(pkgdir, 'Infinit.app/Contents/Resources', dir_),
                 )
+            rel_fuse_lib = os.path.join(pkgdir, "Infinit.app/Contents/Resources/lib", "libfuse4x.2.dylib")
+            rel_gap_lib = os.path.join(pkgdir, "Infinit.app/Contents/Resources/lib", "libgap.dylib")
+            shutil.copyfile("/usr/local/lib/libfuse4x.2.dylib", rel_fuse_lib)
+            cmd(
+                "install_name_tool",
+                "-change", "/usr/local/lib/libfuse4x.2.dylib",
+                os.path.join("@loader_path", "libfuse4x.2.dylib"),
+                rel_gap_lib
+            )  
 
             params = {
                 'architecture': {
