@@ -62,7 +62,7 @@ static PyMethodDef _metalib_methods[] = {
     ":return: base64 encoded network descriptor\n"
   },
   {
-    "check_root_block_signature",
+    "check_root_directory_signature",
     &metalib_check_root_directory_signature,
     METH_VARARGS,
     "Check wether or not the root block is valid.\n"
