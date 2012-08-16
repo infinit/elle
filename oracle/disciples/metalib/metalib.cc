@@ -54,7 +54,8 @@ static PyMethodDef _metalib_methods[] = {
     "\n"
     ":param network_id: The network unique identifier\n"
     ":param model: Then network model name\n"
-    ":param root_address: The base64 encoded root block address\n"
+    ":param directory_address: The base64 encoded root block address\n"
+    ":param access_address: The base64 encoded access address\n"
     ":param authority_file: The path to the authority file\n"
     ":param authority_password: Password to decrypt the authority file\n"
     ":rtype: String\n"
@@ -62,12 +63,16 @@ static PyMethodDef _metalib_methods[] = {
   },
   {
     "check_root_block_signature",
-    &metalib_check_root_block_signature,
+    &metalib_check_root_directory_signature,
     METH_VARARGS,
     "Check wether or not the root block is valid.\n"
     "\n"
     ":param root_block: The base64 encoded root block\n"
     ":param root_address: The base64 encoded root address\n"
+    ":param access_block: The base64 encoded access block\n"
+    ":param access_address: The base64 encoded access address\n"
+    ":param group_block: The base64 encoded group block\n"
+    ":param group_address: The base64 encoded group address\n"
     ":param public_key: The base64 encoded public key\n"
     ":rtype: Boolean\n"
     ":return: Wether or not the root_block is valid\n"

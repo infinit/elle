@@ -26,6 +26,7 @@ namespace nucleus
             Access
           , elle::serialize::BufferArchive
         >
+      , public elle::concept::MakeUniquable<Access>
     {
       //
       // constants

@@ -192,20 +192,22 @@ class Nodes(_Page):
 class Update(_Page):
     """
     Update an existing network
-        POST /network {
+        POST {
             '_id': "id",
             'name': 'pretty name', # optional
             'users': [user_id1, ...], # optional
             'devices': [device_id1, ...], # optional
+
             'root_block': "base64 root block", # optional (implies root_address)
             'root_address': "base64 root address", # optional (implies root_block)
+            'access_block': "base64 access block", # optional (implies access_address)
+            'access_address': "base64 access address", # optional (implies access_block)
+            'group_block': "base64 group block", # optional (implies group_address)
+            'group_address': "base64 group address", # optional (implies group_block)
         }
             -> {
                 'success': True,
                 'updated_network_id': "id",
-                'descriptor' : "descriptor file", # only if root_block and root_address where given
-                'root_block': "base64 root block", # only if root_block and root_address where given
-
             }
     """
 
@@ -236,18 +238,31 @@ class Update(_Page):
                 self._check_user
             )
 
-        if 'root_block' in self.data and 'root_address' in self.data and \
-           self.data['root_block'] and self.data['root_address']:
+        if 'root_block' in self.data and self.data['root_block'] and \
+           'root_address' in self.data and self.data['root_address'] and \
+           'access_block' in self.data and self.data['access_block'] and \
+           'access_address' in self.data and self.data['access_address']:
+           'group_block' in self.data and self.data['group_block'] and \
+           'group_address' in self.data and self.data['group_address']:
             if to_save['root_block'] is not None:
                 return self.error("This network has already a root block")
 
             try:
                 root_block = self.data['root_block']
                 root_address = self.data['root_address']
-                assert(self.data.get('descriptor') is None)
-                is_valid = metalib.check_root_block_signature(
+                access_block = self.data['access_block']
+                access_address = self.data['access_address']
+                group_block = self.data['group_block']
+                group_address = self.data['group_address']
+
+                assert self.data.get('descriptor') is None
+                is_valid = metalib.check_root_directory_signature(
                     root_block,
                     root_address,
+                    access_block,
+                    access_address,
+                    group_block,
+                    group_address,
                     self.user['public_key']
                 )
                 if not is_valid:
@@ -255,12 +270,17 @@ class Update(_Page):
 
                 to_save['root_block'] = root_block
                 to_save['root_address'] = root_address
+                to_save['access_block'] = access_block
+                to_save['access_address'] = access_address
+                to_save['group_block'] = group_block
+                to_save['group_address'] = group_address
 
                 to_save['descriptor'] = metalib.generate_network_descriptor(
                     str(id),
                     to_save['name'],
                     to_save.get('model', 'slug'),
                     root_address,
+                    access_address,
                     conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
@@ -270,14 +290,9 @@ class Update(_Page):
                 return self.error("Unexpected error: " + str(err))
 
         id_ = database.networks().save(to_save)
-        res = {
+        return self.success({
             'updated_network_id': id_
-        }
-        if 'descriptor' in to_save:
-            res['descriptor'] = to_save['descriptor']
-            res['root_block'] = to_save['root_block']
-
-        return self.success(res)
+        })
 
 
 class Create(_Page):
@@ -333,6 +348,10 @@ class Create(_Page):
             'descriptor': None,
             'root_block': None,
             'root_address': None,
+            'access_block': None,
+            'access_address': None,
+            'group_block': None,
+            'group_address': None,
         }
         _id = database.networks().insert(network)
         assert _id is not None
