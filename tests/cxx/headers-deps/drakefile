@@ -1,0 +1,7 @@
+import drake, drake.cxx
+
+def configure(cxx_toolkit):
+
+  cfg = drake.cxx.Config()
+  sources = drake.nodes('main.cc', 'test.cc')
+  executable = drake.cxx.Executable('main', sources, cxx_toolkit, cfg)
