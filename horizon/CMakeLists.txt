@@ -1,5 +1,7 @@
 PROJECT(Horizon CXX)
 
+add_definitions(-fPIC)
+
 ADD_LIBRARY(horizon
   Horizon.cc
   Policy.cc
