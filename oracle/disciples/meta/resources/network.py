@@ -241,7 +241,7 @@ class Update(_Page):
         if 'root_block' in self.data and self.data['root_block'] and \
            'root_address' in self.data and self.data['root_address'] and \
            'access_block' in self.data and self.data['access_block'] and \
-           'access_address' in self.data and self.data['access_address']:
+           'access_address' in self.data and self.data['access_address'] and \
            'group_block' in self.data and self.data['group_block'] and \
            'group_address' in self.data and self.data['group_address']:
             if to_save['root_block'] is not None:

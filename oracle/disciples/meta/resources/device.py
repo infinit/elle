@@ -97,7 +97,7 @@ class Create(Page):
         assert id_ is not None
 
         to_save['passport'] = metalib.generate_passport(
-            id_,
+            str(id_),
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
