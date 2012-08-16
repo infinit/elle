@@ -35,7 +35,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
+ELLE_LOG_TRACE_COMPONENT("infinit.hole.implementations.slug.Machine");
 
 namespace hole
 {
@@ -189,6 +189,8 @@ namespace hole
 
           _server->listen(this->port);
           this->port = _server->local_endpoint().port();
+
+          ELLE_LOG_TRACE("listening on port %s", this->port);
 
           {
             // XXX should be done with a signal

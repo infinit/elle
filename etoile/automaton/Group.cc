@@ -31,8 +31,16 @@ namespace etoile
 
       ELLE_LOG_TRACE_SCOPE("Create()");
 
-      context.group = new nucleus::neutron::Group(agent::Agent::Subject.user(),
-                                                  description);
+      // XXX[remove try/catch later]
+      try
+        {
+          context.group = new nucleus::neutron::Group(agent::Agent::Subject.user(),
+                                                      description);
+        }
+      catch (std::exception const& e)
+        {
+          escape("%s", e.what());
+        }
 
       // bind the object to its address i.e this will never changed.
       if (context.group->Bind(address) == elle::Status::Error)

@@ -10,33 +10,31 @@ namespace nucleus
     /// this method updates the access block, more precisely the record
     /// associated with the _subject_.
     ///
-    /// the permissions are updated along with _stuff_ which can represent
+    /// the permissions are updated along with _secret_ which can represent
     /// either a secret key which will be encrypted with the user's public
     /// key or a token already formed.
     ///
     template <typename T>
-    elle::Status        Access::Update(const Subject&           subject,
-                                       const Permissions&       permissions,
-                                       const T&                 stuff,
-                                       elle::cryptography::PublicKey const& K)
+    elle::Status
+    Access::Update(Subject const& subject,
+                   Permissions permissions,
+                   T const& secret,
+                   elle::cryptography::PublicKey const& K)
     {
-      Record* record;
+      // XXX[remove try/catch later]
+      try
+        {
+          Token token(K, secret);
 
-      // retrieve the record.
-      if (this->Lookup(subject, record) == elle::Status::Error)
-        escape("unable to retrieve the subject's record");
+          if (this->Update(subject, permissions, token) == elle::Status::Error)
+            escape("unable to update the record");
+        }
+      catch (std::exception const& e)
+        {
+          escape("%s", e.what());
+        }
 
-      // update the record with the new permissions and stuff.
-      if (record->Update(subject,
-                         permissions,
-                         stuff,
-                         K) == elle::Status::Error)
-        escape("unable to update the record");
-
-      // set the block as dirty.
-      this->state = proton::StateDirty;
-
-      return elle::Status::Ok;
+      return (elle::Status::Ok);
     }
 
   }

@@ -1,5 +1,7 @@
 #include <hole/Openness.hh>
 
+# include <iostream>
+
 namespace hole
 {
 

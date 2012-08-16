@@ -141,6 +141,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to initialize Agent");
 
   hole::Hole::Initialize();
+  hole::Hole::join();
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)
@@ -173,6 +174,8 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   if (agent::Agent::Clean() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Agent");
+
+  hole::Hole::leave();
 
   // clean Hole.
   if (hole::Hole::Clean() == elle::Status::Error)

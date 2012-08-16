@@ -500,6 +500,43 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  subdirectory,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    subdirectory, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  subdirectory, directory);
+          }
+        }
+
       // Add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
@@ -636,6 +673,11 @@ namespace horizon
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
+
+      // Optimisation: if the mask is equal to F_OK i.e there is nothing else
+      // to check but the existence of the path, return righ away.
+      if (mask == F_OK)
+        return (0);
 
       // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
@@ -1216,6 +1258,52 @@ namespace horizon
               -EPERM,
               directory);
 
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  link,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    link, directory);
+
+            // grant the exec permission to the 'everybody' group by
+            // creating the attribute 'perm::exec'.
+            if (etoile::wall::Attributes::Set(link,
+                                              "perm::exec",
+                                              "true") == elle::Status::Error)
+              error("unable to set the attribute",
+                    -EPERM,
+                    link, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  link, directory);
+          }
+        }
+
       // Bind the link.
       if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
         error("unable to bind the link",
@@ -1378,6 +1466,43 @@ namespace horizon
             error("unable to set the attributes",
                   -EPERM,
                   file, directory);
+        }
+
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  file,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    file, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  file, directory);
+          }
         }
 
       // Add the file to the directory.
