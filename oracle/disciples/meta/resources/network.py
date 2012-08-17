@@ -60,10 +60,10 @@ class _Page(Page):
         }) is not None
 
     def _unique_ids_check(self, ids, checker):
-        return filter(
+        return list(set(filter(
             checker,
             map(lambda d: database.ObjectId(str(d).strip()), ids)
-        )
+        )))
 
 NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
 NETWORK_INVITATION_CONTENT = """
@@ -323,10 +323,7 @@ class AddDevice(_Page):
             return self.error("Device not found.")
         devices = network['devices']
         devices.append(device['_id'])
-        network['devices'] = self._check_unique_ids(
-           devices,
-           self._check_device
-        )
+        network['devices'] = list(set(devices))
         database.networks().save(network)
         return self.success({
             "updated_network_id": network['_id'],
