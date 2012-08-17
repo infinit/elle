@@ -283,7 +283,11 @@ void InfinitNetwork::_register_device()
 
   if (it == this->_description.devices.end())
     {
-      LOG("Registering device for network", this->_description.name);
+      LOG("Registering devices for network", this->_description.name);
+      for (auto const& dev : this->_description.devices)
+        {
+          LOG("\t-", dev);
+        }
 
       this->_description.devices.push_back(passport.id);
       try {
