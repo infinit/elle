@@ -186,6 +186,7 @@ class Nodes(_Page):
                     res['nodes'].append(
                         addr['ip'] + ':' + str(addr['port']),
                     )
+        print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
 
