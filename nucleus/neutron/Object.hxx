@@ -6,37 +6,7 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-namespace nucleus
-{
-  namespace neutron
-  {
-    namespace detail
-    {
-
-      // XXX it would be better to serialize Record class
-      template<elle::serialize::ArchiveMode mode> struct SelectMethod
-      { static void update(nucleus::neutron::Object&) {} };
-
-      template<> struct SelectMethod<elle::serialize::ArchiveMode::Input>
-      {
-        static void update(nucleus::neutron::Object& value)
-        {
-          ELLE_LOG_COMPONENT("nucleus.neutron.Object");
-          ELLE_TRACE("Compute owner record")
-            {
-              if (value.meta.owner.record.Update(
-                      value.owner.subject,
-                      value.meta.owner.permissions,
-                      value.meta.owner.token) == elle::Status::Error)
-                  throw std::runtime_error("unable to create the owner access record");
-            }
-        }
-      };
-
-    }
-  }
-}
-
+# include <nucleus/neutron/Author.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
                       archive,
@@ -47,24 +17,22 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
 
   archive & static_cast<nucleus::proton::ImprintBlock&>(value);
 
-  archive & value.author;
+  archive & elle::serialize::alive_pointer(value._author);
 
-  archive & value.meta.owner.permissions;
-  archive & value.meta.owner.token;
-  archive & value.meta.genre;
-  archive & value.meta.stamp;
-  archive & value.meta.attributes;
-  archive & value.meta.access;
-  archive & value.meta.version;
-  archive & value.meta.signature;
+  archive & value._meta.owner.permissions;
+  archive & value._meta.owner.token;
+  archive & value._meta.genre;
+  archive & value._meta.modification_stamp;
+  archive & value._meta.attributes;
+  archive & value._meta.access;
+  archive & value._meta.version;
+  archive & value._meta.signature;
 
-  archive & value.data.contents;
-  archive & value.data.size;
-  archive & value.data.stamp;
-  archive & value.data.version;
-  archive & value.data.signature;
-
-  nucleus::neutron::detail::SelectMethod<Archive::mode>::update(value); // XXX
+  archive & value._data.contents;
+  archive & value._data.size;
+  archive & value._data.modification_stamp;
+  archive & value._data.version;
+  archive & value._data.signature;
 }
 
 #endif

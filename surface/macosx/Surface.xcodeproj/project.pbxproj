@@ -15,7 +15,7 @@
 		1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C50F8EE1574D50D0082F57C /* OOSetupView.m */; };
 		1C50F8F11574D50D0082F57C /* OOSetupWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8EF1574D50D0082F57C /* OOSetupWindow.xib */; };
 		1C50F8F81574EE030082F57C /* setup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8F71574EE030082F57C /* setup-bg.png */; };
-		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; };
+		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C74C3251598713B009210AC /* OOSetupWindowController.m */; };
 		1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */; };
 		1C7863401566919800F7D2F5 /* 19px-active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863011566919800F7D2F5 /* 19px-active.png */; };

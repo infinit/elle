@@ -7,30 +7,33 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <FinderPanel/OOBrowserWindowController.h>
 
 extern NSString *OOOpenSetupWindowAndStopWatchdog;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 {
-    NSWindow *window;
-    IBOutlet NSMenu *statusMenu;
-    IBOutlet NSMenu *statusLoginMenu;
-    NSStatusItem *statusItem;
-    NSInteger currentFrame;
-    NSTimer *animTimer;
-    NSImage *defaultIcon;
-    int     pendingCount;
-    BOOL    isPending;
-    BOOL    isUpdating;
-    BOOL    isLoginIn;
+    NSWindow                    *window;
+    IBOutlet NSMenu             *statusMenu;
+    IBOutlet NSMenu             *statusLoginMenu;
+    NSStatusItem                *statusItem;
+    NSInteger                   currentFrame;
+    NSTimer                     *animTimer;
+    NSImage                     *defaultIcon;
+    int                         pendingCount;
+    BOOL                        isPending;
+    BOOL                        isUpdating;
+    BOOL                        isLoginIn;
+    OOBrowserWindowController   *browserWindowController;
 }
 
-@property(assign)   IBOutlet NSWindow   *window;
-@property(assign)   NSInteger           currentFrame;
-@property(assign)   NSTimer             *animTimer;
-@property           BOOL                isPending;
-@property           BOOL                isUpdating;
-@property           BOOL                isLoginIn;
+@property(assign)   IBOutlet NSWindow               *window;
+@property(assign)   NSInteger                       currentFrame;
+@property(assign)   NSTimer                         *animTimer;
+@property           BOOL                            isPending;
+@property           BOOL                            isUpdating;
+@property           BOOL                            isLoginIn;
+@property(retain)   OOBrowserWindowController       *browserWindowController;
 
 - (void)launch8Watchdog;
 
@@ -39,8 +42,8 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
 - (void)updateStatusItemImageWithTimer:(NSTimer*)arg1;
 
 - (IBAction)openInfinitNeworks:(id)sender;
-- (IBAction)installInjectBundle:(id)sender;
-- (IBAction)injectBundle:(id)sender;
+//- (IBAction)installInjectBundle:(id)sender;
+//- (IBAction)injectBundle:(id)sender;
 - (IBAction)launchWebsite:(id)sender;
 - (IBAction)launchHelpCenter:(id)sender;
 

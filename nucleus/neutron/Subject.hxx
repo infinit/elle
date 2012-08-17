@@ -16,18 +16,18 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
 {
   assert(version == 0);
 
-  archive & value.type;
+  archive & value._type;
 
-  switch (value.type)
+  switch (value._type)
     {
     case nucleus::neutron::Subject::TypeUser:
       {
-        archive & elle::serialize::alive_pointer(value.user);
+        archive & elle::serialize::alive_pointer(value._user);
         break;
       }
     case nucleus::neutron::Subject::TypeGroup:
       {
-        archive & elle::serialize::alive_pointer(value.group);
+        archive & elle::serialize::alive_pointer(value._group);
         break;
       }
     default:

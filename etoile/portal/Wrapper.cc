@@ -3,6 +3,8 @@
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Directory.hh>
+#include <etoile/wall/Group.hh>
+#include <etoile/gear/Identifier.hh>
 
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Subject.hh>
@@ -11,6 +13,7 @@
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Entry.hh>
+#include <nucleus/neutron/Fellow.hh>
 
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
@@ -35,9 +38,9 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record& record)
     {
-      nucleus::neutron::Record* r;
+      nucleus::neutron::Record const* r;
 
-      ELLE_TRACE("Access::Lookup()");
+      ELLE_TRACE_SCOPE("Access::Lookup()");
 
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
@@ -67,7 +70,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Record> r;
 
-      ELLE_TRACE("Access::Consult()");
+      ELLE_TRACE_SCOPE("Access::Consult()");
 
       // forward the call to wall.
       if (wall::Access::Consult(identifier,
@@ -95,9 +98,9 @@ namespace etoile
                           const elle::String&                   name,
                           nucleus::neutron::Trait& trait)
     {
-      nucleus::neutron::Trait* t;
+      nucleus::neutron::Trait const* t;
 
-      ELLE_TRACE("Attributes::Get()");
+      ELLE_TRACE_SCOPE("Attributes::Get()");
 
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
@@ -125,7 +128,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Trait> r;
 
-      ELLE_TRACE("Attributes::Fetch()");
+      ELLE_TRACE_SCOPE("Attributes::Fetch()");
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
@@ -151,9 +154,9 @@ namespace etoile
                           const path::Slab&                     slab,
                           nucleus::neutron::Entry& entry)
     {
-      nucleus::neutron::Entry* e;
+      nucleus::neutron::Entry const* e;
 
-      ELLE_TRACE("Directory::Lookup()");
+      ELLE_TRACE_SCOPE("Directory::Lookup()");
 
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
@@ -183,7 +186,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Entry> r;
 
-      ELLE_TRACE("Directory::Consult()");
+      ELLE_TRACE_SCOPE("Directory::Consult()");
 
       // forward the call to wall.
       if (wall::Directory::Consult(identifier,
@@ -191,6 +194,59 @@ namespace etoile
                                    size,
                                    r) == elle::Status::Error)
         escape("unable to consult the given object's directory entries");
+
+      // copy the range, duplicating every entry in it.
+      range = r;
+
+      return elle::Status::Ok;
+    }
+
+//
+// ---------- group -----------------------------------------------------------
+//
+
+    elle::Status
+    Wrapper::Group::Lookup(gear::Identifier const& identifier,
+                           nucleus::neutron::Subject const& subject,
+                           nucleus::neutron::Fellow& fellow)
+    {
+      nucleus::neutron::Fellow const* f;
+
+      ELLE_TRACE_SCOPE("Group::Lookup()");
+
+      // forward the call to wall.
+      if (wall::Group::Lookup(identifier,
+                              subject,
+                              f) == elle::Status::Error)
+        escape("unable to lookup the fellow");
+
+      // construct the fellow depending on the value of _f_.
+      if (f != nullptr)
+        fellow = *f;
+      else
+        fellow = nucleus::neutron::Fellow::Null;
+
+      return elle::Status::Ok;
+    }
+
+    elle::Status
+    Wrapper::Group::Consult(gear::Identifier const& identifier,
+                            nucleus::neutron::Index const& index,
+                            nucleus::neutron::Size const& size,
+                            nucleus::neutron::Range<
+                              nucleus::neutron::Fellow>& range)
+    {
+      nucleus::neutron::Range<nucleus::neutron::Fellow> r;
+
+      ELLE_TRACE_SCOPE("Group::Consult(%s, %s, %s, %s)",
+                           identifier, index, size, range);
+
+      // forward the call to wall.
+      if (wall::Group::Consult(identifier,
+                               index,
+                               size,
+                               r) == elle::Status::Error)
+        escape("unable to consult the given group fellows");
 
       // copy the range, duplicating every entry in it.
       range = r;

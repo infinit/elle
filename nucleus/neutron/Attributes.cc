@@ -43,7 +43,7 @@ namespace nucleus
     /// this method returns the trait corresponding to the given name.
     ///
     elle::Status        Attributes::Lookup(const elle::String&  name,
-                                           Trait*&              trait) const
+                                           Trait const*& trait) const
     {
       // look in the range.
       if (this->range.Lookup(name, trait) == elle::Status::Error)

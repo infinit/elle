@@ -23,7 +23,7 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (NSString *)getHashPasswordWithEmail:(NSString*)arg1 andClearPassword:(NSString*)arg2;
 
-- (void)loginWithEmail:(NSString*)arg1 password:(NSString*)arg2 performSelector:(SEL)arg3 forObject:(id)arg4;
+- (void)loginWithEmail:(NSString*)arg1 password:(NSString*)arg2 machineName:(NSString*)arg3 performSelector:(SEL)arg4 forObject:(id)arg5;
 
 - (void)registerWithFullName:(NSString*)arg1 
                        email:(NSString*)arg2 
@@ -52,5 +52,7 @@ extern NSString *OOUpdateProgessChangedNotification;
 - (NSArray*)searchUsersWithString:(NSString*)arg1;
 
 - (void)launchWatchdog;
+
+- (void)stopWatchdog;
 
 @end

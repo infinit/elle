@@ -2,11 +2,11 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/gear/Object.hh>
 
-#include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Object.hh>
 
 #include <elle/idiom/Close.hh>
 # include <limits>
@@ -34,15 +34,15 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 
       // does the attribute already exist.
-      if (context.object->meta.attributes.Exist(name) == elle::Status::True)
+      if (context.object->attributes().Exist(name) == elle::Status::True)
         {
           // update the trait, properly i.e by calling the Update() method.
-          if (context.object->meta.attributes.Update(
+          if (context.object->attributes().Update(
                 name,
                 value) == elle::Status::Error)
             escape("unable to update the trait");
@@ -55,7 +55,7 @@ namespace etoile
           trait = new nucleus::neutron::Trait(name, value);
 
           // add the trait to the attributes.
-          if (context.object->meta.attributes.Add(trait) == elle::Status::Error)
+          if (context.object->attributes().Add(trait) == elle::Status::Error)
             {
               delete trait;
               escape("unable to add the trait");
@@ -64,8 +64,8 @@ namespace etoile
 
       // administrate the object.
       if (context.object->Administrate(
-            context.object->meta.attributes,
-            context.object->meta.owner.permissions) == elle::Status::Error)
+            context.object->attributes(),
+            context.object->owner_permissions()) == elle::Status::Error)
         escape("unable to administrate the object");
 
       // set the context's state.
@@ -81,10 +81,10 @@ namespace etoile
     elle::Status        Attributes::Get(
                           gear::Object&                         context,
                           const elle::String&                   name,
-                          nucleus::neutron::Trait*& trait)
+                          nucleus::neutron::Trait const*& trait)
     {
       // lookup in the attributes object.
-      if (context.object->meta.attributes.Lookup(name,
+      if (context.object->attributes().Lookup(name,
                                                  trait) == elle::Status::Error)
         escape("unable to lookup in the attributes");
 
@@ -100,7 +100,7 @@ namespace etoile
                             nucleus::neutron::Trait>& range)
     {
       // consult the attributes.
-      if (context.object->meta.attributes.Consult(
+      if (context.object->attributes().Consult(
             std::numeric_limits<nucleus::neutron::Index>::min(),
             std::numeric_limits<nucleus::neutron::Size>::max(),
             range) == elle::Status::Error)
@@ -121,18 +121,18 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 
       // remove the trait associated with the given name.
-      if (context.object->meta.attributes.Remove(name) == elle::Status::True)
+      if (context.object->attributes().Remove(name) == elle::Status::True)
         escape("unable to remove the trait");
 
       // administrate the object.
       if (context.object->Administrate(
-            context.object->meta.attributes,
-            context.object->meta.owner.permissions) == elle::Status::Error)
+            context.object->attributes(),
+            context.object->owner_permissions()) == elle::Status::Error)
         escape("unable to administrate the object");
 
       // set the context's state.

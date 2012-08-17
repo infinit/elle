@@ -2,68 +2,102 @@
 # define ELLE_FORMAT_JSON_ARRAY_HH
 
 # include <cassert>
-# include <vector>
 # include <list>
+# include <vector>
 
 # include "Object.hh"
+# include "_internal.hh"
 
-namespace elle { namespace format { namespace json {
-
-    class Null;
-
-    class Array : public Object
+namespace elle
+{
+  namespace format
+  {
+    namespace json
     {
-    private:
-      std::vector<Object*> _value;
 
-    public:
-      Array() {}
-
-      template<typename Container>
-      Array(Container const& container);
-
-      ~Array()
+      class Array:
+        public Object
       {
-        for (auto it = _value.begin(), end = _value.end(); it != end; ++it)
-          delete (*it);
-        _value.clear();
-      }
+      private:
+        internal::Array _value;
 
-      template<typename T> inline void push_back(T const& value);
-      inline void push_back(std::unique_ptr<Object>&& value)
-        {
-          assert(value.get() != nullptr);
-          _value.push_back(value.get());
-          value.release();
-        }
+        //
+        // Construction.
+        //
+      public:
+        /// Default constructor makes an empty array.
+        Array();
 
-      size_t size() const { return _value.size(); }
+        /// Build an array from any kind of sequence. Contained type has to be
+        /// convertible to a json object.
+        template <typename Container>
+        Array(Container const& container);
 
-      std::unique_ptr<Object> Clone() const;
-    protected:
-      void Save(elle::serialize::OutputJSONArchive& ar) const;
+        /// An array of json object pointers can be moved.
+        Array(internal::Array&& value);
 
-    public:
-      using Object::operator ==;
-      inline Object& operator[] (size_t index) const;
+        /// dtor.
+        ~Array();
 
-      virtual bool operator ==(Object const& other) const
-        { return other == *this; }
+        //
+        // Behave like an std::vector.
+        //
+      public:
+        /// Add an arbitrary value.
+        template <typename T>
+        inline
+        void
+        push_back(T const& value);
 
-      virtual bool operator ==(Array const& other) const
-        {
-          if (this->size() != other.size())
-            return false;
-          for (size_t i = 0; i < this->size(); ++i)
-            if (*_value[i] != *other._value[i])
-              return false;
-          return true;
-        }
+        /// Move a json object pointer.
+        void
+        push_back(std::unique_ptr<Object>&& value);
 
-      template<typename T>
-      operator std::list<T>() const;
-    };
+        /// Indexable.
+        /// @throws std::range_error.
+        inline
+        Object&
+        operator [](size_t index) const;
 
-}}} // !namespace elle::format::json
+        /// Size of the array.
+        inline
+        size_t
+        size() const;
+
+        // Representation.
+      public:
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
+
+        // Clonable.
+      public:
+        std::unique_ptr<Object>
+        clone() const;
+
+        // Comparable.
+      public:
+        using Object::operator ==;
+        virtual
+        bool
+        operator ==(Array const& other) const;
+        virtual
+        bool
+        operator ==(Object const& other) const;
+
+        // Convertible to std::list and std::vector.
+      public:
+        template<typename T>
+        operator std::vector<T>() const;
+        template<typename T>
+        operator std::list<T>() const;
+      };
+
+    }
+  }
+} // !namespace elle::format::json
+
+# include "Array.hxx"
 
 #endif /* ! ARRAY_HH */

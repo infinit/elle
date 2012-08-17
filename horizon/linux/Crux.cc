@@ -1,10 +1,9 @@
-#include <elle/log.hh>
-
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Janitor.hh>
 #include <horizon/linux/Handle.hh>
 #include <horizon/linux/Crib.hh>
+#include <horizon/Policy.hh>
 
 #include <agent/Agent.hh>
 
@@ -19,7 +18,7 @@
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Path.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Record.hh>
@@ -31,6 +30,10 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
+
+#include <hole/Hole.hh>
+
+#include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
@@ -118,7 +121,7 @@ namespace horizon
       ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       Handle*                           handle;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       elle::String*                     name;
 
       // Clear the stat structure.
@@ -220,7 +223,7 @@ namespace horizon
           }
         case nucleus::neutron::GenreFile:
           {
-            nucleus::neutron::Trait* trait;
+            nucleus::neutron::Trait const* trait;
 
             stat->st_mode = S_IFREG;
 
@@ -343,7 +346,7 @@ namespace horizon
 
       Handle*           handle;
       off_t             next;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Set the handle pointer to the file handle that has been
       // filled by Opendir().
@@ -458,7 +461,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  subdirectory;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -509,6 +512,43 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  subdirectory,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    subdirectory, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  subdirectory, directory);
+          }
+        }
+
       // Add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
@@ -543,8 +583,8 @@ namespace horizon
       etoile::path::Chemin              chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
-      etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      etoile::abstract::Object   abstract;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
@@ -638,15 +678,20 @@ namespace horizon
       ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
       etoile::gear::Identifier          identifier;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
+
+      // Optimisation: if the mask is equal to F_OK i.e there is nothing else
+      // to check but the existence of the path, return righ away.
+      if (mask == F_OK)
+        return (0);
 
       // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
@@ -689,7 +734,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreFile:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -708,7 +753,7 @@ namespace horizon
               }
             case nucleus::neutron::GenreLink:
               {
-                nucleus::neutron::Trait* trait;
+                nucleus::neutron::Trait const* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -774,7 +819,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
@@ -942,7 +987,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
@@ -1005,7 +1050,7 @@ namespace horizon
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Trait* trait;
+      nucleus::neutron::Trait const* trait;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1136,7 +1181,7 @@ namespace horizon
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      etoile::miscellaneous::Abstract   abstract;
+      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
@@ -1199,7 +1244,7 @@ namespace horizon
       etoile::path::Way         from(etoile::path::Way(source), name);
       etoile::path::Way         to(target);
       etoile::path::Chemin      chemin;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -1234,6 +1279,52 @@ namespace horizon
         error("unable to create a link",
               -EPERM,
               directory);
+
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  link,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    link, directory);
+
+            // grant the exec permission to the 'everybody' group by
+            // creating the attribute 'perm::exec'.
+            if (etoile::wall::Attributes::Set(link,
+                                              "perm::exec",
+                                              "true") == elle::Status::Error)
+              error("unable to set the attribute",
+                    -EPERM,
+                    link, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  link, directory);
+          }
+        }
 
       // Bind the link.
       if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
@@ -1277,7 +1368,7 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
       etoile::path::Way         target;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1342,7 +1433,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  file;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1400,6 +1491,43 @@ namespace horizon
             error("unable to set the attributes",
                   -EPERM,
                   file, directory);
+        }
+
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  file,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    file, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  file, directory);
+          }
         }
 
       // Add the file to the directory.
@@ -1509,7 +1637,7 @@ namespace horizon
 
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Retrieve the handle;
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1560,7 +1688,7 @@ namespace horizon
 
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1649,7 +1777,7 @@ namespace horizon
                            static_cast<elle::Natural64>(size), info);
 
       Handle*           handle;
-      nucleus::neutron::Record* record;
+      nucleus::neutron::Record const* record;
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1765,8 +1893,8 @@ namespace horizon
           // since the source and target directory are identical.
           etoile::path::Chemin          chemin;
           etoile::gear::Identifier      directory;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           ELLE_TRACE("resolve the source directory path")
             if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -1849,8 +1977,8 @@ namespace horizon
             etoile::gear::Identifier    from;
             etoile::gear::Identifier    to;
           }                             identifier;
-          nucleus::neutron::Entry* entry;
-          nucleus::neutron::Record* record;
+          nucleus::neutron::Entry const* entry;
+          nucleus::neutron::Record const* record;
 
           // Resolve the path.
           if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -2021,8 +2149,8 @@ namespace horizon
       }                                 chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
-      etoile::miscellaneous::Abstract   abstract;
-      nucleus::neutron::Record* record;
+      etoile::abstract::Object   abstract;
+      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.

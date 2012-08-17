@@ -10,7 +10,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/journal/Journal.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/proton/Location.hh>
 #include <nucleus/neutron/Object.hh>
@@ -77,7 +77,7 @@ namespace etoile
 
           // Depending on the object's genre, a context is allocated
           // for the scope.
-          switch (object.get()->meta.genre)
+          switch (object->genre())
             {
             case nucleus::neutron::GenreFile:
               {
@@ -108,7 +108,8 @@ namespace etoile
               }
             default:
               {
-                // XXX
+                // XXX[this whole code should probably be put within the
+                //     critical section?]
                 printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
                 object.get()->Dump();
 
@@ -185,7 +186,7 @@ namespace etoile
     ///
     elle::Status        Object::Information(
                           const gear::Identifier&               identifier,
-                          miscellaneous::Abstract&              abstract)
+                          abstract::Object&              abstract)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

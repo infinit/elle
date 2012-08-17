@@ -11,5 +11,6 @@
 @interface OONurseManager : NSObject
 
 - (BOOL)manage:(NSString *)arg1;
+- (void)quit;
 
 @end

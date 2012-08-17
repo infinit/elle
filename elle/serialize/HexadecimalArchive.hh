@@ -93,5 +93,3 @@ namespace elle { namespace serialize {
 }} // !ns elle::serialize
 
 #endif /* ! HEXADECIMALARCHIVE_HH */
-
-

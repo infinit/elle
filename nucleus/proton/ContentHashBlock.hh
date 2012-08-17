@@ -52,6 +52,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // serializable
       // XXX ELLE_CONCEPT_FILEABLE_METHODS(ContentHashBlock);
     };
 

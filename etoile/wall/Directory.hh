@@ -33,7 +33,7 @@ namespace etoile
                                     const gear::Identifier&);
       static elle::Status       Lookup(const gear::Identifier&,
                                        const path::Slab&,
-                                       nucleus::neutron::Entry*&);
+                                       nucleus::neutron::Entry const*&);
       static elle::Status       Consult(const gear::Identifier&,
                                         const nucleus::neutron::Index&,
                                         const nucleus::neutron::Size&,

@@ -52,14 +52,14 @@ namespace satellite
   elle::Status
   Access::Display(nucleus::neutron::Record const& record)
   {
-    switch (record.subject.type)
+    switch (record.subject.type())
       {
       case nucleus::neutron::Subject::TypeUser:
         {
           elle::io::Unique unique;
 
           // convert the public key into a human-kind-of-readable string.
-          if (record.subject.user->Save(unique) == elle::Status::Error)
+          if (record.subject.user().Save(unique) == elle::Status::Error)
             escape("unable to save the public key's unique");
 
           std::cout << "User"
@@ -75,7 +75,7 @@ namespace satellite
           elle::io::Unique unique;
 
           // convert the group's address into a human-kind-of-readable string.
-          if (record.subject.group->Save(unique) == elle::Status::Error)
+          if (record.subject.group().Save(unique) == elle::Status::Error)
             escape("unable to save the address' unique");
 
           std::cout << "Group"
@@ -513,10 +513,10 @@ namespace satellite
 
     // register the options.
     if (Infinit::Parser->Register(
-          "Identifier",
+          "Identity",
           'i',
-          "identifier",
-          "specify the user/group base64 identifier",
+          "identity",
+          "specify the user/group base64 identity",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
@@ -635,16 +635,16 @@ namespace satellite
                 elle::cryptography::PublicKey         K;
                 std::string                           res;
 
-                // retrieve the identifier which is supposed to
+                // retrieve the identity which is supposed to
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value(
-                      "Identifier",
+                      "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  escape("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
-                         "through the identifier");
+                         "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
@@ -722,16 +722,16 @@ namespace satellite
                 elle::cryptography::PublicKey         K;
                 std::string res;
 
-                // retrieve the identifier which is supposed to
+                // retrieve the identity which is supposed to
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value(
-                      "Identifier",
+                      "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  escape("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
-                         "through the identifier");
+                         "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
@@ -803,16 +803,16 @@ namespace satellite
                 elle::cryptography::PublicKey         K;
                 std::string res;
 
-                // retrieve the identifier which is supposed to
+                // retrieve the identity which is supposed to
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value(
-                      "Identifier",
+                      "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  escape("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
-                         "through the identifier");
+                         "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)

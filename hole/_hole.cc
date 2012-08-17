@@ -100,6 +100,7 @@ namespace hole
 
     // initialize the Hole library.
     hole::Hole::Initialize();
+    hole::Hole::join();
 
     // launch the program.
     elle::concurrency::Program::Launch();
@@ -107,6 +108,8 @@ namespace hole
     // delete the parser.
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
+
+    hole::Hole::leave();
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::Status::Error)

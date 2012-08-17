@@ -65,7 +65,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a directory.
-      if (context.object->meta.genre != nucleus::neutron::GenreDirectory)
+      if (context.object->genre() != nucleus::neutron::GenreDirectory)
         escape("this object does not seem to be a directory");
 
       // set the context's state.
@@ -122,11 +122,11 @@ namespace etoile
 
       // update the object.
       if (context.object->Update(
-            context.object->author,
-            context.object->data.contents,
+            context.object->author(),
+            context.object->contents(),
             size,
-            context.object->meta.access,
-            context.object->meta.owner.token) == elle::Status::Error)
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -142,7 +142,7 @@ namespace etoile
     elle::Status        Directory::Lookup(
                           gear::Directory&                      context,
                           const path::Slice&                    name,
-                          nucleus::neutron::Entry*& entry)
+                          nucleus::neutron::Entry const*& entry)
     {
       ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, name);
 
@@ -263,11 +263,11 @@ namespace etoile
       // update the object though renaming an entry may not impact
       // the object's data size.
       if (context.object->Update(
-            context.object->author,
-            context.object->data.contents,
+            context.object->author(),
+            context.object->contents(),
             size,
-            context.object->meta.access,
-            context.object->meta.owner.token) == elle::Status::Error)
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -317,11 +317,11 @@ namespace etoile
 
       // update the object.
       if (context.object->Update(
-            context.object->author,
-            context.object->data.contents,
+            context.object->author(),
+            context.object->contents(),
             size,
-            context.object->meta.access,
-            context.object->meta.owner.token) == elle::Status::Error)
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -359,7 +359,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context.rights.role != nucleus::neutron::RoleOwner)
+      if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this directory");
 

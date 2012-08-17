@@ -19,7 +19,7 @@
 # include <boost/lexical_cast.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("nucleus.proton.MutableBlock");
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.MutableBlock");
 
 namespace nucleus
 {
@@ -211,8 +211,8 @@ namespace nucleus
           // if the history is not supported, store the mutable block
           // in a file without version number extension.
           //
-          elle::standalone::Region          region;
-          MutableBlock          block;
+          elle::standalone::Region region;
+          MutableBlock block;
 
           // complete the file path.
           if (file.Complete(elle::io::Piece("%VERSION%", "@")) ==

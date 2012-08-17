@@ -9,6 +9,9 @@ namespace nucleus
   namespace neutron
   {
 
+    // XXX[remove all nucleus::neutron:: before Object when Author will
+    //     no longer derive radix::Object]
+
 //
 // ---------- definitions -----------------------------------------------------
 //
@@ -26,7 +29,7 @@ namespace nucleus
     /// the constructor.
     ///
     Author::Author():
-      role(RoleUnknown)
+      role(nucleus::neutron::Object::RoleUnknown)
     {
     }
 
@@ -47,7 +50,7 @@ namespace nucleus
     elle::Status        Author::Create()
     {
       // set the role.
-      this->role = RoleOwner;
+      this->role = nucleus::neutron::Object::RoleOwner;
 
       return elle::Status::Ok;
     }
@@ -60,7 +63,7 @@ namespace nucleus
     elle::Status        Author::Create(const Index&             index)
     {
       // set the role.
-      this->role = RoleLord;
+      this->role = nucleus::neutron::Object::RoleLord;
 
       // set the index.
       this->lord.index = index;
@@ -88,7 +91,7 @@ namespace nucleus
       // depending on the role.
       switch (this->role)
         {
-        case RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
             //
             // nothing more to compare.
@@ -96,7 +99,7 @@ namespace nucleus
 
             break;
           }
-        case RoleLord:
+        case nucleus::neutron::Object::RoleLord:
           {
             //
             // compare the index to the entry in the Access block.
@@ -108,7 +111,7 @@ namespace nucleus
 
             break;
           }
-        case RoleVassal:
+        case nucleus::neutron::Object::RoleVassal:
           {
             // XXX to implement.
 
@@ -152,7 +155,7 @@ namespace nucleus
       // depending on the role.
       switch (this->role)
         {
-        case RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
             //
             // nothing more to dump.
@@ -160,7 +163,7 @@ namespace nucleus
 
             break;
           }
-        case RoleLord:
+        case nucleus::neutron::Object::RoleLord:
           {
             //
             // dump the index to the entry in the Access block.
@@ -173,11 +176,20 @@ namespace nucleus
 
             break;
           }
-        case RoleVassal:
+        case nucleus::neutron::Object::RoleVassal:
           {
             // XXX to implement.
 
             break;
+          }
+        case nucleus::neutron::Object::RoleUnknown:
+        case nucleus::neutron::Object::RoleNone:
+          {
+            break;
+          }
+        default:
+          {
+            escape("unknown role '%u'", this->role);
           }
         }
 

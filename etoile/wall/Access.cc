@@ -39,7 +39,7 @@ namespace etoile
     elle::Status        Access::Lookup(
                           const gear::Identifier&               identifier,
                           const nucleus::neutron::Subject& subject,
-                          nucleus::neutron::Record*& record)
+                          nucleus::neutron::Record const*& record)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

@@ -1,17 +1,21 @@
 #ifndef ELLE_FORMAT_JSON_STRING_HH
 # define ELLE_FORMAT_JSON_STRING_HH
 
-# include <string>
-
 # include "Object.hh"
 # include "_detail.hh"
+# include "_internal.hh"
 
-namespace elle { namespace format { namespace json {
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
-    typedef detail::BasicObject<std::string> String;
+      typedef detail::BasicObject<internal::String> String;
 
-}}} // !namespace elle::format::json
+    }
+  }
+} // !namespace elle::format::json
 
 #endif /* ! STRING_HH */
-
-

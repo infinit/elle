@@ -76,7 +76,7 @@ namespace etoile
     elle::Status        Attributes::Get(
                           const gear::Identifier&               identifier,
                           const elle::String&                   name,
-                          nucleus::neutron::Trait*& trait)
+                          nucleus::neutron::Trait const*& trait)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

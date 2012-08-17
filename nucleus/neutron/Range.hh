@@ -21,7 +21,7 @@ namespace nucleus
     /// a range must be parameterised with a type providing two things:
     ///  1) a type T::S which defines the key type used to differenciate
     ///     items.
-    ///  2) a Symbol() method which must returns a T::S&, this method
+    ///  2) a symbol() method which must returns a T::S&, this method
     ///     being used to retrieve the key value of a given item.
     ///
     template <typename T>
@@ -47,7 +47,7 @@ namespace nucleus
       //
       // types
       //
-      typedef typename T::S                             S;
+      typedef typename T::Symbol                        Symbol;
 
       typedef std::list<T*>                             Container;
       typedef typename Container::iterator              Iterator;
@@ -64,14 +64,19 @@ namespace nucleus
       // methods
       //
       elle::Status      Add(T*);
-      elle::Status      Exist(const S&) const;
-      elle::Status      Lookup(const S&,
+      /// XXX
+      elle::Status
+      Add(Range<T> const& other);
+      elle::Status      Exist(const Symbol&) const;
+      elle::Status      Lookup(const Symbol&,
+                               T const*& = Trash) const;
+      elle::Status      Lookup(const Symbol&,
                                T*& = Trash) const;
-      elle::Status      Remove(const S&);
+      elle::Status      Remove(const Symbol&);
       elle::Status      Capacity(Size&) const;
-      elle::Status      Locate(const S&,
+      elle::Status      Locate(const Symbol&,
                                Scoutor&) const;
-      elle::Status      Locate(const S&,
+      elle::Status      Locate(const Symbol&,
                                Iterator&);
 
       elle::Status      Detach();

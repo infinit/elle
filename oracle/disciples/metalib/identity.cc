@@ -101,8 +101,6 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
 
       if (res)
         {
-          std::cout << "all:"<<all<< " <- all\n";
-          std::cout << "pub:"<<pub<< " <- pub\n";
           ret = Py_BuildValue("(ss)", all.c_str(), pub.c_str());
         }
       else

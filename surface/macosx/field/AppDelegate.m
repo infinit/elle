@@ -12,7 +12,6 @@
 #import "OOSetupWindowDelegate.h"
 #import "OOPreferencesWindowController.h"
 #import <Phone/OOPhone.h>
-#import <FinderPanel/OOBrowserWindowController.h>
 #import "OOEnvironmentVar.h"
 
 NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog";
@@ -23,9 +22,11 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize currentFrame;
 @synthesize animTimer;
 @synthesize isPending;
+@synthesize browserWindowController;
 
 - (void)dealloc
 {
+    [self stop8Watchdog];
     [super dealloc];
 }
 
@@ -74,7 +75,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)setDefaultStatusIcon {
     if (defaultIcon == nil) {
-        defaultIcon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active", currentFrame]];
+        defaultIcon = [NSImage imageNamed:@"19px-active"];
     }
     [defaultIcon setTemplate:YES];
     [statusItem setImage:defaultIcon];
@@ -86,14 +87,31 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [[OOPhone getInstance] launchWatchdog];
 }
 
+- (void)stop8Watchdog
+{
+    [[OOPhone getInstance] stopWatchdog];
+}
+
 - (void)tryToLogin
 {
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    [[NSUserDefaults standardUserDefaults]synchronize ];
     [statusItem setMenu:statusLoginMenu];
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
     NSString* email = [pref objectForKey:@"Email"];
     NSString* password = [pref objectForKey:@"Password"];
+    NSString* machineName = [pref objectForKey:@"ComputerName"];
     BOOL rememberMe = [[pref objectForKey:@"RememberMe"] boolValue];
+    
+    if (email == nil || password == nil || machineName == nil) {
+        [self loginResult:[NSNumber numberWithInt:1]];
+        return;
+    } else if ([email length] * [password length] * [machineName length] == 0 ) {
+        [self loginResult:[NSNumber numberWithInt:1]];
+        return;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     
@@ -101,12 +119,12 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         [self addPending];
         [[OOPhone getInstance] loginWithEmail:email 
                                      password:password
+                                  machineName:machineName
                               performSelector:@selector(loginResult:) 
                                     forObject:self];
     } else {
         [self loginResult:[NSNumber numberWithInt:1]];
     }
-    
 }
 
 - (void)showSetupWindow {
@@ -118,6 +136,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (void)loginResult:(NSNumber *)arg1 {
     int error = [arg1 intValue];
     if (error != 0) {
+        NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+        [[NSUserDefaults standardUserDefaults]synchronize ];
         [self showSetupWindow];
     }
     else {
@@ -140,7 +161,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [self addPending];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(updateProgessChangedNotification:) 
-                                                 name:OOUpdateProgessChangedNotification 
+                                                 name:OOUpdateProgessChangedNotification
                                                object:nil];
     [[OOPhone getInstance] update];
 }
@@ -149,9 +170,14 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     if (!self.isLoginIn && !self.isUpdating) {
         [statusItem setMenu:statusMenu];
         [self launch8Watchdog];
-        OOBrowserWindowController* browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
-        [browserWindowController showWindow:self];
+        self.browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
+        [self.browserWindowController showWindow:self];
     }
+}
+
+- (void)stopInfinit {
+    [self stop8Watchdog];
+    [self.browserWindowController close];
 }
 
 - (void)updateProgessChangedNotification:(NSNotification *)notification {
@@ -182,14 +208,15 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 {
     //get the image for the current frame
     currentFrame = (++currentFrame % 18) + 1;
-    NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%d",currentFrame]];
+    NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%ld",currentFrame]];
     [image setTemplate:YES];
     [statusItem setImage:image];
 }
 
 - (IBAction)openInfinitNeworks:(id)sender
 {
-    [[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
+    [[browserWindowController window] makeKeyAndOrderFront:self];
+    //[[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
 }
 
 - (IBAction)openPreferenceWindow:(id)sender
@@ -216,6 +243,10 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (IBAction)launchHelpCenter:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io/help"]];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [self stop8Watchdog];
 }
 
 @end

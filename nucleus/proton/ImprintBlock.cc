@@ -1,14 +1,15 @@
 #include <nucleus/proton/ImprintBlock.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Family.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/PublicKey.hh>
 
-#include <nucleus/proton/Family.hh>
-
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("Nucleus.Proton");
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImprintBlock");
 
 namespace nucleus
 {
@@ -16,163 +17,177 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- construction ----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     ImprintBlock::ImprintBlock():
       MutableBlock()
     {
+      this->_owner.subject = nullptr;
     }
 
-    ///
-    /// specific constructor.
-    ///
-    ImprintBlock::ImprintBlock(const neutron::Component         component):
+    ImprintBlock::ImprintBlock(neutron::Component const component):
       MutableBlock(FamilyImprintBlock, component)
     {
+      this->_owner.subject = nullptr;
+    }
+
+    ImprintBlock::ImprintBlock(neutron::Component const component,
+                               elle::cryptography::PublicKey const& owner):
+      MutableBlock(FamilyImprintBlock, component)
+    {
+      this->_owner.subject = nullptr;
+
+      if (this->Create(owner) == elle::Status::Error)
+        throw Exception("unable to create the imprint block");
+        // XXX[no longer necessary in the future]
+    }
+
+    ImprintBlock::~ImprintBlock()
+    {
+      delete this->_owner.subject;
     }
 
 //
 // ---------- object ----------------------------------------------------------
 //
 
-    ///
-    /// this macro-function call generates the object.
-    ///
     embed(ImprintBlock, _());
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates an imprint based on the given owner's public key.
-    ///
-    elle::Status        ImprintBlock::Create(elle::cryptography::PublicKey const& owner)
+    elle::Status
+    ImprintBlock::Create(elle::cryptography::PublicKey const& owner_K)
     {
-      ELLE_TRACE("Creating an ImprintBlock %p", this)
-      {
-        // retrieve the current time.
-        if (this->stamp.Current() == elle::Status::Error)
-          escape("unable to retrieve the current time");
+      ELLE_TRACE_SCOPE("[%p] Create(%s)", this, owner_K);
 
-        // generate a random number.
-        if (elle::cryptography::Random::Generate(this->salt) == elle::Status::Error)
-          escape("unable to generate the seed");
+      // Compute the creation timestamp.
+      if (this->_creation_stamp.Current() == elle::Status::Error)
+        escape("unable to retrieve the current time");
 
-        // set the owner public key.
-        assert(owner.key() != nullptr);
-        this->owner.K = owner;
+      // Generate a random number for the salt.
+      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
+        escape("unable to generate the seed");
 
-        // create a subject corresponding to the user. note that this
-        // subject will never be serialized hence is not really part of
-        // the object but is used to ease the process of access control.
-        if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
-          escape("unable to create the owner subject");
-
-      }
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method computes the block's address.
-    ///
-    elle::Status        ImprintBlock::Bind(Address&             address)
-      const
-    {
-      ELLE_TRACE("Binding an ImprintBlock %p", this)
-      {
-        assert(this->owner.K.key() != nullptr);
-        // compute the address.
-        if (address.Create(this->family, this->component,
-                           this->network,
-                           this->family,
-                           this->component,
-                           this->stamp, this->salt, this->owner.K) ==
-            elle::Status::Error)
-          escape("unable to compute the imprint address");
-      }
+      // Set the owner public key.
+      this->_owner.K = owner_K;
 
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method verifies the block's validity.
-    ///
-    elle::Status        ImprintBlock::Validate(const Address&   address)
-      const
+    elle::Status
+    ImprintBlock::Bind(Address& address) const
     {
-      Address           self;
-      ELLE_TRACE("Validating an ImprintBlock address %p", this)
-      {
-        assert(this->owner.K.key() != nullptr);
-        //
-        // make sure the address has not be tampered and correspond to the
-        // hash of the tuple (stamp, salt, owner public key).
-        //
+      ELLE_TRACE_SCOPE("[%p] Bind()", this);
 
-        // compute the address.
-        if (self.Create(this->family, this->component,
-                        this->network,
-                        this->family,
-                        this->component,
-                        this->stamp, this->salt, this->owner.K) ==
-            elle::Status::Error)
-          escape("unable to compute the imprint address");
-
-        // verify with the recorded address.
-        if (address != self)
-          escape("the address does not correspond to the block's public key");
-      }
+      // Compute the address of the block by hashing the following
+      // elements: network, family, component, stamp, salt and owner.K..
+      if (address.Create(this->family, this->component,
+                         this->network,
+                         this->family,
+                         this->component,
+                         this->_creation_stamp, this->_salt, this->_owner.K) ==
+          elle::Status::Error)
+        escape("unable to compute the imprint address");
 
       return elle::Status::Ok;
+    }
+
+    elle::Status
+    ImprintBlock::Validate(Address const& address) const
+    {
+      Address self;
+
+      ELLE_TRACE_SCOPE("Validate() this(%p)", this);
+
+      // Make sure the block has not be tampered and correspond to the
+      // given original address. In order to do that, the address is
+      // recomputed by hashing the tuple (network, family, component,
+      // stamp, salt, owner.K).
+      if (self.Create(this->family, this->component,
+                      this->network,
+                      this->family,
+                      this->component,
+                      this->_creation_stamp, this->_salt, this->_owner.K) ==
+          elle::Status::Error)
+        escape("unable to compute the imprint address");
+
+      // Finally, compare the recomputed address with the theoretical address
+      // of the block.
+      if (address != self)
+        escape("the address does not correspond to the block's public key");
+
+      return elle::Status::Ok;
+    }
+
+    elle::utility::Time const&
+    ImprintBlock::creation_stamp() const
+    {
+      return (this->_creation_stamp);
+    }
+
+    elle::cryptography::PublicKey const&
+    ImprintBlock::owner_K() const
+    {
+      return (this->_owner.K);
+    }
+
+    neutron::Subject const&
+    ImprintBlock::owner_subject()
+    {
+      // Create the subject corresponding to the block owner, if necessary.
+      // Note that this subject will never be serialized but is used to ease
+      // the process of access control since most method require a subject.
+      if (this->_owner.subject == nullptr)
+        this->_owner.subject = new neutron::Subject(this->_owner.K);
+
+      assert(this->_owner.subject != nullptr);
+
+      return (*this->_owner.subject);
     }
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this function dumps an block object.
-    ///
-    elle::Status        ImprintBlock::Dump(const
-                                             elle::Natural32    margin) const
+    elle::Status
+    ImprintBlock::Dump(const elle::Natural32 margin) const
     {
-      elle::String      alignment(margin, ' ');
+      elle::String alignment(margin, ' ');
 
       std::cout << alignment << "[ImprintBlock]" << std::endl;
 
-      // dump the parent class.
       if (MutableBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
 
-      // dump the stamp.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << elle::io::Dumpable::Shift
-                << "[Stamp]" << std::endl;
+                << "[Creation Stamp]" << std::endl;
 
-      if (this->stamp.Dump(margin + 6) == elle::Status::Error)
+      if (this->_creation_stamp.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the stamp");
 
-      // dump the salt.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << elle::io::Dumpable::Shift
-                << "[Salt] " << this->salt << std::endl;
+                << "[Salt] " << this->_salt << std::endl;
 
-      // dump the owner.
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Owner]" << std::endl;
 
-      // dump the owner's public key.
-      if (this->owner.K.Dump(margin + 4) == elle::Status::Error)
+      if (this->_owner.K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the owner's public key");
 
-      // dump the subject.
-      if (this->owner.subject.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the subject");
+      if (this->_owner.subject != nullptr)
+        {
+          if (this->_owner.subject->Dump(margin + 4) == elle::Status::Error)
+            escape("unable to dump the subject");
+        }
+      else
+        {
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << elle::io::Dumpable::Shift
+                    << "[Subject] " << elle::none << std::endl;
+        }
 
       return elle::Status::Ok;
     }

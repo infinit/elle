@@ -85,13 +85,29 @@ def to_add(lib):
             "libobjc",
             "Foundation",
             "libfuse.so.",
-            "libfuse4x",
             "libutil.so",
             "libpthread.",
             "libc.",
             "libm.",
             "libdl.",
             "Cocoa",
+            "libcache",
+            "libcommonCrypto",
+            "libcompiler_rt",
+            "libcopyfile",
+            "libdispatch",
+            "libdnsinfo",
+            "libdyld",
+            "libkeymgr",
+            "liblaunch",
+            "libmacho",
+            "libquarantine",
+            "libremovefile",
+            "libsystem",
+            "libunc",
+            "libunwind",
+            "libxpc",
+            "libfuse4x",
         ]
     }
     patterns_include = {
@@ -222,6 +238,7 @@ LIBRARY_EXT = "darwin" in sys.platform and "dylib" or "so"
 infinit_files = [
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
+    ("satellites/group/8group", "bin"),
     ("plasma/watchdog/8watchdog", "bin"),
     ("surface/cli/infinit-cli", "bin"),
     ("surface/cli/8chmod", "bin"),
@@ -262,10 +279,11 @@ for src, node in dependencies.items():
 
 infinit_app = os.path.join(DIR_BUILD, "surface/macosx/Infinit.app")
 if os.path.exists(infinit_app):
-    shutil.copytree(
-        "/Library/Extensions/fuse4x.kext",
-        os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext")
-    )
+    #shutil.copytree(
+    #    "/Library/Extensions/fuse4x.kext",
+    #    os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext")
+    #)
+    patch_binary_for(os.path.join(DIR_INSTALL_CLIENT_LIB, "libgap.dylib"), "/opt/local/lib/libfuse4x.2.dylib")
     dst_app = os.path.join(DIR_INSTALL_CLIENT, os.path.basename(infinit_app))
 
     shutil.copytree(infinit_app, dst_app, symlinks=True)

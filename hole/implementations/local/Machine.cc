@@ -68,7 +68,7 @@ namespace hole
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->meta.access != nucleus::proton::Address::Null)
+              if (object->access() != nucleus::proton::Address::Null)
                 {
                   ELLE_TRACE(
                     "Put nucleus::Object MutableBlock %p"
@@ -77,7 +77,7 @@ namespace hole
                     ) {
                     // Load the access block.
                     std::unique_ptr<nucleus::proton::Block> block
-                      (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                      (Hole::Pull(object->access(), nucleus::proton::Version::Last));
                     std::unique_ptr<nucleus::neutron::Access> access
                       (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                     if (access == nullptr)
@@ -204,11 +204,11 @@ namespace hole
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->meta.access != nucleus::proton::Address::Null)
+              if (object->access() != nucleus::proton::Address::Null)
                 {
                   // Load the access block.
                   std::unique_ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
                   std::unique_ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)

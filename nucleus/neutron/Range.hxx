@@ -99,7 +99,7 @@ namespace nucleus
     elle::Status        Range<T>::Add(T*                        item)
     {
       // check if another item exists with this symbol.
-      if (this->Exist(item->Symbol()) == true)
+      if (this->Exist(item->symbol()) == true)
         escape("an item with this symbol already exist");
 
       // add the item to the container.
@@ -108,11 +108,42 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    template <typename T>
+    elle::Status
+    Range<T>::Add(Range<T> const& other)
+    {
+      if (this->options != other.options)
+        escape("unable to merge ranges with different options");
+
+      for (T* item: other.container)
+        {
+          switch (this->options)
+            {
+            case Range<T>::OptionNone:
+              {
+                if (this->Add(new T(*item)) == elle::Status::Error)
+                  escape("unable to add the item");
+
+                break;
+              }
+            case Range<T>::OptionDetach:
+              {
+                if (this->Add(item) == elle::Status::Error)
+                  escape("unable to add the item");
+
+                break;
+              }
+            }
+        }
+
+      return elle::Status::Ok;
+    }
+
     ///
     /// this method returns true if an item for the given symbol exists.
     ///
     template <typename T>
-    elle::Status        Range<T>::Exist(const Range<T>::S&      symbol) const
+    elle::Status        Range<T>::Exist(const Range<T>::Symbol& symbol) const
     {
       Range<T>::Scoutor scoutor;
 
@@ -129,8 +160,27 @@ namespace nucleus
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    elle::Status        Range<T>::Lookup(const Range<T>::S&     symbol,
-                                         T*&                    item) const
+    elle::Status        Range<T>::Lookup(const Range<T>::Symbol& symbol,
+                                         T const*& item) const
+    {
+      Range<T>::Scoutor scoutor;
+
+      // initialize the pointer to null.
+      item = nullptr;
+
+      // try to locate the item.
+      if (this->Locate(symbol, scoutor) == false)
+        return elle::Status::False;
+
+      // return the item.
+      item = *scoutor;
+
+      return elle::Status::True;
+    }
+
+    template <typename T>
+    elle::Status        Range<T>::Lookup(const Range<T>::Symbol& symbol,
+                                         T*& item) const
     {
       Range<T>::Scoutor scoutor;
 
@@ -151,7 +201,7 @@ namespace nucleus
     /// this method removes an item from the range.
     ///
     template <typename T>
-    elle::Status        Range<T>::Remove(const Range<T>::S&     symbol)
+    elle::Status        Range<T>::Remove(const Range<T>::Symbol& symbol)
     {
       Range<T>::Iterator        iterator;
 
@@ -184,7 +234,7 @@ namespace nucleus
     /// this method returns a scoutor on the identified item.
     ///
     template <typename T>
-    elle::Status        Range<T>::Locate(const Range<T>::S&     symbol,
+    elle::Status        Range<T>::Locate(const Range<T>::Symbol& symbol,
                                          Range<T>::Scoutor&     scoutor) const
     {
       Range<T>::Scoutor s;
@@ -197,7 +247,7 @@ namespace nucleus
           T*                    item = *s;
 
           // if found...
-          if (item->Symbol() == symbol)
+          if (item->symbol() == symbol)
             {
               // return the scoutor.
               scoutor = s;
@@ -215,7 +265,7 @@ namespace nucleus
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    elle::Status        Range<T>::Locate(const Range<T>::S&     symbol,
+    elle::Status        Range<T>::Locate(const Range<T>::Symbol& symbol,
                                          Range<T>::Iterator&    iterator)
     {
       Range<T>::Iterator        i;
@@ -228,7 +278,7 @@ namespace nucleus
           T*                    item = *i;
 
           // if found...
-          if (item->Symbol() == symbol)
+          if (item->symbol() == symbol)
             {
               // return the iterator.
               iterator = i;

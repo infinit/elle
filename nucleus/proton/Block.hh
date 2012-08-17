@@ -62,12 +62,12 @@ namespace nucleus
     ///
     class Block
       : public elle::radix::Object
+      , public elle::io::Dumpable
       , public elle::concept::contract::Serializable<>
       , public elle::concept::contract::Serializable<
             elle::serialize::BufferArchive
         >
       , public elle::concept::Fileable<>
-      , public elle::io::Dumpable
     {
     public:
       //

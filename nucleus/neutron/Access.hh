@@ -19,20 +19,25 @@ namespace nucleus
   {
 
     /// This class represents an access control list.
-    class Access
-      : public proton::ContentHashBlock
-      , public elle::concept::Serializable<Access>
-      , public elle::concept::Serializable<
-            Access
-          , elle::serialize::BufferArchive
-        >
+    class Access:
+      public proton::ContentHashBlock,
+      public elle::concept::Serializable<Access>,
+      public elle::concept::Serializable<
+        Access,
+        elle::serialize::BufferArchive
+      >,
+      public elle::concept::MakeUniquable<Access>
     {
-    public:
-      typedef proton::ContentHashBlock SuperClass;
-
+      //
+      // constants
+      //
     public:
       static const Access               Null;
 
+      //
+      // construction
+      //
+    public:
       Access();
 
       //
@@ -41,23 +46,38 @@ namespace nucleus
       elle::Status      Add(Record*);
       elle::Status      Exist(const Subject&) const;
       elle::Status      Lookup(const Subject&,
+                               Record const*&) const;
+      elle::Status      Lookup(const Subject&,
                                Record*&) const;
       elle::Status      Lookup(const Subject&,
-                               Index&) const;
+                               Index&) const; // XXX[rename to seek()]
       elle::Status      Lookup(const Index&,
                                Record*&) const;
+      /// XXX
       template <typename T>
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               const T&);
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             T const& secret,
+             elle::cryptography::PublicKey const& K);
+      /// XXX
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Record>&) const;
-      elle::Status      Upgrade(elle::cryptography::SecretKey const&);
-      elle::Status      Downgrade();
       elle::Status      Remove(const Subject&);
       elle::Status      Capacity(Size&) const;
       elle::Status      Fingerprint(elle::cryptography::Digest&) const;
+
+      /// XXX
+      typename Range<Record>::Scoutor
+      begin() const;
+      /// XXX
+      typename Range<Record>::Scoutor
+      end() const;
 
       //
       // interfaces

@@ -63,6 +63,24 @@ namespace etoile
                                         nucleus::neutron::Range<
                                           nucleus::neutron::Entry>&);
       };
+
+      struct Group
+      {
+        /// XXX
+        static
+        elle::Status
+        Lookup(gear::Identifier const& identifier,
+               nucleus::neutron::Subject const& subject,
+               nucleus::neutron::Fellow& fellow);
+        /// XXX
+        static
+        elle::Status
+        Consult(gear::Identifier const& identifier,
+                nucleus::neutron::Index const& index,
+                nucleus::neutron::Size const& size,
+                nucleus::neutron::Range<
+                  nucleus::neutron::Fellow>& range);
+      };
     };
 
   }

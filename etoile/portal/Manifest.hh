@@ -7,8 +7,11 @@
 # include <elle/network/Range.hh>
 # include <etoile/path/fwd.hh>
 # include <etoile/gear/fwd.hh>
-# include <etoile/miscellaneous/fwd.hh>
+# include <etoile/abstract/fwd.hh>
 # include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Group.hh>
+
+# include <elle/idiom/Open.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -126,7 +129,23 @@ namespace etoile
         TagAttributesTrait,
         TagAttributesFetch,
         TagAttributesRange,
-        TagAttributesOmit
+        TagAttributesOmit,
+
+        // group
+        TagGroupCreate,
+        TagGroupIdentity,
+        TagGroupLoad,
+        TagGroupInformation,
+        TagGroupAbstract,
+        TagGroupAdd,
+        TagGroupLookup,
+        TagGroupFellow,
+        TagGroupConsult,
+        TagGroupRange,
+        TagGroupRemove,
+        TagGroupDiscard,
+        TagGroupStore,
+        TagGroupDestroy
       };
 
   }
@@ -164,7 +183,7 @@ message(etoile::portal::TagObjectLoad,
 message(etoile::portal::TagObjectInformation,
         parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagObjectAbstract,
-        parameters(etoile::miscellaneous::Abstract&));
+        parameters(etoile::abstract::Object&));
 message(etoile::portal::TagObjectDiscard,
        parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagObjectStore,
@@ -290,5 +309,41 @@ message(etoile::portal::TagAttributesRange,
 message(etoile::portal::TagAttributesOmit,
         parameters(etoile::gear::Identifier&,
                    elle::String&));
+
+// group
+message(etoile::portal::TagGroupCreate,
+        parameters(elle::String&));
+message(etoile::portal::TagGroupIdentity,
+        parameters(typename nucleus::neutron::Group::Identity&,
+                   etoile::gear::Identifier&));
+message(etoile::portal::TagGroupLoad,
+        parameters(typename nucleus::neutron::Group::Identity&));
+message(etoile::portal::TagGroupInformation,
+        parameters(etoile::gear::Identifier&));
+message(etoile::portal::TagGroupAbstract,
+        parameters(etoile::abstract::Group&));
+message(etoile::portal::TagGroupAdd,
+        parameters(etoile::gear::Identifier&,
+                   nucleus::neutron::Subject&));
+message(etoile::portal::TagGroupLookup,
+        parameters(etoile::gear::Identifier&,
+                   nucleus::neutron::Subject&));
+message(etoile::portal::TagGroupFellow,
+        parameters(nucleus::neutron::Fellow&));
+message(etoile::portal::TagGroupConsult,
+        parameters(etoile::gear::Identifier&,
+                   nucleus::neutron::Index&,
+                   nucleus::neutron::Size&));
+message(etoile::portal::TagGroupRange,
+        parameters(nucleus::neutron::Range<nucleus::neutron::Fellow>&));
+message(etoile::portal::TagGroupRemove,
+        parameters(etoile::gear::Identifier&,
+                   nucleus::neutron::Subject&));
+message(etoile::portal::TagGroupDiscard,
+        parameters(etoile::gear::Identifier&));
+message(etoile::portal::TagGroupStore,
+        parameters(etoile::gear::Identifier&));
+message(etoile::portal::TagGroupDestroy,
+        parameters(etoile::gear::Identifier&));
 
 #endif

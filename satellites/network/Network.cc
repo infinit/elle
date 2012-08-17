@@ -5,6 +5,7 @@
 #include <etoile/Etoile.hh>
 
 #include <hole/Hole.hh>
+#include <hole/Openness.hh>
 
 #include <elle/Elle.hh>
 #include <elle/io/Console.hh>
@@ -20,10 +21,14 @@
 
 #include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Network.hh>
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Access.hh>
+
+#include <horizon/Policy.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -50,14 +55,16 @@ namespace satellite
   elle::Status          Network::Create(const elle::String&     identifier,
                                         const elle::String&     name,
                                         const hole::Model&      model,
+                                        hole::Openness const& openness,
+                                        horizon::Policy const& policy,
                                         const elle::String&     administrator)
   {
     lune::Authority     authority;
     lune::Descriptor    descriptor;
     lune::Identity      identity;
-    nucleus::neutron::Object directory;
-    nucleus::proton::Network    network;
-    nucleus::proton::Address    address;
+    nucleus::proton::Address directory_address;
+    nucleus::proton::Address group_address;
+    nucleus::proton::Address access_address;
 
     //
     // test the arguments.
@@ -130,27 +137,141 @@ namespace satellite
         escape("unable to decrypt the identity");
     }
 
+    nucleus::proton::Network network;
+
+    // create the network object.
+    if (network.Create(name) == elle::Status::Error)
+      escape("unable to create the network object");
+
+    //
+    // create an "everybody" group.
+    //
+    nucleus::neutron::Group group(identity.pair.K,
+                                  "everybody");
+    {
+      // XXX[remove try/catch in the future]
+      try
+        {
+          group.seal(identity.pair.k);
+        }
+      catch (...)
+        {
+          escape("unable to seal the group");
+        }
+
+      if (group.Bind(group_address) == elle::Status::Error)
+        escape("unable to bind the group");
+
+      if (group.MutableBlock::Store(
+            network,
+            group_address) == elle::Status::Error)
+        escape("unable to store the block");
+    }
+
+    nucleus::neutron::Access access;
+
+    // depending on the policy.
+    switch (policy)
+      {
+      case horizon::Policy::accessible:
+      case horizon::Policy::editable:
+        {
+          // Create an access block and add the 'everybody' group
+          // to it.
+          nucleus::neutron::Record* record = new nucleus::neutron::Record;
+          nucleus::neutron::Subject subject;
+          nucleus::neutron::Permissions permissions;
+
+          switch (policy)
+            {
+            case horizon::Policy::accessible:
+              {
+                permissions = nucleus::neutron::PermissionRead;
+
+                break;
+              }
+            case horizon::Policy::editable:
+              {
+                permissions = nucleus::neutron::PermissionWrite;
+
+                // XXX
+                assert(false && "not yet supported");
+
+                break;
+              }
+            case horizon::Policy::confidential:
+              {
+                // Nothing else to do in this case, the file system object
+                // remains private to its owner.
+
+                break;
+              }
+            default:
+              {
+                escape("invalid policy");
+              }
+            }
+
+          if (subject.Create(group_address) == elle::Status::Error)
+            escape("unable to create the group subject");
+
+          // Note that a null token is provided because the root directory
+          // contains no data.
+          if (record->Update(
+                subject,
+                permissions,
+                nucleus::neutron::Token::Null) == elle::Status::Error)
+            escape("unable to update the record");
+
+          if (access.Add(record) == elle::Status::Error)
+            escape("unable to add the record to the access");
+
+          if (access.Bind(access_address) == elle::Status::Error)
+            escape("unable to bind the access");
+
+          if (access.ImmutableBlock::Store(
+                network,
+                access_address) == elle::Status::Error)
+            escape("unable to store the block");
+
+          break;
+        }
+      case horizon::Policy::confidential:
+        {
+          break;
+        }
+      }
+
     //
     // create the root directory.
     //
+    nucleus::neutron::Object directory;
     {
-      // create the network object.
-      if (network.Create(name) == elle::Status::Error)
-        escape("unable to create the network object");
-
       // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::neutron::GenreDirectory,
                            identity.pair.K) == elle::Status::Error)
         escape("unable to create the object directory");
 
+      if (directory.Update(directory.author(),
+                           directory.contents(),
+                           directory.size(),
+                           access_address,
+                           directory.owner_token()) == elle::Status::Error)
+        escape("unable to update the directory");
+
       // seal the directory.
-      if (directory.Seal(identity.pair.k,
-                         nucleus::neutron::Access::Null) == elle::Status::Error)
+      if (directory.Seal(identity.pair.k, access) == elle::Status::Error)
         escape("unable to seal the object");
 
       // compute the directory's address.
-      if (directory.Bind(address) == elle::Status::Error)
+      if (directory.Bind(directory_address) == elle::Status::Error)
         escape("unable to bind the object to an address");
+
+      // store the block.
+      if (directory.MutableBlock::Store(
+            network,
+            directory_address) == elle::Status::Error)
+        escape("unable to store the block");
     }
 
     //
@@ -162,11 +283,14 @@ namespace satellite
             identifier,
             name,
             model,
-            address,
+            openness,
+            directory_address,
+            group_address,
             lune::Descriptor::History,
             lune::Descriptor::Extent,
             lune::Descriptor::Contention,
-            lune::Descriptor::Balancing) == elle::Status::Error)
+            lune::Descriptor::Balancing,
+            policy) == elle::Status::Error)
         escape("unable to create the network's descriptor");
 
       // seal the descriptor.
@@ -176,16 +300,6 @@ namespace satellite
       // store the descriptor.
       if (descriptor.Store(name) == elle::Status::Error)
         escape("unable to store the descriptor file");
-    }
-
-    //
-    // store the root directory block now that the network exists.
-    //
-    {
-      // store the block.
-      if (directory.MutableBlock::Store(network,
-                          address) == elle::Status::Error)
-        escape("unable to store the block");
     }
 
     return elle::Status::Ok;
@@ -523,6 +637,8 @@ namespace satellite
           if (Network::Create(identifier,
                               name,
                               model,
+                              hole::Openness::closed, // XXX[make an option]
+                              horizon::Policy::accessible, // XXX[make an option]
                               administrator) == elle::Status::Error)
             escape("unable to create the network");
 

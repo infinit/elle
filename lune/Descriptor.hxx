@@ -17,11 +17,14 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
   archive & value._id;
   archive & value.name;
   archive & value.model;
+  archive & value._openness;
   archive & value.root;
+  archive & value._everybody.identity;
   archive & value.history;
   archive & value.extent;
   archive & value.contention;
   archive & value.balancing;
+  archive & value._policy;
   archive & value.signature;
 }
 

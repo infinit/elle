@@ -1,0 +1,6 @@
+#ifndef HORIZON_MACOSX_FWD_HH
+# define HORIZON_MACOSX_FWD_HH
+
+// XXX
+
+#endif

@@ -1,22 +1,12 @@
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
 #include <nucleus/neutron/Object.hh>
-#include <nucleus/neutron/Role.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace etoile
 {
-  namespace miscellaneous
+  namespace abstract
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this defines a empty, unused hence null abstract.
-    ///
-    const Abstract                      Abstract::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -25,7 +15,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Abstract::Abstract()
+    Object::Object()
     {
     }
 
@@ -36,30 +26,30 @@ namespace etoile
     ///
     /// this method generates the abstract according to the given object.
     ///
-    elle::Status        Abstract::Create(const nucleus::neutron::Object& object)
+    elle::Status        Object::Create(const nucleus::neutron::Object& object)
     {
       // set the genre.
-      this->genre = object.meta.genre;
+      this->genre = object.genre();
 
       // set the stamps.
-      this->stamps.creation = object.stamp;
+      this->stamps.creation = object.creation_stamp();
       this->stamps.modification =
-        object.data.stamp < object.meta.stamp ?
-        object.meta.stamp :
-        object.data.stamp;
+        object.data_modification_stamp() < object.meta_modification_stamp() ?
+        object.meta_modification_stamp() :
+        object.data_modification_stamp();
 
       // set the size
-      this->size = object.data.size;
+      this->size = object.size();
 
       // set the owner.
-      this->keys.owner = object.owner.K;
+      this->keys.owner = object.owner_K();
 
       // set the author depending on the mode.
-      switch (object.author.role)
+      switch (object.author().role)
         {
-        case nucleus::neutron::RoleOwner:
+        case nucleus::neutron::Object::RoleOwner:
           {
-            this->keys.author = object.owner.K;
+            this->keys.author = object.owner_K();
 
             break;
           }
@@ -70,11 +60,11 @@ namespace etoile
         }
 
       // set the permissions.
-      this->permissions.owner = object.meta.owner.permissions;
+      this->permissions.owner = object.owner_permissions();
 
       // set the versions.
-      this->versions.meta = object.meta.version;
-      this->versions.data = object.data.version;
+      this->versions.meta = object.meta_version();
+      this->versions.data = object.data_version();
 
       return elle::Status::Ok;
     }
@@ -86,7 +76,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean       Abstract::operator==(const Abstract&    element)
+    elle::Boolean       Object::operator==(const Object&    element)
       const
     {
       // check the address as this may actually be the same object.
@@ -111,7 +101,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Abstract, _());
+    embed(Object, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -120,11 +110,11 @@ namespace etoile
     ///
     /// this method dumps the abstract object.
     ///
-    elle::Status        Abstract::Dump(const elle::Natural32    margin) const
+    elle::Status        Object::Dump(const elle::Natural32    margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Abstract]" << std::endl;
+      std::cout << alignment << "[Object]" << std::endl;
 
       // dump the genre.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Genre] "

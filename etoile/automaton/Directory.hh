@@ -29,7 +29,7 @@ namespace etoile
                                     const nucleus::proton::Address&);
       static elle::Status       Lookup(gear::Directory&,
                                        const path::Slice&,
-                                       nucleus::neutron::Entry*&);
+                                       nucleus::neutron::Entry const*&);
       static elle::Status       Consult(gear::Directory&,
                                         const nucleus::neutron::Index&,
                                         const nucleus::neutron::Size&,

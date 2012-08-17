@@ -11,7 +11,6 @@
 # include <nucleus/proton/Version.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Genre.hh>
-# include <nucleus/neutron/Author.hh>
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
@@ -48,31 +47,48 @@ namespace nucleus
     /// make it as easy to manipulate the owner entry as for other access
     /// records. thus, this attribute is never serialized.
     ///
-    class Object
-      : public proton::ImprintBlock
-      , public elle::concept::Serializable<Object>
-      , public elle::concept::Serializable<
-            Object, elle::serialize::BufferArchive
-        >
-      , public elle::concept::MakeUniquable<Object>
+    class Object:
+      public proton::ImprintBlock,
+      public elle::concept::Serializable<Object>,
+      public elle::concept::Serializable<
+        Object,
+        elle::serialize::BufferArchive
+      >,
+      public elle::concept::MakeUniquable<Object>
     {
+      //
+      // enumerations
+      //
     public:
+      /// This defines the roles that a user can play on an object.
+      enum Role
+        {
+          RoleUnknown = 0,
+          RoleOwner,
+          RoleLord,
+          RoleVassal,
+          RoleNone
+        };
+
       //
       // constructors & destructors
       //
+    public:
       Object();
+      ~Object();
 
       //
       // methods
       //
+    public:
       elle::Status      Create(const Genre,
                                elle::cryptography::PublicKey const&);
 
-      elle::Status      Update(const Author&,
-                               const proton::Address&,
-                               const Size&,
-                               const proton::Address&,
-                               const Token&);
+      elle::Status      Update(const Author& author,
+                               const proton::Address& contents,
+                               const Size& size,
+                               const proton::Address& access,
+                               const Token& owner_token);
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
@@ -82,11 +98,59 @@ namespace nucleus
       elle::Status      Validate(const proton::Address&) const;
       elle::Status      Validate(const proton::Address&,
                                  const Access&) const;
+      /// Returns the address of the referenced Access block.
+      proton::Address const&
+      access() const;
+      /// Returns the record associated with the object owner.
+      /// XXX[the const on the return type needs to be added]
+      Record&
+      owner_record();
+      /// Returns the owner's access token.
+      Token const&
+      owner_token() const;
+      /// Returns the owner's access permissions.
+      Permissions const&
+      owner_permissions() const;
+      /// Returns the object's genre: file, directory or link.
+      Genre const&
+      genre() const;
+      /// Returns the object's author i.e last writer.
+      Author const&
+      author() const;
+      /// Returns the address of the contents block.
+      proton::Address const&
+      contents() const;
+      /// Returns the attributes associated with the object.
+      Attributes const&
+      attributes() const;
+      /// Returns the attributes associated with the object.
+      Attributes&
+      attributes();
+      /// Returns the size of the object's content.
+      Size const&
+      size() const;
+      /// Returns the stamp associated with the data section.
+      elle::utility::Time const&
+      data_modification_stamp() const;
+      /// Returns the stamp associated with the meta section.
+      elle::utility::Time const&
+      meta_modification_stamp() const;
+      /// Returns the version associated with the data section.
+      proton::Version const&
+      data_version() const;
+      /// Returns the version associated with the meta section.
+      proton::Version const&
+      meta_version() const;
+
+    private:
+      /// Computes the owner's record, if necessary.
+      void
+      _owner_record();
 
       //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(Object);
@@ -95,13 +159,17 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Object);
+
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object);
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 
       //
       // attributes
       //
-      Author                    author;
+    private:
+      Author* _author;
 
       struct
       {
@@ -109,39 +177,38 @@ namespace nucleus
 
         struct
         {
-          Permissions           permissions;
-          Token                 token;
+          Permissions permissions;
+          Token token;
+          Record* record;
+        } owner;
 
-          Record                record;
-        }                       owner;
+        Genre genre;
+        elle::utility::Time modification_stamp;
 
-        Genre                   genre;
-        elle::utility::Time              stamp;
+        Attributes attributes;
 
-        Attributes              attributes;
+        proton::Address access;
 
-        proton::Address         access;
+        proton::Version version;
+        elle::cryptography::Signature signature;
 
-        proton::Version         version;
-        elle::cryptography::Signature         signature;
-
-        proton::State           state;
-      }                         meta;
+        proton::State state;
+      } _meta;
 
       struct
       {
         // XXX to implement: proton::Base               base;
 
-        proton::Address         contents;
+        proton::Address contents;
 
-        Size                    size;
-        elle::utility::Time              stamp;
+        Size size;
+        elle::utility::Time modification_stamp;
 
-        proton::Version         version;
-        elle::cryptography::Signature         signature;
+        proton::Version version;
+        elle::cryptography::Signature signature;
 
-        proton::State           state;
-      }                         data;
+        proton::State state;
+      } _data;
     };
 
   }

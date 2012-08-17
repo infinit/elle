@@ -1,6 +1,6 @@
-PROJECT(Etoile CXX)
+project(Etoile CXX)
 
-ADD_LIBRARY(etoile
+add_library(etoile
   path/Path.cc
   path/Route.cc
   path/Chemin.cc
@@ -14,6 +14,7 @@ ADD_LIBRARY(etoile
   gear/Directory.cc
   gear/File.cc
   gear/Gear.cc
+  gear/Group.cc
   gear/Guard.cc
   gear/Identifier.cc
   gear/Link.cc
@@ -24,7 +25,9 @@ ADD_LIBRARY(etoile
   automaton/Attributes.cc
   automaton/Author.cc
   automaton/Directory.cc
+  automaton/Ensemble.cc
   automaton/File.cc
+  automaton/Group.cc
   automaton/Link.cc
   automaton/Object.cc
   automaton/Rights.cc
@@ -33,6 +36,7 @@ ADD_LIBRARY(etoile
   wall/Access.cc
   wall/Directory.cc
   wall/File.cc
+  wall/Group.cc
   wall/Link.cc
   wall/Object.cc
   wall/Path.cc
@@ -41,7 +45,8 @@ ADD_LIBRARY(etoile
   portal/Portal.cc
   portal/Wrapper.cc
 
-  miscellaneous/Abstract.cc
+  abstract/Object.cc
+  abstract/Group.cc
 
   journal/Journal.cc
 
@@ -54,4 +59,4 @@ ADD_LIBRARY(etoile
   Etoile.cc
 )
 
-TARGET_LINK_LIBRARIES(etoile nucleus lune agent)
+target_link_libraries(etoile nucleus lune agent)

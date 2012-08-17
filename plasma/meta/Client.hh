@@ -61,6 +61,10 @@ namespace plasma
       std::string              model;
       std::string              root_block;
       std::string              root_address;
+      std::string              access_block;
+      std::string              access_address;
+      std::string              group_block;
+      std::string              group_address;
       std::string              descriptor;
       std::list<std::string>   devices;
       std::list<std::string>   users;
@@ -86,9 +90,6 @@ namespace plasma
     struct UpdateNetworkResponse : Response
     {
       std::string             updated_network_id;
-      std::string             descriptor;
-      std::string             root_block;
-      std::string             root_address;
     };
 
     struct NetworkNodesResponse : Response
@@ -200,7 +201,11 @@ namespace plasma
                      std::list<std::string> const* users,
                      std::list<std::string> const* devices,
                      std::string const* root_block,
-                     std::string const* root_address);
+                     std::string const* root_address,
+                     std::string const* access_block,
+                     std::string const* access_address,
+                     std::string const* group_block,
+                     std::string const* group_address);
 
 
       NetworkAddUserResponse

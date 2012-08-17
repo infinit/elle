@@ -16,105 +16,48 @@ namespace nucleus
 // ---------- definition ------------------------------------------------------
 //
 
-    ///
-    /// this macro defines an empty token.
-    ///
-    const Token                 Token::Null;
+    const Token Token::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// default constructor
-    ///
     Token::Token():
-      code(nullptr)
+      _code(nullptr)
     {
     }
 
-    ///
-    /// copy constructor.
-    ///
-    Token::Token(const Token&                                   token):
-      Object(token)
+    Token::Token(const Token& other):
+      Object(other)
     {
-      // copy the code, if present.
-      if (token.code != nullptr)
+      if (other._code != nullptr)
         {
-          // duplicate the code.
-          this->code = new elle::cryptography::Code(*token.code);
+          // Duplicate the code.
+          this->_code = new elle::cryptography::Code(*other.code());
         }
       else
-        this->code = nullptr;
+        this->_code = nullptr;
     }
 
-    ///
-    /// destructor.
-    ///
     Token::~Token()
     {
-      // release the code.
-      if (this->code != nullptr)
-        delete this->code;
+      delete this->_code;
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates or update the token.
-    ///
-    elle::Status        Token::Update(elle::cryptography::SecretKey const&    key,
-                                      elle::cryptography::PublicKey const&    K)
+    elle::cryptography::Code const*
+    Token::code() const
     {
-      // delete the previous code.
-      if (this->code != nullptr)
-        delete this->code;
-
-      // if the secret key is null, reinitialize to the default null token.
-      if (key == elle::cryptography::SecretKey::Null)
-        {
-          this->code = nullptr;
-        }
-      else
-        {
-          // allocate a new code.
-          this->code = new elle::cryptography::Code;
-
-          // encrypt the given secret key with the given public key.
-          if (K.Encrypt(key, *this->code) == elle::Status::Error)
-            escape("unable to encrypt the key");
-        }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method extracts the secret key from the token.
-    ///
-    elle::Status        Token::Extract(elle::cryptography::PrivateKey const&  k,
-                                       elle::cryptography::SecretKey&         key) const
-    {
-      // check the code.
-      if (this->code == nullptr)
-        escape("unable to retrieve the key out of a null token");
-
-      // decrypt the code.
-      if (k.Decrypt(*this->code, key) == elle::Status::Error)
-        escape("unable to decrypt the token's content");
-
-      return elle::Status::Ok;
+      return (this->_code);
     }
 
 //
 // ---------- object ----------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
     elle::Boolean       Token::operator==(const Token&          element) const
     {
       // check if the objects are the same.
@@ -122,42 +65,35 @@ namespace nucleus
         return true;
 
       // compare the code.
-      if ((this->code == nullptr) || (element.code == nullptr))
+      if ((this->_code == nullptr) || (element.code() == nullptr))
         {
-          if (this->code != element.code)
+          if (this->_code != element.code())
             return false;
         }
       else
         {
-          if (*this->code != *element.code)
+          if (*this->_code != *element.code())
             return false;
         }
 
       return true;
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
     embed(Token, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this function dumps an block object.
-    ///
     elle::Status        Token::Dump(elle::Natural32     margin) const
     {
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Token] " << std::endl;
 
-      // dump the code.
-      if (this->code != nullptr)
+      if (this->_code != nullptr)
         {
-          if (this->code->Dump(margin + 2) == elle::Status::Error)
+          if (this->_code->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the parent Code class");
         }
       else

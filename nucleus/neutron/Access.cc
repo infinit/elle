@@ -68,7 +68,17 @@ namespace nucleus
     /// this method returns the record corresponding to the given subject.
     ///
     elle::Status        Access::Lookup(const Subject&           subject,
-                                       Record*&                 record) const
+                                       Record const*& record) const
+    {
+      // look in the range.
+      if (this->range.Lookup(subject, record) == elle::Status::Error)
+        escape("unable to retrieve the record");
+
+      return elle::Status::Ok;
+    }
+
+    elle::Status        Access::Lookup(const Subject&           subject,
+                                       Record*& record) const
     {
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::Status::Error)
@@ -130,6 +140,26 @@ namespace nucleus
       escape("unable to locate the record at the given index");
     }
 
+    elle::Status
+    Access::Update(Subject const& subject,
+                   Permissions permissions,
+                   Token const& token)
+    {
+      Record* record;
+
+      // retrieve the record.
+      if (this->Lookup(subject, record) == elle::Status::Error)
+        escape("unable to retrieve the subject's record");
+
+      record->permissions = permissions;
+      record->token = token;
+
+      // set the block as dirty.
+      this->state = proton::StateDirty;
+
+      return elle::Status::Ok;
+    }
+
     ///
     /// this method returns a range representing a subset of the access
     /// control list delimited by the given index and size.
@@ -159,98 +189,6 @@ namespace nucleus
               if (range.Add(record) == elle::Status::Error)
                 escape("unable to add the record to the given range");
             }
-        }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method updates the records with the given secret key by
-    /// encrypted the given key with every subject's public key.
-    ///
-    elle::Status        Access::Upgrade(elle::cryptography::SecretKey const&  key)
-    {
-      Range<Record>::Iterator   iterator;
-
-      // go through the range.
-      for (iterator = this->range.container.begin();
-           iterator != this->range.container.end();
-           iterator++)
-        {
-          Record*       record = *iterator;
-
-          // check if the subject has the proper permissions.
-          if ((record->permissions & PermissionRead) != PermissionRead)
-            continue;
-
-          // depending on the subject's type.
-          switch (record->subject.type)
-            {
-            case Subject::TypeUser:
-              {
-                //
-                // if the subject is a user, encrypt the key with the
-                // user's public key so that she will be the only one
-                // capable of decrypting it.
-                //
-
-                elle::cryptography::PublicKey*        K = record->subject.user;
-
-                // update the token.
-                if (record->token.Update(key, *K) == elle::Status::Error)
-                  escape("unable to update the token");
-
-                break;
-              }
-            case Subject::TypeGroup:
-              {
-                //
-                // if the subject is a group, the key is made available
-                // to the group's owner. this is especially useful in
-                // order to increase the number of delegates available to
-                // respond to vassal's requests.
-                //
-
-                // XXX to implement.
-
-                break;
-              }
-            default:
-              {
-                escape("the access block contains unknown entries");
-              }
-            }
-
-          // set the access block as being dirty.
-          this->state = proton::StateDirty;
-        }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method updates the records with a null token.
-    ///
-    elle::Status        Access::Downgrade()
-    {
-      Range<Record>::Iterator   iterator;
-
-      // go through the range.
-      for (iterator = this->range.container.begin();
-           iterator != this->range.container.end();
-           iterator++)
-        {
-          Record*       record = *iterator;
-
-          // check if the subject has the proper permissions.
-          if ((record->permissions & PermissionRead) != PermissionRead)
-            continue;
-
-          // reset the token.
-          record->token = Token::Null;
-
-          // set the access block as being dirty.
-          this->state = proton::StateDirty;
         }
 
       return elle::Status::Ok;
@@ -310,6 +248,18 @@ namespace nucleus
         escape("unable to hash the set of archived tuples");
 
       return elle::Status::Ok;
+    }
+
+    typename Range<Record>::Scoutor
+    Access::begin() const
+    {
+      return (this->range.container.begin());
+    }
+
+    typename Range<Record>::Scoutor
+    Access::end() const
+    {
+      return (this->range.container.end());
     }
 
 //

@@ -1,6 +1,6 @@
 
 set(QT_USE_QTNETWORK true)
-set(QT_DONT_USE_QTGUI false)
+set(QT_DONT_USE_QTGUI true)
 set(QT_USE_QTXML true)
 
 include(${QT_USE_FILE})

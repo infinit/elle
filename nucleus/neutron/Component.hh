@@ -21,6 +21,7 @@ namespace nucleus
         ComponentAccess,
         ComponentUser,
         ComponentGroup,
+        ComponentEnsemble,
 
         ComponentSeamCatalog,
         ComponentQuillCatalog,

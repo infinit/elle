@@ -1,4 +1,3 @@
-
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
@@ -127,39 +126,42 @@ namespace surface
     {
       QLocalSocket conn;
       conn.connectToServer(common::watchdog::server_name().c_str());
-      if (conn.waitForConnected(2000))
-        {
-          json::Dictionary req;
-          req["_id"] = this->_watchdog_id();
-          req["command"] = cmd;
-          if (kwargs != nullptr)
-            req.update(*kwargs);
-          ELLE_DEBUG("Send watchdog command: %s", req.repr());
-          conn.write(req.repr().c_str());
-          conn.write("\n");
-          if (!conn.waitForBytesWritten(2000))
-              throw Exception(gap_internal_error,
-                              "Couldn't send the command '" + cmd + "'");
-          ELLE_DEBUG("Command sent");
+      if (!conn.waitForConnected(2000))
+        throw Exception{
+            gap_internal_error,
+            "Couldn't connect to the watchdog"
+        };
 
-          if (response != nullptr)
-            {
-              if (!conn.waitForReadyRead(2000))
-                throw Exception(gap_internal_error,
-                              "Couldn't read response of '" + cmd + "' command");
-              QByteArray response_data = conn.readLine();
-              std::stringstream ss{
-                  std::string{
-                      response_data.data(),
-                      static_cast<size_t>(response_data.size()),
-                  },
-              };
-              auto ptr = json::Parser<>{}.Parse(ss);
-              response->update(dynamic_cast<json::Dictionary const&>(*ptr));
-            }
-        }
-      else
-        throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
+      json::Dictionary req;
+      req["_id"] = this->_watchdog_id();
+      req["command"] = cmd;
+      if (kwargs != nullptr)
+        req.update(*kwargs);
+      this->log.debug("Send watchdog command:", req.repr());
+      conn.write(req.repr().c_str());
+      conn.write("\n");
+      if (!conn.waitForBytesWritten(2000))
+          throw Exception(gap_internal_error,
+                          "Couldn't send the command '" + cmd + "'");
+      this->log.debug("Command sent");
+
+      if (response == nullptr)
+        return;
+
+      if (!conn.waitForReadyRead(2000))
+        throw Exception{
+            gap_internal_error,
+            "Couldn't read response of '" + cmd + "' command"
+        };
+      QByteArray response_data = conn.readLine();
+      std::stringstream ss{
+          std::string{
+              response_data.data(),
+              static_cast<size_t>(response_data.size()),
+          },
+      };
+      auto ptr = json::parse(ss);
+      response->update(ptr->as_dictionary());
     }
 
     User const& State::user(std::string const& id)
@@ -408,6 +410,23 @@ namespace surface
                     network->users.end(),
                     user_id) == network->users.end())
         network->users.push_back(user_id);
+
+      std::string const& group_binary = common::infinit::binary_path("8group");
+
+      QStringList arguments;
+      arguments << "--user" << _api->email().c_str()
+                << "--type" << "user"
+                << "--add"
+                << "--network" << network->name.c_str()
+                << "--identity" << this->user(user_id).public_key.c_str()
+                ;
+      this->log.debug("LAUNCH:",
+                      group_binary,
+                      arguments.join(" ").toStdString());
+      QProcess p;
+      p.start(group_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8group binary failed");
     }
 
     std::map<std::string, NetworkStatus*> const&

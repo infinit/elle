@@ -49,6 +49,14 @@ namespace hole
     //
   public:
     static void                 Initialize();
+    /// XXX
+    static
+    void
+    join();
+    /// XXX
+    static
+    void
+    leave();
     static elle::Status         Clean();
 
     static elle::Status         Origin(nucleus::proton::Address&);

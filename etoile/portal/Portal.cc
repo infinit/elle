@@ -14,6 +14,7 @@
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Entry.hh>
+#include <nucleus/neutron/Fellow.hh>
 
 #include <etoile/portal/Portal.hh>
 #include <etoile/portal/Wrapper.hh>
@@ -21,7 +22,8 @@
 #include <etoile/path/Chemin.hh>
 #include <etoile/path/Path.hh>
 #include <etoile/gear/Identifier.hh>
-#include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/abstract/Object.hh>
+#include <etoile/abstract/Group.hh>
 #include <etoile/portal/Manifest.hh>
 
 #include <etoile/wall/Object.hh>
@@ -31,6 +33,7 @@
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Path.hh>
+#include <etoile/wall/Group.hh>
 
 #include <lune/Lune.hh>
 
@@ -54,7 +57,6 @@ namespace etoile
     ///
     Portal::Container Portal::applications;
 
-    // XXX
     reactor::network::TCPServer* Portal::server = nullptr;
     reactor::Thread* Portal::acceptor = nullptr;
 
@@ -503,6 +505,100 @@ namespace etoile
               elle::network::Procedure<TagAttributesOmit,
                               elle::TagOk>(
                 elle::concurrency::Callback<>::Infer(&wall::Attributes::Omit),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        //
+        // group
+        //
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupCreate,
+                                       TagGroupIdentity>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Create),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupLoad,
+                                       TagIdentifier>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Load),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupInformation,
+                                       TagGroupAbstract>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Information),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+         escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupAdd,
+                                       elle::TagOk>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Add),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupLookup,
+                                       TagGroupFellow>(
+                elle::concurrency::Callback<>::Infer(&Wrapper::Group::Lookup),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupConsult,
+                                       TagGroupRange>(
+                elle::concurrency::Callback<>::Infer(&Wrapper::Group::Consult),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupRemove,
+                                       elle::TagOk>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Remove),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupDiscard,
+                                       elle::TagOk>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Discard),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupStore,
+                                       elle::TagOk>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Store),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
+              elle::Status::Error)
+          escape("unable to register the callback");
+
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagGroupDestroy,
+                                       elle::TagOk>(
+                elle::concurrency::Callback<>::Infer(&wall::Group::Destroy),
                 elle::concurrency::Callback<>::Infer(&Portal::Prolog),
                 elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)

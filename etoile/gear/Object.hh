@@ -8,7 +8,6 @@
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Object.hh>
-# include <nucleus/neutron/Role.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Record.hh>
 # include <nucleus/neutron/Author.hh>
@@ -74,6 +73,8 @@ namespace etoile
                   >
                 >                               S;
 
+      typedef nucleus::neutron::Object::Role Role;
+
       //
       // constructors & destructors
       //
@@ -98,7 +99,7 @@ namespace etoile
 
       struct
       {
-        nucleus::neutron::Role role;
+        nucleus::neutron::Object::Role role;
         nucleus::neutron::Permissions permissions;
         elle::cryptography::SecretKey key;
         nucleus::neutron::Record record;

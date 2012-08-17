@@ -27,7 +27,7 @@ namespace nucleus
       //
       // types
       //
-      typedef elle::String              S;
+      typedef elle::String Symbol;
 
       //
       // constructors & destructors
@@ -50,7 +50,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // rangeable
-      elle::String&     Symbol();
+      elle::String&
+      symbol();
 
       //
       // attributes

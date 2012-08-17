@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "elle/format/json/String.hh"
+#include <elle/format/json/String.hh>
 
 namespace json = elle::format::json;
 
@@ -12,7 +12,7 @@ int main()
 
   assert(value == "");
     {
-      auto clone_ptr = value.Clone();
+      auto clone_ptr = value.clone();
       auto casted = dynamic_cast<json::String*>(clone_ptr.get());
       assert(casted != nullptr);
       assert(*casted == "");
@@ -25,7 +25,7 @@ int main()
 
   assert(value == "Coucou");
     {
-      auto clone_ptr = value.Clone();
+      auto clone_ptr = value.clone();
       auto casted = static_cast<json::String*>(clone_ptr.get());
       assert(*casted == "Coucou");
       assert(casted->repr() == "\"Coucou\"");

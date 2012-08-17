@@ -10,13 +10,12 @@
 
 #include <Infinit.hh>
 
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImmutableBlock");
+
 namespace nucleus
 {
   namespace proton
   {
-
-    ELLE_LOG_COMPONENT("nucleus.proton.ImmutableBlock");
-
     ///
     /// default constructor.
     ///

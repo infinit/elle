@@ -37,6 +37,7 @@ namespace
   {
     static std::unordered_map<std::string, std::string> paths{
       {"8access",   "satellites/access/8access"},
+      {"8group",   "satellites/group/8group"},
       {"8infinit",  "8infinit"},
       {"8watchdog", "plasma/watchdog/8watchdog"},
     };
@@ -84,13 +85,13 @@ namespace common
         return it->second;
 
       static std::string build_dir = elle::os::getenv("INFINIT_BUILD_DIR", "");
-      static std::string bin_dir = elle::os::getenv("INFINIT_BIN_DIR", "");
+      static std::string bin_dir = elle::os::getenv("INFINIT_BINARY_DIR", "");
       std::string path;
       if (build_dir.size())
           path = elle::os::path::join(build_dir,
                                       _built_binary_relative_path(name));
       else if (bin_dir.size())
-          path = elle::os::path::join(bin_dir, "bin", name);
+          path = elle::os::path::join(bin_dir, name);
       else
           path = elle::os::path::join(home(), "bin", name);
 

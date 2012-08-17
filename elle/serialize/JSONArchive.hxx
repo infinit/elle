@@ -1,9 +1,7 @@
 #ifndef ELLE_SERIALIZE_JSONARCHIVE_HXX
 # define ELLE_SERIALIZE_JSONARCHIVE_HXX
 
-# include <elle/format/json/Object.hxx>
-# include <elle/format/json/Parser.hh>
-# include <elle/format/json/Dictionary.hh>
+# include <elle/format/json.hh>
 
 # include "JSONArchive.hh"
 # include "BaseArchive.hxx"
@@ -67,7 +65,7 @@ namespace elle { namespace serialize {
         std::is_base_of<json::Object, T>::value
     >::type OutputJSONArchive::Save(T const& value)
     {
-      static_cast<json::Object const&>(value).Save(*this);
+      static_cast<json::Object const&>(value).repr(this->stream());
     }
 
     template<typename T> inline typename std::enable_if<
@@ -107,7 +105,7 @@ namespace elle { namespace serialize {
 
       template<typename T> _DictStream& operator >>(NamedValue<T> const& pair)
       {
-        this->Load(_dict[pair.name], pair.value);
+        this->load(_dict[pair.name], pair.value);
         return *this;
       }
 
@@ -118,7 +116,7 @@ namespace elle { namespace serialize {
 
       template<typename T> _DictStream& operator >>(NamedValue<T>&& pair)
       {
-        this->Load(_dict[pair.name], pair.value);
+        this->load(_dict[pair.name], pair.value);
         return *this;
       }
 
@@ -128,15 +126,15 @@ namespace elle { namespace serialize {
       }
 
       template<typename T> inline typename std::enable_if<
-          json::Object::CanLoad<T>::value
-      >::type Load(json::Object const& obj, T& value)
+          json::detail::ObjectCanLoad<T>::value
+      >::type load(json::Object const& obj, T& value)
         {
-          obj.Load(value);
+          obj.load(value);
         }
 
       template<typename T> inline typename std::enable_if<
-          !json::Object::CanLoad<T>::value
-      >::type Load(json::Object const& obj, T& value)
+          !json::detail::ObjectCanLoad<T>::value
+      >::type load(json::Object const& obj, T& value)
         {
           json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);
           if (dict == nullptr)
@@ -159,11 +157,15 @@ namespace elle { namespace serialize {
     template<typename T> void InputJSONArchive::Load(T& val)
     {
       auto parser = json::Parser<std::string>();
-      auto obj = parser.Parse(this->stream());
+      auto obj = parser.parse(this->stream());
       assert(obj.get() != nullptr);
-      json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(obj.get());
+      json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(
+          obj.get()
+      );
       if (dict == nullptr)
-        throw std::runtime_error("Cannot convert '"+ obj->repr() +"' to a dictionary");
+        throw std::runtime_error{
+          "Cannot convert '"+ obj->repr() +"' to a dictionary"
+        };
       _DictStream dstream(*this, *dict);
 
       unsigned int version = 0;

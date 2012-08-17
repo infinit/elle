@@ -176,9 +176,19 @@ namespace hole
                           str(fmt % Hole::Descriptor.model.type));
         }
       }
+  }
 
+  void
+  Hole::join()
+  {
     // join the network
     Hole::Implementation->Join();
+  }
+
+  void
+  Hole::leave()
+  {
+    // XXX
   }
 
   ///

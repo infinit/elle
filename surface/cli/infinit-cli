@@ -14,6 +14,20 @@ import re
 import stat
 import sys
 
+try:
+    import readline
+except:
+    import pyreadline as readline
+
+try:
+    import rlcompleter
+    if sys.platform == 'darwin':
+        readline.parse_and_bind("bind ^I rl_complete")
+    else:
+        readline.parse_and_bind("tab: complete")
+except:
+    pass
+
 INFINIT_DEFAULT_HOME = os.path.join(
     os.path.expanduser('~'), '.infinit'
 )

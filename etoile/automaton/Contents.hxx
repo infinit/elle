@@ -34,7 +34,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // check if there exists a contents. if so, load the block.
-      if (context.object->data.contents != nucleus::proton::Address::Null)
+      if (context.object->contents() != nucleus::proton::Address::Null)
         {
           // load the block.
           try
@@ -43,7 +43,7 @@ namespace etoile
               //     of releasing here.]
               context.contents =
                 depot::Depot::pull<nucleus::proton::Contents<typename T::C>>(
-                context.object->data.contents).release();
+                context.object->contents()).release();
             }
           catch (std::runtime_error& e)
             {
@@ -84,11 +84,11 @@ namespace etoile
                           T&                                    context)
     {
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.object->data.contents != nucleus::proton::Address::Null)
+      if (context.object->contents() != nucleus::proton::Address::Null)
         {
           // mark the content block for removal.
           if (context.transcript.Wipe(
-                context.object->data.contents) == elle::Status::Error)
+                context.object->contents()) == elle::Status::Error)
             escape("unable to mark the content block for removal");
         }
 
@@ -166,8 +166,8 @@ namespace etoile
                 context.author,
                 nucleus::proton::Address::Null,
                 0,
-                context.object->meta.access,
-                context.object->meta.owner.token) == elle::Status::Error)
+                context.object->access(),
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           //
@@ -225,8 +225,8 @@ namespace etoile
                 context.author,
                 address,
                 size,
-                context.object->meta.access,
-                context.object->meta.owner.token) == elle::Status::Error)
+                context.object->access(),
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.

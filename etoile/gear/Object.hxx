@@ -1,4 +1,4 @@
-#ifndef  ETOILE_GEAR_OBJECT_HXX
+#ifndef ETOILE_GEAR_OBJECT_HXX
 # define ETOILE_GEAR_OBJECT_HXX
 
 # include <cassert>

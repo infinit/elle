@@ -30,25 +30,34 @@ namespace nucleus
       //
       // types
       //
-      typedef Subject                   S;
+      typedef Subject                   Symbol;
 
       //
       // constructors & destructors
       //
       Record();
-      Record(const Subject&,
-             const Permissions&,
-             const Token&);
+      Record(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
+      Record(Subject const& subject,
+             Permissions permissions,
+             elle::cryptography::SecretKey const& secret,
+             elle::cryptography::PublicKey const& K);
 
       //
       // methods
       //
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               elle::cryptography::SecretKey const&);
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               const Token&);
+      /// XXX @deprecated
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             elle::cryptography::SecretKey const& secret,
+             elle::cryptography::PublicKey const& K);
+      /// XXX @deprecated
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
 
       //
       // interfaces
@@ -64,14 +73,15 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // rangeable
-      Subject&          Symbol();
+      Subject&
+      symbol();
 
       //
       // attributes
       //
-      Subject           subject;
-      Permissions       permissions;
-      Token             token;
+      Subject subject;
+      Permissions permissions;
+      Token token;
     };
 
   }
