@@ -8,6 +8,10 @@ if (NOT Boost_PYTHON3_LIBRARY)
 	find_package(Boost COMPONENTS python-3.2)
 endif()
 
+if (NOT Boost_PYTHON3_LIBRARY)
+	message(FATAL_ERROR "Couldn't find boost_python32 library")
+endif()
+
 message(STATUS "Python3 libraries: ${PYTHON3_LIBRARIES}")
 message(STATUS "Python3 include directory: ${PYTHON3_INCLUDE_DIR}")
 message(STATUS "Boost python library: ${Boost_PYTHON3_LIBRARY}")
