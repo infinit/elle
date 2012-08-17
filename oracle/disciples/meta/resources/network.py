@@ -231,7 +231,6 @@ class Update(_Page):
             devices = network['devices']
             devices.extend(self.data.get('devices', []))
             to_save['devices'] = self._unique_ids_check(devices, self._check_device)
-            print("SAVING DEVICES:", to_save_devices)
 
         if 'users' in self.data:
             users = network['users']
