@@ -1,10 +1,9 @@
-#include <elle/log.hh>
-
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Janitor.hh>
 #include <horizon/linux/Handle.hh>
 #include <horizon/linux/Crib.hh>
+#include <horizon/Policy.hh>
 
 #include <agent/Agent.hh>
 
@@ -32,7 +31,9 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon.Crux");
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("infinit.horizon.Crux");
 
 namespace horizon
 {
