@@ -47,13 +47,13 @@ class _Page(Page):
         """device_id is not empty and belongs to the user"""
         if not device_id:
             return False
-        return device_id in self.user['devices']
+        return database.ObjectId(device_id) in self.user['devices']
 
     def _check_user(self, user_id):
         """user_id is not empty and is different from the owner and exists"""
         if not user_id:
             return False
-        if user_id == str(self.user['_id']):
+        if str(user_id) == str(self.user['_id']):
             return False
         return database.users().find_one({
             '_id': database.ObjectId(user_id),
@@ -62,7 +62,7 @@ class _Page(Page):
     def _unique_ids_check(self, ids, checker):
         return filter(
             checker,
-            map(lambda d: database.ObjectId(d.strip()), ids)
+            map(lambda d: database.ObjectId(str(d).strip()), ids)
         )
 
 NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
@@ -176,16 +176,16 @@ class Nodes(_Page):
         }
         for device_id in network['devices']:
             device = database.byId(database.devices(), device_id)
-            if device:
-                for addr_kind in ['local_address', 'extern_address']:
-                    addr = device[addr_kind]
-                    if addr['port']:
-                        print("append addr: %s" % str(addr))
-                        res['nodes'].append(
-                            addr['ip'] + ':' + str(addr['port']),
-                        )
-            else:
+            if not device:
                 print "No more device_id", device['_id']
+                continue
+            for addr_kind in ['local_address', 'extern_address']:
+                addr = device[addr_kind]
+                if addr['port']:
+                    res['nodes'].append(
+                        addr['ip'] + ':' + str(addr['port']),
+                    )
+        print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
 
@@ -227,16 +227,15 @@ class Update(_Page):
             to_save['name'] = name
 
         if 'devices' in self.data:
-            to_save['devices'] = self._unique_ids_check(
-                self.data.get('devices', []),
-                self._check_device
-            )
+            devices = to_save.get('devices', [])
+            devices.extend(self.data['devices'])
+            to_save['devices'] = self._unique_ids_check(devices, self._check_device)
+            print("saving devices of %s" % to_save['name'], to_save['devices'])
 
         if 'users' in self.data:
-            to_save['users'] = self._unique_ids_check(
-                self.data.get('users', []),
-                self._check_user
-            )
+            users = to_save.get('users', [])
+            users.extend(self.data.get('users', []))
+            to_save['users'] = self._unique_ids_check(users, self._check_user)
 
         if 'root_block' in self.data and self.data['root_block'] and \
            'root_address' in self.data and self.data['root_address'] and \
@@ -280,7 +279,7 @@ class Update(_Page):
                     to_save['name'],
                     to_save.get('model', 'slug'),
                     root_address,
-                    access_address,
+                    group_address,
                     conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
