@@ -3,14 +3,19 @@
 
 # include "Object.hh"
 # include "_detail.hh"
+# include "_internal.hh"
 
-namespace elle { namespace format { namespace json {
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
-    typedef detail::BasicObject<int32_t> Integer;
+      typedef detail::BasicObject<internal::Integer> Integer;
 
-}}} // !namespace elle::format::json
-
+    }
+  }
+} // !namespace elle::format::json
 
 #endif /* ! JSON_INT_HH */
-
-

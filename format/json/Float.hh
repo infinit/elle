@@ -3,13 +3,19 @@
 
 # include "Object.hh"
 # include "_detail.hh"
+# include "_internal.hh"
 
-namespace elle { namespace format { namespace json {
+namespace elle
+{
+  namespace format
+  {
+    namespace json
+    {
 
-    typedef detail::BasicObject<double> Float;
+      typedef detail::BasicObject<internal::Float> Float;
 
-}}} // !namespace elle::format::json
+    }
+  }
+} // !namespace elle::format::json
 
 #endif /* ! FLOAT_HH */
-
-

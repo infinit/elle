@@ -1,5 +1,5 @@
-#ifndef  STORECLASSVERSION_HH
-# define STORECLASSVERSION_HH
+#ifndef  ELLE_SERIALIZE_STORECLASSVERSION_HH
+# define ELLE_SERIALIZE_STORECLASSVERSION_HH
 
 # include <type_traits>
 
@@ -10,21 +10,12 @@ namespace elle
 
     ///
     /// Each specialized type gets its version stored along with the object
-    /// itself. To change this behavior, you just have to define a specialization
-    /// for each type that doesn't need to store its version.
+    /// itself. To change this behavior, you just have to define a
+    /// specialization for each type that doesn't need to store its version.
+    /// The specialization has to define a constant boolean named `value'.
+    /// @see ELLE_SERIALIZE_NO_VERSION for the macro shorcut.
     ///
-    template<typename T> struct StoreClassVersion
-      { static bool const value = true; };
-
-    template<typename T> struct StoreClassVersion<T&>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T const>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T volatile>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T*>
-      { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
-
+    template<typename T> struct StoreClassVersion;
 
   }
 }
@@ -37,6 +28,8 @@ namespace elle
       };                                                                      \
   }}                                                                          \
   /**/
+
+# include "StoreClassVersion.hxx"
 
 #endif
 

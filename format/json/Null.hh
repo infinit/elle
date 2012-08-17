@@ -9,19 +9,31 @@ namespace elle
   {
     namespace json
     {
-      class Null
-        : public Object
+      class Null:
+        public Object
       {
-      protected:
-        void Save(elle::serialize::OutputJSONArchive& ar) const;
-        std::unique_ptr<Object> Clone() const;
+      public:
+        Null();
+        virtual ~Null();
 
       public:
         using Object::operator ==;
-        virtual bool operator ==(Object const& other) const;
-        virtual bool operator ==(Null const&) const;
-        Null();
-        virtual ~Null();
+        virtual
+        bool
+        operator ==(Object const& other) const;
+        virtual
+        bool
+        operator ==(Null const&) const;
+
+      public:
+        using Object::repr;
+        virtual
+        void
+        repr(std::ostream& out) const;
+
+      protected:
+        std::unique_ptr<Object>
+        clone() const;
       };
 
       extern Null const null;

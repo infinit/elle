@@ -1,6 +1,5 @@
 #include <ostream>
 
-#include <elle/serialize/JSONArchive.hh>
 #include <elle/format/json/Null.hh>
 
 namespace elle
@@ -17,13 +16,13 @@ namespace elle
       {}
 
       void
-      Null::Save(elle::serialize::OutputJSONArchive& ar) const
+      Null::repr(std::ostream& out) const
       {
-        ar.stream() << "null";
+        out << "null";
       }
 
       std::unique_ptr<Object>
-      Null::Clone() const
+      Null::clone() const
       {
         return std::unique_ptr<Object>(new Null);
       }
