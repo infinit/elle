@@ -294,6 +294,45 @@ class Update(_Page):
         })
 
 
+class AddDevice(_Page):
+    """
+    Add a device to a network
+        POST {
+            '_id': "id",
+            "device_id": "device id",
+        }
+            -> {
+                'success': True,
+                'updated_network_id': "id",
+            }
+    """
+    __pattern__ = '/network/add_device'
+
+    def POST(self):
+        # XXX What are security check requirement ?
+        self.requireLoggedIn()
+        network = database.networks().find({
+            "_id": database.ObjectId(self.data["_id"]),
+        })
+        if not network:
+            return self.error("Network not found.")
+        device = database.devices().find({
+            "_id": database.ObjectId(self.data["device_id"]),
+        })
+        if not device:
+            return self.error("Device not found.")
+        devices = network['devices']
+        devices.append(device['_id'])
+        network['devices'] = self._check_unique_ids(
+           devices,
+           self._check_device
+        )
+        database.networks().save(network)
+        return self.success({
+            "updated_network_id": network['_id'],
+        })
+
+
 class Create(_Page):
     """
     Create a new network

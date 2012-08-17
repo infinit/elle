@@ -288,24 +288,22 @@ void InfinitNetwork::_register_device()
         {
           LOG("\t-", dev);
         }
-
-      this->_description.devices.push_back(passport.id);
-      try {
-      this->_on_device_registered(this->_manager.meta().update_network(
+      this->_manager.meta().network_add_device(
           this->_description._id,
-          nullptr,
-          nullptr,
-          &this->_description.devices,
-          nullptr,
-          nullptr,
-          nullptr,
-          nullptr,
-          nullptr,
-          nullptr
-      ));
-      } catch (std::exception const& err) {
+          passport.id
+      );
+      try
+        {
+          this->_on_device_registered(this->_manager.meta().network_add_device(
+                this->_description._id,
+                passport.id
+          ));
+          this->_description.devices.push_back(passport.id);
+        }
+      catch (std::exception const& err)
+        {
           LOG("Couldn't register the device:", err.what());
-      }
+        }
     }
   else
     {

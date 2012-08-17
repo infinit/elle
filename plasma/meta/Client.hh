@@ -98,10 +98,8 @@ namespace plasma
       std::list<std::string>  nodes;
     };
 
-    struct NetworkAddUserResponse : Response
-    {
-      std::string             updated_network_id;
-    };
+    typedef UpdateNetworkResponse NetworkAddUserResponse;
+    typedef UpdateNetworkResponse NetworkAddDeviceResponse;
 
     /// Error values.
     enum class Error
@@ -212,6 +210,10 @@ namespace plasma
       NetworkAddUserResponse
       network_add_user(std::string const& network_id,
                        std::string const& user_id);
+
+      NetworkAddDeviceResponse
+      network_add_device(std::string const& network_id,
+                         std::string const& device_id);
 
     public:
       void token(std::string const& tok);

@@ -143,11 +143,6 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
   ar & named("users", res.users);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::NetworkAddUserResponse, ar, res)
-{
-  ar & named("updated_network_id", res.updated_network_id);
-}
-
 namespace plasma
 {
   namespace meta
@@ -408,6 +403,16 @@ namespace plasma
           {"user_id", user_id},
       }};
       return this->_post<NetworkAddUserResponse>("/network/add_user", request);
+    }
+    NetworkAddDeviceResponse
+    Client::network_add_device(std::string const& network_id,
+                               std::string const& device_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"_id", network_id},
+          {"device_id", device_id},
+      }};
+      return this->_post<NetworkAddDeviceResponse>("/network/add_device", request);
     }
 
     //- Properties ------------------------------------------------------------
