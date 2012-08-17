@@ -283,9 +283,14 @@ void InfinitNetwork::_register_device()
 
   if (it == this->_description.devices.end())
     {
-      LOG("Registering device for this network.");
+      LOG("Registering devices for network", this->_description.name);
+      for (auto const& dev : this->_description.devices)
+        {
+          LOG("\t-", dev);
+        }
 
       this->_description.devices.push_back(passport.id);
+      try {
       this->_on_device_registered(this->_manager.meta().update_network(
           this->_description._id,
           nullptr,
@@ -298,6 +303,9 @@ void InfinitNetwork::_register_device()
           nullptr,
           nullptr
       ));
+      } catch (std::exception const& err) {
+          LOG("Couldn't register the device:", err.what());
+      }
     }
   else
     {
