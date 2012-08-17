@@ -16,7 +16,8 @@
 namespace
 {
 
-  std::string _home_directory()
+  std::string
+  _home_directory()
   {
     struct passwd* pw = ::getpwuid(getuid());
     if (pw != nullptr && pw->pw_dir != nullptr)
@@ -25,7 +26,8 @@ namespace
       return elle::os::getenv("HOME", "/tmp");
   }
 
-  std::string _infinit_home()
+  std::string
+  _infinit_home()
   {
     return elle::os::getenv(
         "INFINIT_HOME",
@@ -33,7 +35,8 @@ namespace
     );
   }
 
-  std::string _built_binary_relative_path(std::string const& name)
+  std::string
+  _built_binary_relative_path(std::string const& name)
   {
     static std::unordered_map<std::string, std::string> paths{
       {"8access",   "satellites/access/8access"},
@@ -47,7 +50,8 @@ namespace
     return it->second;
   }
 
-  uint16_t _meta_port()
+  uint16_t
+  _meta_port()
   {
     std::string port_string = elle::os::getenv(
         "INFINIT_META_PORT",
@@ -70,13 +74,15 @@ namespace common
   namespace infinit
   {
 
-    std::string const& home()
+    std::string const&
+    home()
     {
       static std::string infinit_dir = _infinit_home();
       return infinit_dir;
     }
 
-    std::string const& binary_path(std::string const& name, bool ensure)
+    std::string const&
+    binary_path(std::string const& name, bool ensure)
     {
       static std::unordered_map<std::string, std::string> binaries;
 
@@ -107,13 +113,15 @@ namespace common
   namespace system
   {
 
-    std::string const& home_directory()
+    std::string const&
+    home_directory()
     {
       static std::string home_dir = _home_directory();
       return home_dir;
     }
 
-    std::string const& platform()
+    std::string const&
+    platform()
     {
       static std::string const platform_ =
 #ifdef INFINIT_LINUX
@@ -130,7 +138,8 @@ namespace common
         return platform_;
     }
 
-    unsigned int architecture()
+    unsigned int
+    architecture()
     {
       return sizeof(void*) * 8;
     }
@@ -140,7 +149,8 @@ namespace common
   namespace meta
   {
 
-    std::string const& protocol()
+    std::string const&
+    protocol()
     {
       static std::string const protocol = elle::os::getenv(
           "INFINIT_META_PROTOCOL"
@@ -149,13 +159,15 @@ namespace common
       return protocol;
     }
 
-    uint16_t port()
+    uint16_t
+    port()
     {
       static uint16_t const port = _meta_port();
       return port;
     }
 
-    std::string const& host()
+    std::string const&
+    host()
     {
       static std::string const host = elle::os::getenv(
           "INFINIT_META_HOST",
@@ -164,7 +176,8 @@ namespace common
       return host;
     }
 
-    std::string const& url()
+    std::string const&
+    url()
     {
       static std::string const url = elle::os::getenv(
           "INFINIT_META_URL",
@@ -179,8 +192,9 @@ namespace common
   namespace resources
   {
 
-    std::string base_url(char const* platform_,
-                         unsigned int architecture_)
+    std::string
+    base_url(char const* platform_,
+             unsigned int architecture_)
     {
       static std::string const base_url = elle::os::getenv(
           "INFINIT_RESOURCES_ROOT_URL",
@@ -199,8 +213,9 @@ namespace common
       return base_url + "/" + platform + architecture;
     }
 
-    std::string manifest(char const* platform,
-                         unsigned int architecture)
+    std::string
+    manifest(char const* platform,
+             unsigned int architecture)
     {
       return base_url(platform, architecture) + "/manifest.xml";
     }
@@ -210,7 +225,8 @@ namespace common
 
   //- scheduled for deletion --------------------------------------------------
 
-  std::string const& passport_path()
+  std::string const&
+  passport_path()
   {
     static std::string const path = elle::os::path::join(infinit::home(),
                                                          "infinit.ppt");
@@ -220,14 +236,16 @@ namespace common
   namespace watchdog
   {
 
-    std::string const& identity_path()
+    std::string const&
+    identity_path()
     {
       static std::string const path = elle::os::path::join(infinit::home(),
                                                            "identity.wtg");
       return path;
     }
 
-    std::string const& server_name()
+    std::string const&
+    server_name()
     {
       // The name is specific to the infinit home, as many instance could be
       // launched on the same machine.
