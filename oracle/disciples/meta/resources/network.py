@@ -280,7 +280,7 @@ class Update(_Page):
                     to_save['name'],
                     to_save.get('model', 'slug'),
                     root_address,
-                    access_address,
+                    group_address,
                     conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
