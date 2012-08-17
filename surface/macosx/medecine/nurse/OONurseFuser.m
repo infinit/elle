@@ -22,6 +22,7 @@
     
     // copy to /usr/local/lib
     BOOL libInstalled = [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib"];
+    libInstalled &= [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib"];
     // copy to /usr/local/include
     BOOL includeInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/include"] to:@"/usr/local/include"];
     // copy to /Library/Extensions
