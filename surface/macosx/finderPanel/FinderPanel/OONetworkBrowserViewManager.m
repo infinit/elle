@@ -8,6 +8,8 @@
 
 @implementation OONetworkBrowserViewManager
 
+@synthesize updateNetwork, forceUpdateNetwork;
+
 - (id)init {
     self = [super init];
     if (self) {
@@ -15,6 +17,7 @@
         // The second one contains temporary imported images  for thread safeness.
         networks = [[NSMutableArray alloc] init];
         importedNetworks = [[NSMutableArray alloc] init];
+        self.updateNetwork = YES;
         //[importedNetworks addObject:[[OONetworkAddButton alloc] init]];
     }
     return self;
@@ -139,22 +142,42 @@
 	}
 }
 
-- (void)updateNetworks
-{   
-    while (YES) {
-        NSArray* networkIds = [[OOPhone getInstance] getUserNetworks];
-        NSInteger i, n;
-        n = [networkIds count];
-        for (i = 0; i < n; i++)
-        {
-            NSString* userId = [networkIds objectAtIndex:i];
-            [self addNetworkWithId:userId];
+-(void)forceUpdateNetworks {
+    self.forceUpdateNetwork = YES;
+}
+
+- (void)updateNetworksLoop
+{
+    int updateNetworkFrequency = 10;
+    static int updateNetworksLoop = 0;
+    while (self.updateNetwork) {
+        if (self.forceUpdateNetwork) {
+            updateNetworksLoop += updateNetworkFrequency;
+            self.forceUpdateNetwork = NO;
         }
-    
-        // Update the data source in the main thread.
-        [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
-        sleep(10);
+        if (updateNetworksLoop >= updateNetworkFrequency) {
+            [self updateNetworks];
+            updateNetworksLoop = 0;
+        } else {
+            updateNetworksLoop++;
+            sleep(1);
+        }
     }
+}
+
+- (void)updateNetworks
+{
+    NSArray* networkIds = [[OOPhone getInstance] getUserNetworks];
+    NSInteger i, n;
+    n = [networkIds count];
+    for (i = 0; i < n; i++)
+    {
+        NSString* userId = [networkIds objectAtIndex:i];
+        [self addNetworkWithId:userId];
+    }
+    
+    // Update the data source in the main thread.
+    [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
 }
 
 

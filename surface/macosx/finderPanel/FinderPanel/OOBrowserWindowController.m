@@ -21,13 +21,7 @@
         // launch import in an independent thread
 		[NSThread detachNewThreadSelector:@selector(addUsersWithIds:) toTarget:userBrowserViewManager withObject:users];
 	}
-    
-    NSArray* networks = [NSArray arrayWithObjects:@"qsdjskbdhqsuiè7T", @"qsdjsdsdskbdhqsuiè7T", nil];
-    if (networks)
-	{ 
-        // launch import in an independent thread
-		[NSThread detachNewThreadSelector:@selector(updateNetworks) toTarget:networkBrowserViewManager withObject:nil];
-	}
+    [NSThread detachNewThreadSelector:@selector(updateNetworksLoop) toTarget:networkBrowserViewManager withObject:nil];
 }
 
 - (IBAction)startAnimations:(id)sender
@@ -115,7 +109,7 @@
 
 
 // -------------------------------------------------------------------------
-//	performDragOperation:sender
+//	createNetwork:sender
 // ------------------------------------------------------------------------- 
 - (IBAction)createNetwork:(id)sender {
     NSString *networkName = [networkNameTextField stringValue];
