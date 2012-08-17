@@ -31,6 +31,8 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
 
+#include <hole/Hole.hh>
+
 #include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("infinit.horizon.Crux");
