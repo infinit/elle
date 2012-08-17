@@ -47,13 +47,13 @@ class _Page(Page):
         """device_id is not empty and belongs to the user"""
         if not device_id:
             return False
-        return device_id in self.user['devices']
+        return database.ObjectId(device_id) in self.user['devices']
 
     def _check_user(self, user_id):
         """user_id is not empty and is different from the owner and exists"""
         if not user_id:
             return False
-        if user_id == str(self.user['_id']):
+        if str(user_id) == str(self.user['_id']):
             return False
         return database.users().find_one({
             '_id': database.ObjectId(user_id),
@@ -62,7 +62,7 @@ class _Page(Page):
     def _unique_ids_check(self, ids, checker):
         return filter(
             checker,
-            map(lambda d: database.ObjectId(d.strip()), ids)
+            map(lambda d: database.ObjectId(str(d).strip()), ids)
         )
 
 NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
