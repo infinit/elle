@@ -311,12 +311,12 @@ class AddDevice(_Page):
     def POST(self):
         # XXX What are security check requirement ?
         self.requireLoggedIn()
-        network = database.networks().find({
+        network = database.networks().find_one({
             "_id": database.ObjectId(self.data["_id"]),
         })
         if not network:
             return self.error("Network not found.")
-        device = database.devices().find({
+        device = database.devices().find_one({
             "_id": database.ObjectId(self.data["device_id"]),
         })
         if not device:
