@@ -33,7 +33,9 @@ extern NSString *OOUpdateProgessChangedNotification;
              performSelector:(SEL)arg6 
                    forObject:(id)arg7;
 
-- (void)createNetworkWithName:(NSString*)arg1;
+- (void)createNetworkWithName:(NSString *)arg1
+              performSelector:(SEL)arg2
+                    forObject:(id)arg3;
 
 - (void)update;
 

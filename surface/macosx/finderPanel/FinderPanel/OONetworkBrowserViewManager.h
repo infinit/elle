@@ -8,7 +8,13 @@
     IBOutlet OOUserBrowserViewManager*  userBrowserViewManager;
     NSMutableArray*                     networks;
     NSMutableArray*                     importedNetworks;
+    BOOL                                updateNetwork, forceUpdateNetwork;
 }
 
+@property BOOL updateNetwork, forceUpdateNetwork;
+
 - (void)defineStyle;
+- (void)forceUpdateNetworks;
+- (void)updateNetworksLoop;
+- (void)updateNetworks;
 @end

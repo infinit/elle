@@ -24,12 +24,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize isPending;
 @synthesize browserWindowController;
 
-- (void)dealloc
-{
-    [self stop8Watchdog];
-    [super dealloc];
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     pendingCount = 0;
@@ -37,7 +31,11 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     self.isUpdating = YES;
     self.isLoginIn = YES;
     // Launch installer process
-    [OOInjectorHelper launchFinderHelperTools:YES];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(helperInstalled) name:OOHelperInstalled object:nil];
+    [OOInjectorHelper launchFinderHelperTools:NO];
+}
+
+- (void)helperInstalled {
     [self update];
     [self tryToLogin];
 }
@@ -216,7 +214,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (IBAction)openInfinitNeworks:(id)sender
 {
     [[browserWindowController window] makeKeyAndOrderFront:self];
-    //[[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
 }
 
 - (IBAction)openPreferenceWindow:(id)sender
@@ -224,16 +221,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     OOPreferencesWindowController* preferencesWindowController = [OOPreferencesWindowController getInstance];
     [preferencesWindowController showWindow:self];
 }
-/*
-- (IBAction)installInjectBundle:(id)sender
-{
-    [OOInjectorHelper launchFinderHelperTools:YES];
-}
-
-- (IBAction)injectBundle:(id)sender
-{
-    [OOInjectorHelper launchFinderHelperTools:NO];
-}*/
 
 - (IBAction)launchWebsite:(id)sender
 {
