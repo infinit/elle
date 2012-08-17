@@ -37,6 +37,7 @@ namespace
   {
     static std::unordered_map<std::string, std::string> paths{
       {"8access",   "satellites/access/8access"},
+      {"8group",   "satellites/group/8group"},
       {"8infinit",  "8infinit"},
       {"8watchdog", "plasma/watchdog/8watchdog"},
     };
