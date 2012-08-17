@@ -176,16 +176,16 @@ class Nodes(_Page):
         }
         for device_id in network['devices']:
             device = database.byId(database.devices(), device_id)
-            if device:
-                for addr_kind in ['local_address', 'extern_address']:
-                    addr = device[addr_kind]
-                    if addr['port']:
-                        print("append addr: %s" % str(addr))
-                        res['nodes'].append(
-                            addr['ip'] + ':' + str(addr['port']),
-                        )
-            else:
+            if not device:
                 print "No more device_id", device['_id']
+                continue
+            for addr_kind in ['local_address', 'extern_address']:
+                addr = device[addr_kind]
+                if addr['port']:
+                    print("append addr: %s" % str(addr))
+                    res['nodes'].append(
+                        addr['ip'] + ':' + str(addr['port']),
+                    )
         return self.success(res)
 
 
@@ -227,16 +227,14 @@ class Update(_Page):
             to_save['name'] = name
 
         if 'devices' in self.data:
-            to_save['devices'] = self._unique_ids_check(
-                self.data.get('devices', []),
-                self._check_device
-            )
+            devices = to_save['devices']
+            devices.extend(self.data.get('devices', []))
+            to_save['devices'] = self._unique_ids_check(devices, self._check_device)
 
         if 'users' in self.data:
-            to_save['users'] = self._unique_ids_check(
-                self.data.get('users', []),
-                self._check_user
-            )
+            users = to_save['users']
+            users.extend(self.data.get('users', []))
+            to_save['users'] = self._unique_ids_check(users, self._check_user)
 
         if 'root_block' in self.data and self.data['root_block'] and \
            'root_address' in self.data and self.data['root_address'] and \
