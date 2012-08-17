@@ -113,7 +113,7 @@
 // ------------------------------------------------------------------------- 
 - (IBAction)createNetwork:(id)sender {
     NSString *networkName = [networkNameTextField stringValue];
-    [[OOPhone getInstance] createNetworkWithName:networkName];
+    [[OOPhone getInstance] createNetworkWithName:networkName performSelector:@selector(forceUpdateNetwork) forObject:networkBrowserViewManager];
 }
 
 @end

@@ -142,7 +142,7 @@
 	}
 }
 
--(void)forceUpdateNetworks {
+- (void)forceUpdateNetworks {
     self.forceUpdateNetwork = YES;
 }
 

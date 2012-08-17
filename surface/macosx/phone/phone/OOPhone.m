@@ -101,8 +101,13 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     }
 }
 
-- (void)createNetworkWithName:(NSString *)arg1 {
-    gap_create_network(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
+- (void)createNetworkWithName:(NSString *)arg1
+              performSelector:(SEL)arg2
+                    forObject:(id)arg3 {
+    [self addOperationWithBlock:^(void) {
+        gap_create_network(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
+        [arg3 performSelectorOnMainThread:arg2 withObject:nil waitUntilDone:NO];
+    }];
     return;
 }
 

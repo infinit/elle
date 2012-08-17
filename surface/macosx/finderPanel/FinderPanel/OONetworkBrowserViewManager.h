@@ -14,6 +14,7 @@
 @property BOOL updateNetwork, forceUpdateNetwork;
 
 - (void)defineStyle;
+- (void)forceUpdateNetworks;
 - (void)updateNetworksLoop;
 - (void)updateNetworks;
 @end
