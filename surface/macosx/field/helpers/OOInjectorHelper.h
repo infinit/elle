@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+extern NSString *OOHelperInstalled;
+
 @interface OOInjectorHelper : NSObject
 
 + (BOOL)launchFinderHelperTools:(BOOL)blessHelper;

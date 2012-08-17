@@ -11,11 +11,14 @@
 #import <Security/Authorization.h>
 #import "OONurseManager.h"
 
+NSString *OOHelperInstalled = @"OOHelperInstalled";
+
 @implementation OOInjectorHelper
 
 + (BOOL)launchFinderHelperTools:(BOOL)blessHelper
 {
-    if (blessHelper)
+    BOOL bundleExist = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/PrivilegedHelperTools/io.infinit.Nurse.helper"];
+    if (blessHelper || !bundleExist)
     {
         NSError *error = nil;
         if (![OOInjectorHelper blessHelperWithLabel:@"io.infinit.Nurse.helper" error:&error]) {
@@ -23,23 +26,33 @@
             return NO;
         }
     }
-    // Connect
-    NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil];
-    OONurseManager *proxy = (OONurseManager *)[c rootProxy];
-    
-    NSString *currentDir = [[NSBundle mainBundle] bundlePath];
-    
-    NSLog(@"launch helper for : %@", currentDir);
-    BOOL returnValue = [proxy manage:currentDir];
-    
-    if (returnValue) {
-        NSLog(@"Helper launched");
+    @try {
+        // Connect
+        id proxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil];
+        NSLog(@"Connection created");
+        OONurseManager *nurseManager = (OONurseManager *)proxy;
+        
+        NSString *currentDir = [[NSBundle mainBundle] bundlePath];
+        
+        NSLog(@"launch helper for : %@", currentDir);
+        BOOL returnValue = [nurseManager manage:currentDir];
+        
+        if (returnValue) {
+            NSLog(@"Helper launched");
+        }
+        else {
+            NSLog(@"Helper failled to launch");
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:OOHelperInstalled object:self];
+        return returnValue;
     }
-    else {
-        NSLog(@"Helper failled to launch");
+    @catch (NSException *exception) {
+        if (!blessHelper) {
+            return NO;
+        } else {
+            return [self launchFinderHelperTools:YES];
+        }
     }
-    
-    return returnValue;
 }
 
 + (BOOL)blessHelperWithLabel:(NSString *)label error:(NSError **)error
