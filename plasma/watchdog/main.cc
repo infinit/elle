@@ -17,7 +17,6 @@ int     main(int ac, char* av[])
 {
   plasma::watchdog::Application app(ac, av);
 
-
   try
     {
       _initAll();
@@ -167,7 +166,7 @@ static void _initAll()
 
   elle::log::default_logger.name("watchdog");
   //XXX make logger configurable
-  elle::log::default_logger.level(elle::log::Logger::Level::warn);
+  elle::log::default_logger.level(elle::log::Logger::Level::debug);
 
   // XXX use elle here
 

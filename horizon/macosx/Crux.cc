@@ -641,7 +641,6 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
-      /* XXX[coming soon...]
       switch (hole::Hole::Descriptor.policy())
         {
         case horizon::Policy::accessible:
@@ -678,7 +677,6 @@ namespace horizon
                   subdirectory, directory);
           }
         }
-      */
 
       // add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
@@ -841,6 +839,11 @@ namespace horizon
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
+
+      // Optimisation: if the mask is equal to F_OK i.e there is nothing else
+      // to check but the existence of the path, return righ away.
+      if (mask == F_OK)
+        return (0);
 
       // load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
@@ -1505,8 +1508,7 @@ namespace horizon
 
       // check the record.
       if (!((record != nullptr) &&
-            ((record->permissions &
-              nucleus::neutron::PermissionWrite) ==
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a link in "
               "this directory",
@@ -1518,6 +1520,52 @@ namespace horizon
         error("unable to create a link",
               -EPERM,
               directory);
+
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  link,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    link, directory);
+
+            // grant the exec permission to the 'everybody' group by
+            // creating the attribute 'perm::exec'.
+            if (etoile::wall::Attributes::Set(link,
+                                              "perm::exec",
+                                              "true") == elle::Status::Error)
+              error("unable to set the attribute",
+                    -EPERM,
+                    link, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  link, directory);
+          }
+        }
 
       // bind the link.
       if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
@@ -1705,6 +1753,43 @@ namespace horizon
             error("unable to set the attributes",
                   -EPERM,
                   file, directory);
+        }
+
+      switch (hole::Hole::Descriptor.policy())
+        {
+        case horizon::Policy::accessible:
+          {
+            // grant the read permission to the 'everybody' group.
+            if (etoile::wall::Access::Grant(
+                  file,
+                  hole::Hole::Descriptor.everybody_subject(),
+                  nucleus::neutron::PermissionRead) == elle::Status::Error)
+              error("unable to update the access record",
+                    -EPERM,
+                    file, directory);
+
+            break;
+          }
+        case horizon::Policy::editable:
+          {
+            // XXX
+            assert(false && "not yet supported");
+
+            break;
+          }
+        case horizon::Policy::confidential:
+          {
+            // Nothing else to do in this case, the file system object
+            // remains private to its owner.
+
+            break;
+          }
+        default:
+          {
+            error("invalid policy",
+                  -EIO,
+                  file, directory);
+          }
         }
 
       // add the file to the directory.

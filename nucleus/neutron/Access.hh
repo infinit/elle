@@ -53,11 +53,18 @@ namespace nucleus
                                Index&) const; // XXX[rename to seek()]
       elle::Status      Lookup(const Index&,
                                Record*&) const;
+      /// XXX
       template <typename T>
-      elle::Status      Update(const Subject&,
-                               const Permissions&,
-                               const T&,
-                               elle::cryptography::PublicKey const& K);
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             T const& secret,
+             elle::cryptography::PublicKey const& K);
+      /// XXX
+      elle::Status
+      Update(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Record>&) const;

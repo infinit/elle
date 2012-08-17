@@ -36,20 +36,24 @@ namespace nucleus
       // constructors & destructors
       //
       Record();
-      Record(const Subject&,
-             const Permissions&,
-             const Token&);
+      Record(Subject const& subject,
+             Permissions permissions,
+             Token const& token);
+      Record(Subject const& subject,
+             Permissions permissions,
+             elle::cryptography::SecretKey const& secret,
+             elle::cryptography::PublicKey const& K);
 
       //
       // methods
       //
-      /// XXX
+      /// XXX @deprecated
       elle::Status
       Update(Subject const& subject,
              Permissions permissions,
              elle::cryptography::SecretKey const& secret,
              elle::cryptography::PublicKey const& K);
-      /// XXX
+      /// XXX @deprecated
       elle::Status
       Update(Subject const& subject,
              Permissions permissions,

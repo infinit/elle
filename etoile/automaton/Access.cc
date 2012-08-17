@@ -130,27 +130,117 @@ namespace etoile
                   // in this case, the access record can be updated.
                   //
 
-                  // update the record.
-                  if (context.access->Update(
-                        subject,
-                        permissions,
-                        context.rights.key,
-                        subject.user()) == elle::Status::Error)
-                    escape("unable to update the access");
+                  switch (subject.type())
+                    {
+                    case nucleus::neutron::Subject::TypeUser:
+                      {
+                        // XXX[remove try/catch later]
+                        try
+                          {
+                            // update the record.
+                            if (context.access->Update(
+                                  subject,
+                                  permissions,
+                                  context.rights.key,
+                                  subject.user()) == elle::Status::Error)
+                              escape("unable to update the access");
+                          }
+                        catch (std::exception const& e)
+                          {
+                            escape("%s", e.what());
+                          }
+                        break;
+                      }
+                    case nucleus::neutron::Subject::TypeGroup:
+                      {
+                        nucleus::neutron::Group group;
+
+                        if (depot::Depot::Pull(subject.group(),
+                                               nucleus::proton::Version::Last,
+                                               group) == elle::Status::Error)
+                          escape("unable to pull the group block");
+
+                        // XXX[remove try/catch later]
+                        try
+                          {
+                            // update the record.
+                            if (context.access->Update(
+                                  subject,
+                                  permissions,
+                                  context.rights.key,
+                                  group.pass_K()) == elle::Status::Error)
+                              escape("unable to update the access");
+                          }
+                        catch (std::exception const& e)
+                          {
+                            escape("%s", e.what());
+                          }
+
+                        break;
+                      }
+                    default:
+                      {
+                        escape("invalid subject type '%u'", subject.type());
+                      }
+                    }
                 }
             }
           else
             {
-              // allocate a new record.
-              std::unique_ptr<nucleus::neutron::Record>
-                record{new nucleus::neutron::Record};
+              std::unique_ptr<nucleus::neutron::Record> record;
 
-              // create the new record.
-              if (record->Update(subject,
-                                 permissions,
-                                 context.rights.key,
-                                 subject.user()) == elle::Status::Error)
-                escape("unable to create the new record");
+              switch (subject.type())
+                {
+                case nucleus::neutron::Subject::TypeUser:
+                  {
+                    // XXX[remove try/catch later]
+                    try
+                      {
+                        // allocate a new record.
+                        record.reset(
+                          new nucleus::neutron::Record(subject,
+                                                       permissions,
+                                                       context.rights.key,
+                                                       subject.user()));
+                      }
+                    catch (std::exception const& e)
+                      {
+                        escape("%s", e.what());
+                      }
+
+                    break;
+                  }
+                case nucleus::neutron::Subject::TypeGroup:
+                  {
+                    nucleus::neutron::Group group;
+
+                    if (depot::Depot::Pull(subject.group(),
+                                           nucleus::proton::Version::Last,
+                                           group) == elle::Status::Error)
+                      escape("unable to pull the group block");
+
+                    // XXX[remove try/catch later]
+                    try
+                      {
+                        // allocate a new record.
+                        record.reset(
+                          new nucleus::neutron::Record(subject,
+                                                       permissions,
+                                                       context.rights.key,
+                                                       group.pass_K()));
+                      }
+                    catch (std::exception const& e)
+                      {
+                        escape("%s", e.what());
+                      }
+
+                    break;
+                  }
+                default:
+                  {
+                    escape("invalid subject type '%u'", subject.type());
+                  }
+                }
 
               // add the record to the access object.
               if (context.access->Add(record.get()) == elle::Status::Error)
@@ -199,6 +289,8 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record const*& record)
     {
+      ELLE_LOG_TRACE_SCOPE("lookup(%s, %s)", context, subject);
+
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
         {
@@ -207,20 +299,25 @@ namespace etoile
           // the user's rights so that this is not to be done later.
           //
 
+          ELLE_LOG_TRACE("the target subject is the current user");
+
           // determine the user's rights on the object.
           if (Rights::Determine(context) == elle::Status::Error)
             escape("unable to determine the user's rights");
 
-          // return the record.
-          record = &context.rights.record;
-
-          ELLE_LOG_TRACE("Access lookup found record %p from context.rights", record);
+          // return the record, if present.
+          if (context.rights.role != nucleus::neutron::Object::RoleNone)
+            record = &context.rights.record;
+          else
+            record = nullptr;
         }
       else
         {
           //
           // otherwise, proceed normally.
           //
+
+          ELLE_LOG_TRACE("the target subject is _not_ the current user");
 
           // perform the lookup according to the subject.
           if (subject == context.object.owner_subject())
@@ -231,6 +328,8 @@ namespace etoile
               // this record is not part of the object but has been generated
               // automatically when the object was extracted.
               //
+
+              ELLE_LOG_TRACE("the target subject is the object owner");
 
               // return the record.
               record = &context.object.owner_record();
@@ -245,17 +344,17 @@ namespace etoile
               // in look in it.
               //
 
+              ELLE_LOG_TRACE("the target subject is _not_ the object owner: "
+                             "look in the Access block");
+
               // open the access.
               if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access block");
 
-
-              // lookup the subject.
+               // lookup the subject.
               if (context.access->Lookup(subject,
                                          record) == elle::Status::Error)
                 escape("unable to lookup in the access object");
-
-              ELLE_LOG_TRACE("Access lookup found record %p from context.access", record);
             }
         }
 
@@ -786,6 +885,7 @@ namespace etoile
         case nucleus::neutron::Object::RoleVassal:
           {
             // XXX to implement.
+            assert(false && "not supported yet");
 
             break;
           }

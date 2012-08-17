@@ -36,6 +36,14 @@ namespace hole
     // static methods
     //
     static void                 Initialize();
+    /// XXX
+    static
+    void
+    join();
+    /// XXX
+    static
+    void
+    leave();
     static elle::Status         Clean();
 
     static elle::Status         Ready();

@@ -238,6 +238,7 @@ LIBRARY_EXT = "darwin" in sys.platform and "dylib" or "so"
 infinit_files = [
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
+    ("satellites/group/8group", "bin"),
     ("plasma/watchdog/8watchdog", "bin"),
     ("surface/cli/infinit-cli", "bin"),
     ("surface/cli/8chmod", "bin"),
@@ -281,7 +282,7 @@ if os.path.exists(infinit_app):
     #shutil.copytree(
     #    "/Library/Extensions/fuse4x.kext",
     #    os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext")
-    #)  
+    #)
     patch_binary_for(os.path.join(DIR_INSTALL_CLIENT_LIB, "libgap.dylib"), "/opt/local/lib/libfuse4x.2.dylib")
     dst_app = os.path.join(DIR_INSTALL_CLIENT, os.path.basename(infinit_app))
 

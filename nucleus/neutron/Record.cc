@@ -30,13 +30,24 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Record::Record(const Subject&                               subject,
-                   const Permissions&                           permissions,
-                   const Token&                                 token):
+    Record::Record(Subject const& subject,
+                   Permissions permissions,
+                   Token const& token):
       subject(subject),
       permissions(permissions),
       token(token)
     {
+    }
+
+    Record::Record(Subject const& subject,
+                   Permissions permissions,
+                   elle::cryptography::SecretKey const& secret,
+                   elle::cryptography::PublicKey const& K):
+      subject(subject),
+      permissions(permissions)
+    {
+      if (this->Update(subject, permissions, secret, K) == elle::Status::Error)
+        throw Exception("unable to update the recor"); // XXX[useless later]
     }
 
 //

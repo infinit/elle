@@ -23,7 +23,7 @@ namespace common
     home();
 
     /// Returns binary path from its name.
-    /// Default is ${INFINIT_HOME}/bin/binary_name but if INFINIT_BUILD_DIR or 
+    /// Default is ${INFINIT_HOME}/bin/binary_name but if INFINIT_BUILD_DIR or
     /// INFINIT_BINARY_DIR with INFINIT_BUILD_DIR > INFINIT_BINARY_DIR is
     /// exported, it will return the accurate binary path inside the build
     /// directory.
@@ -115,7 +115,8 @@ namespace common
 
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
-  std::string const& passport_path();
+  std::string const&
+  passport_path();
 
 } // !common
 

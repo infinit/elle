@@ -140,6 +140,26 @@ namespace nucleus
       escape("unable to locate the record at the given index");
     }
 
+    elle::Status
+    Access::Update(Subject const& subject,
+                   Permissions permissions,
+                   Token const& token)
+    {
+      Record* record;
+
+      // retrieve the record.
+      if (this->Lookup(subject, record) == elle::Status::Error)
+        escape("unable to retrieve the subject's record");
+
+      record->permissions = permissions;
+      record->token = token;
+
+      // set the block as dirty.
+      this->state = proton::StateDirty;
+
+      return elle::Status::Ok;
+    }
+
     ///
     /// this method returns a range representing a subset of the access
     /// control list delimited by the given index and size.

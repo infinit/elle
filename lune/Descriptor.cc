@@ -10,6 +10,8 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Subject.hh>
 
+#include <hole/Openness.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace lune
