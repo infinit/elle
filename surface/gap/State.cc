@@ -410,6 +410,23 @@ namespace surface
                     network->users.end(),
                     user_id) == network->users.end())
         network->users.push_back(user_id);
+
+      std::string const& group_binary = common::infinit::binary_path("8group");
+
+      QStringList arguments;
+      arguments << "--user" << _api->email().c_str()
+                << "--type" << "user"
+                << "--add"
+                << "--network" << network->name.c_str()
+                << "--identity" << this->user(user_id).public_key.c_str()
+                ;
+      this->log.debug("LAUNCH:",
+                      group_binary,
+                      arguments.join(" ").toStdString());
+      QProcess p;
+      p.start(group_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8group binary failed");
     }
 
     std::map<std::string, NetworkStatus*> const&
