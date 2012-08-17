@@ -231,8 +231,7 @@ namespace common
     {
       // The name is specific to the infinit home, as many instance could be
       // launched on the same machine.
-      static std::string const name =
-        ::common::infinit::home() + "/WATCHDOG_SERVER_NAME";
+      static std::string const name = "WATCHDOG_SERVER_NAME";
       return name;
     }
 
