@@ -62,17 +62,9 @@ EMAIL_REGEXP = re.compile(
 parser = argparse.ArgumentParser(description="Infinit launcher")
 
 parser.add_argument(
-    '--register',
-    '-r',
-    help="Register instead of log in",
-    action="store_true"
-)
-
-parser.add_argument(
     'action',
-    choices=['start', 'stop', 'restart', 'shell'],
-    default='start',
-    nargs='?',
+    choices=['register', 'start', 'stop', 'shell'],
+    nargs='+',
     help="Action done once logged in",
 )
 
@@ -88,6 +80,23 @@ parser.add_argument(
     action="store_true",
 )
 
+def make_simple_argument_parser(prog=None,
+                                description=None,
+                                add_help=False,
+                                args=None):
+    parser = argparse.ArgumentParser(prog=prog,
+                                     description=description,
+                                     add_help=add_help)
+    def raise_parser_exception(self, status=None, message=""):
+        raise Exception(message)
+    parser.exit = raise_parser_exception
+    for arg in args:
+        flags = arg.pop('flags')
+        if not (isinstance(flags, list) or isinstance(flags, tuple)):
+            flags = (flags,)
+        parser.add_argument(*flags, **arg)
+    return parser
+
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
         self._state = state
@@ -95,12 +104,29 @@ class InfinitShell(cmd.Cmd):
         self.prompt = state.email + '$ '
         super(InfinitShell, self).__init__()
 
-    def do_networks(self, args):
+    def _get_args(self, parser, line):
+        try:
+            return parser.parse_args(line.strip().split())
+        except Exception as e:
+            print(e.msg.strip())
+
+    ###########################################################################
+    # Retreive networks.
+
+    _networks_argument_parser = make_simple_argument_parser(
+        prog = "networks",
+        description = "Print all networks",
+        args = [],
+    )
+
+    def do_networks(self, line):
         """Print networks."""
+        args = self._get_args(self._networks_argument_parser, line)
         try:
             networks = self._state.networks()
             for network_id in networks:
-                print(self._state.network_name(network_id), '(%s)' % network_id)
+                print(self._state.network_name(network_id),
+                      '(%s)' % network_id)
                 mnt = None
                 try: mnt = self._state.network_mount_point(network_id)
                 except: pass
@@ -108,22 +134,47 @@ class InfinitShell(cmd.Cmd):
         except Exception as e:
             print(e)
 
-    def do_create_network(self, args):
-        """Create a new network."""
-        name = args.strip()
-        if not name:
-            print("You have to specify a name")
+    def help_networks(self):
+        self._networks_argument_parser.print_help()
+
+    ###########################################################################
+    # Retreive networks.
+
+    _create_network_argument_parser = make_simple_argument_parser(
+        prog = "create_network",
+        description = "Create a new network",
+        args = [
+            {
+                'flags': 'name',
+                'help': "The network name",
+            },
+        ]
+    )
+
+    def help_create_network(self):
+        self._create_network_argument_parser.print_help()
+
+    def do_create_network(self, line):
+        args = self._get_args(self._create_network_argument_parser, line)
+        if not args:
             return
         try:
-            self._state.create_network(name)
+            self._state.create_network(args.name)
         except Exception as e:
             print(e)
 
+    ###########################################################################
+    # Refresh networks.
+
     def do_refresh_networks(self, args):
+        """Refresh networks."""
         try:
             self._state.refresh_networks()
         except Exception as e:
             print(e)
+
+    ###########################################################################
+    # Start infinit.
 
     def do_start(self, args):
         """Mount all infinit networks."""
@@ -132,11 +183,18 @@ class InfinitShell(cmd.Cmd):
         except Exception as e:
             print(e)
 
+    ###########################################################################
+    # Stop infinit.
+
     def do_stop(self, args):
         try:
             self._state.stop_watchdog()
         except Exception as e:
             print(e)
+
+
+    ###########################################################################
+    # Log out from infinit.
 
     def do_logout(self, args):
         try:
@@ -144,28 +202,45 @@ class InfinitShell(cmd.Cmd):
         except Exception as e:
             print(e)
 
-    def do_invite(self, args):
-        """
-        invite a user to join a network.
-        usage: invite user network
-        """
-        if len(args.split()) != 2:
-            print("Wrong arguments")
+    ###########################################################################
+    # Invite a user to a network.
+
+    _invite_argument_parser = make_simple_argument_parser(
+        prog = "invite",
+        description = "Invite a user to join one of your networks",
+        args = [
+            {
+                'flags': 'user',
+                'help': 'email of the user to invite (can also be its id).',
+            },
+            {
+                'flags': 'network',
+                'help': 'The network name (or id) you want to share.',
+            },
+        ],
+    )
+
+    def help_invite(self):
+        self._invite_argument_parser.print_help()
+
+    def do_invite(self, line):
+        args = self._get_args(self._invite_argument_parser, line)
+        if not args:
             return
 
-        user, network = args.split()
         network_id = None
         for id_ in self._state.networks():
-            if id_ == network or self._state.network_name(id_) == network:
+            if id_ == args.network or \
+               self._state.network_name(id_) == args.network:
                 network_id = id_
                 break
 
         if network_id is None:
-            print("Cannot find any network with the name or id '%s'" % network)
+            print("Cannot find any network with the name or id '%s'" % args.network)
             return
 
         try:
-            self._state.network_add_user(network_id, user)
+            self._state.network_add_user(network_id, args.user)
         except Exception as e:
             print(e)
 
@@ -200,10 +275,17 @@ def start_shell(state, args):
                 dev_name = default_dev_name
             shell.do_create_device(dev_name)
 
-    if args.action == 'shell':
-        shell.cmdloop(SHELL_INTRO)
+    if 'shell' in args.action:
+        do_shell = True
+        args.action.remove('shell')
     else:
-        getattr(shell, 'do_' + args.action)('')
+        do_shell = False
+
+    for action in set(args.action):
+        getattr(shell, 'do_' + action)('')
+
+    if do_shell:
+        shell.cmdloop(SHELL_INTRO)
 
 def re_input(prompt, pattern=".+", regexp=None, errmsg="Input is not valid", default=None):
     if default is not None:
@@ -328,8 +410,10 @@ def main():
     state = gap.State()
     if args.debug:
         state.enable_debug()
-    if args.register:
+    print("actions", args.action)
+    if 'register' in args.action:
         print("Registering to infinit:")
+        args.action.remove('register')
         register(state)
     else:
         print("Authentication required (if you don't have an account, try -r)")
