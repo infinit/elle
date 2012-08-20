@@ -8,8 +8,13 @@ if (NOT Boost_PYTHON3_LIBRARY)
 	find_package(Boost COMPONENTS python-3.2)
 endif()
 
+if (NOT Boost_PYTHON3_LIBRARY)
+	#XXX on gentoo boost python package has complete python version suffix
+	find_package(Boost COMPONENTS python-3.1)
+endif()
+
 if (NOT(Boost_LIBRARIES MATCHES ".*boost_python.*"))
-	message(FATAL_ERROR "Couldn't find boost_python32 library")
+	message(FATAL_ERROR "Couldn't find boost_python3{1,2} library")
 endif()
 
 include_directories("${PYTHON3_INCLUDE_DIR}")
