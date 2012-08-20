@@ -14,13 +14,13 @@
 
 #define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
 
-ELLE_LOG_TRACE_COMPONENT("infinit.tests.nucleus.neutron.Group");
+ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
 void test_group()
 {
   elle::cryptography::KeyPair owner;
 
-  ELLE_LOG_TRACE("Generate owner key pair")
+  ELLE_TRACE("Generate owner key pair")
     {
       CHECK(owner.Generate());
     }
@@ -29,14 +29,14 @@ void test_group()
 
   elle::cryptography::KeyPair pass;
 
-  ELLE_LOG_TRACE("Generate the group's pass")
+  ELLE_TRACE("Generate the group's pass")
     {
       CHECK(pass.Generate());
     }
 
   nucleus::neutron::Ensemble ensemble;
 
-  ELLE_LOG_TRACE("Add subjects in the ensemble")
+  ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
       {
         elle::cryptography::KeyPair kp;
@@ -52,19 +52,19 @@ void test_group()
         assert(group.state == nucleus::proton::StateDirty);
       }
 
-  ELLE_LOG_TRACE("Update the ensemble with the private pass")
+  ELLE_TRACE("Update the ensemble with the private pass")
     {
       ensemble.update(pass.k);
     }
 
   nucleus::proton::Address ensemble_address;
 
-  ELLE_LOG_TRACE("Bind the ensemble block")
+  ELLE_TRACE("Bind the ensemble block")
     {
       CHECK(ensemble.Bind(ensemble_address));
     }
 
-  ELLE_LOG_TRACE("Upgrade the group")
+  ELLE_TRACE("Upgrade the group")
     {
       nucleus::neutron::Token manager_token(group.manager_K(), pass.k);
 
@@ -73,7 +73,7 @@ void test_group()
       assert(group.state == nucleus::proton::StateDirty);
     }
 
-  ELLE_LOG_TRACE("Seal the group")
+  ELLE_TRACE("Seal the group")
     {
       group.seal(owner.k);
 
@@ -82,14 +82,14 @@ void test_group()
 
   nucleus::proton::Address group_address;
 
-  ELLE_LOG_TRACE("Bind the group block")
+  ELLE_TRACE("Bind the group block")
     {
       CHECK(group.Bind(group_address));
     }
 
   elle::utility::Buffer buffer;
 
-  ELLE_LOG_TRACE("Serialize the group and ensemble blocks")
+  ELLE_TRACE("Serialize the group and ensemble blocks")
     {
       buffer.Writer() << group << ensemble;
     }
@@ -97,15 +97,15 @@ void test_group()
   nucleus::neutron::Group g;
   nucleus::neutron::Ensemble e;
 
-  ELLE_LOG_TRACE("Deserialize the group and ensemble blocks")
+  ELLE_TRACE("Deserialize the group and ensemble blocks")
     {
       buffer.Reader() >> g >> e;
     }
 
-  ELLE_LOG_TRACE("Validate the group")
+  ELLE_TRACE("Validate the group")
     CHECK(g.Validate(group_address));
 
-  ELLE_LOG_TRACE("Validate the ensemble")
+  ELLE_TRACE("Validate the ensemble")
     CHECK(e.Validate(ensemble_address));
 }
 

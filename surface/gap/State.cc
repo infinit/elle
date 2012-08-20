@@ -137,13 +137,13 @@ namespace surface
       req["command"] = cmd;
       if (kwargs != nullptr)
         req.update(*kwargs);
-      this->log.debug("Send watchdog command:", req.repr());
+      ELLE_DEBUG("Send watchdog command:", req.repr());
       conn.write(req.repr().c_str());
       conn.write("\n");
       if (!conn.waitForBytesWritten(2000))
           throw Exception(gap_internal_error,
                           "Couldn't send the command '" + cmd + "'");
-      this->log.debug("Command sent");
+      ELLE_DEBUG("Command sent");
 
       if (response == nullptr)
         return;
@@ -420,7 +420,7 @@ namespace surface
                 << "--network" << network->name.c_str()
                 << "--identity" << this->user(user_id).public_key.c_str()
                 ;
-      this->log.debug("LAUNCH:",
+      ELLE_DEBUG("LAUNCH:",
                       group_binary,
                       arguments.join(" ").toStdString());
       QProcess p;
@@ -698,8 +698,7 @@ namespace surface
       ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
 
       if (permissions & gap_exec)
-        ELLE_WARN(
-          "XXX: setting executable permissions not yet implemented");
+        ELLE_WARN("XXX: setting executable permissions not yet implemented");
 
       QProcess p;
       p.start(access_binary.c_str(), arguments);
