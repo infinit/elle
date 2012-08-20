@@ -21,12 +21,12 @@
 - (BOOL)installFuse {
     
     // copy to /usr/local/lib
-    BOOL libInstalled = [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib"];
-    libInstalled &= [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib"];
+    BOOL libInstalled = [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib" withForceCopy:NO];
+    libInstalled &= [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib" withForceCopy:NO];
     // copy to /usr/local/include
-    BOOL includeInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/include"] to:@"/usr/local/include"];
+    BOOL includeInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/include"] to:@"/usr/local/include" withForceCopy:NO];
     // copy to /Library/Extensions
-    BOOL kextInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/Library/Extensions"] to:@"/Library/Extensions"];
+    BOOL kextInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/Library/Extensions"] to:@"/Library/Extensions" withForceCopy:NO];
     
     NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:06755UL] forKey:NSFilePosixPermissions];
     NSFileManager *fm = [NSFileManager defaultManager];
@@ -35,22 +35,26 @@
     return libInstalled && includeInstalled && kextInstalled;
 }
 
-- (BOOL)copyForEachElementsIn:(NSString*)arg1 to:(NSString*)arg2 {
+- (BOOL)copyForEachElementsIn:(NSString*)arg1 to:(NSString*)arg2 withForceCopy:(BOOL)arg3{
     NSFileManager *fm = [NSFileManager defaultManager];
     NSArray *dirContents = [fm contentsOfDirectoryAtPath:arg1 error:nil];
-    NSDictionary *attr=[NSDictionary dictionaryWithObjectsAndKeys:
-                        [NSNumber numberWithInt:0], NSFileGroupOwnerAccountID,
-                        [NSNumber numberWithInt:0], NSFileOwnerAccountID,
-                        @"root", NSFileGroupOwnerAccountName,
-                        @"root", NSFileOwnerAccountName, nil ];
+    NSDictionary *attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          [NSNumber numberWithInt:0], NSFileGroupOwnerAccountID,
+                          [NSNumber numberWithInt:0], NSFileOwnerAccountID,
+                          @"root", NSFileGroupOwnerAccountName,
+                          @"root", NSFileOwnerAccountName, nil ];
     
     BOOL result = YES;
     for(NSString * item in dirContents) {
-        [fm removeItemAtPath:[arg2 stringByAppendingPathComponent:item] error:&error];
-        result &= [fm copyItemAtPath:[arg1 stringByAppendingPathComponent:item]
-                              toPath:[arg2 stringByAppendingPathComponent:item]
-                               error:&error];
-        [self setPermissionAtPath:[arg2 stringByAppendingPathComponent:item] withAttributes:attr];
+        if (arg3) {
+            [fm removeItemAtPath:[arg2 stringByAppendingPathComponent:item] error:&error];
+        }
+        if (![fm fileExistsAtPath:[arg2 stringByAppendingPathComponent:item]]) {
+            result &= [fm copyItemAtPath:[arg1 stringByAppendingPathComponent:item]
+                                  toPath:[arg2 stringByAppendingPathComponent:item]
+                                   error:&error];
+            [self setPermissionAtPath:[arg2 stringByAppendingPathComponent:item] withAttributes:attr];
+        }
     }
     return result;
 }
