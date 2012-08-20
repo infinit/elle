@@ -288,7 +288,7 @@ void InfinitNetwork::_register_device()
       LOG("Registering devices for network %s", this->_description.name);
       for (auto const& dev : this->_description.devices)
         {
-          LOG("\t-", dev);
+          LOG("\t- %s", dev);
         }
       this->_manager.meta().network_add_device(
           this->_description._id,
@@ -304,7 +304,7 @@ void InfinitNetwork::_register_device()
         }
       catch (std::exception const& err)
         {
-          LOG("Couldn't register the device:", err.what());
+          LOG("Couldn't register the device: %s", err.what());
         }
     }
   else
