@@ -18,7 +18,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.wall.Group");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Group");
 
 namespace etoile
 {
@@ -37,7 +37,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Create()");
+      ELLE_TRACE_SCOPE("Create()");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -79,7 +79,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Load()");
+      ELLE_TRACE_SCOPE("Load()");
 
       // XXX[change this so as to scope the groups i.e in order for the groups
       //     to be opened by multiple actors concurrently]
@@ -123,7 +123,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE("Information()");
+      ELLE_TRACE("Information()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -155,7 +155,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Add()");
+      ELLE_TRACE_SCOPE("Add()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
@@ -190,7 +190,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Lookup()");
+      ELLE_TRACE_SCOPE("Lookup()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -226,7 +226,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
+      ELLE_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
                            identifier, index, size, range);
 
       // select the actor.
@@ -262,7 +262,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Remove()");
+      ELLE_TRACE_SCOPE("Remove()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
@@ -295,7 +295,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Discard()");
+      ELLE_TRACE_SCOPE("Discard()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
@@ -381,7 +381,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Store()");
+      ELLE_TRACE_SCOPE("Store()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
@@ -467,7 +467,7 @@ namespace etoile
       gear::Scope* scope;
       gear::Group* context;
 
-      ELLE_LOG_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -550,7 +550,7 @@ namespace etoile
     elle::Status
     Group::Purge(gear::Identifier const&)
     {
-      ELLE_LOG_TRACE_SCOPE("Purge()");
+      ELLE_TRACE_SCOPE("Purge()");
 
       // XXX to implement.
 

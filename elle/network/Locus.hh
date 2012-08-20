@@ -1,6 +1,7 @@
 #ifndef ELLE_NETWORK_LOCUS_HH
 # define ELLE_NETWORK_LOCUS_HH
 
+# include <elle/Printable.hh>
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>
@@ -15,11 +16,10 @@ namespace elle
   namespace network
   {
 
-    ///
-    /// this class represents a network locus i.e a host and port.
-    ///
-    class Locus:
-      public radix::Object
+    /// A network host and port.
+    class Locus
+      : public radix::Object
+      , public elle::Printable
     {
     public:
       //
@@ -27,10 +27,12 @@ namespace elle
       //
       static const Locus                Null;
 
-      //
-      // constructors & destructors
-      //
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
       Locus();
+      Locus(std::string const& hostname, int port);
 
       //
       // methods
@@ -57,10 +59,18 @@ namespace elle
       //
       Host              host;
       Port              port;
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual void print(std::ostream& stream) const;
     };
 
   }
 }
+
+
 
 #include <elle/network/Locus.hxx>
 

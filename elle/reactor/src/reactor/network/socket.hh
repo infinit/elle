@@ -3,9 +3,7 @@
 
 # include <elle/IOStream.hh>
 
-# include <reactor/asio.hh>
 # include <reactor/duration.hh>
-# include <reactor/fwd.hh>
 # include <reactor/network/fwd.hh>
 
 namespace reactor

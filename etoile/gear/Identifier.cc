@@ -105,5 +105,11 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    std::ostream&
+    operator << (std::ostream& stream, Identifier const& id)
+    {
+      stream << id.value;
+      return stream;
+    }
   }
 }

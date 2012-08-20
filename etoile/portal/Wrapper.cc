@@ -18,7 +18,7 @@
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.portal.Wrapper");
+ELLE_LOG_COMPONENT("infinit.etoile.portal.Wrapper");
 
 namespace etoile
 {
@@ -40,7 +40,7 @@ namespace etoile
     {
       nucleus::neutron::Record const* r;
 
-      ELLE_LOG_TRACE_SCOPE("Access::Lookup()");
+      ELLE_TRACE_SCOPE("Access::Lookup()");
 
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
@@ -70,7 +70,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Record> r;
 
-      ELLE_LOG_TRACE_SCOPE("Access::Consult()");
+      ELLE_TRACE_SCOPE("Access::Consult()");
 
       // forward the call to wall.
       if (wall::Access::Consult(identifier,
@@ -100,7 +100,7 @@ namespace etoile
     {
       nucleus::neutron::Trait const* t;
 
-      ELLE_LOG_TRACE_SCOPE("Attributes::Get()");
+      ELLE_TRACE_SCOPE("Attributes::Get()");
 
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
@@ -128,7 +128,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Trait> r;
 
-      ELLE_LOG_TRACE_SCOPE("Attributes::Fetch()");
+      ELLE_TRACE_SCOPE("Attributes::Fetch()");
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
@@ -156,7 +156,7 @@ namespace etoile
     {
       nucleus::neutron::Entry const* e;
 
-      ELLE_LOG_TRACE_SCOPE("Directory::Lookup()");
+      ELLE_TRACE_SCOPE("Directory::Lookup()");
 
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
@@ -186,7 +186,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Entry> r;
 
-      ELLE_LOG_TRACE_SCOPE("Directory::Consult()");
+      ELLE_TRACE_SCOPE("Directory::Consult()");
 
       // forward the call to wall.
       if (wall::Directory::Consult(identifier,
@@ -212,7 +212,7 @@ namespace etoile
     {
       nucleus::neutron::Fellow const* f;
 
-      ELLE_LOG_TRACE_SCOPE("Group::Lookup()");
+      ELLE_TRACE_SCOPE("Group::Lookup()");
 
       // forward the call to wall.
       if (wall::Group::Lookup(identifier,
@@ -238,7 +238,7 @@ namespace etoile
     {
       nucleus::neutron::Range<nucleus::neutron::Fellow> r;
 
-      ELLE_LOG_TRACE_SCOPE("Group::Consult(%s, %s, %s, %s)",
+      ELLE_TRACE_SCOPE("Group::Consult(%s, %s, %s, %s)",
                            identifier, index, size, range);
 
       // forward the call to wall.

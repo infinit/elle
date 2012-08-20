@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <hole/Hole.hh>
 #include <hole/Holeable.hh>
 #include <hole/implementations/local/Implementation.hh>
@@ -14,6 +16,8 @@
 #include <elle/idiom/Close.hh>
 # include <boost/format.hpp>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
 namespace hole
 {
@@ -52,12 +56,7 @@ namespace hole
   ///
   Hole::State                   Hole::state = Hole::StateOffline;
 
-  ///
-  /// XXX[to replace by a new signal]
-  ///
-  elle::concurrency::Signal<
-    elle::radix::Parameters<>
-    >                           Hole::ready;
+  boost::signal<void ()> Hole::_ready;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -210,21 +209,21 @@ namespace hole
     return elle::Status::Ok;
   }
 
-  ///
-  /// this method can be called to signal the other components that the
-  /// network layer is ready to receive requests.
-  ///
-  elle::Status          Hole::Ready()
+  void
+  Hole::ready()
   {
-    if (Hole::state == Hole::StateOnline)
-      return elle::Status::Ok;
+    ELLE_LOG_SCOPE("ready");
+    if (Hole::state != Hole::StateOnline)
+      {
+        Hole::_ready();
+        Hole::state = Hole::StateOnline;
+      }
+  }
 
-    if (Hole::ready.Emit() == elle::Status::Error)
-      escape("unable to emit the signal");
-
-    Hole::state = Hole::StateOnline;
-
-    return elle::Status::Ok;
+  void
+  Hole::readyHook(boost::function<void ()> const& f)
+  {
+    Hole::_ready.connect(f);
   }
 
   ///
@@ -260,9 +259,7 @@ namespace hole
                    &block) != nullptr);
 
           // store the immutable block.
-          if (Hole::Implementation->Put(address, *ib) == elle::Status::Error)
-            escape("unable to put the block");
-
+          Hole::Implementation->Put(address, *ib);
           break;
         }
       case nucleus::proton::FamilyPublicKeyBlock:
@@ -277,9 +274,7 @@ namespace hole
                    &block) != nullptr);
 
           // store the mutable block.
-          if (Hole::Implementation->Put(address, *mb) == elle::Status::Error)
-            escape("unable to put the block");
-
+          Hole::Implementation->Put(address, *mb);
           break;
         }
       default:
@@ -292,70 +287,30 @@ namespace hole
     return elle::Status::Ok;
   }
 
-  ///
-  /// this method returns the block associated with the given address.
-  ///
-  elle::Status          Hole::Pull(const nucleus::proton::Address&      address,
-                                   const nucleus::proton::Version&      version,
-                                   nucleus::proton::Block&              block)
+  std::unique_ptr<nucleus::proton::Block>
+  Hole::Pull(const nucleus::proton::Address& address,
+             const nucleus::proton::Version& version)
   {
-    // forward the request depending on the nature of the block which
+    // Forward the request depending on the nature of the block which
     // the addres indicates.
     switch (address.family)
       {
-      case nucleus::proton::FamilyContentHashBlock:
-        {
-          nucleus::proton::ImmutableBlock*      ib;
-
-          // cast to an immutable block.
-          ib = static_cast<nucleus::proton::ImmutableBlock*>(&block);
-          assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
-                   &block) != nullptr);
-
-          // retrieve the immutable block.
-          if (Hole::Implementation->Get(address, *ib) == elle::Status::Error)
-            escape("unable to get the block");
-
-          break;
-        }
-      case nucleus::proton::FamilyPublicKeyBlock:
-      case nucleus::proton::FamilyOwnerKeyBlock:
-      case nucleus::proton::FamilyImprintBlock:
-        {
-          nucleus::proton::MutableBlock*        mb;
-
-          // cast to a mutable block.
-          mb = static_cast<nucleus::proton::MutableBlock*>(&block);
-          assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
-                   &block) != nullptr);
-
-          // retrieve the mutable block.
-          if (Hole::Implementation->Get(address, version,
-                                        *mb) == elle::Status::Error)
-            escape("unable to get the block");
-
-          break;
-        }
-      default:
-        {
-          escape("unknown block family '%u'",
-                 address.family);
-        }
+        case nucleus::proton::FamilyContentHashBlock:
+          return Hole::Implementation->Get(address);
+        case nucleus::proton::FamilyPublicKeyBlock:
+        case nucleus::proton::FamilyOwnerKeyBlock:
+        case nucleus::proton::FamilyImprintBlock:
+          return Hole::Implementation->Get(address, version);
+        default:
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   elle::sprintf("unknown block family '%u'", address.family));
       }
-
-    return elle::Status::Ok;
   }
 
-  ///
-  /// this method removes the block associated with the given address.
-  ///
-  elle::Status          Hole::Wipe(const nucleus::proton::Address&      address)
+  void
+  Hole::Wipe(nucleus::proton::Address const& address)
   {
-    // forward the kill request to the implementation.
-    if (Hole::Implementation->Kill(address) == elle::Status::Error)
-      escape("unable to erase the block");
-
-    return elle::Status::Ok;
+    Hole::Implementation->Kill(address);
   }
 
 }

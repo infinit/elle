@@ -33,17 +33,22 @@ namespace etoile
       if (context.contents != nullptr)
         return elle::Status::Ok;
 
-      // otherwise create a new contents according to the context's type.
-      context.contents = new nucleus::proton::Contents<typename T::C>;
-
       // check if there exists a contents. if so, load the block.
-      if (context.object.contents() != nucleus::proton::Address::Null)
+      if (context.object->contents() != nucleus::proton::Address::Null)
         {
           // load the block.
-          if (depot::Depot::Pull(context.object.contents(),
-                                 nucleus::proton::Version::Any,
-                                 *context.contents) == elle::Status::Error)
-            escape("unable to load the contents");
+          try
+            {
+              // XXX[the context should make use of unique_ptr instead
+              //     of releasing here.]
+              context.contents =
+                depot::Depot::pull<nucleus::proton::Contents<typename T::C>>(
+                context.object->contents()).release();
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the contents block: %s", e.what());
+            }
 
           // determine the rights the current user has on this object.
           if (Rights::Determine(context) == elle::Status::Error)
@@ -61,6 +66,8 @@ namespace etoile
         }
       else
         {
+          // otherwise create a new contents according to the context's type.
+          context.contents = new nucleus::proton::Contents<typename T::C>;
           // otherwise, create an empty contents.
           if (context.contents->Create() == elle::Status::Error)
             escape("unable to create the contents");
@@ -77,11 +84,11 @@ namespace etoile
                           T&                                    context)
     {
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.object.contents() != nucleus::proton::Address::Null)
+      if (context.object->contents() != nucleus::proton::Address::Null)
         {
           // mark the content block for removal.
-          if (context.transcript.Wipe(context.object.contents()) ==
-              elle::Status::Error)
+          if (context.transcript.Wipe(
+                context.object->contents()) == elle::Status::Error)
             escape("unable to mark the content block for removal");
         }
 
@@ -155,12 +162,12 @@ namespace etoile
             }
 
           // update the object with the null contents address.
-          if (context.object.Update(
+          if (context.object->Update(
                 context.author,
                 nucleus::proton::Address::Null,
                 0,
-                context.object.access(),
-                context.object.owner_token()) == elle::Status::Error)
+                context.object->access(),
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           //
@@ -214,12 +221,12 @@ namespace etoile
           context.contents->state = nucleus::proton::StateConsistent;
 
           // update the object.
-          if (context.object.Update(
+          if (context.object->Update(
                 context.author,
                 address,
                 size,
-                context.object.access(),
-                context.object.owner_token()) == elle::Status::Error)
+                context.object->access(),
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.

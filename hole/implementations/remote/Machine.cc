@@ -11,7 +11,7 @@
 # include <boost/format.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Machine");
+ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Machine");
 
 namespace hole
 {
@@ -86,75 +86,43 @@ namespace hole
         locus = *Hole::Set.loci.begin();
 
         // try to connect to the server's host.
-        ELLE_LOG_TRACE("try starting as a client")
+        ELLE_TRACE("try starting as a client")
           try
             {
-              // allocate a client.
-              auto client = std::unique_ptr<Client>(new Client(locus));
-
-              // launch the client.
-
-              if (client->Launch() == elle::Status::Ok)
-                {
-                  // set the client as the host.
-                  this->client = client.release();
-
-                  // set the role.
-                  this->role = Machine::RoleClient;
-
-                  // set the hole as ready to receive requests.
-                  if (Hole::Ready() == elle::Status::Error)
-                    throw std::runtime_error("unable to set the hole online");
-
-                  ELLE_LOG_TRACE("successfully started as a client")
-                  return;
-                }
-              ELLE_LOG_TRACE("error while starting as a client");
-#include <elle/idiom/Close.hh>
-              // XXX
-              elle::concurrency::scheduler().current()->yield();
-#include <elle/idiom/Open.hh>
+              std::string host;
+              locus.host.Convert(host);
+              auto client = std::unique_ptr<Client>(new Client(host, locus.port));
+              this->role = Machine::RoleClient;
+              Hole::ready();
+              this->client = client.release();
+              return;
             }
           catch (reactor::network::Exception& e)
             {
-              ELLE_LOG_TRACE("network error while starting as a client: %s", e.what());
+              ELLE_TRACE("network error while starting as a client: %s", e.what());
             }
 
         // purge the error messages.
         purge();
 
         // if the client did not succeed, create a server a wait for a client.
-        ELLE_LOG_TRACE("start as a server")
+        ELLE_TRACE("start as a server")
         {
-          // allocate a server.
-          auto server = std::unique_ptr<Server>(new Server(locus));
-
-          // launch the server.
-          if (server->Launch() == elle::Status::Ok)
-            {
-              // set the server as the host.
-              this->server = server.release();
-
-              // set the role.
-              this->role = Machine::RoleServer;
-
-              return;
-            }
+          this->server = new Server(locus.port);
+          this->role = Machine::RoleServer;
+          return;
         }
 
         throw std::runtime_error("unable to create a client or a server");
       }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-      ///
-      /// this method dumps the machine.
-      ///
-      elle::Status      Machine::Dump(const elle::Natural32     margin) const
+      /*---------.
+      | Dumpable |
+      `---------*/
+      elle::Status
+      Machine::Dump(const elle::Natural32 margin) const
       {
-        elle::String    alignment(margin, ' ');
+        elle::String alignment(margin, ' ');
 
         std::cout << alignment << "[Machine]" << std::endl;
 

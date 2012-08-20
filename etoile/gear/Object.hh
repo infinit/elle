@@ -94,7 +94,7 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      nucleus::neutron::Object object;
+      nucleus::neutron::Object* object;
       nucleus::neutron::Access* access;
 
       struct

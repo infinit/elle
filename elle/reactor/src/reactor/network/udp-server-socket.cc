@@ -1,10 +1,13 @@
-#include <reactor/debug.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/network/udp-server-socket.hh>
 #include <reactor/network/udp-server.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Reactor.Network.UDPServerSocket");
 
 namespace reactor
 {
@@ -48,17 +51,16 @@ namespace reactor
     Size
     UDPServerSocket::read_some(Buffer buffer, DurationOpt timeout)
     {
-      INFINIT_REACTOR_DEBUG(*this << ": read at most "
-                            << buffer.size() << " bytes.");
+      ELLE_TRACE("%s: read at most %s bytes", *this, buffer.size());
       if (_read_buffer_size == 0)
       {
-        INFINIT_REACTOR_DEBUG(*this << ": wait for data from server.");
+        ELLE_TRACE("%s: wait for data from server.", *this);
         if (!scheduler().current()->wait(_read_ready, timeout))
           throw TimeOut(scheduler());
       }
       assert(_read_buffer_size > 0);
       Size size = std::min(buffer.size(), _read_buffer_size);
-      INFINIT_REACTOR_DEBUG(*this << ": read " << size << " bytes.");
+      ELLE_TRACE("%s: read %s bytes", *this, size);
       memmove(buffer.data(), _read_buffer, size);
       if (size != _read_buffer_size)
         memmove(_read_buffer, _read_buffer + size, _read_buffer_size - size);

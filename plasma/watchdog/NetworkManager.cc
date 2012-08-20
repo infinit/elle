@@ -8,6 +8,8 @@
 #include "Manager.hh"
 #include "NetworkManager.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 NetworkManager::NetworkManager(Manager& manager):
@@ -24,7 +26,7 @@ void NetworkManager::stop()
 
 void NetworkManager::update_networks()
 {
-  elle::log::debug("Updating networks");
+  ELLE_DEBUG("Updating networks");
   using namespace std::placeholders;
   this->_on_networks_update(this->_manager.meta().networks());
 }
@@ -38,7 +40,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 {
   std::set<std::string> visited;
 
-  elle::log::debug("Got network list");
+  ELLE_DEBUG("Got network list");
   // apply to the networks
     {
       auto it =  response.networks.begin(),
@@ -69,7 +71,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 
 void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
 {
-  elle::log::debug("Updating network", r._id);
+  ELLE_DEBUG("Updating network %s", r._id);
   auto it = this->_networks.find(r._id);
   if (it == this->_networks.end())
     {

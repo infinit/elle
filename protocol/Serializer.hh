@@ -3,6 +3,8 @@
 
 # include <iostream>
 
+# include <reactor/mutex.hh>
+
 # include <protocol/Stream.hh>
 
 namespace infinit
@@ -35,11 +37,19 @@ namespace infinit
     public:
       void write(Packet& packet);
 
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual void print(std::ostream& stream) const;
+
     /*--------.
     | Details |
     `--------*/
     private:
       std::iostream& _stream;
+      reactor::Mutex _lock_write;
+      reactor::Mutex _lock_read;
     };
   }
 }

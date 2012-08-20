@@ -260,15 +260,9 @@ namespace horizon
       return nullptr;
     }
 
-    ///
-    /// this method is triggered so as to launch the FUSE-specific thread.
-    ///
-    elle::Status        FUker::Run()
+    void
+    FUker::run()
     {
-      // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
-        escape("unable to create the FUSE-specific thread");
-
       // XXX[race conditions exist here:
       //     1) the FUSE thread calls Program::Exit() before our event loop
       //        is entered.
@@ -276,8 +270,9 @@ namespace horizon
       //        is a bad idea since teardown() could have been called, still
       //        the pointer would not be nullptr. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
-
-      return elle::Status::Ok;
+      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to create the FUSE-specific thread");
     }
 
     ///
@@ -287,22 +282,16 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // XXX[to replace by the new signal mechanism]
       switch (hole::Hole::state)
         {
         case hole::Hole::StateOffline:
           {
-            if (hole::Hole::ready.Subscribe(
-                  elle::concurrency::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
-              escape("unable to subscribe to the signal");
-
+            hole::Hole::readyHook(&FUker::run);
             break;
           }
         case hole::Hole::StateOnline:
           {
-            if (FUker::Run() == elle::Status::Error)
-              escape("unable to run the FUker thread");
-
+            FUker::run();
             break;
           }
         }

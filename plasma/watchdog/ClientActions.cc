@@ -13,6 +13,8 @@
 #include "Manager.hh"
 #include "NetworkManager.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 using namespace plasma::watchdog;
 
 // Register a command to the manager.
@@ -35,8 +37,8 @@ using namespace plasma::watchdog;
   do {                                                                        \
       if (args["_id"].toString() != this->_watchdogId)                        \
         {                                                                     \
-          elle::log::warn("Invalid watchdog id:",                             \
-                          args["_id"].toString().toStdString());              \
+          ELLE_WARN("Invalid watchdog id: %s",                                \
+                    args["_id"].toString().toStdString());                    \
           return;                                                             \
         }                                                                     \
   } while(false)                                                              \
@@ -60,11 +62,11 @@ ClientActions::ClientActions(Manager& manager) :
 ClientActions::~ClientActions()
 {}
 
-void ClientActions::_on_run(Connection& conn,
-                            Client& client,
+void ClientActions::_on_run(Connection&,
+                            Client&,
                             QVariantMap const& args)
 {
-  elle::log::debug("Starting watchdog monitoring.");
+  ELLE_DEBUG("Starting watchdog monitoring.");
   CHECK_ID(args);
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
@@ -79,7 +81,7 @@ void ClientActions::_on_run(Connection& conn,
 
       if (!identity_infos.good())
         {
-          elle::log::fatal("Cannot open identity file");
+          ELLE_ERR("Cannot open identity file");
           std::abort();
         }
 
@@ -90,7 +92,7 @@ void ClientActions::_on_run(Connection& conn,
 
       if (!identity_infos.good())
         {
-          elle::log::fatal("Cannot write identity file");
+          ELLE_ERR("Cannot write identity file");
           std::abort();
         }
       identity_infos.close();
@@ -100,11 +102,11 @@ void ClientActions::_on_run(Connection& conn,
       REGISTER_ALL();
     }
   else
-    elle::log::warn("The token was not provided (cannot start monitoring).");
+    ELLE_WARN("The token was not provided (cannot start monitoring).");
 }
 
-void ClientActions::_on_stop(Connection& conn,
-                            Client& client,
+void ClientActions::_on_stop(Connection&,
+                            Client&,
                             QVariantMap const& args)
 {
   CHECK_ID(args);
@@ -113,8 +115,8 @@ void ClientActions::_on_stop(Connection& conn,
 }
 
 
-void ClientActions::_on_refresh_networks(Connection& conn,
-                                         Client& client,
+void ClientActions::_on_refresh_networks(Connection&,
+                                         Client&,
                                          QVariantMap const& args)
 {
   CHECK_ID(args);
@@ -123,7 +125,7 @@ void ClientActions::_on_refresh_networks(Connection& conn,
 
 
 void ClientActions::_on_status(Connection& conn,
-                               Client& client,
+                               Client&,
                                QVariantMap const& args)
 {
   namespace json = elle::format::json;

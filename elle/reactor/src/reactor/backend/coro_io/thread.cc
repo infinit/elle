@@ -2,7 +2,10 @@
 #include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
 #include <reactor/backend/coro_io/thread.hh>
 #include <reactor/backtrace.hh>
-#include <reactor/debug.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Reactor.Backend");
 
 namespace reactor
 {
@@ -74,8 +77,8 @@ namespace reactor
 
       Thread::~Thread()
       {
-        assert(status() == status::done || status() == status::starting);
-        INFINIT_REACTOR_DEBUG(_name << ": die");
+        assert(status() == status::done || status() == status::starting || this == &_manager._self);
+        ELLE_TRACE("%s: die", this->_name);
         if (_coro)
           {
             Coro_free(_coro);
@@ -122,9 +125,9 @@ namespace reactor
           _manager._current = this;
           _coro = Coro_new();
           assert(_coro);
-          INFINIT_REACTOR_DEBUG(current->_name << ": start " << _name);
+          ELLE_TRACE("%s: start %s", current->_name , this->_name);
           Coro_startCoro_(_caller->_coro, _coro, this, &starter);
-          INFINIT_REACTOR_DEBUG(current->_name << ": back from " << _name);
+          ELLE_TRACE("%s: back from %s", current->_name, _name);
         }
         else
         {
@@ -133,7 +136,7 @@ namespace reactor
           Thread* current = _manager._current;
           _caller = current;
           _manager._current = this;
-          INFINIT_REACTOR_DEBUG(_name << ": step from " << _caller->_name);
+          ELLE_TRACE("%s: step from %s", this->_name, _caller->_name);
           Coro_switchTo_(current->_coro, _coro);
         }
       }
@@ -168,7 +171,7 @@ namespace reactor
         _caller = 0;
         _status = status::done;
         _manager._current = caller;
-        INFINIT_REACTOR_DEBUG(_name << ": done");
+        ELLE_TRACE("%s: done", this->_name);
         Coro_switchTo_(_coro, caller->_coro);
       }
 
@@ -179,7 +182,8 @@ namespace reactor
         assert(_status == status::running);
         _status = status::waiting;
         _manager._current = _caller;
-        INFINIT_REACTOR_DEBUG(_name << ": yield back to " << _manager._current->_name);
+        ELLE_TRACE("%s: yield back to %s",
+                       this->_name, _manager._current->_name);
         _caller = 0;
         Coro_switchTo_(_coro, _manager._current->_coro);
       }

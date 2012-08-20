@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <etoile/journal/Journal.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Scope.hh>
@@ -17,6 +19,8 @@
 # include <boost/foreach.hpp>
 #include <elle/idiom/Open.hh>
 
+ELLE_LOG_COMPONENT("infinit.etoile.journal.Journal");
+
 namespace etoile
 {
   namespace journal
@@ -31,6 +35,8 @@ namespace etoile
     ///
     elle::Status        Journal::Record(gear::Scope*            scope)
     {
+      ELLE_TRACE_SCOPE("Journal::Record(%s)", *scope);
+
       assert(scope != nullptr);
       return Journal::_Record(scope);
       // XXX
@@ -107,10 +113,6 @@ namespace etoile
       scope->context->state = gear::Context::StateCleaned;
 
       Journal::_scopes.erase(scope);
-
-      // bury the scope i.e a scope may have recorded itself; thus bury
-      // it in order to avoid problems.
-      bury(scope);
 
       return elle::Status::Ok;
     }

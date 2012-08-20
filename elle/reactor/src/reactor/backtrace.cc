@@ -36,10 +36,9 @@ namespace reactor
     return extract(str, ignored, until);
   }
 
-  std::string
-  demangle(const std::string& sym)
+  bool
+  demangle(const std::string& sym, std::string& res, std::string& error)
   {
-    std::string err;
     size_t size;
     int status;
     char* demangled = abi::__cxa_demangle(sym.c_str(), 0, &size, &status);
@@ -48,24 +47,36 @@ namespace reactor
     {
       case 0:
       {
-        std::string res(demangled);
+        res = demangled;
         free(demangled);
-        return res;
+        return true;
       }
       case -1:
-        err = "memory allocation failure";
-        break;
+        error = "memory allocation failure";
+        return false;
       case -2:
-        err = "not a valid name under the C++ ABI mangling rules";
-        break;
+        error = "not a valid name under the C++ ABI mangling rules";
+        return false;
       case -3:
-        err = "invalid argument";
-        break;
+        error = "invalid argument";
+        return false;
       default:
         std::abort();
     }
-    static boost::format fmt("%s: demangling failure: %s");
-    throw std::runtime_error(str(fmt % sym % err));
+  }
+
+  std::string
+  demangle(const std::string& sym)
+  {
+    std::string error;
+    std::string res;
+    if (!demangle(sym, res, error))
+      {
+        static boost::format model("%s: demangling failure: %s");
+        boost::format fmt(model);
+        throw std::runtime_error(str(fmt % sym % error));
+      }
+    return res;
   }
 
   Backtrace::Backtrace()
@@ -89,14 +100,9 @@ namespace reactor
       discard(sym, '(');
       if (extract(sym, frame.symbol_mangled, '+'))
       {
-        try
-        {
-          frame.symbol = frame.symbol_demangled = demangle(frame.symbol_mangled);
-        }
-        catch (const std::runtime_error&)
-        {
+        std::string error;
+        if (!demangle(frame.symbol_mangled, frame.symbol, error))
           frame.symbol = frame.symbol_mangled;
-        }
 
         std::string offset;
         extract(sym, offset, ')');

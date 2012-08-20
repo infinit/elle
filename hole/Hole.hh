@@ -1,6 +1,8 @@
 #ifndef HOLE_HOLE_HH
 # define HOLE_HOLE_HH
 
+# include <boost/signals.hpp>
+
 # include <elle/types.hh>
 # include <elle/concurrency/Signal.hh>
 
@@ -32,9 +34,20 @@ namespace hole
         StateOnline
       };
 
+  /*------.
+  | Ready |
+  `------*/
+  public:
+    /// Signal other components the storage layer is ready.
+    static void ready();
+    static void readyHook(boost::function<void ()> const& f);
+  private:
+    static boost::signal<void ()> _ready;
+
     //
     // static methods
     //
+  public:
     static void                 Initialize();
     /// XXX
     static
@@ -46,15 +59,14 @@ namespace hole
     leave();
     static elle::Status         Clean();
 
-    static elle::Status         Ready();
-
     static elle::Status         Origin(nucleus::proton::Address&);
     static elle::Status         Push(const nucleus::proton::Address&,
                                      const nucleus::proton::Block&);
-    static elle::Status         Pull(const nucleus::proton::Address&,
-                                     const nucleus::proton::Version&,
-                                     nucleus::proton::Block&);
-    static elle::Status         Wipe(const nucleus::proton::Address&);
+    /// The block associated with the given address.
+    static std::unique_ptr<nucleus::proton::Block>
+    Pull(const nucleus::proton::Address&, const nucleus::proton::Version&);
+    /// Remove the block associated with the given address.
+    static void Wipe(const nucleus::proton::Address&);
 
     //
     // static attributes
@@ -67,10 +79,6 @@ namespace hole
 
     // XXX
     static State                state;
-    static
-    elle::concurrency::Signal<
-      elle::radix::Parameters<>
-      >                         ready;
   };
 
 }

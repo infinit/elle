@@ -18,8 +18,11 @@ set_property(
 
 add_library(elle
 
+  assert.cc
+
   Buffer.cc
   IOStream.cc
+  Printable.cc
 
   standalone/Log.cc
   standalone/Morgue.cc
@@ -115,7 +118,6 @@ add_library(elle
   reactor/src/reactor/backend/coro_io/thread.cc
   reactor/src/reactor/backend/pthread/pthread.cc
   reactor/src/reactor/backtrace.cc
-  reactor/src/reactor/debug.cc
   reactor/src/reactor/duration.cc
   reactor/src/reactor/exception.cc
   reactor/src/reactor/lockable.cc

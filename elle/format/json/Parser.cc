@@ -13,7 +13,7 @@
 #include "Parser.hh"
 #include "String.hh"
 
-ELLE_LOG_TRACE_COMPONENT("infinit.elle.format.json.Parser");
+ELLE_LOG_COMPONENT("infinit.elle.format.json.Parser");
 
 namespace elle
 {
@@ -61,7 +61,7 @@ namespace elle
       typename Parser<T>::ObjectPtr
       Parser<T>::parse(StreamType& input)
       {
-        ELLE_LOG_TRACE_SCOPE("Parsing json from stream");
+        ELLE_TRACE_SCOPE("Parsing json from stream");
         ObjectPtr res;
         if (!_ReadJSONValue(input, res))
           throw std::runtime_error("Couldn't read any JSON value");

@@ -1,9 +1,12 @@
-#include <reactor/debug.hh>
 #include <reactor/network/udp-server.hh>
 #include <reactor/network/udp-server-socket.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Reactor.Network.UDPServer");
 
 namespace reactor
 {
@@ -48,16 +51,16 @@ namespace reactor
     UDPServerSocket*
     UDPServer::accept()
     {
-      INFINIT_REACTOR_DEBUG(*this << ": accept");
+      ELLE_TRACE("%s: accept", *this);
       if (_accepted.empty())
       {
-        INFINIT_REACTOR_DEBUG(*this << ": wait for incoming connection");
+        ELLE_TRACE("%s: wait for incoming connection", *this);
         scheduler().current()->wait(_accept);
       }
       assert(!_accepted.empty());
       UDPServerSocket* res = _accepted.back();
       _accepted.pop_back();
-      // INFINIT_REACTOR_DEBUG(*this << ": got client: " << *res);
+      // ELLE_TRACE("%s: got client: %s", *this, *res);
       return res;
     }
 
@@ -94,8 +97,8 @@ namespace reactor
         std::cerr << error << std::endl;
         std::abort();
       }
-      INFINIT_REACTOR_DEBUG(*this << ": " << bytes
-                            << " bytes available from " << _peer);
+      ELLE_TRACE("%s: %s bytes available from %s",
+                     *this, bytes, this->_peer);
       Clients::iterator elt = _clients.find(_peer);
       UDPServerSocket* socket = 0;
       if (elt == _clients.end())
@@ -104,7 +107,7 @@ namespace reactor
         static const Size buffer_size = 512;
         socket->_read_buffer = new Byte[buffer_size];
         socket->_read_buffer_capacity = buffer_size;
-        INFINIT_REACTOR_DEBUG(*this << ": new client: " << *socket);
+        ELLE_TRACE("%s: new client: %s", *this, *socket);
         _clients[_peer] = socket;
         _accepted.push_back(socket);
         _accept.signal();
@@ -112,21 +115,21 @@ namespace reactor
       else
       {
         socket = elt->second;
-        INFINIT_REACTOR_DEBUG(*this << ": client: " << socket);
+        ELLE_TRACE("%s: client: %s", *this, socket);
       }
       // Grow buffer if needed.
       Size free = socket->_read_buffer_capacity - socket->_read_buffer_size;
       while (bytes > free)
       {
-        INFINIT_REACTOR_DEBUG(*this << ": grow client buffer (free: "
-                              << free << ")");
+        ELLE_TRACE("%s: grow client buffer (free: %s)",
+                       *this, free);
         socket->_read_buffer = reinterpret_cast<Byte*>
           (realloc(socket->_read_buffer, socket->_read_buffer_capacity * 2));
         socket->_read_buffer_capacity *= 2;
         free = socket->_read_buffer_capacity - socket->_read_buffer_size;
       }
       // Copy data
-      INFINIT_REACTOR_DEBUG(*this << ": post client data");
+      ELLE_TRACE("%s: post client data", *this);
       memmove(socket->_read_buffer + socket->_read_buffer_size,
               _buffer, bytes);
       socket->_read_buffer_size += bytes;

@@ -77,23 +77,20 @@ namespace horizon
     int                 Crux::Statfs(const char*,
                                      struct ::statvfs*          statvfs)
     {
-      // XXX
-      statvfs->f_bsize = 4096;
+      // XXX[these numbers are based on the return value of statvfs() on
+      //     a local file system; just to make sure the Finder does not
+      //     complain there is not storage space left]
+      statvfs->f_bsize = 1048576;
       statvfs->f_frsize = 4096;
-
-      statvfs->f_blocks = 6000000;
-      statvfs->f_bfree = 2000000;
-      statvfs->f_bavail = statvfs->f_blocks - statvfs->f_bfree;
-
-      statvfs->f_files = 6000000;
-      statvfs->f_ffree = 2000000;
-      statvfs->f_favail = statvfs->f_files - statvfs->f_ffree;
-
-      statvfs->f_fsid = 0;
-
+      statvfs->f_blocks = 29412370;
+      statvfs->f_bfree = 1096215;
+      statvfs->f_bavail = 1032215;
+      statvfs->f_files = 29412368;
+      statvfs->f_ffree = 1032215;
+      statvfs->f_favail = 1032215;
+      statvfs->f_fsid = 234881026;
       statvfs->f_flag = ST_NOSUID;
-
-      statvfs->f_namemax = 2048;
+      statvfs->f_namemax = 255;
       // XXX
 
       return (0);

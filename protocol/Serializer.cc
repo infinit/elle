@@ -4,23 +4,12 @@
 
 #include <protocol/Serializer.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Protocol");
+ELLE_LOG_COMPONENT("infinit.protocol.Serializer");
 
 namespace infinit
 {
   namespace protocol
   {
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    static std::ostream&
-    operator << (std::ostream& s, Serializer const& ps)
-    {
-      s << "infinit::protocol::Serializer(" << &ps << ")";
-      return s;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -28,6 +17,8 @@ namespace infinit
     Serializer::Serializer(reactor::Scheduler& scheduler, std::iostream& stream)
       : Super(scheduler)
       , _stream(stream)
+      , _lock_write()
+      , _lock_read()
     {}
 
     /*----------.
@@ -37,13 +28,14 @@ namespace infinit
     Packet
     Serializer::read()
     {
-      ELLE_LOG_TRACE("%s: read packet", *this)
+      reactor::Lock lock(scheduler(), _lock_read);
+      ELLE_TRACE("%s: read packet", *this)
         {
           uint32_t size(_uint32_get(_stream));
-          ELLE_LOG_TRACE("%s: packet size: %s, reading body", *this, size);
+          ELLE_DEBUG("%s: packet size: %s, reading body", *this, size);
           Packet res(size);
           _stream.read(reinterpret_cast<char*>(res._data), size);
-          ELLE_LOG_TRACE("%s: got full packet", *this);
+          ELLE_TRACE("%s: got %s", *this, res);
           return res;
         }
     }
@@ -54,14 +46,24 @@ namespace infinit
     void
     Serializer::write(Packet& packet)
     {
-      ELLE_LOG_TRACE("%s: send packet of size %s",
-                     *this, packet._data_size)
+      reactor::Lock lock(scheduler(), _lock_write);
+      ELLE_TRACE("%s: send %s", *this, packet)
         {
           _uint32_put(_stream, packet._data_size);
           _stream.write(reinterpret_cast<char*>(packet._data),
                         packet._data_size);
         }
       _stream.flush();
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Serializer::print(std::ostream& stream) const
+    {
+      stream << "Serializer " << this;
     }
   }
 }

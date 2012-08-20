@@ -1,6 +1,10 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
 
+# include <boost/noncopyable.hpp>
+
+# include <unordered_set>
+
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
 
@@ -19,85 +23,83 @@ namespace hole
   {
     namespace remote
     {
-
+      /// The server waiting for clients to connect which are then
+      /// authenticated.
       ///
-      /// this class represents the server which waits for clients to
-      /// connect which are then authenticated.
-      ///
-      /// note that multiple clients can connect to the server in
+      /// Note that multiple clients can connect to the server in
       /// parallel.
-      ///
-      class Server:
-        public elle::radix::Entity
+      class Server
+        : public elle::radix::Entity
+        , public boost::noncopyable
       {
+      /*------.
+      | Types |
+      `------*/
       public:
-        //
-        // types
-        //
-        typedef std::map<elle::network::TCPSocket*, Customer*>   Container;
-        typedef typename Container::iterator            Iterator;
-        typedef typename Container::const_iterator      Scoutor;
 
-        //
-        // constructors & destructors
-        //
-        Server(const elle::network::Locus&);
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
+        Server(int port);
         ~Server();
 
-        //
-        // methods
-        //
-        elle::Status            Launch();
+      /*----------.
+      | Customers |
+      `----------*/
+      private:
+        /// Set of customers.
+        typedef std::unordered_set<Customer*> Customers;
+        /// The customers.
+        Customers _customers;
+        /// Add the given customer to the set.
+        void
+        _add(Customer*);
+        /// Remove a customer from the set.
+        void
+        _remove(Customer*);
+        /// Let customers manage the set.
+        friend class Customer;
 
-        elle::Status            Add(elle::network::TCPSocket*,
-                                    Customer*);
-        elle::Status            Remove(elle::network::TCPSocket*);
-        elle::Status            Retrieve(elle::network::TCPSocket*,
-                                         Customer*&);
-        elle::Status            Locate(elle::network::TCPSocket*,
-                                       Iterator* = nullptr);
+      /*----.
+      | API |
+      `----*/
+      public:
+        /// Store an immutable block.
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::ImmutableBlock&);
+        /// Store a mutable block.
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::MutableBlock&);
+        /// Retrieve an immutable block.
+        void
+        get(const nucleus::proton::Address&,
+            nucleus::proton::ImmutableBlock&);
+        /// Retrieve a mutable block.
+        void
+        get(const nucleus::proton::Address&,
+            const nucleus::proton::Version&,
+            nucleus::proton::MutableBlock&);
+        /// This method removes a block.
+        void
+        kill(const nucleus::proton::Address&);
 
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::ImmutableBlock&);
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::MutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    nucleus::proton::ImmutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    const nucleus::proton::Version&,
-                                    nucleus::proton::MutableBlock&);
-        elle::Status            Kill(const nucleus::proton::Address&);
-
-        elle::Status            Challenge(const lune::Passport&);
-
-        elle::Status            Sweep(Customer*);
-
-        elle::Status            Push(const nucleus::proton::Address&,
-                                     nucleus::Derivable const&);
-        elle::Status            Pull(const nucleus::proton::Address&,
-                                     const nucleus::proton::Version&);
-        elle::Status            Wipe(const nucleus::proton::Address&);
-
-        //
-        // interfaces
-        //
-
-        // dumpable
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
         elle::Status            Dump(const elle::Natural32 = 0) const;
 
-        //
-        // attributes
-        //
-        elle::network::Locus             _locus;
-
-        Container               container;
-
+      /*-------.
+      | Server |
+      `-------*/
       private:
         void _accept();
-        reactor::network::TCPServer* _server;
-        reactor::Thread* _acceptor;
+        std::unique_ptr<reactor::network::TCPServer> _server;
+        std::unique_ptr<reactor::Thread> _acceptor;
       };
-
     }
   }
 }

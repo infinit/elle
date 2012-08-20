@@ -83,41 +83,41 @@ namespace horizon
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
         // operations.statfs: not supported
-        operations.getattr = Crux::Getattr;
-        operations.fgetattr = Crux::Fgetattr;
-        operations.utimens = Crux::Utimens;
+        operations.getattr = Crux::getattr;
+        operations.fgetattr = Crux::fgetattr;
+        operations.utimens = Crux::utimens;
 
-        operations.opendir = Crux::Opendir;
-        operations.readdir = Crux::Readdir;
-        operations.releasedir = Crux::Releasedir;
-        operations.mkdir = Crux::Mkdir;
-        operations.rmdir = Crux::Rmdir;
+        operations.opendir = Crux::opendir;
+        operations.readdir = Crux::readdir;
+        operations.releasedir = Crux::releasedir;
+        operations.mkdir = Crux::mkdir;
+        operations.rmdir = Crux::rmdir;
 
-        operations.access = Crux::Access;
-        operations.chmod = Crux::Chmod;
-        operations.chown = Crux::Chown;
+        operations.access = Crux::access;
+        operations.chmod = Crux::chmod;
+        operations.chown = Crux::chown;
 #if defined(HAVE_SETXATTR)
-        operations.setxattr = Crux::Setxattr;
-        operations.getxattr = Crux::Getxattr;
-        operations.listxattr = Crux::Listxattr;
-        operations.removexattr = Crux::Removexattr;
+        operations.setxattr = Crux::setxattr;
+        operations.getxattr = Crux::getxattr;
+        operations.listxattr = Crux::listxattr;
+        operations.removexattr = Crux::removexattr;
 #endif
 
-        // operations.link: not supported
-        operations.readlink = Crux::Readlink;
-        operations.symlink = Crux::Symlink;
+        operations.link = Crux::link;
+        operations.readlink = Crux::readlink;
+        operations.symlink = Crux::symlink;
 
-        operations.create = Crux::Create;
+        operations.create = Crux::create;
         // operations.mknod: not supported
-        operations.open = Crux::Open;
-        operations.write = Crux::Write;
-        operations.read = Crux::Read;
-        operations.truncate = Crux::Truncate;
-        operations.ftruncate = Crux::Ftruncate;
-        operations.release = Crux::Release;
+        operations.open = Crux::open;
+        operations.write = Crux::write;
+        operations.read = Crux::read;
+        operations.truncate = Crux::truncate;
+        operations.ftruncate = Crux::ftruncate;
+        operations.release = Crux::release;
 
-        operations.rename = Crux::Rename;
-        operations.unlink = Crux::Unlink;
+        operations.rename = Crux::rename;
+        operations.unlink = Crux::unlink;
 
         // the following flag being activated prevents the path argument
         // to be passed for functions which take a file descriptor.

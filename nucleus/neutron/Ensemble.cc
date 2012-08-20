@@ -6,7 +6,7 @@
 
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.nucleus.neutron.Ensemble");
+ELLE_LOG_COMPONENT("infinit.nucleus.neutron.Ensemble");
 
 namespace nucleus
 {
@@ -29,7 +29,7 @@ namespace nucleus
     void
     Ensemble::add(std::unique_ptr<Fellow>&& fellow)
     {
-      ELLE_LOG_TRACE_SCOPE("[%p] add(%s)", this, fellow);
+      ELLE_TRACE_SCOPE("[%p] add(%s)", this, fellow);
 
       if (this->exists(fellow->subject()) == true)
         throw Exception("a fellow with this subject already exists");
@@ -51,7 +51,7 @@ namespace nucleus
     {
       Ensemble::Scoutor scoutor;
 
-      ELLE_LOG_TRACE_SCOPE("[%p] exists(%s)", this, subject);
+      ELLE_TRACE_SCOPE("[%p] exists(%s)", this, subject);
 
       try
         {
@@ -71,7 +71,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Fellow* fellow;
 
-      ELLE_LOG_TRACE_SCOPE("[%p] locate(%s)", this, subject);
+      ELLE_TRACE_SCOPE("[%p] locate(%s)", this, subject);
 
       scoutor = this->_locate(subject);
       fellow = *scoutor;
@@ -85,7 +85,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Index i(0);
 
-      ELLE_LOG_TRACE_SCOPE("[%p] locate(%s)", this, index);
+      ELLE_TRACE_SCOPE("[%p] locate(%s)", this, index);
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -109,7 +109,7 @@ namespace nucleus
       Ensemble::Scoutor scoutor;
       Index i(0);
 
-      ELLE_LOG_TRACE_SCOPE("[%p] seek(%s)", this, subject);
+      ELLE_TRACE_SCOPE("[%p] seek(%s)", this, subject);
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -135,7 +135,7 @@ namespace nucleus
       Range<Fellow> range;
       Index i(0);
 
-      ELLE_LOG_TRACE_SCOPE("consult(%s, %s)", index, size);
+      ELLE_TRACE_SCOPE("consult(%s, %s)", index, size);
 
       if (range.Detach() == elle::Status::Error)
         throw Exception("unable to detach the data from the range"); // XXX[to remove in the future]
@@ -163,7 +163,7 @@ namespace nucleus
     {
       Ensemble::Iterator iterator;
 
-      ELLE_LOG_TRACE_SCOPE("[%p] update(%s)", this, pass_k);
+      ELLE_TRACE_SCOPE("[%p] update(%s)", this, pass_k);
 
       for (iterator = this->_container.begin();
            iterator != this->_container.end();
@@ -177,7 +177,7 @@ namespace nucleus
               {
                 Token token(fellow->subject().user(), pass_k);
 
-                ELLE_LOG_TRACE_SCOPE("update fellow user '%s'", fellow->subject());
+                ELLE_TRACE_SCOPE("update fellow user '%s'", fellow->subject());
 
                 // Update the fellow's token with the freshly constructed
                 // token which embeds the new private key encrypted with the

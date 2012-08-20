@@ -7,15 +7,10 @@ namespace hole
   {
     namespace slug
     {
-
       class Bank;
-      class Cluster;
-      class Guestlist;
       class Host;
       class Implementation;
       class Machine;
-      class Neighbourhood;
-
     }
   }
 }

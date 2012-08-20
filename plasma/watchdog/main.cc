@@ -9,6 +9,8 @@
 
 #include "Application.hh"
 
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+
 static void _initAll();
 
 #define BUF_SIZE 4096
@@ -20,17 +22,17 @@ int     main(int ac, char* av[])
   try
     {
       _initAll();
-      elle::log::debug("Starting the watchdog !");
+      ELLE_DEBUG("Starting the watchdog !");
       auto res = app.exec();
       return res;
     }
   catch (std::exception const& err)
     {
-      elle::log::fatal("An exception occured:", err.what());
+      ELLE_ERR("An exception occured: %s", err.what());
     }
   catch (...)
     {
-      elle::log::fatal("Uncaught exception");
+      ELLE_ERR("Uncaught exception");
     }
   return EXIT_FAILURE;
 }
@@ -127,7 +129,7 @@ static void _init_daemon(std::string const& infinit_home)
         write(lfp, str, strlen(str)); /* record pid to lockfile */
       }
     else
-      elle::log::warn("Already a deamon!");
+      ELLE_WARN("Already a deamon!");
 
 #define SIG_CONNECT(sig)                                                      \
       {                                                                       \
@@ -163,10 +165,6 @@ static void _initAll()
       lune::Lune::Initialize() == elle::Status::Error ||
       nucleus::Nucleus::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
-
-  elle::log::default_logger.name("watchdog");
-  //XXX make logger configurable
-  elle::log::default_logger.level(elle::log::Logger::Level::debug);
 
   // XXX use elle here
 

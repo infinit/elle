@@ -82,6 +82,8 @@ namespace etoile
       Container                 elements;
     };
 
+    std::ostream&
+    operator << (std::ostream& stream, Route const& r);
   }
 }
 

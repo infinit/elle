@@ -1,32 +1,25 @@
+#include <elle/log.hh>
+
 #include <horizon/linux/Crib.hh>
 
 #include <elle/standalone/Report.hh>
+
+ELLE_LOG_COMPONENT("infinit.horizon.linux.Crib");
 
 namespace horizon
 {
   namespace linux
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this container holds the set of created files along with their path
-    /// and handle.
-    ///
+    /// The set of created files along with their path and handle.
     Crib::Container                 Crib::Handles;
 
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method adds a created file.
-    ///
-    elle::Status            Crib::Add(const elle::String&           path,
-                                      Handle*                       handle)
+    /// Add a created file.
+    elle::Status
+    Crib::Add(const elle::String& path,
+              Handle* handle)
     {
+      ELLE_TRACE_SCOPE("add handle for %s: %s", path, handle);
+
       std::pair<Crib::Iterator, elle::Boolean>   result;
 
       result = Crib::Handles.insert(
@@ -38,13 +31,14 @@ namespace horizon
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns true if the created file, referenced through
-    /// the given path, exists.
-    ///
-    elle::Status            Crib::Exist(const elle::String&         path)
+    /// True if the created file referenced through the given path
+    /// exists.
+    elle::Status
+    Crib::Exist(const elle::String& path)
     {
-      Crib::Iterator        iterator;
+      ELLE_TRACE_SCOPE("check if handle exists for %s", path);
+
+      Crib::Iterator iterator;
 
       if ((iterator = Crib::Handles.find(path)) != Crib::Handles.end())
         return elle::Status::True;
@@ -52,12 +46,13 @@ namespace horizon
       return elle::Status::False;
     }
 
-    ///
-    /// this method returns the handle associated with the given path.
-    ///
-    elle::Status            Crib::Retrieve(const elle::String&      path,
-                                           Handle*&                 handle)
+    /// The handle associated with the given path.
+    elle::Status
+    Crib::Retrieve(const elle::String& path,
+                   Handle*& handle)
     {
+      ELLE_TRACE_SCOPE("retrieve handle for %s", path);
+
       Crib::Iterator        iterator;
 
       if ((iterator = Crib::Handles.find(path)) == Crib::Handles.end())
@@ -68,11 +63,12 @@ namespace horizon
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method removes the created file's handle from the crib.
-    ///
-    elle::Status            Crib::Remove(const elle::String&        path)
+    /// Remove the created file's handle.
+    elle::Status
+    Crib::Remove(const elle::String& path)
     {
+      ELLE_TRACE_SCOPE("remove handle for %s", path);
+
       Crib::Iterator        iterator;
 
       if ((iterator = Crib::Handles.find(path)) == Crib::Handles.end())
@@ -83,5 +79,14 @@ namespace horizon
       return elle::Status::Ok;
     }
 
+    void
+    Crib::rename(const char* source, const char* target)
+    {
+      auto elt = Handles.find(source);
+      assert(elt != Handles.end());
+      auto res = Handles.insert(Container::value_type(target, elt->second));
+      assert(res.second);
+      Handles.erase(elt);
+    }
   }
 }

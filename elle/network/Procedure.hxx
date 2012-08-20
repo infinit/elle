@@ -72,8 +72,8 @@ namespace elle
         template<typename T1, typename ...T>
         Status Load(T1& v1, T&... values)
         {
-          ELLE_LOG_TRACE_COMPONENT("elle.network.Procedure");
-          ELLE_LOG_TRACE("Skeleton extract %p", &v1)
+          ELLE_LOG_COMPONENT("elle.network.Procedure");
+          ELLE_TRACE("Skeleton extract %p", &v1)
           try
             {
               _archive >> v1;
@@ -81,7 +81,7 @@ namespace elle
             }
           catch (std::exception const& err)
             {
-              ELLE_LOG_TRACE(
+              ELLE_TRACE(
                 "An exception occured while extracting skeleton: %s",
                 err.what());
               return Status::Error;
@@ -139,9 +139,13 @@ namespace elle
       // the information has been extracted. this step ensures that
       // the archive does not contain more variables that extracted.
       if (archive.Stream().BytesLeft() > 0)
-        escape((
-            "the archive seems to contain additional information: " +
-            elle::sprint(archive.Stream().BytesLeft(), "bytes left")).c_str());
+        {
+          std::string msg(
+            elle::sprintf("the archive seems to contain additional "
+                          "information: %s bytes left",
+                          archive.Stream().BytesLeft()));
+          escape("%s", msg.c_str());
+        }
 
       // at this point, an Arguments is created which references both
       // the inputs and outputs. thus no copy is made while the

@@ -9,16 +9,15 @@ add_library(hole
   implementations/remote/Customer.cc
   implementations/remote/Implementation.cc
   implementations/remote/Machine.cc
+  implementations/remote/Manifest.cc
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
 
   implementations/slug/Bank.cc
-  implementations/slug/Cluster.cc
-  implementations/slug/Guestlist.cc
   implementations/slug/Host.cc
   implementations/slug/Implementation.cc
   implementations/slug/Machine.cc
-  implementations/slug/Neighbourhood.cc
+  implementations/slug/Manifest.cc
   implementations/slug/Slug.cc
 
 # XXX

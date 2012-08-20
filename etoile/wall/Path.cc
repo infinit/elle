@@ -7,7 +7,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.wall.Path");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Path");
 
 namespace etoile
 {
@@ -29,7 +29,7 @@ namespace etoile
       path::Route       route;
       path::Venue       venue;
 
-      ELLE_LOG_TRACE("Resolve(%s)", way.path.c_str());
+      ELLE_TRACE_SCOPE("Resolve(%s)", way.path.c_str());
 
       // create a route from the way.
       if (route.Create(way) == elle::Status::Error)

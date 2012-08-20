@@ -1,5 +1,6 @@
 #include <iostream>
 #include <reactor/exception.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 namespace reactor
@@ -15,6 +16,13 @@ namespace reactor
 
   Exception::~Exception() throw ()
   {}
+
+  std::ostream&
+  operator << (std::ostream& s, Exception const& e)
+  {
+    s << e.what();
+    return s;
+  }
 
   Backtrace const&
   Exception::backtrace() const

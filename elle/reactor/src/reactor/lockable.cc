@@ -1,4 +1,5 @@
 #include <reactor/lockable.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 namespace reactor

@@ -25,14 +25,16 @@ namespace etoile
     {
       nucleus::proton::Address address;
 
+      context.object = new nucleus::neutron::Object;
+
       // create the file.
-      if (context.object.Create(
+      if (context.object->Create(
             nucleus::neutron::GenreFile,
             agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the file object");
 
       // bind the object to its address i.e this will never changed.
-      if (context.object.Bind(address) == elle::Status::Error)
+      if (context.object->Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
       // create the context's location with an initial version number.
@@ -62,7 +64,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a file.
-      if (context.object.genre() != nucleus::neutron::GenreFile)
+      if (context.object->genre() != nucleus::neutron::GenreFile)
         escape("this object does not seem to be a file");
 
       // set the context's state.
@@ -111,12 +113,12 @@ namespace etoile
         escape("unable to retrieve the contents's size");
 
       // update the object.
-      if (context.object.Update(
-            context.object.author(),
-            context.object.contents(),
+      if (context.object->Update(
+            context.object->author(),
+            context.object->contents(),
             size,
-            context.object.access(),
-            context.object.owner_token()) == elle::Status::Error)
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -201,12 +203,12 @@ namespace etoile
         escape("unable to retrieve the contents's size");
 
       // update the object.
-      if (context.object.Update(
-            context.object.author(),
-            context.object.contents(),
+      if (context.object->Update(
+            context.object->author(),
+            context.object->contents(),
             size,
-            context.object.access(),
-            context.object.owner_token()) == elle::Status::Error)
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.

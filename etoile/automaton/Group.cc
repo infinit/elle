@@ -11,7 +11,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Group");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Group");
 
 namespace etoile
 {
@@ -29,7 +29,7 @@ namespace etoile
     {
       nucleus::proton::Address address;
 
-      ELLE_LOG_TRACE_SCOPE("Create()");
+      ELLE_TRACE_SCOPE("Create()");
 
       // XXX[remove try/catch later]
       try
@@ -61,18 +61,15 @@ namespace etoile
     elle::Status
     Group::Load(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Load()");
+      ELLE_TRACE_SCOPE("Load()");
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
 
-      context.group = new nucleus::neutron::Group;
-
-      if (depot::Depot::Pull(context.location.address,
-                             context.location.version,
-                             *context.group) == elle::Status::Error)
-        escape("unable to retrieve the object block");
+      context.group = depot::Depot::pull<nucleus::neutron::Group>(
+        context.location.address,
+        context.location.version).release();
 
       // compute the base in order to seal the block's original state.
       if (context.group->base.Create(*context.group) == elle::Status::Error)
@@ -99,7 +96,7 @@ namespace etoile
     Group::Add(gear::Group& context,
                nucleus::neutron::Subject const& subject)
     {
-      ELLE_LOG_TRACE_SCOPE("Add()");
+      ELLE_TRACE_SCOPE("Add()");
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -160,7 +157,7 @@ namespace etoile
                   nucleus::neutron::Subject const& subject,
                   nucleus::neutron::Fellow const*& fellow)
     {
-      ELLE_LOG_TRACE_SCOPE("Lookup()");
+      ELLE_TRACE_SCOPE("Lookup()");
 
       // Ty to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -168,7 +165,7 @@ namespace etoile
           // Indeed, if the target subject is the current user, determine
           // the user's rights so that this is not to be done later.
 
-          ELLE_LOG_TRACE("The target subject is the current user");
+          ELLE_TRACE("The target subject is the current user");
 
           if (Rights::Determine(context) == elle::Status::Error)
             escape("unable to determine the user's rights");
@@ -179,12 +176,12 @@ namespace etoile
         {
           // Otherwise, proceed normally.
 
-          ELLE_LOG_TRACE("The target subject is _not_ the current user");
+          ELLE_TRACE("The target subject is _not_ the current user");
 
           // Perform the lookup according to the subject.
           if (subject == context.group->manager_subject())
             {
-              ELLE_LOG_TRACE("The target subject is the group manager");
+              ELLE_TRACE("The target subject is the group manager");
 
               // If the target subject is the object owner, retrieve the
               // access record from the owner's meta section. Note that
@@ -198,7 +195,7 @@ namespace etoile
               // If we are dealing with a fellow, open the ensemble block
               // and look in it.
 
-              ELLE_LOG_TRACE("The target subject is _not_ a group manager: try "
+              ELLE_TRACE("The target subject is _not_ a group manager: try "
                              "to look in the ensemble");
 
               if (Ensemble::Open(context) == elle::Status::Error)
@@ -225,7 +222,7 @@ namespace etoile
                    nucleus::neutron::Size const& size,
                    nucleus::neutron::Range<nucleus::neutron::Fellow>& range)
     {
-      ELLE_LOG_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
+      ELLE_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
                            context, index, size, range);
 
       if (Ensemble::Open(context) == elle::Status::Error)
@@ -285,7 +282,7 @@ namespace etoile
     Group::Remove(gear::Group& context,
                   nucleus::neutron::Subject const& subject)
     {
-      ELLE_LOG_TRACE_SCOPE("Remove()");
+      ELLE_TRACE_SCOPE("Remove()");
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -342,7 +339,7 @@ namespace etoile
     elle::Status
     Group::Discard(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Discard()");
+      ELLE_TRACE_SCOPE("Discard()");
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
@@ -353,7 +350,7 @@ namespace etoile
     elle::Status
     Group::Destroy(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_SCOPE("Destroy()");
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -385,7 +382,7 @@ namespace etoile
     elle::Status
     Group::Store(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Store()");
+      ELLE_TRACE_SCOPE("Store()");
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -405,7 +402,7 @@ namespace etoile
           // seal the group, depending on the presence of a referenced
           // access block.
 
-          ELLE_LOG_TRACE_SCOPE("the group is dirty");
+          ELLE_TRACE_SCOPE("the group is dirty");
 
           // XXX[remove try/catch]
           try

@@ -71,6 +71,8 @@ namespace etoile
       Venue                     venue;
     };
 
+    std::ostream&
+    operator << (std::ostream& stream, Chemin const& c);
   }
 }
 

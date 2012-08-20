@@ -7,13 +7,11 @@ namespace hole
   {
     namespace remote
     {
-
       class Client;
       class Customer;
       class Implementation;
       class Machine;
       class Server;
-
     }
   }
 }

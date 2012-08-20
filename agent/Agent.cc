@@ -1,6 +1,7 @@
 #include <agent/Agent.hh>
 
 #include <elle/io/Console.hh>
+#include <elle/log.hh>
 #include <elle/standalone/Report.hh>
 
 #include <lune/Lune.hh>
@@ -12,6 +13,8 @@
 #include <elle/idiom/Open.hh>
 
 #include <Infinit.hh>
+
+ELLE_LOG_COMPONENT("infinit.agent.Agent");
 
 namespace agent
 {
@@ -66,14 +69,14 @@ namespace agent
           std::getline(identity_file, Agent::meta_token);
           std::string clear_identity;
           std::getline(identity_file, clear_identity);
-          elle::log::debug("got token:", Agent::meta_token);
+          ELLE_TRACE("got token: %s", Agent::meta_token);
           if (Agent::Identity.Restore(clear_identity) == elle::Status::Error)
             escape("unable to restore the identity");
         }
       else
         {
-          elle::log::warn("Cannot load identity from watchdog ",
-                          common::watchdog::identity_path());
+          ELLE_TRACE("Cannot load identity from watchdog %s",
+                         common::watchdog::identity_path());
           elle::String        pass;
           // prompt the user for the passphrase.
           /* XXX[to change to a better version where we retrieve the passphrase

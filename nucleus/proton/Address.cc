@@ -254,5 +254,15 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Address::print(std::ostream& stream) const
+    {
+      stream << this->unique();
+    }
+
   }
 }

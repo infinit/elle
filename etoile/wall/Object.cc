@@ -21,7 +21,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.wall.Object");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Object");
 
 namespace etoile
 {
@@ -44,7 +44,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Load()");
+      ELLE_TRACE_SCOPE("Load()");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -60,19 +60,24 @@ namespace etoile
           // In this case, the object is manually loaded in order to determine
           // the genre.
           nucleus::proton::Location location;
-          nucleus::neutron::Object object;
+          std::unique_ptr<nucleus::neutron::Object> object;
 
           if (chemin.Locate(location) == elle::Status::Error)
             escape("unable to locate the object");
 
-          if (depot::Depot::Pull(location.address,
-                                 location.version,
-                                 object) == elle::Status::Error)
-            escape("unable to retrieve the object block");
+          try
+            {
+              object = depot::Depot::pull_object(location.address,
+                                                 location.version);
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the object block: %s", e.what());
+            }
 
           // Depending on the object's genre, a context is allocated
           // for the scope.
-          switch (object.genre())
+          switch (object->genre())
             {
             case nucleus::neutron::GenreFile:
               {
@@ -106,7 +111,7 @@ namespace etoile
                 // XXX[this whole code should probably be put within the
                 //     critical section?]
                 printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
-                object.Dump();
+                object.get()->Dump();
 
                 escape("unable to allocate the proper context");
               }
@@ -155,7 +160,7 @@ namespace etoile
     elle::Status        Object::Lock(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Lock()");
+      ELLE_TRACE_SCOPE("Lock()");
 
       // XXX to implement.
 
@@ -168,7 +173,7 @@ namespace etoile
     elle::Status        Object::Release(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Release()");
+      ELLE_TRACE_SCOPE("Release()");
 
       // XXX to implement.
 
@@ -187,7 +192,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Information()");
+      ELLE_TRACE_SCOPE("Information()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -223,7 +228,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Discard()");
+      ELLE_TRACE_SCOPE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -314,7 +319,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Store()");
+      ELLE_TRACE_SCOPE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -408,7 +413,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Destroy()");
+      ELLE_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -499,7 +504,7 @@ namespace etoile
     elle::Status        Object::Purge(
                           const gear::Identifier&)
     {
-      ELLE_LOG_TRACE("Purge()");
+      ELLE_TRACE_SCOPE("Purge()");
 
       // XXX to implement.
 

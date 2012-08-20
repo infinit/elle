@@ -19,7 +19,7 @@
 # include <boost/lexical_cast.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.nucleus.proton.MutableBlock");
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.MutableBlock");
 
 namespace nucleus
 {
@@ -100,7 +100,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Load(%s)", unique);
+      ELLE_TRACE("Load(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -192,7 +192,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Store(%s)", unique);
+      ELLE_TRACE("Store(%s)", unique);
 
       // create the shelter path.
       if (file.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -234,7 +234,7 @@ namespace nucleus
 
               std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 
-              ELLE_LOG_TRACE("the mutable block seems to exist "
+              ELLE_TRACE("the mutable block seems to exist "
                              "locally, make sure it derives the "
                              "current version")
                 {
@@ -352,7 +352,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Erase(%s)", unique);
+      ELLE_TRACE("Erase(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -468,7 +468,7 @@ namespace nucleus
 
       unique = address.unique();
 
-      ELLE_LOG_TRACE("Exist(%s)", unique);
+      ELLE_TRACE("Exist(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==

@@ -185,5 +185,13 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+
+    std::ostream&
+    operator << (std::ostream& stream, Chemin const& c)
+    {
+      stream << c.route;
+      return stream;
+    }
+
   }
 }

@@ -1,6 +1,6 @@
 #include <hole/Hole.hh>
 #include <hole/Holeable.hh>
-#include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 
@@ -20,6 +20,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/Derivable.hh>
 
+#include <elle/cast.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
@@ -35,7 +36,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.hole.implementations.slug.Machine");
+ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 namespace hole
 {
@@ -43,242 +44,246 @@ namespace hole
   {
     namespace slug
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+      void
+      Machine::_connect(elle::network::Locus const& locus)
+      {
+        std::string hostname;
+        locus.host.Convert(hostname);
+        std::unique_ptr<reactor::network::Socket> socket(
+          new reactor::network::TCPSocket(elle::concurrency::scheduler(),
+                                          hostname, locus.port));
+        _connect(std::move(socket), locus, true);
+      }
 
-      ///
-      /// XXX 3 seconds
-      ///
-      const reactor::Duration Machine::Timeout = boost::posix_time::seconds(3);
+      void
+      Machine::_connect(std::unique_ptr<reactor::network::Socket> socket,
+                        elle::network::Locus const& locus, bool opener)
+      {
+        std::unique_ptr<Host> host(new Host(*this, locus,
+                                            std::move(socket), opener));
+        auto loci = host->authenticate(Hole::Passport);
+        if (this->_state == State::detached)
+          {
+            this->_state = State::attached;
+            Hole::ready();
+          }
+        for (auto locus: loci)
+          if (_hosts.find(locus) == _hosts.end())
+            _connect(locus);
+        ELLE_LOG("%s: add host: %s", *this, *host);
+        _hosts[locus] = host.release();
+      }
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      void
+      Machine::_remove(Host* host)
+      {
+        elle::network::Locus locus(host->locus());
+        assert(this->_hosts.find(locus) != this->_hosts.end());
+        ELLE_LOG("%s: remove host: %s", *this, *host);
+        this->_hosts.erase(locus);
+        delete host;
+      }
 
-      ///
-      /// XXX
-      ///
       Machine::Machine()
-        : state(StateDetached)
-        , port(0)
+        : _state(State::detached)
+        , _port(0)
         , _server(new reactor::network::TCPServer
                   (elle::concurrency::scheduler()))
-      {}
+      {
+        elle::network::Locus     locus;
+        ELLE_TRACE_SCOPE("launch");
 
-      ///
-      /// XXX
-      ///
+        // Connect to hosts from the descriptor.
+        {
+          std::istringstream    stream;
+          this->_port = Infinit::Configuration["hole"].Get("slug.port", 0);
+
+          // FIXME: try these in parallel
+          for (elle::network::Locus& locus: Hole::Set.loci)
+            try
+              {
+                ELLE_TRACE("try connecting to %s", locus)
+                  _connect(locus);
+              }
+            catch (reactor::network::Exception& err)
+              {
+                ELLE_TRACE("ignore host %s: %s", locus, err.what());
+                continue;
+              }
+        }
+
+        // If the machine has been neither connected nor authenticated
+        // to existing nodes...
+        if (this->_state == State::detached)
+          {
+            // Then, suppose that the current machine as the only one
+            // in the network.  Thus, it can be implicitly considered
+            // as authenticated in a network composed of itself alone.
+            this->_state = State::attached;
+
+            // Set the hole as ready to receive requests.
+            Hole::ready();
+          }
+
+        // Finally, listen for incoming connections.
+        {
+          elle::network::Locus locus;
+          elle::network::Host host(elle::network::Host::TypeAny);
+          try
+            {
+              _server->listen(this->_port);
+              // In case we asked for a random port to be picked up
+              // (by using 0), retrieve the actual listening port.
+              this->_port = _server->local_endpoint().port();
+              {
+                // XXX should be done with a signal
+                plasma::meta::Client client("127.0.0.1", 23456);
+                lune::Passport passport;
+                if (passport.Load() != elle::Status::Ok)
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "Cannot load passport");
+                try
+                  {
+                    client.token(agent::Agent::meta_token);
+                    client.update_device(passport.id, nullptr, nullptr, this->_port);
+                  }
+                catch (std::exception const& err)
+                  {
+                    ELLE_TRACE("Cannot update device port: %s",
+                                   err.what()); // XXX[to improve]
+                  }
+              }
+              new reactor::Thread(elle::concurrency::scheduler(),
+                                  "Slug accept",
+                                  boost::bind(&Machine::_accept, this),
+                                  true);
+            }
+          catch (reactor::Exception& e)
+            {
+              ELLE_ERR("unable to accept incoming connections: %s", e.what());
+              // FIXME: what do ? For now, just go on without
+              // listening. Useful when testing with several clients
+              // on the same machine.
+            }
+        }
+      }
+
       Machine::~Machine()
       {}
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+      /*------.
+      | Hosts |
+      `------*/
 
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Launch()
+      std::vector<elle::network::Locus>
+      Machine::loci()
       {
-        elle::network::Locus     locus;
-
-        ELLE_LOG_TRACE("Launch");
-
-        //
-        // register the messages.
-        //
-        {
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagAuthenticate>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Machine::Authenticate, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagAuthenticated>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Machine::Authenticated, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagPush>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Machine::Push, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagPull>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Machine::Pull, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagWipe>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Machine::Wipe, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-        }
-
-        //
-        // retrieve information from the descriptor.
-        //
-        {
-          std::istringstream    stream;
-          auto                  iterator = Hole::Set.loci.begin();
-          auto                  end = Hole::Set.loci.end();
-
-          // retrieve the machine's listening port.
-          this->port = Infinit::Configuration["hole"].Get("slug.port", 0);
-
-          // for every locus in the set.
-          for (; iterator != end; ++iterator)
-            {
-              std::unique_ptr<Host> host;
-
-              try
-                {
-                  host = std::unique_ptr<Host>(new Host(*iterator));
-                }
-              catch (reactor::network::Exception& err)
-                {
-                  // The host wasn't up, just ignore it.
-                  elle::log::warn("Ignore one host:", err.what());
-                  continue;
-                }
-
-              // subscribe to the signal.
-              if (host->signal.dead.Subscribe(
-                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
-                                            this)) == elle::Status::Error)
-                escape("unable to subscribe to the signal");
-
-              // add the host to the guestlist.
-              if (this->guestlist.Add(host->socket, host.get()) ==
-                  elle::Status::Error)
-                escape("unable to add the host to the guestlist");
-
-              // release the host.
-              host.release();
-            }
-        }
-
-        // Set up the timeout after which the machine will be
-        // considered alone in the network, in other words, the very
-        // first node.
-        elle::concurrency::scheduler().CallLater
-          (boost::bind(&Machine::Alone, this),
-           "Machine::Alone", Machine::Timeout);
-
-        //
-        // finally, listen for incoming connections.
-        //
-        {
-          elle::network::Locus   locus;
-          elle::network::Host    host;
-
-          // create a host.
-          if (host.Create(elle::network::Host::TypeAny) == elle::Status::Error)
-            escape("unable to create the host");
-
-          _server->listen(this->port);
-          this->port = _server->local_endpoint().port();
-
-          ELLE_LOG_TRACE("listening on port %s", this->port);
-
-          {
-            // XXX should be done with a signal
-            plasma::meta::Client client{
-                common::meta::host(),
-                common::meta::port(),
-            };
-            lune::Passport passport;
-            if (passport.Load() != elle::Status::Ok)
-              escape("Cannot load passport");
-            try
-              {
-                client.token(agent::Agent::meta_token);
-                client.update_device(passport.id, nullptr, nullptr, port);
-              }
-            catch (std::exception const& err)
-              {
-                elle::log::warn("Cannot update device port:", err.what()); // XXX[to improve]
-              }
-          }
-          new reactor::Thread(elle::concurrency::scheduler(),
-                              "Slug accept",
-                              boost::bind(&Machine::_accept, this),
-                              true);
-        }
-
-        return elle::Status::Ok;
+        std::vector<elle::network::Locus> res;
+        for (auto host: _hosts)
+          res.push_back(host.first);
+        return std::move(res);
       }
 
-      ///
-      /// this method stores an immutable block.
-      ///
-      elle::Status      Machine::Put(const nucleus::proton::Address& address,
-                                     const nucleus::proton::ImmutableBlock& block)
+      std::vector<Host*>
+      Machine::hosts()
       {
-        ELLE_LOG_TRACE("Put[Immutable]");
+        std::vector<Host*> res;
+        for (auto host: _hosts)
+          res.push_back(host.second);
+        return std::move(res);
+      }
+
+      /*-------.
+      | Server |
+      `-------*/
+
+      elle::network::Port
+      Machine::port() const
+      {
+        return this->_port;
+      }
+
+      void
+      Machine::_accept()
+      {
+        while (true)
+          {
+            std::unique_ptr<reactor::network::TCPSocket> socket(_server->accept());
+
+            ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
+
+            // Depending on the machine's state.
+            switch (this->_state)
+              {
+                case State::attached:
+                {
+                  // FIXME: handling via loci is very wrong. IPs are
+                  // not uniques, and this reconstruction is lame and
+                  // non-injective.
+                  elle::network::Locus locus(
+                    socket->peer().address().to_string(),
+                    socket->peer().port());
+                  _connect(std::move(socket), locus, false);
+                  break;
+                }
+                default:
+                {
+                  // FIXME: Why not listening only when we're attached ?
+                  ELLE_TRACE("not attached, ignore %s", socket->peer());
+                  break;
+                }
+              }
+          }
+      }
+
+      /*----.
+      | API |
+      `----*/
+
+      void
+      Machine::Put(const nucleus::proton::Address&    address,
+                   const nucleus::proton::ImmutableBlock& block)
+      {
+        ELLE_TRACE("Put[Immutable]");
 
         // depending on the machine's state.
-        switch (this->state)
+        switch (this->_state)
           {
-          case Machine::StateAttached:
+            case State::attached:
             {
-              //
-              // in this case, the current machine is connected and has
-              // been authenticated as a valid node of the network.
-              //
-              // therefore, the operation is carried out both locally but
-              // also sent to every node in the network.
-              //
+              // In this case, the current machine is connected and
+              // has been authenticated as a valid node of the
+              // network.  Therefore, the operation is carried out
+              // both locally but also sent to every node in the
+              // network.
 
-              //
-              // first, store the block locally.
-              //
+              // Store the block locally.
               {
-                // does the block already exist.
                 if (block.Exist(Hole::Implementation->network,
                                 address) == elle::Status::True)
-                  escape("this immutable block seems to already exist");
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "this immutable block seems to already exist");
 
-                // validate the block.
                 if (block.Validate(address) == elle::Status::Error)
-                  escape("unable to validate the block");
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "unable to validate the block");
 
-                // store the block.
                 if (block.Store(Hole::Implementation->network,
                                 address) == elle::Status::Error)
-                  escape("unable to store the block");
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "unable to store the block");
               }
-
-              //
-              // then, publish it onto the network.
-              //
+              // Publish it onto the network.
               {
-                Neighbourhood::Scoutor  scoutor;
-
-                nucleus::Derivable derivable(address.component, block);
-
-                // for every scoutor.
-                for (scoutor = this->neighbourhood.container.begin();
-                     scoutor != this->neighbourhood.container.end();
-                     scoutor++)
+                for (auto neighbour: _hosts)
                   {
-                    Host*               host = scoutor->second;
-
-                    // send the block to the host.
-                    host->socket->send(elle::network::Inputs<TagPush>(address, derivable));
-
-                    // ignore the error messages and continue with the
+                    Host* host = neighbour.second;
+                    host->push(address, block);
+                    // Ignore the error messages and continue with the
                     // next neighbour.
                     purge();
                   }
@@ -288,27 +293,25 @@ namespace hole
             }
           default:
             {
-              escape("the machine's state '%u' does not allow one to request "
-                     "operations on the storage layer",
-                     this->state);
+              throw reactor::Exception
+                (elle::concurrency::scheduler(),
+                 elle::sprintf("the machine's state '%u' does not allow one to request "
+                               "operations on the storage layer",
+                               this->_state));
             }
           }
-
-        return elle::Status::Ok;
       }
 
-      ///
-      /// this method stores a mutable block.
-      ///
-      elle::Status      Machine::Put(const nucleus::proton::Address& address,
-                                     const nucleus::proton::MutableBlock& block)
+      void
+      Machine::Put(const nucleus::proton::Address&    address,
+                   const nucleus::proton::MutableBlock& block)
       {
-        ELLE_LOG_TRACE("Put[Mutable]");
+        ELLE_TRACE("Put[Mutable]");
 
         // depending on the machine's state.
-        switch (this->state)
+        switch (this->_state)
           {
-          case Machine::StateAttached:
+            case State::attached:
             {
               //
               // in this case, the current machine is connected and has
@@ -339,18 +342,19 @@ namespace hole
                       // a referenced access block.
                       if (object->access() != nucleus::proton::Address::Null)
                         {
-                          nucleus::neutron::Access access;
-
-                          // load the access block.
-                          if (Hole::Pull(object->access(),
-                                         nucleus::proton::Version::Last,
-                                         access) == elle::Status::Error)
-                            escape("unable to load the access block");
+                          // Load the access block.
+                          std::unique_ptr<nucleus::proton::Block> block
+                            (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                          std::unique_ptr<nucleus::neutron::Access> access
+                            (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                          if (access == nullptr)
+                            throw reactor::Exception(elle::concurrency::scheduler(),
+                                                     "expected an access block");
 
                           // validate the object, providing the
                           if (object->Validate(address,
-                                               access) == elle::Status::Error)
-                            escape("unable to validate the object");
+                                               *access) == elle::Status::Error)
+                            throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
                         }
                       else
                         {
@@ -358,7 +362,7 @@ namespace hole
                           if (object->Validate(
                                 address,
                                 nucleus::neutron::Access::Null) == elle::Status::Error)
-                            escape("unable to validate the object");
+                            throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
                         }
 
                       break;
@@ -367,40 +371,30 @@ namespace hole
                     {
                       // validate the block through the common interface.
                       if (block.Validate(address) == elle::Status::Error)
-                        escape("the block seems to be invalid");
+                        throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
 
                       break;
                     }
                   case nucleus::neutron::ComponentUnknown:
                     {
-                      escape("unknown component '%u'",
-                             address.component);
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               elle::sprintf("unknown component '%u'",
+                                                             address.component));
                     }
                   }
 
                 // store the block.
                 if (block.Store(Hole::Implementation->network,
                                 address) == elle::Status::Error)
-                  escape("unable to store the block");
+                  throw reactor::Exception(elle::concurrency::scheduler(), "unable to store the block");
               }
 
-              //
-              // then, publish it onto the network.
-              //
+              // Publish it onto the network.
               {
-                Neighbourhood::Scoutor  scoutor;
-                nucleus::Derivable derivable(address.component, block);
-
-                // for every scoutor.
-                for (scoutor = this->neighbourhood.container.begin();
-                     scoutor != this->neighbourhood.container.end();
-                     scoutor++)
+                for (auto neighbour: this->_hosts)
                   {
-                    Host*               host = scoutor->second;
-
-                    // send the block to the host.
-                    host->socket->send(elle::network::Inputs<TagPush>(address, derivable));
-
+                    Host* host = neighbour.second;
+                    host->push(address, block);
                     // ignore the error messages and continue with the
                     // next neighbour.
                     purge();
@@ -411,27 +405,26 @@ namespace hole
             }
           default:
             {
-              escape("the machine's state '%u' does not allow one to request "
-                     "operations on the storage layer",
-                     this->state);
+              throw reactor::Exception
+                (elle::concurrency::scheduler(),
+                 elle::sprintf("the machine's state '%u' does not allow one to request "
+                               "operations on the storage layer",
+                               this->_state));
             }
           }
-
-        return elle::Status::Ok;
       }
 
-      ///
-      /// this method retrieves an immutable block.
-      ///
-      elle::Status      Machine::Get(const nucleus::proton::Address& address,
-                                     nucleus::proton::ImmutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Machine::Get(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE("Get[Immutable]");
+        ELLE_TRACE("Get[Immutable]");
+
+        using nucleus::proton::ImmutableBlock;
 
         // depending on the machine's state.
-        switch (this->state)
+        switch (this->_state)
           {
-          case Machine::StateAttached:
+            case State::attached:
             {
               //
               // in this case, the current machine is connected and has
@@ -440,558 +433,480 @@ namespace hole
               // therefore, the operation is carried out both locally but
               // also sent to every node in the network.
               //
+              nucleus::proton::ImmutableBlock* block;
+              nucleus::Nucleus::Factory.Build(address.component, block);
 
               // does the block exist.
-              if (block.Exist(Hole::Implementation->network,
+              if (block->Exist(Hole::Implementation->network,
                               address) == elle::Status::True)
                 {
                   // load the block.
-                  if (block.Load(Hole::Implementation->network,
+                  if (block->Load(Hole::Implementation->network,
                                  address) == elle::Status::Error)
-                    escape("unable to load the block");
+                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
 
                   // validate the block.
-                  if (block.Validate(address) == elle::Status::Error)
-                    escape("the block seems to be invalid");
+                  if (block->Validate(address) == elle::Status::Error)
+                    throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+                  return std::unique_ptr<nucleus::proton::Block>(block);
                 }
               else
                 {
-                  //
-                  // otherwise, go through the neighbours and retrieve
+                  // Otherwise, go through the neighbours and retrieve
                   // the block from them.
-                  //
-                  Neighbourhood::Scoutor                scoutor;
-
-                  // for every scoutor.
-                  for (scoutor = this->neighbourhood.container.begin();
-                       scoutor != this->neighbourhood.container.end();
-                       scoutor++)
+                  bool found = false;
+                  for (auto neighbour: this->_hosts)
                     {
-                      nucleus::Derivable derivable;
-
-                      // request the host.
-                      Host*                     host = scoutor->second;
-                      if (host->socket->Call(
-                            elle::network::Inputs<TagPull>(address,
-                                                           nucleus::proton::Version::Any),
-                            elle::network::Outputs<TagBlock>(derivable)) ==
-                          elle::Status::Ok)
+                      Host* host = neighbour.second;
+                      auto iblock = elle::cast<ImmutableBlock>::runtime(
+                        host->pull(address, nucleus::proton::Version::Any));
+                      // validate the block.
+                      if (iblock->Validate(address) == elle::Status::Ok)
                         {
-                          auto const& b =
-                            static_cast<nucleus::proton::ImmutableBlock const&>(derivable.block());
-
-                          // validate the block.
-                          if (b.Validate(address) == elle::Status::Ok)
-                            {
-                              // finally, store it locally.
-                              if (b.Store(Hole::Implementation->network,
-                                          address) == elle::Status::Ok)
-                                break;
-                            }
-                          else
-                            {
-                              // XXX
-                              ELLE_LOG_TRACE("unable to validate the immutable block");
-                              address.Dump();
-                              b.Dump();
-                              host->locus.Dump();
-                              show();
-                              assert(false);
-                            }
+                          // finally, store it locally.
+                          if (iblock->Store(Hole::Implementation->network,
+                                      address) == elle::Status::Ok)
+                            found = true;
+                            break;
                         }
                       else
                         {
                           // XXX
-                          ELLE_LOG_TRACE("unable to pull the immutable block");
+                          ELLE_TRACE("unable to validate the immutable block");
                           address.Dump();
-                          host->locus.Dump();
+                          iblock->Dump();
+                          host->Dump();
                           show();
                           assert(false);
                         }
-
-                      // ignore the error messages and continue with the
-                      // next neighbour.
-                      // XXX no log at all in case of error ?
-                      purge();
                     }
 
-                  // check if none if the neighbour has the block.
-                  if (scoutor == this->neighbourhood.container.end())
-                    escape("unable to retrieve the block associated with "
-                           "the given address from the other peers");
+                  // Check if none if the neighbour has the block.
+                  if (!found)
+                    throw reactor::Exception(
+                      elle::concurrency::scheduler(),
+                      "unable to retrieve the block associated with "
+                      "the given address from the other peers");
 
-                  // finally, load the block since it has been retrieved
-                  // and stored locally.
-                  if (block.Load(Hole::Implementation->network,
+                  // Finally, load the block since it has been
+                  // retrieved and stored locally.
+                  if (block->Load(Hole::Implementation->network,
                                  address) == elle::Status::Error)
-                    escape("unable to load the block");
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "unable to load the block");
+                  return std::unique_ptr<nucleus::proton::Block>(block);
                 }
-
-              break;
             }
           default:
             {
-              escape("the machine's state '%u' does not allow one to request "
-                     "operations on the storage layer",
-                     this->state);
+              throw reactor::Exception
+                (elle::concurrency::scheduler(),
+                 elle::sprintf("the machine's state '%u' does not allow one to request "
+                               "operations on the storage layer",
+                               this->_state));
             }
           }
-
-        return elle::Status::Ok;
       }
 
-      ///
-      /// this method retrieves a mutable block.
-      ///
-      elle::Status      Machine::Get(const nucleus::proton::Address& address,
-                                     const nucleus::proton::Version& version,
-                                     nucleus::proton::MutableBlock& block)
+      template <typename T>
+      using Ptr = std::unique_ptr<T>;
+
+      Ptr<nucleus::proton::Block>
+      Machine::_get_latest(const nucleus::proton::Address&    address)
       {
-        ELLE_LOG_TRACE("Get[Mutable]");
+        // Contact all the hosts in order to retrieve the latest
+        // version of the block.
+        //
+        // This is required since no synchronisation mechanism is
+        // present yet so the current machine may have missed some
+        // versions when disconnected.
+        using nucleus::proton::MutableBlock;
+        using nucleus::proton::Version;
+        using nucleus::neutron::Object;
+        using nucleus::proton::Block;
 
-        // depending on the machine's state.
-        switch (this->state)
+        for (auto neighbour: this->_hosts)
           {
-          case Machine::StateAttached:
-            {
-              //
-              // in this case, the current machine is connected and has
-              // been authenticated as a valid node of the network.
-              //
+            Host* host = neighbour.second;
+            auto block = elle::cast<MutableBlock>::runtime(
+              host->pull(address, Version::Last));
 
-              //
-              // first, do something special: all the hosts are contacted
-              // in order to retrieve the latest version of the block, if
-              // the latest version is requested.
-              //
-              // this is required since no synchronisation mechanism is
-              // present yet so the current machine may have missed some
-              // versions when disconnected.
-              //
-              if (version == nucleus::proton::Version::Last)
+            // Validate the block, depending on its component.
+            // Indeed, the Object component requires as additional
+            // block for being validated.
+            switch (address.component)
+              {
+                case nucleus::neutron::ComponentObject:
                 {
-                  Neighbourhood::Scoutor        scoutor;
+                  assert(dynamic_cast<Object const*>(block.get()) != nullptr);
+                  Object const& object =
+                    *static_cast<Object*>(block.get());
 
-                  // for every scoutor.
-                  for (scoutor = this->neighbourhood.container.begin();
-                       scoutor != this->neighbourhood.container.end();
-                       scoutor++)
+                  // Validate the object according to the presence of
+                  // a referenced access block.
+                  if (object.access() != nucleus::proton::Address::Null)
                     {
-                      Host*                     host = scoutor->second;
+                      Ptr<Block> block(Hole::Pull(object.access(), Version::Last));
+                      Ptr<nucleus::neutron::Access> access
+                        (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                      if (access == nullptr)
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "expected an access block");
 
-                      nucleus::Derivable derivable;
+                      // validate the object, providing the
+                      if (object.Validate(address, *access)
+                          == elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "unable to validate the object");
+                    }
+                  else
+                    {
+                      // Validate the object.
+                      if (object.Validate(
+                            address,
+                            nucleus::neutron::Access::Null) ==
+                          elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "unable to validate the object");
+                    }
 
-                      // request the host.
-                      if (host->socket->Call(
-                            elle::network::Inputs<TagPull>(address, version),
-                            elle::network::Outputs<TagBlock>(derivable)) ==
-                          elle::Status::Ok)
+                  break;
+                }
+                default:
+                {
+                  // validate the block through the common
+                  // interface.
+                  if (block->Validate(address) == elle::Status::Error)
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "the block seems to be invalid");
+
+                  break;
+                }
+                case nucleus::neutron::ComponentUnknown:
+                {
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           elle::sprintf("unknown component '%u'",
+                                                         address.component));
+                }
+              }
+
+            // Finally, since the block has been retrieved,
+            // store it locally.
+            block->Store(Hole::Implementation->network, address);
+            // XXX do not check the result as the block to
+            // XXX store may not be the latest.
+
+            // ignore the error messages and continue with the
+            // next neighbour.
+            purge();
+          }
+
+        // At this point, we may have retrieved one or more versions
+        // of the mutable block but we do not have any guarantee.
+
+        MutableBlock* block;
+        nucleus::Nucleus::Factory.Build(address.component, block);
+
+        // does the block exist.
+        if (block->Exist(Hole::Implementation->network, address, Version::Last)
+            == elle::Status::True)
+          {
+            // load the block.
+            if (block->Load(Hole::Implementation->network, address, Version::Last)
+                == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to load the block");
+
+            // Validate the block, depending on its component.
+            // although every stored block has been checked, the block
+            // may have been corrupt while on the hard disk.
+            //
+            // Note that the Object component requires as additional
+            // block for being validated.
+            switch (address.component)
+              {
+                case nucleus::neutron::ComponentObject:
+                {
+                  const Object* object =
+                    static_cast<const Object*>(block);
+                  assert(dynamic_cast<const Object*>(
+                           block) != nullptr);
+                  // Validate the object according to the presence of
+                  // a referenced access block.
+                  if (object->access() != nucleus::proton::Address::Null)
+                    {
+                      // Load the access block.
+                      Ptr<Block> block
+                        (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                      Ptr<nucleus::neutron::Access> access
+                        (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                      if (access == nullptr)
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "expected an access block");
+                      // Validate the object, providing the
+                      if (object->Validate(address, *access) ==
+                          elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    }
+                  else
+                    {
+                      // Validate the object.
+                      if (object->Validate(
+                            address,
+                            nucleus::neutron::Access::Null) ==
+                          elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    }
+
+                  break;
+                }
+                default:
+                {
+                  // validate the block through the common interface.
+                  if (block->Validate(address) == elle::Status::Error)
+                    throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+
+                  break;
+                }
+                case nucleus::neutron::ComponentUnknown:
+                {
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           elle::sprintf("unknown component '%u'",
+                                                         address.component));
+                }
+              }
+          }
+        return Ptr<Block>(block);
+      }
+
+
+      std::unique_ptr<nucleus::proton::Block>
+      Machine::_get_specific(const nucleus::proton::Address& address,
+                             nucleus::proton::Version const& version)
+      {
+        // Go through the neighbours and retrieve the
+        // specific version of the block.
+
+        using nucleus::neutron::Object;
+        using nucleus::proton::MutableBlock;
+
+        Ptr<MutableBlock> block;
+        {
+          MutableBlock* raw;
+          nucleus::Nucleus::Factory.Build(address.component, raw);
+          block = Ptr<MutableBlock>(raw);
+        }
+
+        // Does the block exist: if it does not, retrieve it from the
+        // peers.
+        if (block->Exist(Hole::Implementation->network, address, version)
+            == elle::Status::False)
+          {
+            bool found = false;
+            for (auto neighbour: this->_hosts)
+              {
+                Host*                     host = neighbour.second;
+                nucleus::Derivable derivable;
+
+                // request the host.
+                auto block = elle::cast<MutableBlock>::runtime(
+                  host->pull(address, version));
+
+                // validate the block, depending on its
+                // component.
+                //
+                // indeed, the Object component requires as
+                // additional block for being validated.
+                switch (address.component)
+                  {
+                    case nucleus::neutron::ComponentObject:
+                    {
+                      Object const&  object =
+                        static_cast<Object const&>(
+                          derivable.block());
+                      assert(dynamic_cast<Object const*>(
+                               &(derivable.block())) != nullptr);
+
+                      // validate the object according to the
+                      // presence of a referenced access block.
+                      if (object.access() !=
+                          nucleus::proton::Address::Null)
                         {
-                          auto const& mb =
-                            static_cast<nucleus::proton::MutableBlock const&>(
-                                derivable.block());
-                          assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
-                                   &(derivable.block())) != nullptr);
+                          Ptr<nucleus::proton::Block> block
+                            (Hole::Pull(object.access(), nucleus::proton::Version::Last));
+                          Ptr<nucleus::neutron::Access> access
+                            (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                          if (access == nullptr)
+                            throw reactor::Exception(elle::concurrency::scheduler(),
+                                                     "expected an access block");
 
-                          // validate the block, depending on its component.
-                          //
-                          // indeed, the Object component requires as
-                          // additional block for being validated.
-                          switch (address.component)
-                            {
-                            case nucleus::neutron::ComponentObject:
-                              {
-                                nucleus::neutron::Object const& object =
-                                  static_cast<nucleus::neutron::Object const&>(mb);
-                                assert(dynamic_cast<nucleus::neutron::Object const*>(
-                                         &mb) != nullptr);
-
-                                // validate the object according to the
-                                // presence of a referenced access block.
-                                if (object.access() !=
-                                    nucleus::proton::Address::Null)
-                                  {
-                                    nucleus::neutron::Access access;
-
-                                    // load the access block.
-                                    if (Hole::Pull(
-                                          object.access(),
-                                          nucleus::proton::Version::Last,
-                                          access) == elle::Status::Error)
-                                      escape("unable to load the access "
-                                             "block");
-
-                                    // validate the object, providing the
-                                    if (object.Validate(
-                                          address,
-                                          access) == elle::Status::Error)
-                                      escape("unable to validate the object");
-                                  }
-                                else
-                                  {
-                                    // validate the object.
-                                    if (object.Validate(
-                                          address,
-                                          nucleus::neutron::Access::Null) ==
-                                        elle::Status::Error)
-                                      escape("unable to validate the object");
-                                  }
-
-                                break;
-                              }
-                            default:
-                              {
-                                // validate the block through the common
-                                // interface.
-                                if (mb.Validate(address) == elle::Status::Error)
-                                  escape("the block seems to be invalid");
-
-                                break;
-                              }
-                            case nucleus::neutron::ComponentUnknown:
-                              {
-                                escape("unknown component '%u'",
-                                       address.component);
-                              }
-                            }
-
-                          // finally, since the block has been retrieved,
-                          // store it locally.
-                          mb.Store(Hole::Implementation->network, address);
-                          // XXX do not check the result as the block to
-                          // XXX store may not be the latest.
+                          // validate the object, providing the
+                          if (object.Validate(
+                                address,
+                                *access) == elle::Status::Error)
+                            throw reactor::Exception(elle::concurrency::scheduler(),
+                                                     "unable to validate the "
+                                                     "object");
                         }
                       else
                         {
-                          // XXX
-                          ELLE_LOG_TRACE("unable to pull the latest mutable block");
-                          address.Dump();
-                          host->locus.Dump();
-                          show();
-                          assert(false);
+                          // validate the object.
+                          if (object.Validate(
+                                address,
+                                nucleus::neutron::Access::Null) ==
+                              elle::Status::Error)
+                            throw reactor::Exception(elle::concurrency::scheduler(),
+                                                     "unable to validate the "
+                                                     "object");
                         }
-
-                      // ignore the error messages and continue with the
-                      // next neighbour.
-                      purge();
+                      found = true;
+                      break;
                     }
-
-                  //
-                  // at this point, we may have retrieved one or more versions
-                  // of the mutable block but we do not have any guarantee.
-                  //
-
-                  // does the block exist.
-                  if (block.Exist(Hole::Implementation->network,
-                                  address,
-                                  version) == elle::Status::True)
+                    default:
                     {
-                      // load the block.
-                      if (block.Load(Hole::Implementation->network,
-                                     address,
-                                     version) == elle::Status::Error)
-                        escape("unable to load the block");
-
-                      // validate the block, depending on its component.
-                      // although every stored block has been checked, the
-                      // block may have been corrupt while on the hard disk.
-                      //
-                      // note that the Object component requires as additional
-                      // block for being validated.
-                      switch (address.component)
-                        {
-                        case nucleus::neutron::ComponentObject:
-                          {
-                            const nucleus::neutron::Object* object =
-                              static_cast<const nucleus::neutron::Object*>(&block);
-                            assert(dynamic_cast<const nucleus::neutron::Object*>(
-                                     &block) != nullptr);
-
-                            // validate the object according to the presence of
-                            // a referenced access block.
-                            if (object->access() != nucleus::proton::Address::Null)
-                              {
-                                nucleus::neutron::Access access;
-
-                                // load the access block.
-                                if (Hole::Pull(object->access(),
-                                               nucleus::proton::Version::Last,
-                                               access) == elle::Status::Error)
-                                  escape("unable to load the access block");
-
-                                // validate the object, providing the
-                                if (object->Validate(address,
-                                                     access) ==
-                                    elle::Status::Error)
-                                  escape("unable to validate the object");
-                              }
-                            else
-                              {
-                                // validate the object.
-                                if (object->Validate(
-                                      address,
-                                      nucleus::neutron::Access::Null) ==
-                                    elle::Status::Error)
-                                  escape("unable to validate the object");
-                              }
-
-                            break;
-                          }
-                        default:
-                          {
-                            // validate the block through the common interface.
-                            if (block.Validate(address) == elle::Status::Error)
-                              escape("the block seems to be invalid");
-
-                            break;
-                          }
-                        case nucleus::neutron::ComponentUnknown:
-                          {
-                            escape("unknown component '%u'",
-                                   address.component);
-                          }
-                        }
+                      // Validate the block through the common
+                      // interface.
+                      if (derivable.block().Validate(address) ==
+                          elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
                     }
-                }
-              else
-                {
-                  //
-                  // otherwise, go through the neighbours and retrieve the
-                  // specific version of the block from them.
-                  //
-
-                  // does the block exist: if it does not, retrieve it
-                  // from the peers.
-                  if (block.Exist(Hole::Implementation->network,
-                                  address,
-                                  version) == elle::Status::False)
+                    case nucleus::neutron::ComponentUnknown:
                     {
-                      Neighbourhood::Scoutor        scoutor;
-
-                      // for every scoutor.
-                      for (scoutor = this->neighbourhood.container.begin();
-                           scoutor != this->neighbourhood.container.end();
-                           scoutor++)
-                        {
-                          Host*                     host = scoutor->second;
-                          nucleus::Derivable derivable;
-
-                          // request the host.
-                          if (host->socket->Call(
-                                elle::network::Inputs<TagPull>(address, version),
-                                elle::network::Outputs<TagBlock>(derivable)) ==
-                              elle::Status::Ok)
-                            {
-                              auto const& mb=
-                                static_cast<nucleus::proton::MutableBlock const&>(
-                                    derivable.block());
-                              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
-                                       &(derivable.block())) != nullptr);
-
-                              // validate the block, depending on its
-                              // component.
-                              //
-                              // indeed, the Object component requires as
-                              // additional block for being validated.
-                              switch (address.component)
-                                {
-                                case nucleus::neutron::ComponentObject:
-                                  {
-                                    nucleus::neutron::Object const&  object =
-                                      static_cast<nucleus::neutron::Object const&>(
-                                        derivable.block());
-                                    assert(dynamic_cast<nucleus::neutron::Object const*>(
-                                             &(derivable.block())) != nullptr);
-
-                                    // validate the object according to the
-                                    // presence of a referenced access block.
-                                    if (object.access() !=
-                                        nucleus::proton::Address::Null)
-                                      {
-                                        nucleus::neutron::Access access;
-
-                                        // load the access block.
-                                        if (Hole::Pull(
-                                              object.access(),
-                                              nucleus::proton::Version::Last,
-                                              access) == elle::Status::Error)
-                                          escape("unable to load the access "
-                                                 "block");
-
-                                        // validate the object, providing the
-                                        if (object.Validate(
-                                              address,
-                                              access) == elle::Status::Error)
-                                          escape("unable to validate the "
-                                                 "object");
-                                      }
-                                    else
-                                      {
-                                        // validate the object.
-                                        if (object.Validate(
-                                              address,
-                                              nucleus::neutron::Access::Null) ==
-                                            elle::Status::Error)
-                                          escape("unable to validate the "
-                                                 "object");
-                                      }
-
-                                    break;
-                                  }
-                                default:
-                                  {
-                                    // validate the block through the common
-                                    // interface.
-                                    if (derivable.block().Validate(address) ==
-                                        elle::Status::Error)
-                                      escape("the block seems to be invalid");
-
-                                    break;
-                                  }
-                                case nucleus::neutron::ComponentUnknown:
-                                  {
-                                    escape("unknown component '%u'",
-                                           address.component);
-                                  }
-                                }
-
-                              // finally, since the block has been retrieved,
-                              // store it locally.
-                              mb.Store(Hole::Implementation->network, address);
-                              // XXX do not check the result as the block to
-                              // XXX store may not be the latest i.e when
-                              // XXX history is not active.
-
-                              // stop since a block for this specific
-                              // version has been retrieved.
-                              break;
-                            }
-                          else
-                            {
-                              // XXX
-                              ELLE_LOG_TRACE("unable to pull the versioned mutable block");
-                              address.Dump();
-                              version.Dump();
-                              host->locus.Dump();
-                              show();
-                              assert(false);
-                            }
-
-                          // ignore the error messages and continue with the
-                          // next neighbour.
-                          purge();
-                        }
-
-                      // check if none if the neighbour has the block.
-                      if (scoutor == this->neighbourhood.container.end())
-                        escape("unable to retrieve the block associated with "
-                               "the given address from the other peers");
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               elle::sprintf("unknown component '%u'",
+                                                             address.component));
                     }
+                  }
 
-                  //
-                  // now let us try to retrieve the block from the
-                  // local storage.
-                  //
+                // Finally, since the block has been retrieved,
+                // store it locally.
+                block->Store(Hole::Implementation->network, address);
+                // XXX do not check the result as the block to
+                // XXX store may not be the latest i.e when
+                // XXX history is not active.
 
-                  // does the block exist.
-                  if (block.Exist(Hole::Implementation->network,
-                                  address,
-                                  version) == elle::Status::True)
-                    {
-                      // load the block.
-                      if (block.Load(Hole::Implementation->network,
-                                     address,
-                                     version) == elle::Status::Error)
-                        escape("unable to load the block");
+                // stop since a block for this specific
+                // version has been retrieved.
+                break;
 
-                      // validate the block, depending on its component.
-                      // although every stored block has been checked, the
-                      // block may have been corrupt while on the hard disk.
-                      //
-                      // note that the Object component requires as additional
-                      // block for being validated.
-                      switch (address.component)
-                        {
-                        case nucleus::neutron::ComponentObject:
-                          {
-                            const nucleus::neutron::Object* object =
-                              static_cast<const nucleus::neutron::Object*>(
-                                &block);
-                            assert(dynamic_cast<const nucleus::neutron::Object*>(
-                                     &block) != nullptr);
+                // ignore the error messages and continue with the
+                // next neighbour.
+                purge();
+              }
 
-                            // validate the object according to the presence of
-                            // a referenced access block.
-                            if (object->access() !=
-                                nucleus::proton::Address::Null)
-                              {
-                                nucleus::neutron::Access access;
-
-                                // load the access block.
-                                if (Hole::Pull(object->access(),
-                                               nucleus::proton::Version::Last,
-                                               access) == elle::Status::Error)
-                                  escape("unable to load the access block");
-
-                                // validate the object, providing the
-                                if (object->Validate(address,
-                                                     access) ==
-                                    elle::Status::Error)
-                                  escape("unable to validate the object");
-                              }
-                            else
-                              {
-                                // validate the object.
-                                if (object->Validate(
-                                      address,
-                                      nucleus::neutron::Access::Null) ==
-                                    elle::Status::Error)
-                                  escape("unable to validate the object");
-                              }
-
-                            break;
-                          }
-                        default:
-                          {
-                            // validate the block through the common interface.
-                            if (block.Validate(address) == elle::Status::Error)
-                              escape("the block seems to be invalid");
-
-                            break;
-                          }
-                        case nucleus::neutron::ComponentUnknown:
-                          {
-                            escape("unknown component '%u'",
-                                   address.component);
-                          }
-                        }
-                    }
-                }
-
-              break;
-            }
-          default:
-            {
-              escape("the machine's state '%u' does not allow one "
-                     "to request operations on the storage layer",
-                     this->state);
-            }
+            // check if none if the neighbour has the block.
+            if (!found)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the block associated with "
+                                       "the given address from the other peers");
           }
 
-        return elle::Status::Ok;
+        // Now let us try to retrieve the block from the local
+        // storage.
+
+        // Does the block exist.
+        if (block->Exist(Hole::Implementation->network,
+                         address,
+                         version) == elle::Status::True)
+          {
+            // Load the block.
+            if (block->Load(Hole::Implementation->network,
+                            address,
+                            version) == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
+
+            // validate the block, depending on its component.
+            // although every stored block has been checked, the
+            // block may have been corrupt while on the hard disk.
+            //
+            // note that the Object component requires as additional
+            // block for being validated.
+            switch (address.component)
+              {
+                case nucleus::neutron::ComponentObject:
+                {
+                  assert(dynamic_cast<const Object*>(block.get()) != nullptr);
+                  const Object* object = static_cast<const Object*>(block.get());
+
+                  // validate the object according to the presence of
+                  // a referenced access block.
+                  if (object->access() !=
+                      nucleus::proton::Address::Null)
+                    {
+                      // Load the access block.
+                      Ptr<nucleus::proton::Block> block
+                        (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                      Ptr<nucleus::neutron::Access> access
+                        (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                      if (access == nullptr)
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "expected an access block");
+
+                      // Validate the object.
+                      if (object->Validate(address, *access) == elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    }
+                  else
+                    {
+                      // validate the object.
+                      if (object->Validate(
+                            address,
+                            nucleus::neutron::Access::Null) ==
+                          elle::Status::Error)
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                    }
+
+                  break;
+                }
+                default:
+                {
+                  // validate the block through the common interface.
+                  if (block->Validate(address) == elle::Status::Error)
+                    throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+
+                  break;
+                }
+                case nucleus::neutron::ComponentUnknown:
+                {
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           elle::sprintf("unknown component '%u'",
+                                                         address.component));
+                }
+              }
+          }
+        return std::move(block);
       }
 
-      ///
-      /// this method removes a block.
-      ///
-      elle::Status      Machine::Kill(const nucleus::proton::Address& address)
+      std::unique_ptr<nucleus::proton::Block>
+      Machine::Get(const nucleus::proton::Address&    address,
+                   const nucleus::proton::Version&    version)
       {
-        ELLE_LOG_TRACE("Kill");
+        ELLE_TRACE("Get[Mutable]");
+
+        // Check the machine is connected and has been authenticated
+        // as a valid node of the network.
+        if (this->_state != State::attached)
+          throw reactor::Exception(\
+            elle::concurrency::scheduler(),
+            elle::sprintf("the machine's state '%u' does not allow one "
+                          "to request operations on the storage layer",
+                          this->_state));
+
+        if (version == nucleus::proton::Version::Last)
+          return _get_latest(address);
+        else
+          return _get_specific(address, version);
+      }
+
+      void
+      Machine::Kill(const nucleus::proton::Address&   address)
+      {
+        ELLE_TRACE("Kill");
 
         // depending on the machine's state.
-        switch (this->state)
+        switch (this->_state)
           {
-          case Machine::StateAttached:
+            case State::attached:
             {
               //
               // in this case, the current machine is connected and has
@@ -1015,7 +930,7 @@ namespace hole
                       if (nucleus::proton::ImmutableBlock::Erase(
                             Hole::Implementation->network,
                             address) == elle::Status::Error)
-                        escape("unable to erase the block");
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
 
                       break;
                     }
@@ -1027,34 +942,25 @@ namespace hole
                       if (nucleus::proton::MutableBlock::Erase(
                             Hole::Implementation->network,
                             address) == elle::Status::Error)
-                        escape("unable to erase the block");
+                        throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
 
                       break;
                     }
                   default:
                     {
-                      escape("unknown block family");
+                      throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
                     }
                   }
               }
 
-              //
-              // then, notify the other hosts of the removal.
-              //
+              // Notify the other hosts of the removal.
               {
-                Neighbourhood::Scoutor  scoutor;
-
                 // for every scoutor.
-                for (scoutor = this->neighbourhood.container.begin();
-                     scoutor != this->neighbourhood.container.end();
-                     scoutor++)
+                for (auto neighbour: this->_hosts)
                   {
-                    Host*               host = scoutor->second;
-
-                    // Send the request to the host.
-                    host->socket->send(elle::network::Inputs<TagWipe>(address));
-
-                    // ignore the error messages and continue with the
+                    Host* host = neighbour.second;
+                    host->wipe(address);
+                    // Ignore the error messages and continue with the
                     // next neighbour.
                     purge();
                   }
@@ -1064,707 +970,53 @@ namespace hole
             }
           default:
             {
-              escape("the machine's state '%u' does not allow one to "
-                     "request operations on the storage layer",
-                     this->state);
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       elle::sprintf("the machine's state '%u' does not allow one to "
+                                                     "request operations on the storage layer",
+                                                     this->_state));
             }
           }
-
-        return elle::Status::Ok;
       }
 
-//
-// ---------- callbacks -------------------------------------------------------
-//
+      /*----------.
+      | Printable |
+      `----------*/
 
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Alone()
-      {
-        ELLE_LOG_TRACE("Alone");
-
-        // if the machine has been neither connected nor authenticated
-        // to existing nodes...
-        if (this->state == Machine::StateDetached)
-          {
-            // then, suppose that the current machine as the only one in
-            // the network.
-            //
-            // thus, it can be implicitly considered as authenticated
-            // in a network composed of itself alone.
-            this->state = Machine::StateAttached;
-
-            // set the hole as ready to receive requests.
-            if (Hole::Ready() == elle::Status::Error)
-              escape("unable to set the hole online");
-          }
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this method handles new connections.
-      ///
       void
-      Machine::_accept()
+      Machine::print(std::ostream& stream) const
       {
-        while (true)
+        stream << elle::sprintf("Slug machine %s", this->_port);
+      }
+
+      /*---------.
+      | Dumpable |
+      `---------*/
+
+      std::ostream&
+      operator << (std::ostream& stream, Machine::State state)
+      {
+        switch (state)
           {
-            reactor::network::TCPSocket* socket = _server->accept();
-            auto connection = new elle::network::TCPSocket(socket, false);
-
-            ELLE_LOG_TRACE("_accept");
-
-            // depending on the machine's state.
-            switch (this->state)
-              {
-                case Machine::StateAttached:
-                {
-                  // allocate the host.
-                  auto      host = std::unique_ptr<Host>(new Host(connection));
-
-                  // subscribe to the signal.
-                  if (host->signal.dead.Subscribe(
-                        elle::concurrency::Callback<>::Infer(&Machine::Sweep,
-                                                this)) == elle::Status::Error)
-                    throw std::runtime_error("unable to subscribe to the signal");
-
-                  // add the host to the guestlist for now until it
-                  // gets authenticated.
-                  if (this->guestlist.Add(host->socket,
-                                          host.get()) == elle::Status::Error)
-                    throw std::runtime_error("unable to add the host to the neigbourhood");
-
-                  // release the host.
-                  auto      h = host.release();
-
-                  // also authenticate to this host now that it is
-                  // considered a potentiel peer.
-                  h->socket->send(
-                    elle::network::Inputs<TagAuthenticate>(
-                      Hole::Passport, this->port));
-
-                  break;
-                }
-                default:
-                {
-                  //
-                  // if the machine is not authenticated, reject the
-                  // incoming connection right away.
-                  //
-
-                  // delete the socket. XXX ARGHLLL use unique_ptr !
-                  delete socket;
-
-                  break;
-                }
-              }
-          }
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Authenticate(const lune::Passport& passport,
-                                              const elle::network::Port& port)
-      {
-        Host*           host;
-
-        ELLE_LOG_TRACE("Authenticate");
-
-        // if the host exists in the guestlist, handle its authentication.
-        if (this->guestlist.Exist(
-              static_cast<elle::network::TCPSocket*>(elle::network::current_context().socket)) ==
-            elle::Status::True)
-          {
-            Cluster     cluster;
-
-            // retrieve the host from the guestlist.
-            if (this->guestlist.Retrieve(
-                  static_cast<elle::network::TCPSocket*>(elle::network::current_context().socket),
-                  host) == elle::Status::Error)
-              escape("unable to retrieve the host");
-
-            // if the host has already been authenticated, do nothing.
-            if (host->state == Host::StateAuthenticated)
-              return elle::Status::Ok;
-
-            // create the cluster based on the current neighbourhood.
-            if (cluster.Create(this->neighbourhood) == elle::Status::Error)
-              escape("unable to create the cluster");
-
-            // validate the passport.
-            if (passport.Validate(Infinit::Authority) == elle::Status::Error)
-              escape("unable to validate the passport");
-
-            // create the host's locus according to the given port.
-            elle::network::Host h;
-            h.Create(elle::network::current_context().host);
-            if (host->locus.Create(h, port) == elle::Status::Error)
-              escape("unable to create the locus");
-
-            // add the host to the neighbourhood now that it has been
-            // authenticated.
-            if (this->neighbourhood.Add(host->locus,
-                                        host) == elle::Status::Error)
-              escape("unable to add the host to the neighbourhood");
-
-            // set the host as having been authenticated.
-            if (host->Authenticated() == elle::Status::Error)
-              escape("unable to set the host as authenticated");
-
-            host->socket->reply(elle::network::Inputs<TagAuthenticated>
-                                (cluster));
-
-            // also authenticate to this host.
-            host->socket->send(
-              elle::network::Inputs<TagAuthenticate>(
-                Hole::Passport, this->port));
-          }
-        else
-          {
-            log("unexpected: an Authenticate message has been received "
-                "from an unknown guest");
-          }
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Authenticated(const Cluster&   cluster)
-      {
-        ELLE_LOG_TRACE("Authenticated");
-
-        // set the machine as being authenticated and is therefore now
-        // considered attached to the network.
-        this->state = Machine::StateAttached;
-
-        // set the hole as ready to receive requests.
-        if (Hole::Ready() == elle::Status::Error)
-          escape("unable to set the hole online");
-
-        //
-        // use the given cluster to extend the network by connecting to
-        // every other host.
-        //
-        {
-          Cluster::Scoutor      scoutor;
-
-          // go through the cluster.
-          for (scoutor = cluster.container.begin();
-               scoutor != cluster.container.end();
-               scoutor++)
-            {
-              elle::network::Locus       locus = *scoutor;
-
-              // check if this locus is already registered.
-              if (this->neighbourhood.Exist(locus) == elle::Status::True)
-                continue;
-
-              auto host = std::unique_ptr<Host>(new Host(locus));
-
-              // subscribe to the signal.
-              if (host->signal.dead.Subscribe(
-                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
-                                            this)) == elle::Status::Error)
-                escape("unable to subscribe to the signal");
-
-              // add the host to the guestlist.
-              if (this->guestlist.Add(host->socket, host.get()) ==
-                  elle::Status::Error)
-                escape("unable to add the host to the guestlist");
-
-              // release the host.
-              host.release();
-            }
-        }
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Sweep(Host*                    host)
-      {
-        ELLE_LOG_TRACE("Sweep");
-
-        // depending on the host's state.
-        switch (host->state)
-          {
-          case Host::StateAuthenticated:
-            {
-              // remove the host from the guestlist.
-              if (this->guestlist.Remove(host->socket) == elle::Status::Error)
-                escape("unable to remove the host from the guestlist");
-
-              // remove the host from the neighbourhood.
-              if (this->neighbourhood.Remove(host->locus) == elle::Status::Error)
-                escape("unable to remove the host from the neighbourhood");
-
+            case Machine::State::detached:
+              stream << "detached";
               break;
-            }
-          default:
-            {
-              // does the host exist in the guestlist.
-              if (this->guestlist.Exist(host->socket) == elle::Status::True)
-                {
-                  // remove the host from the guestlist.
-                  if (this->guestlist.Remove(host->socket) ==
-                      elle::Status::Error)
-                    escape("unable to remove the host from the neighbourhood");
-                }
-
+            case Machine::State::attached:
+              stream << "attached";
               break;
-            }
           }
-
-        // delete the host.
-        bury(host);
-
-        return elle::Status::Ok;
+        return stream;
       }
 
-      ///
-      /// XXX
-      ///
-      elle::Status      Machine::Synchronised()
-      {
-        ELLE_LOG_TRACE("Push");
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this method stores the given block.
-      ///
-      elle::Status      Machine::Push(const nucleus::proton::Address& address,
-                                      const nucleus::Derivable& derivable)
-      {
-        Host*           host;
-
-        ELLE_LOG_TRACE("Push");
-
-        auto const& block = derivable.block();
-
-        // retrieve the host from the guestlist.
-        if (this->guestlist.Retrieve(
-              elle::network::current_context().socket,
-              host) == elle::Status::Error)
-          escape("unable to retrieve the host");
-
-        // check the host's state.
-        if (host->state != Host::StateAuthenticated)
-          escape("unable to process a request from an unauthenticated host");
-
-        // forward the request depending on the nature of the block which
-        // the address indicates.
-        switch (address.family)
-          {
-          case nucleus::proton::FamilyContentHashBlock:
-            {
-              nucleus::proton::ImmutableBlock const& ib =
-                  static_cast<nucleus::proton::ImmutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::proton::ImmutableBlock const*>(
-                       &block));
-
-              ELLE_LOG_TRACE("pushing immutable block");
-
-              //
-              // first, store the block locally.
-              //
-              {
-                // does the block already exist.
-                if (ib.Exist(Hole::Implementation->network,
-                              address) == elle::Status::True)
-                  escape("this immutable block seems to already exist");
-
-                // store the block.
-                if (ib.Store(Hole::Implementation->network,
-                              address) == elle::Status::Error)
-                  escape("unable to store the block");
-              }
-
-              break;
-            }
-          case nucleus::proton::FamilyPublicKeyBlock:
-          case nucleus::proton::FamilyOwnerKeyBlock:
-          case nucleus::proton::FamilyImprintBlock:
-            {
-              nucleus::proton::MutableBlock const& mb =
-                  static_cast<nucleus::proton::MutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
-                       &block));
-
-              ELLE_LOG_TRACE("pushing mutable block");
-
-              //
-              // first, store the block locally.
-              //
-              {
-                // validate the block, depending on its component.
-                //
-                // indeed, the Object component requires as additional
-                // block for being validated.
-                switch (address.component)
-                  {
-                  case nucleus::neutron::ComponentObject:
-                    {
-                      const nucleus::neutron::Object* object =
-                        static_cast<const nucleus::neutron::Object*>(&mb);
-                      assert(dynamic_cast<const nucleus::neutron::Object*>(
-                               &mb) != nullptr);
-
-                      ELLE_LOG_TRACE("validating the object mutable block");
-
-                      // validate the object according to the presence of
-                      // a referenced access block.
-                      if (object->access() != nucleus::proton::Address::Null)
-                        {
-                          nucleus::neutron::Access access;
-
-                          ELLE_LOG_TRACE("retrieving the access block");
-
-                          // load the access block.
-                          if (Hole::Pull(object->access(),
-                                         nucleus::proton::Version::Last,
-                                         access) == elle::Status::Error)
-                            escape("unable to load the access block");
-
-                          // validate the object, providing the
-                          if (object->Validate(address,
-                                               access) == elle::Status::Error)
-                            escape("unable to validate the object");
-                        }
-                      else
-                        {
-                          // validate the object.
-                          if (object->Validate(
-                                address,
-                                nucleus::neutron::Access::Null) == elle::Status::Error)
-                            escape("unable to validate the object");
-                        }
-
-                      break;
-                    }
-                  default:
-                    {
-                      ELLE_LOG_TRACE("validating the mutable block");
-
-                      // validate the block through the common interface.
-                      if (mb.Validate(address) == elle::Status::Error)
-                        escape("the block seems to be invalid");
-
-                      break;
-                    }
-                  case nucleus::neutron::ComponentUnknown:
-                    {
-                      escape("unknown component '%u'",
-                             address.component);
-                    }
-                  }
-
-                // does the block already exist.
-                if (mb.Exist(Hole::Implementation->network,
-                              address,
-                              nucleus::proton::Version::Last) == elle::Status::True)
-                  {
-                    nucleus::proton::MutableBlock* current;
-
-                    ELLE_LOG_TRACE("the mutable block seems to exist "
-                                   "locally, make sure it derives the "
-                                   "current version");
-
-                    // build a block according to the component.
-                    if (nucleus::Nucleus::Factory.Build(
-                          address.component,
-                          current) == elle::Status::Error)
-                      escape("unable to build the block");
-
-                    std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
-
-                    // load the latest version.
-                    if (current->Load(Hole::Implementation->network,
-                                      address,
-                                      nucleus::proton::Version::Last) ==
-                        elle::Status::Error)
-                      escape("unable to load the current version");
-
-                    // does the given block derive the current version.
-                    if (!(mb.version > current->version))
-                      escape("the block to store does not seem to derive "
-                             "the current version");
-                  }
-
-                ELLE_LOG_TRACE("now storing the validated mutable block locally");
-
-                // store the block.
-                if (mb.Store(Hole::Implementation->network,
-                              address) == elle::Status::Error)
-                  escape("unable to store the block");
-              }
-
-              break;
-            }
-          default:
-            {
-              escape("unknown block family");
-            }
-          }
-
-        // XXX do not even bother returning TagOk
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this method returns the block associated with the given address.
-      ///
-      elle::Status      Machine::Pull(const nucleus::proton::Address& address,
-                                      const nucleus::proton::Version& version)
-      {
-        Host*           host;
-        nucleus::proton::Block* block;
-
-        ELLE_LOG_TRACE("Pull");
-
-        // retrieve the host from the guestlist.
-        if (this->guestlist.Retrieve(
-              elle::network::current_context().socket,
-              host) == elle::Status::Error)
-          escape("unable to retrieve the host");
-
-        // check the host's state.
-        if (host->state != Host::StateAuthenticated)
-          escape("unable to process a request from an unauthenticated host");
-
-        // build the block according to the component.
-        if (nucleus::Nucleus::Factory.Build(address.component,
-                                            block) == elle::Status::Error)
-          escape("unable to build the block");
-
-        std::unique_ptr<nucleus::proton::Block> guard(block);
-
-        // forward the request depending on the nature of the block which
-        // the addres indicates.
-        switch (address.family)
-          {
-          case nucleus::proton::FamilyContentHashBlock:
-            {
-              nucleus::proton::ImmutableBlock* ib;
-
-              ELLE_LOG_TRACE("pulling immutable block");
-
-              // cast to an immutable block.
-              ib = static_cast<nucleus::proton::ImmutableBlock*>(block);
-              assert(dynamic_cast<nucleus::proton::ImmutableBlock*>(
-                       block) != nullptr);
-
-              // does the block exist.
-              if (ib->Exist(Hole::Implementation->network,
-                            address) == elle::Status::False)
-                escape("the block does not seem to exist");
-
-              // load the block.
-              if (ib->Load(Hole::Implementation->network,
-                           address) == elle::Status::Error)
-                escape("unable to load the block");
-
-              // validate the block.
-              if (ib->Validate(address) == elle::Status::Error)
-                escape("the block seems to be invalid");
-
-              break;
-            }
-          case nucleus::proton::FamilyPublicKeyBlock:
-          case nucleus::proton::FamilyOwnerKeyBlock:
-          case nucleus::proton::FamilyImprintBlock:
-            {
-              nucleus::proton::MutableBlock* mb;
-
-              ELLE_LOG_TRACE("pulling mutable block");
-
-              // cast to a mutable block.
-              mb = static_cast<nucleus::proton::MutableBlock*>(block);
-              assert(dynamic_cast<nucleus::proton::MutableBlock*>(
-                       block) != nullptr);
-
-              // does the block exist.
-              if (mb->Exist(Hole::Implementation->network,
-                            address, version) == elle::Status::True)
-                {
-                  // load the block.
-                  if (mb->Load(Hole::Implementation->network,
-                               address, version) == elle::Status::Error)
-                    escape("unable to load the block");
-
-                  // validate the block, depending on its component.
-                  //
-                  // indeed, the Object component requires as additional
-                  // block for being validated.
-                  switch (address.component)
-                    {
-                    case nucleus::neutron::ComponentObject:
-                      {
-                        const nucleus::neutron::Object* object =
-                          static_cast<const nucleus::neutron::Object*>(mb);
-                        assert(dynamic_cast<const nucleus::neutron::Object*>(
-                                 mb) != nullptr);
-
-                        // validate the object according to the presence of
-                        // a referenced access block.
-                        if (object->access() !=
-                            nucleus::proton::Address::Null)
-                          {
-                            nucleus::neutron::Access access;
-
-                            // load the access block.
-                            if (Hole::Pull(object->access(),
-                                           nucleus::proton::Version::Last,
-                                           access) == elle::Status::Error)
-                              escape("unable to load the access block");
-
-                            // validate the object, providing the
-                            if (object->Validate(address,
-                                                 access) == elle::Status::Error)
-                              escape("unable to validate the object");
-                          }
-                        else
-                          {
-                            // validate the object.
-                            if (object->Validate(
-                                  address,
-                                  nucleus::neutron::Access::Null) == elle::Status::Error)
-                              escape("unable to validate the object");
-                          }
-
-                        break;
-                      }
-                    default:
-                      {
-                        // validate the block through the common interface.
-                        if (mb->Validate(address) == elle::Status::Error)
-                          escape("the block seems to be invalid");
-
-                        break;
-                      }
-                    case nucleus::neutron::ComponentUnknown:
-                      {
-                        escape("unknown component '%u'",
-                               address.component);
-                      }
-                    }
-                }
-
-              break;
-            }
-          default:
-            {
-              escape("unknown block family");
-            }
-          }
-
-        nucleus::Derivable derivable(address.component, *block);
-
-        // return the block.
-        host->socket->reply(elle::network::Inputs<TagBlock>(derivable));
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this method removes the block associated with the given address.
-      ///
-      elle::Status      Machine::Wipe(const nucleus::proton::Address& address)
-      {
-        Host*           host;
-
-        ELLE_LOG_TRACE("Wipe");
-
-        // retrieve the host from the guestlist.
-        if (this->guestlist.Retrieve(
-              static_cast<elle::network::TCPSocket*>(elle::network::current_context().socket),
-              host) == elle::Status::Error)
-          escape("unable to retrieve the host");
-
-        // check the host's state.
-        if (host->state != Host::StateAuthenticated)
-          escape("unable to process a request from an unauthenticated host");
-
-        //
-        // remove the block locally.
-        //
-        {
-          // treat the request depending on the nature of the block which
-          // the addres indicates.
-          switch (address.family)
-            {
-            case nucleus::proton::FamilyContentHashBlock:
-              {
-                // erase the immutable block.
-                if (nucleus::proton::ImmutableBlock::Erase(
-                      Hole::Implementation->network,
-                      address) == elle::Status::Error)
-                  escape("unable to erase the block");
-
-                break;
-              }
-            case nucleus::proton::FamilyPublicKeyBlock:
-            case nucleus::proton::FamilyOwnerKeyBlock:
-            case nucleus::proton::FamilyImprintBlock:
-              {
-                // retrieve the mutable block.
-                if (nucleus::proton::MutableBlock::Erase(
-                      Hole::Implementation->network,
-                      address) == elle::Status::Error)
-                  escape("unable to erase the block");
-
-                break;
-              }
-            default:
-              {
-                escape("unknown block family");
-              }
-            }
-        }
-
-        // XXX do not even bother returning TagOk
-
-        return elle::Status::Ok;
-      }
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-      ///
-      /// this method dumps the machine.
-      ///
-      elle::Status      Machine::Dump(const elle::Natural32     margin) const
+      elle::Status
+      Machine::Dump(const elle::Natural32 margin) const
       {
         elle::String    alignment(margin, ' ');
 
         std::cout << alignment << "[Machine]" << std::endl;
-
-        // dump the state.
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[State] " << this->state << std::endl;
-
-        // dump the port.
+                  << "[State] " << this->_state << std::endl;
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Port] " << std::dec << this->port << std::endl;
-
-        // dump the guestlist.
-        if (this->guestlist.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the guestlist");
-
-        // dump the neighbourhood.
-        if (this->neighbourhood.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the neighbourhood");
-
+                  << "[Port] " << std::dec << this->_port << std::endl;
         return elle::Status::Ok;
       }
     }

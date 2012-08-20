@@ -1,10 +1,19 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
+# include <elle/idiom/Close.hh>
+# include <reactor/network/socket.hh>
+# include <elle/idiom/Open.hh>
+
 # include <elle/types.hh>
 # include <elle/network/fwd.hh>
 # include <elle/network/Locus.hh>
 # include <elle/concurrency/Signal.hh>
+
+# include <protocol/ChanneledStream.hh>
+# include <protocol/Serializer.hh>
+
+# include <hole/implementations/slug/Manifest.hh>
 
 namespace hole
 {
@@ -12,72 +21,93 @@ namespace hole
   {
     namespace slug
     {
-
-      ///
-      /// XXX
-      ///
-      class Host:
-        public elle::radix::Entity
+      class Host
+        : public elle::radix::Entity
       {
       public:
-        //
-        // enumerations
-        //
-        enum State
-          {
-            StateUnknown,
-            StateConnected,
-            StateAuthenticated,
-            StateDead
-          };
+        // Enumerations
+        enum class State
+        {
+          connected,
+          authenticating,
+          authenticated,
+          dead,
+        };
 
-        //
-        // constants
-        //
-        static const elle::Natural32            Timeout;
-
-        //
-        // constructors & destructors
-        //
-        Host(const elle::network::Locus& locus);
-        Host(elle::network::TCPSocket* connection);
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
+        Host(Machine& machine,
+             elle::network::Locus const& locus,
+             std::unique_ptr<reactor::network::Socket> socket,
+             bool opener);
         ~Host();
 
-        //
-        // methods
-        //
-        elle::Status    Disconnect();
+      /*-----------.
+      | Attributes |
+      `-----------*/
 
-        elle::Status    Authenticated();
+      public:
+        elle::network::Locus locus() const;
+      private:
+        elle::network::Locus _locus;
 
-        //
-        // interfaces
-        //
+      private:
+        Machine& _machine;
+        State _state;
+        std::unique_ptr<reactor::network::Socket> _socket;
+        infinit::protocol::Serializer _serializer;
+        infinit::protocol::ChanneledStream _channels;
+      /*----.
+      | RPC |
+      `----*/
+      private:
+        void _rpc_run();
+        RPC _rpcs;
+        reactor::Thread* _rpcs_handler;
 
-        // dumpable
+      /*----.
+      | API |
+      `----*/
+      public:
+        std::vector<elle::network::Locus>
+        authenticate(lune::Passport& passport);
+        std::unique_ptr<nucleus::proton::Block>
+        pull(nucleus::proton::Address const& address,
+             nucleus::proton::Version const& version);
+        bool
+        push(nucleus::proton::Address const& address,
+             nucleus::proton::Block const& block);
+        bool
+        wipe(nucleus::proton::Address const& address);
+      private:
+        std::vector<elle::network::Locus>
+        _authenticate(lune::Passport const& passport);
+        bool
+        _push(nucleus::proton::Address const& address,
+              nucleus::Derivable& derivable);
+        nucleus::Derivable
+        _pull(nucleus::proton::Address const&,
+              nucleus::proton::Version const&);
+        bool
+        _wipe(nucleus::proton::Address const&);
+
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
         elle::Status    Dump(const elle::Natural32 = 0) const;
 
-        //
-        // signals
-        //
-        struct
-        {
-          elle::concurrency::Signal<
-            elle::radix::Parameters<
-              Host*
-              >
-            >                   dead;
-        }                       signal;
-
-        //
-        // attributes
-        //
-        State                   state;
-
-        elle::network::Locus             locus;
-        elle::network::TCPSocket*        socket;
+      /*-------------.
+      | Pretty print |
+      `-------------*/
+      public:
+        void print(std::ostream& stream) const;
       };
 
+      std::ostream&
+      operator << (std::ostream& stream, const Host& host);
     }
   }
 }

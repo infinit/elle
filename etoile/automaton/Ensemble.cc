@@ -14,7 +14,7 @@
 
 #include <hole/Hole.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Ensemble");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Ensemble");
 
 namespace etoile
 {
@@ -24,29 +24,22 @@ namespace etoile
     elle::Status
     Ensemble::Open(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Open()");
+      ELLE_TRACE_SCOPE("Open()");
 
       // if the ensemble is already opened, return.
       if (context.ensemble != nullptr)
         return elle::Status::Ok;
 
-      // otherwise create a new ensemble according to the context's type.
-      context.ensemble = new nucleus::neutron::Ensemble;
-
       // check if there exists a ensemble. if so, load the block.
       if (context.group->ensemble() != nucleus::proton::Address::Null)
         {
-          ELLE_LOG_TRACE_SCOPE("pull the ensemble block from the storage layer");
-
-          // load the block.
-          if (depot::Depot::Pull(context.group->ensemble(),
-                                 nucleus::proton::Version::Any,
-                                 *context.ensemble) == elle::Status::Error)
-            escape("unable to load the ensemble");
+          ELLE_TRACE_SCOPE("pull the ensemble block from the storage layer");
+          context.ensemble = depot::Depot::pull<nucleus::neutron::Ensemble>(
+            context.group->ensemble(), nucleus::proton::Version::Any).release();
         }
       else
         {
-          ELLE_LOG_TRACE_SCOPE("the group does not reference an ensemble");
+          ELLE_TRACE_SCOPE("the group does not reference an ensemble");
         }
 
       return elle::Status::Ok;
@@ -55,14 +48,14 @@ namespace etoile
     elle::Status
     Ensemble::Destroy(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_SCOPE("Destroy()");
 
       assert(context.group != nullptr);
 
       // if a block is referenced by the object, mark it as needing removal.
       if (context.group->ensemble() != nucleus::proton::Address::Null)
         {
-          ELLE_LOG_TRACE_SCOPE("record the ensemble block in the transcript");
+          ELLE_TRACE_SCOPE("record the ensemble block in the transcript");
 
           // mark the content block for removal.
           if (context.transcript.Wipe(context.group->ensemble()) ==
@@ -76,7 +69,7 @@ namespace etoile
     elle::Status
     Ensemble::Close(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("Close()");
+      ELLE_TRACE_SCOPE("Close()");
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -113,7 +106,7 @@ namespace etoile
           // by the network, the ensemble block is marked for deletion.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the ensemble is empty");
+          ELLE_TRACE_SCOPE("the ensemble is empty");
 
           // does the network support the history?
           if (hole::Hole::Descriptor.history == false)
@@ -150,7 +143,7 @@ namespace etoile
           // the history support is not activated for this network.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
+          ELLE_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
 
           nucleus::proton::Address address;
           elle::cryptography::KeyPair pass;

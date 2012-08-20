@@ -2,7 +2,6 @@
 # define INFINIT_REACTOR_RW_MUTEX_HH
 
 # include <reactor/mutex.hh>
-# include <reactor/signal.hh>
 
 namespace reactor
 {
@@ -21,7 +20,8 @@ namespace reactor
           virtual bool _wait(Thread* thread);
         private:
           RWMutex& _owner;
-          bool _locked;
+          reactor::Thread* _locked;
+          int _locked_recursive;
           friend class RWMutex;
       };
       WriteMutex& write();

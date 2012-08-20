@@ -52,9 +52,6 @@ namespace surface
 
     class State
     {
-    public:
-      /// Logger used everywhere.
-      elle::log::Logger                 log;
     private:
       plasma::meta::Client*             _api;
 

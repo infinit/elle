@@ -8,23 +8,12 @@
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Protocol");
+ELLE_LOG_COMPONENT("infinit.protocol.Channel");
 
 namespace infinit
 {
   namespace protocol
   {
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    static std::ostream&
-    operator << (std::ostream& s, ChanneledStream const& stream)
-    {
-      s << "infinit::protocol::ChanneledStream(" << &stream << ")";
-      return s;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -77,7 +66,7 @@ namespace infinit
     Packet
     ChanneledStream::_read(Channel* channel)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
+      ELLE_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
       int requested_channel = channel->_id;
       reactor::Thread* current = scheduler().current();
       while (true)
@@ -86,64 +75,80 @@ namespace infinit
             {
               // FIXME: use helper to pop
               Packet packet(std::move(channel->_packets.front()));
-              ELLE_LOG_TRACE("%s: %s available.", *this, packet);
               channel->_packets.pop_front();
+              ELLE_TRACE("%s: %s available.", *this, packet);
               return packet;
             }
-          ELLE_LOG_TRACE("%s: no packet available.", *this);
+          ELLE_DEBUG("%s: no packet available.", *this);
           if (!_reading)
-            ELLE_LOG_TRACE("%s: reading packets.", *this)
-              while (true)
-                {
-                  _reading = true;
-                  Packet p(_backend.read());
-                  int channel_id = _uint32_get(p);
-                  // FIXME: The size of the packet isn't
-                  // adjusted. This is cosmetic though.
-                  ELLE_LOG_TRACE("%s: received %s on channel %s.", *this, p, channel_id);
-                  if (channel_id == requested_channel)
-                    {
-                      // Wake another thread so it can read future packets.
-                      for (auto channel: _channels)
-                        if (channel.second->_available.signal_one())
-                          break;
-                      _reading = false;
-                      return p;
-                    }
-                  else
-                    {
-                      auto it = _channels.find(channel_id);
-                      if (it != _channels.end())
-                        {
-                          it->second->_packets.push_back(std::move(p));
-                          it->second->_available.signal_one();
-                        }
-                    else
-                      {
-                        _channels_new.push_back(Channel(*this, channel_id));
-                        _channels_new.back()._packets.push_back(std::move(p));
-                        _channel_available.signal_one();
-                      }
-                    }
-                }
+            _read(false, requested_channel);
           else
-            ELLE_LOG_TRACE("%s: reader already present, waiting.", *this)
+            ELLE_DEBUG("%s: reader already present, waiting.", *this)
               current->wait(channel->_available);
         }
+    }
+
+    void
+    ChanneledStream::_read(bool channel, int requested_channel)
+    {
+      ELLE_DEBUG_SCOPE("%s: reading packets.", *this);
+      while (true)
+        {
+          _reading = true;
+          Packet p(_backend.read());
+          int channel_id = _uint32_get(p);
+          // FIXME: The size of the packet isn't
+          // adjusted. This is cosmetic though.
+          ELLE_DEBUG("%s: received %s on channel %s.", *this, p, channel_id);
+          auto it = _channels.find(channel_id);
+          if (it != _channels.end())
+            {
+              it->second->_packets.push_back(std::move(p));
+              if (channel_id == requested_channel)
+                break;
+              else
+                  it->second->_available.signal_one();
+            }
+          else
+            {
+              Channel res(*this, channel_id);
+              res._packets.push_back(std::move(p));
+              _channels_new.push_back(std::move(res));
+              if (channel)
+                break;
+              else
+                _channel_available.signal_one();
+            }
+        }
+      // Wake another thread so it can read future packets.
+      _reading = false;
+      for (auto channel: _channels)
+        if (channel.second->_available.signal_one())
+          return;
+      _channel_available.signal_one();
     }
 
     Channel
     ChanneledStream::accept()
     {
-      if (_channels_new.empty())
+      ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
+      while (_channels_new.empty())
         {
-          reactor::Thread* current = scheduler().current();
-          current->wait(this->_channel_available);
+          ELLE_DEBUG("%s: no channel available, waiting", *this);
+          if (!_reading)
+            _read(true, 0);
+          else
+            {
+              ELLE_DEBUG("%s: reader already present, waiting.", *this);
+              reactor::Thread* current = scheduler().current();
+              current->wait(this->_channel_available);
+            }
         }
       assert(!_channels_new.empty());
       // FIXME: use helper to pop
       Channel res = std::move(_channels_new.front());
       _channels_new.pop_front();
+      ELLE_TRACE("%s: got channel %s", *this, res);
       return res;
     }
 
@@ -160,13 +165,23 @@ namespace infinit
     void
     ChanneledStream::_write(Packet& packet, int id)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
+      ELLE_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
 
       Packet backend_packet;
       _uint32_put(backend_packet, id);
       backend_packet.write(packet._data, packet.size());
       backend_packet.flush();
       _backend.write(backend_packet);
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    ChanneledStream::print(std::ostream& stream) const
+    {
+      stream << "ChanneledStream " << this;
     }
   }
 }

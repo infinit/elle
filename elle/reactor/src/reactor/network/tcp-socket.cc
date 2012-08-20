@@ -10,7 +10,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.TCPSocket");
+ELLE_LOG_COMPONENT("Reactor.TCPSocket");
 
 namespace reactor
 {
@@ -93,13 +93,13 @@ namespace reactor
         {
           if (error == boost::system::errc::operation_canceled)
             {
-              ELLE_LOG_TRACE("read canceled");
+              ELLE_TRACE("read canceled");
               return;
             }
           if (error)
-            ELLE_LOG_TRACE("%s: read error: %s", *this, error.message());
+            ELLE_TRACE("%s: read error: %s", *this, error.message());
           else
-            ELLE_LOG_TRACE("%s: read completed: %s bytes", *this, read);
+            ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
           if (error == boost::asio::error::eof)
             this->_raise(new ConnectionClosed(scheduler()));
@@ -128,7 +128,7 @@ namespace reactor
     Size
     TCPSocket::_read(Buffer buf, DurationOpt timeout, bool some)
     {
-      ELLE_LOG_TRACE_SCOPE("%s: read %s%s bytes (%s)",
+      ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
                            *this, some ? "up to " : "", buf.size(), timeout);
       Read read(scheduler(), this, buf, some);
       bool finished;
@@ -138,15 +138,15 @@ namespace reactor
         }
       catch (...)
         {
-          ELLE_LOG_TRACE("%s: read threw", *this);
+          ELLE_TRACE("%s: read threw", *this);
           throw;
         }
       if (!finished)
         {
-          ELLE_LOG_TRACE("%s: read timed out", *this);
+          ELLE_TRACE("%s: read timed out", *this);
           throw TimeOut(scheduler());
         }
-      ELLE_LOG_TRACE("%s: read completed: %s bytes", *this, read.read());
+      ELLE_TRACE("%s: read completed: %s bytes", *this, read.read());
       return read.read();
     }
 
@@ -223,7 +223,7 @@ namespace reactor
     void
     TCPSocket::print(std::ostream& s) const
     {
-      s << "reactor::network::TCPSocket(" << peer() << ")";
+      s << "TCPSocket(" << peer() << ")";
     }
   }
 }

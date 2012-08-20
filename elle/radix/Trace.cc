@@ -205,7 +205,8 @@ namespace elle
       ::sprintf(Trace::Location, "/tmp/XXXXXX");
 
       // generate a temporary location.
-      ::mkdtemp(Trace::Location);
+      if (!::mkdtemp(Trace::Location))
+        escape("unable to create temporary directory");
 
       // compute the location's length.
       Trace::Length = ::strlen(Trace::Location);

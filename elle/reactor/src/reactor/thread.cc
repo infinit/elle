@@ -2,13 +2,12 @@
 
 #include <elle/log.hh>
 
-#include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
+ELLE_LOG_COMPONENT("Reactor.Thread");
 
 namespace reactor
 {
@@ -117,10 +116,10 @@ namespace reactor
   void
   Thread::yield()
   {
-    ELLE_LOG_TRACE("%s: yield", *this)
+    ELLE_TRACE("%s: yield", *this)
       {
         _thread.yield();
-        ELLE_LOG_TRACE("%s: back from yield", *this);
+        ELLE_TRACE("%s: back from yield", *this);
         if (_injection)
           {
             Injection i(_injection);
@@ -131,7 +130,7 @@ namespace reactor
           {
             Exception* e = _exception;
             _exception = 0;
-            ELLE_LOG_TRACE("%s: re-raise exception", *this);
+            ELLE_TRACE("%s: re-raise exception", *this);
             e->raise_and_delete();
           }
       }
@@ -187,7 +186,7 @@ namespace reactor
       }
     if (freeze)
     {
-      ELLE_LOG_TRACE("%s: freeze", *this);
+      ELLE_TRACE("%s: freeze", *this);
       if (timeout)
       {
         boost::asio::deadline_timer _timer(_scheduler.io_service(),
@@ -245,14 +244,14 @@ namespace reactor
   {
     if (e == boost::system::errc::operation_canceled)
       return;
-    ELLE_LOG_TRACE("%s: timed out", *this);
+    ELLE_TRACE("%s: timed out", *this);
     _wait_abort();
   }
 
   void
   Thread::_wait_abort()
   {
-    ELLE_LOG_TRACE("%s: abort wait", *this);
+    ELLE_TRACE("%s: abort wait", *this);
     assert(state() == state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
@@ -273,22 +272,22 @@ namespace reactor
   void
   Thread::_wake(Waitable*       waitable)
   {
-    ELLE_LOG_TRACE("%s: wait ended for %s", *this, *waitable)
+    ELLE_TRACE("%s: wait ended for %s", *this, *waitable)
       {
         if (waitable->_exception && !_exception)
           {
-            ELLE_LOG_TRACE("%s: forward exception", *this);
+            ELLE_TRACE("%s: forward exception", *this);
             _exception = waitable->_exception;
           }
         _waited.erase(waitable);
         if (_waited.empty())
           {
-            ELLE_LOG_TRACE("%s: nothing to wait on, waking up", *this);
+            ELLE_TRACE("%s: nothing to wait on, waking up", *this);
             _scheduler._unfreeze(*this);
             _state = Thread::state::running;
           }
         else
-          ELLE_LOG_TRACE("%s: still waiting for %s other elements", *this, _waited.size());
+          ELLE_TRACE("%s: still waiting for %s other elements", *this, _waited.size());
       }
   }
 

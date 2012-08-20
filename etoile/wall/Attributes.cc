@@ -13,7 +13,7 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.wall.Attributes");
+ELLE_LOG_COMPONENT("infinit.etoile.wall.Attributes");
 
 namespace etoile
 {
@@ -36,7 +36,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Set()");
+      ELLE_TRACE_SCOPE("Set()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -82,7 +82,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Get()");
+      ELLE_TRACE_SCOPE("Get()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -124,7 +124,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Fetch()");
+      ELLE_TRACE_SCOPE("Fetch()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -160,7 +160,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_LOG_TRACE("Omit()");
+      ELLE_TRACE_SCOPE("Omit()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

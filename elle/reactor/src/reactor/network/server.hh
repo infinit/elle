@@ -1,10 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_SERVER_HH
 # define INFINIT_REACTOR_NETWORK_SERVER_HH
 
-# include <reactor/asio.hh>
-
 # include <reactor/network/fwd.hh>
-# include <reactor/network/socket.hh>
 
 namespace reactor
 {

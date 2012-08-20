@@ -1,6 +1,6 @@
 #include <ostream>
 
-#include "Null.hh"
+#include <elle/format/json/Null.hh>
 
 namespace elle
 {

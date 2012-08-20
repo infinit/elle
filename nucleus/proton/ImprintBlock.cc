@@ -9,7 +9,7 @@
 
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.nucleus.proton.ImprintBlock");
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImprintBlock");
 
 namespace nucleus
 {
@@ -61,7 +61,7 @@ namespace nucleus
     elle::Status
     ImprintBlock::Create(elle::cryptography::PublicKey const& owner_K)
     {
-      ELLE_LOG_TRACE_SCOPE("[%p] Create(%s)", this, owner_K);
+      ELLE_TRACE_SCOPE("[%p] Create(%s)", this, owner_K);
 
       // Compute the creation timestamp.
       if (this->_creation_stamp.Current() == elle::Status::Error)
@@ -80,7 +80,7 @@ namespace nucleus
     elle::Status
     ImprintBlock::Bind(Address& address) const
     {
-      ELLE_LOG_TRACE_SCOPE("[%p] Bind()", this);
+      ELLE_TRACE_SCOPE("[%p] Bind()", this);
 
       // Compute the address of the block by hashing the following
       // elements: network, family, component, stamp, salt and owner.K..
@@ -100,7 +100,7 @@ namespace nucleus
     {
       Address self;
 
-      ELLE_LOG_TRACE_SCOPE("Validate() this(%p)", this);
+      ELLE_TRACE_SCOPE("Validate() this(%p)", this);
 
       // Make sure the block has not be tampered and correspond to the
       // given original address. In order to do that, the address is

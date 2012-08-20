@@ -20,8 +20,34 @@ namespace elle
 {
   namespace log
   {
-    elle::log::Logger default_logger{
-        elle::log::Logger::Level::trace
+    Logger::Level
+    logLevel()
+    {
+      const char* env = ::getenv("ELLE_LOG_LEVEL");
+      if (env)
+        {
+          const std::string level(env);
+          if (level == "LOG")
+            return Logger::Level::log;
+          else if (level == "TRACE")
+            return Logger::Level::trace;
+          else if (level == "DEBUG")
+            return Logger::Level::debug;
+          else if (level == "DUMP")
+            return Logger::Level::dump;
+          else
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     elle::sprintf("invalid log level: %s", level));
+        }
+      else
+        return Logger::Level::log;
+    }
+
+
+    elle::log::Logger& default_logger()
+    {
+      static elle::log::Logger logger(logLevel());
+      return logger;
     };
 
     namespace detail
@@ -37,7 +63,7 @@ namespace elle
       struct Components
       {
       private:
-        std::vector<std::string>*     _patterns;
+        std::vector<std::string> _patterns;
         std::map<std::string, bool>   _enabled;
 
       public:
@@ -48,16 +74,25 @@ namespace elle
 
       private:
         Components()
-          : _patterns(nullptr)
+          : _patterns()
           , _enabled()
           , _max_string_size(0)
-        {}
+        {
+          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
+          if (components_str == nullptr)
+            this->_patterns.push_back("*");
+          else
+            {
+              boost::algorithm::split(this->_patterns, components_str,
+                                      boost::algorithm::is_any_of(","),
+                                      boost::algorithm::token_compress_on);
+              for (auto& pattern: this->_patterns)
+                boost::algorithm::trim(pattern);
+            }
+        }
 
         ~Components()
-        {
-          delete this->_patterns;
-          this->_patterns = nullptr;
-        }
+        {}
 
       public:
         static Components& instance()
@@ -97,28 +132,7 @@ namespace elle
       private:
         std::vector<std::string> const& patterns()
         {
-          if (this->_patterns != nullptr)
-            return *this->_patterns;
-          this->_patterns = new std::vector<std::string>();
-
-          std::vector<std::string> res;
-          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
-          if (components_str == nullptr)
-              return *this->_patterns;
-
-          boost::algorithm::split(
-              res, components_str,
-              boost::algorithm::is_any_of(","),
-              boost::algorithm::token_compress_on
-          );
-
-          for (auto& el: res)
-            {
-              boost::algorithm::trim(el);
-              if (el.size())
-                  this->_patterns->push_back(el);
-            }
-          return *this->_patterns;
+          return this->_patterns;
         }
       };
 
@@ -129,12 +143,17 @@ namespace elle
         Components::instance().enable(this->name);
       }
 
-
-
-      TraceContext::TraceContext(TraceComponent const& component)
+      TraceContext::TraceContext(elle::log::Logger::Level level,
+                                 elle::log::Logger::Type type,
+                                 TraceComponent const& component,
+                                 char const* file,
+                                 unsigned int line,
+                                 char const* function,
+                                 std::string const& message)
         : _component(component)
       {
         _indent();
+        this->_send(level, type, file, line, function, message);
       }
 
       TraceContext::~TraceContext()
@@ -143,7 +162,9 @@ namespace elle
       }
 
       void
-      TraceContext::_send(char const* file,
+      TraceContext::_send(elle::log::Logger::Level level,
+                          elle::log::Logger::Type type,
+                          char const* file,
                           unsigned int line,
                           char const* function,
                           const std::string& msg)
@@ -152,34 +173,17 @@ namespace elle
         if (location)
           {
             static boost::format fmt("%s:%s: %s (%s)");
-            this->_send(str(fmt % file % line % msg % function));
+            this->_send(level, type, str(fmt % file % line % msg % function));
           }
         else
-          this->_send(msg);
-      }
-
-      static int thread_id(reactor::Thread* t)
-      {
-        if (!t)
-          return 0;
-
-        static int i = 1;
-        typedef std::unordered_map<reactor::Thread*, int> Ids;
-        static Ids ids;
-
-        auto elt = ids.find(t);
-        if (elt == ids.end())
-          {
-            ids[t] = i;
-            return i++;
-          }
-        else
-          return ids[t];
+          this->_send(level, type, msg);
       }
 
 
       void
-      TraceContext::_send(std::string const& msg)
+      TraceContext::_send(elle::log::Logger::Level level,
+                          elle::log::Logger::Type type,
+                          std::string const& msg)
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
@@ -201,9 +205,11 @@ namespace elle
           time = boost::posix_time::second_clock::universal_time();
         else
           time = boost::posix_time::second_clock::local_time();
-        boost::format fmt("%s: [%s] [%2s]");
+        static boost::format model("%s: [%s] [%s] %s%s");
+        boost::format fmt(model);
         reactor::Thread* t = elle::concurrency::scheduler().current();
-        default_logger.trace(str(fmt % time % s % thread_id(t)), align, msg);
+        fmt % time % s % (t ? t->name() : std::string(" ")) % align % msg;
+        default_logger().message(level, type, str(fmt));
       }
 
       void

@@ -22,12 +22,12 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Load(elle::io::Path const& path)
     {
-      ELLE_LOG_TRACE_COMPONENT("infinit.elle.concept.Fileable");
-      ELLE_LOG_TRACE("Load(%s)", path.string())
+      ELLE_LOG_COMPONENT("infinit.elle.concept.Fileable");
+      ELLE_TRACE("Load(%s)", path.string())
         {
-          ELLE_LOG_TRACE("Open file %s in read mode", path.string());
+          ELLE_TRACE("Open file %s in read mode", path.string());
           std::ifstream in(path.string(), std::ios_base::in | std::ios_base::binary);
-          ELLE_LOG_TRACE("File opened: %s", path.string());
+          ELLE_TRACE("File opened: %s", path.string());
           if (!in.good())
             {
               escape("Cannot open in file '%s'", path.string().c_str());
@@ -36,7 +36,7 @@ namespace elle
             }
           try
             {
-              ELLE_LOG_TRACE("Deserializing %p from file", this)
+              ELLE_TRACE("Deserializing %p from file", this)
                 {
                   typedef contract::_Serializable<Archive> interface_t;
                   assert(dynamic_cast<interface_t*>(this) != nullptr);
@@ -63,8 +63,8 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Store(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("infinit.elle.concept.Fileable");
-      ELLE_LOG_TRACE_SCOPE("Store(%s)", path.string());
+      ELLE_LOG_COMPONENT("infinit.elle.concept.Fileable");
+      ELLE_TRACE_SCOPE("Store(%s)", path.string());
 
       if (elle::io::File::Dig(path) == elle::Status::Error)
         escape("unable to dig the chain of directories");
@@ -103,8 +103,8 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Status Fileable<Archive>::Erase(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("infinit.elle.concept.Fileable");
-      ELLE_LOG_TRACE_SCOPE("Erase(%s)", path.string());
+      ELLE_LOG_COMPONENT("infinit.elle.concept.Fileable");
+      ELLE_TRACE_SCOPE("Erase(%s)", path.string());
 
       if (elle::io::File::Erase(path) == elle::Status::Error)
         escape("unable to erase the path");
@@ -115,8 +115,8 @@ namespace elle
     template<__ECS_ARCHIVE_TPL(Archive)>
     Boolean Fileable<Archive>::Exists(elle::io::Path const& path) const
     {
-      ELLE_LOG_TRACE_COMPONENT("infinit.elle.concept.Fileable");
-      ELLE_LOG_TRACE_SCOPE("Exists(%s)", path.string());
+      ELLE_LOG_COMPONENT("infinit.elle.concept.Fileable");
+      ELLE_TRACE_SCOPE("Exists(%s)", path.string());
 
       if (elle::io::File::Exist(path) == elle::Status::Error)
         escape("unable to check the path");

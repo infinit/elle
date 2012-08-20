@@ -4,6 +4,8 @@
 # include <iostream>
 # include <list>
 
+# include <elle/Printable.hh>
+
 # include <reactor/fwd.hh>
 
 # include <protocol/Packet.hh>
@@ -12,13 +14,14 @@ namespace infinit
 {
   namespace protocol
   {
-    class Stream
+    class Stream: public elle::Printable
     {
     /*-------------.
     | Construction |
     `-------------*/
     public:
       Stream(reactor::Scheduler& scheduler);
+      virtual ~Stream();
 
     /*-----------.
     | Properties |

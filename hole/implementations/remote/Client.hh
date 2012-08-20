@@ -3,11 +3,16 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
-
 # include <elle/network/fwd.hh>
-# include <elle/network/Locus.hh>
+
+# include <reactor/network/tcp-socket.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/Nucleus.hh>
+# include <hole/implementations/remote/Manifest.hh>
+
+# include <protocol/ChanneledStream.hh>
+# include <protocol/Serializer.hh>
 
 namespace hole
 {
@@ -15,70 +20,67 @@ namespace hole
   {
     namespace remote
     {
-
-      ///
-      /// this class represents a client machine and is therefore used
-      /// whenever the current host is acting as a client of another host
-      /// i.e the server.
-      ///
-      class Client:
-        public elle::radix::Entity
+      /// A client machine and is therefore used whenever the current
+      /// host is acting as a client of another host i.e the server.
+      class Client
+        : public elle::radix::Entity
       {
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
-        //
-        // enumerations
-        //
-        enum State
-          {
-            StateUnknown,
-            StateConnected,
-            StateAuthenticated
-          };
-
-        //
-        // constructors & destructors
-        //
-        Client(const elle::network::Locus&);
+        Client(std::string const& host, int port);
         ~Client();
 
-        //
-        // methods
-        //
-        elle::Status            Launch();
+      /*----.
+      | API |
+      `----*/
+      public:
+        /// Store an immutable block.
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::ImmutableBlock&);
+        /// Store a mutable block.
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::MutableBlock&);
+        /// Retrieve an immutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        get(const nucleus::proton::Address&);
+        /// Retrieve a mutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        get(const nucleus::proton::Address&, const nucleus::proton::Version&);
+        /// Remove a block.
+        void
+        kill(const nucleus::proton::Address&);
 
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::ImmutableBlock&);
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::MutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    nucleus::proton::ImmutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    const nucleus::proton::Version&,
-                                    nucleus::proton::MutableBlock&);
-        elle::Status            Kill(const nucleus::proton::Address&);
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
+        elle::Status
+        Dump(const elle::Natural32 = 0) const;
 
-        //
-        // callbacks
-        //
-        elle::Status            Authenticated();
-        elle::Status            Exception(const elle::standalone::Report&);
+      /*------.
+      | State |
+      `------*/
+      private:
+        enum class State
+        {
+          connected,
+          authenticated
+        };
+        State _state;
 
-        //
-        // interfaces
-        //
-
-        // dumpable
-        elle::Status            Dump(const elle::Natural32 = 0) const;
-
-        //
-        // attributes
-        //
-        State                   state;
-
-        elle::network::Locus             locus;
-        elle::network::TCPSocket*        socket;
+      /*--------.
+      | Details |
+      `--------*/
+      private:
+        reactor::network::TCPSocket _stream;
+        infinit::protocol::Serializer _serializer;
+        infinit::protocol::ChanneledStream _channels;
+        RPC _rpc;
       };
-
     }
   }
 }

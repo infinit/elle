@@ -1,5 +1,7 @@
 #include <etoile/depot/Depot.hh>
 
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Version.hh>
@@ -38,18 +40,37 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method retrives a block from the underlying storage layer.
-    ///
-    elle::Status        Depot::Pull(const nucleus::proton::Address& address,
-                                    const nucleus::proton::Version& version,
-                                    nucleus::proton::Block& block)
+    std::unique_ptr<nucleus::neutron::Object>
+    Depot::pull_object(nucleus::proton::Address const& address,
+                       nucleus::proton::Version const & version)
     {
-      // call the Hole.
-      if (hole::Hole::Pull(address, version, block) == elle::Status::Error)
-        escape("unable to retrieve the block");
+      std::unique_ptr<nucleus::proton::Block> block;
 
-      return elle::Status::Ok;
+      block = hole::Hole::Pull(address, version);
+
+      std::unique_ptr<nucleus::neutron::Object> object(
+        dynamic_cast<nucleus::neutron::Object*>(block.release()));
+
+      if (!object)
+        throw std::runtime_error("the retrieved block is not an object");
+
+      return object;
+    }
+
+    std::unique_ptr<nucleus::neutron::Access>
+    Depot::pull_access(nucleus::proton::Address const& address)
+    {
+      std::unique_ptr<nucleus::proton::Block> block;
+
+      block = hole::Hole::Pull(address, nucleus::proton::Version::Last);
+
+      std::unique_ptr<nucleus::neutron::Access> access(
+        dynamic_cast<nucleus::neutron::Access*>(block.release()));
+
+      if (!access)
+        throw std::runtime_error("the retrieved block is not an access");
+
+      return access;
     }
 
     ///
@@ -58,8 +79,7 @@ namespace etoile
     elle::Status        Depot::Wipe(const nucleus::proton::Address& address)
     {
       // call the Hole.
-      if (hole::Hole::Wipe(address) == elle::Status::Error)
-        escape("unable to remove the block");
+      hole::Hole::Wipe(address);
 
       return elle::Status::Ok;
     }

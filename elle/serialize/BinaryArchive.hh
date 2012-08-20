@@ -3,10 +3,12 @@
 
 # include <elle/serialize/fwd.hh>
 
-# include "BaseArchive.hh"
+# include <elle/serialize/BaseArchive.hh>
 
-namespace elle { namespace serialize {
-
+namespace elle
+{
+  namespace serialize
+  {
     ///
     /// Binary archives are intended for high performace packing. It uses
     /// exactly the size of serialized objects, with a few extra data when
@@ -60,25 +62,26 @@ namespace elle { namespace serialize {
     /// Simple binary archive.
     ///
     template<ArchiveMode mode>
-      class BinaryArchive
-        : public BaseBinaryArchive<mode, BinaryArchive<mode>>
-      {
+    class BinaryArchive
+      : public BaseBinaryArchive<mode, BinaryArchive<mode>>
+    {
       private:
-        typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
+      typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
       public:
-        typedef typename BaseClass::StreamType                StreamType;
+      typedef typename BaseClass::StreamType                StreamType;
       public:
-        BinaryArchive(StreamType& stream)
-          : BaseClass(stream)
-        {}
+      BinaryArchive(StreamType& stream)
+        : BaseClass(stream)
+      {}
 
-        template<typename T> BinaryArchive(StreamType& stream, T& value)
-          : BaseClass(stream, value)
-        {}
-      };
+      template<typename T> BinaryArchive(StreamType& stream, T& value)
+        : BaseClass(stream, value)
+      {}
+    };
+  }
+} // !elle::serialize
 
-
-}} // !elle::serialize
+# include <elle/serialize/BinaryArchive.hxx>
 
 #endif /* ! BINARYARCHIVE_HH */
 

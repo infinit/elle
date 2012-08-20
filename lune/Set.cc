@@ -123,6 +123,10 @@ namespace lune
     // for every string-based locus in the string.
     while (std::getline(stream, element, ' '))
       {
+        // Skip comments.
+        if (!element.empty() && element[0] == '#')
+          continue;
+
         elle::network::Locus       locus;
 
         // build the host locus.

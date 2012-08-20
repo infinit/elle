@@ -21,12 +21,13 @@
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Access");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Access");
 
 namespace etoile
 {
   namespace automaton
   {
+    ELLE_LOG_COMPONENT("infinit.etoile.automaton.Access");
 
     ///
     /// this method opens the access block by loading it if necessary i.e
@@ -41,22 +42,24 @@ namespace etoile
       if (context.access != nullptr)
         return elle::Status::Ok;
 
-      // allocate an access block.
-      context.access = new nucleus::neutron::Access;
-
       // if an access block is referenced in the object.
-      if (context.object.access() != nucleus::proton::Address::Null)
+      if (context.object->access() != nucleus::proton::Address::Null)
         {
           // retrieve the access block.
-          if (depot::Depot::Pull(context.object.access(),
-                                 nucleus::proton::Version::Any,
-                                 *context.access) == elle::Status::Error)
-            escape("unable to load the access block");
+          try
+            {
+              // XXX[the context should make use of unique_ptr instead
+              //     of releasing here.]
+              context.access = depot::Depot::pull_access(
+                context.object->access()).release();
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the access block: %s", e.what());
+            }
         }
       else
-        {
-          // otherwise the block is left empty.
-        }
+        context.access = new nucleus::neutron::Access;
 
       return elle::Status::Ok;
     }
@@ -80,15 +83,15 @@ namespace etoile
                "the access permissions");
 
       // update the accesses depending on the subject.
-      if (subject == context.object.owner_subject())
+      if (subject == context.object->owner_subject())
         {
           //
           // in this case, the subject represents the object's owner.
           //
 
           // update the permissions.
-          if (context.object.Administrate(
-                context.object.attributes(),
+          if (context.object->Administrate(
+                context.object->attributes(),
                 permissions) == elle::Status::Error)
             escape("unable to administrate the object");
         }
@@ -153,12 +156,10 @@ namespace etoile
                       }
                     case nucleus::neutron::Subject::TypeGroup:
                       {
-                        nucleus::neutron::Group group;
+                        std::unique_ptr<nucleus::neutron::Group> group;
 
-                        if (depot::Depot::Pull(subject.group(),
-                                               nucleus::proton::Version::Last,
-                                               group) == elle::Status::Error)
-                          escape("unable to pull the group block");
+                        group = depot::Depot::pull<nucleus::neutron::Group>(
+                          subject.group(), nucleus::proton::Version::Last);
 
                         // XXX[remove try/catch later]
                         try
@@ -168,7 +169,7 @@ namespace etoile
                                   subject,
                                   permissions,
                                   context.rights.key,
-                                  group.pass_K()) == elle::Status::Error)
+                                  group->pass_K()) == elle::Status::Error)
                               escape("unable to update the access");
                           }
                         catch (std::exception const& e)
@@ -212,12 +213,10 @@ namespace etoile
                   }
                 case nucleus::neutron::Subject::TypeGroup:
                   {
-                    nucleus::neutron::Group group;
+                    std::unique_ptr<nucleus::neutron::Group> group;
 
-                    if (depot::Depot::Pull(subject.group(),
-                                           nucleus::proton::Version::Last,
-                                           group) == elle::Status::Error)
-                      escape("unable to pull the group block");
+                    group = depot::Depot::pull<nucleus::neutron::Group>(
+                      subject.group(), nucleus::proton::Version::Last);
 
                     // XXX[remove try/catch later]
                     try
@@ -227,7 +226,7 @@ namespace etoile
                           new nucleus::neutron::Record(subject,
                                                        permissions,
                                                        context.rights.key,
-                                                       group.pass_K()));
+                                                       group->pass_K()));
                       }
                     catch (std::exception const& e)
                       {
@@ -255,9 +254,9 @@ namespace etoile
           // fingerprint has probably changed.
           //
           // for more information, please refer to the Object class.
-          if (context.object.Administrate(
-                context.object.attributes(),
-                context.object.owner_permissions()) == elle::Status::Error)
+          if (context.object->Administrate(
+                context.object->attributes(),
+                context.object->owner_permissions()) == elle::Status::Error)
             escape("unable to administrate the object");
         }
 
@@ -289,7 +288,7 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record const*& record)
     {
-      ELLE_LOG_TRACE_SCOPE("lookup(%s, %s)", context, subject);
+      ELLE_TRACE_SCOPE("lookup(%s, %s)", context, subject);
 
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -299,7 +298,7 @@ namespace etoile
           // the user's rights so that this is not to be done later.
           //
 
-          ELLE_LOG_TRACE("the target subject is the current user");
+          ELLE_TRACE("the target subject is the current user");
 
           // determine the user's rights on the object.
           if (Rights::Determine(context) == elle::Status::Error)
@@ -317,10 +316,10 @@ namespace etoile
           // otherwise, proceed normally.
           //
 
-          ELLE_LOG_TRACE("the target subject is _not_ the current user");
+          ELLE_TRACE("the target subject is _not_ the current user");
 
           // perform the lookup according to the subject.
-          if (subject == context.object.owner_subject())
+          if (subject == context.object->owner_subject())
             {
               //
               // if the target subject is the object owner, retrieve the
@@ -329,12 +328,12 @@ namespace etoile
               // automatically when the object was extracted.
               //
 
-              ELLE_LOG_TRACE("the target subject is the object owner");
+              ELLE_TRACE("the target subject is the object owner");
 
               // return the record.
-              record = &context.object.owner_record();
+              record = &context.object->owner_record();
 
-              ELLE_LOG_TRACE("Access lookup found record %p from "
+              ELLE_TRACE("Access lookup found record %p from "
                              "context.object.meta.owner", record);
             }
           else
@@ -344,7 +343,7 @@ namespace etoile
               // in look in it.
               //
 
-              ELLE_LOG_TRACE("the target subject is _not_ the object owner: "
+              ELLE_TRACE("the target subject is _not_ the object owner: "
                              "look in the Access block");
 
               // open the access.
@@ -384,7 +383,7 @@ namespace etoile
       if (index == 0)
         {
           // add the record to the range.
-          if (range.Add(&context.object.owner_record()) == elle::Status::Error)
+          if (range.Add(&context.object->owner_record()) == elle::Status::Error)
             escape("unable to add the owner record");
 
           // consult the access object by taking care of consulting one
@@ -425,15 +424,15 @@ namespace etoile
                "access permissions");
 
       // update the access block or object according to the subject.
-      if (subject == context.object.owner_subject())
+      if (subject == context.object->owner_subject())
         {
           //
           // in this case, the subject represents the object's owner.
           //
 
           // update the permissions.
-          if (context.object.Administrate(
-                context.object.attributes(),
+          if (context.object->Administrate(
+                context.object->attributes(),
                 nucleus::neutron::PermissionNone) == elle::Status::Error)
             escape("unable to administrate the object");
         }
@@ -456,9 +455,9 @@ namespace etoile
           // fingerprint has probably changed.
           //
           // for more information, please refer to the Object class.
-          if (context.object.Administrate(
-                context.object.attributes(),
-                context.object.owner_permissions()) == elle::Status::Error)
+          if (context.object->Administrate(
+                context.object->attributes(),
+                context.object->owner_permissions()) == elle::Status::Error)
             escape("unable to administrate the object");
         }
 
@@ -546,15 +545,13 @@ namespace etoile
                 // able to decrypt it since they have been distributed the
                 // private pass.
 
-                nucleus::neutron::Group group;
+                std::unique_ptr<nucleus::neutron::Group> group;
 
-                if (depot::Depot::Pull(record->subject.group(),
-                                       nucleus::proton::Version::Last,
-                                       group) == elle::Status::Error)
-                  escape("unable to pull the group block");
+                group = depot::Depot::pull<nucleus::neutron::Group>(
+                  record->subject.group(), nucleus::proton::Version::Last);
 
                 record->token =
-                  nucleus::neutron::Token(group.pass_K(), key);
+                  nucleus::neutron::Token(group->pass_K(), key);
 
                 break;
               }
@@ -574,18 +571,18 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      nucleus::neutron::Token token(context.object.owner_K(), key);
+      nucleus::neutron::Token token(context.object->owner_K(), key);
 
       // update the object with the new owner token.
       //
       // let us recall that the owner token is actually included in the
       // object's data section in order for authors to be able to re-generate
       // it.
-      if (context.object.Update(
-            context.object.author(),
-            context.object.contents(),
-            context.object.size(),
-            context.object.access(),
+      if (context.object->Update(
+            context.object->author(),
+            context.object->contents(),
+            context.object->size(),
+            context.object->access(),
             token) == elle::Status::Error)
         escape("unable to update the object");
 
@@ -640,11 +637,11 @@ namespace etoile
       context.access->state = nucleus::proton::StateDirty;
 
       // also update the owner's token.
-      if (context.object.Update(
-            context.object.author(),
-            context.object.contents(),
-            context.object.size(),
-            context.object.access(),
+      if (context.object->Update(
+            context.object->author(),
+            context.object->contents(),
+            context.object->size(),
+            context.object->access(),
             nucleus::neutron::Token::Null) == elle::Status::Error)
         escape("unable to update the object");
 
@@ -675,11 +672,11 @@ namespace etoile
                           gear::Object&                         context)
     {
       // if the block is present.
-      if (context.object.access() != nucleus::proton::Address::Null)
+      if (context.object->access() != nucleus::proton::Address::Null)
         {
           // mark the access block for removal.
-          if (context.transcript.Wipe(context.object.access()) ==
-              elle::Status::Error)
+          if (context.transcript.Wipe(
+                context.object->access()) == elle::Status::Error)
             escape("unable to mark the access block for removal");
         }
 
@@ -749,12 +746,12 @@ namespace etoile
             }
 
           // update the object with the null access address.
-          if (context.object.Update(
-                context.object.author(),
-                context.object.contents(),
-                context.object.size(),
+          if (context.object->Update(
+                context.object->author(),
+                context.object->contents(),
+                context.object->size(),
                 nucleus::proton::Address::Null,
-                context.object.owner_token()) == elle::Status::Error)
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
         }
       else
@@ -787,12 +784,12 @@ namespace etoile
           context.access->state = nucleus::proton::StateConsistent;
 
           // finally, update the object with the new access address.
-          if (context.object.Update(
-                context.object.author(),
-                context.object.contents(),
-                context.object.size(),
+          if (context.object->Update(
+                context.object->author(),
+                context.object->contents(),
+                context.object->size(),
                 address,
-                context.object.owner_token()) == elle::Status::Error)
+                context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.
@@ -824,7 +821,7 @@ namespace etoile
                                       const nucleus::neutron::Subject& subject)
     {
       // depending on the current author's role.
-      switch (context.object.author().role)
+      switch (context.object->author().role)
         {
         case nucleus::neutron::Object::RoleOwner:
           {
@@ -893,7 +890,7 @@ namespace etoile
         case nucleus::neutron::Object::RoleNone:
         default:
           {
-            escape("invalid role '%u'", context.object.author().role);
+            escape("invalid role '%u'", context.object->author().role);
           }
         }
 
@@ -918,12 +915,12 @@ namespace etoile
 
       // update the object with a new author. since the object gets updated,
       // it will be re-signed during the object's sealing process.
-      if (context.object.Update(
+      if (context.object->Update(
             author,
-            context.object.contents(),
-            context.object.size(),
-            context.object.access(),
-            context.object.owner_token()) == elle::Status::Error)
+            context.object->contents(),
+            context.object->size(),
+            context.object->access(),
+            context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
 
       return elle::Status::Ok;

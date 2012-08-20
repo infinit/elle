@@ -43,8 +43,8 @@ namespace elle
     void
     TCPSocket::send(const I inputs, infinit::protocol::Stream& channel)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
-      ELLE_LOG_TRACE_SCOPE("%s: send packet %s", *this, inputs.tag);
+      ELLE_LOG_COMPONENT("Infinit.Network");
+      ELLE_TRACE_SCOPE("%s: send packet %s", *this, inputs.tag);
 
       Data body;
       body.Writer() << inputs;
@@ -68,8 +68,8 @@ namespace elle
     Status
     TCPSocket::receive(infinit::protocol::Stream& channel, O outputs)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
-      ELLE_LOG_TRACE_SCOPE("%s: wait for answer.", *this);
+      ELLE_LOG_COMPONENT("Infinit.Network");
+      ELLE_TRACE_SCOPE("%s: wait for answer.", *this);
 
       infinit::protocol::Packet packet(channel.read());
       Parcel* parcel = _read_parcel(packet);
@@ -108,7 +108,7 @@ namespace elle
 
       try
         {
-          ELLE_LOG_TRACE("%s: reading data parcel of size %u",
+          ELLE_TRACE("%s: reading data parcel of size %u",
                          *this, parcel->data->Size());
           parcel->data->Reader() >> outputs;
           delete parcel;
@@ -130,12 +130,12 @@ namespace elle
     Status              TCPSocket::Call(const I                 inputs,
                                         O                       outputs)
     {
-      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+      ELLE_LOG_COMPONENT("Infinit.Network");
 
       infinit::protocol::Channel channel(*_channels);
 
       // Send the inputs.
-      ELLE_LOG_TRACE("%s: call tag %s and await tag %s",
+      ELLE_TRACE("%s: call tag %s and await tag %s",
                      *this, inputs.tag, outputs.tag)
         {
           this->send(inputs, channel);

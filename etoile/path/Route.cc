@@ -311,5 +311,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    std::ostream&
+    operator << (std::ostream& stream, Route const& r)
+    {
+      for (auto elt: r.elements)
+        stream << elt << "/";
+      return stream;
+    }
   }
 }

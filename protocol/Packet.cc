@@ -87,7 +87,7 @@ namespace infinit
                   assert(_packet._data);
                   return elle::Buffer(_packet._data, _packet._data_size);
                 }
-            case Mode::write:
+            default:
               std::abort();
           }
       }
@@ -120,7 +120,7 @@ namespace infinit
 
     Packet::~Packet()
     {
-      delete [] _data;
+      free(_data);
     }
 
     /*-----------.
@@ -139,9 +139,12 @@ namespace infinit
 
     Packet::Packet(elle::Size data_size)
       : elle::IOStream(_streambuffer = new StreamBuffer(*this))
-      , _data(new Byte[data_size])
+      , _data(reinterpret_cast<Byte*>(malloc(data_size)))
       , _data_size(data_size)
-    {}
+    {
+      if (!_data)
+        throw std::bad_alloc();
+    }
 
     /*----------------.
     | Pretty printing |

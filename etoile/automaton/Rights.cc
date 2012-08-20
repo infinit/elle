@@ -17,7 +17,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("infinit.etoile.automaton.Rights");
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Rights");
 
 namespace etoile
 {
@@ -34,44 +34,43 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      ELLE_LOG_TRACE_SCOPE("determine the user's rights over the "
+      ELLE_TRACE_SCOPE("determine the user's rights over the "
                            "object context");
 
       if (context.rights.role != nucleus::neutron::Object::RoleUnknown)
         {
-          ELLE_LOG_TRACE("rights have already been determined")
-
+          ELLE_TRACE("rights have already been determined")
           return elle::Status::Ok;
         }
 
       // determine the rights according to the subject.
-      if (agent::Agent::Subject == context.object.owner_subject())
+      if (agent::Agent::Subject == context.object->owner_subject())
         {
           //
           // if the user is the object's owner, retrieve the user's
           // permissions, token etc. from the object's meta section.
           //
 
-          ELLE_LOG_TRACE("the user is the object owner");
+          ELLE_TRACE("the user is the object owner");
 
           // set the role.
           context.rights.role = nucleus::neutron::Object::RoleOwner;
 
           // set the permissions.
-          context.rights.permissions = context.object.owner_permissions();
+          context.rights.permissions = context.object->owner_permissions();
 
           // if a token is present, decrypt it.
-          if (context.object.owner_token() != nucleus::neutron::Token::Null)
+          if (context.object->owner_token() != nucleus::neutron::Token::Null)
             {
               // extract the secret key from the token.
-              if (context.object.owner_token().Extract(
+              if (context.object->owner_token().Extract(
                     agent::Agent::Identity.pair.k,
                     context.rights.key) == elle::Status::Error)
                 escape("unable to extract the secret key from the token");
             }
 
           // set the record for ease purpose.
-          context.rights.record = context.object.owner_record();
+          context.rights.record = context.object->owner_record();
         }
       else
         {
@@ -81,7 +80,7 @@ namespace etoile
           // associated with the subject.
           //
 
-          ELLE_LOG_TRACE("the user is _not_ the object owner");
+          ELLE_TRACE("the user is _not_ the object owner");
 
           // open the access.
           if (Access::Open(context) == elle::Status::Error)
@@ -96,7 +95,7 @@ namespace etoile
               //
               nucleus::neutron::Record* record;
 
-              ELLE_LOG_TRACE("the subject seems to be present in "
+              ELLE_TRACE("the subject seems to be present in "
                              "the Access block");
 
               // retrieve the record associated with this subject.
@@ -131,7 +130,7 @@ namespace etoile
               // a token.
               //
 
-              ELLE_LOG_TRACE("the subject does _not_ seem to be present "
+              ELLE_TRACE("the subject does _not_ seem to be present "
                              "in the Access block: look in the groups");
 
               // Go through the Access records in order to explore the groups
@@ -140,21 +139,20 @@ namespace etoile
                 {
                   if (record->subject.type() == nucleus::neutron::Subject::TypeGroup)
                     {
-                      nucleus::neutron::Group group;
+                      std::unique_ptr<nucleus::neutron::Group> group;
 
-                      ELLE_LOG_TRACE_SCOPE("looking at the group '%s'",
+                      ELLE_TRACE_SCOPE("looking at the group '%s'",
                                            record->subject.group());
 
                       // Retrieve the group block.
-                      if (depot::Depot::Pull(record->subject.group(),
-                                             nucleus::proton::Version::Last,
-                                             group) == elle::Status::Error)
-                        escape("unable to pull the group block");
+                      group = depot::Depot::pull<nucleus::neutron::Group>(
+                        record->subject.group(),
+                        nucleus::proton::Version::Last);
 
                       // Check if the subject is actually the group manager.
-                      if (agent::Agent::Subject == group.manager_subject())
+                      if (agent::Agent::Subject == group->manager_subject())
                         {
-                          ELLE_LOG_TRACE("the subject is the manager of "
+                          ELLE_TRACE("the subject is the manager of "
                                          "the group '%s'",
                                          record->subject.group());
 
@@ -163,7 +161,7 @@ namespace etoile
 
                           // Compute a token with the appropriate information taken
                           // from the group and the access record.
-                          nucleus::neutron::Record r(group.manager_subject(),
+                          nucleus::neutron::Record r(group->manager_subject(),
                                                      record->permissions,
                                                      record->token);
                           context.rights.record = r;
@@ -176,15 +174,15 @@ namespace etoile
                             {
                               elle::cryptography::PrivateKey pass_k;
 
-                              ELLE_LOG_TRACE("the access token is present");
+                              ELLE_TRACE("the access token is present");
 
-                              ELLE_LOG_TRACE("decrypting the private pass");
+                              ELLE_TRACE("decrypting the private pass");
 
                               // XXX[remove try/catch in the future]
                               try
                                 {
                                   nucleus::neutron::Token token =
-                                    group.manager_token();
+                                    group->manager_token();
 
                                   // First, extract the private pass from the
                                   // manager's fellow.
@@ -197,7 +195,7 @@ namespace etoile
                                   escape("%s", e.what());
                                 }
 
-                              ELLE_LOG_TRACE("decrypting the access token");
+                              ELLE_TRACE("decrypting the access token");
 
                               // With the private pass, one can decrypt the
                               // access token associated with the group.
@@ -208,7 +206,7 @@ namespace etoile
                             }
                           else
                             {
-                              ELLE_LOG_TRACE("the access token is _not_ present");
+                              ELLE_TRACE("the access token is _not_ present");
                             }
                         }
                       else
@@ -217,25 +215,24 @@ namespace etoile
                           // therefore look in the group's ensemble so as to locate the
                           // subject's fellow entry.
 
-                          ELLE_LOG_TRACE("the subject is _not_ the group manager");
+                          ELLE_TRACE("the subject is _not_ the group manager");
 
-                          if (group.ensemble() != nucleus::proton::Address::Null)
+                          if (group->ensemble() != nucleus::proton::Address::Null)
                             {
-                              nucleus::neutron::Ensemble ensemble;
+                              std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
 
-                              ELLE_LOG_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
+                              ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
 
                               // Retrieve the ensemble which contains the list of
                               // the subjects belonging to the group.
-                              if (depot::Depot::Pull(group.ensemble(),
-                                                     nucleus::proton::Version::Any,
-                                                     ensemble) == elle::Status::Error)
-                                escape("unable to pull the group block");
+                              ensemble = depot::Depot::pull<nucleus::neutron::Ensemble>(
+                                group->ensemble(),
+                                nucleus::proton::Version::Any);
 
                               // Look for the user's subject in the ensemble.
-                              if (ensemble.exists(agent::Agent::Subject) == false)
+                              if (ensemble->exists(agent::Agent::Subject) == false)
                                 {
-                                  ELLE_LOG_TRACE("the subject does not exist in the ensemble");
+                                  ELLE_TRACE("the subject does not exist in the ensemble");
                                   continue;
                                 }
 
@@ -243,7 +240,7 @@ namespace etoile
                               try
                                 {
                                   nucleus::neutron::Fellow const& fellow =
-                                    ensemble.locate(agent::Agent::Subject);
+                                    ensemble->locate(agent::Agent::Subject);
 
                                   context.rights.role =
                                     nucleus::neutron::Object::RoleVassal;
@@ -267,9 +264,9 @@ namespace etoile
                                     {
                                       elle::cryptography::PrivateKey pass_k;
 
-                                      ELLE_LOG_TRACE("the access token is present");
+                                      ELLE_TRACE("the access token is present");
 
-                                      ELLE_LOG_TRACE("decrypting the private pass");
+                                      ELLE_TRACE("decrypting the private pass");
 
                                       nucleus::neutron::Token token = fellow.token();
 
@@ -288,7 +285,7 @@ namespace etoile
                                     }
                                   else
                                     {
-                                      ELLE_LOG_TRACE("the access token is _not_ present");
+                                      ELLE_TRACE("the access token is _not_ present");
                                     }
                                 }
                               catch (std::exception const& e)
@@ -298,7 +295,7 @@ namespace etoile
                             }
                           else
                             {
-                              ELLE_LOG_TRACE("the Ensemble block is _not_ present: skip this group");
+                              ELLE_TRACE("the Ensemble block is _not_ present: skip this group");
                             }
                         }
                     }
@@ -309,14 +306,14 @@ namespace etoile
               // the object.
               if (context.rights.role == nucleus::neutron::Object::RoleUnknown)
                 {
-                  ELLE_LOG_TRACE("the user has no rights over the object");
+                  ELLE_TRACE("the user has no rights over the object");
 
                   context.rights.role = nucleus::neutron::Object::RoleNone;
                   context.rights.permissions = nucleus::neutron::PermissionNone;
                 }
               else
                 {
-                  ELLE_LOG_TRACE("the user plays the role of %s and has "
+                  ELLE_TRACE("the user plays the role of %s and has "
                                  "the %s permissions over the object",
                                  context.rights.role, context.rights.permissions);
                 }
@@ -348,11 +345,11 @@ namespace etoile
     elle::Status
     Rights::Determine(gear::Group& context)
     {
-      ELLE_LOG_TRACE_SCOPE("determine the user's rights over the group context");
+      ELLE_TRACE_SCOPE("determine the user's rights over the group context");
 
       if (context.rights.role != nucleus::neutron::Group::RoleUnknown)
         {
-          ELLE_LOG_TRACE("rights have already been determined")
+          ELLE_TRACE("rights have already been determined")
 
           return elle::Status::Ok;
         }
@@ -365,7 +362,7 @@ namespace etoile
           // token.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the user is the group manager");
+          ELLE_TRACE_SCOPE("the user is the group manager");
 
           context.rights.role = nucleus::neutron::Group::RoleManager;
         }
@@ -375,7 +372,7 @@ namespace etoile
           // if the user is not the manager, leave the role as unknown.
           //
 
-          ELLE_LOG_TRACE_SCOPE("the user is _not_ the group manager");
+          ELLE_TRACE_SCOPE("the user is _not_ the group manager");
 
           context.rights.role = nucleus::neutron::Group::RoleNone;
         }

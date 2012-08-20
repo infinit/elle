@@ -1,7 +1,7 @@
 #ifndef  ELLE_FORMAT_JSON_NULL_HH
 # define ELLE_FORMAT_JSON_NULL_HH
 
-# include "Object.hh"
+# include <elle/format/json/Object.hh>
 
 namespace elle
 {
@@ -9,7 +9,6 @@ namespace elle
   {
     namespace json
     {
-
       class Null:
         public Object
       {
@@ -38,9 +37,8 @@ namespace elle
       };
 
       extern Null const null;
-
     }
   }
-} // !namespace elle::format::json
+}
 
 #endif

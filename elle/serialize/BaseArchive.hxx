@@ -116,8 +116,8 @@ namespace elle
     //  >::type
     //  BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
     //  {
-    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
-    //    ELLE_LOG_TRACE(
+    //    ELLE_LOG_COMPONENT("elle.serialize");
+    //    ELLE_TRACE(
     //        "Saving %p from its virtual type %s",
     //        this, ELLE_PRETTY_OBJECT_TYPE(this)
     //    ) static_cast<
@@ -164,8 +164,8 @@ namespace elle
     //  >::type
     //  BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
     //  {
-    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
-    //    ELLE_LOG_TRACE(
+    //    ELLE_LOG_COMPONENT("elle.serialize");
+    //    ELLE_TRACE(
     //        "Loading %p from its virtual type %s",
     //        this, ELLE_PRETTY_OBJECT_TYPE(this)
     //    ) static_cast<
@@ -186,11 +186,10 @@ namespace elle
         //if (StoreClassVersion<T>::value == true)
         //  Access::Load(this->self(), classVersion);
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
-        ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-        ELLE_LOG_TRACE(
-            "Load construct %p with its concrete type %s",
-            this, ELLE_PRETTY_TYPE(T)
-        ) Serializer::LoadConstruct(this->self(), ptr);
+        ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+        ELLE_TRACE("Load construct %p with its concrete type %s",
+                   this, ELLE_PRETTY_TYPE(T)
+          ) Serializer::LoadConstruct(this->self(), ptr);
       }
 
     //-------------------------------------------------------------------------
@@ -199,8 +198,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int16_t val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving int16_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving int16_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -220,8 +219,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int16_t& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Loading int16_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Loading int16_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -242,8 +241,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int32_t val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving int32_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving int32_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -266,8 +265,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int32_t& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Loading int32_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Loading int32_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -291,8 +290,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int64_t val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving int64_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving int64_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -319,8 +318,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int64_t& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinig.elle.serialize");
-          ELLE_LOG_TRACE("Loading int64_t '%s'", val);
+          ELLE_LOG_COMPONENT("infinig.elle.serialize");
+          ELLE_TRACE("Loading int64_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -348,8 +347,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(float val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving float '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving float '%s'", val);
 
           static_assert(sizeof(val) == 4, "float size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -362,8 +361,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(float& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Loading float '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Loading float '%s'", val);
 
           static_assert(sizeof(val) == 4, "float size is not standard");
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -376,8 +375,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(double val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving double '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving double '%s'", val);
 
           static_assert(sizeof(val) == 8, "double size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -390,8 +389,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(double& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Loading double '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Loading double '%s'", val);
 
           static_assert(sizeof(val) == 8, "double size is not standard");
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -404,8 +403,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(std::string const& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Saving string '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Saving string '%s'", val);
 
           typedef typename Archive::StringSizeType SizeType;
           static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
@@ -423,8 +422,8 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(std::string& val)
         {
-          ELLE_LOG_TRACE_COMPONENT("infinit.elle.serialize.BaseArchive");
-          ELLE_LOG_TRACE("Loading string '%s'", val);
+          ELLE_LOG_COMPONENT("infinit.elle.serialize.BaseArchive");
+          ELLE_TRACE("Loading string '%s'", val);
 
           typedef typename Archive::StringSizeType SizeType;
           static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
@@ -501,6 +500,7 @@ namespace elle
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::SaveBinary(void const* data, std::streamsize size)
         {
+          // std::cerr << "REGION SERIALIZED: " << data << " (" << size << ")" << std::endl;
           this->stream().write(static_cast<char const*>(data), size);
         }
 

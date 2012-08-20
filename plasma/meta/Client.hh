@@ -144,8 +144,7 @@ namespace plasma
     public:
       Client(std::string const& server,
              uint16_t port,
-             bool check_errors = true,
-             elle::log::Logger& log = elle::log::default_logger);
+             bool check_errors = true);
       ~Client();
 
     public:

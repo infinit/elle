@@ -6,6 +6,7 @@
 # endif
 
 # include <elle/types.hh>
+# include <elle/system/Platform.hh>
 
 # include <elle/idiom/Close.hh>
 #  define _GNU_SOURCE
@@ -44,7 +45,7 @@ namespace horizon
       // static methods
       //
       static elle::Status       Initialize();
-      static elle::Status       Run();
+      static void run();
       static void*              Setup(void*);
       static elle::Status       Clean();
 

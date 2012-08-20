@@ -1,3 +1,4 @@
+#include <horizon/linux/Crux.hh>
 #include <horizon/linux/FUker.hh>
 #include <horizon/linux/FUSE.hh>
 #include <horizon/operations.hh>
@@ -27,7 +28,7 @@
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.FUSE");
+ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
 namespace horizon
 {
@@ -69,8 +70,12 @@ namespace horizon
 #define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
     , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
 
-#define INFINIT_FUSE_EFFECTIVE(R, Data, I, Elem)        \
-    , BOOST_PP_CAT(a, I)
+#define INFINIT_FUSE_EFFECTIVE_(R, Data, I, Elem)       \
+    , BOOST_PP_CAT(a, BOOST_PP_INC(I))
+
+#define INFINIT_FUSE_EFFECTIVE(Args)                            \
+    a0 BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE_, _,      \
+                               BOOST_PP_SEQ_POP_FRONT(Args))    \
 
 #define INFINIT_FUSE_BOUNCER(Name, Args)                                \
     static int                                                          \
@@ -78,11 +83,19 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
+      int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));               \
+      ELLE_TRACE("%s returns: %s", BOOST_PP_STRINGIZE(Name), res);              \
+      return res;                                                       \
+    }                                                                   \
+                                                                        \
+    static int                                                          \
+    BOOST_PP_CAT(Name, _mt)(BOOST_PP_SEQ_HEAD(Args) a0                  \
+         BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
+                                 BOOST_PP_SEQ_POP_FRONT(Args)))         \
+    {                                                                   \
       return elle::concurrency::scheduler().mt_run<int>                 \
         (BOOST_PP_STRINGIZE(Name),                                      \
-         boost::bind(FUSE::Operations.Name                              \
-                     BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \
-                                             _, Args)));                \
+         boost::bind(Name, INFINIT_FUSE_EFFECTIVE(Args)));              \
     }                                                                   \
 
 #define INFINIT_FUSE_BOUNCER_(R, Data, Elem)                            \
@@ -118,7 +131,6 @@ namespace horizon
       const char*       arguments[] =
         {
           "horizon",
-          "-s",
 
           // XXX
           "-s",
@@ -180,7 +192,7 @@ namespace horizon
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
         // Fill fuse functions array.
-#define INFINIT_FUSE_LINK(Name) operations.Name = Name
+#define INFINIT_FUSE_LINK(Name) operations.Name = BOOST_PP_CAT(Name, _mt)
 #define INFINIT_FUSE_LINK_(R, Data, Elem)                       \
         INFINIT_FUSE_LINK(BOOST_PP_TUPLE_ELEM(2, 0, Elem));
         BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_LINK_, _, INFINIT_FUSE_COMMANDS)
@@ -236,15 +248,9 @@ namespace horizon
       return (nullptr);
     }
 
-    ///
-    /// XXX[to replace by the new signal mechanism]
-    ///
-    elle::Status        FUker::Run()
+    void
+    FUker::run()
     {
-      // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
-        escape("unable to create the FUSE-specific thread");
-
       // XXX[race conditions exist here:
       //     1) the FUSE thread calls Program::Exit() before our event loop
       //        is entered.
@@ -252,8 +258,9 @@ namespace horizon
       //        is a bad idea since teardown() could have been called, still
       //        the pointer would not be nullptr. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
-
-      return elle::Status::Ok;
+      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to create the FUSE-specific thread");
     }
 
     ///
@@ -263,22 +270,16 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // XXX[to replace by the new signal mechanism]
       switch (hole::Hole::state)
         {
         case hole::Hole::StateOffline:
           {
-            if (hole::Hole::ready.Subscribe(
-                  elle::concurrency::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
-              escape("unable to subscribe to the signal");
-
+            hole::Hole::readyHook(&FUker::run);
             break;
           }
         case hole::Hole::StateOnline:
           {
-            if (FUker::Run() == elle::Status::Error)
-              escape("unable to run the FUker thread");
-
+            FUker::run();
             break;
           }
         }

@@ -6,156 +6,90 @@ namespace elle
 {
   namespace log
   {
-
-    namespace
+    void
+    Logger::message(Level level,
+                    elle::log::Logger::Type type,
+                    std::string const& msg)
     {
+      this->_message(level, type, msg);
+    }
 
-      size_t const max_level_idx = static_cast<size_t>(Logger::Level::_max_value);
+#define ELLE_LOG_LEVEL_MESSAGE(Lvl)                     \
+    void                                                \
+    Logger::Lvl(std::string const& msg)                 \
+    {                                                   \
+    return this->message(Logger::Level::Lvl,            \
+                         Logger::Type::info,            \
+                         msg);                          \
+    }                                                   \
 
-      std::string const level_strings[max_level_idx] = {
-          "[ TRACE ]",
-          "[ DEBUG ]",
-          "[ INFO  ]",
-          "[WARNING]",
-          "[ ERROR ]",
-          "[ FATAL ]",
-      };
-
-      struct OutStream
-      {
-        std::ostream* out;
-        bool          owned;
-        OutStream(std::ostream* out, bool owned) : out(out), owned(owned) {}
-        OutStream(OutStream&& other) : out(other.out), owned(other.owned)
-        {
-          other.out = nullptr;
-          other.owned = false;
-        }
-        OutStream& operator =(OutStream&& other)
-        {
-          if (this != &other)
-            {
-              if (this->owned)
-                {
-                  delete this->out;
-                  this->out = nullptr;
-                }
-              this->out = other.out;
-              this->owned = other.owned;
-              other.out = nullptr;
-              other.owned = false;
-            }
-          return *this;
-        }
-        ~OutStream()
-        {
-          if (this->owned)
-            {
-              delete this->out;
-              this->out = nullptr;
-            }
-        }
-      };
-
-    } // !anonymous
-
-    struct Logger::Impl
-    {
-      Level       level;
-      std::string name;
-      OutStream   streams[max_level_idx];
-      Impl(Level level, std::string const& name)
-        : level(level)
-        , name(name)
-        , streams({
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-            })
-      {}
-    };
+    ELLE_LOG_LEVEL_MESSAGE(log);
+    ELLE_LOG_LEVEL_MESSAGE(trace);
+    ELLE_LOG_LEVEL_MESSAGE(debug);
+    ELLE_LOG_LEVEL_MESSAGE(dump);
+#undef ELLE_LOG_LEVEL_MESSAGE
 
     Logger::Logger(Logger::Level level, std::string const& name)
-      : _impl(nullptr)
-    {
-        this->_impl = new Impl{
-            level,
-            name,
-        };
-    }
+      : _level(level)
+      , _name(name)
+    {}
 
     Logger::~Logger()
+    {}
+
+    void
+    Logger::_message(Level level,
+                     elle::log::Logger::Type type,
+                     std::string const& message)
     {
-      delete this->_impl;
-      this->_impl = nullptr;
+      switch (type)
+        {
+          case Type::info:
+            break;
+          case Type::warning:
+            // Yellow
+            std::cerr << "[33;01;33m";
+            break;
+          case Type::error:
+            // Red
+            std::cerr << "[33;01;31m";
+        }
+      if (level <= _level)
+        std::cerr << message << std::endl;
+      switch (type)
+        {
+          case Type::info:
+            break;
+          case Type::warning:
+          case Type::error:
+            std::cerr << "[0m";
+            break;
+        }
+    }
+
+    std::string const&
+    Logger::name() const
+    {
+      return this->_name;
     }
 
     void
-      Logger::_message(Level level, std::string const& message)
-      {
-        if (level < this->_impl->level)
-          return;
-        size_t idx = static_cast<size_t>(level);
-        assert(idx < max_level_idx);
-        std::ostream* out = this->_impl->streams[idx].out;
-        assert(out != nullptr);
-        (*out) << level_strings[idx] << ' ' << message << std::endl;
-      }
-
-    void
-      Logger::stream(Level level, std::ostream& out)
-      {
-        size_t idx = static_cast<size_t>(level);
-        assert(idx < max_level_idx);
-        this->_impl->streams[idx] = OutStream{&out, false};
-      }
-
-    void
-      Logger::stream(Level level, std::unique_ptr<std::ostream>&& out)
-      {
-        assert(out.get() != nullptr && "Shouldn't set a null out stream");
-        size_t idx = static_cast<size_t>(level);
-        assert(idx < max_level_idx);
-        OutStream old = std::move(this->_impl->streams[idx]);
-        this->_impl->streams[idx] = OutStream{out.get(), true};
-        out.release();
-        if (old.owned)
-          delete old.out;
-      }
-
-    void
-      Logger::stream(std::ostream& out)
-      {
-        for (size_t idx = 0; idx < max_level_idx; ++idx)
-          this->stream(static_cast<Level>(idx), out);
-      }
-
-    std::string const&
-      Logger::name() const
-      {
-        return this->_impl->name;
-      }
-
-    void
-      Logger::name(std::string const& name_)
-      {
-        this->_impl->name = name_;
-      }
+    Logger::name(std::string const& name_)
+    {
+      this->_name = name_;
+    }
 
     Logger::Level
-      Logger::level() const
-      {
-        return this->_impl->level;
-      }
+    Logger::level() const
+    {
+      return this->_level;
+    }
 
     void
-      Logger::level(Level level_)
-      {
-        this->_impl->level = level_;
-      }
+    Logger::level(Level level_)
+    {
+      this->_level = level_;
+    }
 
   }
 }

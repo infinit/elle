@@ -29,16 +29,17 @@ namespace hole
     virtual void                Join() = 0;
     virtual elle::Status        Leave() = 0;
 
-    virtual elle::Status        Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::ImmutableBlock&) = 0;
-    virtual elle::Status        Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::MutableBlock&) = 0;
-    virtual elle::Status        Get(const nucleus::proton::Address&,
-                                    nucleus::proton::ImmutableBlock&) = 0;
-    virtual elle::Status        Get(const nucleus::proton::Address&,
-                                    const nucleus::proton::Version&,
-                                    nucleus::proton::MutableBlock&) = 0;
-    virtual elle::Status        Kill(const nucleus::proton::Address&) = 0;
+    virtual void
+    Put(const nucleus::proton::Address&,
+        const nucleus::proton::ImmutableBlock&) = 0;
+    virtual void
+    Put(const nucleus::proton::Address&,
+        const nucleus::proton::MutableBlock&) = 0;
+    virtual std::unique_ptr<nucleus::proton::Block>
+    Get(const nucleus::proton::Address&) = 0;
+    virtual std::unique_ptr<nucleus::proton::Block>
+    Get(const nucleus::proton::Address&, const nucleus::proton::Version&) = 0;
+    virtual void Kill(const nucleus::proton::Address&) = 0;
 
     //
     // interfaces

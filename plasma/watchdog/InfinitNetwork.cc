@@ -24,10 +24,12 @@
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
-#define LOG(...)                                                              \
-  elle::log::debug("InfinitNetwork::", __FUNCTION__,                          \
-                   "(id=", this->_description._id, "):", __VA_ARGS__)         \
+#define LOG(Fmt, ...)                                                   \
+  ELLE_DEBUG("InfinitNetwork::%s(id=%s): %s" Fmt,                       \
+             __FUNCTION__, this->_description._id, ##__VA_ARGS__);      \
   /**/
+
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 using namespace plasma::watchdog;
 
@@ -53,7 +55,7 @@ InfinitNetwork::~InfinitNetwork()
 {
   if (this->_process.state() != QProcess::NotRunning)
     {
-      elle::log::warn("Network ", this->_description.name, "not terminated !");
+      ELLE_WARN("Network %s not terminated !", this->_description.name);
     }
 }
 
@@ -69,17 +71,17 @@ std::string const& InfinitNetwork::id() const
 
 void InfinitNetwork::update(meta::NetworkResponse const& response)
 {
-  LOG("Updating network:", response._id);
+  LOG("Updating network: %s", response._id);
   this->_description = response;
   this->_update();
 }
 
 void InfinitNetwork::stop()
 {
-  elle::log::debug("Shutting down network", this->_description.name);
+  ELLE_DEBUG("Shutting down network %s", this->_description.name);
   this->_process.terminate();
   //this->_process.waitForFinished();
-  elle::log::debug("Done!");
+  ELLE_DEBUG("Done!");
 }
 
 void InfinitNetwork::_update()
@@ -103,7 +105,7 @@ void InfinitNetwork::_update()
         return this->_create_network_root_block();
       else
         {
-          LOG("Already has a nice descriptor:",
+          LOG("Already has a nice descriptor: %s",
               this->_description.descriptor);
           this->_prepare_directory();
         }
@@ -274,7 +276,7 @@ void InfinitNetwork::_register_device()
       throw std::runtime_error("Couldn't load the passport file :'(");
     }
 
-  LOG("search device for the passport id:", passport.id);
+  LOG("search device for the passport id: %s", passport.id);
   auto it = std::find(
       this->_description.devices.begin(),
       this->_description.devices.end(),
@@ -332,15 +334,14 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
        end = response.nodes.end();
   for (; it != end; ++it)
   {
-    LOG("\t * ", *it);
+    LOG("\t * %s", *it);
     elle::network::Locus locus;
 
     if (locus.Create(*it) == elle::Status::Error)
       throw std::runtime_error("Cannot create locus from string '" + *it + "'.");
     if (locusSet.Add(locus) == elle::Status::Error)
       {
-        LOG("Cannot add locus '", elle::iomanip::nosep, *it,
-            "' to the set (ignored).");
+        LOG("Cannot add locus '%s' to the set (ignored).", *it);
       }
   }
 
@@ -370,9 +371,8 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
 
 void InfinitNetwork::_on_any_error(plasma::meta::Error error, std::string const& err)
 {
-  LOG("Got error while creating the network '",
-      elle::iomanip::nosep, this->_description.name,
-      ": ", err, " (", (int)error, ").");
+  LOG("Got error while creating the network '%s': %s (%s)",
+      this->_description.name, err, (int)error);
 }
 
 void InfinitNetwork::_start_process()
@@ -393,16 +393,16 @@ void InfinitNetwork::_start_process()
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
-      LOG("Created mount point", home_mnt.path().toStdString());
+      LOG("Created mount point %s", home_mnt.path().toStdString());
       auto link_path = home_mnt.filePath(this->_description.name.c_str());
 #ifdef INFINIT_WINDOWS
       link_path += ".lnk";
 #endif
       if (!QFile(this->_mount_point.path()).link(link_path))
-        elle::log::debug("Cannot create links to mount points.");
+        ELLE_DEBUG("Cannot create links to mount points.");
     }
   else
-    elle::log::warn("Cannot create mount point directory.");
+    ELLE_WARN("Cannot create mount point directory.");
 
 
   this->connect(
@@ -420,12 +420,11 @@ void InfinitNetwork::_start_process()
       this, SLOT(_on_process_finished(int, QProcess::ExitStatus))
   );
 
-  LOG("exec:",
+  LOG("exec: %s -n %s -m %s -u %s",
       common::infinit::binary_path("8infinit"),
-      "-n", this->_description.name.c_str(),
-      "-m", this->_mount_point.path().toStdString(),
-      "-u", this->_manager.user().c_str()
-  );
+      this->_description.name.c_str(),
+      this->_mount_point.path().toStdString(),
+      this->_manager.user().c_str());
 
   QStringList arguments;
   arguments << "-n" << this->_description.name.c_str()
@@ -457,7 +456,7 @@ void InfinitNetwork::_on_process_error(QProcess::ProcessError)
 
 void InfinitNetwork::_on_process_finished(int exit_code, QProcess::ExitStatus)
 {
-  LOG("Process finished with exit code ", exit_code);
+  LOG("Process finished with exit code %s", exit_code);
   if (true || exit_code) // XXX
     {
       auto stdout = this->_process.readAllStandardOutput();
