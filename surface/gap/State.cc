@@ -137,7 +137,7 @@ namespace surface
       req["command"] = cmd;
       if (kwargs != nullptr)
         req.update(*kwargs);
-      ELLE_DEBUG("Send watchdog command:", req.repr());
+      ELLE_DEBUG("Send watchdog command: %s", req.repr());
       conn.write(req.repr().c_str());
       conn.write("\n");
       if (!conn.waitForBytesWritten(2000))
@@ -420,7 +420,7 @@ namespace surface
                 << "--network" << network->name.c_str()
                 << "--identity" << this->user(user_id).public_key.c_str()
                 ;
-      ELLE_DEBUG("LAUNCH:",
+      ELLE_DEBUG("LAUNCH: %s %s",
                       group_binary,
                       arguments.join(" ").toStdString());
       QProcess p;

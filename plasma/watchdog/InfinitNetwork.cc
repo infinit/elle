@@ -24,9 +24,9 @@
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
-#define LOG(Fmt, ...)                                                   \
-  ELLE_DEBUG("InfinitNetwork::%s(id=%s): %s" Fmt,                       \
-             __FUNCTION__, this->_description._id, ##__VA_ARGS__);      \
+#define LOG(Fmt, ...)                                                         \
+  ELLE_DEBUG("InfinitNetwork::%s(id=%s): " Fmt,                               \
+             __FUNCTION__, this->_description._id, ##__VA_ARGS__);            \
   /**/
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
@@ -285,7 +285,7 @@ void InfinitNetwork::_register_device()
 
   if (it == this->_description.devices.end())
     {
-      LOG("Registering devices for network", this->_description.name);
+      LOG("Registering devices for network %s", this->_description.name);
       for (auto const& dev : this->_description.devices)
         {
           LOG("\t-", dev);
@@ -363,8 +363,8 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
       );
     }
   this->_description = this->_manager.meta().network(this->_description._id);
-  LOG("Got descriptor for", this->_description.name,
-      "(", this->_description._id, ") :", this->_description.descriptor);
+  LOG("Got descriptor for %s (%s): %s", this->_description.name,
+      this->_description._id, this->_description.descriptor);
 
   this->_prepare_directory();
 }
