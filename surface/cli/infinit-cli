@@ -108,7 +108,7 @@ class InfinitShell(cmd.Cmd):
         try:
             return parser.parse_args(line.strip().split())
         except Exception as e:
-            print(e.msg.strip())
+            print(str(e).strip())
 
     ###########################################################################
     # Retreive networks.
