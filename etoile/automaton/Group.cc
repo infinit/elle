@@ -128,6 +128,7 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
+              assert(context.ensemble);
               context.ensemble->add(
                 std::move(std::unique_ptr<nucleus::neutron::Fellow>(
                   new nucleus::neutron::Fellow(subject))));
