@@ -63,7 +63,7 @@ int Application::exec()
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);
-  ELLE_DEBUG("New watchdog id: %s");
+  ELLE_DEBUG("New watchdog id: %s", watchdogId);
 
   // Saving watchdog id
   {
