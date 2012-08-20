@@ -13,7 +13,7 @@
 #include "Parser.hh"
 #include "String.hh"
 
-ELLE_LOG_COMPONENT("infinit.elle.format.json.Parser");
+ELLE_LOG_COMPONENT("elle.format.json.Parser");
 
 namespace elle
 {
