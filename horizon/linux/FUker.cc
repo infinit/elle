@@ -83,9 +83,32 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
-      int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));               \
-      ELLE_TRACE("%s returns: %s", BOOST_PP_STRINGIZE(Name), res);              \
-      return res;                                                       \
+      try                                                               \
+        {                                                               \
+          int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));           \
+          ELLE_TRACE("%s returns: %s",                                  \
+                     BOOST_PP_STRINGIZE(Name), res);                    \
+          return res;                                                   \
+        }                                                               \
+      catch (reactor::Exception const& e)                               \
+        {                                                               \
+          ELLE_ERR("%s killed by exception: %s",                        \
+                   BOOST_PP_STRINGIZE(Name), e.what());                 \
+          /* FIXME: show backtrace */                                   \
+          return -EIO;                                                  \
+        }                                                               \
+      catch (std::exception const& e)                                   \
+        {                                                               \
+          ELLE_ERR("%s killed by exception: %s",                        \
+                   BOOST_PP_STRINGIZE(Name), e.what());                 \
+          return -EIO;                                                  \
+        }                                                               \
+      catch (...)                                                       \
+        {                                                               \
+          ELLE_ERR("%s killed by unknown exception",                    \
+                   BOOST_PP_STRINGIZE(Name));                           \
+          return -EIO;                                                  \
+        }                                                               \
     }                                                                   \
                                                                         \
     static int                                                          \
