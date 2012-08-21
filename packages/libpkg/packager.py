@@ -110,6 +110,7 @@ class Packager:
                 assert res is not None
                 assert isinstance(res, str)
                 path = os.path.join(dest_dir, res)
+                print("Path =", path)
                 assert os.path.isfile(path)
                 packages.append(Package(
                     kind=self.name,

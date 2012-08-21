@@ -14,6 +14,8 @@ class Build:
     @property
     def infos(self): return self._infos
 
+    def info(self, name): return self.infos[name]
+
     ##
     ## Generic methods
     ##

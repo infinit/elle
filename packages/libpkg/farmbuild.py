@@ -64,28 +64,43 @@ class FarmBuild(Build):
             self._release_dir = None
             self._dir = None
 
+
+        def _downloadTarball(self, dl, target,
+                             print_status=True,
+                             chunck_size=4096 * 4):
+            size = 0
+            with open(target, 'wb') as f:
+                while True:
+                    data = dl.read(chunk_size)
+                    if not data:
+                        break
+                    size += len(data)
+                    if print_status:
+                        print(
+                            '\r - %s: %.2f' % (
+                                self._tarball, float(size) / (1024.0 * 1024.0)
+                            ), 'MB', end=''
+                        )
+                    sys.stdout.flush()
+                    f.write(data)
+            print()
+
         def prepare(self):
             if self._dir is not None:
                 return
             self._dir = self.makeTemporaryDirectory()
             dl = farm.downloadTarball(self._tarball)
-            t = os.path.join(self._dir, self._tarball)
+            if self.build.info('download_dir') is not None:
+                target = os.path.join(self.build.info('download_dir'),
+                                      self._tarball)
+            else:
+                target = os.path.join(self._dir, self._tarball)
 
-            size = 0
-            with open(t, 'wb') as f:
-                while True:
-                    data = dl.read(4096 * 4)
-                    if not data:
-                        break
-                    size += len(data)
-                    print('\r - %s: %.2f' % (self._tarball, float(size) / (1024.0 * 1024.0)), 'MB', end='')
-                    sys.stdout.flush()
-                    f.write(data)
-            print()
-
+            if not os.path.exists(target):
+                self._downloadTarball(dl, target)
 
             print(' -', self._tarball + ": extracting")
-            archive = tarfile.open(t)
+            archive = tarfile.open(target)
             try:
                 archive.extractall(self._dir)
             finally:
@@ -96,6 +111,7 @@ class FarmBuild(Build):
         def cleanup(self):
             if self._dir is not None:
                 self.removeDirectory(self._dir)
+                self._dir = None
 
         @property
         def is_client(self):

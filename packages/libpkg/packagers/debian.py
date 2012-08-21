@@ -12,14 +12,14 @@ class Packager(BasePackager):
     """Debian packager.
     """
     _control_template = """
-Package: infinit
-Version: 1.0
+Package: infinit-%(version_name)s
+Version: %(version)s
 Section: otherosfs
 Priority: optional
 Architecture: %(architecture)s
 Installed-Size: %(installed_size)d
 Essential: no
-Depends: libfuse2
+Depends: libfuse2, python3
 Maintainer: Infinit.io <debian@infinit.io>
 Description: Provide a secure, distributed and cross-platform filesystem.
 """

@@ -22,6 +22,15 @@ parser.add_argument(
     action='store_true',
     default=False
 )
+
+parser.add_argument(
+    '--download-dir', '-D',
+    help="Keep (and use) downloaded builds in this directory",
+    action="store",
+    type=str,
+    default=None,
+)
+
 parser.add_argument(
     '--print',
     help="Only print matching releases",
@@ -193,6 +202,7 @@ def getFarmBuild(infos, args):
     if not to_install:
         sys.exit(not args.print and 1 or 0)
 
+    infos['download_dir'] = args.download_dir
     return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
 def preparePackages(args, build, packagers, build_client, build_server):
