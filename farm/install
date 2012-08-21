@@ -33,7 +33,8 @@ for d in [DIR_SOURCE, DIR_BUILD]:
         fatal(d, "is not a directory")
 
 name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8").strip()
-rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8").strip()
+rev = cmd("cd '%s' && git rev-parse --short HEAD" % DIR_SOURCE, shell=True).decode("utf-8").strip()
+
 version = name.split("-")[0]
 major = version.split(".")[0]
 minor = version.split(".")[1]
