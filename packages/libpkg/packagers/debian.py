@@ -19,7 +19,7 @@ Priority: optional
 Architecture: %(architecture)s
 Installed-Size: %(installed_size)d
 Essential: no
-Depends: libfuse2, python3
+Depends: libfuse2, python3, libpython3.2
 Maintainer: Infinit.io <debian@infinit.io>
 Description: Provide a secure, distributed and cross-platform filesystem.
 """
