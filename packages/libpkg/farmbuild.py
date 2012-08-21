@@ -67,7 +67,7 @@ class FarmBuild(Build):
 
         def _downloadTarball(self, dl, target,
                              print_status=True,
-                             chunck_size=4096 * 4):
+                             chunk_size=4096 * 4):
             size = 0
             with open(target, 'wb') as f:
                 while True:
