@@ -45,14 +45,11 @@ Description: Provide a secure, distributed and cross-platform filesystem.
             os.mkdir(pkgdir)
             infinit_dir = os.path.join(pkgdir, 'opt/infinit')
 
-            shutil.copytree(
-                os.path.join(build_env.directory, 'bin'),
-                os.path.join(infinit_dir, 'bin')
-            )
-            shutil.copytree(
-                os.path.join(build_env.directory, 'lib'),
-                os.path.join(infinit_dir, 'lib')
-            )
+            for dir_ in ['lib', 'bin', 'python']:
+                shutil.copytree(
+                    os.path.join(build_env.directory, dir_),
+                    os.path.join(infinit_dir, dir_)
+                )
 
             debian_dir = os.path.join(pkgdir, 'DEBIAN')
             os.mkdir(debian_dir)
