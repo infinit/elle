@@ -111,6 +111,13 @@ def to_add(lib):
             "libfuse4x",
         ]
     }
+    if 'linux' in sys.platform.lower():
+        patterns_exclude['contains'].extend([
+            'libssl',
+            'libcrypto',
+            'libQt',
+        ])
+
     patterns_include = {
         'startswith': [
         ],

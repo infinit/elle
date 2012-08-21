@@ -30,10 +30,14 @@ target_link_libraries(_gap
 	${Boost_LIBRARIES}
 	${PYTHON3_LIBRARIES}
 )
-set_target_properties(_gap PROPERTIES PREFIX "")
-
+set_target_properties(_gap PROPERTIES
+	PREFIX ""
+)
 if(UNIX)
-	set_target_properties(_gap PROPERTIES SUFFIX ".so")
+	set_target_properties(_gap PROPERTIES
+		SUFFIX ".so"
+		LINK_FLAGS "-fPIC -export-dynamic"
+	)
 endif()
 
 file(COPY gap.py DESTINATION .)
