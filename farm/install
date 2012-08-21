@@ -26,7 +26,7 @@ def which(executable):
 DIR_SOURCE = os.path.abspath(os.environ["DIR_SOURCE"])
 DIR_BUILD = os.path.abspath(os.environ["DIR_BUILD"])
 DIR_INSTALL = os.path.abspath(os.environ["DIR_INSTALL"])
-DEBUG = True # XXX use env var
+DEBUG = os.environ.get("MAKE_DEBUG_INSTALL", False)
 
 for d in [DIR_SOURCE, DIR_BUILD]:
     if not os.path.isdir(d):
