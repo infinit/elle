@@ -114,6 +114,7 @@ def to_add(lib):
     if 'linux' in sys.platform.lower():
         patterns_exclude['contains'].extend([
             'libssl',
+            'libscrypto',
             'libQt',
             'libpython',
         ])
