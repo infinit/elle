@@ -116,7 +116,6 @@ def to_add(lib):
             'libssl',
             'libcrypto',
             'libQt',
-            'libpython',
         ])
 
     patterns_include = {
