@@ -43,7 +43,7 @@ Description: Provide a secure, distributed and cross-platform filesystem.
         try:
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
-            infinit_dir = os.path.join(pkgdir, 'usr', 'share', 'infinit')
+            infinit_dir = os.path.join(pkgdir, 'opt/infinit')
 
             shutil.copytree(
                 os.path.join(build_env.directory, 'bin'),
