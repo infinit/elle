@@ -236,6 +236,7 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
 LIBRARY_EXT = "darwin" in sys.platform and "dylib" or "so"
 
 infinit_files = [
+    (which("python3"), "bin"),
     ("8infinit", "bin"),
     ("satellites/access/8access", "bin"),
     ("satellites/group/8group", "bin"),
