@@ -35,6 +35,17 @@ endif()
 
 set(INFINIT_PLATFORM "${INFINIT_PLATFORM}${INFINIT_ARCHITECTURE}")
 
+# Compiler ####################################################################
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+	exec_program("${CMAKE_CXX_COMPILER}"
+		ARGS --version OUTPUT_VARIABLE CMAKE_CXX_COMPILER_VERSION
+	)
+	if(NOT(CMAKE_CXX_COMPILER_VERSION MATCHES ".*4\\.7.*"))
+		message(FATAL_ERROR "gcc version has to be 4.7 or greater")
+	endif()
+endif()
+
 # Compilation flags ###########################################################
 set(CUSTOM_CXX_FLAGS)
 set(CUSTOM_C_FLAGS)
