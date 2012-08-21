@@ -141,19 +141,20 @@ namespace hole
               this->_port = _server->local_endpoint().port();
               {
                 // XXX should be done with a signal
-                plasma::meta::Client client("127.0.0.1", 23456);
+                plasma::meta::Client client(common::meta::host(), common::meta::port());
                 lune::Passport passport;
                 if (passport.Load() != elle::Status::Ok)
                   throw reactor::Exception(elle::concurrency::scheduler(),
                                            "Cannot load passport");
                 try
                   {
+                    std::cout << "Register instance port: " << this->_port << std::endl;
                     client.token(agent::Agent::meta_token);
                     client.update_device(passport.id, nullptr, nullptr, this->_port);
                   }
                 catch (std::exception const& err)
                   {
-                    ELLE_TRACE("Cannot update device port: %s",
+                    ELLE_ERR("Cannot update device port: %s",
                                    err.what()); // XXX[to improve]
                   }
               }
