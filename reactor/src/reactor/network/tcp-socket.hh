@@ -23,9 +23,13 @@ namespace reactor
     `-------------*/
     public:
       TCPSocket(Scheduler& sched,
-                const std::string& hostname, const std::string& port);
+                const std::string& hostname,
+                const std::string& port,
+                DurationOpt timeout = DurationOpt());
       TCPSocket(Scheduler& sched,
-                const std::string& hostname, int port);
+                const std::string& hostname,
+                int port,
+                DurationOpt timeout = DurationOpt());
       virtual ~TCPSocket();
     private:
       friend class TCPServer;
