@@ -264,7 +264,8 @@ namespace horizon
 
     _leave:
       // now that FUSE has stopped, make sure the program is exiting.
-      elle::concurrency::scheduler().mt_run<void>("exit", &elle::concurrency::Program::Exit);
+      new reactor::Thread(elle::concurrency::scheduler(), "exit",
+                          &elle::concurrency::Program::Exit, true);
       return nullptr;
     }
 
