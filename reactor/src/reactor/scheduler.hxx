@@ -38,6 +38,11 @@ namespace reactor
     }
     return result;
   }
+
+  template <>
+  void
+  Scheduler::mt_run<void>(const std::string& name,
+                          const boost::function<void ()>& action);
 }
 
 #endif

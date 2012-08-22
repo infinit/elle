@@ -59,14 +59,18 @@ namespace reactor
       void dump(std::ostream&);
       void debug();
 
-    /*----------------.
-    | Multithread API |
-    `----------------*/
-    public:
-      template <typename R>
-      R
-      mt_run(const std::string&                 name,
-             const boost::function<R ()>&       action);
+  /*----------------.
+  | Multithread API |
+  `----------------*/
+  public:
+    template <typename R>
+    R
+    mt_run(const std::string& name,
+           const boost::function<R ()>& action);
+  private:
+    void
+    _mt_run_void(const std::string& name,
+                 const boost::function<void ()>& action);
 
   /*----------.
   | Shortcuts |
