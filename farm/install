@@ -271,7 +271,7 @@ for src, node in dependencies.items():
     os.chmod(dst, stat.S_IRWXU)
     if not DEBUG:
         print("Strip", dst)
-        cmd('strip', dst)
+        cmd('strip', '-S', dst)
     else:
         print("DO NOT STRIP", dst)
     patch_binary(dst, DIR_INSTALL_CLIENT_LIB)
