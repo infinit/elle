@@ -12,7 +12,7 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Elle.Program");
+ELLE_LOG_COMPONENT("elle.concurrency.Program");
 
 namespace elle
 {
