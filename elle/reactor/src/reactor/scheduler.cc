@@ -299,4 +299,46 @@ namespace reactor
   {
     return _io_service;
   }
+
+  /*----------------.
+  | Multithread API |
+  `----------------*/
+
+  static
+  void
+  _wrapper_void(boost::mutex& mutex,
+                boost::condition_variable& cond,
+                const boost::function<void ()>& action)
+  {
+    assert(action);
+    action();
+    boost::unique_lock<boost::mutex> lock(mutex);
+    cond.notify_one();
+  }
+
+  // FIXME: duplicated from non-void case
+  void
+  Scheduler::_mt_run_void(const std::string& name,
+                          const boost::function<void ()>& action)
+  {
+    boost::mutex mutex;
+    boost::condition_variable condition;
+    {
+      boost::unique_lock<boost::mutex> lock(mutex);
+      new reactor::Thread(*this, name,
+                          boost::bind(_wrapper_void,
+                                      boost::ref(mutex),
+                                      boost::ref(condition),
+                                      action), true);
+      condition.wait(lock);
+    }
+  }
+
+  template <>
+  void
+  Scheduler::mt_run<void>(const std::string& name,
+                          const boost::function<void ()>& action)
+  {
+    _mt_run_void(name, action);
+  }
 }
