@@ -10,6 +10,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/format.hpp>
+#include <boost/thread/locks.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log.hh>
@@ -52,6 +54,8 @@ namespace elle
 
     namespace detail
     {
+      static boost::mutex _indentation_lock;
+
       static unsigned int&
       _indentation()
       {
@@ -187,7 +191,11 @@ namespace elle
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
-        int indent = _indentation();
+        int indent;
+        {
+          boost::lock_guard<boost::mutex> lock(_indentation_lock);
+          indent = _indentation();
+        }
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
         unsigned int size = this->_component.name.size();
@@ -215,13 +223,17 @@ namespace elle
       void
       TraceContext::_indent()
       {
+        boost::lock_guard<boost::mutex> lock(_indentation_lock);
         _indentation() += 1;
       }
 
       void
       TraceContext::_unindent()
       {
-        _indentation() -= 1;
+        boost::lock_guard<boost::mutex> lock(_indentation_lock);
+        auto& indentation = _indentation();
+        assert(indentation >= 1);
+        indentation -= 1;
       }
     }
   }
