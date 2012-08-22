@@ -77,12 +77,13 @@ namespace reactor
 
     template <typename AsioSocket>
     PlainSocket<AsioSocket>::PlainSocket(Scheduler& sched,
-                                         const EndPoint& peer)
+                                         const EndPoint& peer,
+                                         DurationOpt timeout)
       : Super(sched)
       , _socket(0)
       , _peer(peer)
     {
-      _connect(_peer);
+      _connect(_peer, timeout);
     }
 
     template <typename AsioSocket>
@@ -136,14 +137,15 @@ namespace reactor
 
     template <typename AsioSocket>
     void
-    PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint)
+    PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint, DurationOpt timeout)
     {
       ELLE_TRACE("%s: connecting to %s", *this, endpoint);
       _socket = new AsioSocket(this->scheduler().io_service());
       Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
       try
       {
-        connection.run();
+        if (!connection.run(timeout))
+          throw TimeOut(scheduler());
       }
       catch (...)
       {

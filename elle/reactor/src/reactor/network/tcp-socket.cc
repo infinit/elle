@@ -21,15 +21,23 @@ namespace reactor
     `-------------*/
 
     TCPSocket::TCPSocket(Scheduler& sched,
-                         const std::string& hostname, const std::string& port)
-      : Super(sched, resolve_tcp(sched, hostname, port))
+                         const std::string& hostname,
+                         const std::string& port,
+                         DurationOpt timeout)
+      : Super(sched,
+              resolve_tcp(sched, hostname, port),
+              timeout)
       , _write_mutex()
     {}
 
     TCPSocket::TCPSocket(Scheduler& sched,
-                         const std::string& hostname, int port)
-      : Super(sched, resolve_tcp(sched, hostname,
-                                 boost::lexical_cast<std::string>(port)))
+                         const std::string& hostname,
+                         int port,
+                         DurationOpt timeout)
+      : Super(sched,
+              resolve_tcp(sched, hostname,
+                          boost::lexical_cast<std::string>(port)),
+              timeout)
       , _write_mutex()
     {}
 

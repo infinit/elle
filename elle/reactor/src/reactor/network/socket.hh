@@ -79,23 +79,23 @@ namespace reactor
         /// End point type for the asio socket type.
         typedef typename AsioSocket::endpoint_type EndPoint;
 
-      /*-------------.
-      | Construction |
-      `-------------*/
-      protected:
-        /// Create and connect socket.
-        PlainSocket(Scheduler& sched, const EndPoint& peer);
-        /// Create wrapping socket.
-        PlainSocket(Scheduler& sched, AsioSocket* socket);
-        /// Destroy a socket.
-        virtual ~PlainSocket();
+    /*-------------.
+    | Construction |
+    `-------------*/
+    protected:
+      /// Create and connect socket.
+      PlainSocket(Scheduler& sched, const EndPoint& peer, DurationOpt timeout = DurationOpt());
+      /// Create wrapping socket.
+      PlainSocket(Scheduler& sched, AsioSocket* socket);
+      /// Destroy a socket.
+      virtual ~PlainSocket();
 
-      /*-----------.
-      | Connection |
-      `-----------*/
-      private:
-        void _connect(const EndPoint& peer);
-        void _disconnect();
+    /*-----------.
+    | Connection |
+    `-----------*/
+    private:
+      void _connect(const EndPoint& peer, DurationOpt timeout = DurationOpt());
+      void _disconnect();
 
     /*-----------.
     | Properties |
