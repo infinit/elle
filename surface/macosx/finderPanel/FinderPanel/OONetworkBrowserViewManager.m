@@ -60,7 +60,7 @@
 	[networkBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];	
 	
 	//change intercell spacing
-	[networkBrowser setIntercellSpacing:NSMakeSize(20, 80)];
+	[networkBrowser setIntercellSpacing:NSMakeSize(20, 20)];
 	
 	//change selection color
 	[networkBrowser setValue:[NSColor colorWithCalibratedRed:1 green:0 blue:0.5 alpha:1.0] forKey:IKImageBrowserSelectionColorKey];

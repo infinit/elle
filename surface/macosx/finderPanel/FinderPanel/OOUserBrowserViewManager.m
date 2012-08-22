@@ -51,7 +51,7 @@
 	[userBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];	
 	
 	//change intercell spacing
-	[userBrowser setIntercellSpacing:NSMakeSize(20, 80)];
+	[userBrowser setIntercellSpacing:NSMakeSize(20, 20)];
 	
 	//change selection color
 	[userBrowser setValue:[NSColor colorWithCalibratedRed:1 green:0 blue:0.5 alpha:1.0] forKey:IKImageBrowserSelectionColorKey];
@@ -94,7 +94,7 @@
     // Add a path to the temporary images array.
     OOUserModel* p = [[OOUserModel alloc] init];
     p.fullName =[[OOPhone getInstance] getUserFullNameById:arg1];
-    p.image = [[NSImage alloc] initWithContentsOfFile:@"/Users/charlesguillot/Pictures/avatars/Alice1.jpg"];
+    p.image = [NSImage imageNamed:NSImageNameUser];
     p.uid = arg1;
     return p;
 }
@@ -185,7 +185,7 @@
     if ([draggedUsers count] > 0) {
         [pasteboard clearContents];
         NSArray *array = [[NSArray alloc] initWithArray:draggedUsers];
-        BOOL OK = [pasteboard writeObjects:array];
+        [pasteboard writeObjects:array];
     }
     return [draggedUsers count];
 }

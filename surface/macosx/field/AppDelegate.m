@@ -213,7 +213,8 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (IBAction)openInfinitNeworks:(id)sender
 {
-    [[browserWindowController window] makeKeyAndOrderFront:self];
+    [NSApp activateIgnoringOtherApps:YES];
+    [[browserWindowController window] orderFrontRegardless];
 }
 
 - (IBAction)openPreferenceWindow:(id)sender
