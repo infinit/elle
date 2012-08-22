@@ -161,6 +161,23 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Version::print(std::ostream& s) const
+    {
+      if (this == &First)
+        s << "Version::First";
+      else if (this == &Last)
+        s << "Version::Last";
+      else if (this == &Any)
+        s << "Version::Any";
+      else
+        s << "Version(" << this->number << ")";
+    }
   }
 }
 
