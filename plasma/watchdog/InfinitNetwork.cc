@@ -48,6 +48,21 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   }
 {
   LOG("Creating new network.");
+
+  this->connect(
+      &this->_process, SIGNAL(started()),
+      this, SLOT(_on_process_started())
+  );
+
+  this->connect(
+      &this->_process, SIGNAL(error(QProcess::ProcessError)),
+      this, SLOT(_on_process_error(QProcess::ProcessError))
+  );
+
+  this->connect(
+      &this->_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+      this, SLOT(_on_process_finished(int, QProcess::ExitStatus))
+  );
   this->_update();
 }
 
@@ -404,22 +419,6 @@ void InfinitNetwork::_start_process()
   else
     ELLE_WARN("Cannot create mount point directory.");
 
-
-  this->connect(
-      &this->_process, SIGNAL(started()),
-      this, SLOT(_on_process_started())
-  );
-
-  this->connect(
-      &this->_process, SIGNAL(error(QProcess::ProcessError)),
-      this, SLOT(_on_process_error(QProcess::ProcessError))
-  );
-
-  this->connect(
-      &this->_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-      this, SLOT(_on_process_finished(int, QProcess::ExitStatus))
-  );
-
   LOG("exec: %s -n %s -m %s -u %s",
       common::infinit::binary_path("8infinit"),
       this->_description.name.c_str(),
@@ -451,13 +450,23 @@ void InfinitNetwork::_on_process_started()
 
 void InfinitNetwork::_on_process_error(QProcess::ProcessError)
 {
-  LOG("Process has an error.");
+  ELLE_ERR("Process has an error.");
+    {
+      auto stdout = this->_process.readAllStandardOutput();
+      auto stderr = this->_process.readAllStandardError();
+      std::cerr << "=================================== standard output:\n"
+                << QString(stdout).toStdString()
+                << "\n=================================== standard error:\n"
+                << QString(stderr).toStdString()
+                ;
+
+    }
 }
 
 void InfinitNetwork::_on_process_finished(int exit_code, QProcess::ExitStatus)
 {
-  LOG("Process finished with exit code %s", exit_code);
-  if (true || exit_code) // XXX
+  ELLE_ERR("Process finished with exit code %s", exit_code);
+  if (exit_code != 0)
     {
       auto stdout = this->_process.readAllStandardOutput();
       auto stderr = this->_process.readAllStandardError();
