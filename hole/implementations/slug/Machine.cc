@@ -44,6 +44,13 @@ namespace hole
   {
     namespace slug
     {
+
+      /*----------.
+      | Variables |
+      `----------*/
+
+      static std::set<elle::String> cache;
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -435,6 +442,29 @@ namespace hole
                                this->_state));
             }
           }
+
+        // Finally, now that the block has been accepted as a valid version
+        // of the mutable block, record it in the cache so that the machine
+        // will no longer have to fetch the block from the other peers since
+        // it already has the last version and the other nodes will publish
+        // any new version.
+        elle::String unique = address.unique();
+
+        if (cache.find(unique) == cache.end())
+          {
+            elle::String unique = address.unique();
+
+            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+
+            auto result = cache.insert(unique);
+
+            if (result.second == false)
+              throw reactor::Exception(
+                elle::concurrency::scheduler(),
+                elle::sprintf("unable to insert the address '%s' in the cache",
+                              unique));
+          }
+
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -547,6 +577,45 @@ namespace hole
         using nucleus::proton::Version;
         using nucleus::neutron::Object;
         using nucleus::proton::Block;
+
+        // First, check whether the address is already contained in the
+        // cache. If so, the local block is used rather than issuing network
+        // communication. The goal of this cache is to say 'the local version
+        // of the block is the latest, so use it instead of bothering everyone
+        // else'. Note that this optimization works because all nodes are
+        // supposed to be trustworthy (in the 'slug' implementation) and
+        // therefore to send the newest version of every modified block.
+        elle::String unique = address.unique();
+        auto iterator = cache.find(unique);
+
+        if (iterator != cache.end())
+          {
+            MutableBlock* block;
+
+            nucleus::Nucleus::Factory.Build(address.component, block);
+
+            Ptr<nucleus::proton::Block> ptr(block);
+
+            // Make sure the block exists, otherwise, fall down to the
+            // usual case: retrieving the block from the network.
+            if (block->Exist(Hole::Implementation->network,
+                             address,
+                             Version::Last) == elle::Status::True)
+              {
+                ELLE_LOG("[%p] cache hit on '%s'", *this, unique);
+
+                // Load the block.
+                if (block->Load(Hole::Implementation->network,
+                                address,
+                                Version::Last) == elle::Status::Error)
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "unable to load the block");
+
+                return (ptr);
+              }
+          }
+
+        ELLE_TRACE_SCOPE("retrieving the block from the network");
 
         for (auto neighbour: this->_hosts)
           {
@@ -699,6 +768,27 @@ namespace hole
                 }
               }
           }
+
+        // At this point, now that the block has been retrieved from
+        // the network, the cache is updated by marking this mutable
+        // block as up-to-date locally, meaning that the machine no
+        // longer needs to fetch it from the other peers. Instead
+        // the peers will notify everyone of the updated versions.
+        if (cache.find(unique) == cache.end())
+          {
+            elle::String unique = address.unique();
+
+            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+
+            auto result = cache.insert(unique);
+
+            if (result.second == false)
+              throw reactor::Exception(
+                elle::concurrency::scheduler(),
+                elle::sprintf("unable to insert the address '%s' in the cache",
+                              unique));
+          }
+
         return Ptr<Block>(block);
       }
 
@@ -909,7 +999,7 @@ namespace hole
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
         if (this->_state != State::attached)
-          throw reactor::Exception(\
+          throw reactor::Exception(
             elle::concurrency::scheduler(),
             elle::sprintf("the machine's state '%u' does not allow one "
                           "to request operations on the storage layer",

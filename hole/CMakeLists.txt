@@ -13,7 +13,6 @@ add_library(hole
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
 
-  implementations/slug/Bank.cc
   implementations/slug/Host.cc
   implementations/slug/Implementation.cc
   implementations/slug/Machine.cc
