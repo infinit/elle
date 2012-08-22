@@ -2,11 +2,12 @@ import drake
 import drake.cxx
 
 config = None
-lib = None
+lib_static = None
+lib_dynamic = None
 
 def configure(cxx_toolkit, cxx_config):
 
-  global config, lib
+  global config, lib_static, lib_dynamic
 
   config = drake.cxx.Config()
   config.add_local_include_path('src/')
@@ -44,7 +45,8 @@ def configure(cxx_toolkit, cxx_config):
     'src/reactor/duration.cc',
     )
 
-  lib = drake.cxx.StaticLib('lib/reactor', sources, cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('lib/reactor', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/reactor', sources, cxx_toolkit, cxx_config)
 
   tests = drake.nodes(
     'tests/reactor/test.cc',

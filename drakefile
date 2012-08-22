@@ -63,7 +63,9 @@ def configure(cxx_toolkit, cxx_config):
     'lune/fwd.hh',
     )
   lune_lib = drake.cxx.DynLib('lib/lune', lune_sources,
-                                 cxx_toolkit, cxx_config)
+                              cxx_toolkit, cxx_config)
+  lune_slib = drake.cxx.StaticLib('lib/lune', lune_sources,
+                                  cxx_toolkit, cxx_config)
 
   # Nucleus
   nucleus_sources = drake.nodes(
@@ -186,6 +188,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   nucleus_lib = drake.cxx.DynLib('lib/nucleus', nucleus_sources,
                                  cxx_toolkit, cxx_config)
+  nucleus_slib = drake.cxx.StaticLib('lib/nucleus', nucleus_sources,
+                                     cxx_toolkit, cxx_config)
 
   # Comet
   comet_sources = drake.nodes(
@@ -199,6 +203,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   comet_lib = drake.cxx.DynLib('lib/comet', comet_sources,
                                cxx_toolkit, cxx_config)
+  comet_slib = drake.cxx.StaticLib('lib/comet', comet_sources,
+                                   cxx_toolkit, cxx_config)
 
   # Protocol
   protocol_sources = drake.nodes(
@@ -219,6 +225,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   protocol_lib = drake.cxx.DynLib('lib/protocol', protocol_sources,
                                   cxx_toolkit, cxx_config)
+  protocol_slib = drake.cxx.StaticLib('lib/protocol', protocol_sources,
+                                   cxx_toolkit, cxx_config)
 
   # Plasma
   plasma_sources = drake.nodes(
@@ -246,6 +254,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   plasma_lib = drake.cxx.DynLib('lib/plasma', plasma_sources,
                                 cxx_toolkit, cxx_config)
+  plasma_slib = drake.cxx.StaticLib('lib/plasma', plasma_sources,
+                                    cxx_toolkit, cxx_config)
 
   # Agent
   agent_sources = drake.nodes(
@@ -253,7 +263,9 @@ def configure(cxx_toolkit, cxx_config):
     'agent/Agent.cc',
     )
   agent_lib = drake.cxx.DynLib('lib/agent', agent_sources,
-                                cxx_toolkit, cxx_config)
+                               cxx_toolkit, cxx_config)
+  agent_slib = drake.cxx.StaticLib('lib/agent', agent_sources,
+                                   cxx_toolkit, cxx_config)
 
   # Infinit
   infinit_sources = drake.nodes(
@@ -262,6 +274,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   infinit_lib = drake.cxx.DynLib('lib/infinit', infinit_sources,
                                  cxx_toolkit, cxx_config)
+  infinit_slib = drake.cxx.StaticLib('lib/infinit', infinit_sources,
+                                     cxx_toolkit, cxx_config)
 
   # Hole
   hole_sources = drake.nodes(
@@ -335,6 +349,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   hole_lib = drake.cxx.DynLib('lib/hole', hole_sources,
                               cxx_toolkit, cxx_config)
+  hole_slib = drake.cxx.StaticLib('lib/hole', hole_sources,
+                                  cxx_toolkit, cxx_config)
 
   # Etoile
   etoile_sources = drake.nodes(
@@ -467,6 +483,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   etoile_lib = drake.cxx.DynLib('lib/etoile', etoile_sources,
                                 cxx_toolkit, cxx_config)
+  etoile_slib = drake.cxx.StaticLib('lib/etoile', etoile_sources,
+                                 cxx_toolkit, cxx_config)
 
   # Horizon
   horizon_sources = drake.nodes(
@@ -510,6 +528,8 @@ def configure(cxx_toolkit, cxx_config):
     )
   horizon_lib = drake.cxx.DynLib('lib/horizon', horizon_sources,
                                  cxx_toolkit, cxx_config)
+  horizon_slib = drake.cxx.StaticLib('lib/horizon', horizon_sources,
+                                  cxx_toolkit, cxx_config)
 
   ## -------- ##
   ## Programs ##
@@ -520,14 +540,29 @@ def configure(cxx_toolkit, cxx_config):
     comet_lib,
     etoile_lib,
     hole_lib,
-    horizon_lib,
     infinit_lib,
     lune_lib,
     nucleus_lib,
     plasma_lib,
     protocol_lib,
-    reactor.lib,
-    elle.lib,
+    reactor.lib_dynamic,
+    elle.lib_dynamic,
+    horizon_slib,
+    ]
+
+  infinit_slibs = [
+    agent_slib,
+    etoile_slib,
+    lune_slib,
+    hole_slib,
+    horizon_slib,
+    infinit_slib,
+    nucleus_slib,
+    plasma_slib,
+    protocol_slib,
+    reactor.lib_static,
+    elle.lib_static,
+    comet_slib,
     ]
 
   # 8infinit
@@ -537,11 +572,14 @@ def configure(cxx_toolkit, cxx_config):
   infinit_bin = drake.cxx.Executable('8infinit',
                                      drake.nodes('_infinit.cc') + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
+  infinit_sbin = drake.cxx.Executable('8infinit-static',
+                                     drake.nodes('_infinit.cc') + infinit_slibs,
+                                     cxx_toolkit, infinit_bin_config)
 
   # # 8hole
   # hole_bin = drake.cxx.Executable('hole/8hole',
   #                                 drake.nodes('hole/_hole.cc') +
-  #                                 [infinit_lib, elle.lib, reactor.lib],
+  #                                 [infinit_lib, elle.lib, reactor.lib_dynamic],
   #                                 cxx_toolkit, cxx_config)
 
   # Tests
@@ -554,5 +592,5 @@ def configure(cxx_toolkit, cxx_config):
     bin_path.extension = ''
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(test) +
-                               [infinit_lib, elle.lib, reactor.lib],
+                               [infinit_lib, elle.lib_dynamic, reactor.lib_dynamic],
                                cxx_toolkit, tests_cxx_config)
