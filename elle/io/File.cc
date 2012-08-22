@@ -3,7 +3,9 @@
 
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
+#include <elle/idiom/Close.hh>
 #include <elle/io/Path.hh>
+#include <elle/idiom/Open.hh>
 
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Report.hh>
