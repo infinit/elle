@@ -123,6 +123,7 @@ namespace infinit
         else
           {
             std::string error;
+            input >> error;
             throw reactor::Exception(
               elle::concurrency::scheduler(), // FIXME: modularity
               elle::sprintf("remote procedure failed: %s", error));
