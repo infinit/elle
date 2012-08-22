@@ -36,7 +36,11 @@ namespace reactor
         void _wakeup(const boost::system::error_code& error)
         {
           if (error)
-            _raise(new Exception(scheduler(), error.message()));
+            {
+              if (error == boost::system::errc::operation_canceled)
+                return;
+              _raise(new Exception(scheduler(), error.message()));
+            }
           _signal();
         }
         PlainSocket<AsioSocket>* _socket;
