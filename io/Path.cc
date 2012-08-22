@@ -102,5 +102,14 @@ namespace elle
       return Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Path::print(std::ostream& s) const
+    {
+      s << _string;
+    }
   }
 }
