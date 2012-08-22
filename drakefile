@@ -2,16 +2,19 @@ import drake
 import drake.cxx
 
 config = None
-lib = None
+lib_static = None
+lib_dynamic = None
 
 def configure(cxx_toolkit, cxx_config):
 
-  global config, lib
+  global config, lib_static, lib_dynamic
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
 
   cxx_config = cxx_config + config
+  cxx_config.lib('curl')
+  cxx_config.lib('readline')
 
   sources = drake.nodes(
     'Buffer.cc',
@@ -312,4 +315,5 @@ def configure(cxx_toolkit, cxx_config):
     'utility/fwd.hh',
    )
 
-  lib = drake.cxx.StaticLib('elle', sources, cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('elle', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('elle', sources, cxx_toolkit, cxx_config)
