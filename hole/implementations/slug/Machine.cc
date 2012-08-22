@@ -51,11 +51,14 @@ namespace hole
       void
       Machine::_connect(elle::network::Locus const& locus)
       {
+        static int timeout_int = Infinit::Configuration["hole"].Get("slug.timeout", -1);
+        reactor::Duration timeout = boost::posix_time::milliseconds(timeout_int);
+
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
           new reactor::network::TCPSocket(elle::concurrency::scheduler(),
-                                          hostname, locus.port));
+                                          hostname, locus.port, timeout));
         _connect(std::move(socket), locus, true);
       }
 
