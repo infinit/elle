@@ -34,9 +34,10 @@ namespace etoile
         {
           // XXX[the context should make use of unique_ptr instead
           //     of releasing here.]
-          context.object = depot::Depot::pull_object(
-                             context.location.address,
-                             context.location.version).release();
+          context.object =
+            depot::Depot::pull_object(
+              context.location.address,
+              context.location.version).release();
         }
       catch (std::runtime_error& e)
         {

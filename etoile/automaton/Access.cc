@@ -50,8 +50,8 @@ namespace etoile
             {
               // XXX[the context should make use of unique_ptr instead
               //     of releasing here.]
-              context.access = depot::Depot::pull_access(
-                context.object->access()).release();
+              context.access =
+                depot::Depot::pull_access(context.object->access()).release();
             }
           catch (std::runtime_error& e)
             {
@@ -158,12 +158,16 @@ namespace etoile
                       {
                         std::unique_ptr<nucleus::neutron::Group> group;
 
-                        group = depot::Depot::pull<nucleus::neutron::Group>(
-                          subject.group(), nucleus::proton::Version::Last);
-
                         // XXX[remove try/catch later]
                         try
                           {
+                            // XXX[the context should make use of unique_ptr instead
+                            //     of releasing here.]
+                            group =
+                              depot::Depot::pull_group(
+                                subject.group(),
+                                nucleus::proton::Version::Last);
+
                             // update the record.
                             if (context.access->Update(
                                   subject,
@@ -215,12 +219,16 @@ namespace etoile
                   {
                     std::unique_ptr<nucleus::neutron::Group> group;
 
-                    group = depot::Depot::pull<nucleus::neutron::Group>(
-                      subject.group(), nucleus::proton::Version::Last);
-
                     // XXX[remove try/catch later]
                     try
                       {
+                        // XXX[the context should make use of unique_ptr instead
+                        //     of releasing here.]
+                        group =
+                          depot::Depot::pull_group(
+                            subject.group(),
+                            nucleus::proton::Version::Last);
+
                         // allocate a new record.
                         record.reset(
                           new nucleus::neutron::Record(subject,
@@ -547,11 +555,23 @@ namespace etoile
 
                 std::unique_ptr<nucleus::neutron::Group> group;
 
-                group = depot::Depot::pull<nucleus::neutron::Group>(
-                  record->subject.group(), nucleus::proton::Version::Last);
+                // XXX[remove try/catch later]
+                try
+                  {
+                    // XXX[the context should make use of unique_ptr instead
+                    //     of releasing here.]
+                    group =
+                      depot::Depot::pull_group(
+                        record->subject.group(),
+                        nucleus::proton::Version::Last);
 
-                record->token =
-                  nucleus::neutron::Token(group->pass_K(), key);
+                    record->token =
+                      nucleus::neutron::Token(group->pass_K(), key);
+                  }
+                catch (std::exception const& e)
+                  {
+                    escape("%s", e.what());
+                  }
 
                 break;
               }

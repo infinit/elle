@@ -36,10 +36,16 @@ namespace etoile
       static std::unique_ptr<nucleus::neutron::Object>
       pull_object(nucleus::proton::Address const& address,
                   nucleus::proton::Version const & version);
-
       /// XXX
       static std::unique_ptr<nucleus::neutron::Access>
       pull_access(nucleus::proton::Address const& address);
+      /// XXX
+      static std::unique_ptr<nucleus::neutron::Group>
+      pull_group(nucleus::proton::Address const& address,
+                 nucleus::proton::Version const & version);
+      /// XXX
+      static std::unique_ptr<nucleus::neutron::Ensemble>
+      pull_ensemble(nucleus::proton::Address const& address);
 
       /// XXX
       template <typename T>

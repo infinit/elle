@@ -34,13 +34,29 @@ namespace etoile
       if (context.group->ensemble() != nucleus::proton::Address::Null)
         {
           ELLE_TRACE_SCOPE("pull the ensemble block from the storage layer");
-          context.ensemble = depot::Depot::pull<nucleus::neutron::Ensemble>(
-            context.group->ensemble(), nucleus::proton::Version::Any).release();
+
+          // XXX[remove try/catch later]
+          try
+            {
+              // XXX[the context should make use of unique_ptr instead
+              //     of releasing here.]
+              context.ensemble =
+                depot::Depot::pull_ensemble(
+                  context.group->ensemble()).release();
+            }
+          catch (std::exception const& e)
+            {
+              escape("%s", e.what());
+            }
         }
       else
         {
           ELLE_TRACE_SCOPE("the group does not reference an ensemble");
+
+          context.ensemble = new nucleus::neutron::Ensemble;
         }
+
+      assert(context.ensemble);
 
       return elle::Status::Ok;
     }

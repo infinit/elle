@@ -144,10 +144,19 @@ namespace etoile
                       ELLE_TRACE_SCOPE("looking at the group '%s'",
                                            record->subject.group());
 
-                      // Retrieve the group block.
-                      group = depot::Depot::pull<nucleus::neutron::Group>(
-                        record->subject.group(),
-                        nucleus::proton::Version::Last);
+                      // XXX[remove try/catch later]
+                      try
+                        {
+                          // Retrieve the group block.
+                          group =
+                            depot::Depot::pull_group(
+                              record->subject.group(),
+                              nucleus::proton::Version::Last);
+                        }
+                      catch (std::exception const& e)
+                        {
+                          escape("%s", e.what());
+                        }
 
                       // Check if the subject is actually the group manager.
                       if (agent::Agent::Subject == group->manager_subject())
@@ -223,11 +232,18 @@ namespace etoile
 
                               ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
 
-                              // Retrieve the ensemble which contains the list of
-                              // the subjects belonging to the group.
-                              ensemble = depot::Depot::pull<nucleus::neutron::Ensemble>(
-                                group->ensemble(),
-                                nucleus::proton::Version::Any);
+                              // XXX[remove try/catch later]
+                              try
+                                {
+                                  // Retrieve the ensemble which contains the list of
+                                  // the subjects belonging to the group.
+                                  ensemble =
+                                    depot::Depot::pull_ensemble(group->ensemble());
+                                }
+                              catch (std::exception const& e)
+                                {
+                                  escape("%s", e.what());
+                                }
 
                               // Look for the user's subject in the ensemble.
                               if (ensemble->exists(agent::Agent::Subject) == false)

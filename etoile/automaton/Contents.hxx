@@ -68,10 +68,13 @@ namespace etoile
         {
           // otherwise create a new contents according to the context's type.
           context.contents = new nucleus::proton::Contents<typename T::C>;
+
           // otherwise, create an empty contents.
           if (context.contents->Create() == elle::Status::Error)
             escape("unable to create the contents");
         }
+
+      assert(context.contents);
 
       return elle::Status::Ok;
     }

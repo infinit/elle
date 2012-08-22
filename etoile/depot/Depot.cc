@@ -1,10 +1,12 @@
 #include <etoile/depot/Depot.hh>
 
-#include <nucleus/neutron/Access.hh>
-#include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Version.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Group.hh>
+#include <nucleus/neutron/Ensemble.hh>
 
 #include <hole/Hole.hh>
 
@@ -44,33 +46,30 @@ namespace etoile
     Depot::pull_object(nucleus::proton::Address const& address,
                        nucleus::proton::Version const & version)
     {
-      std::unique_ptr<nucleus::proton::Block> block;
-
-      block = hole::Hole::Pull(address, version);
-
-      std::unique_ptr<nucleus::neutron::Object> object(
-        dynamic_cast<nucleus::neutron::Object*>(block.release()));
-
-      if (!object)
-        throw std::runtime_error("the retrieved block is not an object");
-
-      return object;
+      return (Depot::pull<nucleus::neutron::Object>(address, version));
     }
 
     std::unique_ptr<nucleus::neutron::Access>
     Depot::pull_access(nucleus::proton::Address const& address)
     {
-      std::unique_ptr<nucleus::proton::Block> block;
+      return (Depot::pull<nucleus::neutron::Access>(
+                address,
+                nucleus::proton::Version::Last));
+    }
 
-      block = hole::Hole::Pull(address, nucleus::proton::Version::Last);
+    std::unique_ptr<nucleus::neutron::Group>
+    Depot::pull_group(nucleus::proton::Address const& address,
+                      nucleus::proton::Version const & version)
+    {
+      return (Depot::pull<nucleus::neutron::Group>(address, version));
+    }
 
-      std::unique_ptr<nucleus::neutron::Access> access(
-        dynamic_cast<nucleus::neutron::Access*>(block.release()));
-
-      if (!access)
-        throw std::runtime_error("the retrieved block is not an access");
-
-      return access;
+    std::unique_ptr<nucleus::neutron::Ensemble>
+    Depot::pull_ensemble(nucleus::proton::Address const& address)
+    {
+      return (Depot::pull<nucleus::neutron::Ensemble>(
+                address,
+                nucleus::proton::Version::Last));
     }
 
     ///

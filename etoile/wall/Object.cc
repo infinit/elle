@@ -65,6 +65,7 @@ namespace etoile
           if (chemin.Locate(location) == elle::Status::Error)
             escape("unable to locate the object");
 
+          // XXX[remove try/catch later]
           try
             {
               object = depot::Depot::pull_object(location.address,

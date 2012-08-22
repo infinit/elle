@@ -67,9 +67,18 @@ namespace etoile
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
 
-      context.group = depot::Depot::pull<nucleus::neutron::Group>(
-        context.location.address,
-        context.location.version).release();
+      // XXX[remove try/catch later]
+      try
+        {
+          context.group =
+            depot::Depot::pull_group(
+              context.location.address,
+              context.location.version).release();
+        }
+      catch (std::exception const& e)
+        {
+          escape("%s", e.what());
+        }
 
       // compute the base in order to seal the block's original state.
       if (context.group->base.Create(*context.group) == elle::Status::Error)
@@ -128,7 +137,6 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              assert(context.ensemble);
               context.ensemble->add(
                 std::move(std::unique_ptr<nucleus::neutron::Fellow>(
                   new nucleus::neutron::Fellow(subject))));

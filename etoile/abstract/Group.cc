@@ -124,7 +124,7 @@ namespace etoile
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Manager]" << std::endl;
 
-      if (this->manager.Dump(margin + 6) == elle::Status::Error)
+      if (this->manager.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the manager public key");
 
       std::cout << alignment << elle::io::Dumpable::Shift
