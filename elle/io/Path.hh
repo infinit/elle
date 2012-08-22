@@ -1,13 +1,11 @@
 #ifndef  ELLE_IO_PATH_HH
 # define ELLE_IO_PATH_HH
 
-#include <elle/types.hh>
-
-#include <elle/radix/Object.hh>
-
-#include <elle/io/fwd.hh>
-
+#include <elle/Printable.hh>
 #include <elle/idiom/Open.hh>
+#include <elle/io/fwd.hh>
+#include <elle/radix/Object.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -21,7 +19,8 @@ namespace elle
     /// the pattern %name% as representing a component to be provided later.
     ///
     class Path:
-      public radix::Object
+      public radix::Object,
+      public elle::Printable
     {
     public:
       //
@@ -72,8 +71,14 @@ namespace elle
       { return this->_string; }
       std::string& string()
       { return this->_string; }
-    };
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    public:
+      virtual void print(std::ostream& s) const;
+    };
   }
 }
 

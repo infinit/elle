@@ -79,6 +79,20 @@ namespace hole
       }
 
       void
+      Machine::_connect_try(elle::network::Locus const& locus)
+      {
+        try
+          {
+            ELLE_TRACE("try connecting to %s", locus)
+              _connect(locus);
+          }
+        catch (reactor::network::Exception& err)
+          {
+            ELLE_TRACE("ignore host %s: %s", locus, err.what());
+          }
+      }
+
+      void
       Machine::_remove(Host* host)
       {
         elle::network::Locus locus(host->locus());
@@ -102,18 +116,21 @@ namespace hole
           std::istringstream    stream;
           this->_port = Infinit::Configuration["hole"].Get("slug.port", 0);
 
-          // FIXME: try these in parallel
+          // FIXME: use builtin support for subcoroutines when available.
+          std::vector<reactor::Thread*> connections;
+          auto& sched = elle::concurrency::scheduler();
           for (elle::network::Locus& locus: Hole::Set.loci)
-            try
-              {
-                ELLE_TRACE("try connecting to %s", locus)
-                  _connect(locus);
-              }
-            catch (reactor::network::Exception& err)
-              {
-                ELLE_TRACE("ignore host %s: %s", locus, err.what());
-                continue;
-              }
+            {
+              auto action = std::bind(&Machine::_connect_try, this, locus);
+              auto thread = new reactor::Thread
+                (sched, elle::sprintf("connect %s", locus), action);
+              connections.push_back(thread);
+            }
+          for (reactor::Thread* t: connections)
+            {
+              sched.current()->wait(*t);
+              delete t;
+            }
         }
 
         // If the machine has been neither connected nor authenticated
@@ -882,7 +899,7 @@ namespace hole
       Machine::Get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Version&    version)
       {
-        ELLE_TRACE("Get[Mutable]");
+        ELLE_TRACE_SCOPE("%s: get(%s, %s)", *this, address, version);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.

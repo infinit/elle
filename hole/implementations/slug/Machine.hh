@@ -67,6 +67,8 @@ namespace hole
         void _connect(elle::network::Locus const& locus);
         void _connect(std::unique_ptr<reactor::network::Socket> socket,
                       elle::network::Locus const& locus, bool opener);
+        void
+        _connect_try(elle::network::Locus const& locus);
         void _remove(Host* host);
 
       /*-------.

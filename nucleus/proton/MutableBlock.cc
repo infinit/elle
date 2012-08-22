@@ -95,12 +95,12 @@ namespace nucleus
                                            const Address&       address,
                                            const Version&       version)
     {
+      ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, version);
+
       elle::io::Path path;
       elle::String unique;
 
       unique = address.unique();
-
-      ELLE_TRACE("Load(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -119,8 +119,9 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          if (this->Load(path) == elle::Status::Error)
-            escape("unable to load block");
+          ELLE_DEBUG("%s: load from disk: %s", *this, path)
+            if (this->Load(path) == elle::Status::Error)
+              escape("unable to load block");
         }
       else
         {

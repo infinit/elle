@@ -1,10 +1,10 @@
 #ifndef NUCLEUS_PROTON_VERSION_HH
 # define NUCLEUS_PROTON_VERSION_HH
 
-# include <elle/types.hh>
-# include <elle/radix/Object.hh>
-
+# include <elle/Printable.hh>
 # include <elle/idiom/Open.hh>
+# include <elle/radix/Object.hh>
+# include <elle/types.hh>
 
 namespace nucleus
 {
@@ -16,7 +16,8 @@ namespace nucleus
     /// the versions related to a mutable block.
     ///
     class Version:
-      public elle::radix::Object
+      public elle::radix::Object,
+      public elle::Printable
     {
     public:
       //
@@ -63,9 +64,14 @@ namespace nucleus
       // attributes
       //
       Type                      number;
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    public:
+      virtual void print(std::ostream& s) const;
     };
-
-
   }
 }
 
