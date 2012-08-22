@@ -256,19 +256,16 @@ namespace horizon
       // reset the FUSE structure pointer.
       FUker::FUSE = nullptr;
 
-      // now that FUSE has stopped, make sure the program is exiting.
-      elle::concurrency::Program::Exit();
-
-      return nullptr;
+      goto _leave;
 
     _error:
       // log the error.
       log("%s", ::strerror(errno));
 
+    _leave:
       // now that FUSE has stopped, make sure the program is exiting.
-      elle::concurrency::Program::Exit();
-
-      return (nullptr);
+      elle::concurrency::scheduler().mt_run<void>("exit", &elle::concurrency::Program::Exit);
+      return nullptr;
     }
 
     void
