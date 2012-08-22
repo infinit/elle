@@ -72,20 +72,19 @@ namespace horizon
       struct ::fuse_file_info   info;
       int                       result;
 
-      // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        {
-          // Purge the error messages since it may be normal not to be
-          // able to resolve the given way.
-          purge();
+      ELLE_DEBUG("resolve the path")
+        if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
+          {
+            // Purge the error messages since it may be normal not to be
+            // able to resolve the given way.
+            purge();
+            return (-ENOENT);
+          }
 
-          return (-ENOENT);
-        }
-
-      // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      ELLE_DEBUG("load the object")
+        if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
+          error("unable to load the object",
+                -ENOENT);
 
       // Create a local handle.
       Handle                    handle(Handle::OperationGetattr,

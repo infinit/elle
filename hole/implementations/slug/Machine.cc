@@ -882,7 +882,7 @@ namespace hole
       Machine::Get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Version&    version)
       {
-        ELLE_TRACE("Get[Mutable]");
+        ELLE_TRACE_SCOPE("%s: get(%s, %s)", *this, address, version);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
