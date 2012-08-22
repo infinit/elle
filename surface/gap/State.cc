@@ -401,7 +401,6 @@ namespace surface
     {
       // makes user we have an id
       std::string user_id = this->user(user)._id;
-      auto res = this->_api->network_add_user(network_id, user_id);
       auto it = this->networks().find(network_id);
       assert(it != this->networks().end());
       Network* network = it->second;
@@ -427,6 +426,9 @@ namespace surface
       p.start(group_binary.c_str(), arguments);
       if (!p.waitForFinished())
         throw Exception(gap_internal_error, "8group binary failed");
+      if (p.exitCode())
+        throw Exception(gap_internal_error, "8group binary exited with errors");
+      auto res = this->_api->network_add_user(network_id, user_id);
     }
 
     std::map<std::string, NetworkStatus*> const&
