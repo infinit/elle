@@ -36,7 +36,6 @@ set_target_properties(_gap PROPERTIES
 if(UNIX)
 	set_target_properties(_gap PROPERTIES
 		SUFFIX ".so"
-		LINK_FLAGS "-fPIC -export-dynamic"
 	)
 endif()
 
