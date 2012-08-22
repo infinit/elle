@@ -51,7 +51,9 @@ namespace hole
       void
       Machine::_connect(elle::network::Locus const& locus)
       {
-        static int timeout_int = Infinit::Configuration["hole"].Get("slug.timeout", -1);
+        // FIXME: default timeout should be in the configuration, not
+        // the code.
+        static int timeout_int = Infinit::Configuration["hole"].Get("slug.timeout", 5000);
         reactor::Duration timeout = boost::posix_time::milliseconds(timeout_int);
 
         std::string hostname;
