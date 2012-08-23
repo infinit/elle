@@ -207,6 +207,27 @@ class TestScheduler(unittest.TestCase):
     c = sched.Coroutine(coro, 'coro', self.scheduler)
     self.scheduler.run()
 
+  def test_semaphore(self):
 
+    s = sched.Semaphore(1)
+    beacon = [0]
+    def lock_f(beacon):
+      for i in range(3):
+        s.lock()
+        beacon[0] = beacon[0] + 1
+    lock = sched.Coroutine(lambda: lock_f(beacon), 'lock', self.scheduler)
+    def read_f(beacon):
+      def check(i):
+        sched.coro_yield()
+        assert beacon[0] == i
+        sched.coro_yield()
+        assert beacon[0] == i
+        s.unlock()
+        assert beacon[0] == i
+      check(1)
+      check(2)
+      check(3)
+    read = sched.Coroutine(lambda: read_f(beacon), 'read', self.scheduler)
+    self.scheduler.run()
 
 unittest.main()

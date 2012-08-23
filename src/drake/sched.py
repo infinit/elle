@@ -335,3 +335,46 @@ def coro_wait(waitable):
     Coroutine.current._Coroutine__exception = None
     import traceback
     raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
+class Lockable:
+
+  def lock(self):
+    return self.__lock()
+
+  def unlock(self):
+    return self.__unlock()
+
+  def __enter__(self):
+    return self.lock()
+
+  def __exit__(self, t, value, tb):
+    self.unlock()
+
+class Semaphore(Waitable, Lockable):
+
+  def __init__(self, count = 0):
+    Waitable.__init__(self)
+    Lockable.__init__(self)
+    self.__count = count
+
+  @property
+  def count(self):
+    return self.__count
+
+  def _Waitable__wait(self, coro):
+    if self.count == 0:
+      return Waitable._Waitable__wait(self, coro)
+    else:
+      self.__count = self.__count - 1
+      return False
+
+  def _Lockable__lock(self, coro = None):
+    coro = coro or Coroutine.current
+    return coro.wait(self)
+
+  def _Lockable__unlock(self):
+    if self.__count == 0:
+      Waitable._Waitable__wake_one(self)
+      return True
+    else:
+      self.__count += 1
+      return False
