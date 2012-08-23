@@ -8,6 +8,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/journal/Journal.hh>
 
+#include <nucleus/proton/Version.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
@@ -100,7 +101,9 @@ namespace etoile
         // return the identifier.
         identifier = guard.actor()->identifier;
 
-        if (context->location.Create(identity) == elle::Status::Error)
+        if (context->location.Create(
+              identity,
+              nucleus::proton::Version::Last) == elle::Status::Error)
           escape("unable to create the location");
 
         // apply the load automaton on the context.

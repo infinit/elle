@@ -59,7 +59,7 @@ namespace etoile
 
     std::unique_ptr<nucleus::neutron::Group>
     Depot::pull_group(nucleus::proton::Address const& address,
-                      nucleus::proton::Version const & version)
+                      nucleus::proton::Version const& version)
     {
       return (Depot::pull<nucleus::neutron::Group>(address, version));
     }

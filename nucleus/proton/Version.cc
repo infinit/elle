@@ -169,19 +169,14 @@ namespace nucleus
     void
     Version::print(std::ostream& s) const
     {
-      if (this == &First)
-        s << "Version::First";
-      else if (this == &Last)
-        s << "Version::Last";
-      else if (this == &Any)
-        s << "Version::Any";
+      if (*this == First)
+        s << "first";
+      else if (*this == Last)
+        s << "last";
+      else if (*this == Any)
+        s << "any";
       else
-        s << "Version(" << this->number << ")";
+        s << this->number;
     }
   }
-}
-
-std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v)
-{
-  return out << v.number;
 }

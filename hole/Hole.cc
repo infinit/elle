@@ -291,6 +291,8 @@ namespace hole
   Hole::Pull(const nucleus::proton::Address& address,
              const nucleus::proton::Version& version)
   {
+    ELLE_LOG_SCOPE("pull(%s, %s)", address, version);
+
     // Forward the request depending on the nature of the block which
     // the addres indicates.
     switch (address.family)

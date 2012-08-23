@@ -111,10 +111,7 @@ namespace etoile
         escape("the venue seems to be empty");
 
       // set the location's attributes according to the venue last element.
-      location.address =
-        this->venue.elements[this->venue.elements.size() - 1].address;
-      location.version =
-        this->venue.elements[this->venue.elements.size() - 1].version;
+      location = this->venue.elements[this->venue.elements.size() - 1];
 
       return elle::Status::Ok;
     }

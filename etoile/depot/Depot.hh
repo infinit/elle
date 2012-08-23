@@ -42,7 +42,7 @@ namespace etoile
       /// XXX
       static std::unique_ptr<nucleus::neutron::Group>
       pull_group(nucleus::proton::Address const& address,
-                 nucleus::proton::Version const & version);
+                 nucleus::proton::Version const& version);
       /// XXX
       static std::unique_ptr<nucleus::neutron::Ensemble>
       pull_ensemble(nucleus::proton::Address const& address);

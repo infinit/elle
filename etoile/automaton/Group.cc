@@ -47,7 +47,8 @@ namespace etoile
         escape("unable to bind the object");
 
       // create the context's location with an initial version number.
-      if (context.location.Create(address) == elle::Status::Error)
+      if (context.location.Create(address,
+                                  context.group->version) == elle::Status::Error)
         escape("unable to create the location");
 
       context.state = gear::Context::StateCreated;

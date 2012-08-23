@@ -36,7 +36,7 @@ namespace nucleus
       // methods
       //
       elle::Status      Create(const Address&,
-                               const Version& = Version::First);
+                               const Version&);
 
       //
       // interfaces

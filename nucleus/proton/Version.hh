@@ -70,12 +70,12 @@ namespace nucleus
     `----------*/
 
     public:
-      virtual void print(std::ostream& s) const;
+      virtual
+      void
+      print(std::ostream& s) const;
     };
   }
 }
-
-std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v);
 
 # include <nucleus/proton/Version.hxx>
 
