@@ -317,10 +317,17 @@ namespace hole
                 for (auto neighbour: _hosts)
                   {
                     Host* host = neighbour.second;
-                    host->push(address, block);
-                    // Ignore the error messages and continue with the
-                    // next neighbour.
-                    purge();
+
+                    try
+                      {
+                        host->push(address, block);
+                      }
+                    catch (std::exception const& e)
+                      {
+                        ELLE_WARN("[%p] remote exception: %s\n",
+                                  this, e.what());
+                        continue;
+                      }
                   }
               }
 
@@ -429,10 +436,17 @@ namespace hole
                 for (auto neighbour: this->_hosts)
                   {
                     Host* host = neighbour.second;
-                    host->push(address, block);
-                    // ignore the error messages and continue with the
-                    // next neighbour.
-                    purge();
+
+                    try
+                      {
+                        host->push(address, block);
+                      }
+                    catch (std::exception const& e)
+                      {
+                        ELLE_WARN("[%p] remote exception: %s\n",
+                                  this, e.what());
+                        continue;
+                      }
                   }
               }
 
@@ -507,6 +521,7 @@ namespace hole
                   // validate the block.
                   if (block->Validate(address) == elle::Status::Error)
                     throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+
                   return std::unique_ptr<nucleus::proton::Block>(block);
                 }
               else
@@ -517,26 +532,43 @@ namespace hole
                   for (auto neighbour: this->_hosts)
                     {
                       Host* host = neighbour.second;
-                      auto iblock = elle::cast<ImmutableBlock>::runtime(
-                        host->pull(address, nucleus::proton::Version::Any));
+                      std::unique_ptr<nucleus::proton::ImmutableBlock> iblock;
+
+                      try
+                        {
+                          iblock =
+                            elle::cast<ImmutableBlock>::runtime(
+                              host->pull(address, nucleus::proton::Version::Any));
+                        }
+                      catch (std::exception const& e)
+                        {
+                          ELLE_WARN("[%p] remote exception: %s\n",
+                                    this, e.what());
+                          continue;
+                        }
+
                       // validate the block.
                       if (iblock->Validate(address) == elle::Status::Ok)
                         {
                           // finally, store it locally.
                           if (iblock->Store(Hole::Implementation->network,
                                       address) == elle::Status::Ok)
-                            found = true;
-                            break;
+                            {
+                              found = true;
+
+                              break;
+                            }
+                          else
+                            {
+                              ELLE_WARN("[%p] unable to store the block "
+                                        "'%s' locally",
+                                        this, address);
+                            }
                         }
                       else
                         {
-                          // XXX
-                          ELLE_TRACE("unable to validate the immutable block");
-                          address.Dump();
-                          iblock->Dump();
-                          host->Dump();
-                          show();
-                          assert(false);
+                          ELLE_WARN("[%p] unable to validate the block '%s'",
+                                    this, address);
                         }
                     }
 
@@ -628,8 +660,20 @@ namespace hole
         for (auto neighbour: this->_hosts)
           {
             Host* host = neighbour.second;
-            auto block = elle::cast<MutableBlock>::runtime(
-              host->pull(address, Version::Last));
+            std::unique_ptr<MutableBlock> block;
+
+            try
+              {
+                block =
+                  elle::cast<MutableBlock>::runtime(
+                    host->pull(address, Version::Last));
+              }
+            catch (std::exception const& e)
+              {
+                ELLE_WARN("[%p] remote exception: %s\n",
+                          this, e.what());
+                continue;
+              }
 
             // Validate the block, depending on its component.
             // Indeed, the Object component requires as additional
@@ -692,13 +736,16 @@ namespace hole
 
             // Finally, since the block has been retrieved,
             // store it locally.
-            block->Store(Hole::Implementation->network, address);
-            // XXX do not check the result as the block to
-            // XXX store may not be the latest.
-
-            // ignore the error messages and continue with the
-            // next neighbour.
-            purge();
+            try
+              {
+                block->Store(Hole::Implementation->network, address);
+              }
+            catch (std::exception const& e)
+              {
+                ELLE_WARN("[%p] remote exception: %s\n",
+                          this, e.what());
+                continue;
+              }
           }
 
         // At this point, we may have retrieved one or more versions
@@ -828,12 +875,22 @@ namespace hole
             bool found = false;
             for (auto neighbour: this->_hosts)
               {
-                Host*                     host = neighbour.second;
+                Host* host = neighbour.second;
                 nucleus::Derivable derivable;
+                std::unique_ptr<MutableBlock> block;
 
-                // request the host.
-                auto block = elle::cast<MutableBlock>::runtime(
-                  host->pull(address, version));
+                try
+                  {
+                    block =
+                      elle::cast<MutableBlock>::runtime(
+                        host->pull(address, version));
+                  }
+                catch (std::exception const& e)
+                  {
+                    ELLE_WARN("[%p] remote exception: %s\n",
+                              this, e.what());
+                    continue;
+                  }
 
                 // validate the block, depending on its
                 // component.
@@ -903,18 +960,20 @@ namespace hole
 
                 // Finally, since the block has been retrieved,
                 // store it locally.
-                block->Store(Hole::Implementation->network, address);
-                // XXX do not check the result as the block to
-                // XXX store may not be the latest i.e when
-                // XXX history is not active.
+                try
+                  {
+                    block->Store(Hole::Implementation->network, address);
+                  }
+                catch (std::exception const& e)
+                  {
+                    ELLE_WARN("[%p] remote exception: %s\n",
+                              this, e.what());
+                    continue;
+                  }
 
                 // stop since a block for this specific
                 // version has been retrieved.
                 break;
-
-                // ignore the error messages and continue with the
-                // next neighbour.
-                purge();
               }
 
             // check if none if the neighbour has the block.
@@ -1082,10 +1141,17 @@ namespace hole
                 for (auto neighbour: this->_hosts)
                   {
                     Host* host = neighbour.second;
-                    host->wipe(address);
-                    // Ignore the error messages and continue with the
-                    // next neighbour.
-                    purge();
+
+                    try
+                      {
+                        host->wipe(address);
+                      }
+                    catch (std::exception const& e)
+                      {
+                        ELLE_WARN("[%p] remote exception: %s\n",
+                                  this, e.what());
+                        continue;
+                      }
                   }
               }
 
