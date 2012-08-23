@@ -38,6 +38,9 @@
 
 ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
+// XXX[to improve later with a configuration variable]
+#undef CACHE
+
 namespace hole
 {
   namespace implementations
@@ -49,7 +52,9 @@ namespace hole
       | Variables |
       `----------*/
 
+#ifdef CACHE
       static std::set<elle::String> cache;
+#endif
 
       /*-------------.
       | Construction |
@@ -443,6 +448,7 @@ namespace hole
             }
           }
 
+#ifdef CACHE
         // Finally, now that the block has been accepted as a valid version
         // of the mutable block, record it in the cache so that the machine
         // will no longer have to fetch the block from the other peers since
@@ -464,7 +470,7 @@ namespace hole
                 elle::sprintf("unable to insert the address '%s' in the cache",
                               unique));
           }
-
+#endif
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -578,6 +584,7 @@ namespace hole
         using nucleus::neutron::Object;
         using nucleus::proton::Block;
 
+#ifdef CACHE
         // First, check whether the address is already contained in the
         // cache. If so, the local block is used rather than issuing network
         // communication. The goal of this cache is to say 'the local version
@@ -614,6 +621,7 @@ namespace hole
                 return (ptr);
               }
           }
+#endif
 
         ELLE_TRACE_SCOPE("retrieving the block from the network");
 
@@ -769,6 +777,7 @@ namespace hole
               }
           }
 
+#ifdef CACHE
         // At this point, now that the block has been retrieved from
         // the network, the cache is updated by marking this mutable
         // block as up-to-date locally, meaning that the machine no
@@ -788,6 +797,7 @@ namespace hole
                 elle::sprintf("unable to insert the address '%s' in the cache",
                               unique));
           }
+#endif
 
         return Ptr<Block>(block);
       }
