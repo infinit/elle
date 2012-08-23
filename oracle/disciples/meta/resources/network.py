@@ -65,11 +65,11 @@ class _Page(Page):
             map(lambda d: database.ObjectId(str(d).strip()), ids)
         )))
 
-NETWORK_INVITATION_NEWUSER_SUBJECT = "%(added_by)s wants you to join his/her '%(network_name)s network on Infinit!"
+NETWORK_INVITATION_NEWUSER_SUBJECT = "%(added_by)s wants you to join his/her '%(network_name)s' network on Infinit!"
 NETWORK_INVITATION_NEWUSER_CONTENT = """
 Hi %(recipient)s,
 
-%(added_by)s would like you to join his/her %(network_name)s network on
+%(added_by)s would like you to join his/her '%(network_name)s' network on
 Infinit. Infinit is an incredibly powerful tool that lets you create folders
 with the members of your different communities, giving you the ability to
 easily share and access files and folders collaboratively.
@@ -83,22 +83,33 @@ Click the link below to download Infinit and access your new network!
 MacOSX: http://download.infinit.io/infinit-latest-x86_64.dmg
 Others: http://download.infinit.io
 
---%(space)s
 All the best,
+
+--%(space)s
 The Infinit Team
 infinit.io
 """.strip()
 
-NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
+NETWORK_INVITATION_SUBJECT = "%(added_by)s has just added you to network '%(network_name)s' on Infinit!"
 NETWORK_INVITATION_CONTENT = """
 Hi %(recipient)s,
-    You were invited by %(added_by)s to join the network %(network_name)s. Just
-launch infinit to gain access to this network !
 
+%(added_by)s has added you to his/her '%(network_name)s' network. Just launch
+Infinit to access it!
+
+Networks are made up of your community’s combined storage space allowing
+everyone to access more content than they can store on their own devices. The
+more space you and your community add to a network, the more files and folders,
+you can all access.
+
+Sharing and accessing files has never been easier! And best of all, it's
+completely free :)
+
+All the best,
 
 --%(space)s
-The infinit team
-http://infinit.io
+The Infinit Team
+infinit.io
 """.strip()
 
 class AddUser(_Page):
