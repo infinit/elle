@@ -44,18 +44,21 @@ class FromPublicKey(Page):
 
 # TODO use mailchimp templates
 
-INVITATION_SUBJECT = "Invitation to test Infinit !"
+INVITATION_SUBJECT = "Invitation to test Infinit!"
 INVITATION_CONTENT = """
 Dear early beta tester,
 
-    This is an official invitation from Infinit, just download it for your
-platform at http://download.infinit.io/ and paste your activation code into the
-registration form.
+    This is an official invitation to test Infinit, just download it for your
+platform and paste your activation code into the registration form.
 
 Activation code: %(activation_code)s
 
+Download here: http://infinit.io/download
+
+All the best,
+
 --%(space)s
-The infinit team
+The Infinit team
 http://infinit.io
 
 """.strip()

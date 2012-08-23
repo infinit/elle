@@ -8,7 +8,7 @@ from email.header import Header
 import smtplib
 
 def send(mail, subject, content,
-         from_="Infinit.io <no-reply@infinit.io>",
+         from_="Infinit <no-reply@infinit.io>",
          encoding='utf8'):
         msg = MIMEText(content, _charset=encoding)
         msg['Subject'] = Header(subject, encoding)

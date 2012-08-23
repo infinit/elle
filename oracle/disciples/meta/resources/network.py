@@ -65,14 +65,14 @@ class _Page(Page):
             map(lambda d: database.ObjectId(str(d).strip()), ids)
         )))
 
-NETWORK_INVITATION_NEWUSER_SUBJECT = "%(added_by)s wants you to join his/her '%(network_name)s' network on Infinit!"
-NETWORK_INVITATION_NEWUSER_CONTENT = """
+NETWORK_INVITATION_NEWUSER_SUBJECT = u"%(added_by)s wants you to join the '%(network_name)s' network on Infinit!"
+NETWORK_INVITATION_NEWUSER_CONTENT = u"""
 Hi %(recipient)s,
 
-%(added_by)s would like you to join his/her '%(network_name)s' network on
-Infinit. Infinit is an incredibly powerful tool that lets you create folders
-with the members of your different communities, giving you the ability to
-easily share and access files and folders collaboratively.
+%(added_by)s has added you to the '%(network_name)s' network on Infinit.
+Infinit is an incredibly powerful tool that lets you create folders with the
+members of your different communities, giving you the ability to easily share
+and access files and folders collaboratively.
 
 You’ll no longer have to worry about storage limits in the cloud, large email
 attachments or downloading files again!
@@ -80,8 +80,7 @@ And best of all, it's completely free :)
 
 Click the link below to download Infinit and access your new network!
 
-MacOSX: http://download.infinit.io/infinit-latest-x86_64.dmg
-Others: http://download.infinit.io
+Download here: http://infinit.io/download
 
 All the best,
 
@@ -90,11 +89,11 @@ The Infinit Team
 infinit.io
 """.strip()
 
-NETWORK_INVITATION_SUBJECT = "%(added_by)s has just added you to network '%(network_name)s' on Infinit!"
-NETWORK_INVITATION_CONTENT = """
+NETWORK_INVITATION_SUBJECT = u"%(added_by)s has just added you to the '%(network_name)s' network on Infinit!"
+NETWORK_INVITATION_CONTENT = u"""
 Hi %(recipient)s,
 
-%(added_by)s has added you to his/her '%(network_name)s' network. Just launch
+%(added_by)s has added you to the '%(network_name)s' network. Just launch
 Infinit to access it!
 
 Networks are made up of your community’s combined storage space allowing
