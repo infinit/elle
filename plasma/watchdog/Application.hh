@@ -26,6 +26,11 @@ namespace plasma
 
       /// Start main loop
       int exec();
+
+      // handle exception
+      bool
+      notify(QObject* rec,
+             QEvent* ev);
     };
 
   }

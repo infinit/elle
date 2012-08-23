@@ -85,4 +85,21 @@ int Application::exec()
   this->_server->start(watchdogId);
   return this->QCoreApplication::exec();
 }
-
+bool
+Application::notify(QObject* rec,
+                    QEvent* ev)
+{
+  try
+    {
+      return QCoreApplication::notify(rec,ev);
+    }
+  catch(std::exception const& e)
+    {
+      ELLE_ERR("Handler exception caught: %s", e.what());
+    }
+  catch(...)
+    {
+      ELLE_ERR("Handler exception caught an unknown exception.");
+    }
+  return false;
+}
