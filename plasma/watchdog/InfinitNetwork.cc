@@ -431,6 +431,23 @@ void InfinitNetwork::_start_process()
             << "-u" << this->_manager.user().c_str()
             ;
 
+  // XXX[rename into [network-name].log]
+  std::string log_out =
+    elle::os::path::join(
+      common::infinit::home(),
+      "networks",
+      _description.name,
+      "out.log").c_str();
+  std::string log_err =
+    elle::os::path::join(
+      common::infinit::home(),
+      "networks",
+      _description.name,
+      "err.log").c_str();
+
+  this->_process.setStandardOutputFile(log_out.c_str());
+  this->_process.setStandardErrorFile(log_err.c_str());
+
   this->_process.start(
       common::infinit::binary_path("8infinit").c_str(),
       arguments
