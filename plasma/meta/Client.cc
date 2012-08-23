@@ -413,7 +413,7 @@ namespace plasma
         json::Array local_addr;
         local_addr.push_back(*local_ip);
         local_addr.push_back(local_port);
-        request["local_address"] = local_addr;
+        request["local"] = local_addr;
       }
 
       if (external_ip != nullptr)
@@ -421,7 +421,7 @@ namespace plasma
         json::Array external_addr;
         external_addr.push_back(*external_ip);
         external_addr.push_back(external_port);
-        request["external_address"] = external_addr;
+        request["external"] = external_addr;
       }
       return this->_post<NetworkConnectDeviceResponse>(
           "/network/connect_device",

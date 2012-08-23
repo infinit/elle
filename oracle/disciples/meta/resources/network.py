@@ -208,13 +208,15 @@ class Nodes(_Page):
             "network_id": network['_id'],
             "nodes": [],
         }
-        for node in network['nodes'].keys():
-            for addr_kind in ['local_address', 'extern_address']:
+        addrs = {'local': [], 'external': []}
+        for node in network['nodes'].values():
+            for addr_kind in ['local', 'external']:
                 addr = node[addr_kind]
                 if addr and addr[0] and addr[1]:
-                    res['nodes'].append(
+                    addrs[addr_kind].append(
                         addr[0] + ':' + str(addr[1]),
                     )
+        res['nodes'] = addrs['local'] + addrs['external']
         print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
@@ -343,9 +345,9 @@ class AddDevice(_Page):
         if not device:
             return self.error("Device not found.")
         # this set or reset the device node.
-        network['nodes'][device_id] = {
-                "local_address": None,
-                "external_address": None,
+        network['nodes'][str(device_id)] = {
+                "local": None,
+                "external": None,
         }
         database.networks().save(network)
         return self.success({
@@ -360,10 +362,10 @@ class ConnectDevice(_Page):
         "device_id": "the device id",
 
         # Optional local ip, port
-        "local_address": (192.168.x.x, 62014),
+        "local": (192.168.x.x, 62014),
 
         # optional external address and port
-        "external_address": (212.27.23.67, 62015)
+        "external": (212.27.23.67, 62015)
     }
         -> {
             "updated_network_id": "the same network id",
@@ -382,15 +384,15 @@ class ConnectDevice(_Page):
         device = database.devices().find_one(device_id)
         if not device:
             return self.error("Device not found.")
-        node = network['nodes'].get('device_id')
+        node = network['nodes'].get(str(device_id))
         if node is None:
             return self.error("Cannot find the device in this network")
-        local_address = self.data.get('local_address')
+        local_address = self.data.get('local')
         if local_address is not None:
-            node['local_address'] = (local_address[0], int(local_address[1]))
-        external_address = self.data.get('external_address')
+            node['local'] = (local_address[0], int(local_address[1]))
+        external_address = self.data.get('external')
         if external_address is not None:
-            node['external_address'] = (external_address[0], int(external_address[1]))
+            node['external'] = (external_address[0], int(external_address[1]))
         database.networks.save(network)
         print("Connected device", device['name'], "(%s)" % device_id,
               "to network", network['name'], "(%s)" % network_id,
@@ -438,7 +440,7 @@ class Create(_Page):
             'owner': self.user['_id'],
             'model': 'slug',
             'users': [self.user['_id']],
-            'nodes': [],
+            'nodes': {},
             'descriptor': None,
             'root_block': None,
             'root_address': None,
