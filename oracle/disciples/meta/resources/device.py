@@ -32,10 +32,6 @@ class One(Page):
             -> {
                 '_id': "id",
                 'name': "pretty name",
-                'addresses': [
-                    {'ip': 'ip address 1', 'port': 1912},
-                    ...
-                ],
                 'passport': "passport string",
             }
     """
@@ -57,9 +53,6 @@ class Create(Page):
     Create a new device
         POST /device/create {
             'name': 'pretty name', # required
-            'local_ip': 'local ip address',
-            'local_port': 1912,
-            'extern_port': 343,
         }
             -> {
                 'success': True,
@@ -80,18 +73,6 @@ class Create(Page):
             'name': name,
             'owner': self.user['_id'],
         }
-
-        to_save['local_address'] = {
-            'ip': device['local_ip'],
-            'port': int(device.get('local_port', 0)),
-        }
-
-        to_save['extern_address'] = {
-            'ip': web.ctx.env['REMOTE_ADDR'],
-            'port': int(device.get('extern_port', to_save['local_address']['port'])),
-        }
-        print("CREATE DEVICE local addr: %s" % to_save['local_address'])
-        print("CREATE DEVICE extern addr: %s" % to_save['extern_address'])
 
         id_ = database.devices().insert(to_save)
         assert id_ is not None
@@ -117,9 +98,6 @@ class Update(Page):
         POST /device/update {
             '_id': "id",
             'name': 'pretty name', # optional
-            'local_ip': 'local ip address',
-            'local_port': 1912,
-            'extern_port': 343,
         }
             -> {
                 'success': True,
@@ -145,19 +123,6 @@ class Update(Page):
                 return self.error("You have to provide a valid device name")
             to_save['name'] = name
 
-        if 'local_ip' in device:
-            to_save['local_address']['ip'] = device['local_ip']
-        if 'local_port' in device:
-            to_save['local_address']['port'] = device['local_port']
-
-        to_save['extern_address'] = {
-            'ip': web.ctx.env['REMOTE_ADDR'],
-            'port': device.get('extern_port', to_save['local_address']['port']),
-        }
-
-        print("CREATE DEVICE local addr: %s" % to_save['local_address'])
-        print("CREATE DEVICE extern addr: %s" % to_save['extern_address'])
-
         id_ = database.devices().save(to_save)
         return self.success({
             'updated_device_id': id_,
@@ -179,7 +144,7 @@ class Delete(Page):
 
     def DELETE(self):
         self.requireLoggedIn()
-        _id = self.data['_id']
+        _id = database.ObjectId(self.data['_id'])
         try:
             devices = self.user['devices']
             idx = devices.index(_id)
@@ -190,8 +155,18 @@ class Delete(Page):
                 'error': "The device '%s' was not found" % (_id),
             })
         database.users().save(self.user)
+        for network_id in self.user['networks']:
+            network = database.networks.find_one(network_id)
+            assert network is not None
+            try:
+                network['devices'].remove(_id)
+            except:
+                print("Warning: network", network_id, "does not contain any device", _id)
+                continue
+            database.networks.save(network)
+
         database.devices().find_and_modify({
-            '_id': database.ObjectId(_id),
+            '_id': _id,
             'owner': self.user['_id'], #not required
         }, remove=True)
         return self.success({

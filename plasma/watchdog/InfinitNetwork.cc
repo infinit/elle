@@ -212,8 +212,6 @@ void InfinitNetwork::_create_network_root_block()
     this->_on_got_descriptor(this->_manager.meta().update_network(
           this->_description._id,
           nullptr,
-          nullptr,
-          nullptr,
           &root_block_,
           &root_address_,
           &access_block_,
@@ -291,53 +289,13 @@ void InfinitNetwork::_register_device()
       throw std::runtime_error("Couldn't load the passport file :'(");
     }
 
-  LOG("search device for the passport id: %s", passport.id);
-  auto it = std::find(
-      this->_description.devices.begin(),
-      this->_description.devices.end(),
-      passport.id
-  );
-
-  if (it == this->_description.devices.end())
-    {
-      LOG("Registering devices for network %s", this->_description.name);
-      for (auto const& dev : this->_description.devices)
-        {
-          LOG("\t- %s", dev);
-        }
-      this->_manager.meta().network_add_device(
-          this->_description._id,
-          passport.id
-      );
-      try
-        {
-          this->_on_device_registered(this->_manager.meta().network_add_device(
-                this->_description._id,
-                passport.id
-          ));
-          this->_description.devices.push_back(passport.id);
-        }
-      catch (std::exception const& err)
-        {
-          LOG("Couldn't register the device: %s", err.what());
-        }
-    }
-  else
-    {
-      LOG("Get network nodes.");
-      this->_on_network_nodes(this->_manager.meta().network_nodes(
-          this->_description._id
-      ));
-    }
-}
-
-void InfinitNetwork::_on_device_registered(meta::UpdateNetworkResponse const& response)
-{
-  LOG("Device successfully registered.");
-  assert(response.updated_network_id == this->_description._id);
-  this->_on_network_nodes(this->_manager.meta().network_nodes(
-      this->_description._id
-  ));
+    this->_manager.meta().network_add_device(
+        this->_description._id,
+        passport.id
+    );
+    this->_on_network_nodes(this->_manager.meta().network_nodes(
+        this->_description._id
+    ));
 }
 
 /// Update the network nodes set when everything is good
@@ -414,7 +372,9 @@ void InfinitNetwork::_start_process()
       link_path += ".lnk";
 #endif
       if (!QFile(this->_mount_point.path()).link(link_path))
+      {
         ELLE_DEBUG("Cannot create links to mount points.");
+      }
     }
   else
     ELLE_WARN("Cannot create mount point directory.");

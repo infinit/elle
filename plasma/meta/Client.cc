@@ -142,7 +142,6 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
       res.group_address = "";
       res.descriptor = "";
     }
-  ar & named("devices", res.devices);
   ar & named("users", res.users);
 }
 
@@ -273,34 +272,22 @@ namespace plasma
     //- Devices ---------------------------------------------------------------
 
     CreateDeviceResponse
-    Client::create_device(std::string const& name,
-                          std::string const& local_address,
-                          uint16_t port)
+    Client::create_device(std::string const& name)
     {
       json::Dictionary request{std::map<std::string, std::string>{
           {"name", name},
-          {"local_ip", local_address},
-          {"local_port", elle::sprint(port)},
       }};
       return this->_post<CreateDeviceResponse>("/device/create", request);
     }
 
     UpdateDeviceResponse
     Client::update_device(std::string const& _id,
-                          std::string const* name,
-                          std::string const* local_address,
-                          uint16_t port)
+                          std::string const& name)
     {
       json::Dictionary request{std::map<std::string, std::string>{
             {"_id", _id},
+            {"name", name},
       }};
-
-      if (name != nullptr)
-        request["name"] = *name;
-      if (local_address != nullptr)
-        request["local_ip"] = *local_address;
-      if (port != 0)
-        request["local_port"] = port;
 
       return this->_post<UpdateDeviceResponse>("/device/update", request);
 
@@ -338,8 +325,6 @@ namespace plasma
     UpdateNetworkResponse
     Client::update_network(std::string const& _id,
                            std::string const* name,
-                           std::list<std::string> const* users,
-                           std::list<std::string> const* devices,
                            std::string const* root_block,
                            std::string const* root_address,
                            std::string const* access_block,
@@ -352,10 +337,6 @@ namespace plasma
       }};
       if (name != nullptr)
         request["name"] = *name;
-      if (users != nullptr)
-        request["users"] = *users;
-      if (devices != nullptr)
-        request["devices"] = *devices;
 
       assert(((root_block == nullptr && root_address == nullptr) ||
               (root_block != nullptr && root_address != nullptr)) &&
@@ -412,6 +393,40 @@ namespace plasma
           {"device_id", device_id},
       }};
       return this->_post<NetworkAddDeviceResponse>("/network/add_device", request);
+    }
+
+    NetworkConnectDeviceResponse
+    Client::network_connect_device(std::string const& network_id,
+                                   std::string const& device_id,
+                                   std::string const* local_ip,
+                                   uint16_t local_port,
+                                   std::string const* external_ip,
+                                   uint16_t external_port)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"_id", network_id},
+          {"device_id", device_id},
+      }};
+
+      if (local_ip != nullptr)
+      {
+        json::Array local_addr;
+        local_addr.push_back(*local_ip);
+        local_addr.push_back(local_port);
+        request["local_address"] = local_addr;
+      }
+
+      if (external_ip != nullptr)
+      {
+        json::Array external_addr;
+        external_addr.push_back(*external_ip);
+        external_addr.push_back(external_port);
+        request["external_address"] = external_addr;
+      }
+      return this->_post<NetworkConnectDeviceResponse>(
+          "/network/connect_device",
+          request
+      );
     }
 
     //- Properties ------------------------------------------------------------
@@ -571,8 +586,10 @@ namespace plasma
         throw std::runtime_error("Invalid response");
       if (status_code != 200)
         {
-          throw std::runtime_error("Response returned with status code " +
-              elle::sprint(status_code));
+          throw std::runtime_error(
+              method + "'" + body + "'" + uri + " returned HTTP code " +
+              elle::sprint(status_code) + ": " + status_message
+          );
         }
 
       // Read the response headers, which are terminated by a blank line.

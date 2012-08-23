@@ -66,20 +66,7 @@ namespace plasma
       std::string              group_block;
       std::string              group_address;
       std::string              descriptor;
-      std::list<std::string>   devices;
       std::list<std::string>   users;
-    };
-
-    struct CreateDeviceResponse : Response
-    {
-      std::string             created_device_id;
-      std::string             passport;
-    };
-
-    struct UpdateDeviceResponse : Response
-    {
-      std::string             updated_device_id;
-      std::string             passport;
     };
 
     struct CreateNetworkResponse : Response
@@ -100,6 +87,19 @@ namespace plasma
 
     typedef UpdateNetworkResponse NetworkAddUserResponse;
     typedef UpdateNetworkResponse NetworkAddDeviceResponse;
+    typedef UpdateNetworkResponse NetworkConnectDeviceResponse;
+
+    struct CreateDeviceResponse : Response
+    {
+      std::string             created_device_id;
+      std::string             passport;
+    };
+
+    struct UpdateDeviceResponse : Response
+    {
+      std::string             updated_device_id;
+      std::string             passport;
+    };
 
     /// Error values.
     enum class Error
@@ -171,15 +171,11 @@ namespace plasma
       search_users(std::string const& key);
 
       CreateDeviceResponse
-      create_device(std::string const& name,
-                    std::string const& local_address,
-                    uint16_t port);
+      create_device(std::string const& name);
 
       UpdateDeviceResponse
       update_device(std::string const& _id,
-                    std::string const* name,
-                    std::string const* local_address,
-                    uint16_t port);
+                    std::string const& name);
 
       NetworkResponse
       network(std::string const& _id);
@@ -196,8 +192,6 @@ namespace plasma
       UpdateNetworkResponse
       update_network(std::string const& _id,
                      std::string const* name,
-                     std::list<std::string> const* users,
-                     std::list<std::string> const* devices,
                      std::string const* root_block,
                      std::string const* root_address,
                      std::string const* access_block,
@@ -213,6 +207,14 @@ namespace plasma
       NetworkAddDeviceResponse
       network_add_device(std::string const& network_id,
                          std::string const& device_id);
+
+      NetworkConnectDeviceResponse
+      network_connect_device(std::string const& network_id,
+                             std::string const& device_id,
+                             std::string const* local_ip,
+                             uint16_t local_port,
+                             std::string const* external_ip = nullptr,
+                             uint16_t external_port = 0);
 
     public:
       void token(std::string const& tok);

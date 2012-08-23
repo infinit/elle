@@ -44,7 +44,6 @@ namespace plasma
       void _on_any_error(meta::Error error,
                          std::string const& reason);
       void _register_device();
-      void _on_device_registered(meta::UpdateNetworkResponse const& response);
       void _on_network_nodes(meta::NetworkNodesResponse const& response);
       void _start_process();
 

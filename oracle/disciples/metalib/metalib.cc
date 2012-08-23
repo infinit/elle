@@ -1,3 +1,5 @@
+#include "metalib.hh"
+
 #include <iostream>
 
 #include <lune/Lune.hh>
@@ -6,7 +8,6 @@
 
 #include "identity.hh"
 #include "passport.hh"
-#include "metalib.hh"
 #include "network.hh"
 
 // XXX When Qt is out, remove this

@@ -115,6 +115,7 @@ class AddUser(_Page):
     """
     Add a user in a network
         POST {
+            "_id": "network id",
             "user_id": "id of the user to add",
         }
             -> {
@@ -185,7 +186,6 @@ class One(_Page):
     __pattern__ = "/network/(.+)/view"
 
     def GET(self, _id):
-        print("Get one network: %s" % _id)
         network = self.network(_id)
         network.pop('owner')
         return self.success(network)
@@ -208,16 +208,12 @@ class Nodes(_Page):
             "network_id": network['_id'],
             "nodes": [],
         }
-        for device_id in network['devices']:
-            device = database.byId(database.devices(), device_id)
-            if not device:
-                print "No more device_id", device['_id']
-                continue
+        for node in network['nodes'].keys():
             for addr_kind in ['local_address', 'extern_address']:
-                addr = device[addr_kind]
-                if addr['port']:
+                addr = node[addr_kind]
+                if addr and addr[0] and addr[1]:
                     res['nodes'].append(
-                        addr['ip'] + ':' + str(addr['port']),
+                        addr[0] + ':' + str(addr[1]),
                     )
         print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
@@ -229,8 +225,8 @@ class Update(_Page):
         POST {
             '_id': "id",
             'name': 'pretty name', # optional
-            'users': [user_id1, ...], # optional
-            'devices': [device_id1, ...], # optional
+            'users': [user_id1, ...], # DEPRECATED
+            'devices': [device_id1, ...], # DEPRECATED
 
             'root_block': "base64 root block", # optional (implies root_address)
             'root_address': "base64 root address", # optional (implies root_block)
@@ -249,6 +245,10 @@ class Update(_Page):
 
     def POST(self):
         self.requireLoggedIn()
+        for k in ['devices', 'users']:
+            if k in self.data:
+                return self.error("key %s is deprecated" % k)
+
         id_ = database.ObjectId(self.data['_id'])
         to_save = self.network(id_)
 
@@ -259,17 +259,6 @@ class Update(_Page):
             except Exception, e:
                 return self.error(str(e))
             to_save['name'] = name
-
-        if 'devices' in self.data:
-            devices = to_save.get('devices', [])
-            devices.extend(self.data['devices'])
-            to_save['devices'] = self._unique_ids_check(devices, self._check_device)
-            print("saving devices of %s" % to_save['name'], to_save['devices'])
-
-        if 'users' in self.data:
-            users = to_save.get('users', [])
-            users.extend(self.data.get('users', []))
-            to_save['users'] = self._unique_ids_check(users, self._check_user)
 
         if 'root_block' in self.data and self.data['root_block'] and \
            'root_address' in self.data and self.data['root_address'] and \
@@ -345,22 +334,69 @@ class AddDevice(_Page):
     def POST(self):
         # XXX What are security check requirement ?
         self.requireLoggedIn()
-        network = database.networks().find_one({
-            "_id": database.ObjectId(self.data["_id"]),
-        })
+        network_id = database.ObjectId(self.data["_id"])
+        device_id = database.ObjectId(self.data["device_id"])
+        network = database.networks().find_one(network_id)
         if not network:
             return self.error("Network not found.")
-        device = database.devices().find_one({
-            "_id": database.ObjectId(self.data["device_id"]),
-        })
+        device = database.devices().find_one(device_id)
         if not device:
             return self.error("Device not found.")
-        devices = network['devices']
-        devices.append(device['_id'])
-        network['devices'] = list(set(devices))
+        # this set or reset the device node.
+        network['nodes'][device_id] = {
+                "local_address": None,
+                "external_address": None,
+        }
         database.networks().save(network)
         return self.success({
             "updated_network_id": network['_id'],
+        })
+
+class ConnectDevice(_Page):
+    """
+    Connect the device to a network (setting ip and port)
+    POST {
+        "_id": "the network id",
+        "device_id": "the device id",
+
+        # Optional local ip, port
+        "local_address": (192.168.x.x, 62014),
+
+        # optional external address and port
+        "external_address": (212.27.23.67, 62015)
+    }
+        -> {
+            "updated_network_id": "the same network id",
+        }
+
+    """
+    __pattern__ = '/network/connect_device'
+
+    def POST(self):
+        self.requireLoggedIn()
+        network_id = database.ObjectId(self.data["_id"])
+        device_id = database.ObjectId(self.data["device_id"])
+        network = database.networks().find_one(network_id),
+        if not network:
+            return self.error("Network not found.")
+        device = database.devices().find_one(device_id)
+        if not device:
+            return self.error("Device not found.")
+        node = network['nodes'].get('device_id')
+        if node is None:
+            return self.error("Cannot find the device in this network")
+        local_address = self.data.get('local_address')
+        if local_address is not None:
+            node['local_address'] = (local_address[0], int(local_address[1]))
+        external_address = self.data.get('external_address')
+        if external_address is not None:
+            node['external_address'] = (external_address[0], int(external_address[1]))
+        database.networks.save(network)
+        print("Connected device", device['name'], "(%s)" % device_id,
+              "to network", network['name'], "(%s)" % network_id,
+              "with", node)
+        return self.success({
+            "updated_network_id": network_id
         })
 
 
@@ -369,8 +405,8 @@ class Create(_Page):
     Create a new network
         POST  {
             'name': 'pretty name', # required
-            'users': [user_id1, ...], # optional
-            'devices': [device_id1, ...], # optional
+            'users': [user_id1, ...], # DEPRECATED
+            'devices': [device_id1, ...], # DEPRECATED
         }
             -> {
                 'success': True,
@@ -389,21 +425,10 @@ class Create(_Page):
         except Exception, e:
             return self.error(str(e))
 
-        devices = filter(
-            self._check_device,
-            map(
-                lambda d: database.ObjectId(d.strip()),
-                self.data.get('devices', [])
-            )
-        )
-        users = filter(
-            self._check_user,
-            map(
-                lambda d: database.ObjectId(d.strip()),
-                self.data.get('users', [])
-            )
-        )
-
+        for k in ['devices', 'users']:
+            if k in self.data:
+                return self.error("The key %s is deprecated" % k)
+        users =[]
         if self.user['_id'] not in users:
             assert isinstance(self.user['_id'], database.ObjectId)
             users.append(self.user['_id'])
@@ -412,8 +437,8 @@ class Create(_Page):
             'name': name,
             'owner': self.user['_id'],
             'model': 'slug',
-            'users': users,
-            'devices': devices,
+            'users': [self.user['_id']],
+            'nodes': [],
             'descriptor': None,
             'root_block': None,
             'root_address': None,

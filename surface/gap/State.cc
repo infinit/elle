@@ -291,25 +291,6 @@ namespace surface
       this->login(email, password);
     }
 
-    namespace detail
-    {
-        std::string
-        get_local_address()
-        {
-          elle::network::Host::Container hosts;
-
-          if (elle::network::Host::Hosts(hosts) == elle::Status::Error)
-            throw Exception(gap_network_error, "Couldn't retrieve host list");
-
-          if (!hosts.size())
-            throw Exception(gap_network_error, "No usable host found !");
-
-          std::string host;
-          hosts[0].Convert(host);
-          return host;
-        }
-    }
-
     bool
     State::has_device() const
     {
@@ -319,14 +300,13 @@ namespace surface
     void
     State::update_device(std::string const& name, bool force_create)
     {
-      std::string local_address = detail::get_local_address();
-      ELLE_DEBUG("Registering new device %s for host: %s", name, local_address);
+      ELLE_DEBUG("Registering device %s", name);
 
       std::string passport_string;
 
       if (force_create || !this->has_device())
         {
-          auto res = this->_api->create_device(name, local_address, 0);
+          auto res = this->_api->create_device(name);
           passport_string = res.passport;
           ELLE_DEBUG("Created device id: %s", res.created_device_id);
         }
@@ -338,12 +318,7 @@ namespace surface
             throw Exception(gap_internal_error, "Cannot load the passport");
 
           ELLE_DEBUG("Passport id: %s", passport.id);
-          auto res = this->_api->update_device(
-              passport.id,
-              &name,
-              &local_address,
-              0);
-
+          auto res = this->_api->update_device(passport.id, name);
           passport_string = res.passport;
         }
 
@@ -700,7 +675,9 @@ namespace surface
       ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
 
       if (permissions & gap_exec)
-        ELLE_WARN("XXX: setting executable permissions not yet implemented");
+        {
+          ELLE_WARN("XXX: setting executable permissions not yet implemented");
+        }
 
       QProcess p;
       p.start(access_binary.c_str(), arguments);

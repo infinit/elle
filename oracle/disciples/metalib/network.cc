@@ -1,3 +1,5 @@
+#include "metalib.hh"
+
 #include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
 #include <elle/types.hh>
@@ -27,7 +29,6 @@
 # undef slot
 #endif
 
-#include "metalib.hh"
 #include "network.hh"
 
 

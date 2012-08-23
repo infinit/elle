@@ -180,11 +180,21 @@ namespace hole
                 if (passport.Load() != elle::Status::Ok)
                   throw reactor::Exception(elle::concurrency::scheduler(),
                                            "Cannot load passport");
+                lune::Descriptor descriptor;
+                if (descriptor.Load(Infinit::Network) != elle::Status::Ok)
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "Cannot load descriptor");
                 try
                   {
-                    std::cout << "Register instance port: " << this->_port << std::endl;
+                    std::string address =
+                      _server->local_endpoint().address().to_string();
+                    std::cout << "Register instance address: "
+                              << address << ':' << this->_port
+                              << std::endl;
                     client.token(agent::Agent::meta_token);
-                    client.update_device(passport.id, nullptr, nullptr, this->_port);
+                    client.network_connect_device(descriptor.id(), passport.id,
+                                                  &address,
+                                                  this->_port);
                   }
                 catch (std::exception const& err)
                   {

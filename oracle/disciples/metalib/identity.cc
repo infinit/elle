@@ -1,3 +1,4 @@
+#include "metalib.hh"
 
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/io/Path.hh>
@@ -15,7 +16,6 @@
 #endif
 
 
-#include "metalib.hh"
 #include "identity.hh"
 
 
@@ -68,7 +68,10 @@ static lune::Identity create_identity(elle::String const& id,
   return identity;
 }
 
-extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
+extern "C"
+PyObject*
+metalib_generate_identity(PyObject*,
+                          PyObject* args)
 {
   char const* id = nullptr,
             * login = nullptr,
