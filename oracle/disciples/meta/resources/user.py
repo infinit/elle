@@ -59,6 +59,7 @@ feedback@infinit.io or by visiting feedback.infinit.io. If you have any
 questions, you can reach us on Skype at infinitdotio.
 
 To get started, download Infinit here: http://infinit.io/download.
+
 Your access code is: %(activation_code)s
 
 In order to use Infinit:
