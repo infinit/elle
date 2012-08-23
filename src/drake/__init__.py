@@ -1272,12 +1272,22 @@ class Builder:
 
                     # Update depfiles
                     self._depfile.update()
+                    debug.debug('Write dependencies file %s' % self._depfile,
+                                debug.DEBUG_TRACE_PLUS)
                     if self.__builder_hash is None:
+                        debug.debug('Remove builder dependency file %s' % depfile_builder,
+                                    debug.DEBUG_TRACE_PLUS)
                         depfile_builder.remove()
                     else:
+                        debug.debug('Write builder dependency file %s' % depfile_builder,
+                                    debug.DEBUG_TRACE_PLUS)
                         with open(str(depfile_builder), 'w') as f:
                             print(self.__builder_hash, file = f, end = '')
+                    # FIXME: BUG: remove dynamic dependencies files
+                    # that are no longer present, otherwise this will
+                    # be rebuilt forever.
                     for name in self._depfiles:
+                        debug.debug('Write dependencies file %s' % name, debug.DEBUG_TRACE_PLUS)
                         self._depfiles[name].update()
                     self.__executed = True
                 else:
