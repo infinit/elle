@@ -65,6 +65,7 @@ class _Page(Page):
             map(lambda d: database.ObjectId(str(d).strip()), ids)
         )))
 
+NETWORK_INVITATION_NEWUSER_SUBJECT = "%(added_by)s wants you to join his/her '%(network_name)s network on Infinit!
 NETWORK_INVITATION_SUBJECT = "[Infinit] %(added_by)s shared files with you !"
 NETWORK_INVITATION_CONTENT = """
 Hi %(recipient)s,
