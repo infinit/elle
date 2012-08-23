@@ -63,6 +63,7 @@ To get started, download Infinit here: http://infinit.io/download.
 Your access code is: %(activation_code)s
 
 In order to use Infinit:
+
     1) Install Infinit and create an account with your access code.
 
     2) Create a network.

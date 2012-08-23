@@ -432,18 +432,39 @@ void InfinitNetwork::_start_process()
             ;
 
   // XXX[rename into [network-name].log]
-  std::string log_out =
-    elle::os::path::join(
+  std::string network_dir = elle::os::path::join(
       common::infinit::home(),
       "networks",
-      _description.name,
-      "out.log").c_str();
-  std::string log_err =
-    elle::os::path::join(
-      common::infinit::home(),
-      "networks",
-      _description.name,
-      "err.log").c_str();
+      _description.name
+  );
+
+  std::string log_out = elle::os::path::join(network_dir, "out.log").c_str();
+  std::string log_err = elle::os::path::join(network_dir, "err.log").c_str();
+  std::string pid_file = elle::os::path::join(network_dir, "run.pid").c_str();
+
+  if (elle::os::path::exists(pid_file))
+    {
+      pid_t pid = 0;
+
+        {
+          std::ifstream in(pid_file);
+          if (in.good())
+            in >> pid;
+        }
+
+      if (pid != 0)
+        {
+          kill(pid, SIGINT);
+          sleep(2);
+          kill(pid, SIGKILL);
+        }
+
+        {
+          std::ofstream out(pid_file);
+          if (out.good())
+            out << 0;
+        }
+    }
 
   this->_process.setStandardOutputFile(log_out.c_str());
   this->_process.setStandardErrorFile(log_err.c_str());
@@ -462,7 +483,18 @@ void InfinitNetwork::_start_process()
 
 void InfinitNetwork::_on_process_started()
 {
-  LOG("Process successfully started.");
+  std::string network_dir = elle::os::path::join(
+      common::infinit::home(),
+      "networks",
+      _description.name
+  );
+  std::string pid_file = elle::os::path::join(network_dir, "run.pid").c_str();
+  LOG("Process successfully started (pid = %s)", this->_process.pid());
+    {
+      std::ofstream out(pid_file);
+      if (out.good())
+        out << this->_process.pid();
+    }
 }
 
 void InfinitNetwork::_on_process_error(QProcess::ProcessError)
