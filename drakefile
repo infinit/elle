@@ -40,6 +40,7 @@ def configure(prefix = '.'):
     'src/drake/opencv.py',
     'src/drake/python/__init__.py',
     'src/drake/sched.py',
+    'src/drake/threadpool.py',
     'src/drake/urbi/__init__.py',
     'src/drake/utils.py',
     )

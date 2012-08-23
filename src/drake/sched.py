@@ -13,6 +13,7 @@ import time
 import traceback
 import types
 import drake.debug
+import drake.threadpool
 
 class Frozen:
   pass
@@ -62,7 +63,7 @@ class Scheduler:
 
     self.__running = True
     self.die = False
-    Scheduler.__pool = ThreadPool()
+    Scheduler.__pool = drake.threadpool.ThreadPool()
 
     try:
       while True:
@@ -265,62 +266,6 @@ class Coroutine(Waitable):
       self.__scheduler.unfreeze(self)
 
 
-class ThreadPool:
-
-  class Runner(threading.Thread):
-
-    def __init__(self, pool):
-      threading.Thread.__init__(self)
-      self.__cond = threading.Condition()
-      self.__f = None
-      self.__pool = pool
-      self.__ready = False
-      self.start()
-      cond = pool._ThreadPool__cond
-      with cond:
-        if not self.__ready:
-          cond.wait()
-
-    def run(self):
-      self.__cond.acquire()
-      cond = self.__pool._ThreadPool__cond
-      with cond:
-        self.__ready = True
-        cond.notify()
-      while True:
-        assert self.__f is None
-        self.__cond.wait()
-        if self.__f is None:
-          return
-        self.__f()
-        self.__f = None
-        with self.__pool._ThreadPool__lock:
-          self.__pool._ThreadPool__threads.append(self)
-
-    def wake(self, f):
-      with self.__cond:
-        self.__f = f
-        self.__cond.notify()
-
-  def __init__(self):
-    self.__threads = []
-    self.__lock = threading.Semaphore(1)
-    self.__cond = threading.Condition()
-
-  def run(self, f):
-    with self.__lock:
-      if self.__threads:
-        thread = self.__threads[0]
-        del self.__threads[0]
-      else:
-        thread = ThreadPool.Runner(self)
-
-    thread.wake(f)
-
-  def stop(self):
-    with self.__lock:
-      for thread in self.__threads:
-        thread.wake(None)
 
 
 class ThreadedOperation(Waitable):
