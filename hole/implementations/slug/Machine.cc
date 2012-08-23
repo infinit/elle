@@ -27,6 +27,8 @@
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Morgue.hh>
 #include <elle/network/TCPSocket.hh>
+#include <elle/utility/Time.hh>
+#include <elle/utility/Duration.hh>
 
 #include <Infinit.hh>
 
@@ -39,7 +41,8 @@
 ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 // XXX[to improve later with a configuration variable]
-#undef CACHE
+#define CACHE
+#define CACHE_LIFESPAN 30 /* in seconds */
 
 namespace hole
 {
@@ -53,7 +56,7 @@ namespace hole
       `----------*/
 
 #ifdef CACHE
-      static std::set<elle::String> cache;
+      static std::map<elle::String, elle::utility::Time> cache;
 #endif
 
       /*-------------.
@@ -469,20 +472,41 @@ namespace hole
         // it already has the last version and the other nodes will publish
         // any new version.
         elle::String unique = address.unique();
+        auto iterator = cache.find(unique);
 
-        if (cache.find(unique) == cache.end())
+        if (iterator == cache.end())
           {
             elle::String unique = address.unique();
 
-            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+            ELLE_LOG("[%p] cache register on '%s'", *this, unique);
 
-            auto result = cache.insert(unique);
+            elle::utility::Time current;
+
+            if (current.Current() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the current time");
+
+            auto result =
+              cache.insert(std::pair<elle::String,
+                                     elle::utility::Time>(unique, current));
 
             if (result.second == false)
               throw reactor::Exception(
                 elle::concurrency::scheduler(),
                 elle::sprintf("unable to insert the address '%s' in the cache",
                               unique));
+          }
+        else
+          {
+            elle::utility::Time current;
+
+            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+
+            if (current.Current() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the current time");
+
+            iterator->second = current;
           }
 #endif
       }
@@ -629,33 +653,65 @@ namespace hole
 
         if (iterator != cache.end())
           {
-            MutableBlock* block;
+            elle::utility::Time deadline =
+              iterator->second +
+              elle::utility::Duration(elle::utility::Duration::UnitSeconds,
+                                      CACHE_LIFESPAN);
+            elle::utility::Time current;
 
-            nucleus::Nucleus::Factory.Build(address.component, block);
+            if (current.Current() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the current time");
 
-            Ptr<nucleus::proton::Block> ptr(block);
-
-            // Make sure the block exists, otherwise, fall down to the
-            // usual case: retrieving the block from the network.
-            if (block->Exist(Hole::Implementation->network,
-                             address,
-                             Version::Last) == elle::Status::True)
+            if (current < deadline)
               {
-                ELLE_LOG("[%p] cache hit on '%s'", *this, unique);
+                // In this case, the block is still valid and can therefore
+                // be used.
+                MutableBlock* block;
 
-                // Load the block.
-                if (block->Load(Hole::Implementation->network,
-                                address,
-                                Version::Last) == elle::Status::Error)
-                  throw reactor::Exception(elle::concurrency::scheduler(),
-                                           "unable to load the block");
+                nucleus::Nucleus::Factory.Build(address.component, block);
 
-                return (ptr);
+                Ptr<nucleus::proton::Block> ptr(block);
+
+                // Make sure the block exists, otherwise, fall down to the
+                // usual case: retrieving the block from the network.
+                if (block->Exist(Hole::Implementation->network,
+                                 address,
+                                 Version::Last) == elle::Status::True)
+                  {
+                    ELLE_LOG("[%p] cache hit on '%s'", *this, unique);
+
+                    // Load the block.
+                    if (block->Load(Hole::Implementation->network,
+                                    address,
+                                    Version::Last) == elle::Status::Error)
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               "unable to load the block");
+
+                    return (ptr);
+                  }
+                else
+                  {
+                    ELLE_LOG("[%p] the local block '%s' is invalid", *this, unique);
+                  }
+              }
+            else
+              {
+                // Otherwise, the block must be discarded, as too old to
+                // be used.
+                //
+                // And the process must fall back to the original one which
+                // consists in retrieving the block from peers.
+
+                ELLE_LOG("[%p] cache expiration on '%s'", *this, unique);
+
+                cache.erase(iterator);
               }
           }
 #endif
 
-        ELLE_TRACE_SCOPE("retrieving the block from the network");
+        ELLE_TRACE_SCOPE("[%p] retrieving the block '%s' from the network",
+                         this, address);
 
         for (auto neighbour: this->_hosts)
           {
@@ -830,19 +886,41 @@ namespace hole
         // block as up-to-date locally, meaning that the machine no
         // longer needs to fetch it from the other peers. Instead
         // the peers will notify everyone of the updated versions.
-        if (cache.find(unique) == cache.end())
+        iterator = cache.find(unique);
+
+        if (iterator == cache.end())
           {
             elle::String unique = address.unique();
 
-            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+            ELLE_LOG("[%p] cache register on '%s'", *this, unique);
 
-            auto result = cache.insert(unique);
+            elle::utility::Time current;
+
+            if (current.Current() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the current time");
+
+            auto result =
+              cache.insert(std::pair<elle::String,
+                                     elle::utility::Time>(unique, current));
 
             if (result.second == false)
               throw reactor::Exception(
                 elle::concurrency::scheduler(),
                 elle::sprintf("unable to insert the address '%s' in the cache",
                               unique));
+          }
+        else
+          {
+            elle::utility::Time current;
+
+            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+
+            if (current.Current() == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to retrieve the current time");
+
+            iterator->second = current;
           }
 #endif
 
