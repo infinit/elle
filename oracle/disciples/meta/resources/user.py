@@ -46,21 +46,39 @@ class FromPublicKey(Page):
 
 INVITATION_SUBJECT = "Invitation to test Infinit!"
 INVITATION_CONTENT = """
-Dear early beta tester,
+Dear Alpha tester,
 
-    This is an official invitation to test Infinit, just download it for your
-platform and paste your activation code into the registration form.
+Welcome to Infinit! You are one of the first individuals to get to try it out!
 
-Activation code: %(activation_code)s
+Remember that the version you will be using is still quite basic and only
+functions in a local network at the moment. It may still have bugs and the
+interface is still not in its public version.
 
-Download here: http://infinit.io/download
+You can report bugs or simply tell us what you think by sending us an email at
+feedback@infinit.io or by visiting feedback.infinit.io. If you have any
+questions, you can reach us on Skype at infinitdotio.
+
+To get started, download Infinit here: http://infinit.io/download.
+Your access code is: %(activation_code)s
+
+In order to use Infinit:
+    1) Install Infinit and create an account with your access code.
+
+    2) Create a network.
+
+    3) Drag and drop other users into your network.
+
+    4) Drag and drop files into your network giving everyone read-only access
+       to them.
+
+If there are other people with whom you would like to use Infinit, please let
+us know by sending an email to community@infinit.io.
 
 All the best,
 
 --%(space)s
-The Infinit team
+The Infinit Team
 http://infinit.io
-
 """.strip()
 
 class Invite(Page):
