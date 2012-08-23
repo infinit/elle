@@ -411,10 +411,17 @@ class Path(object):
         False
         >>> Path('/foo/bar') == Path('/foo/bar')
         True
+        >>> Path('') == Path('.')
+        True
         """
         if rhs.__class__ != Path:
             rhs = Path(rhs)
-        return self.__path == rhs.__path
+        def neutralize(p):
+            if not p:
+                return ['.']
+            else:
+                return p
+        return neutralize(self.__path) == neutralize(rhs.__path)
 
     def __truediv__(self, rhs):
         """The concatenation of self and rhs.
