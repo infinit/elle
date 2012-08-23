@@ -314,6 +314,7 @@ def re_input(prompt, pattern=".+", regexp=None, errmsg="Input is not valid", def
     return res
 
 def register(state):
+    import socket
     fullname = re_input("Fullname", pattern='[\w ]{3,64}')
     email = re_input("Email", regexp=EMAIL_REGEXP)
     while True:
@@ -321,18 +322,22 @@ def register(state):
         password2 = getpass.getpass("confirm password: ")
         if password != password2:
             print("Passwords don't match!")
+            continue
         elif len(password) < 4:
             print("Password too short")
+            continue
+        dev_name = re_input(
+          "Computer name",
+          pattern="[\w ]{3,64}",
+          default=socket.gethostname().strip(),
+        )
+        activation_code = re_input("Activation code")
+        try:
+          state.register(fullname, email, password, dev_name, activation_code)
+        except:
+          pass
         else:
-            break
-    import socket
-    dev_name = re_input(
-        "Computer name",
-        pattern="[\w ]{3,64}",
-        default=socket.gethostname().strip(),
-    )
-    activation_code = re_input("Activation code")
-    state.register(fullname, email, password, dev_name, activation_code)
+          break
 
 def login(state):
     email=None
