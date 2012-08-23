@@ -65,8 +65,8 @@ class _Page(Page):
             map(lambda d: database.ObjectId(str(d).strip()), ids)
         )))
 
-NETWORK_INVITATION_NEWUSER_SUBJECT = "%(added_by)s wants you to join the '%(network_name)s' network on Infinit!"
-NETWORK_INVITATION_NEWUSER_CONTENT = """
+NETWORK_INVITATION_NEWUSER_SUBJECT = u"%(added_by)s wants you to join the '%(network_name)s' network on Infinit!"
+NETWORK_INVITATION_NEWUSER_CONTENT = u"""
 Hi %(recipient)s,
 
 %(added_by)s has added you to the '%(network_name)s' network on Infinit.
@@ -89,8 +89,8 @@ The Infinit Team
 infinit.io
 """.strip()
 
-NETWORK_INVITATION_SUBJECT = "%(added_by)s has just added you to the '%(network_name)s' network on Infinit!"
-NETWORK_INVITATION_CONTENT = """
+NETWORK_INVITATION_SUBJECT = u"%(added_by)s has just added you to the '%(network_name)s' network on Infinit!"
+NETWORK_INVITATION_CONTENT = u"""
 Hi %(recipient)s,
 
 %(added_by)s has added you to the '%(network_name)s' network. Just launch
