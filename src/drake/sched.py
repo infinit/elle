@@ -37,7 +37,7 @@ class Scheduler:
     self.reset()
     Scheduler.__instance = self
     self.__lock = threading.Condition()
-    self.__signaled = []
+    self.__scheduled = []
 
   def reset(self):
     self.__coroutines = []
@@ -75,21 +75,21 @@ class Scheduler:
           raise e
         if self.__coroutines:
           with self.__lock:
-            for waitable in self.__signaled:
-              waitable.signal()
-            self.__signaled = []
+            for f in self.__scheduled:
+              f()
+            self.__scheduled = []
         elif not self.__coroutines_frozen:
           self.debug('no more coroutine, dying')
           break
         else:
           while not self.__coroutines:
             with self.__lock:
-              if not self.__signaled:
+              if not self.__scheduled:
                 self.__lock.wait()
-              assert self.__signaled
-              for waitable in self.__signaled:
-                waitable.signal()
-              self.__signaled = []
+              assert self.__scheduled
+              for f in self.__scheduled:
+                f()
+              self.__scheduled = []
 
         i = 0
         while i < len(self.__coroutines):
@@ -135,9 +135,9 @@ class Scheduler:
     finally:
       self.__local.coroutine = prev
 
-  def signal(self, waitable):
+  def schedule(self, f):
     with self.__lock:
-      self.__signaled.append(waitable)
+      self.__scheduled.append(f)
       self.__lock.notify()
 
 class Waitable:
@@ -275,7 +275,7 @@ class ThreadedOperation(Waitable):
 
   def __run(self):
     self.run()
-    Scheduler.scheduler().signal(self)
+    Scheduler.scheduler().schedule(self.signal)
 
 def coro_yield(handle_exceptions = True):
   Coroutine.current._Coroutine__yield()
