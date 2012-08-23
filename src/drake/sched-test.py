@@ -218,6 +218,10 @@ class TestScheduler(unittest.TestCase):
     lock = sched.Coroutine(lambda: lock_f(beacon), 'lock', self.scheduler)
     def read_f(beacon):
       def check(i):
+        # Yield twice, to make sure lock_f has an execution slot: we
+        # just woke him, so it might be scheduled after us in the next
+        # round.
+        sched.coro_yield()
         sched.coro_yield()
         assert beacon[0] == i
         sched.coro_yield()

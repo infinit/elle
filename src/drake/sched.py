@@ -27,6 +27,33 @@ class CoroutineFrozen(Exception):
 class Terminate(Exception):
   pass
 
+class OrderedSet:
+
+  def __init__(self):
+    self.__set = set()
+    self.__list = []
+
+  def add(self, v):
+    self.__set.add(v)
+    self.__list.append(v)
+
+  def remove(self, v):
+    self.__set.remove(v)
+
+  def __iter__(self):
+    remove = []
+    i = 0
+    while i < len(self.__list):
+      elt = self.__list[i]
+      if elt in self.__set:
+        yield elt
+        i += 1
+      else:
+        del self.__list[i]
+
+  def __bool__(self):
+    return bool(self.__set)
+
 class Scheduler:
 
   __instance = None
@@ -43,7 +70,7 @@ class Scheduler:
     self.__scheduled = []
 
   def reset(self):
-    self.__coroutines = []
+    self.__coroutines = OrderedSet()
     self.__coroutines_frozen = set()
     self.__running = False
     self.__exception = None
@@ -58,7 +85,7 @@ class Scheduler:
 
   def add(self, coro):
     self.debug('new coroutine: %s' % (coro.name))
-    self.__coroutines.append(coro)
+    self.__coroutines.add(coro)
 
   def run(self):
 
@@ -94,37 +121,41 @@ class Scheduler:
                 f()
               self.__scheduled = []
 
-        i = 0
-        while i < len(self.__coroutines):
-          coro = self.__coroutines[i]
-          self.debug('step %s' % coro)
-          try:
-            coro.step()
-          except Exception as e:
-            parent = coro._Coroutine__parent
-            if parent is not None:
-              # FIXME: wake it up ?
-              parent._Coroutine__exception = e
-              parent._Coroutine__traceback = coro._Coroutine__traceback
-            else:
-              self.__exception = e.with_traceback(coro._Coroutine__traceback)
-          if coro.done:
-            self.debug('%s ended' % coro)
-            del self.__coroutines[i]
-          elif coro.frozen:
-            self.debug('%s froze' % coro)
-            self.__coroutines_frozen.add(coro)
-            del self.__coroutines[i]
-          else:
-            i += 1
+        running = list(self.__coroutines)
+        for coro in running:
+          self.__step(coro)
     finally:
       Scheduler.__pool.stop()
       Scheduler.__pool = None
       self.__running = False
 
+  def __step(self, coro):
+    if (coro.done):
+      return
+    self.debug('step %s' % coro)
+    triggered = None
+    try:
+      coro.step()
+    except Exception as e:
+      parent = coro._Coroutine__parent
+      if parent is not None:
+        parent.throw(e, coro._Coroutine__traceback)
+        triggered = parent
+      else:
+        self.__exception = e.with_traceback(coro._Coroutine__traceback)
+    if coro.done:
+      self.debug('%s ended' % coro)
+      self.__coroutines.remove(coro)
+    elif coro.frozen:
+      self.debug('%s froze' % coro)
+      self.__coroutines_frozen.add(coro)
+      self.__coroutines.remove(coro)
+    if triggered is not None:
+      self.__step(triggered)
+
   def unfreeze(self, coro):
     self.debug('%s wakes up' % coro)
-    self.__coroutines.append(coro)
+    self.__coroutines.add(coro)
     self.__coroutines_frozen.remove(coro)
 
   def run_one(self, coro):
@@ -206,6 +237,10 @@ class Coroutine(Waitable):
       for waited in self.__waited:
         waited._Waitable__unwait(self)
       self.__waited.clear()
+
+  @property
+  def parent(self):
+    return self.__parent
 
   @property
   def name(self):
