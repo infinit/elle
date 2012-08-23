@@ -22,6 +22,7 @@
 
 #include <elle/cast.hh>
 #include <elle/network/Network.hh>
+#include <elle/network/Interface.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
 #include <elle/standalone/Report.hh>
@@ -189,15 +190,33 @@ namespace hole
                                            "Cannot load descriptor");
                 try
                   {
-                    std::string address =
-                      _server->local_endpoint().address().to_string();
-                    std::cout << "Register instance address: "
-                              << address << ':' << this->_port
-                              << std::endl;
-                    client.token(agent::Agent::meta_token);
-                    client.network_connect_device(descriptor.id(), passport.id,
-                                                  &address,
-                                                  this->_port);
+                    std::string address;
+                    auto interfaces = elle::network::Interface::get_map(
+                        elle::network::Interface::Filter::only_up
+                      | elle::network::Interface::Filter::no_loopback
+                    );
+                    for (auto const& pair: interfaces)
+                      if (pair.second.ipv4_address.size() > 0 &&
+                          pair.second.mac_address.size() > 0)
+                      {
+                        address = pair.second.ipv4_address;
+                        break;
+                      }
+                    if (address.size() == 0)
+                      {
+                        ELLE_ERR("Cannot find any valid ip address");
+                      }
+                    else
+                      {
+                        std::cout << "Register instance address: "
+                                  << address << ':' << this->_port
+                                  << std::endl;
+                        client.token(agent::Agent::meta_token);
+                        client.network_connect_device(descriptor.id(),
+                                                      passport.id,
+                                                      &address,
+                                                      this->_port);
+                      }
                   }
                 catch (std::exception const& err)
                   {

@@ -67,6 +67,7 @@ add_library(elle
 
   network/Header.cc
   network/Host.cc
+  network/Interface.cc
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
