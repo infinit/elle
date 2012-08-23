@@ -104,6 +104,15 @@ class InfinitShell(cmd.Cmd):
         self.prompt = state.email + '$ '
         super(InfinitShell, self).__init__()
 
+    def default(self, line):
+        if line == 'EOF':
+            print('exit')
+            raise KeyboardInterrupt()
+        print("Command not found:", line)
+
+    def emptyline(self):
+        pass
+
     def _get_args(self, parser, line):
         try:
             return parser.parse_args(line.strip().split())
@@ -326,13 +335,19 @@ def register(state):
     state.register(fullname, email, password, dev_name, activation_code)
 
 def login(state):
-    email = re_input("email", regexp=EMAIL_REGEXP)
+    email=None
     while True:
+        email = re_input("email", regexp=EMAIL_REGEXP, default=email)
         password = getpass.getpass("password: ").strip()
-        if password:
+        if not password:
+            print("empty password not allowed")
+            continue
+        try:
+            state.login(email, password)
+        except Exception as e:
+            print("Cannot login:", e)
+        else:
             break
-        print("empty password not allowed")
-    state.login(email, password)
 
 def update_binaries():
     # Prepare directories
