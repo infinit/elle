@@ -20,6 +20,7 @@ import drake.python
 import drake.utils
 import sched
 
+assert os.system('src/drake/threadpool-test.py') == 0
 assert os.system('src/drake/sched-test.py') == 0
 
 os.chdir('_build')
