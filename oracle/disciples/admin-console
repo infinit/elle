@@ -207,7 +207,7 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
             'force': args.force,
             'dont_send_mail': args.no_mail,
         }
-        res = pythia.Admin().post('/invite', request)
+        res = pythia.Admin().post('/user/invite', request)
         if not res['success']:
             print("ERROR:", res['error'])
 
