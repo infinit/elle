@@ -65,8 +65,12 @@ class ThreadPool:
     thread.wake(f)
 
   def stop(self):
+    threads = set()
+    # Collect the Threads and then stop them. Do not stop the Threads
+    # while holding self.__lock, because Thread.stop joins the thread,
+    # which might require self.__lock to finish, hence a dead-lock.
     with self.__lock:
-      for thread in set(self.__threads):
-        thread.stop()
-      for thread in set(self.__running):
-        thread.stop()
+      threads = threads.union(self.__threads)
+      threads = threads.union(self.__running)
+    for thread in threads:
+      thread.stop()
