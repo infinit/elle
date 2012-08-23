@@ -67,11 +67,9 @@ namespace etoile
       // set the context's state.
       scope->context->state = gear::Context::StateJournaled;
 
-      // XXX iterer d'abord sur les ajouts (chb puis pkb),
-      // XXX puis sur les deletions
-      // XXX en fait c'est deja bon je pense!
+      // XXX[to improve in the future]
 
-      // go through the transcript's actions.
+      // Go through the blocks which needs to be pushed.
       for (scoutor = scope->context->transcript.container.begin();
            scoutor != scope->context->transcript.container.end();
            scoutor++)
@@ -88,6 +86,33 @@ namespace etoile
                                        *action->block) == elle::Status::Error)
                   escape("unable to push the block in the depot");
 
+                break;
+              }
+            case nucleus::proton::Action::TypeWipe:
+              {
+                // Ignore these actions for now.
+
+                break;
+              }
+            case nucleus::proton::Action::TypeUnknown:
+              {
+                escape("unknown action type");
+              }
+            }
+        }
+
+      // Then, process the blocks to wipe.
+      for (scoutor = scope->context->transcript.container.begin();
+           scoutor != scope->context->transcript.container.end();
+           scoutor++)
+        {
+          nucleus::proton::Action* action = *scoutor;
+
+          // perform the action.
+          switch (action->type)
+            {
+            case nucleus::proton::Action::TypePush:
+              {
                 break;
               }
             case nucleus::proton::Action::TypeWipe:
