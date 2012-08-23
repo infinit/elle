@@ -24,6 +24,9 @@ class CoroutineDone(Exception):
 class CoroutineFrozen(Exception):
   pass
 
+class Terminate(Exception):
+  pass
+
 class Scheduler:
 
   __instance = None
@@ -195,6 +198,15 @@ class Coroutine(Waitable):
     if scheduler is not None:
       scheduler.add(self)
 
+  def throw(self, exn, tb = None):
+    self.__exception = exn
+    self.__traceback = tb
+    if self.frozen:
+      self.__unfreeze()
+      for waited in self.__waited:
+        waited._Waitable__unwait(self)
+      self.__waited.clear()
+
   @property
   def name(self):
     return self.__name
@@ -265,6 +277,9 @@ class Coroutine(Waitable):
     try:
       Coroutine.__current = self
       self.__coro.switch()
+    except Terminate:
+      assert not self.__coro
+      self.__done_set()
     except Exception as e:
       self.__done_set()
       self.__traceback = e.__traceback__.tb_next
@@ -287,6 +302,14 @@ class Coroutine(Waitable):
     if self.__scheduler:
       self.__scheduler.unfreeze(self)
 
+  def terminate(self):
+    if self.done:
+      return
+    if self.current:
+      raise Terminate()
+    else:
+      self.throw(Terminate())
+      self.step()
 
 class ThreadedOperation(Signal):
 
