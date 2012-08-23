@@ -148,10 +148,26 @@ class Waitable:
     self.__waiting.add(coro)
     return True
 
-  def signal(self):
+  def __unwait(self, coro):
+    self.__waiting.remove(coro)
+
+  def __wake_all(self):
     for coro in self.__waiting:
       coro._Coroutine__unwait(self)
     self.__waiting.clear()
+
+  def __wake_one(self):
+    if self.__waiting:
+      self.__wake(next(iter(self.__waiting)))
+
+  def __wake(self, coro):
+    coro._Coroutine__unwait(self)
+    self.__waiting.remove(coro)
+
+class Signal(Waitable):
+
+  def signal(self):
+    self._Waitable__wake_all()
 
 class classproperty:
   def __init__(self, f):
@@ -214,13 +230,19 @@ class Coroutine(Waitable):
   def __yield(self, *args, **kwargs):
     self.__coro.parent.switch(*args, **kwargs)
 
-  def wait(self, waitable, handle_exceptions = True):
-    if waitable._Waitable__wait(self):
-      self.__frozen = True
-      self.__waited.add(waitable)
-      if self.current:
-        coro_yield(handle_exceptions = handle_exceptions)
-
+  def wait(self, waitables, handle_exceptions = True):
+    if isinstance(waitables, Waitable):
+      return self.wait([waitables], handle_exceptions)
+    else:
+      freeze = False
+      for waitable in waitables:
+        if waitable._Waitable__wait(self):
+          self.__waited.add(waitable)
+          freeze = True
+      if freeze:
+        self.__frozen = True
+        if self.current:
+          coro_yield(handle_exceptions = handle_exceptions)
 
   def __unwait(self, waitable):
     assert waitable in self.__waited
@@ -257,7 +279,7 @@ class Coroutine(Waitable):
     self.__done = True
     for c in self.__done_hooks:
       c()
-    self.signal()
+    self._Waitable__wake_all()
 
   def __unfreeze(self):
     assert self.__frozen
@@ -266,9 +288,7 @@ class Coroutine(Waitable):
       self.__scheduler.unfreeze(self)
 
 
-
-
-class ThreadedOperation(Waitable):
+class ThreadedOperation(Signal):
 
   def start(self):
     Scheduler._Scheduler__pool.run(self.__run)

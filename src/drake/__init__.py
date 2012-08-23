@@ -1121,7 +1121,7 @@ class Builder:
                     sched.coro_wait(self.__executed_signal)
                 # Otherwise, build it ourselves
                 else:
-                    self.__executed_signal = sched.Waitable()
+                    self.__executed_signal = sched.Signal()
 
             # If we were already executed, just skip
             if self.__executed:
