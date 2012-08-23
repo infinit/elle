@@ -384,17 +384,17 @@ class ConnectDevice(_Page):
         device = database.devices().find_one(device_id)
         if not device:
             return self.error("Device not found.")
-        print("NETWORK NDOES", network['nodes'])
         node = network['nodes'].get(str(device_id))
         if node is None:
             return self.error("Cannot find the device in this network")
         local_address = self.data.get('local')
-        print("SENT DATA", self.data)
         if local_address is not None:
             node['local'] = (local_address[0], int(local_address[1]))
         external_address = self.data.get('external')
         if external_address is not None:
             node['external'] = (external_address[0], int(external_address[1]))
+        else:
+            node['external'] = (web.ctx.env['REMOTE_ADDR'], node['local'] and node['local'][1] or 0)
         database.networks().save(network)
         print("Connected device", device['name'], "(%s)" % device_id,
               "to network", network['name'], "(%s)" % network_id,
