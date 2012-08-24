@@ -20,13 +20,17 @@ namespace reactor
   {
   public:
     Exception(Scheduler& scheduler, const std::string& message);
+    Exception(Scheduler& scheduler, const std::string& message,
+              Backtrace const& bt);
     virtual ~Exception() throw ();
     INFINIT_REACTOR_EXCEPTION(Exception);
-
     Backtrace const& backtrace() const;
+    Exception const* inner_exception() const;
+    void inner_exception(Exception* e);
   private:
     Scheduler& _scheduler;
     Backtrace _backtrace;
+    Exception* _inner;
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);
