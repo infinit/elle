@@ -410,19 +410,50 @@ void InfinitNetwork::_start_process()
           std::ifstream in(pid_file);
           if (in.good())
             in >> pid;
+          in.close();
         }
 
       if (pid != 0)
         {
-          kill(pid, SIGINT);
-          sleep(2);
-          kill(pid, SIGKILL);
+          if (kill(pid, SIGINT) == 0)
+            {
+              (void)kill(pid, SIGKILL);
+            }
+          sleep(1);
+          char const* const umount_arguments[] = {
+#ifdef INFINIT_MACOSX
+              "umount",
+              this->_mount_point.path().toStdString().c_str(),
+#endif
+#ifdef INFINIT_LINUX
+              "fusermount"
+              "-z", "-u",
+              this->_mount_point.path().toStdString().c_str(),
+#endif
+              nullptr
+          };
+          pid_t umount_pid = fork();
+          if (umount_pid == 0)
+            {
+              close(STDERR_FILENO);
+              if (execvp(umount_arguments[0], (char**) umount_arguments) != 0)
+                {
+                  ELLE_ERR("Cannot launch %s", umount_arguments[0]);
+                }
+              exit(1);
+            }
+          else if (umount_pid > 0)
+            {
+              int status;
+              (void) waitpid(umount_pid, &status, 0);
+            }
         }
 
         {
           std::ofstream out(pid_file);
           if (out.good())
             out << 0;
+          out.close();
         }
     }
 
