@@ -510,7 +510,7 @@ namespace hole
             {
               elle::String unique = address.unique();
 
-              ELLE_LOG("%s: cache register on '%s'", *this, unique);
+              ELLE_TRACE("%s: register %s", *this, unique);
 
               elle::utility::Time current;
 
@@ -532,7 +532,7 @@ namespace hole
             {
               elle::utility::Time current;
 
-              ELLE_LOG("%s: cache update on '%s'", *this, unique);
+              ELLE_TRACE("%s: update %s", *this, unique);
 
               if (current.Current() == elle::Status::Error)
                 throw reactor::Exception(elle::concurrency::scheduler(),
@@ -674,6 +674,8 @@ namespace hole
         using nucleus::proton::Block;
 
 #ifdef CACHE
+        elle::String unique = address.unique();
+        auto iterator = cache.find(unique);
         {
           ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
 
@@ -684,8 +686,6 @@ namespace hole
           // else'. Note that this optimization works because all nodes are
           // supposed to be trustworthy (in the 'slug' implementation) and
           // therefore to send the newest version of every modified block.
-          elle::String unique = address.unique();
-          auto iterator = cache.find(unique);
 
           if (iterator != cache.end())
             {
@@ -715,7 +715,7 @@ namespace hole
                                    address,
                                    Version::Last) == elle::Status::True)
                     {
-                      ELLE_LOG("%s: cache hit on '%s'", *this, unique);
+                      ELLE_DEBUG("%s: cache hit on %s", *this, unique);
 
                       // Load the block.
                       if (block->Load(Hole::Implementation->network,
@@ -728,7 +728,7 @@ namespace hole
                     }
                   else
                     {
-                      ELLE_LOG("%s: the local block '%s' is invalid", *this, unique);
+                      ELLE_DEBUG("%s: cache miss on %s", *this, unique);
                     }
                 }
               else
@@ -739,7 +739,7 @@ namespace hole
                   // And the process must fall back to the original one which
                   // consists in retrieving the block from peers.
 
-                  ELLE_LOG("%s: cache expiration on '%s'", *this, unique);
+                  ELLE_DEBUG("%s: cache miss (expired) on %s", *this, unique);
 
                   cache.erase(iterator);
                 }
@@ -932,7 +932,7 @@ namespace hole
             {
               elle::String unique = address.unique();
 
-              ELLE_LOG("%s: cache register on '%s'", *this, unique);
+              ELLE_TRACE("%s: register %s", *this, unique);
 
               elle::utility::Time current;
 
@@ -954,7 +954,7 @@ namespace hole
             {
               elle::utility::Time current;
 
-              ELLE_LOG("%s: cache update on '%s'", *this, unique);
+              ELLE_TRACE("%s: update %s", *this, unique);
 
               if (current.Current() == elle::Status::Error)
                 throw reactor::Exception(elle::concurrency::scheduler(),
