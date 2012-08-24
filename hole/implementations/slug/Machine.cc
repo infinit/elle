@@ -507,7 +507,7 @@ namespace hole
           {
             elle::String unique = address.unique();
 
-            ELLE_LOG("[%p] cache register on '%s'", *this, unique);
+            ELLE_LOG("%s: cache register on '%s'", *this, unique);
 
             elle::utility::Time current;
 
@@ -529,7 +529,7 @@ namespace hole
           {
             elle::utility::Time current;
 
-            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+            ELLE_LOG("%s: cache update on '%s'", *this, unique);
 
             if (current.Current() == elle::Status::Error)
               throw reactor::Exception(elle::concurrency::scheduler(),
@@ -595,7 +595,7 @@ namespace hole
                         }
                       catch (std::exception const& e)
                         {
-                          ELLE_WARN("[%p] remote exception: %s",
+                          ELLE_WARN("%s: remote exception: %s",
                                     this, e.what());
                           continue;
                         }
@@ -613,14 +613,14 @@ namespace hole
                             }
                           else
                             {
-                              ELLE_WARN("[%p] unable to store the block "
+                              ELLE_WARN("%s: unable to store the block "
                                         "'%s' locally",
                                         this, address);
                             }
                         }
                       else
                         {
-                          ELLE_WARN("[%p] unable to validate the block '%s'",
+                          ELLE_WARN("%s: unable to validate the block '%s'",
                                     this, address);
                         }
                     }
@@ -708,7 +708,7 @@ namespace hole
                                  address,
                                  Version::Last) == elle::Status::True)
                   {
-                    ELLE_LOG("[%p] cache hit on '%s'", *this, unique);
+                    ELLE_LOG("%s: cache hit on '%s'", *this, unique);
 
                     // Load the block.
                     if (block->Load(Hole::Implementation->network,
@@ -721,7 +721,7 @@ namespace hole
                   }
                 else
                   {
-                    ELLE_LOG("[%p] the local block '%s' is invalid", *this, unique);
+                    ELLE_LOG("%s: the local block '%s' is invalid", *this, unique);
                   }
               }
             else
@@ -732,14 +732,14 @@ namespace hole
                 // And the process must fall back to the original one which
                 // consists in retrieving the block from peers.
 
-                ELLE_LOG("[%p] cache expiration on '%s'", *this, unique);
+                ELLE_LOG("%s: cache expiration on '%s'", *this, unique);
 
                 cache.erase(iterator);
               }
           }
 #endif
 
-        ELLE_TRACE_SCOPE("[%p] retrieving the block '%s' from the network",
+        ELLE_TRACE_SCOPE("%s: retrieving the block '%s' from the network",
                          this, address);
 
         for (auto neighbour: this->_hosts)
@@ -755,7 +755,7 @@ namespace hole
               }
             catch (std::exception const& e)
               {
-                ELLE_WARN("[%p] remote exception: %s",
+                ELLE_WARN("%s: remote exception: %s",
                           this, e.what());
                 continue;
               }
@@ -827,7 +827,7 @@ namespace hole
               }
             catch (std::exception const& e)
               {
-                ELLE_WARN("[%p] remote exception: %s",
+                ELLE_WARN("%s: remote exception: %s",
                           this, e.what());
                 continue;
               }
@@ -921,7 +921,7 @@ namespace hole
           {
             elle::String unique = address.unique();
 
-            ELLE_LOG("[%p] cache register on '%s'", *this, unique);
+            ELLE_LOG("%s: cache register on '%s'", *this, unique);
 
             elle::utility::Time current;
 
@@ -943,7 +943,7 @@ namespace hole
           {
             elle::utility::Time current;
 
-            ELLE_LOG("[%p] cache update on '%s'", *this, unique);
+            ELLE_LOG("%s: cache update on '%s'", *this, unique);
 
             if (current.Current() == elle::Status::Error)
               throw reactor::Exception(elle::concurrency::scheduler(),
@@ -994,7 +994,7 @@ namespace hole
                   }
                 catch (std::exception const& e)
                   {
-                    ELLE_WARN("[%p] remote exception: %s",
+                    ELLE_WARN("%s: remote exception: %s",
                               this, e.what());
                     continue;
                   }
@@ -1073,7 +1073,7 @@ namespace hole
                   }
                 catch (std::exception const& e)
                   {
-                    ELLE_WARN("[%p] remote exception: %s",
+                    ELLE_WARN("%s: remote exception: %s",
                               this, e.what());
                     continue;
                   }
@@ -1255,7 +1255,7 @@ namespace hole
                       }
                     catch (std::exception const& e)
                       {
-                        ELLE_WARN("[%p] remote exception: %s",
+                        ELLE_WARN("%s: remote exception: %s",
                                   this, e.what());
                         continue;
                       }
