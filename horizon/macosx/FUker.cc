@@ -67,7 +67,6 @@ namespace horizon
     /// the thread is resumed and can terminate by returning the
     /// result of the upcall.
 
-    /* XXX
 #define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
     , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
 
@@ -128,8 +127,8 @@ namespace horizon
                          BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
 
     BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
-    */
 
+    /* XXX
 #define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
     , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
 
@@ -154,6 +153,7 @@ namespace horizon
                          BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
 
     BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
+    */
 
 #undef INFINIT_FUSE_BOUNCER_
 #undef INFINIT_FUSE_BOUNCER
@@ -269,7 +269,7 @@ namespace horizon
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
         // Fill fuse functions array.
-#define INFINIT_FUSE_LINK(Name) operations.Name = Name
+#define INFINIT_FUSE_LINK(Name) operations.Name = BOOST_PP_CAT(Name, _mt)
 #define INFINIT_FUSE_LINK_(R, Data, Elem)                       \
         INFINIT_FUSE_LINK(BOOST_PP_TUPLE_ELEM(2, 0, Elem));
         BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_LINK_, _, INFINIT_FUSE_COMMANDS)
