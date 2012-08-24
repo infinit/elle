@@ -10,7 +10,7 @@ namespace elle
   public:
     virtual ~Printable();
     virtual void print(std::ostream& stream) const = 0;
-    std::string toString() const;
+    std::string stringify() const;
   };
 
   std::ostream& operator << (std::ostream& stream, Printable const& o);

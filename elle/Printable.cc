@@ -8,7 +8,7 @@ namespace elle
   {}
 
   std::string
-  Printable::toString() const
+  Printable::stringify() const
   {
     return boost::lexical_cast<std::string>(*this);
   }
