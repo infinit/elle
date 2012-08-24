@@ -333,8 +333,6 @@ def configure(cxx_toolkit, cxx_config):
     'hole/implementations/remote/Server.cc',
     'hole/implementations/remote/Server.hh',
     'hole/implementations/remote/fwd.hh',
-    'hole/implementations/slug/Bank.cc',
-    'hole/implementations/slug/Bank.hh',
     'hole/implementations/slug/Host.cc',
     'hole/implementations/slug/Host.hh',
     'hole/implementations/slug/Implementation.cc',
