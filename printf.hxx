@@ -1,6 +1,8 @@
 #ifndef  ELLE_PRINTF_HXX
 # define ELLE_PRINTF_HXX
 
+# include <elle/assert.hh>
+
 # include <elle/idiom/Close.hh>
 #  include <cstddef>
 #  include <iostream>
@@ -108,9 +110,7 @@ namespace elle
         }
       catch (std::exception const& e)
         {
-          // FIXME
-          std::cerr << e.what() << ": " << fmt << std::endl;
-          std::abort();
+          elle::abort(elle::sprintf("%s: %s", e.what(), fmt));
         }
     }
   }
