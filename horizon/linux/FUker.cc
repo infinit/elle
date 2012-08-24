@@ -93,8 +93,7 @@ namespace horizon
       catch (reactor::Exception const& e)                               \
         {                                                               \
           ELLE_ERR("%s killed by exception: %s",                        \
-                   BOOST_PP_STRINGIZE(Name), e.what());                 \
-          /* FIXME: show backtrace */                                   \
+                   BOOST_PP_STRINGIZE(Name), e);                        \
           return -EIO;                                                  \
         }                                                               \
       catch (std::exception const& e)                                   \
