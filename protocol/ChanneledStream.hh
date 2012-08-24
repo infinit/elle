@@ -48,10 +48,13 @@ namespace infinit
     /*--------.
     | Sending |
     `--------*/
-    public:
-      virtual void write(Packet& packet);
+    protected:
+      virtual
+      void
+      _write(Packet& packet);
     private:
-      void _write(Packet& packet, int id);
+      void
+      _write(Packet& packet, int id);
 
     /*----------.
     | Printable |

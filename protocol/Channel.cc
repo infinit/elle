@@ -90,7 +90,7 @@ namespace infinit
     `--------*/
 
     void
-    Channel::write(Packet& packet)
+    Channel::_write(Packet& packet)
     {
       _backend._write(packet, _id);
     }

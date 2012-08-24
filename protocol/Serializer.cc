@@ -44,7 +44,7 @@ namespace infinit
     | Sending |
     `--------*/
     void
-    Serializer::write(Packet& packet)
+    Serializer::_write(Packet& packet)
     {
       reactor::Lock lock(scheduler(), _lock_write);
       ELLE_TRACE("%s: send %s", *this, packet)

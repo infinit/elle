@@ -110,7 +110,6 @@ namespace infinit
         OSerializer output(question);
         output << _id;
         put_args<OSerializer, Args...>(output, args...);
-        question.flush();
         channel.write(question);
       }
       {
@@ -298,8 +297,6 @@ namespace infinit
           Packet answer;
           OSerializer output(answer);
           procedure->second->_call(input, output);
-          // FIXME: auto flush
-          answer.flush();
           c.write(answer);
         }
     }
