@@ -138,6 +138,7 @@ if [[ "$DISTCC" = ON ]] ; then
     DISTCC="$(which distcc) "
     CC="${DISTCC}${CC}"
     CXX="${DISTCC}${CXX}"
+    echo "---[ distcc activated: ${CXX}"
 else
     DISTCC=""
 fi
