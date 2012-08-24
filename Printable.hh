@@ -8,12 +8,19 @@ namespace elle
   class Printable
   {
   public:
-    virtual ~Printable();
-    virtual void print(std::ostream& stream) const = 0;
-    std::string stringify() const;
+    virtual
+    ~Printable();
+
+    virtual
+    void
+    print(std::ostream& stream) const = 0;
+
+    std::string
+    stringify() const;
   };
 
-  std::ostream& operator << (std::ostream& stream, Printable const& o);
+  std::ostream& operator << (std::ostream& stream,
+                             Printable const& o);
 }
 
 #endif
