@@ -4,9 +4,7 @@
 #include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Close.hh>
-# include <QNetworkInterface>
 # include <QHostAddress>
-# include <QList>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -22,52 +20,6 @@ namespace elle
     /// this contant defines a null host.
     ///
     const Host                  Null;
-
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method returns in the given container the list of hosts
-    /// addresses associated with the current host i.e computer.
-    ///
-    Status              Host::Hosts(Container&                  container)
-    {
-      ::QList< ::QHostAddress >         ql =
-        ::QNetworkInterface::allAddresses();
-
-      // go through all the host's addresses.
-      for (auto scoutor = ql.begin();
-           scoutor != ql.end();
-           scoutor++)
-        {
-          ::QHostAddress                qha = *scoutor;
-          Host                          host;
-
-          // ignore all the special addresses though most of the checks
-          // are needless since it is impossible for an interface's address
-          // to be set to broadcast for instance.
-          if ((qha            == ::QHostAddress::Null)            ||
-              (qha            == ::QHostAddress::LocalHost)       ||
-              (qha            == ::QHostAddress::LocalHostIPv6)   ||
-              (qha            == ::QHostAddress::Broadcast)       ||
-              (qha            == ::QHostAddress::Any)             ||
-              (qha            == ::QHostAddress::AnyIPv6)         ||
-              (qha.protocol() == ::QAbstractSocket::IPv6Protocol) ||
-              (qha.protocol() == ::QAbstractSocket::UnknownNetworkLayerProtocol))
-            continue;
-
-          // create a host.
-          if (host.Create(qha.toString().toStdString()) == Status::Error)
-            escape("unable to create the host from '%s'",
-                   qha.toString().toStdString().c_str());
-
-          // add the host to the container.
-          container.push_back(host);
-        }
-
-      return Status::Ok;
-    }
 
     /*-------------.
     | Construction |

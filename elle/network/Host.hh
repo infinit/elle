@@ -43,11 +43,6 @@ namespace elle
       typedef typename Container::iterator              Iterator;
       typedef typename Container::const_iterator        Scoutor;
 
-      //
-      // static methods
-      //
-      static Status     Hosts(Container&);
-
       /*-------------.
       | Construction |
       `-------------*/
