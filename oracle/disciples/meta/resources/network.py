@@ -210,9 +210,11 @@ class Nodes(_Page):
         }
         addrs = {'local': [], 'external': []}
         for node in network['nodes'].values():
+            print(node)
             for addr_kind in ['local', 'external']:
                 addr = node[addr_kind]
                 if addr and addr[0] and addr[1]:
+                    print("Append", addr_kind, addr)
                     addrs[addr_kind].append(
                         addr[0] + ':' + str(addr[1]),
                     )
@@ -344,11 +346,11 @@ class AddDevice(_Page):
         device = database.devices().find_one(device_id)
         if not device:
             return self.error("Device not found.")
-        # this set or reset the device node.
-        network['nodes'][str(device_id)] = {
-                "local": None,
-                "external": None,
-        }
+        if str(device_id) not in network['nodes']:
+            network['nodes'][str(device_id)] = {
+                    "local": None,
+                    "external": None,
+            }
         database.networks().save(network)
         return self.success({
             "updated_network_id": network['_id'],
