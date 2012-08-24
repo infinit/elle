@@ -43,7 +43,7 @@ ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 // XXX[to improve later with a configuration variable]
 #define CACHE
-#define CACHE_LIFESPAN 30 /* in seconds */
+#define CACHE_LIFESPAN 300 /* in seconds */
 
 namespace hole
 {
