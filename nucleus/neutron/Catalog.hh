@@ -25,6 +25,12 @@ namespace nucleus
     class Catalog:
       public elle::radix::Object
     {
+      //
+      // constants
+      //
+    public:
+      static const Component component = ComponentCatalog;
+
     public:
       //
       // types

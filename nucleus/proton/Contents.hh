@@ -4,6 +4,7 @@
 # include <elle/cryptography/fwd.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
+# include <nucleus/neutron/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -35,6 +36,12 @@ namespace nucleus
             Contents<T>, elle::serialize::BufferArchive
         >
     {
+      //
+      // constants
+      //
+    public:
+      static const neutron::Component component;
+
     public:
       //
       // types

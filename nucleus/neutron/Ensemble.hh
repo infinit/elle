@@ -27,6 +27,12 @@ namespace nucleus
         >
     {
       //
+      // constants
+      //
+    public:
+      static const Component component;
+
+      //
       // types
       //
     public:

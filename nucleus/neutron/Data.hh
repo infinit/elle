@@ -23,6 +23,12 @@ namespace nucleus
     class Data:
       public elle::radix::Object
     {
+      //
+      // constants
+      //
+    public:
+      static const Component component = ComponentData;
+
     public:
       //
       // constructors & destructors

@@ -57,6 +57,12 @@ namespace nucleus
       public elle::concept::MakeUniquable<Object>
     {
       //
+      // constants
+      //
+    public:
+      static const Component component;
+
+      //
       // enumerations
       //
     public:

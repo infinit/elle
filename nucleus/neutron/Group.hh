@@ -56,6 +56,12 @@ namespace nucleus
       public elle::concept::MakeUniquable<Group>
     {
       //
+      // constants
+      //
+    public:
+      static const Component component;
+
+      //
       // types
       //
     public:

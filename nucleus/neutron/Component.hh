@@ -14,12 +14,10 @@ namespace nucleus
         ComponentUnknown = 0,
 
         ComponentObject,
-        ComponentContents,
         ComponentData,
         ComponentCatalog,
         ComponentReference,
         ComponentAccess,
-        ComponentUser,
         ComponentGroup,
         ComponentEnsemble,
 

@@ -47,6 +47,13 @@ namespace nucleus
     ContentsDeclare(neutron::Reference, Reference);
 
 //
+// ---------- constants -------------------------------------------------------
+//
+
+    template <typename T>
+    const neutron::Component Contents<T>::component = T::component;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 

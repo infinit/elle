@@ -32,6 +32,12 @@ namespace nucleus
       // constants
       //
     public:
+      static const Component component;
+
+      //
+      // constants
+      //
+    public:
       static const Access               Null;
 
       //

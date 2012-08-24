@@ -13,6 +13,12 @@ namespace nucleus
   {
 
 //
+// ---------- constants -------------------------------------------------------
+//
+ 
+    const Component Access::component = ComponentAccess;
+
+//
 // ---------- definitions -----------------------------------------------------
 //
 

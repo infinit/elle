@@ -52,7 +52,7 @@ namespace etoile
       static std::unique_ptr<T>
       pull(nucleus::proton::Address const& address,
            nucleus::proton::Version const& version =
-           nucleus::proton::Version::Last);
+             nucleus::proton::Version::Last);
 
       static elle::Status       Wipe(const nucleus::proton::Address&);
     };

@@ -22,6 +22,12 @@ namespace nucleus
     class Reference:
       public elle::radix::Object
     {
+      //
+      // constants
+      //
+    public:
+      static const Component component = ComponentReference;
+
     public:
       //
       // constructors & destructors

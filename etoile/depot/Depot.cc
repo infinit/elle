@@ -52,9 +52,7 @@ namespace etoile
     std::unique_ptr<nucleus::neutron::Access>
     Depot::pull_access(nucleus::proton::Address const& address)
     {
-      return (Depot::pull<nucleus::neutron::Access>(
-                address,
-                nucleus::proton::Version::Last));
+      return (Depot::pull<nucleus::neutron::Access>(address));
     }
 
     std::unique_ptr<nucleus::neutron::Group>
@@ -67,9 +65,7 @@ namespace etoile
     std::unique_ptr<nucleus::neutron::Ensemble>
     Depot::pull_ensemble(nucleus::proton::Address const& address)
     {
-      return (Depot::pull<nucleus::neutron::Ensemble>(
-                address,
-                nucleus::proton::Version::Last));
+      return (Depot::pull<nucleus::neutron::Ensemble>(address));
     }
 
     ///
