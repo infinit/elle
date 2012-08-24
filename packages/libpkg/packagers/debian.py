@@ -50,6 +50,15 @@ Description: Provide a secure, distributed and cross-platform filesystem.
                     os.path.join(build_env.directory, dir_),
                     os.path.join(infinit_dir, dir_)
                 )
+            link_dir = os.path.join(pkgdir, 'usr/bin')
+            os.makedirs(link_dir)
+            os.symlink(
+                os.path.relpath(
+                    os.path.join(infinit_dir, 'bin', 'infinit-cli'),
+                    start=link_dir
+                ),
+                os.path.join(link_dir, 'infinit')
+            )
 
             debian_dir = os.path.join(pkgdir, 'DEBIAN')
             os.mkdir(debian_dir)
