@@ -356,7 +356,7 @@ namespace hole
                       }
                     catch (std::exception const& e)
                       {
-                        ELLE_WARN("[%p] remote exception: %s\n",
+                        ELLE_WARN("[%p] remote exception: %s",
                                   this, e.what());
                         continue;
                       }
@@ -475,7 +475,7 @@ namespace hole
                       }
                     catch (std::exception const& e)
                       {
-                        ELLE_WARN("[%p] remote exception: %s\n",
+                        ELLE_WARN("[%p] remote exception: %s",
                                   this, e.what());
                         continue;
                       }
@@ -595,7 +595,7 @@ namespace hole
                         }
                       catch (std::exception const& e)
                         {
-                          ELLE_WARN("[%p] remote exception: %s\n",
+                          ELLE_WARN("[%p] remote exception: %s",
                                     this, e.what());
                           continue;
                         }
@@ -755,7 +755,7 @@ namespace hole
               }
             catch (std::exception const& e)
               {
-                ELLE_WARN("[%p] remote exception: %s\n",
+                ELLE_WARN("[%p] remote exception: %s",
                           this, e.what());
                 continue;
               }
@@ -827,7 +827,7 @@ namespace hole
               }
             catch (std::exception const& e)
               {
-                ELLE_WARN("[%p] remote exception: %s\n",
+                ELLE_WARN("[%p] remote exception: %s",
                           this, e.what());
                 continue;
               }
@@ -994,7 +994,7 @@ namespace hole
                   }
                 catch (std::exception const& e)
                   {
-                    ELLE_WARN("[%p] remote exception: %s\n",
+                    ELLE_WARN("[%p] remote exception: %s",
                               this, e.what());
                     continue;
                   }
@@ -1073,7 +1073,7 @@ namespace hole
                   }
                 catch (std::exception const& e)
                   {
-                    ELLE_WARN("[%p] remote exception: %s\n",
+                    ELLE_WARN("[%p] remote exception: %s",
                               this, e.what());
                     continue;
                   }
@@ -1255,7 +1255,7 @@ namespace hole
                       }
                     catch (std::exception const& e)
                       {
-                        ELLE_WARN("[%p] remote exception: %s\n",
+                        ELLE_WARN("[%p] remote exception: %s",
                                   this, e.what());
                         continue;
                       }
