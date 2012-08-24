@@ -33,6 +33,8 @@
 
 #include <hole/Hole.hh>
 
+ELLE_LOG_COMPONENT("infinit.horizon.Crux");
+
 namespace horizon
 {
   namespace macosx
@@ -74,7 +76,7 @@ namespace horizon
     ///
     /// this method returns general information on the file system.
     ///
-    int                 Crux::Statfs(const char*,
+    int                 Crux::statfs(const char*,
                                      struct ::statvfs*          statvfs)
     {
       // XXX[these numbers are based on the return value of statvfs() on
@@ -100,7 +102,7 @@ namespace horizon
     /// this method returns general-purpose information on the file system
     /// object identified by _path_.
     ///
-    int                 Crux::Getattr(const char*               path,
+    int                 Crux::getattr(const char*               path,
                                       struct ::stat*            stat)
     {
       etoile::gear::Identifier  identifier;
@@ -137,11 +139,11 @@ namespace horizon
       // set the handle in the fuse_file_info structure.
       //
       // be careful, the address is local but it is alright since it is
-      // used in Fgetattr() only.
+      // used in fgetattr() only.
       info.fh = reinterpret_cast<uint64_t>(&handle);
 
-      // call the Fgetattr() method.
-      if ((result = Crux::Fgetattr(path, stat, &info)) < 0)
+      // call the fgetattr() method.
+      if ((result = Crux::fgetattr(path, stat, &info)) < 0)
         error("unable to get information on the given file descriptor",
               result,
               identifier);
@@ -164,7 +166,7 @@ namespace horizon
     /// this method returns general-purpose information on the file system
     /// object identified by _path_.
     ///
-    int                 Crux::Fgetattr(const char*              path,
+    int                 Crux::fgetattr(const char*              path,
                                        struct ::stat*           stat,
                                        struct ::fuse_file_info* info)
     {
@@ -357,7 +359,7 @@ namespace horizon
     ///
     /// this method changes the access and modification time of the object.
     ///
-    int                 Crux::Utimens(const char*               path,
+    int                 Crux::utimens(const char*               path,
                                       const struct ::timespec[2])
     {
       // debug.
@@ -382,7 +384,7 @@ namespace horizon
     ///
     /// this method opens the directory _path_.
     ///
-    int                 Crux::Opendir(const char*               path,
+    int                 Crux::opendir(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
       etoile::gear::Identifier  identifier;
@@ -424,7 +426,7 @@ namespace horizon
     ///
     /// this method reads the directory entries.
     ///
-    int                 Crux::Readdir(const char*               path,
+    int                 Crux::readdir(const char*               path,
                                       void*                     buffer,
                                       ::fuse_fill_dir_t         filler,
                                       off_t                     offset,
@@ -536,7 +538,7 @@ namespace horizon
     ///
     /// this method closes the directory _path_.
     ///
-    int                 Crux::Releasedir(const char*            path,
+    int                 Crux::releasedir(const char*            path,
                                          struct ::fuse_file_info* info)
     {
       // debug.
@@ -570,7 +572,7 @@ namespace horizon
     ///
     /// this method creates a directory.
     ///
-    int                 Crux::Mkdir(const char*                 path,
+    int                 Crux::mkdir(const char*                 path,
                                     mode_t                      mode)
     {
       nucleus::neutron::Permissions permissions =
@@ -706,7 +708,7 @@ namespace horizon
     ///
     /// this method removes a directory.
     ///
-    int                 Crux::Rmdir(const char*                 path)
+    int                 Crux::rmdir(const char*                 path)
     {
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);
@@ -817,7 +819,7 @@ namespace horizon
     /// this method checks if the current user has the permission to access
     /// the object _path_ for the operations _mask_.
     ///
-    int                 Crux::Access(const char*                path,
+    int                 Crux::access(const char*                path,
                                      int                        mask)
     {
       etoile::gear::Identifier          identifier;
@@ -975,7 +977,7 @@ namespace horizon
     ///
     /// this method modifies the permissions on the object.
     ///
-    int                 Crux::Chmod(const char*                 path,
+    int                 Crux::chmod(const char*                 path,
                                     mode_t                      mode)
     {
       nucleus::neutron::Permissions permissions = nucleus::neutron::PermissionNone;
@@ -1140,7 +1142,7 @@ namespace horizon
     ///
     /// this method modifies the owner of a given object.
     ///
-    int                 Crux::Chown(const char*                 path,
+    int                 Crux::chown(const char*                 path,
                                     uid_t                       uid,
                                     gid_t                       gid)
     {
@@ -1167,7 +1169,7 @@ namespace horizon
     ///
     /// note that the flags are ignored!
     ///
-    int                 Crux::Setxattr(const char*              path,
+    int                 Crux::setxattr(const char*              path,
                                        const char*              name,
                                        const char*              value,
                                        size_t                   size,
@@ -1242,7 +1244,7 @@ namespace horizon
     ///
     /// this method returns the attribute associated with the given object.
     ///
-    int                 Crux::Getxattr(const char*              path,
+    int                 Crux::getxattr(const char*              path,
                                        const char*              name,
                                        char*                    value,
                                        size_t                   size,
@@ -1311,7 +1313,7 @@ namespace horizon
     ///
     /// this method returns the list of attribute names.
     ///
-    int                 Crux::Listxattr(const char*             path,
+    int                 Crux::listxattr(const char*             path,
                                         char*                   list,
                                         size_t                  size)
     {
@@ -1396,7 +1398,7 @@ namespace horizon
     ///
     /// this method removes an attribute.
     ///
-    int                 Crux::Removexattr(const char*           path,
+    int                 Crux::removexattr(const char*           path,
                                           const char*           name)
     {
       etoile::gear::Identifier          identifier;
@@ -1464,10 +1466,18 @@ namespace horizon
     }
 #endif
 
+    int
+    Crux::link(const char* target,
+               const char* source)
+    {
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+      return -ENOSYS;
+    }
+
     ///
     /// this method creates a symbolic link.
     ///
-    int                 Crux::Symlink(const char*               target,
+    int                 Crux::symlink(const char*               target,
                                       const char*               source)
     {
       etoile::gear::Identifier  directory;
@@ -1601,7 +1611,7 @@ namespace horizon
     ///
     /// this method returns the target path pointed by the symbolic link.
     ///
-    int                 Crux::Readlink(const char*              path,
+    int                 Crux::readlink(const char*              path,
                                        char*                    buffer,
                                        size_t                   size)
     {
@@ -1674,7 +1684,7 @@ namespace horizon
     ///
     /// this method creates a new file and opens it.
     ///
-    int                 Crux::Create(const char*                path,
+    int                 Crux::create(const char*                path,
                                      mode_t                     mode,
                                      struct ::fuse_file_info*   info)
     {
@@ -1858,7 +1868,7 @@ namespace horizon
     ///
     /// this method opens a file.
     ///
-    int                 Crux::Open(const char*                  path,
+    int                 Crux::open(const char*                  path,
                                    struct ::fuse_file_info*     info)
     {
       etoile::path::Way         way(path);
@@ -1898,7 +1908,7 @@ namespace horizon
     ///
     /// this method writes data to a file.
     ///
-    int                 Crux::Write(const char*                 path,
+    int                 Crux::write(const char*                 path,
                                     const char*                 buffer,
                                     size_t                      size,
                                     off_t                       offset,
@@ -1959,7 +1969,7 @@ namespace horizon
     ///
     /// this method reads data from a file.
     ///
-    int                 Crux::Read(const char*                  path,
+    int                 Crux::read(const char*                  path,
                                    char*                        buffer,
                                    size_t                       size,
                                    off_t                        offset,
@@ -2018,7 +2028,7 @@ namespace horizon
     ///
     /// this method modifies the size of a file.
     ///
-    int                 Crux::Truncate(const char*              path,
+    int                 Crux::truncate(const char*              path,
                                        off_t                    size)
     {
       etoile::gear::Identifier  identifier;
@@ -2050,8 +2060,8 @@ namespace horizon
       // set the handle in the fuse_file_info structure.
       info.fh = reinterpret_cast<uint64_t>(&handle);
 
-      // call the Ftruncate() method.
-      if ((result = Crux::Ftruncate(path, size, &info)) < 0)
+      // call the ftruncate() method.
+      if ((result = Crux::ftruncate(path, size, &info)) < 0)
         error("unable to truncate the given file descriptpr",
               result,
               identifier);
@@ -2073,7 +2083,7 @@ namespace horizon
     ///
     /// this method modifies the size of an opened file.
     ///
-    int                 Crux::Ftruncate(const char*             path,
+    int                 Crux::ftruncate(const char*             path,
                                         off_t                   size,
                                         struct ::fuse_file_info* info)
     {
@@ -2122,7 +2132,7 @@ namespace horizon
     ///
     /// this method closes a file.
     ///
-    int                 Crux::Release(const char*               path,
+    int                 Crux::release(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
       etoile::path::Way way(path);
@@ -2202,7 +2212,7 @@ namespace horizon
     ///
     /// this method renames a file.
     ///
-    int                 Crux::Rename(const char*                source,
+    int                 Crux::rename(const char*                source,
                                      const char*                target)
     {
       etoile::path::Slab        f;
@@ -2278,7 +2288,7 @@ namespace horizon
               //
               // note that the Crux's method is called in order not to have
               // to deal with the target's genre.
-              if ((result = Crux::Unlink(target)) < 0)
+              if ((result = Crux::unlink(target)) < 0)
                 error("unable to unlink the target object which is "
                       "about to get overwritte",
                       result,
@@ -2414,7 +2424,7 @@ namespace horizon
               //
               // note that the Crux's method is called in order not to have
               // to deal with the target's genre.
-              if ((result = Crux::Unlink(target)) < 0)
+              if ((result = Crux::unlink(target)) < 0)
                 error("unable to unlink the target object which is "
                       "about to get overwritte",
                       result,
@@ -2471,7 +2481,7 @@ namespace horizon
     ///
     /// this method removes an existing file.
     ///
-    int                 Crux::Unlink(const char*                path)
+    int                 Crux::unlink(const char*                path)
     {
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);

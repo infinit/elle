@@ -1230,6 +1230,14 @@ namespace horizon
     }
 #endif
 
+    int
+    Crux::link(const char* target,
+               const char* source)
+    {
+      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+      return -ENOSYS;
+    }
+
     /// This method creates a symbolic link.
     int
     Crux::symlink(const char* target,
@@ -2122,14 +2130,6 @@ namespace horizon
         Crib::rename(source, target);
 
       return (0);
-    }
-
-    int
-    Crux::link(const char* target,
-               const char* source)
-    {
-      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
-      return -ENOSYS;
     }
 
     /// This method removes an existing file.

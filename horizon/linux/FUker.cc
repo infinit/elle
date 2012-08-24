@@ -28,7 +28,7 @@
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("infinit.horizon.Crux");
+ELLE_LOG_COMPONENT("infinit.horizon.FUker");
 
 namespace horizon
 {
@@ -83,6 +83,8 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
+      ELLE_LOG_COMPONENT("infinit.horizon.Crux");                       \
+                                                                        \
       try                                                               \
         {                                                               \
           int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));           \

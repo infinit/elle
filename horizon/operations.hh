@@ -43,6 +43,7 @@
   ((access, (const char*)(int)))                                        \
   ((chmod, (const char*)(mode_t)))                                      \
   ((chown, (const char*)(uid_t)(gid_t)))                                \
+  ((link, (const char*)(const char*)))                                  \
   ((symlink, (const char*)(const char*)))                               \
   ((readlink, (const char*)(char*)(size_t)))                            \
   ((create, (const char*)(mode_t)(struct ::fuse_file_info*)))           \
@@ -55,7 +56,6 @@
   ((ftruncate, (const char*)(off_t)(struct ::fuse_file_info*)))         \
   ((release, (const char*)(struct ::fuse_file_info*)))                  \
   ((rename, (const char*)(const char*)))                                \
-  ((link, (const char*)(const char*)))                                  \
   ((unlink, (const char*)))                                             \
   INFINIT_FUSE_COMMANDS_XATTR                                           \
   INFINIT_FUSE_COMMANDS_STATFS                                          \

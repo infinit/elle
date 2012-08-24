@@ -1,5 +1,6 @@
 #include <horizon/macosx/FUker.hh>
 #include <horizon/macosx/FUSE.hh>
+#include <horizon/macosx/Crux.hh>
 #include <horizon/operations.hh>
 
 #include <elle/concurrency/Program.hh>
@@ -26,6 +27,8 @@
 # include <sys/mount.h>
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("infinit.horizon.FUker");
 
 namespace horizon
 {
@@ -63,6 +66,69 @@ namespace horizon
     /// the event handled, the semaphore is unlocked, in which case
     /// the thread is resumed and can terminate by returning the
     /// result of the upcall.
+
+    /* XXX
+#define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
+    , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
+
+#define INFINIT_FUSE_EFFECTIVE_(R, Data, I, Elem)       \
+    , BOOST_PP_CAT(a, BOOST_PP_INC(I))
+
+#define INFINIT_FUSE_EFFECTIVE(Args)                            \
+    a0 BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE_, _,      \
+                               BOOST_PP_SEQ_POP_FRONT(Args))    \
+
+#define INFINIT_FUSE_BOUNCER(Name, Args)                                \
+    static int                                                          \
+    Name(BOOST_PP_SEQ_HEAD(Args) a0                                     \
+         BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
+                                 BOOST_PP_SEQ_POP_FRONT(Args)))         \
+    {                                                                   \
+      ELLE_LOG_COMPONENT("infinit.horizon.Crux");                       \
+                                                                        \
+      try                                                               \
+        {                                                               \
+          int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));           \
+          ELLE_TRACE("%s returns: %s",                                  \
+                     BOOST_PP_STRINGIZE(Name), res);                    \
+          return res;                                                   \
+        }                                                               \
+      catch (reactor::Exception const& e)                               \
+        {                                                               \
+          ELLE_ERR("%s killed by exception: %s",                        \
+                   BOOST_PP_STRINGIZE(Name), e);                        \
+          return -EIO;                                                  \
+        }                                                               \
+      catch (std::exception const& e)                                   \
+        {                                                               \
+          ELLE_ERR("%s killed by exception: %s",                        \
+                   BOOST_PP_STRINGIZE(Name), e.what());                 \
+          return -EIO;                                                  \
+        }                                                               \
+      catch (...)                                                       \
+        {                                                               \
+          ELLE_ERR("%s killed by unknown exception",                    \
+                   BOOST_PP_STRINGIZE(Name));                           \
+          return -EIO;                                                  \
+        }                                                               \
+    }                                                                   \
+                                                                        \
+    static int                                                          \
+    BOOST_PP_CAT(Name, _mt)(BOOST_PP_SEQ_HEAD(Args) a0                  \
+         BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
+                                 BOOST_PP_SEQ_POP_FRONT(Args)))         \
+    {                                                                   \
+      return elle::concurrency::scheduler().mt_run<int>                 \
+        (BOOST_PP_STRINGIZE(Name),                                      \
+         boost::bind(Name, INFINIT_FUSE_EFFECTIVE(Args)));              \
+    }                                                                   \
+
+#define INFINIT_FUSE_BOUNCER_(R, Data, Elem)                            \
+    INFINIT_FUSE_BOUNCER(BOOST_PP_TUPLE_ELEM(2, 0, Elem),               \
+                         BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
+
+    BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
+    */
 
 #define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
     , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
@@ -132,7 +198,6 @@ namespace horizon
 
           // XXX
           "-s",
-          "-d",
 
           //
           // this option does not register FUSE as a daemon but
@@ -245,18 +310,16 @@ namespace horizon
       // reset the FUSE structure pointer.
       FUker::FUSE = nullptr;
 
-      // now that FUSE has stopped, make sure the program is exiting.
-      elle::concurrency::Program::Exit();
-
-      return nullptr;
+      goto _leave;
 
     _error:
       // log the error.
-      log(::strerror(errno));
+      log("%s", ::strerror(errno));
 
+    _leave:
       // now that FUSE has stopped, make sure the program is exiting.
-      elle::concurrency::Program::Exit();
-
+      new reactor::Thread(elle::concurrency::scheduler(), "exit",
+                          &elle::concurrency::Program::Exit, true);
       return nullptr;
     }
 
@@ -321,7 +384,7 @@ namespace horizon
 
           // finally, wait for the FUSE-specific thread to exit.
           if (::pthread_join(FUker::Thread, nullptr) != 0)
-            log(::strerror(errno));
+            log("%s", ::strerror(errno));
         }
 
       return elle::Status::Ok;

@@ -104,6 +104,9 @@ namespace horizon
 
       // link
       static int
+      link(const char* target,
+           const char* source);
+      static int
       symlink(const char*,
               const char*);
       static int
@@ -146,9 +149,6 @@ namespace horizon
       static int
       rename(const char*,
              const char*);
-      static int
-      link(const char* target,
-           const char* source);
       static int
       unlink(const char*);
     };

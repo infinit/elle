@@ -39,94 +39,152 @@ namespace horizon
       //
 
       // general purpose
-      static int        Statfs(const char*,
-                               struct ::statvfs*);
-      static int        Getattr(const char*,
-                                struct ::stat*);
-      static int        Fgetattr(const char*,
-                                 struct ::stat*,
-                                 struct ::fuse_file_info*);
-      static int        Utimens(const char*,
-                                const struct ::timespec[2]);
+      static
+      int
+      statfs(const char*,
+             struct ::statvfs*);
+      static
+      int
+      getattr(const char*,
+              struct ::stat*);
+      static
+      int
+      fgetattr(const char*,
+               struct ::stat*,
+               struct ::fuse_file_info*);
+      static
+      int
+      utimens(const char*,
+              const struct ::timespec[2]);
 
       // directory
-      static int        Opendir(const char*,
-                                struct ::fuse_file_info*);
-      static int        Readdir(const char*,
-                                void*,
-                                ::fuse_fill_dir_t,
-                                off_t,
-                                struct ::fuse_file_info*);
-      static int        Releasedir(const char*,
-                                   struct ::fuse_file_info*);
-      static int        Mkdir(const char*,
-                              mode_t);
-      static int        Rmdir(const char*);
+      static
+      int
+      opendir(const char*,
+              struct ::fuse_file_info*);
+      static
+      int
+      readdir(const char*,
+              void*,
+              ::fuse_fill_dir_t,
+              off_t,
+              struct ::fuse_file_info*);
+      static
+      int
+      releasedir(const char*,
+                 struct ::fuse_file_info*);
+      static
+      int
+      mkdir(const char*,
+            mode_t);
+      static
+      int
+      rmdir(const char*);
 
       // access
-      static int        Access(const char*,
-                               int);
-      static int        Chmod(const char*,
-                              mode_t);
-      static int        Chown(const char*,
-                              uid_t,
-                              gid_t);
+      static
+      int
+      access(const char*,
+             int);
+      static
+      int
+      chmod(const char*,
+            mode_t);
+      static
+      int
+      chown(const char*,
+            uid_t,
+            gid_t);
 
 #if defined(HAVE_SETXATTR)
       // attribute
-      static int        Setxattr(const char*,
-                                 const char*,
-                                 const char*,
-                                 size_t,
-                                 int,
-                                 uint32_t);
-      static int        Getxattr(const char*,
-                                 const char*,
-                                 char*,
-                                 size_t,
-                                 uint32_t);
-      static int        Listxattr(const char*,
-                                  char*,
-                                  size_t);
-      static int        Removexattr(const char*,
-                                    const char*);
+      static
+      int
+      setxattr(const char*,
+               const char*,
+               const char*,
+               size_t,
+               int,
+               uint32_t);
+      static
+      int
+      getxattr(const char*,
+               const char*,
+               char*,
+               size_t,
+               uint32_t);
+      static
+      int
+      listxattr(const char*,
+                char*,
+                size_t);
+      static
+      int
+      removexattr(const char*,
+                  const char*);
 #endif
 
       // link
-      static int        Symlink(const char*,
-                                const char*);
-      static int        Readlink(const char*,
-                                 char*,
-                                 size_t);
+      static
+      int
+      link(const char* target,
+           const char* source);
+      static
+      int
+      symlink(const char*,
+              const char*);
+      static
+      int
+      readlink(const char*,
+               char*,
+               size_t);
 
       // file
-      static int        Create(const char*,
-                               mode_t,
-                               struct ::fuse_file_info*);
-      static int        Open(const char*,
-                             struct ::fuse_file_info*);
-      static int        Write(const char*,
-                              const char*,
-                              size_t,
-                              off_t,
-                              struct ::fuse_file_info*);
-      static int        Read(const char*,
-                             char*,
-                             size_t,
-                             off_t,
-                             struct ::fuse_file_info*);
-      static int        Truncate(const char*,
-                                 off_t);
-      static int        Ftruncate(const char*,
-                                  off_t,
-                                  struct ::fuse_file_info*);
-      static int        Release(const char*,
-                                struct ::fuse_file_info*);
+      static
+      int
+      create(const char*,
+             mode_t,
+             struct ::fuse_file_info*);
+      static
+      int
+      open(const char*,
+           struct ::fuse_file_info*);
+      static
+      int
+      write(const char*,
+            const char*,
+            size_t,
+            off_t,
+            struct ::fuse_file_info*);
+      static
+      int
+      read(const char*,
+           char*,
+           size_t,
+           off_t,
+           struct ::fuse_file_info*);
+      static
+      int
+      truncate(const char*,
+               off_t);
+      static
+      int
+      ftruncate(const char*,
+                off_t,
+                struct ::fuse_file_info*);
+      static
+      int
+      release(const char*,
+              struct ::fuse_file_info*);
 
       // objects
-      static int        Rename(const char*,
-                               const char*);
-      static int        Unlink(const char*);
+      static
+      int
+      rename(const char*,
+             const char*);
+      static
+      int
+      unlink(const char*);
     };
 
   }
