@@ -22,15 +22,14 @@ namespace hole
       struct RPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
                                                 elle::serialize::OutputBinaryArchive>
       {
-        // FIXME: voids
         RemoteProcedure<bool, lune::Passport&> challenge;
-        RemoteProcedure<bool,
+        RemoteProcedure<void,
                         nucleus::proton::Address const&,
                         nucleus::Derivable&> push;
         RemoteProcedure<nucleus::Derivable,
                         nucleus::proton::Address const&,
                         nucleus::proton::Version const&> pull;
-        RemoteProcedure<bool, nucleus::proton::Address const&> wipe;
+        RemoteProcedure<void, nucleus::proton::Address const&> wipe;
 
         RPC(infinit::protocol::ChanneledStream& channels);
       };

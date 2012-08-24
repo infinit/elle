@@ -76,21 +76,21 @@ namespace hole
         std::unique_ptr<nucleus::proton::Block>
         pull(nucleus::proton::Address const& address,
              nucleus::proton::Version const& version);
-        bool
+        void
         push(nucleus::proton::Address const& address,
              nucleus::proton::Block const& block);
-        bool
+        void
         wipe(nucleus::proton::Address const& address);
       private:
         std::vector<elle::network::Locus>
         _authenticate(lune::Passport const& passport);
-        bool
+        void
         _push(nucleus::proton::Address const& address,
               nucleus::Derivable& derivable);
         nucleus::Derivable
         _pull(nucleus::proton::Address const&,
               nucleus::proton::Version const&);
-        bool
+        void
         _wipe(nucleus::proton::Address const&);
 
       /*---------.
