@@ -14,7 +14,8 @@ namespace elle
   }
 
   std::ostream&
-  operator << (std::ostream& stream, Printable const& o)
+  operator << (std::ostream& stream,
+               Printable const& o)
   {
     o.print(stream);
     return stream;
