@@ -124,9 +124,25 @@ namespace infinit
           {
             std::string error;
             input >> error;
-            throw reactor::Exception(
-              elle::concurrency::scheduler(), // FIXME: modularity
-              elle::sprintf("remote procedure failed: %s", error));
+            uint16_t bt_size;
+            input >> bt_size;
+            reactor::Backtrace bt;
+            for (int i = 0; i < bt_size; ++i)
+              {
+                reactor::StackFrame frame;
+                input >> frame.symbol;
+                input >> frame.symbol_mangled;
+                input >> frame.symbol_demangled;
+                input >> frame.address;
+                input >> frame.offset;
+                bt.push_back(frame);
+              }
+            reactor::Exception* inner =
+              new reactor::Exception(elle::concurrency::scheduler(), error, bt);
+            reactor::Exception e(
+              elle::concurrency::scheduler(), "remote procedure failed");
+            e.inner_exception(inner);
+            throw e;
           }
       }
     }
@@ -206,18 +222,30 @@ namespace infinit
       catch (reactor::Exception& e)
         {
           // FIXME: backtrace
-          err = e.what();
+          out << false;
+          out << std::string(e.what());
+          out << uint16_t(e.backtrace().size());
+          for (auto const& frame: e.backtrace())
+            {
+              out << frame.symbol;
+              out << frame.symbol_mangled;
+              out << frame.symbol_demangled;
+              out << frame.address;
+              out << frame.offset;
+            }
         }
       catch (std::exception& e)
         {
-          err = e.what();
+          out << false;
+          out << std::string(e.what());
+          out << uint16_t(0);
         }
       catch (...)
         {
-          err = "unknown error";
+          out << false;
+          out << std::string("unknown error");
+          out << uint16_t(0);
         }
-      out << false;
-      out << err;
     }
 
     template <typename ISerializer, typename OSerializer>
