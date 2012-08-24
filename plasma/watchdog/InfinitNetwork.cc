@@ -1,7 +1,5 @@
-#include <stdexcept>
-#include <iostream>
-
-#include <QDir>
+#include "InfinitNetwork.hh"
+#include "Manager.hh"
 
 #include <common/common.hh>
 
@@ -21,8 +19,14 @@
 
 #include <elle/idiom/Close.hh>
 
-#include "InfinitNetwork.hh"
-#include "Manager.hh"
+#include <QDir>
+
+#include <stdexcept>
+#include <iostream>
+
+#include <stdlib.h>
+#include <sys/wait.h>
+
 
 #define LOG(Fmt, ...)                                                         \
   ELLE_DEBUG("InfinitNetwork::%s(id=%s): " Fmt,                               \
