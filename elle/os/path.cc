@@ -49,6 +49,18 @@ namespace elle
         return fs::is_directory(path);
       }
 
+
+      void make_directory(std::string const& path)
+      {
+        fs::create_directory(path);
+      }
+
+      void make_path(std::string const& path)
+      {
+
+        fs::create_directories(path);
+      }
+
     }
   }
 }

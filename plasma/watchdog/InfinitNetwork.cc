@@ -36,6 +36,7 @@
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 using namespace plasma::watchdog;
+namespace path = elle::os::path;
 
 InfinitNetwork::InfinitNetwork(Manager& manager,
                                meta::NetworkResponse const& response)
@@ -43,13 +44,8 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _description(response)
   , _manager(manager)
   , _process()
-  , _mount_point{
-      elle::os::path::join(
-        common::infinit::home(),
-        "networks",
-        _description.name,
-        "mnt").c_str()
-  }
+  , _network_dir{path::join(common::infinit::home(), "networks", response._id)}
+  , _mount_point{path::join(_network_dir, "mnt")}
 {
   LOG("Creating new network.");
 
@@ -80,7 +76,7 @@ InfinitNetwork::~InfinitNetwork()
 
 std::string InfinitNetwork::mount_point() const
 {
-  return this->_mount_point.path().toStdString();
+  return this->_mount_point;
 }
 
 std::string const& InfinitNetwork::id() const
@@ -106,28 +102,20 @@ void InfinitNetwork::stop()
 void InfinitNetwork::_update()
 {
   LOG("Starting network update.");
-  QDir home{
-    elle::os::path::join(
-      common::infinit::home(),
-      "networks",
-      this->_description.name).c_str()
-  };
-  if (!home.exists() && !home.mkpath("."))
-      throw std::runtime_error("Cannot create network home");
+  if (!path::exists(this->_network_dir))
+    path::make_path(this->_network_dir);
 
-  QString descriptionFilename =
-    this->_description.name.c_str() + QString(".dsc");
+  std::string description_filename = path::join(
+      this->_network_dir,
+      this->_description._id + ".dsc"
+  );
 
-  if (!home.exists(descriptionFilename))
+  if (!path::exists(description_filename))
     {
       if (!this->_description.descriptor.size())
         return this->_create_network_root_block();
       else
-        {
-          LOG("Already has a nice descriptor: %s",
-              this->_description.descriptor);
           this->_prepare_directory();
-        }
     }
   else
     this->_register_device();
@@ -237,8 +225,9 @@ void InfinitNetwork::_prepare_directory()
   lune::Descriptor descriptor;
 
   auto e = elle::Status::Error;
+  // XXX descriptor.Store() usually take a network name
   if (descriptor.Restore(this->_description.descriptor) == e ||
-      descriptor.Store(this->_description.name)         == e)
+      descriptor.Store(this->_description._id)          == e)
     {
 #include <elle/idiom/Open.hh>
       show();
@@ -249,7 +238,8 @@ void InfinitNetwork::_prepare_directory()
   nucleus::proton::Network network;
   nucleus::neutron::Object directory;
 
-  if (network.Create(this->_description.name)          == e ||
+  // XXX network.Create() usually take a network name
+  if (network.Create(this->_description._id)          == e ||
       directory.Restore(this->_description.root_block) == e ||
       directory.MutableBlock::Store(network, descriptor.root) == e)
     {
@@ -322,7 +312,7 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
       }
   }
 
-  if (locusSet.Store(this->_description.name) == elle::Status::Error)
+  if (locusSet.Store(this->_description._id) == elle::Status::Error)
     throw std::runtime_error("Cannot store the locus set");
   this->_start_process();
 
@@ -330,7 +320,6 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
 void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {
   LOG("Got network descriptor.");
-  // XXX updated is none here, correct meta
   if (response.updated_network_id != this->_description._id)
     {
       throw std::runtime_error(
@@ -357,13 +346,11 @@ void InfinitNetwork::_start_process()
   if (this->_process.state() != QProcess::NotRunning)
     return;
 
-  LOG("Starting infinit process");
+  LOG("Starting infinit process (mount point: %s", this->_mount_point);
 
-  if (!this->_mount_point.exists() && !_mount_point.mkpath("."))
-    throw std::runtime_error(
-        "Cannot create the mount directory '" + _mount_point.path().toStdString() + "'"
-    );
+  path::make_path(this->_mount_point);
 
+#ifndef INFINIT_LINUX
   QDir home_mnt{
       elle::os::path::join(common::system::home_directory(), "Infinit").c_str()
   };
@@ -371,10 +358,10 @@ void InfinitNetwork::_start_process()
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
       LOG("Created mount point %s", home_mnt.path().toStdString());
-      auto link_path = home_mnt.filePath(this->_description.name.c_str());
-#ifdef INFINIT_WINDOWS
+      auto link_path = home_mnt.filePath(this->_description._id.c_str());
+# ifdef INFINIT_WINDOWS
       link_path += ".lnk";
-#endif
+# endif
       if (!QFile(this->_mount_point.path()).link(link_path))
       {
         ELLE_DEBUG("Cannot create links to mount points.");
@@ -382,29 +369,24 @@ void InfinitNetwork::_start_process()
     }
   else
     ELLE_WARN("Cannot create mount point directory.");
+#endif
 
   LOG("exec: %s -n %s -m %s -u %s",
       common::infinit::binary_path("8infinit"),
-      this->_description.name.c_str(),
-      this->_mount_point.path().toStdString(),
+      this->_description._id.c_str(),
+      this->_mount_point,
       this->_manager.user().c_str());
 
   QStringList arguments;
-  arguments << "-n" << this->_description.name.c_str()
-            << "-m" << this->_mount_point.path()
+  arguments << "-n" << this->_description._id.c_str()
+            << "-m" << this->_mount_point.c_str()
             << "-u" << this->_manager.user().c_str()
             ;
 
   // XXX[rename into [network-name].log]
-  std::string network_dir = elle::os::path::join(
-      common::infinit::home(),
-      "networks",
-      _description.name
-  );
-
-  std::string log_out = elle::os::path::join(network_dir, "out.log").c_str();
-  std::string log_err = elle::os::path::join(network_dir, "err.log").c_str();
-  std::string pid_file = elle::os::path::join(network_dir, "run.pid").c_str();
+  std::string log_out = path::join(this->_network_dir, "out.log").c_str();
+  std::string log_err = path::join(this->_network_dir, "err.log").c_str();
+  std::string pid_file = path::join(this->_network_dir, "run.pid").c_str();
 
   if (elle::os::path::exists(pid_file))
     {
@@ -427,12 +409,12 @@ void InfinitNetwork::_start_process()
           char const* const umount_arguments[] = {
 #ifdef INFINIT_MACOSX
               "umount",
-              this->_mount_point.path().toStdString().c_str(),
+              this->_mount_point.c_str(),
 #endif
 #ifdef INFINIT_LINUX
               "fusermount"
               "-z", "-u",
-              this->_mount_point.path().toStdString().c_str(),
+              this->_mount_point.c_str(),
 #endif
               nullptr
           };
@@ -478,12 +460,7 @@ void InfinitNetwork::_start_process()
 
 void InfinitNetwork::_on_process_started()
 {
-  std::string network_dir = elle::os::path::join(
-      common::infinit::home(),
-      "networks",
-      _description.name
-  );
-  std::string pid_file = elle::os::path::join(network_dir, "run.pid").c_str();
+  std::string pid_file = elle::os::path::join(_network_dir, "run.pid").c_str();
   LOG("Process successfully started (pid = %s)", this->_process.pid());
     {
       std::ofstream out(pid_file);

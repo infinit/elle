@@ -25,10 +25,12 @@ namespace plasma
       meta::NetworkResponse   _description;
       Manager&                _manager;
       QProcess                _process;
-      QDir                    _mount_point;
+      std::string             _network_dir;
+      std::string             _mount_point;
 
     public:
-      InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
+      InfinitNetwork(Manager& manager,
+                     meta::NetworkResponse const& response);
       ~InfinitNetwork();
       void update(meta::NetworkResponse const& response);
       void stop();
