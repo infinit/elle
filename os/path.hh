@@ -29,6 +29,12 @@ namespace elle
       /// Check whether or not a path point to a directory.
       bool is_directory(std::string const& path);
 
+      /// Create a new directory. An already existing directory is not an error.
+      void make_directory(std::string const& path);
+
+      /// Create all required path components directories.
+      void make_path(std::string const& path);
+
     }
   }
 }
