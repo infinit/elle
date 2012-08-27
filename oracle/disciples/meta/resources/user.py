@@ -62,19 +62,29 @@ To get started, download Infinit here: http://infinit.io/download.
 
 Your access code is: %(activation_code)s
 
-In order to use Infinit:
+If there are other people with whom you would like to use Infinit, please let
+us know by sending an email to community@infinit.io.
 
+Instructions:
+
+ * MacOSX:
     1) Install Infinit and create an account with your access code.
-
     2) Create a network.
-
     3) Drag and drop other users into your network.
-
     4) Drag and drop files into your network giving everyone read-only access
        to them.
 
-If there are other people with whom you would like to use Infinit, please let
-us know by sending an email to community@infinit.io.
+ * Linux:
+    1) Register a new account and start the Infinit shell.
+        $ infinit register shell
+    2) Start Infinit instances (in the Infinit shell)
+        infinit-shell$ start
+    3) Create a new network:
+        infinit-shell$ create_network MyNetwork
+    4) You might need to refresh networks with
+        infinit-shell$ refresh_networks
+    5) Invite a friend to a network:
+        infinit-shell$ invite my@friend.com MyNetwork
 
 All the best,
 
