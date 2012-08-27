@@ -395,6 +395,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -417,6 +418,7 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				SDKROOT = macosx;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";
@@ -429,6 +431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -451,6 +454,7 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				SDKROOT = macosx;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";

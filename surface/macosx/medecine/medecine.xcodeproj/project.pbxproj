@@ -194,7 +194,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				CODE_SIGN_IDENTITY = io.infinit;
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
@@ -213,7 +213,7 @@
 					"nurse/supportingFiles/Nurse-Launchd.plist",
 				);
 				PRODUCT_NAME = io.infinit.Nurse.helper;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				SDKROOT = macosx;
 				SYMROOT = ../DerivedData;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
@@ -227,7 +227,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				CODE_SIGN_IDENTITY = io.infinit;
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -247,7 +247,7 @@
 					"nurse/supportingFiles/Nurse-Launchd.plist",
 				);
 				PRODUCT_NAME = io.infinit.Nurse.helper;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				SDKROOT = macosx;
 				SYMROOT = ../DerivedData;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";

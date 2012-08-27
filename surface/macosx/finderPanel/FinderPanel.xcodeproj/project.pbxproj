@@ -792,6 +792,7 @@
 		1C045BEA159CAA7900162909 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
@@ -800,6 +801,7 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -807,6 +809,7 @@
 		1C045BEB159CAA7900162909 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
@@ -815,6 +818,7 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
