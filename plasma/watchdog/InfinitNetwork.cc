@@ -350,23 +350,27 @@ void InfinitNetwork::_start_process()
 
   path::make_path(this->_mount_point);
 
-  std::string mnt_link_dir = path::join(
-    common::system::home_directory(),
-    "Infinit"
-  );
-  if (!path::exists(mnt_link_dir))
-    path::make_directory(mnt_link_dir);
+  ELLE_DEBUG("Create mount point link");
+  {
+    std::string mnt_link_dir = path::join(
+      common::system::home_directory(),
+      "Infinit"
+    );
+    if (!path::exists(mnt_link_dir))
+      path::make_directory(mnt_link_dir);
 
-  std::string owner_email = this->_manager.meta().user(
-      this->_description.owner
-  ).email;
+    std::string owner_email = this->_manager.meta().user(
+        this->_description.owner
+    ).email;
 
-  std::string mnt_link = path::join(
-    mnt_link_dir,
-    elle::sprintf("%s (%s)", this->_description.name, owner_email)
-  );
+    std::string mnt_link = path::join(
+      mnt_link_dir,
+      elle::sprintf("%s (%s)", this->_description.name, owner_email)
+    );
 
-  path::make_symlink(this->_mount_point, mnt_link);
+    if (!path::exists(mnt_link))
+      path::make_symlink(this->_mount_point, mnt_link);
+  }
 
   LOG("exec: %s -n %s -m %s -u %s",
       common::infinit::binary_path("8infinit"),
