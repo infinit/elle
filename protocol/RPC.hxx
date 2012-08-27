@@ -4,6 +4,7 @@
 # include <type_traits>
 
 # include <elle/concurrency/Scheduler.hh>
+# include <elle/log.hh>
 # include <elle/printf.hh>
 
 # include <reactor/backtrace.hh>
@@ -156,6 +157,11 @@ namespace infinit
     RPC<IS, OS>::RemoteProcedure<R, Args...>::
     operator () (Args ... args)
     {
+      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+
+      ELLE_TRACE_SCOPE("%s: call remote procedure: %s",
+                       _owner, _name);
+
       Channel channel(_owner._channels);
       {
         Packet question;
@@ -175,6 +181,8 @@ namespace infinit
           {
             std::string error;
             input >> error;
+            ELLE_TRACE_SCOPE("%s: remote procedure call failed: %s",
+                             _owner, error);
             uint16_t bt_size;
             input >> bt_size;
             reactor::Backtrace bt;
@@ -296,37 +304,8 @@ namespace infinit
           OS& out)
     {
       std::string err;
-      try
-        {
-          VoidSwitch<IS, OS, R, Args ...>::call(
-            in, out, _function);
-        }
-      catch (reactor::Exception& e)
-        {
-          out << false;
-          out << std::string(e.what());
-          out << uint16_t(e.backtrace().size());
-          for (auto const& frame: e.backtrace())
-            {
-              out << frame.symbol;
-              out << frame.symbol_mangled;
-              out << frame.symbol_demangled;
-              out << frame.address;
-              out << frame.offset;
-            }
-        }
-      catch (std::exception& e)
-        {
-          out << false;
-          out << std::string(e.what());
-          out << uint16_t(0);
-        }
-      catch (...)
-        {
-          out << false;
-          out << std::string("unknown error");
-          out << uint16_t(0);
-        }
+      VoidSwitch<IS, OS, R, Args ...>::call(
+        in, out, _function);
     }
 
     /*----.
@@ -373,6 +352,8 @@ namespace infinit
     RPC<IS, OS>::
     run()
     {
+      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+
       using elle::sprintf;
       using reactor::Exception;
       while (true)
@@ -384,16 +365,51 @@ namespace infinit
           input >> id;
           auto procedure = _procedures.find(id);
           reactor::Scheduler& sched = _channels.scheduler();
-          if (procedure == _procedures.end())
-            throw Exception(sched, sprintf
-                            ("call to unknown procedure: %s", id));
-          if (procedure->second.second == nullptr)
-            throw Exception(sched, sprintf
-                            ("remote call to non-local procedure: %s",
-                             procedure->second.first));
+
           Packet answer;
           OS output(answer);
-          procedure->second.second->_call(input, output);
+          try
+            {
+              if (procedure == _procedures.end())
+                throw Exception(sched, sprintf
+                                ("call to unknown procedure: %s", id));
+              else if (procedure->second.second == nullptr)
+                {
+                  throw Exception(sched, sprintf
+                                  ("remote call to non-local procedure: %s",
+                                   procedure->second.first));
+                }
+              else
+                ELLE_TRACE("%s: remote procedure called: %s",
+                           *this, procedure->second.first)
+                  procedure->second.second->_call(input, output);
+            }
+          catch (reactor::Exception& e)
+            {
+              output << false;
+              output << std::string(e.what());
+              output << uint16_t(e.backtrace().size());
+              for (auto const& frame: e.backtrace())
+                {
+                  output << frame.symbol;
+                  output << frame.symbol_mangled;
+                  output << frame.symbol_demangled;
+                  output << frame.address;
+                  output << frame.offset;
+                }
+            }
+          catch (std::exception& e)
+            {
+              output << false;
+              output << std::string(e.what());
+              output << uint16_t(0);
+            }
+          catch (...)
+            {
+              output << false;
+              output << std::string("unknown error");
+              output << uint16_t(0);
+            }
           c.write(answer);
         }
     }
@@ -405,6 +421,16 @@ namespace infinit
     add(BaseRPC& rpc)
     {
       _rpcs.push_back(&rpc);
+    }
+
+    template <typename IS,
+              typename OS>
+    void
+    RPC<IS, OS>::
+    print(std::ostream& stream) const
+    {
+      // FIXME: mitigate
+      stream << "RPC pool";
     }
   }
 }

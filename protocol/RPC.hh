@@ -8,6 +8,8 @@
 # include <boost/function.hpp>
 # include <boost/noncopyable.hpp>
 
+# include <elle/Printable.hh>
+
 # include <protocol/fwd.hh>
 
 namespace infinit
@@ -66,7 +68,10 @@ namespace infinit
     };
 
     template <typename ISerializer, typename OSerializer>
-    class RPC: public BaseRPC, public boost::noncopyable
+    class RPC:
+      public BaseRPC,
+      public elle::Printable,
+      public boost::noncopyable
     {
     public:
       template <typename R, typename ... Args>
@@ -104,6 +109,14 @@ namespace infinit
       typedef std::unordered_map<uint32_t, NamedProcedure> Procedures;
       Procedures _procedures;
       std::vector<BaseRPC*> _rpcs;
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const;
     };
   }
 }
