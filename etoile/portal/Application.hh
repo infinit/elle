@@ -18,7 +18,8 @@ namespace etoile
     /// use the message interface.
     ///
     class Application:
-      public elle::radix::Entity
+      public elle::radix::Entity,
+      public elle::Printable
     {
     public:
       //

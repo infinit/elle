@@ -110,5 +110,15 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Application::print(std::ostream& stream) const
+    {
+      stream << "App " << socket->peer();
+    }
+
   }
 }
