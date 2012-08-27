@@ -68,6 +68,7 @@
 		1CDA370A15D00A190078C963 /* fuse4x.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDA370915D00A170078C963 /* fuse4x.bundle */; };
 		1CDA370B15D00CEA0078C963 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
 		1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CDABDA115502B3200F8097E /* infinite-app-icon.icns */; };
+		1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CF9868115EB8E700095C264 /* ResourceRules.plist */; };
 		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
 /* End PBXBuildFile section */
 
@@ -245,6 +246,7 @@
 		1CD5C4621552EC9200556CC9 /* pref_tab_stores.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pref_tab_stores.png; sourceTree = "<group>"; };
 		1CDA370915D00A170078C963 /* fuse4x.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = fuse4x.bundle; sourceTree = "<group>"; };
 		1CDABDA115502B3200F8097E /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "infinite-app-icon.icns"; path = "icons/infinite-app-icon.icns"; sourceTree = "<group>"; };
+		1CF9868115EB8E700095C264 /* ResourceRules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ResourceRules.plist; sourceTree = "<group>"; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
@@ -471,6 +473,7 @@
 		36E9F8AB14FF7DE7000B9C12 = {
 			isa = PBXGroup;
 			children = (
+				1CF9868115EB8E700095C264 /* ResourceRules.plist */,
 				1CD2BBCD15D0034F0081FE59 /* medecine.xcodeproj */,
 				1CD332EA1553E13F00930842 /* infinite-app-icon.icns */,
 				1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */,
@@ -648,6 +651,7 @@
 				1C50F8F11574D50D0082F57C /* OOSetupWindow.xib in Resources */,
 				1C50F8F81574EE030082F57C /* setup-bg.png in Resources */,
 				1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */,
+				1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -706,7 +710,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,7 +739,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;
@@ -747,7 +752,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -776,7 +782,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;

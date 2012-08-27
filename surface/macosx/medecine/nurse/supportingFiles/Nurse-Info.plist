@@ -14,7 +14,7 @@
 	<string></string>
 	<key>SMAuthorizedClients</key>
 	<array>
-		<string>identifier io.infinit.Infinit and certificate leaf[subject.CN] = &quot;io.infinit&quot;</string>
+		<string>identifier io.infinit.Infinit and certificate leaf[subject.CN] = &quot;Developer ID Application: infinit.io&quot;</string>
 	</array>
 </dict>
 </plist>

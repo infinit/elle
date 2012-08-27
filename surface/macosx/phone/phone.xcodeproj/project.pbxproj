@@ -395,7 +395,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -418,8 +418,9 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";
 				VALID_ARCHS = x86_64;
@@ -431,7 +432,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer: Charles Guillot (H3WB7R86UD)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -454,8 +455,9 @@
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "712E7B5A-BFDE-4D82-AD27-E6D7DFDEEFE4";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";
 				VALID_ARCHS = x86_64;
