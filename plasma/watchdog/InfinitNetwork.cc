@@ -350,26 +350,23 @@ void InfinitNetwork::_start_process()
 
   path::make_path(this->_mount_point);
 
-#ifndef INFINIT_LINUX
-  QDir home_mnt{
-      elle::os::path::join(common::system::home_directory(), "Infinit").c_str()
-  };
+  std::string mnt_link_dir = path::join(
+    common::system::home_directory(),
+    "Infinit"
+  );
+  if (!path::exists(mnt_link_dir))
+    path::make_directory(mnt_link_dir);
 
-  if (home_mnt.exists() || home_mnt.mkpath("."))
-    {
-      LOG("Created mount point %s", home_mnt.path().toStdString());
-      auto link_path = home_mnt.filePath(this->_description._id.c_str());
-# ifdef INFINIT_WINDOWS
-      link_path += ".lnk";
-# endif
-      if (!QFile(this->_mount_point.c_str()).link(link_path))
-      {
-        ELLE_DEBUG("Cannot create links to mount points.");
-      }
-    }
-  else
-    ELLE_WARN("Cannot create mount point directory.");
-#endif
+  std::string owner_email = this->_manager.meta().user(
+      this->_description.owner
+  ).email;
+
+  std::string mnt_link = path::join(
+    mnt_link_dir,
+    elle::sprintf("%s (%s)", this->_description.name, owner_email)
+  );
+
+  path::make_symlink(this->_mount_point, mnt_link);
 
   LOG("exec: %s -n %s -m %s -u %s",
       common::infinit::binary_path("8infinit"),
