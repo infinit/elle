@@ -362,7 +362,7 @@ void InfinitNetwork::_start_process()
 # ifdef INFINIT_WINDOWS
       link_path += ".lnk";
 # endif
-      if (!QFile(this->_mount_point.path()).link(link_path))
+      if (!QFile(this->_mount_point.c_str()).link(link_path))
       {
         ELLE_DEBUG("Cannot create links to mount points.");
       }
