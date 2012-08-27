@@ -6,6 +6,7 @@
     NSMutableArray*					users;
     NSMutableArray*					importedUsers;
     NSMutableArray*					filteredUsers;
+    BOOL                            notFiltered;
 }
 
 - (void)defineStyle;

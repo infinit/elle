@@ -23,6 +23,8 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize animTimer;
 @synthesize isPending;
 @synthesize browserWindowController;
+@synthesize isLoginIn;
+@synthesize isUpdating;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -137,9 +139,11 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
         [[NSUserDefaults standardUserDefaults]synchronize ];
+        NSLog(@"Show setup windows");
         [self showSetupWindow];
     }
     else {
+        NSLog(@"Start Infinit");
         self.isLoginIn = NO;
         [self removePending];
         [self readyToStartInfinit];
@@ -147,10 +151,12 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 }
 
 - (void)userLoggedNotification:(NSNotification *)notification {
+    NSLog(@"User logged notification");
     if ([notification name] == OOUserLoggedNotification) {
+        NSLog(@"User logged");
         [self loginResult:0];
-    }
-    else if([notification name] == OOUserUnLoggedNotification) {
+    } else if([notification name] == OOUserUnLoggedNotification) {
+        NSLog(@"User unlogged");
         [NSApp terminate:nil];
     }
 }
@@ -165,7 +171,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 }
 
 - (void)readyToStartInfinit {
+    NSLog(@"Ready to start Infinit");
     if (!self.isLoginIn && !self.isUpdating) {
+        NSLog(@"Is loged and is updated");
         [statusItem setMenu:statusMenu];
         [self launch8Watchdog];
         self.browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
@@ -233,8 +241,10 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io/help"]];
 }
 
-- (void)windowWillClose:(NSNotification *)notification {
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    NSLog(@"try stoping watchdog");
     [self stop8Watchdog];
+    NSLog(@"watchdog stopped");
 }
 
 @end

@@ -13,6 +13,7 @@
         users = [[NSMutableArray alloc] init];
         importedUsers = [[NSMutableArray alloc] init];
         filteredUsers = [[NSMutableArray alloc] init];
+        notFiltered = YES;
     }
     return self;
 }
@@ -20,7 +21,7 @@
 - (void)defineStyle {
     // Allow reordering, animations and set the dragging destination delegate.
     [userBrowser setAllowsReordering:YES];
-    [userBrowser setAnimates:YES];
+    //[userBrowser setAnimates:YES];
     //[userBrowser setDraggingDestinationDelegate:self];
 	
 	// customize the appearance
@@ -39,7 +40,7 @@
 	
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];	
 	[attributes setObject:[NSFont systemFontOfSize:9] forKey:NSFontAttributeName]; 
-	[attributes setObject:paraphStyle forKey:NSParagraphStyleAttributeName];	
+	//[attributes setObject:paraphStyle forKey:NSParagraphStyleAttributeName];
 	[attributes setObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
 	[userBrowser setValue:attributes forKey:IKImageBrowserCellsTitleAttributesKey];
 	
@@ -48,7 +49,7 @@
 	[attributes setObject:paraphStyle forKey:NSParagraphStyleAttributeName];	
 	[attributes setObject:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
 	
-	[userBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];	
+	[userBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];
 	
 	//change intercell spacing
 	[userBrowser setIntercellSpacing:NSMakeSize(20, 20)];
@@ -124,7 +125,12 @@
     }
     
 	// Update the data source in the main thread.
-    [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
+    if (notFiltered) {
+        [self updateDatasource];
+        [self setFilteredUsers:nil];
+        
+        
+    }
 }
 
 
@@ -247,12 +253,15 @@
 //
 
 - (void)setFilteredUsers:(NSArray*)userIds {
+    NSLog(@"Filter users");
     [filteredUsers removeAllObjects];
     if (userIds == nil) {
+        notFiltered = YES;
         [filteredUsers addObjectsFromArray:users];
     } else {
+        notFiltered = NO;
         for (int i = 0; i < [userIds count]; i ++) {
-            [filteredUsers addObject:[self getUserInfoWithId:userIds[i]]];
+            [filteredUsers addObject:[self getUserInfoWithId:[userIds objectAtIndex:i]]];
         }
     }
     // Reload the image browser, which triggers setNeedsDisplay.

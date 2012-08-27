@@ -734,13 +734,13 @@
 					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
 					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OBJROOT = "$(SYMROOT)/Intermediates";
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;
@@ -777,13 +777,13 @@
 					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
 					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OBJROOT = "$(SYMROOT)/Intermediates";
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;

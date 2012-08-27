@@ -13,7 +13,6 @@
 		1C045BCC159CAA7900162909 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BCA159CAA7900162909 /* Credits.rtf */; };
 		1C045BCF159CAA7900162909 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BCE159CAA7900162909 /* OOAppDelegate.m */; };
 		1C045BD2159CAA7900162909 /* OOBrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BD0159CAA7900162909 /* OOBrowserWindow.xib */; };
-		1C045BDA159CAA7900162909 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BD9159CAA7900162909 /* SenTestingKit.framework */; };
 		1C045BDB159CAA7900162909 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BBB159CAA7900162909 /* Cocoa.framework */; };
 		1C045BE3159CAA7900162909 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BE1159CAA7900162909 /* InfoPlist.strings */; };
 		1C045BE6159CAA7900162909 /* FinderPanelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BE5159CAA7900162909 /* FinderPanelTests.m */; };
@@ -72,7 +71,6 @@
 		1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
 		1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973415A2F8DE002F0B1E /* pin.tiff */; };
 		1C96022515C84B4B001C864F /* glossy.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973615A2F8E6002F0B1E /* glossy.png */; };
-		1C9F697F15CA831000610EAE /* phone.xcodeproj in Resources */ = {isa = PBXBuildFile; fileRef = 1C9F697E15CA831000610EAE /* phone.xcodeproj */; };
 		1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
 		1CB8E5CC15A5A13C00DCA443 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
 		1CBD903715A1987D00D03CBD /* OOUserBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903615A1987D00D03CBD /* OOUserBrowserView.m */; };
@@ -151,7 +149,6 @@
 		1C045BCE159CAA7900162909 /* OOAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOAppDelegate.m; sourceTree = "<group>"; };
 		1C045BD1159CAA7900162909 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OOBrowserWindow.xib; sourceTree = "<group>"; };
 		1C045BD8159CAA7900162909 /* FinderPanelTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinderPanelTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C045BD9159CAA7900162909 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		1C045BE0159CAA7900162909 /* FinderPanelTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderPanelTests-Info.plist"; sourceTree = "<group>"; };
 		1C045BE2159CAA7900162909 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1C045BE4159CAA7900162909 /* FinderPanelTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FinderPanelTests.h; sourceTree = "<group>"; };
@@ -211,7 +208,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C045BDA159CAA7900162909 /* SenTestingKit.framework in Frameworks */,
 				1C045BDB159CAA7900162909 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -256,7 +252,6 @@
 			children = (
 				1CBD903B15A1CF0400D03CBD /* Quartz.framework */,
 				1C045BBB159CAA7900162909 /* Cocoa.framework */,
-				1C045BD9159CAA7900162909 /* SenTestingKit.framework */,
 				1C045BBD159CAA7900162909 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -607,7 +602,6 @@
 				1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */,
 				1C136A7C15B58D7D003D41B9 /* pin.tiff in Resources */,
 				1C136A7D15B58D81003D41B9 /* glossy.png in Resources */,
-				1C9F697F15CA831000610EAE /* phone.xcodeproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -872,8 +866,11 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.8;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -893,8 +890,11 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.8;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;

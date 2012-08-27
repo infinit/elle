@@ -122,6 +122,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     [pref setObject:[self.loginViewComputerName stringValue]  forKey:@"ComputerName"];
     [pref setObject:[self.loginViewRememberMe stringValue]  forKey:@"RememberMe"];
     [pref synchronize];
+    NSLog(@"User try to login");
     [[OOPhone getInstance] loginWithEmail:[pref objectForKey:@"Email"]
                                  password:[pref objectForKey:@"Password"]
                               machineName:[pref objectForKey:@"ComputerName"]
@@ -131,14 +132,18 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 
 - (void)loginResult:(NSNumber *)arg1 {
     int error = [arg1 intValue];
-    if (error != 0)
+    if (error != 0) {
+        NSLog(@"User login failled");
         [self.loginViewError setStringValue:@"An error occurred..."];
+    }
     else {
+        NSLog(@"User login succeed");
         [transition setSubtype:kCATransitionFromRight];
         [self swapView:loggedView];
         
         self.isLogged = YES;
         [[self window] close];
+        NSLog(@"Close setup windows");
     }
 }
 
@@ -192,8 +197,10 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 - (void)windowWillClose:(NSNotification *)notification
 {
     if (self.isLogged) {
+        NSLog(@"Send succeed logged notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:OOUserLoggedNotification object:self];
     } else {
+        NSLog(@"Send unsuccessful logging notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:OOUserUnLoggedNotification object:self];
     }
 }

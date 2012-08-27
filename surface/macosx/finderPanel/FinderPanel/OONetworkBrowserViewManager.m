@@ -26,7 +26,7 @@
 - (void)defineStyle {
     // Allow reordering, animations and set the dragging destination delegate.
     [networkBrowser setAllowsReordering:YES];
-    [networkBrowser setAnimates:YES];
+    //[networkBrowser setAnimates:YES];
     [networkBrowser setAllowsDroppingOnItems:YES];
     [networkBrowser setDraggingDestinationDelegate:self];
     [networkBrowser registerForDraggedTypes:[NSArray arrayWithObjects: NSPasteboardTypeString, NSFilenamesPboardType, nil]];
@@ -57,7 +57,7 @@
 	[attributes setObject:paraphStyle forKey:NSParagraphStyleAttributeName];	
 	[attributes setObject:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
 	
-	[networkBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];	
+	//[networkBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];
 	
 	//change intercell spacing
 	[networkBrowser setIntercellSpacing:NSMakeSize(20, 20)];
@@ -72,13 +72,14 @@
 
 - (void)updateDatasource
 {
+    NSLog(@"Update data source");
     // Update the datasource, add recently imported items.
     [networks addObjectsFromArray:importedNetworks];
 	
 	// Empty the temporary array.
     NSMutableArray* usersToAdd = [[NSMutableArray alloc] init];
     for (int i = 0; i < [importedNetworks count]; i++) {
-        NSArray* members = ((OONetworkModel*)importedNetworks[i]).members;
+        NSArray* members = ((OONetworkModel*)[importedNetworks objectAtIndex:i]).members;
         [usersToAdd addObjectsFromArray:members];
     }
     [userBrowserViewManager addUsersWithIds:usersToAdd];
@@ -90,7 +91,7 @@
 
 - (void)updateUsers {
     for (int i = 0; i < [networks count]; i++) {
-        [self updateModel:(OONetworkModel*)networks[i] InfoWithId:((OONetworkModel*)networks[i]).uid];
+        [self updateModel:(OONetworkModel*)[networks objectAtIndex:i] InfoWithId:((OONetworkModel*)[networks objectAtIndex:i]).uid];
         // if selected update filtered users...
     }
     
@@ -143,19 +144,21 @@
 }
 
 - (void)forceUpdateNetworks {
+    NSLog(@"Force update network");
     self.forceUpdateNetwork = YES;
 }
 
 - (void)updateNetworksLoop
 {
     int updateNetworkFrequency = 10;
-    static int updateNetworksLoop = 0;
+    static int updateNetworksLoop = 10;
     while (self.updateNetwork) {
         if (self.forceUpdateNetwork) {
             updateNetworksLoop += updateNetworkFrequency;
             self.forceUpdateNetwork = NO;
         }
         if (updateNetworksLoop >= updateNetworkFrequency) {
+            NSLog(@"Update network");
             [self updateNetworks];
             updateNetworksLoop = 0;
         } else {
@@ -172,8 +175,8 @@
     n = [networkIds count];
     for (i = 0; i < n; i++)
     {
-        NSString* userId = [networkIds objectAtIndex:i];
-        [self addNetworkWithId:userId];
+        NSString* networkId = [networkIds objectAtIndex:i];
+        [self addNetworkWithId:networkId];
     }
     
     // Update the data source in the main thread.
@@ -277,27 +280,44 @@
 //	performDragOperation:sender
 // ------------------------------------------------------------------------- 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    id dsource;
+    dsource = [sender draggingSource];
+    pboard = [sender draggingPasteboard];
+    
     NSUInteger networkIndex;
     networkIndex = networkBrowser.indexAtLocationOfDroppedItem;
     OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:networkIndex] representedItem];
     
-    if ([sender draggingSource] == userBrowser) {
+    if (dsource == userBrowser) {
         NSIndexSet* indexSet = [userBrowser selectionIndexes];
         if ([indexSet count] > 0){
             OOUserModel* userModel = [[userBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
             [[OOPhone getInstance] addUser:userModel.uid toNetwork:networkModel.uid];
         }
+    } else if ([[pboard types] containsObject:NSURLPboardType]) {
+        NSArray *sourcePaths;
+        NSString *source;
+        sourcePaths = [pboard propertyListForType: NSFilenamesPboardType];
+        source = [[sourcePaths objectAtIndex: 0] stringByDeletingLastPathComponent];
+        NSMutableArray *files = [NSMutableArray arrayWithCapacity: 1];
+        for(int i = 0; i < [sourcePaths count]; i++) {
+            [files addObject: [[sourcePaths objectAtIndex: i] lastPathComponent]];
+        }
+        [[NSWorkspace sharedWorkspace] performFileOperation:NSWorkspaceCopyOperation source:source destination:[networkModel.mountPoint path] files:files tag:nil];
+        
     }
     
     return YES;
 }
+
 - (void)copyFiles {
     
 }
+
 // -------------------------------------------------------------------------
 //	IKImageBrowserDelegate Protocol
 // -------------------------------------------------------------------------
-
 - (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser {
     NSIndexSet* indexSet = [aBrowser selectionIndexes];
     if ([indexSet count] > 0){
@@ -312,7 +332,7 @@
     NSIndexSet* indexSet = [aBrowser selectionIndexes];
     if ([indexSet count] > 0){
         OONetworkModel* networkModel = [[networkBrowser cellForItemAtIndex:[indexSet firstIndex]] representedItem];
-        [[NSWorkspace sharedWorkspace] openFile:[networkModel.mountPoint absoluteString]];
+        [[NSWorkspace sharedWorkspace] openFile:[networkModel.mountPoint path]];
     }
 }
 

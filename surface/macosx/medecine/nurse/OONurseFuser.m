@@ -19,7 +19,14 @@
 }
 
 - (BOOL)installFuse {
-    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isDir;
+    if(![fm fileExistsAtPath:@"usr/local/lib" isDirectory:&isDir])
+        if(![fm createDirectoryAtPath:@"usr/local/lib" withIntermediateDirectories:YES attributes:nil error:nil])
+            NSLog(@"Error: Create folder failed");
+    if(![fm fileExistsAtPath:@"usr/local/include" isDirectory:&isDir])
+        if(![fm createDirectoryAtPath:@"usr/local/include" withIntermediateDirectories:YES attributes:nil error:nil])
+            NSLog(@"Error: Create folder failed");
     // copy to /usr/local/lib
     BOOL libInstalled = [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib" withForceCopy:NO];
     libInstalled &= [self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/usr/local/lib"] to:@"/usr/local/lib" withForceCopy:NO];
@@ -29,7 +36,7 @@
     BOOL kextInstalled =[self copyForEachElementsIn:[self.sourceFullPath stringByAppendingString:@"/Library/Extensions"] to:@"/Library/Extensions" withForceCopy:NO];
     
     NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:06755UL] forKey:NSFilePosixPermissions];
-    NSFileManager *fm = [NSFileManager defaultManager];
+    
     [fm setAttributes:attr ofItemAtPath:@"/Library/Extensions/fuse4x.kext/Support/load_fuse4x" error:&error];
     
     return libInstalled && includeInstalled && kextInstalled;

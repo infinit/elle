@@ -415,11 +415,12 @@
 					"$(SRCROOT)/../../../build/macosx64/surface/gap/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SKIP_INSTALL = YES;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";
@@ -452,11 +453,12 @@
 					"$(SRCROOT)/../../../build/macosx64/surface/gap/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SKIP_INSTALL = YES;
 				SYMROOT = build;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../gap/**";

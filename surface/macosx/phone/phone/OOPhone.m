@@ -120,6 +120,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 - (NSArray*)getUserNetworks {
     NSMutableArray* returnArray = [[NSMutableArray alloc] init];
+    gap_refresh_networks(self._gap_State);
     char** networkIds = gap_networks(self._gap_State);
     
     if (networkIds == NULL) return returnArray;

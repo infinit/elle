@@ -8,14 +8,17 @@
 @synthesize isOpen;
 
 - (id)initWithWindowNib {
-    return [self initWithWindowNibName:@"OOBrowserWindow"];
+    self = [self initWithWindowNibName:@"OOBrowserWindow"];
+    return self;
 }
 
 - (void)awakeFromNib
 {
+    
     [userBrowserViewManager defineStyle];
     [networkBrowserViewManager defineStyle];
     NSArray* users = [[OOPhone getInstance] searchUsersWithString:nil];
+    NSLog(@"# of users : %ld", users.count);
     if (users)
 	{ 
         // launch import in an independent thread
@@ -113,7 +116,7 @@
 // ------------------------------------------------------------------------- 
 - (IBAction)createNetwork:(id)sender {
     NSString *networkName = [networkNameTextField stringValue];
-    [[OOPhone getInstance] createNetworkWithName:networkName performSelector:@selector(forceUpdateNetwork) forObject:networkBrowserViewManager];
+    [[OOPhone getInstance] createNetworkWithName:networkName performSelector:@selector(forceUpdateNetworks) forObject:networkBrowserViewManager];
 }
 
 @end
