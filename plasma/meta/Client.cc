@@ -119,6 +119,7 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
 {
   ar & named("_id", res._id);
   ar & named("name", res.name);
+  ar & named("owner", res.owner);
   ar & named("model", res.model);
   try
     {

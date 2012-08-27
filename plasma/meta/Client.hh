@@ -57,6 +57,7 @@ namespace plasma
     struct NetworkResponse : Response
     {
       std::string              _id;
+      std::string              owner;
       std::string              name;
       std::string              model;
       std::string              root_block;
