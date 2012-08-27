@@ -141,10 +141,10 @@ namespace infinit
     {
       auto proc = _owner._procedures.find(_id);
       assert(proc != _owner._procedures.end());
-      assert(proc->second == nullptr);
+      assert(proc->second.second == nullptr);
       typedef Procedure<IS, OS, R, Args...> Proc;
       Proc* res = new Proc(_name, _owner, _id, f);
-      _owner._procedures[_id] = res;
+      _owner._procedures[_id].second = res;
     }
 
 
@@ -356,7 +356,7 @@ namespace infinit
     add(std::string const& name)
     {
       uint32_t id = _id++;
-      _procedures[id] = nullptr;
+      _procedures[id] = NamedProcedure(name, nullptr);
       return RemoteProcedure<R, Args...>(name, *this, id);
     }
 
@@ -387,12 +387,13 @@ namespace infinit
           if (procedure == _procedures.end())
             throw Exception(sched, sprintf
                             ("call to unknown procedure: %s", id));
-          if (procedure->second == nullptr)
+          if (procedure->second.second == nullptr)
             throw Exception(sched, sprintf
-                            ("remote call to non-local procedure: %s", id));
+                            ("remote call to non-local procedure: %s",
+                             procedure->second.first));
           Packet answer;
           OS output(answer);
-          procedure->second->_call(input, output);
+          procedure->second.second->_call(input, output);
           c.write(answer);
         }
     }

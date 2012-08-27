@@ -100,8 +100,9 @@ namespace infinit
       virtual void run();
     protected:
       typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;
-      // FIXME: unique_ptr
-      std::unordered_map<uint32_t, LocalProcedure*> _procedures;
+      typedef std::pair<std::string, LocalProcedure*> NamedProcedure;
+      typedef std::unordered_map<uint32_t, NamedProcedure> Procedures;
+      Procedures _procedures;
       std::vector<BaseRPC*> _rpcs;
     };
   }
