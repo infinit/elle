@@ -187,7 +187,6 @@ class One(_Page):
 
     def GET(self, _id):
         network = self.network(_id)
-        network.pop('owner')
         return self.success(network)
 
 class Nodes(_Page):
