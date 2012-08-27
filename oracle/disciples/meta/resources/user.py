@@ -75,13 +75,13 @@ Instructions:
        to them.
 
  * Linux:
-    1) Register a new account and start the Infinit shell.
+    1) Register a new account and start the Infinit shell:
         $ infinit register shell
-    2) Start Infinit instances (in the Infinit shell)
+    2) Start Infinit instances (in the Infinit shell):
         infinit-shell$ start
     3) Create a new network:
         infinit-shell$ create_network MyNetwork
-    4) You might need to refresh networks with
+    4) You might need to refresh networks with:
         infinit-shell$ refresh_networks
     5) Invite a friend to a network:
         infinit-shell$ invite my@friend.com MyNetwork
