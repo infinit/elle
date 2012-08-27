@@ -57,8 +57,14 @@ namespace elle
 
       void make_path(std::string const& path)
       {
-
         fs::create_directories(path);
+      }
+
+      void
+      make_symlink(std::string const& oldname,
+                   std::string const& newname)
+      {
+        fs::create_symlink(oldname, newname);
       }
 
     }
