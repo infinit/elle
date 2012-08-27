@@ -380,10 +380,6 @@ namespace surface
       assert(it != this->networks().end());
       Network* network = it->second;
       assert(network != nullptr);
-      if (std::find(network->users.begin(),
-                    network->users.end(),
-                    user_id) == network->users.end())
-        network->users.push_back(user_id);
 
       std::string const& group_binary = common::infinit::binary_path("8group");
 
@@ -391,7 +387,7 @@ namespace surface
       arguments << "--user" << _api->email().c_str()
                 << "--type" << "user"
                 << "--add"
-                << "--network" << network->name.c_str()
+                << "--network" << network->_id.c_str()
                 << "--identity" << this->user(user_id).public_key.c_str()
                 ;
       ELLE_DEBUG("LAUNCH: %s %s",
@@ -404,6 +400,10 @@ namespace surface
       if (p.exitCode())
         throw Exception(gap_internal_error, "8group binary exited with errors");
       auto res = this->_api->network_add_user(network_id, user_id);
+      if (std::find(network->users.begin(),
+                    network->users.end(),
+                    user_id) == network->users.end())
+        network->users.push_back(user_id);
     }
 
     std::map<std::string, NetworkStatus*> const&
@@ -608,7 +608,7 @@ namespace surface
       QStringList arguments;
       arguments << "--user" << this->_api->email().c_str()
                 << "--type" << "user"
-                << "--network" << this->network(infos->network_id).name.c_str()
+                << "--network" << this->network(infos->network_id)._id.c_str()
                 << "--path" << ("/" + infos->relative_path).c_str()
                 << "--consult"
                 ;
@@ -663,7 +663,7 @@ namespace surface
       arguments << "--user" << _api->email().c_str()
                 << "--type" << "user"
                 << "--grant"
-                << "--network" << network->name.c_str()
+                << "--network" << network->_id.c_str()
                 << "--path" << ("/" + infos.relative_path).c_str()
                 << "--identifier" << this->user(user_id).public_key.c_str()
                 ;
