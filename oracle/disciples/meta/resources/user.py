@@ -52,7 +52,9 @@ Welcome to Infinit! You are one of the first individuals to get to try it out!
 
 Remember that the version you will be using is still quite basic and only
 functions in a local network at the moment. It may still have bugs and the
-interface is still not in its public version.
+interface is still not in its public version. For now, file sharing is limited
+to 30 MB and only the network owner can edit the files. Don’t worry though!
+We’ll be updating all of this over the coming weeks.
 
 You can report bugs or simply tell us what you think by sending us an email at
 feedback@infinit.io or by visiting feedback.infinit.io. If you have any
