@@ -1186,6 +1186,13 @@ class Builder:
                             Coroutine(node.build, str(node), _scheduler(),
                                       sched.Coroutine.current))
 
+                try:
+                    sched.coro_wait(coroutines_static)
+                except:
+                    for coro in coroutines_static:
+                        coro.terminate()
+                    raise
+
                 # Build dynamic dependencies
                 debug.debug('Build dynamic dependencies')
                 with debug.indentation():
@@ -1197,15 +1204,14 @@ class Builder:
                             Coroutine(node.build, str(node), _scheduler(),
                                       sched.Coroutine.current))
 
-                for coro in coroutines_static:
-                    sched.coro_wait(coro)
-
-                for coro in coroutines_dynamic:
+                while True:
                     try:
-                        sched.coro_wait(coro)
+                        sched.coro_wait(coroutines_dynamic)
                     except Exception as e:
-                        debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                        debug.debug('Execution needed because some dynamic dependency couldn\'t be built')
                         execute = True
+                    else:
+                        break
 
                 # If any non-virtual target is missing, we must rebuild.
                 if not execute:
