@@ -68,6 +68,15 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    elle::io::Path
+    History::_path(Network const& network,
+                   Address const& address)
+    {
+      return (elle::io::Path(lune::Lune::Network::Shelter::History,
+                             elle::io::Piece("%NETWORK%", network.name),
+                             elle::io::Piece("%ADDRESS%", address.unique())));
+    }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -150,112 +159,36 @@ namespace nucleus
 // ---------- fileable --------------------------------------------------------
 //
 
-    ///
-    /// this method loads a history.
-    ///
-    elle::Status        History::Load(const Network&            network,
-                                      const Address&            address)
+    void
+    History::load(Network const& network,
+                  Address const& address)
     {
-      elle::io::Path path;
-      elle::String unique;
-
-      unique = address.unique();
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::History) ==
-          elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
-        escape("unable to complete the path");
-
-      return this->Load(path);
+      this->load(History::_path(network, address));
     }
 
-    ///
-    /// this method stores the history in its file format.
-    ///
-    elle::Status        History::Store(const Network&           network,
-                                       const Address&           address) const
+    void
+    History::store(Network const& network,
+                   Address const& address) const
     {
-      elle::io::Path path;
-      elle::String unique;
-
-      unique = address.unique();
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::History) ==
-          elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
-        escape("unable to complete the path");
-
-      return this->Store(path);
+      this->store(History::_path(network, address));
     }
 
-    ///
-    /// this method erases a block.
-    ///
-    elle::Status        History::Erase(const Network&           network,
-                                       const Address&           address) const
+    void
+    History::erase(Network const& network,
+                   Address const& address)
     {
-      elle::io::Path path;
-      elle::String unique;
+      elle::io::Path path(History::_path(network, address));
 
-      unique = address.unique();
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::History) ==
-          elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
-        escape("unable to complete the path");
-
-      // is the file present...
-      if (elle::io::File::Exist(path) == true)
-        {
-          // erase the file.
-          if (elle::io::File::Erase(path) == elle::Status::Error)
-            escape("unable to erase the file");
-        }
-
-      return elle::Status::Ok;
+      if (elle::concept::Fileable<>::exists(path) == true)
+        elle::concept::Fileable<>::erase(path);
     }
 
-    ///
-    /// this method returns true if the block exists.
-    ///
-    elle::Status        History::Exist(const Network&           network,
-                                       const Address&           address) const
+    elle::Boolean
+    History::exists(Network const& network,
+                    Address const& address)
     {
-      elle::io::Path path;
-      elle::String unique;
-
-      unique = address.unique();
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::History) ==
-          elle::Status::Error)
-        flee("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
-        flee("unable to complete the path");
-
-      // test the file.
-      if (elle::io::File::Exist(path) == true)
-        return elle::Status::True;
-
-      return elle::Status::False;
+      return (elle::concept::Fileable<>::exists(
+        History::_path(network, address)));
     }
 
   }

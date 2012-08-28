@@ -11,8 +11,8 @@ namespace lune
   /// this class represents a configuration file which can be used to
   /// alterate the Infinit behaviour dynamically.
   ///
-  class Configuration
-    : public elle::utility::Settings
+  class Configuration:
+    public elle::utility::Settings
   {
   public:
     //
@@ -79,17 +79,40 @@ namespace lune
     elle::Status                Pull();
 
     //
+    // static methods
+    //
+  private:
+    /// XXX
+    static
+    elle::io::Path
+    _path();
+
+    //
     // interfaces
     //
-
+  public:
     // dumpable
     elle::Status                Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    elle::Status                Load();
-    elle::Status                Store() const;
-    elle::Status                Erase() const;
-    elle::Status                Exist() const;
+    // XXX ELLE_CONCEPT_FILEABLE_METHODS();
+
+    // XXX[broken]
+    using Settings::load;
+    using Settings::store;
+    using Settings::erase;
+    using Settings::exists;
+
+    void
+    load();
+    void
+    store() const;
+    static
+    void
+    erase();
+    static
+    elle::Boolean
+    exists();
 
     //
     // attributes

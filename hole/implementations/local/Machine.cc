@@ -12,8 +12,6 @@
 
 #include <elle/log.hh>
 
-#include <Infinit.hh>
-
 namespace hole
 {
   namespace implementations
@@ -29,31 +27,20 @@ namespace hole
       Machine::Put(const nucleus::proton::Address& address,
                    const nucleus::proton::ImmutableBlock& block)
       {
-        // Debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::local::Put[Immutable]()\n");
-
         // Check if the block already exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address) == elle::Status::True)
+        if (nucleus::proton::ImmutableBlock::exists(
+              Hole::Implementation->network, address) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "this immutable block seems to already exist");
 
         // Store the block.
-        if (block.Store(Hole::Implementation->network,
-                        address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to store the block");
+        block.store(Hole::Implementation->network, address);
       }
 
       void
       Machine::Put(const nucleus::proton::Address&    address,
                    const nucleus::proton::MutableBlock& block)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::local::Put[Mutable]()\n");
-
         // validate the block, depending on its component.
         //
         // indeed, the Object component requires as additional block for
@@ -126,38 +113,64 @@ namespace hole
             }
           }
 
-        ELLE_TRACE("Store the block %p", &block)
+        // XXX[this kind of check should be provided by a method such as
+        //     hole/backend/fs/MutableBlock::derives()]
+        ELLE_TRACE("Check if the block derives the current block")
           {
-            // store the block.
-            if (block.Store(Hole::Implementation->network,
-                            address) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to store the block");
-          }
+            // does the block already exist.
+            if (nucleus::proton::MutableBlock::exists(
+                  Hole::Implementation->network,
+                  address,
+                  nucleus::proton::Version::Last) == true)
+              {
+                nucleus::proton::MutableBlock* current;
 
-        ELLE_TRACE("Block %p successfully stored", &block);
+                // build a block according to the component.
+                if (nucleus::Nucleus::Factory.Build(
+                      address.component,
+                      current) == elle::Status::Error)
+                  throw std::runtime_error("unable to build the block");
+
+                std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
+
+                ELLE_TRACE_SCOPE("the mutable block seems to exist "
+                                 "locally: make sure it derives the "
+                                 "current version");
+
+                // load the latest version.
+                current->load(
+                  Hole::Implementation->network,
+                  address,
+                  nucleus::proton::Version::Last);
+
+                if (block.derives(*current) == true)
+                  {
+                    ELLE_TRACE("Store the block %p", &block)
+                      block.store(Hole::Implementation->network, address);
+
+                    ELLE_TRACE("Block %p successfully stored", &block);
+                  }
+                else
+                  ELLE_TRACE("the block %p does not derive the current one",
+                             &block);
+              }
+          }
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Machine::Get(const nucleus::proton::Address& address)
       {
-        // Debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::local::Get[Immutable]()\n");
-
         nucleus::proton::ImmutableBlock* block;
         nucleus::Nucleus::Factory.Build(address.component, block);
 
         // Does the block exist.
-        if (block->Exist(Hole::Implementation->network, address) == elle::Status::False)
+        if (nucleus::proton::ImmutableBlock::exists(
+              Hole::Implementation->network, address) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // Load the block.
-        if (block->Load(Hole::Implementation->network,
-                       address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to load the block");
+        block->load(Hole::Implementation->network, address);
 
         // Validate the block.
         if (block->Validate(address) == elle::Status::Error)
@@ -171,24 +184,17 @@ namespace hole
       Machine::Get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Version&    version)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::local::Get[Mutable]()\n");
-
         nucleus::proton::MutableBlock* block;
         nucleus::Nucleus::Factory.Build(address.component, block);
 
         // does the block exist.
-        if (block->Exist(Hole::Implementation->network,
-                        address, version) == elle::Status::False)
+        if (nucleus::proton::MutableBlock::exists(
+              Hole::Implementation->network, address, version) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        if (block->Load(Hole::Implementation->network,
-                       address, version) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to load the block");
+        block->load(Hole::Implementation->network, address, version);
 
         // validate the block, depending on its component.
         //
@@ -254,10 +260,6 @@ namespace hole
       void
       Machine::Kill(const nucleus::proton::Address& address)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::local::Kill()\n");
-
         // treat the request depending on the nature of the block which
         // the addres indicates.
         switch (address.family)
@@ -265,9 +267,9 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              if (nucleus::proton::ImmutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
+              nucleus::proton::ImmutableBlock::erase(
+                Hole::Implementation->network, address);
+
               break;
             }
           case nucleus::proton::FamilyPublicKeyBlock:
@@ -275,9 +277,8 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              if (nucleus::proton::MutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
+              nucleus::proton::MutableBlock::erase(
+                Hole::Implementation->network, address);
 
               break;
             }

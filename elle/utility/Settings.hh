@@ -21,10 +21,11 @@ namespace elle
     /// note that the class supports both basic types and compound i.e
     /// Uniquable classes through the Behaviour structure dispatcher.
     ///
-    class Settings
-      : public elle::format::ini::File
-      , public elle::concept::MakeFileable<Settings, elle::serialize::IniArchive>
-      , public elle::io::Dumpable
+    /// XXX[to remove, this class has become useless]
+    class Settings:
+      public elle::format::ini::File,
+      public elle::concept::MakeFileable<Settings, elle::serialize::IniArchive>,
+      public elle::io::Dumpable
     {
     public:
       Status Dump(Natural32 const indent = 0) const;

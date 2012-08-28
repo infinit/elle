@@ -51,7 +51,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist(user) == elle::Status::False)
+      if (lune::Identity::exists(user) == false)
         escape("this user does not seem to exist");
     }
 
@@ -60,12 +60,8 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(user) == elle::Status::True)
-        {
-          // load the dictionary.
-          if (dictionary.Load(user) == elle::Status::Error)
-            escape("unable to load the dictionary");
-        }
+      if (lune::Dictionary::exists(user) == true)
+        dictionary.load(user);
     }
 
     // perform the action depending on the type.
@@ -106,14 +102,8 @@ namespace satellite
         }
       }
 
-    //
-    // store the dictionary.
-    //
-    {
-      // store the dictionary file.
-      if (dictionary.Store(user) == elle::Status::Error)
-        escape("unable to store the dictionary");
-    }
+    // store the dictionary file.
+    dictionary.store(user);
 
     return elle::Status::Ok;
   }
@@ -134,7 +124,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist(user) == elle::Status::False)
+      if (lune::Identity::exists(user) == false)
         escape("this user does not seem to exist");
     }
 
@@ -143,12 +133,8 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(user) == elle::Status::True)
-        {
-          // load the dictionary file.
-          if (dictionary.Load(user) == elle::Status::Error)
-            escape("unable to load the dictionary");
-        }
+      if (lune::Dictionary::exists(user) == true)
+        dictionary.load(user);
     }
 
     // perform the action depending on the type.
@@ -177,14 +163,8 @@ namespace satellite
         }
       }
 
-    //
-    // store the dictionary back.
-    //
-    {
-      // store the dictionary file.
-      if (dictionary.Store(user) == elle::Status::Error)
-        escape("unable to store the dictionary");
-    }
+    // store the dictionary file.
+    dictionary.store(user);
 
     return elle::Status::Ok;
   }
@@ -204,7 +184,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist(user) == elle::Status::False)
+      if (lune::Identity::exists(user) == false)
         escape("this user does not seem to exist");
     }
 
@@ -213,12 +193,8 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(user) == elle::Status::True)
-        {
-          // load the dictionary file.
-          if (dictionary.Load(user) == elle::Status::Error)
-            escape("unable to load the dictionary");
-        }
+      if (lune::Dictionary::exists(user) == true)
+        dictionary.load(user);
     }
 
     // perform the action depending on the type.
@@ -286,7 +262,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist(user) == elle::Status::False)
+      if (lune::Identity::exists(user) == false)
         escape("this user does not seem to exist");
     }
 
@@ -295,12 +271,8 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(user) == elle::Status::True)
-        {
-          // load the dictionary file.
-          if (dictionary.Load(user) == elle::Status::Error)
-            escape("unable to load the dictionary");
-        }
+      if (lune::Dictionary::exists(user) == true)
+        dictionary.load(user);
     }
 
     // perform the action depending on the type.

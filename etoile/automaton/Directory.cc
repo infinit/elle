@@ -57,6 +57,7 @@ namespace etoile
                           gear::Directory&                      context)
     {
       ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;

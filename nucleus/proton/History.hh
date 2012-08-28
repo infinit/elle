@@ -21,10 +21,10 @@ namespace nucleus
     /// this class contains all the version numbers associated with
     /// a given mutable block.
     ///
-    class History
-      : public elle::radix::Object
-      , public elle::concept::Serializable<History>
-      , public elle::concept::Fileable<>
+    class History:
+      public elle::radix::Object,
+      public elle::concept::Serializable<History>,
+      public elle::concept::Fileable<>
     {
     public:
       //
@@ -49,10 +49,17 @@ namespace nucleus
 
       elle::Status      Size(Version::Type&) const;
 
+    private:
+      /// XXX
+      static
+      elle::io::Path
+      _path(Network const& network,
+            Address const& address);
+
       //
       // interfaces
       //
-
+    public:
       // object
       declare(History);
       elle::Boolean     operator==(const History&) const;
@@ -60,17 +67,23 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      using elle::concept::Fileable<>::Load;
-      using elle::concept::Fileable<>::Store;
+      // fileable
+      ELLE_CONCEPT_FILEABLE_METHODS();
 
-      elle::Status      Load(const Network&,
-                             const Address&);
-      elle::Status      Store(const Network&,
-                              const Address&) const;
-      elle::Status      Erase(const Network&,
-                              const Address&) const;
-      elle::Status      Exist(const Network&,
-                              const Address&) const;
+      void
+      load(Network const& network,
+           Address const& address);
+      void
+      store(Network const& network,
+            Address const& address) const;
+      static
+      void
+      erase(Network const& network,
+            Address const& address);
+      static
+      elle::Boolean
+      exists(Network const& network,
+             Address const& address);
 
       //
       // attributes

@@ -46,11 +46,11 @@ namespace satellite
       escape("unable to create a user without a user name");
 
     // check if the user already exists.
-    if (identity.Exist(name) == elle::Status::True)
+    if (lune::Identity::exists(name) == true)
       escape("this user seems to already exist");
 
     // check if the authority exists.
-    if (authority.Exist() == elle::Status::False)
+    if (lune::Authority::exists() == false)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
@@ -63,8 +63,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the authority.
-    if (authority.Load() == elle::Status::Error)
-      escape("unable to load the authority");
+    authority.load();
 
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
@@ -96,12 +95,10 @@ namespace satellite
       escape("unable to seal the identity");
 
     // store the identity.
-    if (identity.Store(name) == elle::Status::Error)
-      escape("unable to store the identity");
+    identity.store(name);
 
     // store an empty dictionary.
-    if (dictionary.Store(name) == elle::Status::Error)
-      escape("unable to store the dictionary");
+    dictionary.store(name);
 
     return elle::Status::Ok;
   }
@@ -122,12 +119,11 @@ namespace satellite
         escape("unable to destroy a user without a user name");
 
       // check if the user already exists.
-      if (identity.Exist(name) == elle::Status::False)
+      if (lune::Identity::exists(name) == false)
         escape("this user does not seem to exist");
 
       // destroy the identity.
-      if (identity.Erase(name) == elle::Status::False)
-        escape("unable to erase the identity file");
+      lune::Identity::erase(name);
     }
 
     //
@@ -137,12 +133,8 @@ namespace satellite
       lune::Dictionary  dictionary;
 
       // if the dictionary exists...
-      if (dictionary.Exist(name) == elle::Status::True)
-        {
-          // remove it.
-          if (dictionary.Erase(name) == elle::Status::Error)
-            escape("unable to erase the dictionary");
-        }
+      if (lune::Dictionary::exists(name) == true)
+        lune::Dictionary::erase(name);
     }
 
     //
@@ -187,7 +179,7 @@ namespace satellite
       escape("unable to create a user without a user name");
 
     // check if the user already exists.
-    if (identity.Exist(name) == elle::Status::False)
+    if (lune::Identity::exists(name) == false)
       escape("this user does not seem to exist");
 
     // prompt the user for the passphrase.
@@ -200,8 +192,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the identity.
-    if (identity.Load(name) == elle::Status::Error)
-      escape("unable to load the identity");
+    identity.load(name);
 
     // verify the identity.
     if (identity.Validate(Infinit::Authority) == elle::Status::Error)

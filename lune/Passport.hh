@@ -18,10 +18,10 @@ namespace lune
   /// used by the storage layer to locate the nodes responsible for a
   /// block's replica for instance.
   ///
-  class Passport
-    : public elle::radix::Object
-    , public elle::concept::MakeFileable<Passport>
-    , public elle::concept::MakeUniquable<Passport>
+  class Passport:
+    public elle::radix::Object,
+    public elle::concept::MakeFileable<Passport>,
+    public elle::concept::MakeUniquable<Passport>
   {
   public:
     //
@@ -38,10 +38,16 @@ namespace lune
     elle::Status        Seal(const Authority&);
     elle::Status        Validate(const Authority&) const;
 
+  private:
+    /// XXX
+    static
+    elle::io::Path
+    _path();
+
     //
     // interfaces
     //
-
+  public:
     // object
     declare(Passport);
 
@@ -50,10 +56,17 @@ namespace lune
 
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-    elle::Status        Load();
-    elle::Status        Store() const;
-    elle::Status        Erase() const;
-    elle::Status        Exist() const;
+
+    void
+    load();
+    void
+    store() const;
+    static
+    void
+    erase();
+    static
+    elle::Boolean
+    exists();
 
     //
     // attributes

@@ -55,9 +55,18 @@ namespace lune
     elle::Status        Decrypt(const elle::String&);
 
     //
+    // static methods
+    //
+  private:
+    /// XXX
+    static
+    elle::io::Path
+    _path();
+
+    //
     // interfaces
     //
-
+  public:
     // object
     declare(Authority);
 
@@ -65,13 +74,18 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    using elle::concept::Fileable<>::Load;
-    using elle::concept::Fileable<>::Store;
+    ELLE_CONCEPT_FILEABLE_METHODS();
 
-    elle::Status        Load();
-    elle::Status        Store() const;
-    elle::Status        Erase() const;
-    elle::Status        Exist() const;
+    void
+    load();
+    void
+    store() const;
+    static
+    void
+    erase();
+    static
+    elle::Boolean
+    exists();
 
     //
     // attributes

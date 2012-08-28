@@ -225,9 +225,7 @@ void InfinitNetwork::_prepare_directory()
   lune::Descriptor descriptor;
 
   auto e = elle::Status::Error;
-  // XXX descriptor.Store() usually take a network name
-  if (descriptor.Restore(this->_description.descriptor) == e ||
-      descriptor.Store(this->_description._id)          == e)
+  if (descriptor.Restore(this->_description.descriptor) == e)
     {
 #include <elle/idiom/Open.hh>
       show();
@@ -235,13 +233,13 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't save the descriptor.");
     }
 
+  descriptor.store(this->_description.name);
+
   nucleus::proton::Network network;
   nucleus::neutron::Object directory;
 
-  // XXX network.Create() usually take a network name
-  if (network.Create(this->_description._id)          == e ||
-      directory.Restore(this->_description.root_block) == e ||
-      directory.MutableBlock::Store(network, descriptor.root) == e)
+  if (network.Create(this->_description.name)          == e ||
+      directory.Restore(this->_description.root_block) == e)
     {
 #include <elle/idiom/Open.hh>
       show();
@@ -249,19 +247,23 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't store the root block.");
     }
 
+  directory.store(network, descriptor.root);
+
   nucleus::neutron::Access access;
   nucleus::proton::Address access_address;
   if (access.Restore(this->_description.access_block) == e ||
-      access_address.Restore(this->_description.access_address) == e ||
-      access.Store(network, access_address) == e)
+      access_address.Restore(this->_description.access_address) == e)
     throw std::runtime_error("Couldn't store the access block");
+
+  access.store(network, access_address);
 
   nucleus::neutron::Group group;
   nucleus::proton::Address group_address;
   if (group.Restore(this->_description.group_block) == e ||
-      group_address.Restore(this->_description.group_address) == e ||
-      group.Store(network, group_address) == e)
+      group_address.Restore(this->_description.group_address) == e)
     throw std::runtime_error("Couldn't store the group block");
+
+  group.store(network, group_address);
 
   LOG("Root block stored.");
 
@@ -275,21 +277,14 @@ void InfinitNetwork::_register_device()
   LOG("Check if the device is registered for this network.");
   lune::Passport passport;
 
-  if (passport.Load() == elle::Status::Error)
-    {
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      throw std::runtime_error("Couldn't load the passport file :'(");
-    }
+  passport.load();
 
-    this->_manager.meta().network_add_device(
-        this->_description._id,
-        passport.id
-    );
-    this->_on_network_nodes(this->_manager.meta().network_nodes(
-        this->_description._id
-    ));
+  this->_manager.meta().network_add_device(
+    this->_description._id,
+    passport.id);
+
+  this->_on_network_nodes(this->_manager.meta().network_nodes(
+    this->_description._id));
 }
 
 /// Update the network nodes set when everything is good
@@ -311,9 +306,8 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
         LOG("Cannot add locus '%s' to the set (ignored).", *it);
       }
   }
+  locusSet.store(this->_description.name);
 
-  if (locusSet.Store(this->_description._id) == elle::Status::Error)
-    throw std::runtime_error("Cannot store the locus set");
   this->_start_process();
 
 }

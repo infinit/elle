@@ -68,7 +68,6 @@ namespace etoile
       scope->context->state = gear::Context::StateJournaled;
 
       // XXX[to improve in the future]
-
       // Go through the blocks which needs to be pushed.
       for (scoutor = scope->context->transcript.container.begin();
            scoutor != scope->context->transcript.container.end();

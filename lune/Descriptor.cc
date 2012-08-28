@@ -207,6 +207,13 @@ namespace lune
     assert(this->_everybody.subject != nullptr);
   }
 
+  elle::io::Path
+  Descriptor::_path(elle::String const& network)
+  {
+    return (elle::io::Path(Lune::Network::Descriptor,
+                           elle::io::Piece("%NETWORK%", network)));
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -284,93 +291,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads a descriptor.
-  ///
-  elle::Status          Descriptor::Load(const elle::String&    name)
+  void
+  Descriptor::load(elle::String const& network)
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-
-    // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Load(path) == elle::Status::Error)
-      escape("unable to load '%s'", path.string().c_str());
-
-    return elle::Status::Ok;
+    this->load(Descriptor::_path(network));
   }
 
-  ///
-  /// this method stores a descriptor.
-  ///
-  elle::Status          Descriptor::Store(const elle::String&   name) const
+  void
+  Descriptor::store(elle::String const& network) const
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store '%s'", path.string().c_str());
-
-    return elle::Status::Ok;
+    this->store(Descriptor::_path(network));
   }
 
-  ///
-  /// this method erases the descriptor.
-  ///
-  elle::Status          Descriptor::Erase(const elle::String&   name) const
+  void
+  Descriptor::erase(elle::String const& network)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Descriptor::_path(network));
   }
 
-  ///
-  /// this method tests the descriptor.
-  ///
-  elle::Status          Descriptor::Exist(const elle::String&   name) const
+  elle::Boolean
+  Descriptor::exists(elle::String const& network)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Descriptor::_path(network)));
   }
 
 }

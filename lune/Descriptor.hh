@@ -91,6 +91,10 @@ namespace lune
     /// XXX
     void
     _everybody_subject();
+    /// XXX
+    static
+    elle::io::Path
+    _path(elle::String const& network);
 
     //
     // interfaces
@@ -108,10 +112,16 @@ namespace lune
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
 
-    elle::Status        Load(const elle::String&);
-    elle::Status        Store(const elle::String&) const;
-    elle::Status        Erase(const elle::String&) const;
-    elle::Status        Exist(const elle::String&) const;
+    void
+    load(elle::String const& network);
+    void
+    store(elle::String const& network) const;
+    static
+    void
+    erase(elle::String const& network);
+    static
+    elle::Boolean
+    exists(elle::String const& network);
 
     //
     // attributes

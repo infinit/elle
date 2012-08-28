@@ -1,7 +1,9 @@
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Family.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/Exception.hh>
 
+#include <elle/cryptography/Random.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 
@@ -20,6 +22,13 @@ namespace nucleus
     ContentHashBlock::ContentHashBlock():
       ImmutableBlock()
     {
+      // Compute the creation timestamp.
+      if (this->_creation_stamp.Current() == elle::Status::Error)
+        throw Exception("unable to retrieve the current time");
+
+      // Generate a random number for the salt.
+      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
+        throw Exception("unable to generate the seed");
     }
 
     ///
@@ -28,6 +37,13 @@ namespace nucleus
     ContentHashBlock::ContentHashBlock(const neutron::Component component):
       ImmutableBlock(FamilyContentHashBlock, component)
     {
+      // Compute the creation timestamp.
+      if (this->_creation_stamp.Current() == elle::Status::Error)
+        throw Exception("unable to retrieve the current time");
+
+      // Generate a random number for the salt.
+      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
+        throw Exception("unable to generate the seed");
     }
 
 //
@@ -109,6 +125,9 @@ namespace nucleus
       // dump the parent class.
       if (ImmutableBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
+
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Salt] " << this->_salt << std::endl;
 
       return elle::Status::Ok;
     }

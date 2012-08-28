@@ -67,8 +67,7 @@ namespace satellite
       escape("unable to encrypt the authority");
 
     // store the authority.
-    if (authority.Store() == elle::Status::Error)
-      escape("unable to store the authority");
+    authority.store();
 
     return elle::Status::Ok;
   }
@@ -83,8 +82,7 @@ namespace satellite
     lune::Authority     authority;
 
     // erase the authority file.
-    if (authority.Erase() == elle::Status::Error)
-      escape("unable to erase the authority");
+    lune::Authority::erase();
 
     return elle::Status::Ok;
   }
@@ -100,7 +98,7 @@ namespace satellite
     elle::io::Unique        unique;
 
     // check if the authority exists.
-    if (authority.Exist() == elle::Status::False)
+    if (lune::Authority::exists() == false)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
@@ -113,8 +111,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the authority.
-    if (authority.Load() == elle::Status::Error)
-      escape("unable to load the authority file");
+    authority.load();
 
     authority.Dump();
 

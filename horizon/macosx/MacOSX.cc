@@ -65,12 +65,8 @@ namespace horizon
       //
       {
         // if the dictionary exist.
-        if (MacOSX::Dictionary.Exist(Infinit::User) == elle::Status::True)
-          {
-            // load the dictionary file.
-            if (MacOSX::Dictionary.Load(Infinit::User) == elle::Status::Error)
-              escape("unable to load the dictionary");
-          }
+        if (lune::Dictionary::exists(Infinit::User) == true)
+          MacOSX::Dictionary.load(Infinit::User);
       }
 
       //

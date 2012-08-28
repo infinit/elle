@@ -17,8 +17,8 @@ namespace nucleus
     /// this class derives the Block and abstracts the notion of
     /// immutable block.
     ///
-    class ImmutableBlock
-      : public Block
+    class ImmutableBlock:
+      public Block
     {
     public:
       //
@@ -29,25 +29,42 @@ namespace nucleus
                      const neutron::Component);
 
       //
+      // methods
+      //
+    private:
+      /// XXX
+      static
+        elle::io::Path
+        _path(Network const& network,
+              Address const& address);
+
+      //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(ImmutableBlock);
 #include <elle/idiom/Close.hh>
 
-      elle::Status      Load(const Network&,
-                             const Address&);
-      elle::Status      Store(const Network&,
-                              const Address&) const;
-      elle::Status      Exist(const Network&,
-                              const Address&) const;
-
-      using Block::Load;
-      using Block::Store;
-
-      static elle::Status Erase(Network const&, Address const&);
+      // fileable
+    protected:
+      ELLE_CONCEPT_FILEABLE_METHODS();
+    public:
+      void
+      load(Network const& network,
+           Address const& address);
+      void
+      store(Network const& network,
+            Address const& address) const;
+      static
+      void
+      erase(Network const& network,
+            Address const& address);
+      static
+      elle::Boolean
+      exists(Network const& network,
+             Address const& address);
     };
 
   }

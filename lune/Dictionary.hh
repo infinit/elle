@@ -16,9 +16,9 @@ namespace lune
   /// Infinit identifiers so that Infinit can be used with local file
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///
-  class Dictionary
-    : public elle::radix::Object
-    , public elle::concept::MakeFileable<Dictionary>
+  class Dictionary:
+    public elle::radix::Object,
+    public elle::concept::MakeFileable<Dictionary>
   {
   public:
     //
@@ -27,9 +27,18 @@ namespace lune
     static const elle::String           Extension;
 
     //
+    // methods
+    //
+  private:
+    /// XXX
+    static
+    elle::io::Path
+    _path(elle::String const& user);
+
+    //
     // interfaces
     //
-
+  public:
     // object
     declare(Dictionary);
 
@@ -38,10 +47,17 @@ namespace lune
 
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-    elle::Status        Load(const elle::String&);
-    elle::Status        Store(const elle::String&) const;
-    elle::Status        Erase(const elle::String&) const;
-    elle::Status        Exist(const elle::String&) const;
+
+    void
+    load(elle::String const& user);
+    void
+    store(elle::String const& user) const;
+    static
+    void
+    erase(elle::String const& user);
+    static
+    elle::Boolean
+    exists(elle::String const& user);
 
     //
     // attributes

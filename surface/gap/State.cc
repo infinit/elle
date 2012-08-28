@@ -258,16 +258,16 @@ namespace surface
       // Store the identity
         {
           // user.idy
-          if (identity.Restore(identity_clear)  == elle::Status::Error ||
-              identity.Store(email)             == elle::Status::Error)
+          if (identity.Restore(identity_clear)  == elle::Status::Error)
             throw Exception(gap_internal_error,
                             "Cannot save the identity file.");
 
+          identity.store(email);
+
           // user.dic
           lune::Dictionary dictionary;
-          if (dictionary.Store(email) == elle::Status::Error)
-            throw Exception(gap_internal_error,
-                            "Cannot store the dictionary.");
+
+          dictionary.store(email);
         }
     }
 
@@ -314,8 +314,7 @@ namespace surface
         {
           lune::Passport passport;
 
-          if (passport.Load() == elle::Status::Error)
-            throw Exception(gap_internal_error, "Cannot load the passport");
+          passport.load();
 
           ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_api->update_device(passport.id, name);
@@ -325,8 +324,8 @@ namespace surface
       lune::Passport passport;
       if (passport.Restore(passport_string) == elle::Status::Error)
         throw Exception(gap_internal_error, "Cannot load the passport");
-      if (passport.Store() == elle::Status::Error)
-        throw Exception(gap_internal_error, "Cannot save the passport");
+
+      passport.store();
     }
 
     //- Network management ----------------------------------------------------

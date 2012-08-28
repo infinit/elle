@@ -185,6 +185,12 @@ namespace lune
     return elle::Status::Ok;
   }
 
+  elle::io::Path
+  Authority::_path()
+  {
+    return (elle::io::Path(Lune::Authority));
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -238,73 +244,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads the system's authority file.
-  ///
-  elle::Status          Authority::Load()
+  void
+  Authority::load()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Authority) == elle::Status::Error)
-      escape("unable to create the path");
-
-    return this->Load(path);
+    this->load(Authority::_path());
   }
 
-  ///
-  /// this method stores the authority.
-  ///
-  elle::Status          Authority::Store() const
+  void
+  Authority::store() const
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::Authority) == elle::Status::Error)
-      escape("unable to create the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store");
-
-    return elle::Status::Ok;
+    this->store(Authority::_path());
   }
 
-  ///
-  /// this method erases the authority.
-  ///
-  elle::Status          Authority::Erase() const
+  void
+  Authority::erase()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Authority) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Authority::_path());
   }
 
-  ///
-  /// this method tests the authority.
-  ///
-  elle::Status          Authority::Exist() const
+  elle::Boolean
+  Authority::exists()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Authority) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Authority::_path()));
   }
 
 }

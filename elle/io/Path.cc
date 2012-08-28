@@ -19,6 +19,11 @@ namespace elle
     {
     }
 
+    Path::Path(Pattern const& pattern):
+      _string(pattern.string)
+    {
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -43,6 +48,12 @@ namespace elle
       this->_string = pattern.string;
 
       return Status::Ok;
+    }
+
+    Status
+    Path::Complete()
+    {
+      return (elle::Status::Ok);
     }
 
     ///

@@ -34,9 +34,8 @@ namespace nucleus
     /// the _base_ attribute is used internally to keep a view of the
     /// block's original state i.e before being modified.
     ///
-    class MutableBlock
-      : public Block
-    // XXX public elle::concept::Fileable<MutableBlock>
+    class MutableBlock:
+      public Block
     {
     public:
       //
@@ -47,9 +46,32 @@ namespace nucleus
                    const neutron::Component);
 
       //
+      // methods
+      //
+    public:
+      /// Returns true if the instance derives the given
+      /// mutable block i.e its version is strictly higher than
+      /// the given one's.
+      elle::Boolean
+      derives(MutableBlock const& other) const;
+
+    private:
+      /// XXX
+      static
+      elle::io::Path
+      _path(Network const& network,
+            Address const& address);
+      /// XXX
+      static
+      elle::io::Path
+      _path(Network const& network,
+            Address const& address,
+            elle::String const& version);
+
+      //
       // interfaces
       //
-
+    public:
       // object
 #include <elle/idiom/Open.hh>
       declare(MutableBlock);
@@ -59,21 +81,26 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // XXX ELLE_CONCEPT_FILEABLE_METHODS(MutableBlock);
-
-      using Block::Load;
-      using Block::Store;
-
-      elle::Status      Load(const Network&,
-                             const Address&,
-                             const Version&);
-      elle::Status      Store(const Network&,
-                              const Address&) const;
-      elle::Status      Exist(const Network&,
-                              const Address&,
-                              const Version&) const;
-
-      static elle::Status Erase(Network const&, Address const&);
+      // fileable
+    protected:
+      ELLE_CONCEPT_FILEABLE_METHODS();
+    public:
+      void
+      load(Network const& network,
+           Address const& address,
+           Version const& version);
+      void
+      store(Network const& network,
+            Address const& address) const;
+      static
+      void
+      erase(Network const& network,
+            Address const& address);
+      static
+      elle::Boolean
+      exists(Network const& network,
+             Address const& address,
+             Version const& version = Version::Any);
 
       //
       // attributes

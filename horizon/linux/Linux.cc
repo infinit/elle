@@ -65,12 +65,8 @@ namespace horizon
       //
       {
         // if the dictionary exist.
-        if (Linux::Dictionary.Exist(Infinit::User) == elle::Status::True)
-          {
-            // load the dictionary file.
-            if (Linux::Dictionary.Load(Infinit::User) == elle::Status::Error)
-              escape("unable to load the dictionary");
-          }
+        if (lune::Dictionary::exists(Infinit::User) == true)
+          Linux::Dictionary.load(Infinit::User);
       }
 
       //

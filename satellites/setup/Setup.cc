@@ -74,8 +74,7 @@ namespace satellite
         escape("unable to pus the parameters");
 
       // store the configuration.
-      if (configuration.Store() == elle::Status::Error)
-        escape("unable to store the configuration");
+      configuration.store();
     }
 
     return elle::Status::Ok;
@@ -95,12 +94,8 @@ namespace satellite
       lune::Configuration       configuration;
 
       // if the configuration exists...
-      if (configuration.Exist() == elle::Status::True)
-        {
-          // remove it.
-          if (configuration.Erase() == elle::Status::Error)
-            escape("unable to erase the configuration");
-        }
+      if (lune::Configuration::exists() == true)
+        lune::Configuration::erase();
     }
 
     //

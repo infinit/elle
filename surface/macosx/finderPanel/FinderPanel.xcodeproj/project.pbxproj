@@ -786,7 +786,7 @@
 		1C045BEA159CAA7900162909 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_IDENTITY = io.infinit;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
@@ -804,7 +804,7 @@
 		1C045BEB159CAA7900162909 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_IDENTITY = io.infinit;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
