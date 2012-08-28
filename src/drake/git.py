@@ -22,7 +22,8 @@ class Git(VirtualNode):
     >>> path.remove()
     >>> os.environ['GIT_AUTHOR_NAME'] = 'mefyl'
     >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
-    >>> del os.environ['GIT_DIR']
+    >>> if 'GIT_DIR' in os.environ:
+    ...   del os.environ['GIT_DIR']
     >>> os.system('git init %s' % path)
     0
     >>> os.chdir(str(path))
