@@ -491,11 +491,13 @@ def mkdeps(res, n, lvl, config, marks,
 
     f_init(res, n)
 
-    def unique(include, prev, new):
+    def unique(include, prev_via, prev, new_via, new):
 
         if prev is not None:
-            raise Exception('two nodes match inclusion %s: %s and %s' % (include, prev, new))
-        return new
+            raise Exception('two nodes match inclusion %s: '\
+                                '%s via %s and %s via %s' % \
+                                (include, prev, prev_via, new, new_via))
+        return new, new_via
 
 
     n.build()
@@ -505,10 +507,11 @@ def mkdeps(res, n, lvl, config, marks,
         match = include_re.match(line.decode('utf-8'))
         if match:
             include = match.group(2)
-            search = config.local_include_path()
+            search = set(config.local_include_path())
             if match.group(1) == '"':
-                search += [Path('.')]
+                search.add(n.name().dirname())
             found = None
+            via = None
             for include_path in search:
 
                 name = include_path / include
@@ -518,20 +521,22 @@ def mkdeps(res, n, lvl, config, marks,
                     # Check this is not an old cached dependency from cxx.inclusions.
                     # Not sure of myself though.
                     if test.is_file() or node(str(test)).builder is not None:
-                        found = unique(include, found, node(test))
+                        found, via = unique(include, via, found, test, node(test))
                         # debug.debug('%sfound node: %s' % (idt, test))
 
                 if not found or srctree() != Path('.'):
                     test = srctree() / test
                     if test.is_file():
                         # debug.debug('%sfound file: %s' % (idt, test))
-                        found = unique(include, found, node(name, Header))
+                        found, via = unique(include, via, found, test, node(name, Header))
 
             if found is not None:
                 rec = []
                 mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
                 f_add(res, found, rec)
-
+            else:
+                debug.debug('%sinclusion not found: %s (search path: %s)'\
+                                % (idt, include, ', '.join(map(str, search))))
 
 class Compiler(Builder):
 
