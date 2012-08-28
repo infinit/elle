@@ -112,8 +112,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         [self loginResult:[NSNumber numberWithInt:1]];
         return;
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     
     if (rememberMe) {
         [self addPending];
@@ -129,6 +127,8 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)showSetupWindow {
     [self addPending];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     OOSetupWindowController *setupWindowsController = [OOSetupWindowController getInstance];
     [setupWindowsController showWindow:self];
 }
@@ -151,6 +151,12 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 }
 
 - (void)userLoggedNotification:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:OOUserLoggedNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:OOUserUnLoggedNotification
+                                                  object:nil];
     NSLog(@"User logged notification");
     if ([notification name] == OOUserLoggedNotification) {
         NSLog(@"User logged");
