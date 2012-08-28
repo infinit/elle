@@ -264,29 +264,5 @@ namespace elle
       return Status::Ok;
     }
 
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-    ///
-    /// this method erases the key pair file.
-    ///
-    Status              KeyPair::Erase(const io::Path& path) const
-    {
-      // erase the file.
-      if (io::File::Erase(path) == Status::Error)
-        escape("unable to erase the file");
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method tests the key pair file.
-    ///
-    Status              KeyPair::Exist(const io::Path& path) const
-    {
-      return (io::File::Exist(path));
-    }
-
   }
 }
