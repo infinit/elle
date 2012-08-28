@@ -34,8 +34,8 @@ namespace nucleus
     /// hashed in order to prevent conflicts i.e several ImprintBlocks
     /// being created by the same user at the same time.
     class ImprintBlock:
-      public MutableBlock,
-      public elle::concept::Serializable<ImprintBlock>
+      public MutableBlock
+      // XXX[should not be the case] public elle::concept::Serializable<ImprintBlock>
     {
       //
       // construction
@@ -84,7 +84,7 @@ namespace nucleus
       Dump(const elle::Natural32 = 0) const;
 
       // serializable
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
+      // XXX[should not be the case since in-the-middle class] ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
 
       ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 

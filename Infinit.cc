@@ -109,12 +109,8 @@ elle::Status            Infinit::Initialize()
   //
   {
     // if the configuration file exists...
-    if (Infinit::Configuration.Exist() == elle::Status::True)
-      {
-        // load the configuration file.
-        if (Infinit::Configuration.Load() == elle::Status::Error)
-          escape("unable to load the configuration");
-      }
+    if (lune::Configuration::exists() == true)
+      Infinit::Configuration.load();
 
     // pull the parameters.
     if (Infinit::Configuration.Pull() == elle::Status::Error)

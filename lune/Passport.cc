@@ -66,6 +66,12 @@ namespace lune
     return elle::Status::Ok;
   }
 
+  elle::io::Path
+  Passport::_path()
+  {
+    return (elle::io::Path(Lune::Passport));
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -107,77 +113,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads a system named passport file.
-  ///
-  elle::Status          Passport::Load()
+  void
+  Passport::load()
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-
-    // create the path.
-    if (path.Create(Lune::Passport) == elle::Status::Error)
-      escape("unable to create the path");
-
-    if (this->Load(path) == elle::Status::Error)
-      escape("unable to decode the object");
-
-    return elle::Status::Ok;
+    this->load(Passport::_path());
   }
 
-  ///
-  /// this method stores a system named user passport.
-  ///
-  elle::Status          Passport::Store() const
+  void
+  Passport::store() const
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::Passport) == elle::Status::Error)
-      escape("unable to create the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store the object");
-
-    return elle::Status::Ok;
+    this->store(Passport::_path());
   }
 
-  ///
-  /// this method erases the passport.
-  ///
-  elle::Status          Passport::Erase() const
+  void
+  Passport::erase()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Passport) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Passport::_path());
   }
 
-  ///
-  /// this method tests the passport.
-  ///
-  elle::Status          Passport::Exist() const
+  elle::Boolean
+  Passport::exists()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Passport) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Passport::_path()));
   }
 
 }

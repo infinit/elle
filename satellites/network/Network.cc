@@ -71,7 +71,7 @@ namespace satellite
     //
     {
       // does the network already exist.
-      if (descriptor.Exist(name) == elle::Status::True)
+      if (lune::Descriptor::exists(name) == true)
         escape("this network seems to already exist");
 
       // check the model.
@@ -79,11 +79,11 @@ namespace satellite
         escape("please specify the model of the network");
 
       // does the administrator user exist.
-      if (identity.Exist(administrator) == elle::Status::False)
+      if (lune::Identity::exists(administrator) == false)
         escape("the administrator user does not seem to exist");
 
       // check if the authority exists.
-      if (authority.Exist() == elle::Status::False)
+      if (lune::Authority::exists() == false)
         escape("unable to locate the authority file");
     }
 
@@ -104,8 +104,7 @@ namespace satellite
         escape("unable to read the input");
 
       // load the authority.
-      if (authority.Load() == elle::Status::Error)
-        escape("unable to load the authority");
+      authority.load();
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::Status::Error)
@@ -129,8 +128,7 @@ namespace satellite
         escape("unable to read the input");
 
       // load the identity.
-      if (identity.Load(administrator) == elle::Status::Error)
-        escape("unable to load the administrator's identity");
+      identity.load(administrator);
 
       // decrypt the authority.
       if (identity.Decrypt(pass) == elle::Status::Error)
@@ -162,10 +160,7 @@ namespace satellite
       if (group.Bind(group_address) == elle::Status::Error)
         escape("unable to bind the group");
 
-      if (group.MutableBlock::Store(
-            network,
-            group_address) == elle::Status::Error)
-        escape("unable to store the block");
+      group.store(network, group_address);
     }
 
     nucleus::neutron::Access access;
@@ -229,10 +224,7 @@ namespace satellite
           if (access.Bind(access_address) == elle::Status::Error)
             escape("unable to bind the access");
 
-          if (access.ImmutableBlock::Store(
-                network,
-                access_address) == elle::Status::Error)
-            escape("unable to store the block");
+          access.store(network, access_address);
 
           break;
         }
@@ -268,10 +260,7 @@ namespace satellite
         escape("unable to bind the object to an address");
 
       // store the block.
-      if (directory.MutableBlock::Store(
-            network,
-            directory_address) == elle::Status::Error)
-        escape("unable to store the block");
+      directory.store(network, directory_address);
     }
 
     //
@@ -298,8 +287,7 @@ namespace satellite
         escape("unable to seal the descriptor");
 
       // store the descriptor.
-      if (descriptor.Store(name) == elle::Status::Error)
-        escape("unable to store the descriptor file");
+      descriptor.store(name);
     }
 
     return elle::Status::Ok;
@@ -318,12 +306,8 @@ namespace satellite
       elle::io::Path        path;
 
       // does the network exist.
-      if (descriptor.Exist(name) == elle::Status::True)
-        {
-          // remove the descriptor.
-          if (descriptor.Erase(name) == elle::Status::Error)
-            escape("unable to erase the descriptor");
-        }
+      if (lune::Descriptor::exists(name) == true)
+        lune::Descriptor::erase(name);
     }
 
     //
@@ -418,7 +402,7 @@ namespace satellite
     //
     {
       // does the network exist.
-      if (descriptor.Exist(name) == elle::Status::False)
+      if (lune::Descriptor::exists(name) == false)
         escape("this network does not seem to exist");
     }
 
@@ -427,8 +411,7 @@ namespace satellite
     //
     {
       // load the descriptor.
-      if (descriptor.Load(name) == elle::Status::Error)
-        escape("unable to load the descriptor");
+      descriptor.load(name);
 
       // validate the descriptor.
       if (descriptor.Validate(Infinit::Authority) == elle::Status::Error)

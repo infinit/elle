@@ -178,6 +178,12 @@ namespace lune
     return elle::Status::Ok;
   }
 
+  elle::io::Path
+  Configuration::_path()
+  {
+    return (elle::io::Path(Lune::Configuration));
+  }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -205,76 +211,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads the system's configuration file.
-  ///
-  elle::Status          Configuration::Load()
+  void
+  Configuration::load()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Configuration) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // call the setting's method.
-    if (elle::utility::Settings::Load(path) == elle::Status::Error)
-      escape("unable to load the settings");
-
-    return elle::Status::Ok;
+    this->load(Configuration::_path());
   }
 
-  ///
-  /// this method stores the configuration.
-  ///
-  elle::Status          Configuration::Store() const
+  void
+  Configuration::store() const
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Configuration) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // call the setting's method.
-    if (elle::utility::Settings::Store(path) == elle::Status::Error)
-      escape("unable to store the settings");
-
-    return elle::Status::Ok;
+    this->store(Configuration::_path());
   }
 
-  ///
-  /// this method erases the configuration.
-  ///
-  elle::Status          Configuration::Erase() const
+  void
+  Configuration::erase()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Configuration) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Configuration::_path());
   }
 
-  ///
-  /// this method tests the configuration.
-  ///
-  elle::Status          Configuration::Exist() const
+  elle::Boolean
+  Configuration::exists()
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Configuration) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Configuration::_path()));
   }
 
 }

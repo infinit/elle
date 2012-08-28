@@ -47,7 +47,7 @@ namespace satellite
     //
     {
       // check if the authority exists.
-      if (authority.Exist() == elle::Status::False)
+      if (lune::Authority::exists() == false)
         escape("unable to locate the authority file");
     }
 
@@ -68,8 +68,7 @@ namespace satellite
         escape("unable to read the input");
 
       // load the authority.
-      if (authority.Load() == elle::Status::Error)
-        escape("unable to load the authority");
+      authority.load();
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::Status::Error)
@@ -105,8 +104,7 @@ namespace satellite
         escape("unable to seal the passport");
 
       // store the passport.
-      if (passport.Store() == elle::Status::Error)
-        escape("unable to store the passport");
+      passport.store();
     }
 
     return elle::Status::Ok;
@@ -120,12 +118,8 @@ namespace satellite
     lune::Passport      passport;
 
     // does the passport exist.
-    if (passport.Exist() == elle::Status::True)
-      {
-        // remove the passport.
-        if (passport.Erase() == elle::Status::Error)
-          escape("unable to erase the passport");
-      }
+    if (lune::Passport::exists() == true)
+      lune::Passport::erase();
 
     return elle::Status::Ok;
   }
@@ -142,7 +136,7 @@ namespace satellite
     //
     {
       // does the passport exist.
-      if (passport.Exist() == elle::Status::False)
+      if (lune::Passport::exists() == false)
         escape("this passport does not seem to exist");
     }
 
@@ -151,8 +145,7 @@ namespace satellite
     //
     {
       // load the passport.
-      if (passport.Load() == elle::Status::Error)
-        escape("unable to load the passport");
+      passport.load();
 
       // validate the passport.
       if (passport.Validate(Infinit::Authority) == elle::Status::Error)

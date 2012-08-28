@@ -29,6 +29,10 @@ namespace etoile
     elle::Status        Contents::Open(
                           T&                                    context)
     {
+      ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
+
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // if the contents is already opened, return.
       if (context.contents != nullptr)
         return elle::Status::Ok;
@@ -86,9 +90,16 @@ namespace etoile
     elle::Status        Contents::Destroy(
                           T&                                    context)
     {
+      ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
+
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // if a block is referenced by the object, mark it as needing removal.
       if (context.object->contents() != nucleus::proton::Address::Null)
         {
+          ELLE_TRACE("record the Contents block '%s' for removal",
+                     context.object->contents());
+
           // mark the content block for removal.
           if (context.transcript.Wipe(
                 context.object->contents()) == elle::Status::Error)
@@ -108,8 +119,12 @@ namespace etoile
     elle::Status        Contents::Close(
                           T&                                    context)
     {
+      ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
+
       elle::cryptography::SecretKey   key;
       nucleus::neutron::Size     size;
+
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -125,6 +140,8 @@ namespace etoile
         if (context.contents->state == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
+
+      ELLE_TRACE("the Contents block seems to have been modified");
 
       // retrieve the contents's size.
       if (context.contents->content->Capacity(size) == elle::Status::Error)
@@ -156,6 +173,8 @@ namespace etoile
           // by the network, the access block is marked for deletion.
           //
 
+          ELLE_TRACE("the Contents block is empty");
+
           // does the network support the history?
           if (hole::Hole::Descriptor.history == false)
             {
@@ -164,28 +183,37 @@ namespace etoile
                 escape("unable to destroy the contents block");
             }
 
-          // update the object with the null contents address.
-          if (context.object->Update(
-                context.author,
-                nucleus::proton::Address::Null,
-                0,
-                context.object->access(),
-                context.object->owner_token()) == elle::Status::Error)
-            escape("unable to update the object");
+          ELLE_TRACE("update the object with a null Contents address")
+            {
+              // update the object with the null contents address.
+              if (context.object->Update(
+                    context.author,
+                    nucleus::proton::Address::Null,
+                    0,
+                    context.object->access(),
+                    context.object->owner_token()) == elle::Status::Error)
+                escape("unable to update the object");
+            }
 
           //
           // finally, since the data has changed (is now empty), the tokens
           // must be reinitialized to null.
           //
 
-          // open the access.
-          if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access");
+          ELLE_TRACE("open the Access block")
+            {
+              // open the access.
+              if (Access::Open(context) == elle::Status::Error)
+                escape("unable to open the access");
+            }
 
-          // downgrade the access entries i.e set the tokens as null
-          // since no content is present.
-          if (Access::Downgrade(context) == elle::Status::Error)
-            escape("unable to downgrade the accesses");
+          ELLE_TRACE("downgrade the Access record")
+            {
+              // downgrade the access entries i.e set the tokens as null
+              // since no content is present.
+              if (Access::Downgrade(context) == elle::Status::Error)
+                escape("unable to downgrade the accesses");
+            }
         }
       else
         {
@@ -197,8 +225,9 @@ namespace etoile
           // objects benefit from the history i.e multiple versions; unless
           // the history support is not activated for this network.
           //
-
           nucleus::proton::Address address;
+
+          ELLE_TRACE("the Contents block is _not_ empty");
 
           // does the network support the history?
           if (hole::Hole::Descriptor.history == false)

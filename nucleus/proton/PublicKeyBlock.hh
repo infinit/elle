@@ -23,9 +23,8 @@ namespace nucleus
     /// modified without implying the creation of a new block as for
     /// ContentHashBlocks.
     ///
-    class PublicKeyBlock
-      : public MutableBlock
-    // XXX, public elle::concept::Fileable<PublicKeyBlock>
+    class PublicKeyBlock:
+      public MutableBlock
     {
     public:
       //

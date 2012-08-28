@@ -2,11 +2,10 @@
 # define NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
 
 # include <elle/types.hh>
-# include <elle/concept/Fileable.hh>
+# include <elle/utility/Time.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImmutableBlock.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 namespace nucleus
@@ -23,9 +22,8 @@ namespace nucleus
     /// changes, the hash of those data as well, so does the address, hence
     /// the creation of a new block.
     ///
-    class ContentHashBlock
-      : public ImmutableBlock
-    // XXX , public elle::concept::Fileable<ContentHashBlock>
+    class ContentHashBlock:
+      public ImmutableBlock
     {
     public:
       //
@@ -53,7 +51,24 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // serializable
-      // XXX ELLE_CONCEPT_FILEABLE_METHODS(ContentHashBlock);
+      ELLE_SERIALIZE_FRIEND_FOR(ContentHashBlock);
+
+      //
+      // attributes
+      //
+    private:
+      /// A creation timestamp and a random salt have been introduced
+      /// so as to differentiate two ContentHashBlocks with exactly the
+      /// same content. For instance, two empty files referencing the
+      /// same Access block containing for instance a single record
+      /// for the 'everybody' group and no token would end up with the
+      /// exact same ContentHashBlock and address.
+      ///
+      /// Note that referencing counting is not possible in a decentralised
+      /// environment, at least without resorting to complicating protocols.
+      /// This is why deduplication is not used.
+      elle::utility::Time _creation_stamp;
+      elle::Natural64 _salt;
     };
 
   }

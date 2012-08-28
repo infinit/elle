@@ -50,16 +50,7 @@ namespace lune
   ///
   elle::io::Pattern                 Lune::Configuration;
 
-  ///
-  /// this variable contains the pattern-based path to the user identity file.
-  ///
-  elle::io::Pattern                 Lune::Identity;
-
-  ///
-  /// this variable contains the pattern-based path to the user dictionary
-  /// file.
-  ///
-  elle::io::Pattern                 Lune::Dictionary;
+  elle::io::Pattern Lune::Phrase;
 
   ///
   /// this variable contains path to the users directory.
@@ -210,20 +201,11 @@ namespace lune
             Configuration::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
-      // create the identity path pattern.
-      if (Lune::Identity.Create(
+      if (Lune::Phrase.Create(
             home +
             elle::system::System::Path::Separator +
-            "infinit" +
-            Identity::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the dictionary path pattern.
-      if (Lune::Dictionary.Create(
-            home +
-            elle::system::System::Path::Separator +
-            "infinit" +
-            Dictionary::Extension) == elle::Status::Error)
+            "%NAME%" +
+            Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the users path pattern.

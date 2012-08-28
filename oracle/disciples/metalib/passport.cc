@@ -33,8 +33,7 @@ static lune::Passport create_passport(elle::String const& id,
     throw std::runtime_error("unable to create authority path");
 
   // load the authority file
-  if (authority.Load(authority_path) == elle::Status::Error)
-    throw std::runtime_error("unable to load the authority file");
+  authority.load(authority_path);
 
   // decrypt the authority.
   if (authority.Decrypt(authority_password) == elle::Status::Error)

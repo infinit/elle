@@ -1,11 +1,8 @@
 add_subdirectory(gap)
 add_subdirectory(cli)
 
-#if(INFINIT_MACOSX)
-#	add_subdirectory(macosx)
-#endif(INFINIT_MACOSX)
-
-
-#if(INFINIT_LINUX)
-#	add_subdirectory(linux)
-#endif()
+if(INFINIT_MACOSX)
+  if(${HAS_XCODE})
+	add_subdirectory(macosx)
+  endif()
+endif(INFINIT_MACOSX)

@@ -27,9 +27,7 @@ namespace elle
       // constructors & destructors
       //
       Path();
-      template <typename T>
-      Path(Pattern const& pattern,
-           T const& piece);
+      Path(Pattern const& pattern);
       template <typename T,
                 typename... TT>
       Path(Pattern const& pattern,
@@ -42,6 +40,8 @@ namespace elle
       Status            Create(const String&);
       Status            Create(const Pattern&);
 
+      Status
+      Complete();
       template <typename T>
       Status            Complete(T const&);
       template <typename T,
@@ -62,6 +62,9 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
+      //
+      // attributes
+      //
     private:
       String            _string;
 

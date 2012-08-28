@@ -57,6 +57,13 @@ namespace lune
     return elle::Status::Ok;
   }
 
+  elle::io::Path
+  Set::_path(elle::String const& network)
+  {
+    return (elle::io::Path(Lune::Network::Set,
+                           elle::io::Piece("%NETWORK%", network)));
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -94,27 +101,16 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-///
-/// this method loads the set.
-///
-  elle::Status          Set::Load(const elle::String&        network)
+  void
+  Set::load(elle::String const& network)
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    std::istringstream  stream;
-    elle::String        element;
-
-    // create the path.
-    if (path.Create(Lune::Network::Set) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
+    elle::standalone::Region region;
+    std::istringstream stream;
+    elle::String element;
 
     // read the file's content.
-    if (elle::io::File::Read(path, region) == elle::Status::Error)
-      escape("unable to read the file's content");
+    if (elle::io::File::Read(Set::_path(network), region) == elle::Status::Error)
+      throw std::runtime_error("unable to read the file's content");
 
     // set up the stream.
     stream.str(elle::String(reinterpret_cast<char*>(region.contents),
@@ -131,93 +127,48 @@ namespace lune
 
         // build the host locus.
         if (locus.Create(element) == elle::Status::Error)
-          escape("unable to create the host locus");
+          throw std::runtime_error("unable to create the host locus");
 
         // add the locus to the set.
         if (this->Add(locus) == elle::Status::Error)
-          escape("unable to add the locus");
+          throw std::runtime_error("unable to add the locus");
       }
-
-    return elle::Status::Ok;
   }
 
-  ///
-  /// this method stores the set.
-  ///
-  elle::Status          Set::Store(const elle::String&       network) const
+  void
+  Set::store(elle::String const& network) const
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Set) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
+    elle::io::Path path(Set::_path(network));
     std::ofstream out(path.string());
 
     if (!out.good())
-      escape("cannot open file %s", path.string().c_str());
+      throw std::runtime_error("cannot open file");
 
-    auto it = this->loci.begin(), end = this->loci.end();
+    auto it = this->loci.begin();
+    auto end = this->loci.end();
+
     for (; it != end; ++it)
       {
-        elle::String      host;
+        elle::String host;
 
         // convert the current locus into a string.
         if (it->host.Convert(host) == elle::Status::Error)
-          escape("unable to convert the locus into a string");
+          throw std::runtime_error("unable to convert the locus into a string");
 
         out << host << ":" << it->port << " ";
       }
-
-    return elle::Status::Ok;
   }
 
-  ///
-  /// this method erases the set.
-  ///
-  elle::Status          Set::Erase(const elle::String&       network) const
+  void
+  Set::erase(elle::String const& network)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Set) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Set::_path(network));
   }
 
-  ///
-  /// this method tests the set.
-  ///
-  elle::Status          Set::Exist(const elle::String&       network) const
+  elle::Boolean
+  Set::exists(elle::String const& network)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Set) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Set::_path(network)));
   }
 
 }

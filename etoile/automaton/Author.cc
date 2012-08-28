@@ -67,6 +67,7 @@ namespace etoile
         default:
           {
             // XXX to implement.
+            assert(false);
 
             break;
           }

@@ -101,11 +101,7 @@ namespace satellite
     lune::Phrase phrase;
 
     // load the phrase.
-    if (phrase.Load(
-          elle::io::Path(lune::Lune::Network::Phrase,
-                         elle::io::Piece("%NETWORK%", Infinit::Network),
-                         elle::io::Piece("%NAME%", "portal"))) == elle::Status::Error)
-      escape("unable to load the phrase");
+    phrase.load(Infinit::Network, "portal");
 
     // connect to the server.
     reactor::network::TCPSocket* socket =

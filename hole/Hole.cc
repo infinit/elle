@@ -77,14 +77,12 @@ namespace hole
     //
     {
       // does the network exist.
-      if (Hole::Descriptor.Exist(Infinit::Network) == elle::Status::False)
+      if (lune::Descriptor::exists(Infinit::Network) == false)
         throw reactor::Exception(elle::concurrency::scheduler(),
                         "this network does not seem to exist");
 
       // load the descriptor.
-      if (Hole::Descriptor.Load(Infinit::Network) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "unable to load the descriptor");
+      Hole::Descriptor.load(Infinit::Network);
 
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::Status::Error)
@@ -95,26 +93,20 @@ namespace hole
     //
     // retrieve the set, if present.
     //
-    if (Hole::Set.Exist(Infinit::Network) == elle::Status::True)
-      {
-        // load the set.
-        if (Hole::Set.Load(Infinit::Network) == elle::Status::Error)
-          throw std::runtime_error("unable to load the set");
-      }
+    if (lune::Set::exists(Infinit::Network) == true)
+      Hole::Set.load(Infinit::Network);
 
     //
     // retrieve the passport.
     //
     {
       // does the network exist.
-      if (Hole::Passport.Exist() == elle::Status::False)
+      if (lune::Passport::exists() == false)
         throw reactor::Exception(elle::concurrency::scheduler(),
                         "the device passport does not seem to exist");
 
       // load the passport.
-      if (Hole::Passport.Load() == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "unable to load the passport");
+      Hole::Passport.load();
 
       // validate the passport.
       if (Hole::Passport.Validate(Infinit::Authority) == elle::Status::Error)

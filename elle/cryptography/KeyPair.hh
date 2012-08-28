@@ -5,8 +5,6 @@
 
 # include <elle/radix/Object.hh>
 
-# include <elle/concept/Fileable.hh>
-
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/cryptography/PrivateKey.hh>
@@ -28,7 +26,6 @@ namespace elle
     class KeyPair
       : public radix::Object
       , public elle::concept::Serializable<KeyPair>
-      , public elle::concept::Fileable<>
     {
     public:
       //
@@ -76,14 +73,6 @@ namespace elle
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
-
-      // fileable
-      Status            Load(const io::Path&,
-                             const String&);
-      Status            Store(const io::Path&,
-                              const String&) const;
-      Status            Erase(const io::Path&) const;
-      Status            Exist(const io::Path&) const;
 
       //
       // attributes

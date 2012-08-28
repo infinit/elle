@@ -81,14 +81,13 @@ namespace hole
         ELLE_TRACE_SCOPE("Put[Immutable]");
 
         // does the block already exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address) == elle::Status::True)
-          throw reactor::Exception(elle::concurrency::scheduler(), "this immutable block seems to already exist");
+        if (nucleus::proton::ImmutableBlock::exists(
+              Hole::Implementation->network, address) == true)
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "this immutable block seems to already exist");
 
         // store the block.
-        if (block.Store(Hole::Implementation->network,
-                        address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to store the block");
+        block.store(Hole::Implementation->network, address);
       }
 
       void
@@ -153,10 +152,48 @@ namespace hole
             }
           }
 
-        // store the block.
-        if (block.Store(Hole::Implementation->network,
-                        address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to store the block");
+        // XXX[this kind of check should be provided by a method such as
+        //     hole/backend/fs/MutableBlock::derives()]
+        ELLE_TRACE("Check if the block derives the current block")
+          {
+            // does the block already exist.
+            if (nucleus::proton::MutableBlock::exists(
+                  Hole::Implementation->network,
+                  address,
+                  nucleus::proton::Version::Last) == true)
+              {
+                nucleus::proton::MutableBlock* current;
+
+                // build a block according to the component.
+                if (nucleus::Nucleus::Factory.Build(
+                      address.component,
+                      current) == elle::Status::Error)
+                  throw std::runtime_error("unable to build the block");
+
+                std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
+
+                ELLE_TRACE_SCOPE("the mutable block seems to exist "
+                                 "locally: make sure it derives the "
+                                 "current version");
+
+                // load the latest version.
+                current->load(
+                  Hole::Implementation->network,
+                  address,
+                  nucleus::proton::Version::Last);
+
+                if (block.derives(*current) == true)
+                  {
+                    ELLE_TRACE("Store the block %p", &block)
+                      block.store(Hole::Implementation->network, address);
+
+                    ELLE_TRACE("Block %p successfully stored", &block);
+                  }
+                else
+                  ELLE_TRACE("the block %p does not derive the current one",
+                             &block);
+              }
+          }
       }
 
       void
@@ -166,14 +203,13 @@ namespace hole
         ELLE_TRACE_SCOPE("Get[Immutable]");
 
         // does the block exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address) == elle::Status::False)
-          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
+        if (nucleus::proton::ImmutableBlock::exists(
+              Hole::Implementation->network, address) == true)
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the block does not seem to exist");
 
         // load the block.
-        if (block.Load(Hole::Implementation->network,
-                       address) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
+        block.load(Hole::Implementation->network, address);
 
         // validate the block.
         if (block.Validate(address) == elle::Status::Error)
@@ -188,14 +224,13 @@ namespace hole
         ELLE_TRACE_SCOPE("Get[Mutable]");
 
         // does the block exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address, version) == elle::Status::False)
-          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
+        if (nucleus::proton::MutableBlock::exists(
+              Hole::Implementation->network, address, version) == true)
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the block does not seem to exist");
 
         // load the block.
-        if (block.Load(Hole::Implementation->network,
-                       address, version) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
+        block.load(Hole::Implementation->network, address, version);
 
         // validate the block, depending on its component.
         //
@@ -267,9 +302,8 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              if (nucleus::proton::ImmutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
+              nucleus::proton::ImmutableBlock::erase(
+                Hole::Implementation->network, address);
 
               break;
             }
@@ -278,9 +312,8 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              if (nucleus::proton::MutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
+              nucleus::proton::MutableBlock::erase(
+                Hole::Implementation->network, address);
 
               break;
             }

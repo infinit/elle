@@ -1,9 +1,9 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
 # define NUCLEUS_PROTON_ADDRESS_HH
 
+# include <elle/radix/Object.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/concept/Serializable.hh>
-# include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/Printable.hh>
 
@@ -33,11 +33,10 @@ namespace nucleus
     /// noteworthy is that the family and component are also included in
     /// the generation of the address' digest.
     ///
-    class Address
-      : public elle::radix::Object
-      , public elle::Printable
-      , public elle::concept::MakeFileable<Address>
-      , public elle::concept::MakeUniquable<Address>
+    class Address:
+      public elle::radix::Object,
+      public elle::Printable,
+      public elle::concept::MakeUniquable<Address>
     {
     public:
       //

@@ -10,6 +10,10 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Object");
+
 namespace etoile
 {
   namespace automaton
@@ -130,6 +134,8 @@ namespace etoile
     elle::Status        Object::Store(
                           gear::Object&                         context)
     {
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // close the access.
       if (Access::Close(context) == elle::Status::Error)
         escape("unable to close the access");

@@ -169,6 +169,13 @@ namespace lune
     return elle::Status::Ok;
   }
 
+  elle::io::Path
+  Identity::_path(elle::String const& user)
+  {
+    return (elle::io::Path(Lune::User::Identity,
+                           elle::io::Piece("%USER%", user)));
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -221,93 +228,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads a user's identity file.
-  ///
-  elle::Status          Identity::Load(const elle::String&      name)
+  void
+  Identity::load(elle::String const& user)
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-
-    // create the path.
-    if (path.Create(Lune::User::Identity) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Load(path) == elle::Status::Error)
-      escape("unable to decode the object");
-
-    return elle::Status::Ok;
+    this->load(Identity::_path(user));
   }
 
-  ///
-  /// this method stores a user's identity.
-  ///
-  elle::Status          Identity::Store(const elle::String&     name) const
+  void
+  Identity::store(elle::String const& user) const
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::User::Identity) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store the object");
-
-    return elle::Status::Ok;
+    this->store(Identity::_path(user));
   }
 
-  ///
-  /// this method erases a user's identity.
-  ///
-  elle::Status          Identity::Erase(const elle::String&     name) const
+  void
+  Identity::erase(elle::String const& user)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::User::Identity) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Identity::_path(user));
   }
 
-  ///
-  /// this method tests the identity.
-  ///
-  elle::Status          Identity::Exist(const elle::String&     name) const
+  elle::Boolean
+  Identity::exists(elle::String const& user)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::User::Identity) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Identity::_path(user)));
   }
 
 }

@@ -17,6 +17,17 @@ namespace lune
   const elle::String            Dictionary::Extension = ".dic";
 
 //
+// ---------- methods ---------------------------------------------------------
+//
+
+  elle::io::Path
+  Dictionary::_path(elle::String const& user)
+  {
+    return (elle::io::Path(Lune::User::Dictionary,
+                           elle::io::Piece("%USER%", user)));
+  }
+
+//
 // ---------- object ----------------------------------------------------------
 //
 
@@ -53,93 +64,28 @@ namespace lune
 // ---------- fileable --------------------------------------------------------
 //
 
-  ///
-  /// this method loads the user's local dictionary.
-  ///
-  elle::Status          Dictionary::Load(const elle::String&    name)
+  void
+  Dictionary::load(elle::String const& user)
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-
-    // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Load(path) == elle::Status::Error)
-      escape("unable to decode the object");
-
-    return elle::Status::Ok;
+    this->load(Dictionary::_path(user));
   }
 
-  ///
-  /// this method stores the user's local dictionary.
-  ///
-  elle::Status          Dictionary::Store(const elle::String&   name) const
+  void
+  Dictionary::store(elle::String const& user) const
   {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store the object");
-
-    return elle::Status::Ok;
+    this->store(Dictionary::_path(user));
   }
 
-  ///
-  /// this method erases the dictionary.
-  ///
-  elle::Status          Dictionary::Erase(const elle::String&   name) const
+  void
+  Dictionary::erase(elle::String const& user)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
+    elle::concept::Fileable<>::erase(Dictionary::_path(user));
   }
 
-  ///
-  /// this method tests the dictionary.
-  ///
-  elle::Status          Dictionary::Exist(const elle::String&   name) const
+  elle::Boolean
+  Dictionary::exists(elle::String const& user)
   {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
+    return (elle::concept::Fileable<>::exists(Dictionary::_path(user)));
   }
 
 }

@@ -27,9 +27,8 @@ namespace nucleus
     /// update them rather than keeping the private key associated with
     /// with every mutable block as for PKBs.
     ///
-    class OwnerKeyBlock
-      : public MutableBlock
-    // XXX , public elle::concept::Fileable<OwnerKeyBlock>
+    class OwnerKeyBlock:
+      public MutableBlock
     {
     public:
       //
@@ -55,9 +54,6 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      // serializable
-      // XXX ELLE_CONCEPT_FILEABLE_METHODS(OwnerKeyBlock);
 
       //
       // attributes

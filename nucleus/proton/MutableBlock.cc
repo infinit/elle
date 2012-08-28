@@ -52,6 +52,39 @@ namespace nucleus
     }
 
 //
+// ---------- methods ---------------------------------------------------------
+//
+
+    elle::Boolean
+    MutableBlock::derives(MutableBlock const& other) const
+    {
+      if (this->version > other.version)
+        return (true);
+
+      return (false);
+    }
+
+    elle::io::Path
+    MutableBlock::_path(Network const& network,
+                        Address const& address)
+    {
+      return (elle::io::Path(lune::Lune::Network::Shelter::MutableBlock,
+                             elle::io::Piece("%NETWORK%", network.name),
+                             elle::io::Piece("%ADDRESS%", address.unique())));
+    }
+
+    elle::io::Path
+    MutableBlock::_path(Network const& network,
+                        Address const& address,
+                        elle::String const& version)
+    {
+      return (elle::io::Path(lune::Lune::Network::Shelter::MutableBlock,
+                             elle::io::Piece("%NETWORK%", network.name),
+                             elle::io::Piece("%ADDRESS%", address.unique()),
+                             elle::io::Piece("%VERSION%", version)));
+    }
+
+//
 // ---------- object ----------------------------------------------------------
 //
 
@@ -88,65 +121,41 @@ namespace nucleus
 // ---------- fileable --------------------------------------------------------
 //
 
-    ///
-    /// this method loads the block.
-    ///
-    elle::Status        MutableBlock::Load(const Network&       network,
-                                           const Address&       address,
-                                           const Version&       version)
+    void
+    MutableBlock::load(Network const& network,
+                       Address const& address,
+                       Version const& version)
     {
       ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, version);
-
-      elle::io::Path path;
-      elle::String unique;
-
-      unique = address.unique();
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
-          elle::Status::Error)
-        escape("unable to create the path");
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.history == false)
         {
-          elle::standalone::Region  region;
-
-          // complete the path with the network name.
-          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                            elle::io::Piece("%ADDRESS%", unique),
-                            elle::io::Piece("%VERSION%", "@")) ==
-              elle::Status::Error)
-            escape("unable to complete the path");
-
-          ELLE_DEBUG("%s: load from disk: %s", *this, path)
-            if (this->Load(path) == elle::Status::Error)
-              escape("unable to load block");
+          this->load(elle::io::Path(MutableBlock::_path(network, address, "@")));
         }
       else
         {
-          elle::standalone::Region  region;
-          elle::String  number;
+          /* XXX
+          elle::standalone::Region region;
+          elle::String number;
+          elle::io::Unique unique(address.unique());
 
           // if the requested version is the latest...
           if (version == Version::Last)
             {
-              elle::io::Path        link;
-              elle::standalone::Region      r;
-
-              // copy the path.
-              link = path;
+              elle::io::Path link(path);
+              elle::standalone::Region r;
 
               // complete the link path.
               if (link.Complete(elle::io::Piece("%NETWORK%", network.name),
                                 elle::io::Piece("%ADDRESS%", unique),
                                 elle::io::Piece("%VERSION%", "@")) ==
                   elle::Status::Error)
-                escape("unable to complete the path");
+                throw std::runtime_error("unable to complete the path");
 
               // read the file's content.
               if (elle::io::File::Read(link, r) == elle::Status::Error)
-                escape("unable to read the file's content");
+                throw std::runtime_error("unable to read the file's content");
 
               // set the number of the latest version.
               number = elle::String(reinterpret_cast<const char*>(r.contents),
@@ -154,17 +163,7 @@ namespace nucleus
             }
           else
             {
-              try
-                {
-                  number = boost::lexical_cast<std::string>(version.number);
-                }
-              catch (std::exception const& err)
-                {
-                  escape(
-                      "unable to convert the version number into a string: %s",
-                      err.what()
-                  );
-                }
+              number = boost::lexical_cast<std::string>(version.number);
             }
 
           // complete the path with the network name.
@@ -172,38 +171,18 @@ namespace nucleus
                             elle::io::Piece("%ADDRESS%", unique),
                             elle::io::Piece("%VERSION%", number)) ==
               elle::Status::Error)
-            escape("unable to complete the path");
+            throw std::runtime_error("unable to complete the path");
 
-          if (this->Load(path) == elle::Status::Error)
-            escape("unable to load '%s'", path.string().c_str());
+          this->load(path);
+          */
         }
-
-      return elle::Status::Ok;
     }
 
-    ///
-    /// this method stores the block in its file format.
-    ///
-    elle::Status        MutableBlock::Store(const Network&      network,
-                                            const Address&      address)
-      const
+    void
+    MutableBlock::store(Network const& network,
+                        Address const& address) const
     {
-      elle::io::Path file;
-      elle::String unique;
-
-      unique = address.unique();
-
-      ELLE_TRACE("Store(%s)", unique);
-
-      // create the shelter path.
-      if (file.Create(lune::Lune::Network::Shelter::MutableBlock) ==
-          elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (file.Complete(elle::io::Piece("%NETWORK%", network.name),
-                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
-        escape("unable to complete the path");
+      ELLE_TRACE_SCOPE("%s: store(%s, %s)", *this, network, address);
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.history == false)
@@ -212,95 +191,46 @@ namespace nucleus
           // if the history is not supported, store the mutable block
           // in a file without version number extension.
           //
-          elle::standalone::Region region;
-          MutableBlock block;
 
-          // complete the file path.
-          if (file.Complete(elle::io::Piece("%VERSION%", "@")) ==
-              elle::Status::Error)
-            escape("unable to complete the path");
-
-          // does the block already exist.
-          if (block.Exist(network,
-                          address,
-                          nucleus::proton::Version::Last) == elle::Status::True)
-            {
-              nucleus::proton::MutableBlock* current;
-
-              // build a block according to the component.
-              if (nucleus::Nucleus::Factory.Build(
-                    address.component,
-                    current) == elle::Status::Error)
-                escape("unable to build the block");
-
-              std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
-
-              ELLE_TRACE("the mutable block seems to exist "
-                             "locally, make sure it derives the "
-                             "current version")
-                {
-                  // load the latest version.
-                  if (current->Load(
-                        network,
-                        address,
-                        nucleus::proton::Version::Last) == elle::Status::Error)
-                    escape("unable to load the current version");
-
-                  // does the given block derive the current version.
-                  if (!(this->version > current->version))
-                    escape("the block to store does not seem to derive the "
-                           "current version");
-                }
-            }
-
-          if (this->Store(file) == elle::Status::Error)
-            escape("Cannot store into %s", file.string().c_str());
+          this->store(
+            elle::io::Path(MutableBlock::_path(network, address, "@")));
         }
       else
         {
+          /* XXX
           //
           // otherwise, store the block in a file with a name of the
           // form [identifier]#[version number].blk. besides, a special
           // file of the form [identifier]#@.blk contains the number
           // of the latest version of the mutable block.
           //
+
           elle::String number;
-          elle::io::Path link;
+          elle::io::Path link(file);
           elle::standalone::Region region;
           nucleus::proton::History history;
 
-          try
-            {
-              number = boost::lexical_cast<std::string>(this->version.number);
-            }
-          catch (std::exception const&)
-            {
-              escape("unable to transform the version number into a string");
-            }
-
-          // duplicate the path.
-          link = file;
+          number = boost::lexical_cast<std::string>(this->version.number);
 
           // complete the file path.
           if (file.Complete(elle::io::Piece("%VERSION%", number)) ==
               elle::Status::Error)
-            escape("unable to complete the path");
+            throw std::runtime_error("unable to complete the path");
 
-          if (this->Store(file) != elle::Status::Ok)
-            escape("unable to store the block");
+          this->store(file);
 
           // complete the link path.
           if (link.Complete(elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
-            escape("unable to complete the path");
+            throw std::runtime_error("unable to complete the path");
 
           // if there is a link, remove it.
-          if (elle::io::File::Exist(link) == elle::Status::True)
+          if (elle::io::File::Exist(link) == true)
             {
               // delete the file which references the latest version since a
               // new version has been created.
               if (elle::io::File::Erase(link) == elle::Status::Error)
-                escape("unable to erase the block link");
+                throw std::runtime_error("unable to erase the block link");
             }
 
           // finally, create the block link.
@@ -309,7 +239,7 @@ namespace nucleus
                 elle::standalone::Region(
                   reinterpret_cast<const elle::Byte*>(number.c_str()),
                   number.length())) == elle::Status::Error)
-            escape("unable to create the block link");
+            throw std::runtime_error("unable to create the block link");
 
           // XXX here the history should be loaded before the file is
           // XXX being stored. then the file should be stored only if the
@@ -320,66 +250,41 @@ namespace nucleus
           // XXX 32 already exists). finally, the history should be re-worked
           // XXX so as to used a sorted data structure such as a map which
           // XXX would then be used to retrieve the latest version number.
-          escape("XXX");
+          throw std::runtime_error("XXX");
 
           // if there is a history, load it.
-          if (history.Exist(network, address) == elle::Status::True)
+          if (history.exists(network, address) == true)
             {
               // load the history.
-              if (history.Load(network, address) == elle::Status::Error)
-                escape("unable to load the history");
+              history.load(network, address);
             }
 
           // register the new version.
           if (history.Register(version) == elle::Status::Error)
-            escape("unable to register the new version");
+            throw std::runtime_error("unable to register the new version");
 
           // store the history.
-          if (history.Store(network, address) == elle::Status::Error)
-            escape("unable to store the history");
+          history.store(network, address);
+          */
         }
-
-      return elle::Status::Ok;
     }
 
-    ///
-    /// this method erases a block.
-    ///
-    elle::Status        MutableBlock::Erase(const Network&      network,
-                                            const Address&      address)
+    void
+    MutableBlock::erase(Network const& network,
+                        Address const& address)
     {
-      elle::io::Unique unique;
-      elle::io::Path path;
-
-      unique = address.unique();
-
-      ELLE_TRACE("Erase(%s)", unique);
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
-          elle::Status::Error)
-        escape("unable to create the path");
+      ELLE_TRACE_SCOPE("erase(%s, %s)", network, address);
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.history == false)
         {
-          // complete the path with the network name.
-          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                            elle::io::Piece("%ADDRESS%", unique),
-                            elle::io::Piece("%VERSION%", "@")) ==
-              elle::Status::Error)
-            escape("unable to complete the path");
-
-          // is the file present...
-          if (elle::io::File::Exist(path) == elle::Status::True)
-            {
-              // erase the file.
-              if (elle::io::File::Erase(path) == elle::Status::Error)
-                escape("unable to erase the file");
-            }
+          elle::concept::Fileable<>::erase(
+            MutableBlock::_path(network, address, "@"));
         }
       else
         {
+          /* XXX
+          elle::io::Unique unique(address.unique);
           History       history;
           Version::Type size;
           Version::Type i;
@@ -388,15 +293,15 @@ namespace nucleus
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
                             elle::io::Piece("%ADDRESS%", unique)) ==
               elle::Status::Error)
-            escape("unable to complete the path");
+            throw std::runtime_error("unable to complete the path");
 
           // load the history.
           if (history.Load(network, address) == elle::Status::Error)
-            escape("unable to load the history");
+            throw std::runtime_error("unable to load the history");
 
           // retrieve the number of versions.
           if (history.Size(size) == elle::Status::Error)
-            escape("unable to retrieve the size of the history");
+            throw std::runtime_error("unable to retrieve the size of the history");
 
           // go through the versions.
           for (i = 0; i < size; i++)
@@ -407,7 +312,7 @@ namespace nucleus
 
               // select a particular version.
               if (history.Select(i, version) == elle::Status::Error)
-                escape("unable to select a particular version");
+                throw std::runtime_error("unable to select a particular version");
 
               try
                 {
@@ -415,7 +320,7 @@ namespace nucleus
                 }
               catch (std::exception const&)
                 {
-                  escape("unable to transform the version number into a string");
+                  throw std::runtime_error("unable to transform the version number into a string");
                 }
 
               // duplicate the generic path.
@@ -424,75 +329,66 @@ namespace nucleus
               // complete the path with the version number.
               if (file.Complete(elle::io::Piece("%VERSION%",
                                             number)) == elle::Status::Error)
-                escape("unable to complete the path");
+                throw std::runtime_error("unable to complete the path");
 
               // is the file present...
               if (elle::io::File::Exist(file) == elle::Status::True)
                 {
                   // erase the file.
                   if (elle::io::File::Erase(file) == elle::Status::Error)
-                    escape("unable to erase the file");
+                    throw std::runtime_error("unable to erase the file");
                 }
             }
 
           // complete the path with the last version pointer.
           if (path.Complete(elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
-            escape("unable to complete the path");
+            throw std::runtime_error("unable to complete the path");
 
           // is the file present...
           if (elle::io::File::Exist(path) == elle::Status::True)
             {
               // delete the link which references the latest version.
               if (elle::io::File::Erase(path) == elle::Status::Error)
-                escape("unable to erase the block link");
+                throw std::runtime_error("unable to erase the block link");
             }
 
           // erase the history.
           if (history.Erase(network, address) == elle::Status::Error)
-            escape("unable to erase the history");
+            throw std::runtime_error("unable to erase the history");
+          */
         }
-
-      return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns true if the block exists.
-    ///
-    elle::Status        MutableBlock::Exist(const Network&      network,
-                                            const Address&      address,
-                                            const Version&      version)
-      const
+    elle::Boolean
+    MutableBlock::exists(Network const& network,
+                         Address const& address,
+                         Version const& version)
     {
-      elle::io::Path path;
-      elle::String unique;
-
-      unique = address.unique();
-
-      ELLE_TRACE("Exist(%s)", unique);
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
-          elle::Status::Error)
-        flee("unable to create the path");
+      ELLE_TRACE_SCOPE("exists(%s, %s)", network, address);
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.history == false)
         {
-          // complete the path with the network name.
-          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
-                            elle::io::Piece("%ADDRESS%", unique),
-                            elle::io::Piece("%VERSION%", "@")) ==
-              elle::Status::Error)
-            flee("unable to complete the path");
+          if (version == Version::Last)
+            {
+              return (elle::concept::Fileable<>::exists(
+                MutableBlock::_path(network, address, "@")));
+            }
+          else
+            {
+              elle::String number(
+                boost::lexical_cast<elle::String>(version.number));
 
-          // test the file.
-          if (elle::io::File::Exist(path) == elle::Status::True)
-            return elle::Status::True;
+              return (elle::concept::Fileable<>::exists(
+                MutableBlock::_path(network, address, number)));
+            }
         }
       else
         {
-          elle::String  number;
+          /* XXX
+           elle::String unique(address.unique);
+           elle::String  number;
 
           // if the requested version is the latest...
           if (version == Version::Last)
@@ -540,9 +436,10 @@ namespace nucleus
           // test the file.
           if (elle::io::File::Exist(path) == elle::Status::True)
             return elle::Status::True;
+          */
         }
 
-      return elle::Status::False;
+      return (false);
     }
 
   }

@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 2.8)
 
+# ---------- options ----------------------------------------------------------
+set(HAS_XCODE TRUE CACHE BOOL
+    "Disable HAS_XCODE if your machine does not have it")
+
 # follow symlink when copying
 cmake_policy(SET CMP0009 NEW)
 
 project(Infinit C CXX)
-
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules")
 

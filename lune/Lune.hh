@@ -37,8 +37,7 @@ namespace lune
 
     static elle::io::Pattern        Configuration;
 
-    static elle::io::Pattern        Identity;
-    static elle::io::Pattern        Dictionary;
+    static elle::io::Pattern      Phrase;
 
     static elle::io::Pattern        Users;
 

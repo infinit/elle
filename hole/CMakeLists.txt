@@ -28,6 +28,8 @@ add_library(hole
 #  implementations/cirkle/Neighbourhood.cc
 #  implementations/cirkle/RoutingTable.cc
 
+  backends/fs/MutableBlock.cc
+
   Hole.cc
   Holeable.cc
   Label.cc

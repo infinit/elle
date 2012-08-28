@@ -60,7 +60,7 @@ namespace agent
     //
     {
       // does the identity exist.
-      if (Agent::Identity.Exist(Infinit::User) == elle::Status::False)
+      if (lune::Identity::exists(Infinit::User) == false)
         escape("the user identity does not seem to exist");
 
       std::ifstream identity_file(common::watchdog::identity_path());
@@ -92,8 +92,7 @@ namespace agent
           // XXX[temporary fix]
 
           // load the identity.
-          if (Agent::Identity.Load(Infinit::User) == elle::Status::Error)
-            escape("unable to load the identity");
+          Agent::Identity.load(Infinit::User);
 
           // verify the identity.
           if (Agent::Identity.Validate(Infinit::Authority) == elle::Status::Error)

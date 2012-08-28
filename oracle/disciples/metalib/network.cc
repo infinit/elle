@@ -54,8 +54,7 @@ generate_network_descriptor(elle::String const& id,
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
-  if (authority.Load(authority_path) == elle::Status::Error)
-    throw std::runtime_error("unable to load the authority file");
+  authority.load(authority_path);
 
   if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
