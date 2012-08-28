@@ -111,6 +111,7 @@ add_library(elle
   print.cc
 
   log.cc
+
   log/Logger.cc
 
   reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
