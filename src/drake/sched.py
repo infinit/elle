@@ -274,6 +274,9 @@ class Coroutine(Waitable):
   def __str__(self):
     return 'coroutine %s' % self.name
 
+  def __repr__(self):
+    return 'Coroutine(%s)' % self.name
+
   def __yield(self, *args, **kwargs):
     self.__coro.parent.switch(*args, **kwargs)
 
@@ -332,7 +335,7 @@ class Coroutine(Waitable):
     self._Waitable__wake_all()
 
   def __unfreeze(self):
-    assert self.__frozen
+    assert self.frozen
     self.__frozen = False
     if self.__scheduler:
       self.__scheduler.unfreeze(self)
@@ -368,7 +371,6 @@ def coro_wait(waitable):
   exception = Coroutine.current._Coroutine__exception
   if exception is not None:
     Coroutine.current._Coroutine__exception = None
-    import traceback
     raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
 class Lockable:
 
