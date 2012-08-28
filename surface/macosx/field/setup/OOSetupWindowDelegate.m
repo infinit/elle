@@ -142,6 +142,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
         [self swapView:loggedView];
         
         self.isLogged = YES;
+        [self notififyApplicationIfUserIsLogged];
         [[self window] close];
         NSLog(@"Close setup windows");
     }
@@ -190,12 +191,12 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
         [self swapView:loggedView];
         
         self.isLogged = YES;
+        [self notififyApplicationIfUserIsLogged];
         [[self window] close];
     }
 }
 
-- (void)windowWillClose:(NSNotification *)notification
-{
+- (void)notififyApplicationIfUserIsLogged {
     if (self.isLogged) {
         NSLog(@"Send succeed logged notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:OOUserLoggedNotification object:self];
@@ -203,5 +204,11 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
         NSLog(@"Send unsuccessful logging notification");
         [[NSNotificationCenter defaultCenter] postNotificationName:OOUserUnLoggedNotification object:self];
     }
+    
+}
+
+- (BOOL)windowShouldClose:(id)sender {
+    [self notififyApplicationIfUserIsLogged];
+    return YES;
 }
 @end

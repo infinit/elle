@@ -866,7 +866,7 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -890,7 +890,7 @@
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -415,7 +415,7 @@
 					"$(SRCROOT)/../../../build/macosx64/surface/gap/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -453,7 +453,7 @@
 					"$(SRCROOT)/../../../build/macosx64/surface/gap/**",
 					"\"$(SRCROOT)/../../../build/macosx64/surface/gap\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

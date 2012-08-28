@@ -734,7 +734,7 @@
 					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
 					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
@@ -777,7 +777,7 @@
 					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
 					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
