@@ -298,11 +298,16 @@ namespace elle
 
     protected:
       // Default implementation ignores the name
-      template<typename T> inline void SaveNamed(std::string const&, T const& value)
+      template <typename T>
+      inline
+      void SaveNamed(std::string const&, T const& value)
       {
         *this << value;
       }
-      template<typename T> inline void LoadNamed(std::string const&, T& value)
+
+      template <typename T>
+      inline
+      void LoadNamed(std::string const&, T& value)
       {
         *this >> value;
       }
@@ -321,14 +326,17 @@ namespace elle
       inline void Save(double val);
       inline void Save(std::string const& val);
       inline void Save(ClassVersionType const& classVersion);
-      template<typename T>
-        inline typename std::enable_if<std::is_enum<T>::value == true>::type
-        Save(T value);
-      template<typename T>
-        inline typename std::enable_if<
-              std::is_enum<T>::value == false
-        >::type
-        Save(T const& value);
+
+      template <typename T>
+      inline
+      typename std::enable_if<std::is_enum<T>::value == true>::type
+      Save(T value);
+
+      template <typename T>
+      inline
+      typename std::enable_if<std::is_enum<T>::value == false>::type
+      Save(T const& value);
+
       //template<typename T>
       //  inline typename std::enable_if<
       //    elle::concept::IsSerializable<T, Archive>::value == true
