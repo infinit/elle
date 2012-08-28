@@ -5,19 +5,20 @@
 /// Requirements:
 ///   - The class is serializable (XXX make doc on serializable concept)
 /// Effects:
-///   - Provides two virtual methods: Store(Path) and Load(Path)
+///   - Provides virtual methods: store(Path), load(Path), erase(Path) and
+///     exists(Path)
 ///
 /// Example 1: This makes 'MyClass' `fileable` with a BinaryArchive
 /// ---------------------------------------------------------------------------
-///   class MyClass
-///     : public elle::concept::Fileable<>
+///   class MyClass:
+///     public elle::concept::Fileable<>
 ///   {};
 ///
 /// Example 2: When some base class are also fileable
 /// ---------------------------------------------------------------------------
-///   class MyClass2
-///     : public MyClass // MyClass is fileable too
-///     , public elle::concept::Fileable<>
+///   class MyClass2:
+///     public MyClass, // MyClass is fileable too
+///     public elle::concept::Fileable<>
 ///   {
 ///   public:
 ///     ELLE_CONCEPT_FILEABLE_METHODS(MyClass2); // desambiguation is needed
@@ -25,14 +26,14 @@
 /// ---------------------------------------------------------------------------
 ///
 /// Example 3: If you need an abstract base class that enforce the fileable
-///            contract you will need to inherit from AbstractFileable
+///            contract you will need to inherit from contract::Serializable
 /// ---------------------------------------------------------------------------
-///   class MyClassInterface
-///     : public elle::concept::AbstractFileable<>
+///   class MyClassInterface:
+///     public elle::concept::contract::Serializable<>
 ///   {};
 ///
-///   class MyClassImplem
-///     : public elle::concept::Fileable<MyclassImplem>
+///   class MyClassImplem:
+///     public elle::concept::Fileable<MyclassImplem>
 ///   {};
 /// ---------------------------------------------------------------------------
 
@@ -46,11 +47,10 @@
 # include <elle/idiom/Open.hh>
 
 # define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
-  using elle::concept::Fileable<__VA_ARGS__>::Store;                          \
-  using elle::concept::Fileable<__VA_ARGS__>::Load;                           \
-  using elle::concept::Fileable<__VA_ARGS__>::Erase;                          \
-  using elle::concept::Fileable<__VA_ARGS__>::Exists;                         \
-  /**/
+  using elle::concept::Fileable<__VA_ARGS__>::store;                          \
+  using elle::concept::Fileable<__VA_ARGS__>::load;                           \
+  using elle::concept::Fileable<__VA_ARGS__>::erase;                          \
+  using elle::concept::Fileable<__VA_ARGS__>::exists;
 
 namespace elle
 {
@@ -58,19 +58,31 @@ namespace elle
   {
 
     template <__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
-    struct Fileable
-      : virtual contract::_Serializable<Archive>
+    struct Fileable:
+      virtual contract::_Serializable<Archive>
     {
-      Status Load(elle::io::Path const& path);
-      Status Store(elle::io::Path const& path) const;
-      Status Erase(elle::io::Path const& path) const;
-      Boolean Exists(elle::io::Path const& path) const;
+      /// Deserializes the instance from a file.
+      void
+      load(elle::io::Path const& path);
+      /// Serializes the instance to a file.
+      void
+      store(elle::io::Path const& path) const;
+      /// Erases the file containing the instance's serialization
+      /// representation.
+      static
+      void
+      erase(elle::io::Path const& path);
+      /// Returns true if the instance's serialization representation
+      /// file exists.
+      static
+      Boolean
+      exists(elle::io::Path const& path);
     };
 
     template <typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
-    struct MakeFileable
-      : Serializable<T, Archive>
-      , Fileable<Archive>
+    struct MakeFileable:
+      Serializable<T, Archive>,
+      Fileable<Archive>
     {};
 
   }
