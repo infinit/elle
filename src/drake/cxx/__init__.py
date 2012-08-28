@@ -707,6 +707,10 @@ class StaticLibLinker(ShellCommand):
                                              self.objs + list(self.sources_dynamic()),
                                              self.lib))
 
+    def hash(self):
+        res = ' '.join(sorted(map(str, self.objs)))
+        return res
+
 class Source(Node):
 
     def __init__(self, path):
