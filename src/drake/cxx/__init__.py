@@ -499,10 +499,10 @@ def mkdeps(res, n, lvl, config, marks,
 
 
     n.build()
-    for line in open(str(path), 'r'):
+    for line in open(str(path), 'rb'):
 
         line = line.strip()
-        match = include_re.match(line)
+        match = include_re.match(line.decode('utf-8'))
         if match:
             include = match.group(2)
             search = config.local_include_path()
