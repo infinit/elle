@@ -69,7 +69,7 @@ us know by sending an email to community@infinit.io.
 
 Instructions:
 
- * MacOSX:
+ * MacOSX (only Mountain Lion):
     1) Install Infinit and create an account with your access code.
     2) Create a network.
     3) Drag and drop other users into your network.
