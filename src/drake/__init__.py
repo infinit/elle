@@ -1172,6 +1172,10 @@ class Builder:
                 coroutines_static = []
                 coroutines_dynamic = []
 
+                # FIXME: symetric of can_skip_node: if a node is a
+                # plain file and does not exist, err immediately (or
+                # execute = True).
+
                 # Build static dependencies
                 debug.debug('Build static dependencies')
                 with debug.indentation():
