@@ -655,7 +655,8 @@ class DynLibLinker(Builder):
         lib_paths.sort()
         libs = self.config.libs
         libs.sort()
-        return '%s\n%s\n%s\n%s\n' % (flags, frameworks, lib_paths, libs)
+        objs = ' '.join(sorted(map(str, self.objs)))
+        return '\n'.join(map(str, (objs, flags, frameworks, lib_paths, libs)))
 
     def dependencies(self):
 
