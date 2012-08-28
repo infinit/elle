@@ -710,7 +710,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_IDENTITY = io.infinit;
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -752,7 +752,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				CODE_SIGN_IDENTITY = io.infinit;
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
