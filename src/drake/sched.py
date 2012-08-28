@@ -372,6 +372,16 @@ def coro_wait(waitable):
   if exception is not None:
     Coroutine.current._Coroutine__exception = None
     raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
+
+def background(f):
+  class Background(ThreadedOperation):
+    def run(self):
+      self.result = f()
+  op = Background()
+  op.start()
+  coro_wait(op)
+  return op.result
+
 class Lockable:
 
   def lock(self):

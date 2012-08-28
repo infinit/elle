@@ -1054,15 +1054,18 @@ class Builder:
         actual command is printed.
         """
         c = _cmd_escape(c, *args)
-        self.output(c, pretty)
         cwd = None
         if "cwd" in kwargs:
             cwd = kwargs["cwd"]
-        if _RAW:
-            return cmd(c, cwd = cwd)
-        else:
-            with open(str(self.cachedir() / 'stdout'), 'w') as f:
+        with open(str(self.cachedir() / 'stdout'), 'w') as f:
+            def fun():
+                self.output(c, pretty)
                 return cmd(c, cwd = cwd, stdout = f)
+            if _JOBS_LOCK is not None:
+                with _JOBS_LOCK:
+                    return sched.background(fun)
+            else:
+                return fun()
 
     def output(self, raw, pretty = None):
         """Output pretty, or raw if drake is in raw mode."""
@@ -1783,7 +1786,6 @@ def _register_commands():
 
 _register_commands()
 
-_JOBS = 1
 
 def _scheduler():
     res = Scheduler.scheduler()
@@ -1792,9 +1794,14 @@ def _scheduler():
     else:
         return res
 
+_JOBS_LOCK = None
 def _jobs_set(n):
-    global _JOBS
-    _JOBS = int(n)
+    global _JOBS_LOCK
+    n = int(n)
+    if n == 1:
+        _JOBS_LOCK = None
+    else:
+        _JOBS_LOCK = sched.Semaphore(n)
 
 _ARG_DOC_RE = re.compile('\\s*(\\w+)\\s*--\\s*(.*)')
 def _args_doc(doc):
