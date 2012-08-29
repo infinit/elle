@@ -1,6 +1,8 @@
 #ifndef ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 # define ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 
+# include <type_traits>
+
 ///
 /// This module provides tools to specialize the class ArchiveSerializer with
 /// your types, or in other words, to define your own serializers.
@@ -96,7 +98,7 @@ namespace elle
         assert(ptr == nullptr);
         static_assert(!std::is_pointer<T>::value, "You cannot construct pointers...");
         ptr = new T;
-        archive >> *ptr;
+        archive >> const_cast<typename std::remove_cv<T>::type&>(*ptr);
       }
 
     };
