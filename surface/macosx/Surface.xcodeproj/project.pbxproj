@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C03F3361575154200966EC3 /* OOSetupWindowDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C03F3351575154200966EC3 /* OOSetupWindowDelegate.m */; };
 		1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C03F3371575265B00966EC3 /* QuartzCore.framework */; };
+		1C1156FC15ED065B009BE9D5 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE45152AECAB00EFB356 /* MainMenu.xib */; };
 		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
 		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
@@ -51,7 +52,6 @@
 		1CD2BB2815CFD3920081FE59 /* OOEnvironmentVar.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2BB2715CFD3920081FE59 /* OOEnvironmentVar.m */; };
 		1CD2BBDE15D0044E0081FE59 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD2BBDA15D0034F0081FE59 /* io.infinit.Nurse.helper */; };
 		1CD332EB1553E13F00930842 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CD332EA1553E13F00930842 /* infinite-app-icon.icns */; };
-		1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
 		1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9B30BD15529790001EA6EA /* Cocoa.framework */; };
 		1CD5C44C1552A80C00556CC9 /* OOPreferencesWindows.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CD5C44B1552A80C00556CC9 /* OOPreferencesWindows.xib */; };
 		1CD5C44F1552AFCB00556CC9 /* OOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD5C44E1552AFCB00556CC9 /* OOPreferencesWindowController.m */; };
@@ -73,6 +73,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1C1156FD15ED0661009BE9D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C30B5B015B56A280056A382;
+			remoteInfo = FinderPanel;
+		};
 		1C4858F915B55C76003ED64A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */;
@@ -92,13 +99,6 @@
 			containerPortal = 1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1C48591B15B567A2003ED64A;
-			remoteInfo = FinderPanel;
-		};
-		1C48594015B569CA003ED64A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C30B5B015B56A280056A382;
 			remoteInfo = FinderPanel;
 		};
 		1C8BBA1A15CA7E5400E8E1DC /* PBXContainerItemProxy */ = {
@@ -257,8 +257,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C1156FC15ED065B009BE9D5 /* FinderPanel.framework in Frameworks */,
 				1C695E1E15CA837300533738 /* Phone.framework in Frameworks */,
-				1CD3B88315C95E8300F28469 /* FinderPanel.framework in Frameworks */,
 				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
 				1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */,
 				1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */,
@@ -509,9 +509,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				1C1156FE15ED0661009BE9D5 /* PBXTargetDependency */,
 				1CD2BBDD15D003A40081FE59 /* PBXTargetDependency */,
 				1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */,
-				1C48594115B569CA003ED64A /* PBXTargetDependency */,
 			);
 			name = Infinit;
 			productName = Infinit;
@@ -676,10 +676,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1C48594115B569CA003ED64A /* PBXTargetDependency */ = {
+		1C1156FE15ED0661009BE9D5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FinderPanel;
-			targetProxy = 1C48594015B569CA003ED64A /* PBXContainerItemProxy */;
+			targetProxy = 1C1156FD15ED0661009BE9D5 /* PBXContainerItemProxy */;
 		};
 		1C8BBA1B15CA7E5400E8E1DC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -713,27 +713,15 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)/../../build/macosx64/surface/macosx/Release\"",
-					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/Library/Frameworks\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IBC_PLUGIN_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/field/ressources/lib\"",
-					"\"$(SRCROOT)/../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
@@ -754,29 +742,17 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)/../../build/macosx64/surface/macosx/Release\"",
-					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/Library/Frameworks\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IBC_PLUGIN_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/field/ressources/lib\"",
-					"\"$(SRCROOT)/../../build/macosx64/surface/gap\"",
-					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/lib\"",
-					"\"$(SRCROOT)/field/ressources/fuse4x/usr/local/lib\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;

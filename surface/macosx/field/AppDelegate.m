@@ -94,9 +94,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)tryToLogin
 {
-    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
-    [[NSUserDefaults standardUserDefaults]synchronize ];
     [statusItem setMenu:statusLoginMenu];
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
