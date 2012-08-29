@@ -9,6 +9,7 @@
 
 # include <reactor/backtrace.hh>
 # include <reactor/exception.hh>
+# include <reactor/network/exception.hh>
 
 # include <protocol/Channel.hh>
 # include <protocol/ChanneledStream.hh>
@@ -356,61 +357,68 @@ namespace infinit
 
       using elle::sprintf;
       using reactor::Exception;
-      while (true)
+      try
         {
-          Channel c(_channels.accept());
-          Packet question(c.read());
-          IS input(question);
-          uint32_t id;
-          input >> id;
-          auto procedure = _procedures.find(id);
-          reactor::Scheduler& sched = _channels.scheduler();
+          while (true)
+            {
+              Channel c(_channels.accept());
+              Packet question(c.read());
+              IS input(question);
+              uint32_t id;
+              input >> id;
+              auto procedure = _procedures.find(id);
+              reactor::Scheduler& sched = _channels.scheduler();
 
-          Packet answer;
-          OS output(answer);
-          try
-            {
-              if (procedure == _procedures.end())
-                throw Exception(sched, sprintf
-                                ("call to unknown procedure: %s", id));
-              else if (procedure->second.second == nullptr)
+              Packet answer;
+              OS output(answer);
+              try
                 {
-                  throw Exception(sched, sprintf
-                                  ("remote call to non-local procedure: %s",
-                                   procedure->second.first));
+                  if (procedure == _procedures.end())
+                    throw Exception(sched, sprintf
+                                    ("call to unknown procedure: %s", id));
+                  else if (procedure->second.second == nullptr)
+                    {
+                      throw Exception(sched, sprintf
+                                      ("remote call to non-local procedure: %s",
+                                       procedure->second.first));
+                    }
+                  else
+                    ELLE_TRACE("%s: remote procedure called: %s",
+                               *this, procedure->second.first)
+                      procedure->second.second->_call(input, output);
                 }
-              else
-                ELLE_TRACE("%s: remote procedure called: %s",
-                           *this, procedure->second.first)
-                  procedure->second.second->_call(input, output);
-            }
-          catch (reactor::Exception& e)
-            {
-              output << false;
-              output << std::string(e.what());
-              output << uint16_t(e.backtrace().size());
-              for (auto const& frame: e.backtrace())
+              catch (reactor::Exception& e)
                 {
-                  output << frame.symbol;
-                  output << frame.symbol_mangled;
-                  output << frame.symbol_demangled;
-                  output << frame.address;
-                  output << frame.offset;
+                  output << false;
+                  output << std::string(e.what());
+                  output << uint16_t(e.backtrace().size());
+                  for (auto const& frame: e.backtrace())
+                    {
+                      output << frame.symbol;
+                      output << frame.symbol_mangled;
+                      output << frame.symbol_demangled;
+                      output << frame.address;
+                      output << frame.offset;
+                    }
                 }
+              catch (std::exception& e)
+                {
+                  output << false;
+                  output << std::string(e.what());
+                  output << uint16_t(0);
+                }
+              catch (...)
+                {
+                  output << false;
+                  output << std::string("unknown error");
+                  output << uint16_t(0);
+                }
+              c.write(answer);
             }
-          catch (std::exception& e)
-            {
-              output << false;
-              output << std::string(e.what());
-              output << uint16_t(0);
-            }
-          catch (...)
-            {
-              output << false;
-              output << std::string("unknown error");
-              output << uint16_t(0);
-            }
-          c.write(answer);
+        }
+      catch (reactor::network::ConnectionClosed const& e)
+        {
+          return;
         }
     }
 
