@@ -13,6 +13,7 @@
 # include <protocol/ChanneledStream.hh>
 # include <protocol/Serializer.hh>
 
+# include <hole/implementations/slug/Machine.hh>
 # include <hole/implementations/slug/Manifest.hh>
 
 namespace hole

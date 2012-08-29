@@ -6,6 +6,7 @@
 
 #include <reactor/network/exception.hh>
 
+#include <nucleus/Derivable.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
