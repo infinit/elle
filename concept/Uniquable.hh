@@ -5,7 +5,7 @@
 
 # include <elle/io/fwd.hh>
 # include <elle/serialize/fwd.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 
 /// The unique default archive type is defined with this macros.
 # define ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE                               \
@@ -14,7 +14,7 @@
 
 // internal shortcut
 # define __ECU_ARCHIVE_TPL(Archive)                                           \
-  __ECS_ARCHIVE_TPL(Archive)                                                  \
+  __ESS_ARCHIVE_TPL(Archive)                                                  \
   /**/
 
 // internal shortcut
@@ -38,7 +38,7 @@ namespace elle
     ///
     template<__ECU_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Uniquable :
-      contract::Serializable<Archive>
+      serialize::Serializable<Archive>
     {
     public:
       ///
@@ -62,7 +62,7 @@ namespace elle
     ///
     template<typename T, __ECU_DEFAULT_ARCHIVE_TPL(Archive)>
     struct MakeUniquable
-      : Serializable<T, Archive>
+      : serialize::SerializableMixin<T, Archive>
       , Uniquable<Archive>
     {};
 

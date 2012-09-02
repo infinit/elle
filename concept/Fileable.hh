@@ -26,10 +26,10 @@
 /// ---------------------------------------------------------------------------
 ///
 /// Example 3: If you need an abstract base class that enforce the fileable
-///            contract you will need to inherit from contract::Serializable
+///            contract you will need to inherit from Serializable
 /// ---------------------------------------------------------------------------
 ///   class MyClassInterface:
-///     public elle::concept::contract::Serializable<>
+///     public elle::Serializable<>
 ///   {};
 ///
 ///   class MyClassImplem:
@@ -39,7 +39,7 @@
 
 # include <elle/types.hh>
 # include <elle/io/fwd.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <string>
@@ -57,9 +57,9 @@ namespace elle
   namespace concept
   {
 
-    template <__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
+    template <__ESS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Fileable:
-      virtual contract::_Serializable<Archive>
+      virtual serialize::_Serializable<Archive>
     {
       /// Deserializes the instance from a file.
       void
@@ -79,9 +79,9 @@ namespace elle
       exists(elle::io::Path const& path);
     };
 
-    template <typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
+    template <typename T, __ESS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct MakeFileable:
-      Serializable<T, Archive>,
+      serialize::SerializableMixin<T, Archive>,
       Fileable<Archive>
     {};
 

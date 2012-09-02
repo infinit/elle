@@ -1,32 +1,62 @@
 #ifndef  ELLE_SERIALIZE_SERIALIZABLE_HH
 # define ELLE_SERIALIZE_SERIALIZABLE_HH
 
-# include <elle/concept/Serializable.hh>
+# include "fwd.hh"
+
+/// Desambiguate Serializable<T, ArchiveType = BinaryArchive> methods
+# define ELLE_SERIALIZE_SERIALIZABLE_METHODS(cls, ...)                        \
+  __ESS_SERIALIZE(cls, ##__VA_ARGS__)                                         \
+  __ESS_DESERIALIZE(cls, ##__VA_ARGS__)                                       \
+/**/
+
+///
+/// - internal macros ---------------------------------------------------------
+///
+
+# define __ESS_DEFAULT_ARCHIVE  elle::serialize::BinaryArchive
+
+// shortcut for template argument that accept an archive
+# define __ESS_ARCHIVE_TPL(Archive)                                           \
+  template<elle::serialize::ArchiveMode> class Archive                        \
+/**/
+
+// shortcut for defaulted archive type as template argument
+# define __ESS_DEFAULT_ARCHIVE_TPL(Archive)                                   \
+  __ESS_ARCHIVE_TPL(Archive) = __ESS_DEFAULT_ARCHIVE                          \
+/**/
 
 namespace elle
 {
   namespace serialize
   {
 
-    /// Wrapper for types that that implement Serializable concept
-    template<typename T> struct Serializable
-      {
-        T& value;
-        Serializable(T& value) : value(value) {}
-        Serializable(Serializable&& o) : value(o.value) {}
-      };
+    template <__ESS_ARCHIVE_TPL(Archive)>
+    struct _Serializable;
 
-    /// Helper to infer the right Serializable type.
-    template<typename T> static inline
-      Serializable<T> serializable(T& value)
-      {
-        return Serializable<T>(value);
-      }
-    template<typename T> static inline
-      Serializable<T const> serializable(T const& value)
-      {
-        return Serializable<T const>(value);
-      }
+    ///
+    /// Contract for virtual serializable classes. You might want to inherit
+    /// this class when you want to ensure that final types will be
+    /// serializable polymorphically.
+    ///
+    template <__ESS_DEFAULT_ARCHIVE_TPL(Archive)>
+    struct Serializable:
+      public virtual _Serializable<Archive>
+    {};
+
+    ///
+    /// Extend a serializable class (that has a defined serializer) by
+    /// implementing the Serializable interface.
+    ///
+    template <typename T, __ESS_DEFAULT_ARCHIVE_TPL(Archive)>
+    struct SerializableMixin;
+
+    /// Is T has Serializable<Archive> contract ?
+    template <typename T, typename Archive>
+    struct IsSerializable;
+
+    /// Retreive Serializable interface for any archive type.
+    template<typename Archive>
+    struct SerializableFor;
 
   }
 }
@@ -34,4 +64,3 @@ namespace elle
 # include "Serializable.hxx"
 
 #endif
-
