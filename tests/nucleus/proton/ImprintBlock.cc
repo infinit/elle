@@ -40,7 +40,7 @@ int main()
         {
           auto writer = buf.Writer();
 
-          writer << blk;
+          writer << elle::serialize::concrete(blk);
         }
 
         {
@@ -48,7 +48,7 @@ int main()
 
           nucleus::proton::ImprintBlock blk_copy;
 
-          reader >> blk_copy;
+          reader >> elle::serialize::concrete(blk_copy);
 
           CHECK(blk_copy.Validate(addr));
         }
