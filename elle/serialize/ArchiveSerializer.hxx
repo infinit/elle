@@ -53,6 +53,7 @@
 
 # include "ArchivableClass.hh"
 # include "ArchiveMode.hh"
+# include "Concrete.hh"
 # include "StoreClassVersion.hh"
 
 namespace elle
@@ -65,15 +66,31 @@ namespace elle
     /// the serialization process. You might want to derive from this struct for
     /// each specialization of the template class ArchiveSerializer.
     ///
-    template<typename T> struct BaseArchiveSerializer
+    template <typename T>
+    struct BaseArchiveSerializer
     {
+      template <typename Super>
+      static inline
+      Concrete<Super>
+      base_class(T& obj)
+      {
+        return Concrete<Super>(static_cast<Super&>(obj));
+      }
+
+      template <typename Super>
+      static inline
+      Concrete<Super const>
+      base_class(T const& obj)
+      {
+        return Concrete<Super const>(static_cast<Super const&>(obj));
+      }
       ///
       /// Having a chance to construct yourself the object (with a placement new)
       /// can be achieved by overriding this function.
       /// The default implementation just construct the object without parameters
       /// and forward to standard Load() method.
       ///
-      template<typename Archive>
+      template <typename Archive>
       static inline void LoadConstruct(Archive& archive, T*& ptr)
       {
         assert(ptr == nullptr);
@@ -140,7 +157,8 @@ namespace elle
       /// Home made serializer specialization can inherit this class to inherit
       /// a split serializer out of the box.
       template<typename T>
-        struct SplitSerializer : BaseArchiveSerializer<T>
+        struct SplitSerializer:
+          public BaseArchiveSerializer<T>
         {
           template<typename Archive>
           static inline void Serialize(Archive& ar,
@@ -169,110 +187,107 @@ namespace elle
   /**/
 
 /// Define a simple serializer for the type T
-# define ELLE_SERIALIZE_SIMPLE(T, archive, value, version)                      \
-namespace elle { namespace serialize {                                          \
-    template<>                                                                  \
-    struct ArchiveSerializer<T>                                                 \
-        : public BaseArchiveSerializer<T>                                       \
-      {                                                                         \
-      private:                                                                  \
-        template<typename K> struct _LoadConstruct                              \
-        {                                                                       \
-          template<typename Archive>                                            \
-            static inline void Method(Archive& ar, K*& ptr)                     \
-              { BaseArchiveSerializer<K>::LoadConstruct(ar, ptr); }             \
-        };                                                                      \
-        template<typename Archive>                                              \
-          static inline void _Serialize(Archive&, T&, unsigned int);            \
-                                                                                \
-      public:                                                                   \
-        template<typename Archive>                                              \
-          static inline void Serialize(Archive& ar, T& value, unsigned int v)   \
-          {                                                                     \
-            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
-              { _Serialize(ar, value, v); }                                     \
-          }                                                                     \
-        template<typename Archive, typename K>                                  \
-          static inline void LoadConstruct(Archive& archive, K*& ptr)           \
-            { _LoadConstruct<K>::Method(archive, ptr); }                        \
-      };                                                                        \
-}}                                                                              \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T>::_Serialize(                       \
-                                              Archive& archive,                 \
-                                              T& value,                         \
-                                              unsigned int version)             \
-  /**/
-
-
-// Defines an optional load construct method
-# define ELLE_SERIALIZE_LOAD_CONSTRUCT(T, archive, ptr)                         \
-  namespace elle { namespace serialize {                                        \
-        template<> struct ArchiveSerializer<T>::_LoadConstruct<T>               \
-          {                                                                     \
-            template<typename Archive> static inline void                       \
-              Method(Archive& ar, T*& ptr);                                     \
-          };                                                                    \
-  }}                                                                            \
-template<typename Archive>                                                      \
-void                                                                            \
-elle::serialize::ArchiveSerializer<T>::_LoadConstruct<T>::Method(               \
-    Archive& archive,                                                           \
-    T*& ptr                                                                     \
-)                                                                               \
-  /**/
-
+# define ELLE_SERIALIZE_SIMPLE(T, archive, value, version)                    \
+  ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, 0)                     \
+/**/
 
 /// Define a simple serializer for the type T<T1>
-# define ELLE_SERIALIZE_SIMPLE_T1(T, archive, value, version)                   \
-namespace elle { namespace serialize {                                          \
-    template<typename T1> struct ArchiveSerializer<T<T1>>                       \
-      : public BaseArchiveSerializer<T<T1>>                                     \
-      {                                                                         \
-        template<typename Archive>                                              \
-          static void Serialize(Archive& ar, T<T1>& value, unsigned int v)      \
-          {                                                                     \
-            _ELLE_SERIALIZE_LOG_ACTION(T<T1>, v, Archive::mode, value)          \
-              { _Serialize(ar, value, v); }                                     \
-          }                                                                     \
-      private:                                                                  \
-        template<typename Archive>                                              \
-          static void _Serialize(Archive&, T<T1>&, unsigned int);               \
-      };                                                                        \
-}}                                                                              \
-template<typename T1>                                                           \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1>>::_Serialize(                   \
-                                                  Archive& archive,             \
-                                                  T<T1>& value,                 \
-                                                  unsigned int version)         \
-  /**/
+# define ELLE_SERIALIZE_SIMPLE_T1(T, archive, value, version)                 \
+  ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, 1)                     \
+/**/
 
 /// Define a simple serializer for the type T<T1, T2>
-# define ELLE_SERIALIZE_SIMPLE_T2(T, archive, value, version)                   \
-namespace elle { namespace serialize {                                          \
-    template<typename T1, typename T2> struct ArchiveSerializer<T<T1, T2>>      \
-      : public BaseArchiveSerializer<T<T1, T2>>                                 \
-      {                                                                         \
-        template<typename Archive>                                              \
-          static void Serialize(Archive& ar, T<T1, T2>& value, unsigned int v)  \
-          {                                                                     \
-            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
-              { _Serialize(ar, value, v); }                                     \
-          }                                                                     \
-      private:                                                                  \
-        template<typename Archive>                                              \
-          static void _Serialize(Archive&, T<T1, T2>&, unsigned int);           \
-      };                                                                        \
-}}                                                                              \
-template<typename T1, typename T2>                                              \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1, T2>>::_Serialize(               \
-                                                  Archive& archive,             \
-                                                  T<T1, T2>& value,             \
-                                                  unsigned int version)         \
-  /**/
+# define ELLE_SERIALIZE_SIMPLE_T2(T, archive, value, version)                 \
+  ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, 2)                     \
+/**/
 
+/// Define a simple serializer for the type T<T1, ..., TN>
+# define ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, n)              \
+namespace elle { namespace serialize {                                        \
+    __ESA_TEMPLATE_DECL_N(n)                                                  \
+    struct ArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>:                      \
+        public BaseArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>               \
+    {                                                                         \
+      ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(T, n)                                \
+      template<typename Archive>                                              \
+      static inline                                                           \
+      void                                                                    \
+      Serialize(Archive& archive,                                             \
+                __ESA_TEMPLATE_TYPE(T, n)& value,                             \
+                unsigned int version)                                         \
+        {                                                                     \
+          _ELLE_SERIALIZE_LOG_ACTION(                                         \
+              __ESA_TEMPLATE_TYPE(T, n),                                      \
+              version,                                                        \
+              Archive::mode,                                                  \
+              value                                                           \
+          ) { _Serialize(archive, value, version); }                          \
+        }                                                                     \
+    private:                                                                  \
+      template<typename Archive>                                              \
+      static inline                                                           \
+      void                                                                    \
+      _Serialize(Archive&, __ESA_TEMPLATE_TYPE(T, n)&, unsigned int);         \
+    };                                                                        \
+}}                                                                            \
+__ESA_TEMPLATE_DECL(n)                                                        \
+template<typename Archive>                                                    \
+void                                                                          \
+elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(    \
+    Archive& archive,                                                         \
+    __ESA_TEMPLATE_TYPE(T, n)& value,                                         \
+    unsigned int version)                                                     \
+/**/
+
+# define ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(__T, n)                           \
+  template <typename Super>                                                   \
+  static inline                                                               \
+  Concrete<Super>                                                             \
+  base_class(__ESA_TEMPLATE_TYPE(__T, n)& obj)                                \
+  { return Concrete<Super>(static_cast<Super&>(obj)); }                       \
+  template <typename Super>                                                   \
+  static inline                                                               \
+  Concrete<Super const>                                                       \
+  base_class(__ESA_TEMPLATE_TYPE(__T, n) const& obj)                          \
+  { return Concrete<Super>(static_cast<Super const&>(obj)); }                 \
+/**/
+
+//- internal macros -----------------------------------------------------------
+
+# include <boost/preprocessor.hpp> // XXX
+
+#define __ESA_TYPENAME_REPEAT(z, n, prefix)                                   \
+  BOOST_PP_COMMA_IF(n) BOOST_PP_CAT(prefix T, BOOST_PP_INC(n))                \
+/**/
+
+// T0, ..., TN
+#define __ESA_TEMPLATE_ARGS(n)                                                \
+  BOOST_PP_REPEAT(n, __ESA_TYPENAME_REPEAT, BOOST_PP_EMPTY())                 \
+/**/
+
+// typename T0, ..., typename TN
+#define __ESA_TEMPLATE_ARGS_DEF(n)                                            \
+  BOOST_PP_REPEAT(n, __ESA_TYPENAME_REPEAT, typename)                         \
+/**/
+
+// template<typename T0, ..., typename Tn>
+# define __ESA_TEMPLATE_DECL_N(n)                                             \
+  template<__ESA_TEMPLATE_ARGS_DEF(n)>                                        \
+/**/
+
+# define __ESA_TEMPLATE_DECL(n)                                               \
+  BOOST_PP_IF(n, __ESA_TEMPLATE_DECL_N(n), BOOST_PP_EMPTY())                  \
+/**/
+
+// T<T0, ..., TN>
+# define __ESA_TEMPLATE_TYPE_TN(T, n)                                         \
+  T<__ESA_TEMPLATE_ARGS(n)>                                                   \
+/**/
+
+// if (n > 0) T<T0, ..., TN> else T
+# define __ESA_TEMPLATE_TYPE(T, n)                                            \
+  BOOST_PP_IF(n, __ESA_TEMPLATE_TYPE_TN(T, n), T)                             \
+/**/
 
 /// Declare a split serializer for the type T
 # define ELLE_SERIALIZE_SPLIT(T)                                                \
