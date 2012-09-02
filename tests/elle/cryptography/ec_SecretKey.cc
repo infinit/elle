@@ -39,7 +39,7 @@ ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
 
 
 struct Virtual
-  : public elle::concept::contract::Serializable<elle::serialize::BufferArchive>
+  : public elle::serialize::Serializable<elle::serialize::BufferArchive>
 {
   std::string base;
 };
@@ -53,7 +53,7 @@ ELLE_SERIALIZE_SIMPLE(Virtual, ar, value, version)
 
 struct Implem
   : public Virtual
-  , public elle::concept::Serializable<Implem, elle::serialize::BufferArchive>
+  , public elle::serialize::SerializableMixin<Implem, elle::serialize::BufferArchive>
 {
   std::string impl;
 };
@@ -62,7 +62,7 @@ ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
 {
   assert(version == 0);
 
-  ar & static_cast<Virtual&>(value);
+  ar & base_class<Virtual>(value);
   ar & value.impl;
 }
 
@@ -177,9 +177,9 @@ int main()
 
       elle::cryptography::Cipher c1, c2, c3, c4;
       ASSERT(secret_key.Encrypt(impl, c1) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(elle::serialize::serializable(impl), c2) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(elle::serialize::serializable(virt), c3) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(elle::serialize::serializable(virt), c4) == elle::Status::Ok);
+      ASSERT(secret_key.Encrypt(impl, c2) == elle::Status::Ok);
+      ASSERT(secret_key.Encrypt(virt, c3) == elle::Status::Ok);
+      ASSERT(secret_key.Encrypt(virt, c4) == elle::Status::Ok);
 
       Implem res1, res2, res3, res4;
       Virtual& res4_ref = res4;
@@ -187,8 +187,7 @@ int main()
       ASSERT(secret_key.Decrypt(c2, res2) == elle::Status::Ok);
       ASSERT(secret_key.Decrypt(c3, res3) == elle::Status::Ok);
 
-      elle::serialize::Serializable<Virtual> s(res4_ref);
-      ASSERT(secret_key.Decrypt(c4, s) == elle::Status::Ok);
+      ASSERT(secret_key.Decrypt(c4, res4_ref) == elle::Status::Ok);
 
       ASSERT(res1.base == "paf" && res1.impl == "pif");
       ASSERT(res2.base == "paf" && res2.impl == "pif");
