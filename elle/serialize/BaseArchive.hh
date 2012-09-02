@@ -9,15 +9,17 @@
 # include <stdexcept>
 
 # include <boost/noncopyable.hpp>
-# include <boost/call_traits.hpp>
 
 # include "fwd.hh"
 
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
 # include "NamedValue.hh"
+# include "Polymorphic.hh"
+# include "Concrete.hh"
+# include "Identity.hh"
 # include "StoreClassVersion.hh"
-# include "Serializable.hh"
+# include "detail/BaseArchiveOperators.hh"
 
 namespace elle
 {
@@ -92,7 +94,9 @@ namespace elle
       , template<ArchiveMode mode__, typename CharType__>
           class StreamTypeSelect = DefaultStreamTypeSelect
     >
-    class BaseArchive : private boost::noncopyable
+    class BaseArchive:
+      public detail::BaseArchiveOperators<mode_, Archive>,
+      private boost::noncopyable
     {
     public:
       /// The mode of the archive
@@ -116,23 +120,13 @@ namespace elle
       typedef uint32_t                                      SequenceSizeType;
 
 
-    protected:
+    public:
       ///
       /// This structure has to be a friend of a derived class when SaveBinary()
       /// and LoadBinary() methods are not public (which is recommended).
       ///
       class Access;
-
-      /// unique_ptr returned by the Construct method use this deleter
-      // XXX
-      //template<typename T> struct ConstructDeleter
-      //{
-      //  void operator()(T *ptr) const
-      //  {
-      //    ptr->~T();
-      //    ::free(ptr);
-      //  }
-      //};
+      friend struct detail::BaseArchiveOperators<mode_, Archive>; // Operators use Access
 
     private:
       StreamType& _stream;
@@ -154,163 +148,62 @@ namespace elle
       /// return the stream used to read/write raw data
       inline StreamType&  stream() { return this->_stream; }
 
-    protected:
-      // Helper to select proper operators overloads
-      template<typename T, ArchiveMode _mode> struct _EnableFor;
-
     public:
-      ///////////////////////////////////////////////////////////////////////
-      // OutputArchive::operator <<
-
-      /// output_ar << value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Val::
-        type operator <<(T val)
-        {
-          Access::Save(this->self(), val);
-          return this->self();
-        }
-
-      /// output_ar << const_ref
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
-        type operator <<(T const& val)
-        {
-          Access::Save(this->self(), val);
-          return this->self();
-        }
-
-      /// output_ar << named_value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::NamedValue::
-        type operator <<(T const& val)
-        {
-          Access::SaveNamed(this->self(), val.name, val.value);
-          return this->self();
-        }
-
-      ///////////////////////////////////////////////////////////////////////
-      // OutputArchive::operator & (redirect to operator <<)
-
-      /// output_ar & ref
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
-        type operator &(T const& val)
-        {
-          return *this << val;
-        }
-
-      /// output_ar & value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Val::
-        type operator &(T val)
-        {
-          return *this << val;
-        }
-
-      /// output_ar & named_value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::NamedValue::
-        type operator &(T const& val)
-        {
-          return *this << val;
-        }
-
-      ///////////////////////////////////////////////////////////////////////
-      // InputArchive::operator >>
-
-      /// input_ar >> ref_of_non_pointer
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
-        type operator >>(T& val)
-        {
-          Access::Load(this->self(), val);
-          return this->self();
-        }
-
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
-        type operator >>(T const&& val)
-        {
-          Access::Load(this->self(), val);
-          return this->self();
-        }
-
-      /// input_ar >> named_value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
-        type operator >>(T const& val)
-        {
-          Access::LoadNamed(this->self(), val.name, val.value);
-          return this->self();
-        }
-
-      ///////////////////////////////////////////////////////////////////////
-      // InputArchive::operator & (redirect to operator >>)
-
-      /// input_ar & ref_of_non_pointer
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
-        type operator &(T& val)
-        {
-          return *this >> val;
-        }
-
-      /// intput_ar & named_value
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
-        type operator &(T const& val)
-        {
-          return *this >> val;
-        }
-
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
-        type operator &(T const&& val)
-        {
-          Access::Load(this->self(), val);
-          return this->self();
-        }
-
       ///
       /// Load an object on the heap.  If the constructors need arguments, you
       /// will have to override the LoadConstruct function of the
       /// ArchiveSerializer<T> specialization.
       ///
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::ConstructPtr::
-        type Construct()
-        {
-          T* ptr = nullptr;
-          try
-            {
-              Access::LoadConstruct(this->self(), ptr);
-            }
-          catch (std::exception const& err)
-            {
-              delete ptr;
-              throw;
-            }
-          assert(ptr != nullptr);
-
-          //T* ptr = static_cast<T*>(::operator new(sizeof(T)));
-          //if (ptr == nullptr)
-          //  throw std::bad_alloc();
-          //try
-          //  {
-          //    Access::LoadConstruct(this->self(), ptr);
-          //  }
-          //catch (std::exception const&)
-          //  {
-          //    //::free(ptr);
-          //    delete ptr;
-          //    throw;
-          //  }
-          return std::unique_ptr<T>(ptr);
-        }
+      template <typename T>
+      inline
+      std::unique_ptr<T>
+      Construct()
+      {
+        T* ptr = nullptr;
+        try
+          {
+            Access::template LoadConstruct<T>(this->self(), ptr);
+          }
+        catch (std::exception const& err)
+          {
+            delete ptr;
+            throw;
+          }
+        assert(ptr != nullptr);
+        return std::unique_ptr<T>(ptr);
+      }
 
     protected:
-      // Default implementation ignores the name
+      // NamedValue
       template <typename T>
       inline
-      void SaveNamed(std::string const&, T const& value)
-      {
-        *this << value;
-      }
+      void
+      Save(NamedValue<T> const& value);
+      template <typename T>
+      inline
+      void
+      Load(NamedValue<T> const& value);
 
+      // Polymorphic
       template <typename T>
       inline
-      void LoadNamed(std::string const&, T& value)
-      {
-        *this >> value;
-      }
+      void
+      Save(Polymorphic<T> const& value);
+      template <typename T>
+      inline
+      void
+      Load(Polymorphic<T> const& value);
+
+      // Concrete
+      template <typename T>
+      inline
+      void
+      Save(Concrete<T> const& value);
+      template <typename T>
+      inline
+      void
+      Load(Concrete<T> const& value);
+
 
       inline void Save(bool val);
       inline void Save(char val);
@@ -337,11 +230,6 @@ namespace elle
       typename std::enable_if<std::is_enum<T>::value == false>::type
       Save(T const& value);
 
-      //template<typename T>
-      //  inline typename std::enable_if<
-      //    elle::concept::IsSerializable<T, Archive>::value == true
-      //  >::type
-      //  Save(T const& value);
       inline void SaveBinary(void const* data, std::streamsize size);
 
       inline void Load(bool& val);
@@ -358,23 +246,26 @@ namespace elle
       inline void Load(double& val);
       inline void Load(std::string& val);
       inline void Load(ClassVersionType& classVersion);
-      template<typename T>
-        inline typename std::enable_if<std::is_enum<T>::value == true>::type
-        Load(T& value);
-      template<typename T>
-        inline typename std::enable_if<
-              std::is_enum<T>::value == false
-          &&  IsNamedValue<T>::value == false
-        >::type Load(T& val);
 
-      //template<typename T>
-      //  inline typename std::enable_if<
-      //    elle::concept::IsSerializable<T, Archive>::value == true
-      //  >::type
-      //  Load(T& val);
-      template<typename T>
-        inline void LoadConstruct(T*& ptr);
-      inline void LoadBinary(void* data, std::streamsize size);
+      template <typename T>
+      inline
+      typename std::enable_if<std::is_enum<T>::value == true>::type
+      Load(T& value);
+
+      template <typename T>
+      inline
+      typename std::enable_if<std::is_enum<T>::value == false>::type
+      Load(T& val);
+
+      template <typename T>
+      inline
+      void
+      LoadConstruct(T*& ptr);
+
+      inline
+      void
+      LoadBinary(void* data,
+                 std::streamsize size);
 
       // This allows you to write raw c string into an archive
       //inline void Save(char const* val)
