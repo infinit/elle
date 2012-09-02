@@ -14,6 +14,9 @@ namespace elle
     {
       Input = 0x5e4d,
       Output = 0x3417e,
+
+      input = Input,  // XXX smooth transition to norm
+      output = Output,
     };
 
   }
