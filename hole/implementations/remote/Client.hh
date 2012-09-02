@@ -5,7 +5,9 @@
 # include <elle/radix/Entity.hh>
 # include <elle/network/fwd.hh>
 
+# include <elle/idiom/Close.hh>
 # include <reactor/network/tcp-socket.hh>
+# include <elle/idiom/Open.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/Nucleus.hh>
