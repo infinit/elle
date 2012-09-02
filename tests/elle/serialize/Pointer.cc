@@ -11,6 +11,7 @@ struct A
   int i;
   short j;
   std::string biet;
+  A() {}
   A(int i, short j, std::string const& biet)
     : i(i), j(j), biet(biet)
   {}
@@ -23,17 +24,6 @@ ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
   archive & value.i;
   archive & value.j;
   archive & value.biet;
-}
-
-ELLE_SERIALIZE_LOAD_CONSTRUCT(A, archive, ptr)
-{
-  elle::serialize::ClassVersionType version(0);
-  int i;
-  short j;
-  std::string biet;
-  archive >> version >> i >> j >> biet;
-  assert(version.version == 0);
-  ptr = new A(i, j, biet);
 }
 
 int main()
