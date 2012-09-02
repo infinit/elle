@@ -95,9 +95,9 @@ class Network:
     def __enter__(self):
         self._env = copy.deepcopy(os.environ)
         self._root_dir = tempfile.mkdtemp()
-        self._env['INFINIT_HOME'] = self._root_dir
-        print("Prepare reference env of", self._network_name, "for user", self._user_name, "in", self._root_dir)
         self._config_dir = os.path.join(self._root_dir, '.config/infinit')
+        self._env['INFINIT_HOME'] = self._config_dir
+        print("Prepare reference env of", self._network_name, "for user", self._user_name, "in", self._root_dir)
         distutils.dir_util.mkpath(self._config_dir)
         shutil.copyfile(
             os.path.join(BUILD, 'oracle/infinit.auth'),
@@ -162,6 +162,7 @@ class MountPoint:
         self._ref_dir = network.root_dir
         self._port = port
         self._addresses = addresses
+        self._mount_dir = None
 
     @property
     def alive(self):
@@ -179,13 +180,14 @@ class MountPoint:
         self._root_dir = os.path.join(self._temp_dir, 'root')
         self._conf_dir = os.path.join(self._root_dir, '.config/infinit')
         self._network_conf_dir = os.path.join(self._conf_dir, 'networks', self._network.name)
-        self._phrase_path = os.path.join(
+        self._phrase_path = os.path.join( #XXX no more phrase path
             self._network_conf_dir,
             self._network.name + '.phr'
         )
-        self._env['INFINIT_HOME'] = self._root_dir
-        shutil.copytree(self._ref_dir, self._root_dir)
         self._mount_dir = os.path.join(self._root_dir, 'mnt')
+
+        self._env['INFINIT_HOME'] = self._conf_dir
+        shutil.copytree(self._ref_dir, self._root_dir)
         distutils.dir_util.mkpath(self._mount_dir)
 
         if self._port != 0:
@@ -211,8 +213,7 @@ class MountPoint:
         self.__infinit.stdin.close()
         self.__monitor_thread = threading.Thread(target=self._monitor)
         self.__monitor_thread.start()
-        while not os.path.exists(self._phrase_path):
-            time.sleep(1)
+        time.sleep(10) # XXX how to know when the network is ready ?
 
         return self
 
@@ -255,7 +256,7 @@ class MountPoint:
 
     def __str__(self):
         s = '<MountPoint of ' + str(self._network)
-        if self._root_dir is not None:
+        if self._mount_dir is not None:
             s += ' mounted in ' + self._mount_dir
         else:
             s += ' not mounted'
@@ -288,11 +289,13 @@ class NetworkPool:
             for i in range(self._size)
         ]
         for i, m in enumerate(self.mount_points):
+            print("Mount point",i, m)
             if i > 0:
                 print("XXX Waiting 10 seconds")
                 time.sleep(10)
             m.__enter__()
             setattr(self, 'mount_point' + str(i), m)
+            print("Mounted",i, m)
         return self
 
     def __exit__(self, type_, value, traceback):
@@ -380,8 +383,7 @@ def test_all(mount_points, test_timeout=100):
 
 if __name__ == '__main__':
     with Network('user1', 'network1') as network:
-        with NetworkPool(network, 3, start_port=8171) as pool:
-            time.sleep(5)
+        with NetworkPool(network, 2, start_port=8171) as pool:
             print("Network pool ready:")
             for m in pool.mount_points:
                 print("\t", m)
