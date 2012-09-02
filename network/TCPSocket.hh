@@ -3,9 +3,11 @@
 
 # include <elle/network/fwd.hh>
 
-# include <reactor/network/tcp-socket.hh>
-# include <reactor/mutex.hh>
-# include <reactor/thread.hh>
+# include <elle/idiom/Close.hh>
+#  include <reactor/network/tcp-socket.hh>
+#  include <reactor/mutex.hh>
+#  include <reactor/thread.hh>
+# include <elle/idiom/Close.hh>
 
 # include <protocol/fwd.hh>
 
