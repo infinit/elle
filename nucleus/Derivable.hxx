@@ -34,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::Derivable, archive, value, version)
         throw std::runtime_error("Cannot build the block");
     }
   assert(value._block != nullptr);
-  typedef typename elle::concept::SerializableFor<Archive>::Type interface_t;
+  typedef typename elle::serialize::SerializableFor<Archive>::Type interface_t;
   assert(dynamic_cast<interface_t*>(value._block) != nullptr);
   static_cast<interface_t&>(*value._block).deserialize(archive);
 }
@@ -44,7 +44,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::Derivable, archive, value, version)
   assert(version == 0);
   assert(value._block != nullptr);
   archive << value._component;
-  archive << elle::serialize::serializable(*value._block);
+  archive << *value._block;
 }
 
 #endif
