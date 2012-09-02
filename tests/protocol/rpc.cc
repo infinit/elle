@@ -102,6 +102,7 @@ int test()
   reactor::Thread c(elle::concurrency::scheduler(), "Caller", &caller);
 
   elle::concurrency::scheduler().run();
+  return 0;
 }
 
 bool test_suite()
