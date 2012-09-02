@@ -3,8 +3,6 @@
 
 # include <memory>
 
-# include <elle/concept/Uniquable.hh>
-
 # include <elle/io/Dumpable.hh>
 
 # include <elle/serialize/fwd.hh>
@@ -30,7 +28,6 @@ namespace elle
     /// @see WeakBuffer for a buffer that doesn't own the data
     class Buffer
       : public io::Dumpable
-      , public concept::MakeUniquable<Buffer>
     {
       friend class serialize::ArchiveSerializer<Buffer>;
     public:
@@ -93,7 +90,6 @@ namespace elle
 
 
     class WeakBuffer
-      : public concept::MakeUniquable<WeakBuffer>
     {
     private:
       Byte const*   _contents;
