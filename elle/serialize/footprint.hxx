@@ -43,11 +43,12 @@ namespace elle
       };
     }
 
-    template <typename Archive = OutputBinaryArchive, typename T>
+    template <typename Archive, typename T>
     size_t footprint(T const& value)
     {
       auto streambuf = new detail::CounterStreamBuffer;
-      elle::IOStream out{streambuf};
+      // takes owner ship XXX replace with unique_ptr<>&&
+      elle::IOStream out(streambuf);
       Archive{out, value};
       out.flush();
       return streambuf->counter;
