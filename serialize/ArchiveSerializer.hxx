@@ -177,7 +177,7 @@ namespace elle
 } // !namespace elle::serialize
 
 # define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                   \
-  ELLE_LOG_COMPONENT("elle.serialize");                                         \
+  ELLE_LOG_COMPONENT("elle.serialize.ArchiveSerializer");                       \
   ELLE_TRACE("%s " #T " (%s): %p",                                              \
                  mode == ArchiveMode::Input ? "Loading" : "Saving",             \
                  (elle::serialize::StoreClassVersion<T>::value                  \
