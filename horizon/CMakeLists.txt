@@ -3,7 +3,11 @@ PROJECT(Horizon CXX)
 add_definitions(-fPIC)
 
 ADD_LIBRARY(horizon
+  Crib.cc
+  Crux.cc
+  Handle.cc
   Horizon.cc
+  Janitor.cc
   Policy.cc
 )
 

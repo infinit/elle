@@ -184,9 +184,9 @@ namespace satellite
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
     Ward ward(identifier);
-    std::unique_ptr<const nucleus::neutron::Fellow> fellow =
-      Group::rpcs->grouplookup(identifier, subject);
-    Group::display(*fellow);
+    nucleus::neutron::Fellow fellow(
+      Group::rpcs->grouplookup(identifier, subject));
+    Group::display(fellow);
   }
 
   void

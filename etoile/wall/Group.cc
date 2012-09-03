@@ -194,7 +194,7 @@ namespace etoile
       }
     }
 
-    std::unique_ptr<const nucleus::neutron::Fellow>
+    nucleus::neutron::Fellow
     Group::Lookup(gear::Identifier const& identifier,
                   nucleus::neutron::Subject const& subject)
     {
@@ -227,7 +227,10 @@ namespace etoile
                                      fellow) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to lookup the subject in the group");
-        return std::unique_ptr<const nucleus::neutron::Fellow>(fellow);
+        if (fellow)
+          return *fellow;
+        else
+          return nucleus::neutron::Fellow::Null;
       }
     }
 

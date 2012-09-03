@@ -36,6 +36,6 @@ namespace horizon
   }
 }
 
-#include <horizon/linux/Janitor.hxx>
+#include <horizon/Janitor.hxx>
 
 #endif

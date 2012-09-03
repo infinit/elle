@@ -5,7 +5,7 @@
 
 # include <reactor/network/fwd.hh>
 
-# include <etoile/Manifest.hh>
+# include <etoile/portal/Manifest.hh>
 
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>

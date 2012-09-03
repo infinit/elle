@@ -188,7 +188,7 @@ namespace etoile
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Subject const&> groupadd;
-      RemoteProcedure<std::unique_ptr<const nucleus::neutron::Fellow>,
+      RemoteProcedure<nucleus::neutron::Fellow,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Subject const&> grouplookup;
       RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Fellow>,

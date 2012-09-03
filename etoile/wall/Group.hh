@@ -43,7 +43,7 @@ namespace etoile
           nucleus::neutron::Subject const& subject);
       /// XXX
       static
-      std::unique_ptr<const nucleus::neutron::Fellow>
+      nucleus::neutron::Fellow
       Lookup(gear::Identifier const& identifier,
              nucleus::neutron::Subject const& subject);
       /// XXX

@@ -1,4 +1,4 @@
-#include <horizon/linux/Janitor.hh>
+#include <horizon/Janitor.hh>
 
 namespace horizon
 {
