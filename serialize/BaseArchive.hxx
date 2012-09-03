@@ -185,7 +185,6 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Load(int16_t& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Loading int16_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -198,6 +197,7 @@ namespace elle
           (static_cast<int16_t>(tab[1]) << 8 )
         ;
 # endif
+      ELLE_TRACE("Loaded int16_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -233,7 +233,6 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Load(int32_t& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Loading int32_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -248,6 +247,7 @@ namespace elle
           (static_cast<int32_t>(tab[3]) << 24)
         ;
 # endif
+      ELLE_TRACE("Loaded int32_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -287,8 +287,7 @@ namespace elle
     void
     BaseArchive<mode_, Archive, CT, STS>::Load(int64_t& val)
     {
-      ELLE_LOG_COMPONENT("infinig.elle.serialize");
-      ELLE_TRACE("Loading int64_t '%s'", val);
+      ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -307,6 +306,7 @@ namespace elle
           (static_cast<int64_t>(tab[7]) << 56)
         ;
 # endif
+      ELLE_TRACE("Loaded int64_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -333,10 +333,10 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Load(float& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Loading float '%s'", val);
 
       static_assert(sizeof(val) == 4, "float size is not standard");
       Access::LoadBinary(this->self(), &val, sizeof(val));
+      ELLE_TRACE("Loaded float '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -363,10 +363,10 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Load(double& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Loading double '%s'", val);
 
       static_assert(sizeof(val) == 8, "double size is not standard");
       Access::LoadBinary(this->self(), &val, sizeof(val));
+      ELLE_TRACE("Loaded double '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -398,7 +398,6 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Load(std::string& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Loading string '%s'", val);
 
       typedef typename Archive::StringSizeType SizeType;
       static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
@@ -419,6 +418,7 @@ namespace elle
           Access::LoadBinary(this->self(), tab, size);
           val.replace(idx, size, tab, size);
         }
+      ELLE_TRACE("Loaded string '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -427,9 +427,11 @@ namespace elle
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     inline
     void
-    BaseArchive<mode_, Archive, CT, STS>::Save(ClassVersionType const& classVersion)
+    BaseArchive<mode_, Archive, CT, STS>::Save(ClassVersionType const& value)
     {
-      Access::Save(this->self(), classVersion.version);
+      ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
+      ELLE_TRACE("Saving class version '%s'", value.version);
+      Access::Save(this->self(), value.version);
     }
 
     //-------------------------------------------------------------------------
@@ -438,9 +440,11 @@ namespace elle
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     inline
     void
-    BaseArchive<mode_, Archive, CT, STS>::Load(ClassVersionType& classVersion)
+    BaseArchive<mode_, Archive, CT, STS>::Load(ClassVersionType& value)
     {
-      Access::Load(this->self(), classVersion.version);
+      ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
+      Access::Load(this->self(), value.version);
+      ELLE_TRACE("Loaded class version '%s'", value.version);
     }
 
 
