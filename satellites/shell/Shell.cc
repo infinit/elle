@@ -24,11 +24,6 @@ namespace satellite
 //
 
   ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8shell";
-
-  ///
   /// this variable contains the address of the current object.
   ///
   nucleus::proton::Address Shell::Address;

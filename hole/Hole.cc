@@ -27,11 +27,6 @@ namespace hole
 //
 
   ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "hole";
-
-  ///
   /// this variable contains the network descriptor.
   ///
   lune::Descriptor              Hole::Descriptor;

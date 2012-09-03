@@ -9,8 +9,6 @@
 # include <nucleus/Nucleus.hh>
 # include <nucleus/Derivable.hh>
 
-# include <etoile/Manifest.hh>
-
 # include <protocol/RPC.hh>
 
 namespace hole

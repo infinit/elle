@@ -4,10 +4,6 @@
 #include <elle/log.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/network/Locus.hh>
-#include <elle/network/TCPSocket.hh>
-#include <elle/network/Network.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
 
 #include <lune/Passport.hh>
 

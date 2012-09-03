@@ -17,11 +17,6 @@ namespace satellite
 // ---------- definitions -----------------------------------------------------
 //
 
-  ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8diary";
-
 //
 // ---------- functions -------------------------------------------------------
 //

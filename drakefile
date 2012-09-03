@@ -457,8 +457,6 @@ def configure(cxx_toolkit, cxx_config):
     'etoile/portal/Manifest.hh',
     'etoile/portal/Portal.cc',
     'etoile/portal/Portal.hh',
-    'etoile/portal/Wrapper.cc',
-    'etoile/portal/Wrapper.hh',
     'etoile/portal/fwd.hh',
     'etoile/shrub/Riffle.cc',
     'etoile/shrub/Riffle.hh',

@@ -4,6 +4,8 @@
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 
+# include <reactor/network/fwd.hh>
+
 # include <etoile/portal/Manifest.hh>
 
 namespace etoile

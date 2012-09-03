@@ -1,14 +1,15 @@
 #include <satellites/access/Access.hh>
 
 #include <elle/Elle.hh>
-#include <elle/network/TCPSocket.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
+
+#include <reactor/network/tcp-socket.hh>
+
+#include <protocol/Serializer.hh>
 
 #include <etoile/gear/Identifier.hh>
 #include <etoile/path/Chemin.hh>

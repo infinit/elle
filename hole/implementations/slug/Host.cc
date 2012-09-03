@@ -2,7 +2,6 @@
 
 #include <elle/utility/Time.hh>
 #include <elle/standalone/Morgue.hh>
-#include <elle/network/TCPSocket.hh>
 
 #include <reactor/network/exception.hh>
 

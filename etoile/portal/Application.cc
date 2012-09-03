@@ -1,8 +1,11 @@
 #include <Infinit.hh>
 
-#include <elle/network/TCPSocket.hh>
 #include <elle/serialize/PairSerializer.hxx>
 #include <elle/standalone/Morgue.hh>
+
+#include <reactor/network/tcp-socket.hh>
+
+#include <protocol/Serializer.hh>
 
 #include <etoile/abstract/Group.hh>
 #include <etoile/portal/Application.hh>

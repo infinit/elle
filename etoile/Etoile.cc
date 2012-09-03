@@ -8,15 +8,6 @@ namespace etoile
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "etoile";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 

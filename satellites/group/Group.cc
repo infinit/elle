@@ -1,9 +1,6 @@
 #include <satellites/group/Group.hh>
 
 #include <elle/Elle.hh>
-#include <elle/network/TCPSocket.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/concurrency/Program.hh>
@@ -12,6 +9,9 @@
 #include <elle/io/Unique.hh>
 
 #include <reactor/exception.hh>
+#include <reactor/network/tcp-socket.hh>
+
+#include <protocol/Serializer.hh>
 
 #include <elle/serialize/PairSerializer.hxx>
 

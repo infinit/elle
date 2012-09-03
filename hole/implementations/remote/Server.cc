@@ -4,7 +4,6 @@
 #include <hole/implementations/remote/Server.hh>
 
 #include <elle/log.hh>
-#include <elle/network/Network.hh>
 #include <elle/concurrency/Callback.hh>
 
 #include <reactor/network/tcp-server.hh>
