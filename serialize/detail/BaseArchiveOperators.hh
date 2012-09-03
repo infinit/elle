@@ -2,6 +2,7 @@
 # define ELLE_SERIALIZE_DETAIL_BASEARCHIVEOPERATORS_HH
 
 # include <elle/serialize/Serializable.hh>
+# include <elle/serialize/Pointer.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <boost/call_traits.hpp>
@@ -118,6 +119,14 @@ namespace elle
         }
       };
 
+      template <typename T>
+      struct IsWrapper {static const bool value = false;};
+      template <typename T> struct IsWrapper<Polymorphic<T>> {static const bool value = true;};
+      template <typename T> struct IsWrapper<Concrete<T>> {static const bool value = true;};
+      template <typename T> struct IsWrapper<NamedValue<T>> {static const bool value = true;};
+      template <typename T> struct IsWrapper<Pointer<T>> {static const bool value = true;};
+      template <typename T> struct IsWrapper<AlivePointer<T>> {static const bool value = true;};
+
       // Provides operators >> and & for input archive.
       template <typename Archive>
       struct InputArchiveOperators:
@@ -162,7 +171,7 @@ namespace elle
         // >> const move (for wrappers)
         template <typename T>
         inline
-        Archive&
+        typename std::enable_if<IsWrapper<T>::value, Archive&>::type
         operator >>(T const&& value)
         {
           _ELLE_SERIALIZE_BASICARCHIVEOPERATORS_CHECK_TYPE(T);
