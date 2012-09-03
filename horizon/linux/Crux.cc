@@ -71,8 +71,15 @@ namespace horizon
       int                       result;
 
       etoile::path::Chemin      chemin;
-      ELLE_DEBUG("resolve the path")
-        chemin = etoile::wall::Path::resolve(way);
+      try
+        {
+          ELLE_DEBUG("resolve the path")
+            chemin = etoile::wall::Path::resolve(way);
+        }
+      catch (etoile::wall::NoSuchFileOrDirectory const&)
+        {
+          return -ENOENT;
+        }
 
       etoile::gear::Identifier  identifier;
       ELLE_DEBUG("load the object")
@@ -334,18 +341,18 @@ namespace horizon
       // filled by Opendir().
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
-        etoile::wall::Access::lookup(handle->identifier,
-                                     agent::Agent::Subject));
-
-      // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionRead) ==
-             nucleus::neutron::PermissionRead)))
-        error("the subject does not have the right to read the "
-              "directory entries",
-              -EACCES);
+      // Check the subject's permissions on the object.
+      {
+        nucleus::neutron::Record record(
+          etoile::wall::Access::lookup(handle->identifier,
+                                       agent::Agent::Subject));
+        if (record == nucleus::neutron::Record::Null ||
+            (record.permissions & nucleus::neutron::PermissionRead) !=
+            nucleus::neutron::PermissionRead)
+          error("the subject does not have the right to read the "
+                "directory entries",
+                -EACCES);
+      }
 
       // Fill the . and .. entries.
       if (offset == 0)
@@ -451,13 +458,13 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
-             nucleus::neutron::PermissionWrite)))
+      if (record == nucleus::neutron::Record::Null ||
+          (record.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         error("the subject does not have the right to create a "
               "subdirectory in this directory",
               -EACCES,
@@ -566,13 +573,13 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
-             nucleus::neutron::PermissionWrite)))
+      if (record == nucleus::neutron::Record::Null ||
+          (record.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         error("the subject does not have the right to remove "
               "a subdirectory from this directory",
               -EACCES,
@@ -651,11 +658,11 @@ namespace horizon
       etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Retrieve the user's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
       // Check the record.
-      if (record == nullptr)
+      if (record == nucleus::neutron::Record::Null)
         goto _access;
 
       // Check if the permissions match the mask for execution.
@@ -667,7 +674,7 @@ namespace horizon
               {
                 // Check if the user has the read permission meaning
                 // the exec bit
-                if ((record->permissions & nucleus::neutron::PermissionRead) !=
+                if ((record.permissions & nucleus::neutron::PermissionRead) !=
                     nucleus::neutron::PermissionRead)
                   goto _access;
 
@@ -717,7 +724,7 @@ namespace horizon
       // Check if the permissions match the mask for reading.
       if (mask & R_OK)
         {
-          if ((record->permissions & nucleus::neutron::PermissionRead) !=
+          if ((record.permissions & nucleus::neutron::PermissionRead) !=
               nucleus::neutron::PermissionRead)
             goto _access;
         }
@@ -725,7 +732,7 @@ namespace horizon
       // Check if the permissions match the mask for writing.
       if (mask & W_OK)
         {
-          if ((record->permissions & nucleus::neutron::PermissionWrite) !=
+          if ((record.permissions & nucleus::neutron::PermissionWrite) !=
               nucleus::neutron::PermissionWrite)
             goto _access;
         }
@@ -1146,13 +1153,13 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
-             nucleus::neutron::PermissionWrite)))
+      if (record == nucleus::neutron::Record::Null ||
+          (record.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         error("the subject does not have the right to create a link in "
               "this directory",
               -EACCES,
@@ -1261,13 +1268,13 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionRead) ==
-             nucleus::neutron::PermissionRead)))
+      if (record == nucleus::neutron::Record::Null ||
+          (record.permissions & nucleus::neutron::PermissionRead) ==
+          nucleus::neutron::PermissionRead)
         error("the subject does not have the right to read this link",
               -EACCES,
               identifier);
@@ -1319,13 +1326,13 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
-             nucleus::neutron::PermissionWrite)))
+      if (record == nucleus::neutron::Record::Null ||
+          (record.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         error("the subject does not have the right to create a file in "
               "this directory",
               -EACCES,
@@ -1505,12 +1512,12 @@ namespace horizon
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+      if (!((record != nucleus::neutron::Record::Null) &&
+            ((record.permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to update this file",
               -EACCES);
@@ -1552,12 +1559,12 @@ namespace horizon
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionRead) ==
+      if (!((record != nucleus::neutron::Record::Null) &&
+            ((record.permissions & nucleus::neutron::PermissionRead) ==
              nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read this file",
               -EACCES);
@@ -1634,12 +1641,12 @@ namespace horizon
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+      if (!((record != nucleus::neutron::Record::Null) &&
+            ((record.permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to modify the size of "
               "this file",
@@ -1753,14 +1760,14 @@ namespace horizon
               error("unable to load the directory",
                   -ENOENT);
 
-          std::unique_ptr<nucleus::neutron::Record const> record;
+          nucleus::neutron::Record record;
           ELLE_TRACE("retrieve the subject's permissions on the object")
             record = etoile::wall::Access::lookup(directory,
                                                   agent::Agent::Subject);
 
           ELLE_TRACE("check the record")
-            if (!((record != nullptr) &&
-                  ((record->permissions & nucleus::neutron::PermissionWrite) ==
+            if (!((record != nucleus::neutron::Record::Null) &&
+                  ((record.permissions & nucleus::neutron::PermissionWrite) ==
                    nucleus::neutron::PermissionWrite)))
               error("the subject does not have the right to rename this "
                     "directory entry",
@@ -1840,12 +1847,12 @@ namespace horizon
                   identifier.object);
 
           // Retrieve the subject's permissions on the object.
-          std::unique_ptr<nucleus::neutron::Record const> record(
+          nucleus::neutron::Record record(
             etoile::wall::Access::lookup(identifier.to, agent::Agent::Subject));
 
           // Check the record.
-          if (!((record != nullptr) &&
-                ((record->permissions & nucleus::neutron::PermissionWrite) ==
+          if (!((record != nucleus::neutron::Record::Null) &&
+                ((record.permissions & nucleus::neutron::PermissionWrite) ==
                  nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
                   "directory entry",
@@ -1868,8 +1875,8 @@ namespace horizon
             identifier.from, agent::Agent::Subject);
 
           // Check the record.
-          if (!((record != nullptr) &&
-                ((record->permissions & nucleus::neutron::PermissionWrite) ==
+          if (!((record != nucleus::neutron::Record::Null) &&
+                ((record.permissions & nucleus::neutron::PermissionWrite) ==
                  nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
                   "directory entry",
@@ -1993,12 +2000,12 @@ namespace horizon
               identifier);
 
       // Retrieve the subject's permissions on the object.
-      std::unique_ptr<nucleus::neutron::Record const> record(
+      nucleus::neutron::Record record(
         etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
-      if (!((record != nullptr) &&
-            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+      if (!((record != nucleus::neutron::Record::Null) &&
+            ((record.permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to remove an entry from "
               "this directory",

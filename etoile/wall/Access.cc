@@ -23,7 +23,7 @@ namespace etoile
 {
   namespace wall
   {
-    std::unique_ptr<const nucleus::neutron::Record>
+    nucleus::neutron::Record
     Access::lookup(const gear::Identifier& identifier,
                    const nucleus::neutron::Subject& subject)
     {
@@ -41,22 +41,20 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
       {
-        // retrieve the context.
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to retrieve the context");
-
-        // apply the lookup automaton on the context.
-        const nucleus::neutron::Record* record;
-        if (automaton::Access::Lookup(*context,
-                                      subject,
-                                      record) == elle::Status::Error)
+        nucleus::neutron::Record const* res(nullptr);
+        if (automaton::Access::Lookup(*context, subject, res) ==
+            elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to lookup the access record");
-        return std::unique_ptr<const nucleus::neutron::Record>(record);
+                                   "unable to lookup the record");
+        if (res)
+          return *res;
+        else
+          return nucleus::neutron::Record::Null;
       }
     }
 

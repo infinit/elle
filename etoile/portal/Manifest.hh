@@ -140,7 +140,7 @@ namespace etoile
       /*-------.
       | Access |
       `-------*/
-      RemoteProcedure<std::unique_ptr<const nucleus::neutron::Record>,
+      RemoteProcedure<nucleus::neutron::Record,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Subject const&> accesslookup;
       RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Record>,

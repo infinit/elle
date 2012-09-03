@@ -24,7 +24,7 @@ namespace etoile
       /// returned. should this record be destroyed by another actor's
       /// operation, accessing it could make the system crash.
       static
-      std::unique_ptr<const nucleus::neutron::Record>
+      nucleus::neutron::Record
       lookup(gear::Identifier const&,
              nucleus::neutron::Subject const&);
       /// A subset of the object's access access list.

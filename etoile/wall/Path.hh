@@ -3,13 +3,15 @@
 
 # include <elle/types.hh>
 
+# include <reactor/exception.hh>
+
 # include <etoile/path/fwd.hh>
+# include <etoile/path/Way.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
     /// Path resolving into locations.
     class Path
     {
@@ -24,6 +26,14 @@ namespace etoile
       resolve(const path::Way&);
     };
 
+    class NoSuchFileOrDirectory: public reactor::Exception
+    {
+    public:
+      NoSuchFileOrDirectory(reactor::Scheduler& sched, path::Way const& path);
+      ~NoSuchFileOrDirectory() throw ();
+    private:
+      path::Way _path;
+    };
   }
 }
 

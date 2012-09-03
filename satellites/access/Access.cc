@@ -139,9 +139,9 @@ namespace satellite
     etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
     Ward ward(identifier);
     // Lookup the access record.
-    std::unique_ptr<const nucleus::neutron::Record> record(
+    nucleus::neutron::Record record(
       Access::rpcs->accesslookup(identifier, subject));
-    display(*record);
+    display(record);
   }
 
   void
