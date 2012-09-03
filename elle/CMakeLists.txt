@@ -65,13 +65,9 @@ add_library(elle
   cryptography/Seed.cc
   cryptography/Signature.cc
 
-  network/Header.cc
   network/Host.cc
   network/Interface.cc
-  network/Network.cc
-  network/Parcel.cc
   network/Locus.cc
-  network/TCPSocket.cc
 
   os/getenv.cc
   os/path.cc
