@@ -68,6 +68,9 @@
 		1CDA370A15D00A190078C963 /* fuse4x.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDA370915D00A170078C963 /* fuse4x.bundle */; };
 		1CDA370B15D00CEA0078C963 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
 		1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CDABDA115502B3200F8097E /* infinite-app-icon.icns */; };
+		1CDFFABD15F4B08300904115 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 1CDFFABC15F4B08300904115 /* dsa_pub.pem */; };
+		1CDFFABE15F4B0DD00904115 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
+		1CDFFABF15F4B0F100904115 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
 		1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CF9868115EB8E700095C264 /* ResourceRules.plist */; };
 		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
 /* End PBXBuildFile section */
@@ -167,6 +170,7 @@
 			files = (
 				1C8BBA1915CA7E1700E8E1DC /* Phone.framework in CopyFiles */,
 				1C96022615C84DA5001C864F /* FinderPanel.framework in CopyFiles */,
+				1CDFFABF15F4B0F100904115 /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +250,8 @@
 		1CD5C4621552EC9200556CC9 /* pref_tab_stores.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pref_tab_stores.png; sourceTree = "<group>"; };
 		1CDA370915D00A170078C963 /* fuse4x.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = fuse4x.bundle; sourceTree = "<group>"; };
 		1CDABDA115502B3200F8097E /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "infinite-app-icon.icns"; path = "icons/infinite-app-icon.icns"; sourceTree = "<group>"; };
+		1CDFFABA15F4A9EC00904115 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
+		1CDFFABC15F4B08300904115 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		1CF9868115EB8E700095C264 /* ResourceRules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ResourceRules.plist; sourceTree = "<group>"; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -257,6 +263,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CDFFABE15F4B0DD00904115 /* Sparkle.framework in Frameworks */,
 				1C1156FC15ED065B009BE9D5 /* FinderPanel.framework in Frameworks */,
 				1C695E1E15CA837300533738 /* Phone.framework in Frameworks */,
 				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
@@ -303,6 +310,7 @@
 		1C45EE4F152AECAB00EFB356 /* ressources */ = {
 			isa = PBXGroup;
 			children = (
+				1CDFFABC15F4B08300904115 /* dsa_pub.pem */,
 				1CDA370915D00A170078C963 /* fuse4x.bundle */,
 				1C50F8F61574EE030082F57C /* setup */,
 				1C7862C41566919800F7D2F5 /* icons */,
@@ -405,6 +413,7 @@
 		1C9B30BC15529790001EA6EA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1CDFFABA15F4A9EC00904115 /* Sparkle.framework */,
 				1CC9FCB3157CD4DC002C3BE1 /* AddressBook.framework */,
 				1C03F3371575265B00966EC3 /* QuartzCore.framework */,
 				367B0EB714FFB6F100AC66A2 /* Security.framework */,
@@ -652,6 +661,7 @@
 				1C50F8F81574EE030082F57C /* setup-bg.png in Resources */,
 				1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */,
 				1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */,
+				1CDFFABD15F4B08300904115 /* dsa_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,7 +723,10 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/**",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -744,7 +757,10 @@
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/**",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;

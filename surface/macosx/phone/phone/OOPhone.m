@@ -150,7 +150,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 }
 
 //
-//  GET USER INFO
+//  GET NETWORK INFO
 //
 - (NSString*)getNetworkNameWithId:(NSString*)arg1 {
     char const* name = gap_network_name(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);

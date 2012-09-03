@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
@@ -34,6 +34,12 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+	<key>SUFeedURL</key>
+	<string>http://f.cl.ly/items/0j1e3e3Q3u3S2U3l240n/sparkleInfinit.xml</string>
+	<key>SUScheduledCheckInterval</key>
+	<string>3600</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>io.infinit.Nurse.helper</key>

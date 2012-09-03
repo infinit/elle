@@ -42,11 +42,7 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
 - (void)updateStatusItemImageWithTimer:(NSTimer*)arg1;
 
 - (IBAction)openInfinitNeworks:(id)sender;
-//- (IBAction)installInjectBundle:(id)sender;
-//- (IBAction)injectBundle:(id)sender;
 - (IBAction)launchWebsite:(id)sender;
 - (IBAction)launchHelpCenter:(id)sender;
-
-- (void)updateProgessChangedNotification:(NSNotification *)notification;
 - (void)showSetupWindow;
 @end

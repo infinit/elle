@@ -38,7 +38,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 }
 
 - (void)helperInstalled {
-    [self update];
     [self tryToLogin];
 }
 
@@ -164,18 +163,9 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     }
 }
 
-- (void)update {
-    [self addPending];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(updateProgessChangedNotification:) 
-                                                 name:OOUpdateProgessChangedNotification
-                                               object:nil];
-    [[OOPhone getInstance] update];
-}
-
 - (void)readyToStartInfinit {
     NSLog(@"Ready to start Infinit");
-    if (!self.isLoginIn && !self.isUpdating) {
+    if (!self.isLoginIn) {
         NSLog(@"Is loged and is updated");
         [statusItem setMenu:statusMenu];
         [self launch8Watchdog];
@@ -187,30 +177,6 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 - (void)stopInfinit {
     [self stop8Watchdog];
     [self.browserWindowController close];
-}
-
-- (void)updateProgessChangedNotification:(NSNotification *)notification {
-    if ([notification name] == OOUpdateProgessChangedNotification) {
-        NSNumber* progress = [[notification userInfo] objectForKey:@"progress"];
-        if ([progress floatValue] == 1) {
-            self.isUpdating = NO;
-            [statusItem setTitle:nil];
-            [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                            name:OOUpdateProgessChangedNotification 
-                                                          object:nil];
-            [self removePending];
-            [self readyToStartInfinit];
-        } else if ([progress floatValue] >= 0){
-            [statusItem setTitle:[NSString stringWithFormat:@"(%00.f%%)", [progress floatValue]*100]];
-        } else {
-            [statusItem setTitle:@"Error when downloading"];
-            [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                            name:OOUpdateProgessChangedNotification
-                                                          object:nil];
-            [self removePending];
-        }
-        
-    }
 }
 
 - (void)updateStatusItemImageWithTimer:(NSTimer*)arg1
