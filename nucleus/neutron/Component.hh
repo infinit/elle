@@ -24,7 +24,7 @@ namespace nucleus
         ComponentSeamCatalog,
         ComponentQuillCatalog,
 
-        Components = ComponentAccess + 1
+        Components
       };
 
   }
