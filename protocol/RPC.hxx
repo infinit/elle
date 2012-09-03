@@ -389,6 +389,7 @@ namespace infinit
                 }
               catch (reactor::Exception& e)
                 {
+                  ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
                   output << false;
                   output << std::string(e.what());
                   output << uint16_t(e.backtrace().size());
@@ -403,12 +404,14 @@ namespace infinit
                 }
               catch (std::exception& e)
                 {
+                  ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
                   output << false;
                   output << std::string(e.what());
                   output << uint16_t(0);
                 }
               catch (...)
                 {
+                  ELLE_TRACE("%s: procedure failed: unknown error", *this);
                   output << false;
                   output << std::string("unknown error");
                   output << uint16_t(0);
