@@ -11,8 +11,8 @@
 #include <elle/io/Path.hh>
 
 #include <etoile/gear/Identifier.hh>
-#include <etoile/path/Way.hh>
 #include <etoile/path/Chemin.hh>
+#include <etoile/path/Way.hh>
 #include <etoile/portal/Manifest.hh>
 
 #include <nucleus/Nucleus.hh>
@@ -30,53 +30,63 @@
 
 namespace satellite
 {
+  reactor::network::TCPSocket* Access::socket = nullptr;
+  infinit::protocol::Serializer* Access::serializer = nullptr;
+  infinit::protocol::ChanneledStream* Access::channels = nullptr;
+  etoile::portal::RPC* Access::rpcs = nullptr;
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+  /// Ward helper to make sure objects are discarded on errors.
+  class Ward
+  {
+  public:
+    Ward(etoile::gear::Identifier const& id):
+      _id(id),
+      _clean(true)
+    {}
 
-  ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8access";
+    ~Ward()
+    {
+      if (_clean && Access::socket != nullptr)
+        Access::rpcs->objectdiscard(this->_id);
+    }
 
-  ///
-  /// the socket used for communicating with Etoile.
-  ///
-  elle::network::TCPSocket* Access::socket = nullptr;
+    void release()
+    {
+      _clean = false;
+    }
 
-//
-// ---------- static methods --------------------------------------------------
-//
+  private:
+    etoile::gear::Identifier _id;
+    bool _clean;
+  };
 
-  elle::Status
-  Access::Display(nucleus::neutron::Record const& record)
+  void
+  display(nucleus::neutron::Record const& record)
   {
     switch (record.subject.type())
       {
-      case nucleus::neutron::Subject::TypeUser:
+        case nucleus::neutron::Subject::TypeUser:
         {
           elle::io::Unique unique;
-
-          // convert the public key into a human-kind-of-readable string.
+          // Convert the public key into a human-kind-of-readable string.
           if (record.subject.user().Save(unique) == elle::Status::Error)
-            escape("unable to save the public key's unique");
-
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     "unable to save the public key's unique");
           std::cout << "User"
-                    << " "
                     << unique
                     << " "
-                    << std::dec << static_cast<elle::Natural32>(record.permissions) << std::endl;
-
+                    << std::dec
+                    << static_cast<elle::Natural32>(record.permissions)
+                    << std::endl;
           break;
         }
-      case nucleus::neutron::Subject::TypeGroup:
+        case nucleus::neutron::Subject::TypeGroup:
         {
           elle::io::Unique unique;
-
-          // convert the group's address into a human-kind-of-readable string.
+          // Convert the group's address into a human-kind-of-readable string.
           if (record.subject.group().Save(unique) == elle::Status::Error)
-            escape("unable to save the address' unique");
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     "unable to save the address' unique");
 
           std::cout << "Group"
                     << " "
@@ -86,308 +96,107 @@ namespace satellite
 
           break;
         }
-      default:
+        default:
         {
           break;
         }
       }
-
-    return (elle::Status::Ok);
   }
 
-  ///
-  /// this method connects and authenticates to Etoile by sending the user's
-  /// network-specific phrase.
-  ///
-  elle::Status          Access::Connect()
+  void
+  Access::connect()
   {
+    // Load the phrase.
     lune::Phrase        phrase;
-
-    // load the phrase.
     phrase.load(Infinit::Network, "portal");
 
-    // connect to the server.
-    reactor::network::TCPSocket* socket =
+    // Connect to the server.
+    Access::socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
                                       elle::String("127.0.0.1"),
                                       phrase.port);
+    Access::serializer =
+      new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
+    Access::channels =
+      new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
+                                             *serializer, true);
+    Access::rpcs = new etoile::portal::RPC(*channels);
 
-    Access::socket = new elle::network::TCPSocket(socket, false);
-
-    // authenticate.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
-          elle::network::Outputs<etoile::portal::TagAuthenticated>()) ==
-        elle::Status::Error)
-      escape("unable to authenticate to Etoile");
-
-    return elle::Status::Ok;
+    if (!Access::rpcs->authenticate(phrase.pass))
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to authenticate to Etoile");
   }
 
-  ///
-  /// this method looks up the access record associated with the given
-  /// identifier.
-  ///
-  elle::Status          Access::Lookup(const etoile::path::Way& way,
-                                       const nucleus::neutron::Subject&  subject)
+  void
+  Access::lookup(const etoile::path::Way& way,
+                 const nucleus::neutron::Subject& subject)
   {
-    etoile::path::Chemin        chemin;
-    etoile::gear::Identifier    identifier;
-    nucleus::neutron::Record             record;
-
-    // connect to Etoile.
-    if (Access::Connect() == elle::Status::Error)
-      goto _error;
-
-    // resolve the path.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // lookup the access record.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
-          elle::network::Outputs<etoile::portal::TagAccessRecord>(record)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // discard the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // display the record.
-    if (Access::Display(record) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Access::socket != nullptr)
-      {
-        Access::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Access::connect();
+    // Resolve the path.
+    etoile::path::Chemin chemin(Access::rpcs->pathresolve(way));
+    // Load the object.
+    etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
+    Ward ward(identifier);
+    // Lookup the access record.
+    std::unique_ptr<const nucleus::neutron::Record> record(
+      Access::rpcs->accesslookup(identifier, subject));
+    display(*record);
   }
 
-  ///
-  /// this method displays all the access records for the given path.
-  ///
-  elle::Status          Access::Consult(const etoile::path::Way& way)
+  void
+  Access::consult(const etoile::path::Way& way)
   {
-    etoile::path::Chemin                chemin;
-    etoile::gear::Identifier            identifier;
-    nucleus::neutron::Range<nucleus::neutron::Record>     range;
-
-    // connect to Etoile.
-    if (Access::Connect() == elle::Status::Error)
-      goto _error;
-
-    // resolve the path.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // consult the object access.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAccessConsult>(
-            identifier,
-            std::numeric_limits<nucleus::neutron::Index>::min(),
-            std::numeric_limits<nucleus::neutron::Size>::max()),
-          elle::network::Outputs<etoile::portal::TagAccessRange>(range)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // discard the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // dump the range.
-    BOOST_FOREACH(auto record, range.container)
-      {
-        // display the record.
-        if (Access::Display(*record) == elle::Status::Error)
-          goto _error;
-      }
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Access::socket != nullptr)
-      {
-        Access::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    return elle::Status::Ok;
+    Access::connect();
+    // Resolve the path.
+    etoile::path::Chemin chemin(Access::rpcs->pathresolve(way));
+    // Load the object.
+    etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
+    Ward ward(identifier);
+    // Consult the object access.
+    nucleus::neutron::Range<nucleus::neutron::Record> records(
+      Access::rpcs->accessconsult(identifier,
+                                  std::numeric_limits<nucleus::neutron::Index>::min(),
+                                  std::numeric_limits<nucleus::neutron::Size>::max()));
+    // Dump the records.
+    BOOST_FOREACH(auto record, records.container)
+      display(*record);
   }
 
-  ///
-  /// this method grants access to the given entity, referenced by the
-  /// identifier.
-  ///
-  elle::Status          Access::Grant(const etoile::path::Way&  way,
-                                      const nucleus::neutron::Subject&   subject,
-                                      const nucleus::neutron::Permissions permissions)
+  void
+  Access::grant(const etoile::path::Way&  way,
+                const nucleus::neutron::Subject&   subject,
+                const nucleus::neutron::Permissions permissions)
   {
-    etoile::path::Chemin        chemin;
-    etoile::gear::Identifier    identifier;
-
-    // connect to Etoile.
-    if (Access::Connect() == elle::Status::Error)
-      goto _error;
-
-    // resolve the path.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // lookup the access record.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAccessGrant>(identifier,
-                                                       subject,
-                                                       permissions),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
+    Access::connect();
+    // Resolve the path.
+    etoile::path::Chemin chemin(Access::rpcs->pathresolve(way));
+    // Load the object.
+    etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
+    Ward ward(identifier);
+    // Lookup the access record.
+    Access::rpcs->accessgrant(identifier, subject, permissions);
     // store the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Access::socket != nullptr)
-      {
-        Access::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Access::rpcs->objectstore(identifier);
+    ward.release();
   }
 
-  ///
-  /// this method revokes an existing access.
-  ///
-  elle::Status          Access::Revoke(const etoile::path::Way& way,
-                                       const nucleus::neutron::Subject&  subject)
+  void
+  Access::revoke(const etoile::path::Way& way,
+                 const nucleus::neutron::Subject&  subject)
   {
-    etoile::path::Chemin        chemin;
-    etoile::gear::Identifier    identifier;
-    nucleus::neutron::Record             record;
-
-    // connect to Etoile.
-    if (Access::Connect() == elle::Status::Error)
-      goto _error;
-
-    // resolve the path.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // revoke the access for the given subject.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
+    Access::connect();
+    // Resolve the path.
+    etoile::path::Chemin chemin(Access::rpcs->pathresolve(way));
+    // Load the object.
+    etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
+    Ward ward(identifier);
+    // Revoke the access for the given subject.
+    Access::rpcs->accessrevoke(identifier, subject);
     // store the object.
-    if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Access::socket != nullptr)
-      {
-        Access::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Access::rpcs->objectstore(identifier);
+    ward.release();
   }
 
-//
-// ---------- functions -------------------------------------------------------
-//
-
-  ///
-  /// the main function.
-  ///
   elle::Status          Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
   {
@@ -664,8 +473,7 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
 
-          if (Access::Lookup(way, subject) == elle::Status::Error)
-            escape("unable to lookup");
+          Access::lookup(way, subject);
 
           break;
         }
@@ -681,9 +489,7 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
 
-          if (Access::Consult(way) == elle::Status::Error)
-            escape("unable to consult");
-
+          Access::consult(way);
           break;
         }
       case Access::OperationGrant:
@@ -763,9 +569,7 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
 
-          if (Access::Grant(way, subject, permissions) == elle::Status::Error)
-            escape("unable to grant");
-
+          Access::grant(way, subject, permissions);
           break;
         }
       case Access::OperationRevoke:
@@ -833,9 +637,7 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
 
-          if (Access::Revoke(way, subject) == elle::Status::Error)
-            escape("unable to revoke");
-
+          Access::revoke(way, subject);
           break;
         }
       case Access::OperationUnknown:

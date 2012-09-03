@@ -21,11 +21,4 @@ namespace etoile
 
 }
 
-///
-/// this macro-function call reserves a range of tags.
-///
-range(etoile::Component,
-      etoile::Tags,
-      etoile::portal::Component);
-
 #endif

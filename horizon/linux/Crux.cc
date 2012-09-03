@@ -66,25 +66,17 @@ namespace horizon
     {
       ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
-      etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
       struct ::fuse_file_info   info;
       int                       result;
 
+      etoile::path::Chemin      chemin;
       ELLE_DEBUG("resolve the path")
-        if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-          {
-            // Purge the error messages since it may be normal not to be
-            // able to resolve the given way.
-            purge();
-            return (-ENOENT);
-          }
+        chemin = etoile::wall::Path::resolve(way);
 
+      etoile::gear::Identifier  identifier;
       ELLE_DEBUG("load the object")
-        if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-          error("unable to load the object",
-                -ENOENT);
+        identifier = etoile::wall::Object::Load(chemin);
 
       // Create a local handle.
       Handle                    handle(Handle::OperationGetattr,
@@ -103,11 +95,9 @@ namespace horizon
               identifier);
 
       // Discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
-        error("unable to discard the object",
-              -EPERM);
+      etoile::wall::Object::Discard(identifier);
 
-      return (0);
+      return 0;
     }
 
     /// General-purpose information on the file system object
@@ -120,7 +110,6 @@ namespace horizon
       ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       Handle*                           handle;
-      etoile::abstract::Object   abstract;
       elle::String*                     name;
 
       // Clear the stat structure.
@@ -130,10 +119,8 @@ namespace horizon
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(handle->identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM);
+      etoile::abstract::Object abstract(
+        etoile::wall::Object::Information(handle->identifier));
 
       // Set the uid by first looking into the users map. if no local
       // user is found, the 'somebody' user is used instead,
@@ -309,12 +296,9 @@ namespace horizon
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
@@ -345,18 +329,15 @@ namespace horizon
 
       Handle*           handle;
       off_t             next;
-      nucleus::neutron::Record const* record;
 
       // Set the handle pointer to the file handle that has been
       // filled by Opendir().
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(handle->identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(handle->identifier,
+                                     agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -457,15 +438,11 @@ namespace horizon
         nucleus::neutron::PermissionNone;
       etoile::path::Slab        name;
       etoile::path::Way         way(etoile::path::Way(path), name);
-      etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  subdirectory;
-      nucleus::neutron::Record const* record;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
@@ -474,12 +451,8 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(directory,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              directory);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -579,31 +552,22 @@ namespace horizon
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);
       etoile::path::Way                 parent(child, name);
-      etoile::path::Chemin              chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
-      etoile::abstract::Object   abstract;
-      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(parent, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin_dir(etoile::wall::Path::resolve(parent));
 
       // Load the directory.
-      if (etoile::wall::Directory::Load(chemin,
+      if (etoile::wall::Directory::Load(chemin_dir,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(directory,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              directory);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -615,10 +579,7 @@ namespace horizon
               directory);
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(child, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT,
-              directory);
+      etoile::path::Chemin chemin = etoile::wall::Path::resolve(child);
 
       // Load the subdirectory.
       if (etoile::wall::Directory::Load(chemin,
@@ -628,11 +589,8 @@ namespace horizon
               directory);
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(subdirectory,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              subdirectory, directory);
+      etoile::abstract::Object abstract(
+        etoile::wall::Object::Information(subdirectory));
 
       // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -676,16 +634,10 @@ namespace horizon
     {
       ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
-      etoile::gear::Identifier          identifier;
-      etoile::abstract::Object   abstract;
       etoile::path::Way                 way(path);
-      etoile::path::Chemin              chemin;
-      nucleus::neutron::Record const* record;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Optimisation: if the mask is equal to F_OK i.e there is nothing else
       // to check but the existence of the path, return righ away.
@@ -693,24 +645,14 @@ namespace horizon
         return (0);
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              identifier);
+      etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Retrieve the user's permissions on the object.
-      if (etoile::wall::Access::Lookup(identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              identifier);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
       // Check the record.
       if (record == nullptr)
@@ -789,9 +731,7 @@ namespace horizon
         }
 
       // Discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
-        error("unable to discard the object",
-              -EPERM);
+      etoile::wall::Object::Discard(identifier);
 
       return (0);
 
@@ -815,10 +755,7 @@ namespace horizon
     {
       nucleus::neutron::Permissions permissions =
         nucleus::neutron::PermissionNone;
-      etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
-      etoile::path::Chemin              chemin;
-      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
@@ -848,21 +785,13 @@ namespace horizon
         permissions |= nucleus::neutron::PermissionWrite;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              identifier);
+      etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -949,9 +878,7 @@ namespace horizon
         }
 
       // Store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
-        error("unable to store the object",
-              -EPERM);
+      etoile::wall::Object::Store(identifier);
 
       return (0);
     }
@@ -983,28 +910,17 @@ namespace horizon
       ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)",
                            __FUNCTION__, path, name, value, size, flags);
 
-      etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
-      etoile::path::Chemin              chemin;
-      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              identifier);
+      etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -1029,9 +945,7 @@ namespace horizon
               identifier);
 
       // Store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
-        error("unable to store the object",
-              -EPERM);
+      etoile::wall::Object::Store(identifier);
 
       return (0);
     }
@@ -1046,20 +960,14 @@ namespace horizon
     {
       ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
 
-      etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
       nucleus::neutron::Trait const* trait;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Get the attribute.
       if (etoile::wall::Attributes::Get(identifier,
@@ -1070,9 +978,7 @@ namespace horizon
               identifier);
 
       // Discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
-        error("unable to discard the object",
-              -EPERM);
+      etoile::wall::Object::Discard(identifier);
 
       // Test if a trait has been found.
       if (trait == nullptr)
@@ -1103,22 +1009,16 @@ namespace horizon
     {
       ELLE_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
 
-      etoile::gear::Identifier                  identifier;
       etoile::path::Way                         way(path);
-      etoile::path::Chemin                      chemin;
       nucleus::neutron::Range<nucleus::neutron::Trait> range;
       nucleus::neutron::Range<nucleus::neutron::Trait>::Scoutor scoutor;
       size_t                                    offset;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Fetch the attributes.
       if (etoile::wall::Attributes::Fetch(identifier,
@@ -1128,9 +1028,7 @@ namespace horizon
               identifier);
 
       // Discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
-        error("unable to discard the object",
-              -EPERM);
+      etoile::wall::Object::Discard(identifier);
 
       // If the size is zero, this call must return the size required
       // to store the list.
@@ -1177,28 +1075,17 @@ namespace horizon
     {
       ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
 
-      etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
-      etoile::path::Chemin              chemin;
-      etoile::abstract::Object   abstract;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              identifier);
+      etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -1222,11 +1109,9 @@ namespace horizon
               identifier);
 
       // Store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
-        error("unable to store the object",
-              -EPERM);
+      etoile::wall::Object::Store(identifier);
 
-      return (0);
+      return 0;
     }
 #endif
 
@@ -1250,13 +1135,9 @@ namespace horizon
       etoile::path::Slab        name;
       etoile::path::Way         from(etoile::path::Way(source), name);
       etoile::path::Way         to(target);
-      etoile::path::Chemin      chemin;
-      nucleus::neutron::Record const* record;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(from));
 
       // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
@@ -1265,12 +1146,8 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(directory,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              directory);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1373,14 +1250,10 @@ namespace horizon
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
       etoile::path::Way         target;
-      nucleus::neutron::Record const* record;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the link.
       if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
@@ -1388,12 +1261,8 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              identifier);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1437,15 +1306,11 @@ namespace horizon
         nucleus::neutron::PermissionNone;
       etoile::path::Slab        name;
       etoile::path::Way         way(etoile::path::Way(path), name);
-      etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  file;
-      nucleus::neutron::Record const* record;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
@@ -1454,12 +1319,8 @@ namespace horizon
               -ENOENT);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(directory,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              directory);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1564,10 +1425,7 @@ namespace horizon
               -EPERM);
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(etoile::path::Way(path),
-                                      chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      chemin = etoile::wall::Path::resolve(etoile::path::Way(path));
 
       // Finally, the file is reopened.
       if (etoile::wall::File::Load(chemin, file) == elle::Status::Error)
@@ -1611,9 +1469,7 @@ namespace horizon
       etoile::gear::Identifier  identifier;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      chemin = (etoile::wall::Path::resolve(way));
 
       // Load the file.
       if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
@@ -1644,17 +1500,13 @@ namespace horizon
 
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record const* record;
 
       // Retrieve the handle;
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(handle->identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1695,17 +1547,13 @@ namespace horizon
 
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::neutron::Record const* record;
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(handle->identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1739,14 +1587,11 @@ namespace horizon
 
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
       struct ::fuse_file_info   info;
       int                       result;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
       // Load the file.
       if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
@@ -1784,17 +1629,13 @@ namespace horizon
                            static_cast<elle::Natural64>(size), info);
 
       Handle*           handle;
-      nucleus::neutron::Record const* record;
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(handle->identifier,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&
@@ -1898,15 +1739,13 @@ namespace horizon
         {
           // In this case, the object to move can simply be renamed
           // since the source and target directory are identical.
-          etoile::path::Chemin          chemin;
+
           etoile::gear::Identifier      directory;
           nucleus::neutron::Entry const* entry;
-          nucleus::neutron::Record const* record;
 
+          etoile::path::Chemin chemin;
           ELLE_TRACE("resolve the source directory path")
-            if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
-              error("unable to resolve the path",
-                    -ENOENT);
+            chemin = etoile::wall::Path::resolve(from);
 
           ELLE_TRACE("load source directory")
             if (etoile::wall::Directory::Load(chemin,
@@ -1914,13 +1753,10 @@ namespace horizon
               error("unable to load the directory",
                   -ENOENT);
 
+          std::unique_ptr<nucleus::neutron::Record const> record;
           ELLE_TRACE("retrieve the subject's permissions on the object")
-            if (etoile::wall::Access::Lookup(directory,
-                                             agent::Agent::Subject,
-                                             record) == elle::Status::Error)
-              error("unable to retrieve the access record",
-                    -EPERM,
-                    directory);
+            record = etoile::wall::Access::lookup(directory,
+                                                  agent::Agent::Subject);
 
           ELLE_TRACE("check the record")
             if (!((record != nullptr) &&
@@ -1977,7 +1813,6 @@ namespace horizon
           // entry in the _to_ directory is added while the entry in
           // the _from_ directory is removed.
           etoile::path::Way             way(source);
-          etoile::path::Chemin          chemin;
           struct
           {
             etoile::gear::Identifier    object;
@@ -1985,26 +1820,16 @@ namespace horizon
             etoile::gear::Identifier    to;
           }                             identifier;
           nucleus::neutron::Entry const* entry;
-          nucleus::neutron::Record const* record;
 
           // Resolve the path.
-          if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-            error("unable to resolve the path",
-                  -ENOENT);
+          etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
           // Load the object even though we don't know its genre as we
           // do not need to know to perform this operation.
-          if (etoile::wall::Object::Load(
-                chemin,
-                identifier.object) == elle::Status::Error)
-            error("unable to load the object",
-                  -ENOENT);
+          identifier.object = etoile::wall::Object::Load(chemin);
 
           // Resolve the path.
-          if (etoile::wall::Path::Resolve(to, chemin) == elle::Status::Error)
-            error("unable to resolve the path",
-                  -ENOENT,
-                  identifier.object);
+          chemin = etoile::wall::Path::resolve(to);
 
           // Load the _to_ directory.
           if (etoile::wall::Directory::Load(
@@ -2015,12 +1840,8 @@ namespace horizon
                   identifier.object);
 
           // Retrieve the subject's permissions on the object.
-          if (etoile::wall::Access::Lookup(identifier.to,
-                                           agent::Agent::Subject,
-                                           record) == elle::Status::Error)
-            error("unable to retrieve the access record",
-                  -EPERM,
-                  identifier.object, identifier.to);
+          std::unique_ptr<nucleus::neutron::Record const> record(
+            etoile::wall::Access::lookup(identifier.to, agent::Agent::Subject));
 
           // Check the record.
           if (!((record != nullptr) &&
@@ -2032,10 +1853,7 @@ namespace horizon
                   identifier.object, identifier.to);
 
           // Resolve the path.
-          if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
-            error("unable to resolve the path",
-                  -ENOENT,
-                  identifier.object, identifier.to);
+          chemin = etoile::wall::Path::resolve(from);
 
           // Load the _from_ directory.
           if (etoile::wall::Directory::Load(
@@ -2046,12 +1864,8 @@ namespace horizon
                   identifier.object, identifier.to);
 
           // Retrieve the subject's permissions on the object.
-          if (etoile::wall::Access::Lookup(identifier.from,
-                                           agent::Agent::Subject,
-                                           record) == elle::Status::Error)
-            error("unable to retrieve the access record",
-                  -EPERM,
-                  identifier.object, identifier.to, identifier.from);
+          record = etoile::wall::Access::lookup(
+            identifier.from, agent::Agent::Subject);
 
           // Check the record.
           if (!((record != nullptr) &&
@@ -2119,10 +1933,7 @@ namespace horizon
                   identifier.object);
 
           // Store the object.
-          if (etoile::wall::Object::Store(
-                identifier.object) == elle::Status::Error)
-            error("unable to store the object",
-                  -EPERM);
+          etoile::wall::Object::Store(identifier.object);
         }
 
       // FIXME
@@ -2147,29 +1958,17 @@ namespace horizon
         etoile::path::Chemin            parent;
       }                                 chemin;
       etoile::gear::Identifier          directory;
-      etoile::gear::Identifier          identifier;
-      etoile::abstract::Object   abstract;
-      nucleus::neutron::Record const* record;
       nucleus::neutron::Subject subject;
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(child,
-                                      chemin.child) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT);
+      chemin.child = etoile::wall::Path::resolve(child);
 
       // Load the object.
-      if (etoile::wall::Object::Load(chemin.child,
-                                     identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
+      etoile::gear::Identifier identifier(
+        etoile::wall::Object::Load(chemin.child));
 
       // Retrieve information on the object.
-      if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::Status::Error)
-        error("unable to retrieve information on the object",
-              -EPERM,
-              identifier);
+      etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
 
       // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -2184,11 +1983,7 @@ namespace horizon
               identifier);
 
       // Resolve the path.
-      if (etoile::wall::Path::Resolve(parent,
-                                      chemin.parent) == elle::Status::Error)
-        error("unable to resolve the path",
-              -ENOENT,
-              identifier);
+      chemin.parent = etoile::wall::Path::resolve(parent);
 
       // Load the directory.
       if (etoile::wall::Directory::Load(chemin.parent,
@@ -2198,12 +1993,8 @@ namespace horizon
               identifier);
 
       // Retrieve the subject's permissions on the object.
-      if (etoile::wall::Access::Lookup(directory,
-                                       agent::Agent::Subject,
-                                       record) == elle::Status::Error)
-        error("unable to retrieve the access record",
-              -EPERM,
-              identifier, directory);
+      std::unique_ptr<nucleus::neutron::Record const> record(
+        etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
       // Check the record.
       if (!((record != nullptr) &&

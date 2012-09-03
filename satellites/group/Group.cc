@@ -11,6 +11,10 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Unique.hh>
 
+#include <reactor/exception.hh>
+
+#include <elle/serialize/PairSerializer.hxx>
+
 #include <etoile/gear/Identifier.hh>
 #include <etoile/portal/Manifest.hh>
 #include <etoile/abstract/Group.hh>
@@ -30,29 +34,42 @@
 # include <limits>
 #include <elle/idiom/Open.hh>
 
+ELLE_LOG_COMPONENT("infinit.8group");
+
 namespace satellite
 {
+  reactor::network::TCPSocket* Group::socket = nullptr;
+  infinit::protocol::Serializer* Group::serializer = nullptr;
+  infinit::protocol::ChanneledStream* Group::channels = nullptr;
+  etoile::portal::RPC* Group::rpcs = nullptr;
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+  /// Ward helper to make sure groups are discarded on errors.
+  class Ward
+  {
+  public:
+    Ward(etoile::gear::Identifier const& id):
+      _id(id),
+      _clean(true)
+    {}
 
-  ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8group";
+    ~Ward()
+    {
+      if (_clean && Group::socket != nullptr)
+        Group::rpcs->groupdiscard(this->_id);
+    }
 
-  ///
-  /// the socket used for communicating with Etoile.
-  ///
-  elle::network::TCPSocket* Group::socket = nullptr;
+    void release()
+    {
+      _clean = false;
+    }
 
-//
-// ---------- static methods --------------------------------------------------
-//
+  private:
+    etoile::gear::Identifier _id;
+    bool _clean;
+  };
 
-  elle::Status
-  Group::Display(nucleus::neutron::Fellow const& fellow)
+  void
+  Group::display(nucleus::neutron::Fellow const& fellow)
   {
     switch (fellow.subject().type())
       {
@@ -62,7 +79,8 @@ namespace satellite
 
           // convert the public key into a human-kind-of-readable string.
           if (fellow.subject().user().Save(unique) == elle::Status::Error)
-            escape("unable to save the public key's unique");
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     "unable to save the public key's unique");
 
           std::cout << "User"
                     << " "
@@ -77,7 +95,8 @@ namespace satellite
 
           // convert the group's address into a human-kind-of-readable string.
           if (fellow.subject().group().Save(unique) == elle::Status::Error)
-            escape("unable to save the address' unique");
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     "unable to save the address' unique");
 
           std::cout << "Group"
                     << " "
@@ -88,396 +107,123 @@ namespace satellite
         }
       default:
         {
-          escape("unknown subject type '%u'", fellow.subject().type());
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   elle::sprintf("unknown subject type '%u'",
+                                                 fellow.subject().type()));
         }
       }
-
-    return (elle::Status::Ok);
   }
 
-  elle::Status
-  Group::Connect()
+  void
+  Group::connect()
   {
     lune::Phrase phrase;
 
-    // load the phrase.
+    // Load the phrase.
     phrase.load(Infinit::Network, "portal");
 
-    // connect to the server.
-    reactor::network::TCPSocket* socket =
+    Group::socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
                                       elle::String("127.0.0.1"),
                                       phrase.port);
+    Group::serializer =
+      new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
+    Group::channels =
+      new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
+                                             *serializer, true);
+    Group::rpcs = new etoile::portal::RPC(*channels);
 
-    Group::socket = new elle::network::TCPSocket(socket, false);
-
-    // authenticate.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
-          elle::network::Outputs<etoile::portal::TagAuthenticated>()) ==
-        elle::Status::Error)
-      escape("unable to authenticate to Etoile");
-
-    return (elle::Status::Ok);
+    // Authenticate.
+    if (!Group::rpcs->authenticate(phrase.pass))
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "authentication failed");
   }
 
-  elle::Status
-  Group::Information(typename nucleus::neutron::Group::Identity const& identity)
+  void
+  Group::information(typename nucleus::neutron::Group::Identity const& identity)
   {
-    etoile::gear::Identifier identifier;
-    etoile::abstract::Group abstract;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // retrieve the group abstract.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupInformation>(
-            identifier),
-          elle::network::Outputs<etoile::portal::TagGroupAbstract>(abstract)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // discard the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupDiscard>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // dump the abstract.
-    if (abstract.Dump() == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    etoile::abstract::Group abstract = Group::rpcs->groupinformation(identifier);
+    abstract.Dump();
   }
 
-  elle::Status
-  Group::Create(elle::String const& description)
+  void
+  Group::create(elle::String const& description)
   {
-    typename nucleus::neutron::Group::Identity identity;
-    etoile::gear::Identifier identifier;
+    Group::connect();
+    auto group = Group::rpcs->groupcreate(description);
+    auto identity = group.first;
+    etoile::gear::Identifier identifier = group.second;
+    Group::rpcs->groupstore(identifier);
     elle::io::Unique unique;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupCreate>(description),
-          elle::network::Outputs<etoile::portal::TagGroupIdentity>(
-            identity, identifier)) == elle::Status::Error)
-      goto _error;
-
-    // store the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupStore>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // display the group identity.
     if (identity.Save(unique) == elle::Status::Error)
-      goto _error;
-
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to save the identity");
     std::cout << unique << std::endl;
 
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
   }
 
-  elle::Status
-  Group::Add(typename nucleus::neutron::Group::Identity const& identity,
+  void
+  Group::add(typename nucleus::neutron::Group::Identity const& identity,
              nucleus::neutron::Subject const& subject)
   {
-    etoile::gear::Identifier identifier;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // add the subject.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupAdd>(identifier,
-                                                             subject),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // store the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupStore>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    Group::rpcs->groupadd(identifier, subject);
+    Group::rpcs->groupstore(identifier);
+    ward.release();
   }
 
-  elle::Status
-  Group::Lookup(typename nucleus::neutron::Group::Identity const& identity,
+  void
+  Group::lookup(typename nucleus::neutron::Group::Identity const& identity,
                 nucleus::neutron::Subject const& subject)
   {
-    etoile::gear::Identifier identifier;
-    nucleus::neutron::Fellow fellow;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // lookup the subject.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLookup>(identifier,
-                                                                subject),
-          elle::network::Outputs<etoile::portal::TagGroupFellow>(fellow)) == elle::Status::Error)
-      goto _error;
-
-    // discard the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupDiscard>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    if (Group::Display(fellow) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    std::unique_ptr<const nucleus::neutron::Fellow> fellow =
+      Group::rpcs->grouplookup(identifier, subject);
+    Group::display(*fellow);
   }
 
-  elle::Status
-  Group::Consult(typename nucleus::neutron::Group::Identity const& identity)
+  void
+  Group::consult(typename nucleus::neutron::Group::Identity const& identity)
   {
-    etoile::gear::Identifier identifier;
-    nucleus::neutron::Range<nucleus::neutron::Fellow> range;
     nucleus::neutron::Index index(0);
     nucleus::neutron::Size size(std::numeric_limits<nucleus::neutron::Size>::max());
 
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // consult the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupConsult>(
-            identifier, index, size),
-          elle::network::Outputs<etoile::portal::TagGroupRange>(range)) == elle::Status::Error)
-      goto _error;
-
-    // discard the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupDiscard>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    for (auto fellow: range.container)
-      {
-        if (Group::Display(*fellow) == elle::Status::Error)
-          goto _error;
-      }
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    nucleus::neutron::Range<nucleus::neutron::Fellow> fellows =
+      Group::rpcs->groupconsult(identifier, index, size);
+    for (auto fellow: fellows.container)
+      Group::display(*fellow);
   }
 
-  elle::Status
-  Group::Remove(typename nucleus::neutron::Group::Identity const& identity,
+  void
+  Group::remove(typename nucleus::neutron::Group::Identity const& identity,
                 nucleus::neutron::Subject const& subject)
   {
-    etoile::gear::Identifier identifier;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // remove the subject.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupRemove>(identifier,
-                                                                subject),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    // store the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupStore>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    Group::rpcs->groupremove(identifier, subject);
+    Group::rpcs->groupstore(identifier);
+    ward.release();
   }
 
-  elle::Status
-  Group::Destroy(typename nucleus::neutron::Group::Identity const& identity)
+  void
+  Group::destroy(typename nucleus::neutron::Group::Identity const& identity)
   {
-    etoile::gear::Identifier identifier;
-
-    // connect to Etoile.
-    if (Group::Connect() == elle::Status::Error)
-      goto _error;
-
-    // load the object.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupLoad>(identity),
-          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // destroy the group.
-    if (Group::socket->Call(
-          elle::network::Inputs<etoile::portal::TagGroupDestroy>(identifier),
-          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-      goto _error;
-
-    return elle::Status::Ok;
-
-  _error:
-    // release the object.
-    if (Group::socket != nullptr)
-      {
-        Group::socket->send(
-          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-            identifier));
-      }
-
-    // expose the potential errors.
-    expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
+    Group::connect();
+    etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
+    Ward ward(identifier);
+    Group::rpcs->groupdestroy(identifier);
+    ward.release();
   }
 
 //
@@ -751,8 +497,7 @@ namespace satellite
               group = hole::Hole::Descriptor.everybody_identity();
             }
 
-          if (Group::Information(group) == elle::Status::Error)
-            escape("unable to retrieve information on the group");
+          Group::information(group);
 
           break;
         }
@@ -765,8 +510,7 @@ namespace satellite
                                      description) == elle::Status::Error)
             escape("unable to retrieve the description");
 
-          if (Group::Create(description) == elle::Status::Error)
-            escape("unable to create the group");
+          Group::create(description);
 
           break;
         }
@@ -841,8 +585,7 @@ namespace satellite
               }
             }
 
-          if (Group::Add(group, subject) == elle::Status::Error)
-            escape("unable to add the subject into the group");
+          Group::add(group, subject);
 
           break;
         }
@@ -917,8 +660,7 @@ namespace satellite
               }
             }
 
-          if (Group::Lookup(group, subject) == elle::Status::Error)
-            escape("unable to lookup the subject in the group");
+          Group::lookup(group, subject);
 
           break;
         }
@@ -945,8 +687,7 @@ namespace satellite
               group = hole::Hole::Descriptor.everybody_identity();
             }
 
-          if (Group::Consult(group) == elle::Status::Error)
-            escape("unable to consult the group's fellows");
+          Group::consult(group);
 
           break;
         }
@@ -1021,8 +762,7 @@ namespace satellite
               }
             }
 
-          if (Group::Remove(group, subject) == elle::Status::Error)
-            escape("unable to remove the subject from the group");
+          Group::remove(group, subject);
 
           break;
         }
@@ -1049,8 +789,7 @@ namespace satellite
               group = hole::Hole::Descriptor.everybody_identity();
             }
 
-          if (Group::Destroy(group) == elle::Status::Error)
-            escape("unable to destroy the group");
+          Group::destroy(group);
 
           break;
         }
@@ -1105,16 +844,33 @@ _main(elle::Natural32 argc, elle::Character* argv[])
         throw reactor::Exception(elle::concurrency::scheduler(),
                                  "XXX");
     }
-  catch (std::exception const& e)
+  catch (reactor::Exception const& e)
     {
       // XXX
       show();
 
+      ELLE_ERR("fatal error: %s", e);
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      if (reactor::Exception const* re =
-          dynamic_cast<reactor::Exception const*>(&e))
-        std::cerr << re->backtrace() << std::endl;
+      elle::concurrency::scheduler().terminate();
+      return elle::Status::Error;
+    }
+  catch (std::runtime_error const& e)
+    {
+      // XXX
+      show();
 
+      ELLE_ERR("fatal error: %s", e.what());
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::concurrency::scheduler().terminate();
+      return elle::Status::Error;
+    }
+  catch (...)
+    {
+      // XXX
+      show();
+
+      ELLE_ERR("unkown fatal error");
+      std::cerr << argv[0] << ": unknown fatal error" << std::endl;
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }

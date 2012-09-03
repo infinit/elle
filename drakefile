@@ -293,6 +293,8 @@ def configure(cxx_toolkit, cxx_config):
     'hole/Openness.cc',
     'hole/Openness.hh',
     'hole/algorithms/assignment/Assignment.hh',
+    'hole/backends/fs/MutableBlock.cc',
+    'hole/backends/fs/MutableBlock.hh',
     'hole/fwd.hh',
     'hole/implementations/Implementations.hh',
     # 'hole/implementations/cirkle/Cirkle.cc',
@@ -451,6 +453,7 @@ def configure(cxx_toolkit, cxx_config):
     'etoile/path/fwd.hh',
     'etoile/portal/Application.cc',
     'etoile/portal/Application.hh',
+    'etoile/portal/Manifest.cc',
     'etoile/portal/Manifest.hh',
     'etoile/portal/Portal.cc',
     'etoile/portal/Portal.hh',
@@ -580,6 +583,27 @@ def configure(cxx_toolkit, cxx_config):
   #                                 [infinit_lib, elle.lib, reactor.lib_dynamic],
   #                                 cxx_toolkit, cxx_config)
 
+  # 8group
+  group_sources = drake.nodes(
+    'satellites/group/Group.cc',
+    'satellites/group/Group.hh',
+    'satellites/group/Group.hxx',
+    )
+  group_bin = drake.cxx.Executable('bin/8group',
+                                   group_sources + infinit_libs,
+                                   cxx_toolkit, infinit_bin_config)
+
+  # 8access
+  access_sources = drake.nodes(
+    'satellites/access/Access.cc',
+    'satellites/access/Access.hh',
+    'satellites/access/Access.hxx',
+    )
+  access_bin = drake.cxx.Executable('bin/8access',
+                                   access_sources + infinit_libs,
+                                   cxx_toolkit, infinit_bin_config)
+
+
   # Tests
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
@@ -592,3 +616,4 @@ def configure(cxx_toolkit, cxx_config):
                                drake.nodes(test) +
                                [infinit_lib, elle.lib_dynamic, reactor.lib_dynamic],
                                cxx_toolkit, tests_cxx_config)
+

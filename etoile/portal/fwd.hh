@@ -5,9 +5,8 @@ namespace etoile
 {
   namespace portal
   {
-
     class Application;
-
+    class Portal;
   }
 }
 

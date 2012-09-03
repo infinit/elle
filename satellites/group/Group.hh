@@ -2,25 +2,24 @@
 # define GROUP_GROUP_HH
 
 # include <elle/types.hh>
-# include <elle/network/fwd.hh>
+
+# include <reactor/network/fwd.hh>
+
+# include <etoile/Manifest.hh>
 
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>
+
+# include <protocol/fwd.hh>
 
 # include <Infinit.hh>
 
 namespace satellite
 {
-
-  ///
-  /// this class implements the group satellite.
-  ///
+  /// The group satellite.
   class Group
   {
   public:
-    //
-    // enumerations
-    //
     enum Operation
       {
         OperationUnknown = 0,
@@ -34,55 +33,51 @@ namespace satellite
         OperationDestroy
       };
 
-    //
-    // static methods
-    //
-    // XXX
-    static
-    elle::Status
-    Connect();
     /// XXX
     static
-    elle::Status
-    Display(nucleus::neutron::Fellow const& fellow);
-    // XXX
-    static
-    elle::Status
-    Information(typename nucleus::neutron::Group::Identity const& identity);
+    void
+    connect();
     /// XXX
     static
-    elle::Status
-    Create(elle::String const& description);
+    void
+    display(nucleus::neutron::Fellow const& fellow);
     /// XXX
     static
-    elle::Status
-    Add(typename nucleus::neutron::Group::Identity const& identity,
+    void
+    information(typename nucleus::neutron::Group::Identity const& identity);
+    /// XXX
+    static
+    void
+    create(elle::String const& description);
+    /// XXX
+    static
+    void
+    add(typename nucleus::neutron::Group::Identity const& identity,
         nucleus::neutron::Subject const& subject);
     /// XXX
     static
-    elle::Status
-    Lookup(typename nucleus::neutron::Group::Identity const& identity,
+    void
+    lookup(typename nucleus::neutron::Group::Identity const& identity,
            nucleus::neutron::Subject const& subject);
     /// XXX
     static
-    elle::Status
-    Consult(typename nucleus::neutron::Group::Identity const& identity);
+    void
+    consult(typename nucleus::neutron::Group::Identity const& identity);
     /// XXX
     static
-    elle::Status
-    Remove(typename nucleus::neutron::Group::Identity const& identity,
+    void
+    remove(typename nucleus::neutron::Group::Identity const& identity,
            nucleus::neutron::Subject const& subject);
     /// XXX
     static
-    elle::Status
-    Destroy(typename nucleus::neutron::Group::Identity const& identity);
+    void
+    destroy(typename nucleus::neutron::Group::Identity const& identity);
 
-    //
-    // static attributes
-    //
-    static elle::network::TCPSocket* socket;
+    static reactor::network::TCPSocket* socket;
+    static infinit::protocol::Serializer* serializer;
+    static infinit::protocol::ChanneledStream* channels;
+    static etoile::portal::RPC* rpcs;
   };
-
 }
 
 #endif

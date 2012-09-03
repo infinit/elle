@@ -38,15 +38,12 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record& record)
     {
-      nucleus::neutron::Record const* r;
 
       ELLE_TRACE_SCOPE("Access::Lookup()");
 
       // forward the call to wall.
-      if (wall::Access::Lookup(identifier,
-                               subject,
-                               r) == elle::Status::Error)
-        escape("unable to lookup the given subject");
+      std::unique_ptr<const nucleus::neutron::Record> r(
+        wall::Access::lookup(identifier, subject));
 
       // construct the record depending on the value of _r_.
       if (r != nullptr)
@@ -68,19 +65,11 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Record>& range)
     {
-      nucleus::neutron::Range<nucleus::neutron::Record> r;
 
       ELLE_TRACE_SCOPE("Access::Consult()");
 
       // forward the call to wall.
-      if (wall::Access::Consult(identifier,
-                                index,
-                                size,
-                                r) == elle::Status::Error)
-        escape("unable to consult the given object's access records");
-
-      // copy the range, duplicating every record in it.
-      range = r;
+      range = wall::Access::consult(identifier, index, size);
 
       return elle::Status::Ok;
     }
@@ -210,15 +199,12 @@ namespace etoile
                            nucleus::neutron::Subject const& subject,
                            nucleus::neutron::Fellow& fellow)
     {
-      nucleus::neutron::Fellow const* f;
 
       ELLE_TRACE_SCOPE("Group::Lookup()");
 
       // forward the call to wall.
-      if (wall::Group::Lookup(identifier,
-                              subject,
-                              f) == elle::Status::Error)
-        escape("unable to lookup the fellow");
+      std::unique_ptr<const nucleus::neutron::Fellow> f =
+        wall::Group::Lookup(identifier, subject);
 
       // construct the fellow depending on the value of _f_.
       if (f != nullptr)
@@ -236,20 +222,11 @@ namespace etoile
                             nucleus::neutron::Range<
                               nucleus::neutron::Fellow>& range)
     {
-      nucleus::neutron::Range<nucleus::neutron::Fellow> r;
-
       ELLE_TRACE_SCOPE("Group::Consult(%s, %s, %s, %s)",
                            identifier, index, size, range);
 
       // forward the call to wall.
-      if (wall::Group::Consult(identifier,
-                               index,
-                               size,
-                               r) == elle::Status::Error)
-        escape("unable to consult the given group fellows");
-
-      // copy the range, duplicating every entry in it.
-      range = r;
+      range = wall::Group::Consult(identifier, index, size);
 
       return elle::Status::Ok;
     }
