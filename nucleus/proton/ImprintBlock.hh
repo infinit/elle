@@ -35,7 +35,6 @@ namespace nucleus
     /// being created by the same user at the same time.
     class ImprintBlock:
       public MutableBlock
-      // XXX[should not be the case] public elle::concept::Serializable<ImprintBlock>
     {
       //
       // construction
@@ -84,7 +83,7 @@ namespace nucleus
       Dump(const elle::Natural32 = 0) const;
 
       // serializable
-      // XXX[should not be the case since in-the-middle class] ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
+      // XXX[should not be the case since in-the-middle class] ELLE_SERIALIZE_SERIALIZABLE_METHODS(ImprintBlock);
 
       ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 

@@ -7,6 +7,8 @@
 
 # include <elle/cryptography/fwd.hh>
 
+# include <elle/serialize/Polymorphic.hh>
+
 # include <elle/idiom/Close.hh>
 #  include <openssl/evp.h>
 #  include <openssl/err.h>
@@ -67,6 +69,12 @@ namespace elle
         Decrypt(Cipher const& in, elle::utility::Buffer& out) const;
       template<typename T>
         Status Decrypt(Cipher const& in, T& out) const;
+      template<typename T>
+        Status Decrypt(Cipher const& in,
+                       elle::serialize::Polymorphic<T> const& out) const
+        {
+          this->Decrypt<elle::serialize::Polymorphic<T> const>(in, out);
+        }
 
       //
       // interfaces

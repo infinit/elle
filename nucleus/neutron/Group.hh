@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_GROUP_HH
 
 # include <elle/types.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
@@ -48,8 +48,8 @@ namespace nucleus
     /// pass is updated and the fellows' tokens are re-generated.
     class Group:
       public proton::ImprintBlock,
-      public elle::concept::Serializable<Group>,
-      public elle::concept::Serializable<
+      public elle::serialize::SerializableMixin<Group>,
+      public elle::serialize::SerializableMixin<
         Group,
         elle::serialize::BufferArchive
       >,
@@ -168,8 +168,8 @@ namespace nucleus
       Dump(const elle::Natural32 margin = 0) const;
 
       // serialize
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Group);
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Group, elle::serialize::BufferArchive);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group, elle::serialize::BufferArchive);
 
       ELLE_SERIALIZE_FRIEND_FOR(Group);
 

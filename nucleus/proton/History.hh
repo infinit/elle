@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_HISTORY_HH
 
 # include <elle/concept/Fileable.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 # include <elle/radix/Object.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -23,7 +23,7 @@ namespace nucleus
     ///
     class History:
       public elle::radix::Object,
-      public elle::concept::Serializable<History>,
+      public elle::serialize::SerializableMixin<History>,
       public elle::concept::Fileable<>
     {
     public:

@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
                       value,
                       version)
 {
-  archive & static_cast<nucleus::proton::ImmutableBlock&>(value);
+  archive & base_class<nucleus::proton::ImmutableBlock>(value);
 
   if (version == 0)
     {
