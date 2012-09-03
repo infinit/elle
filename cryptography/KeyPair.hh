@@ -25,7 +25,7 @@ namespace elle
     ///
     class KeyPair
       : public radix::Object
-      , public elle::concept::Serializable<KeyPair>
+      , public elle::serialize::SerializableMixin<KeyPair>
     {
     public:
       //
