@@ -177,7 +177,7 @@ namespace elle
 ELLE_SERIALIZE_SPLIT_T1(std::unique_ptr);
 ELLE_SERIALIZE_SPLIT_T1_LOAD(std::unique_ptr, archive, value, version)
 {
-  T1* v = nullptr;
+  typename std::remove_cv<T1>::type* v = nullptr;
   archive >> pointer(v);
   value.reset(v);
 }
