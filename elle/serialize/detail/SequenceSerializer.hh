@@ -32,7 +32,7 @@ namespace elle { namespace serialize { namespace detail {
     // Base class for stl sequences
     template<typename Container_, template <typename> class SaveMethod = stl_insert::PushBack>
       struct SequenceSerializer
-        : public SplitSerializer<Container_>
+        : public elle::serialize::SplitSerializer<Container_>
       {
         typedef Container_ Container;
 
