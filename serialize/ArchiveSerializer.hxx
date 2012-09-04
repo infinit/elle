@@ -201,6 +201,30 @@ namespace elle
   ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, 2)                     \
 /**/
 
+# define ELLE_SERIALIZE_SPLIT(T)                                              \
+  ELLE_SERIALIZE_SPLIT_TN(T, 0)                                               \
+/**/
+# define ELLE_SERIALIZE_SPLIT_LOAD(T, archive, value, version)                \
+  ELLE_SERIALIZE_SPLIT_LOAD_TN(T, archive, value, version, 0)                 \
+/**/
+# define ELLE_SERIALIZE_SPLIT_SAVE(T, archive, value, version)                \
+  ELLE_SERIALIZE_SPLIT_SAVE_TN(T, archive, value, version, 0)                 \
+/**/
+
+# define ELLE_SERIALIZE_SPLIT_T1(T)                                           \
+  ELLE_SERIALIZE_SPLIT_TN(T, 1)                                               \
+/**/
+# define ELLE_SERIALIZE_SPLIT_LOAD_T1(T, archive, value, version)             \
+  ELLE_SERIALIZE_SPLIT_LOAD_TN(T, archive, value, version, 1)                 \
+/**/
+# define ELLE_SERIALIZE_SPLIT_SAVE_T1(T, archive, value, version)             \
+  ELLE_SERIALIZE_SPLIT_SAVE_TN(T, archive, value, version, 1)                 \
+/**/
+
+
+# define ELLE_SERIALIZE_SPLIT_T1_LOAD ELLE_SERIALIZE_SPLIT_LOAD_T1
+# define ELLE_SERIALIZE_SPLIT_T1_SAVE ELLE_SERIALIZE_SPLIT_SAVE_T1
+
 /// Define a simple serializer for the type T<T1, ..., TN>
 # define ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, n)              \
 namespace elle { namespace serialize {                                        \
@@ -249,7 +273,56 @@ elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(    \
   static inline                                                               \
   Concrete<Super const>                                                       \
   base_class(__ESA_TEMPLATE_TYPE(__T, n) const& obj)                          \
-  { return Concrete<Super>(static_cast<Super const&>(obj)); }                 \
+  { return Concrete<Super const>(static_cast<Super const&>(obj)); }           \
+/**/
+
+/// Declare a split serializer for the type = T<T1, ..., Tn> if n > 0 or T
+# define ELLE_SERIALIZE_SPLIT_TN(__T, __n)                                    \
+namespace elle                                                                \
+{                                                                             \
+  namespace serialize                                                         \
+  {                                                                           \
+  __ESA_TEMPLATE_DECL_N(__n)                                                  \
+  struct ArchiveSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>:                    \
+    public BaseArchiveSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>               \
+  {                                                                           \
+    ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(__T, __n)                              \
+    typedef __ESA_TEMPLATE_TYPE(__T, __n) Type;                               \
+                                                                              \
+    template <typename Archive>                                               \
+    static inline                                                             \
+    typename std::enable_if<Archive::mode == ArchiveMode::output>::type       \
+    Serialize(Archive&, Type const&, unsigned int);                           \
+    template <typename Archive>                                               \
+    static inline                                                             \
+    typename std::enable_if<Archive::mode == ArchiveMode::input>::type        \
+    Serialize(Archive&, Type&, unsigned int);                                 \
+  };                                                                          \
+}}                                                                            \
+/**/
+
+# define ELLE_SERIALIZE_SPLIT_SAVE_TN(__T, __archive, __value, __version, __n)\
+__ESA_TEMPLATE_DECL(__n)                                                      \
+template<typename Archive>                                                    \
+typename std::enable_if<                                                      \
+    Archive::mode == elle::serialize::ArchiveMode::output                     \
+>::type                                                                       \
+elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize( \
+    Archive& __archive,                                                       \
+    __ESA_TEMPLATE_TYPE(__T, __n) const& __value,                             \
+    unsigned int __version)                                                   \
+/**/
+
+# define ELLE_SERIALIZE_SPLIT_LOAD_TN(__T, __archive, __value, __version, __n)\
+__ESA_TEMPLATE_DECL(__n)                                                      \
+template<typename Archive>                                                    \
+typename std::enable_if<                                                      \
+    Archive::mode == elle::serialize::ArchiveMode::input                      \
+>::type                                                                       \
+elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize( \
+    Archive& __archive,                                                       \
+    __ESA_TEMPLATE_TYPE(__T, __n)& __value,                                   \
+    unsigned int __version)                                                   \
 /**/
 
 //- internal macros -----------------------------------------------------------
@@ -288,107 +361,6 @@ elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(    \
 # define __ESA_TEMPLATE_TYPE(T, n)                                            \
   BOOST_PP_IF(n, __ESA_TEMPLATE_TYPE_TN(T, n), T)                             \
 /**/
-
-/// Declare a split serializer for the type T
-# define ELLE_SERIALIZE_SPLIT(T)                                                \
-namespace elle { namespace serialize {                                          \
-                                                                                \
-  template<> struct ArchiveSerializer<T>                                        \
-    : public BaseArchiveSerializer<T>                                           \
-    {                                                                           \
-    private:                                                                    \
-      typedef T Type;                                                           \
-                                                                                \
-    public:                                                                     \
-      template<typename Archive>                                                \
-        static void Serialize(Archive& ar, Type& val, unsigned int version)     \
-        {                                                                       \
-          typedef detail::_SplitSerializerSelectMethod<                         \
-              Type                                                              \
-            , Archive::mode                                                     \
-          > Method;                                                             \
-          _ELLE_SERIALIZE_LOG_ACTION(T, version, Archive::mode, val)            \
-            { Method::Serialize(ar, val, version); }                            \
-        }                                                                       \
-        template<typename Archive>                                              \
-          static void Save(Archive& ar, Type const& val, unsigned int version); \
-        template<typename Archive>                                              \
-          static void Load(Archive& ar, Type& val, unsigned int version);       \
-    };                                                                          \
-}}                                                                              \
-  /**/
-
-
-/// Define the Save() method of the split serializer for the type T
-# define ELLE_SERIALIZE_SPLIT_SAVE(T, archive, value, version)                  \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T>::Save(                             \
-                                              Archive& archive,                 \
-                                              Type const& value,                \
-                                              unsigned int version)             \
-  /**/
-
-
-/// Define the Load() method of the split serializer for the type T
-# define ELLE_SERIALIZE_SPLIT_LOAD(T, archive, value, version)                  \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T>::Load(                             \
-                                              Archive& archive,                 \
-                                              Type& value,                      \
-                                              unsigned int version)             \
-  /**/
-
-
-/// Declare a split serializer for the type T<T1>
-# define ELLE_SERIALIZE_SPLIT_T1(T)                                             \
-namespace elle { namespace serialize {                                          \
-                                                                                \
-  template<typename T1> struct ArchiveSerializer<T<T1>>                         \
-    : public BaseArchiveSerializer<T<T1>>                                       \
-    {                                                                           \
-    private:                                                                    \
-      typedef T<T1> Type;                                                       \
-                                                                                \
-    public:                                                                     \
-      template<typename Archive>                                                \
-        static void Serialize(Archive& ar, Type& val, unsigned int version)     \
-        {                                                                       \
-          typedef detail::_SplitSerializerSelectMethod<                         \
-              Type                                                              \
-            , Archive::mode                                                     \
-          > Method;                                                             \
-          _ELLE_SERIALIZE_LOG_ACTION(T<T1>, version, Archive::mode, val)        \
-            { Method::Serialize(ar, val, version); }                            \
-        }                                                                       \
-        template<typename Archive>                                              \
-          static void Save(Archive& ar, Type const& val, unsigned int version); \
-        template<typename Archive>                                              \
-          static void Load(Archive& ar, Type& val, unsigned int version);       \
-    };                                                                          \
-}}                                                                              \
-  /**/
-
-
-/// Define the Save() method of the split serializer for the type T
-# define ELLE_SERIALIZE_SPLIT_T1_SAVE(T, archive, value, version)               \
-template<typename T1>                                                           \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1>>::Save(                         \
-                                              Archive& archive,                 \
-                                              Type const& value,                \
-                                              unsigned int version)             \
-  /**/
-
-
-/// Define the Load() method of the split serializer for the type T
-# define ELLE_SERIALIZE_SPLIT_T1_LOAD(T, archive, value, version)               \
-template<typename T1>                                                           \
-template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1>>::Load(                         \
-                                              Archive& archive,                 \
-                                              Type& value,                      \
-                                              unsigned int version)             \
-  /**/
 
 # include <elle/idiom/Close.hh>
 # include <elle/log.hh>
