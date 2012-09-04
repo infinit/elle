@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,
 {
   assert(version == 0);
 
-  archive & static_cast<nucleus::proton::MutableBlock&>(value);
+  archive & base_class<nucleus::proton::MutableBlock>(value);
 
   archive & value.K;
   archive & value.stamp;

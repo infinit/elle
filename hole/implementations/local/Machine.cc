@@ -123,6 +123,8 @@ namespace hole
                   address,
                   nucleus::proton::Version::Last) == true)
               {
+                // XXX[use backends/fs/MutableBlock.cc]
+
                 nucleus::proton::MutableBlock* current;
 
                 // build a block according to the component.
@@ -165,7 +167,7 @@ namespace hole
 
         // Does the block exist.
         if (nucleus::proton::ImmutableBlock::exists(
-              Hole::Implementation->network, address) == true)
+              Hole::Implementation->network, address) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -189,7 +191,7 @@ namespace hole
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, version) == true)
+              Hole::Implementation->network, address, version) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 

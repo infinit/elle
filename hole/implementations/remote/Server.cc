@@ -204,7 +204,7 @@ namespace hole
 
         // does the block exist.
         if (nucleus::proton::ImmutableBlock::exists(
-              Hole::Implementation->network, address) == true)
+              Hole::Implementation->network, address) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -225,7 +225,7 @@ namespace hole
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, version) == true)
+              Hole::Implementation->network, address, version) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 

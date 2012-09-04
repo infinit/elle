@@ -233,12 +233,12 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't save the descriptor.");
     }
 
-  descriptor.store(this->_description.name);
+  descriptor.store(this->_description._id);
 
   nucleus::proton::Network network;
   nucleus::neutron::Object directory;
 
-  if (network.Create(this->_description.name)          == e ||
+  if (network.Create(this->_description._id)          == e ||
       directory.Restore(this->_description.root_block) == e)
     {
 #include <elle/idiom/Open.hh>
@@ -306,7 +306,7 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
         LOG("Cannot add locus '%s' to the set (ignored).", *it);
       }
   }
-  locusSet.store(this->_description.name);
+  locusSet.store(this->_description._id);
 
   this->_start_process();
 

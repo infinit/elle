@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_ACCESS_HH
 
 # include <elle/types.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 # include <elle/serialize/BufferArchive.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
@@ -21,8 +21,8 @@ namespace nucleus
     /// This class represents an access control list.
     class Access:
       public proton::ContentHashBlock,
-      public elle::concept::Serializable<Access>,
-      public elle::concept::Serializable<
+      public elle::serialize::SerializableMixin<Access>,
+      public elle::serialize::SerializableMixin<
         Access,
         elle::serialize::BufferArchive
       >,
@@ -97,8 +97,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // fileable
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Access);
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Access, elle::serialize::BufferArchive);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access, elle::serialize::BufferArchive);
 
       //
       // attributes

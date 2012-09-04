@@ -37,9 +37,8 @@ namespace nucleus
       this->version = block.version;
 
       // compute the block's digest.
-      if (elle::cryptography::OneWay::Hash(
-            elle::serialize::serializable(block),
-            this->digest) == elle::Status::Error)
+      if (elle::cryptography::OneWay::Hash(block, this->digest)
+          == elle::Status::Error)
         escape("unable to hash the mutable block");
 
       return elle::Status::Ok;
@@ -59,7 +58,7 @@ namespace nucleus
 
       // compute the block's digest.
       if (elle::cryptography::OneWay::Hash(
-            elle::serialize::serializable(block),
+            block,
             digest) == elle::Status::Error
           )
         flee("unable to hash the mutable block");

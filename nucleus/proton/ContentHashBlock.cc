@@ -59,7 +59,7 @@ namespace nucleus
       // compute the address.
       if (address.Create(
             this->family, this->component,
-            elle::serialize::serializable(*this)) == elle::Status::Error)
+            *this) == elle::Status::Error)
         escape("unable to compute the CHB's address");
 
       return elle::Status::Ok;
@@ -89,7 +89,7 @@ namespace nucleus
       // component, K). therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
       if (self.Create(this->family, this->component,
-                      elle::serialize::serializable(*this)) == elle::Status::Error)
+                      *this) == elle::Status::Error)
         escape("unable to compute the CHB's address");
 
       // compare the address with the given one.

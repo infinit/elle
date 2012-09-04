@@ -3,7 +3,6 @@
 
 # include <elle/radix/Object.hh>
 # include <elle/cryptography/fwd.hh>
-# include <elle/concept/Serializable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/Printable.hh>
 
@@ -72,7 +71,7 @@ namespace nucleus
       /// this method returns a unique representation of the address.
       elle::String const
       unique() const;
-      
+
       //
       // interfaces
       //

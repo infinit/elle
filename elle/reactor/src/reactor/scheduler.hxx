@@ -1,6 +1,8 @@
 #ifndef INFINIT_REACTOR_SCHEDULER_HXX
 # define INFINIT_REACTOR_SCHEDULER_HXX
 
+# include <reactor/thread.hh>
+
 namespace reactor
 {
   /*----------------.

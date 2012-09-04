@@ -24,6 +24,11 @@ namespace elle { namespace serialize {
       public:
         OutputIniArchive& operator <<(elle::format::ini::File const& ini_file);
         OutputIniArchive& operator <<(elle::format::ini::Section const& section);
+        template <typename T> // XXX
+        OutputIniArchive& operator <<(Concrete<T> const& value)
+        {
+          return *this << value.value;
+        }
       };
 
       class InputIniArchive
@@ -38,6 +43,11 @@ namespace elle { namespace serialize {
 
       public:
         InputIniArchive& operator >>(elle::format::ini::File& file);
+        template <typename T> // XXX
+        InputIniArchive& operator >>(Concrete<T> const& value)
+        {
+          return *this >> value.value;
+        }
       };
 
       ELLE_SERIALIZE_MERGE_ARCHIVES(IniArchive, InputIniArchive, OutputIniArchive);

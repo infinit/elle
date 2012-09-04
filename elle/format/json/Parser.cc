@@ -22,6 +22,12 @@ namespace elle
     namespace json
     {
 
+      template class Parser<std::string>;
+      template<> std::string const Parser<std::string>::_whitespaces = " \r\n\t";
+      template<> std::string const Parser<std::string>::_nullString  = "null";
+      template<> std::string const Parser<std::string>::_trueString  = "true";
+      template<> std::string const Parser<std::string>::_falseString = "false";
+
       template<typename CharType>
       std::unique_ptr<Object>
       parse(std::basic_istream<CharType>& in,
@@ -351,13 +357,6 @@ namespace elle
             in.ignore(256, c);
           }
       }
-
-
-      template class Parser<std::string>;
-      template<> std::string const Parser<std::string>::_whitespaces = " \r\n\t";
-      template<> std::string const Parser<std::string>::_nullString  = "null";
-      template<> std::string const Parser<std::string>::_trueString  = "true";
-      template<> std::string const Parser<std::string>::_falseString = "false";
 
       template
       std::unique_ptr<Object>

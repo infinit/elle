@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_ENSEMBLE_HH
 
 # include <elle/types.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/cryptography/fwd.hh>
 
@@ -20,8 +20,8 @@ namespace nucleus
     /// group, known as the fellows.
     class Ensemble:
       public proton::ContentHashBlock,
-      public elle::concept::Serializable<Ensemble>,
-      public elle::concept::Serializable<
+      public elle::serialize::SerializableMixin<Ensemble>,
+      public elle::serialize::SerializableMixin<
         Ensemble,
         elle::serialize::BufferArchive
         >
@@ -102,8 +102,8 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Ensemble);
 
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Ensemble);
-      ELLE_CONCEPT_SERIALIZABLE_METHODS(Ensemble, elle::serialize::BufferArchive);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble, elle::serialize::BufferArchive);
 
       //
       // attributes

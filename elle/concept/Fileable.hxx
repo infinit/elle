@@ -1,6 +1,7 @@
 #ifndef ELLE_CONCEPT_FILEABLE_HXX
 # define ELLE_CONCEPT_FILEABLE_HXX
 
+# include <elle/idiom/Close.hh>
 # include <fstream>
 
 # include <elle/log.hh>
@@ -17,7 +18,7 @@ namespace elle
   namespace concept
   {
 
-    template<__ECS_ARCHIVE_TPL(Archive)>
+    template<__ESS_ARCHIVE_TPL(Archive)>
     void
     Fileable<Archive>::load(elle::io::Path const& path)
     {
@@ -39,7 +40,7 @@ namespace elle
           ELLE_TRACE_SCOPE("deserializing the instance '%p' from the file '%s'",
                            this, path);
 
-          typedef contract::_Serializable<Archive> interface_t;
+          typedef serialize::_Serializable<Archive> interface_t;
           assert(dynamic_cast<interface_t*>(this) != nullptr);
           static_cast<interface_t*>(this)->deserialize(in);
         }
@@ -51,7 +52,7 @@ namespace elle
         }
     }
 
-    template<__ECS_ARCHIVE_TPL(Archive)>
+    template<__ESS_ARCHIVE_TPL(Archive)>
     void
     Fileable<Archive>::store(elle::io::Path const& path) const
     {
@@ -75,7 +76,7 @@ namespace elle
           ELLE_TRACE_SCOPE("serializing the instance '%p' to the file '%s'",
                            this, path);
 
-          typedef contract::_Serializable<Archive> interface_t;
+          typedef serialize::_Serializable<Archive> interface_t;
           assert(dynamic_cast<interface_t const*>(this) != nullptr);
           static_cast<interface_t const*>(this)->serialize(out);
         }
@@ -87,7 +88,7 @@ namespace elle
         }
     }
 
-    template<__ECS_ARCHIVE_TPL(Archive)>
+    template<__ESS_ARCHIVE_TPL(Archive)>
     void
     Fileable<Archive>::erase(elle::io::Path const& path)
     {
@@ -100,7 +101,7 @@ namespace elle
           elle::sprintf("unable to erase the file '%s'", path));
     }
 
-    template<__ECS_ARCHIVE_TPL(Archive)>
+    template<__ESS_ARCHIVE_TPL(Archive)>
     Boolean
     Fileable<Archive>::exists(elle::io::Path const& path)
     {

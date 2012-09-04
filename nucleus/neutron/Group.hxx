@@ -15,7 +15,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
 {
   assert(version == 0);
 
-  archive >> static_cast<nucleus::proton::ImprintBlock&>(value);
+  archive >> base_class<nucleus::proton::ImprintBlock>(value);
 
   archive >> value._description;
   archive >> value._pass_K;
@@ -34,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
   assert(version == 0);
   assert(value._signature != elle::cryptography::Signature::Null);
 
-  archive << static_cast<nucleus::proton::ImprintBlock const&>(value);
+  archive << base_class<nucleus::proton::ImprintBlock>(value);
 
   archive << value._description;
   archive << value._pass_K;

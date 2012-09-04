@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_BLOCK_HH
 
 # include <elle/serialize/BufferArchive.hh>
-# include <elle/concept/Serializable.hh>
+# include <elle/serialize/Serializable.hh>
 # include <elle/concept/Fileable.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -13,10 +13,10 @@
 
 // XXX remove this when design allows Serializable contract to be enforced
 # define __NPB_OARCHIVE(...)                                                  \
-  elle::concept::contract::Serializable<__VA_ARGS__>::OutputArchive           \
+  elle::serialize::Serializable<__VA_ARGS__>::OutputArchive                   \
   /**/
 # define __NPB_IARCHIVE(...)                                                  \
-  elle::concept::contract::Serializable<__VA_ARGS__>::InputArchive            \
+  elle::serialize::Serializable<__VA_ARGS__>::InputArchive                    \
   /**/
 # define __NPB_ISTREAM(...)                                                   \
   __NPB_IARCHIVE(__VA_ARGS__)::StreamType                                     \
@@ -63,8 +63,8 @@ namespace nucleus
     class Block:
       public elle::radix::Object,
       public elle::io::Dumpable,
-      public elle::concept::contract::Serializable<>,
-      public elle::concept::contract::Serializable<
+      public elle::serialize::Serializable<>,
+      public elle::serialize::Serializable<
         elle::serialize::BufferArchive
       >,
       public elle::concept::Fileable<>

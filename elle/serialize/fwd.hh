@@ -14,32 +14,34 @@ namespace elle
 
     template<ArchiveMode mode>
     class BinaryArchive;
-    typedef BinaryArchive<ArchiveMode::Output> OutputBinaryArchive;
-    typedef BinaryArchive<ArchiveMode::Input> InputBinaryArchive;
+    typedef BinaryArchive<ArchiveMode::Output>      OutputBinaryArchive;
+    typedef BinaryArchive<ArchiveMode::Input>       InputBinaryArchive;
 
     template<ArchiveMode mode>
     class Base64Archive;
-    typedef Base64Archive<ArchiveMode::Output> OutputBase64Archive;
-    typedef Base64Archive<ArchiveMode::Input> InputBase64Archive;
+    typedef Base64Archive<ArchiveMode::Output>      OutputBase64Archive;
+    typedef Base64Archive<ArchiveMode::Input>       InputBase64Archive;
 
     template<ArchiveMode mode>
     class HexadecimalArchive;
     typedef HexadecimalArchive<ArchiveMode::Output> OutputHexadecimalArchive;
-    typedef HexadecimalArchive<ArchiveMode::Input> InputHexadecimalArchive;
+    typedef HexadecimalArchive<ArchiveMode::Input>  InputHexadecimalArchive;
 
     template<ArchiveMode mode>
     class JSONArchive;
-    class OutputJSONArchive;
-    class InputJSONArchive;
+    typedef JSONArchive<ArchiveMode::input>         InputJSONArchive;
+    typedef JSONArchive<ArchiveMode::output>        OutputJSONArchive;
 
     template<ArchiveMode mode>
     class BufferArchive;
-    typedef BufferArchive<ArchiveMode::Input> InputBufferArchive;
-    typedef BufferArchive<ArchiveMode::Output> OutputBufferArchive;
+    typedef BufferArchive<ArchiveMode::Input>       InputBufferArchive;
+    typedef BufferArchive<ArchiveMode::Output>      OutputBufferArchive;
 
     template<typename T>
     struct ArchiveSerializer;
 
+    template <template<ArchiveMode> class Archive>
+    struct _Serializable;
   }
 }
 

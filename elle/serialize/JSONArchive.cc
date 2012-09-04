@@ -19,22 +19,22 @@ namespace elle
   namespace serialize
   {
 
-    ArchiveMode const OutputJSONArchive::_DictStream::mode = ArchiveMode::Output;
-    ArchiveMode const InputJSONArchive::_DictStream::mode = ArchiveMode::Input;
+    ArchiveMode const JSONArchive<ArchiveMode::output>::_DictStream::mode = ArchiveMode::Output;
+    ArchiveMode const JSONArchive<ArchiveMode::input>::_DictStream::mode = ArchiveMode::Input;
 
-    OutputJSONArchive::OutputJSONArchive(StreamType& stream, json::Object&& obj)
+    JSONArchive<ArchiveMode::output>::JSONArchive(StreamType& stream, json::Object&& obj)
       : BaseClass(stream)
     {
       obj.repr(this->stream());
     }
 
-    OutputJSONArchive::OutputJSONArchive(StreamType& stream, json::Object const& obj)
+    JSONArchive<ArchiveMode::output>::JSONArchive(StreamType& stream, json::Object const& obj)
       : BaseClass(stream)
     {
       obj.repr(this->stream());
     }
 
-    void OutputJSONArchive::Save(std::string const& val)
+    void JSONArchive<ArchiveMode::output>::Save(std::string const& val)
     {
       elle::format::json::String(val).repr(this->stream());
     }

@@ -27,7 +27,7 @@ namespace elle
           {
             ELLE_TRACE_SCOPE("Save %p of type %s to a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
-            typedef contract::_Serializable<Archive> interface_t;
+            typedef serialize::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t const*>(this) != nullptr);
             assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t const*>(this)->serialize(ss);
@@ -51,7 +51,7 @@ namespace elle
             ELLE_LOG_COMPONENT("elle.concept");
             ELLE_TRACE_SCOPE("Load %p of type %s from a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
-            typedef contract::_Serializable<Archive> interface_t;
+            typedef serialize::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t*>(this) != nullptr);
             assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t*>(this)->deserialize(ss);
