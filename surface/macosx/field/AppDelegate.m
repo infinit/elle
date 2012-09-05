@@ -26,8 +26,8 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize isLoginIn;
 @synthesize isUpdating;
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    // Init variables
     pendingCount = 0;
     [OOEnvironmentVar setEnvironmentVar];
     self.isUpdating = YES;
@@ -41,8 +41,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [self tryToLogin];
 }
 
-- (void)awakeFromNib
-{
+- (void)awakeFromNib {
     statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
     [statusItem setMenu:statusMenu];
     [self setDefaultStatusIcon];
@@ -81,18 +80,17 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [statusItem setHighlightMode:YES];
 }
 
-- (void)launch8Watchdog
-{
+- (void)launch8Watchdog {
+    NSLog(@"Launch 8watchdog");
     [[OOPhone getInstance] launchWatchdog];
 }
 
-- (void)stop8Watchdog
-{
+- (void)stop8Watchdog {
+    NSLog(@"Stop 8watchdog");
     [[OOPhone getInstance] stopWatchdog];
 }
 
-- (void)tryToLogin
-{
+- (void)tryToLogin {
     [statusItem setMenu:statusLoginMenu];
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
@@ -179,8 +177,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [self.browserWindowController close];
 }
 
-- (void)updateStatusItemImageWithTimer:(NSTimer*)arg1
-{
+- (void)updateStatusItemImageWithTimer:(NSTimer*)arg1 {
     //get the image for the current frame
     currentFrame = (++currentFrame % 18) + 1;
     NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%ld",currentFrame]];
@@ -188,32 +185,26 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     [statusItem setImage:image];
 }
 
-- (IBAction)openInfinitNeworks:(id)sender
-{
+- (IBAction)openInfinitNeworks:(id)sender {
     [NSApp activateIgnoringOtherApps:YES];
     [[browserWindowController window] orderFrontRegardless];
 }
 
-- (IBAction)openPreferenceWindow:(id)sender
-{
+- (IBAction)openPreferenceWindow:(id)sender {
     OOPreferencesWindowController* preferencesWindowController = [OOPreferencesWindowController getInstance];
     [preferencesWindowController showWindow:self];
 }
 
-- (IBAction)launchWebsite:(id)sender
-{
+- (IBAction)launchWebsite:(id)sender {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io"]];
 }
 
-- (IBAction)launchHelpCenter:(id)sender
-{
+- (IBAction)launchHelpCenter:(id)sender {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io/help"]];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
-    NSLog(@"try stoping watchdog");
     [self stop8Watchdog];
-    NSLog(@"watchdog stopped");
 }
 
 @end

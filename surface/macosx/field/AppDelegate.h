@@ -29,7 +29,7 @@ extern NSString *OOOpenSetupWindowAndStopWatchdog;
 
 @property(assign)   IBOutlet NSWindow               *window;
 @property(assign)   NSInteger                       currentFrame;
-@property           NSTimer                         *animTimer;
+@property(retain)   NSTimer                         *animTimer;
 @property           BOOL                            isPending;
 @property           BOOL                            isUpdating;
 @property           BOOL                            isLoginIn;

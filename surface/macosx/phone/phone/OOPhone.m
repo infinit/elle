@@ -17,8 +17,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 @synthesize _gap_State;
 
-+(OOPhone *)getInstance{
-    
++ (OOPhone *)getInstance {
     static OOPhone *singleton;
     @synchronized(self){
         if (!singleton){
@@ -118,20 +117,30 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return;
 }
 
-- (NSArray*)getUserNetworks {
-    NSMutableArray* returnArray = [[NSMutableArray alloc] init];
-    gap_refresh_networks(self._gap_State);
-    char** networkIds = gap_networks(self._gap_State);
+- (void)getUserNetworksAndPerformSelector:(SEL)arg1 forObject:(id)arg2 {
     
-    if (networkIds == NULL) return returnArray;
-    
-    while (*networkIds) {
-        char* p = *networkIds;
-        NSString *myString = [[NSString alloc] initWithUTF8String:p];
-        [returnArray addObject:myString];
-        networkIds++;
-    }
-    return returnArray;
+    [self addOperationWithBlock:^(void) {
+        NSString* agregateIds = @"";
+        gap_refresh_networks(self._gap_State);
+        char** networkIds = gap_networks(self._gap_State);
+        
+        if (networkIds != NULL) {
+            while (*networkIds) {
+                char* p = *networkIds;
+                NSString *idString = [[NSString alloc] initWithUTF8String:p];
+                agregateIds = [agregateIds stringByAppendingString:idString];
+                networkIds++;
+                if (*networkIds) {
+                    agregateIds = [agregateIds stringByAppendingString:@" "];
+                }
+            }
+        }
+        
+        NSArray* returnArray = [agregateIds
+                                componentsSeparatedByString:@" "];
+        [arg2 performSelectorOnMainThread:arg1 withObject:returnArray waitUntilDone:NO];
+    }];
+    return;
 }
 
 - (NSArray*)getNetworkUsersWithNetworkId:(NSString*)arg1 {
