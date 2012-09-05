@@ -110,10 +110,13 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return;
 }
 
-- (void)addUser:(NSString *)arg1 toNetwork:(NSString *)arg2 {
-    gap_network_add_user(self._gap_State,
-                         [arg2 cStringUsingEncoding:NSUTF8StringEncoding],
-                         [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
+- (void)addUser:(NSString *)arg1
+      toNetwork:(NSString *)arg2 {
+    [self addOperationWithBlock:^(void) {
+        gap_network_add_user(self._gap_State,
+                             [arg2 cStringUsingEncoding:NSUTF8StringEncoding],
+                             [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
+    }];
     return;
 }
 
