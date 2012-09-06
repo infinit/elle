@@ -37,7 +37,7 @@
 /// ELLE_SERIAZE_SIMPLE(A, archive, value, version)
 /// {
 ///    // 0 is the current and only version of A serializer.
-///   assert(version == 0);
+///   enforce(version == 0);
 ///
 ///   // both way serialization operator
 ///   archive & i;
@@ -46,7 +46,7 @@
 /// -----------------------------------
 ///
 
-# include <cassert>
+# include <stdexcept>
 # include <type_traits>
 
 # include <elle/print.hh>
@@ -84,6 +84,21 @@ namespace elle
       {
         return Concrete<Super const>(static_cast<Super const&>(obj));
       }
+
+      typedef std::runtime_error Exception;
+
+      static inline
+      void
+      enforce(bool pred, char const* msg = nullptr)
+      {
+        if (!pred)
+          throw Exception{
+            msg ?
+            std::string(msg) :
+            "Couldn't serialize '" + std::string{msg} + "'"
+          };
+      }
+
       ///
       /// Having a chance to construct yourself the object (with a placement new)
       /// can be achieved by overriding this function.
@@ -274,6 +289,10 @@ elle::serialize::ArchiveSerializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(    \
   Concrete<Super const>                                                       \
   base_class(__ESA_TEMPLATE_TYPE(__T, n) const& obj)                          \
   { return Concrete<Super const>(static_cast<Super const&>(obj)); }           \
+  static inline                                                               \
+  void                                                                        \
+  enforce(bool pred, char const* msg = nullptr)                               \
+  { BaseArchiveSerializer<__ESA_TEMPLATE_TYPE(__T, n)>::enforce(pred, msg); } \
 /**/
 
 /// Declare a split serializer for the type = T<T1, ..., Tn> if n > 0 or T

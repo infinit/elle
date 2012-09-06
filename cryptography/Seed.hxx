@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(elle::cryptography::Seed,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.region;
 }
 

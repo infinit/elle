@@ -160,7 +160,6 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          assert(version == 0);
           _ELLE_SERIALIZE_LOG_ACTION(
             _(elle::network::Bundle::Inputs<G, elle::radix::Parameters<T...>>),
             version, Archive::mode, value
@@ -206,7 +205,6 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          assert(version == 0);
           _ELLE_SERIALIZE_LOG_ACTION(
             _(elle::network::Bundle::Outputs<G, elle::radix::Parameters<T...>>),
             version, Archive::mode, value

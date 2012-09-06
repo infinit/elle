@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(elle::cryptography::Code,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.region;
   // std::cerr << "CODE SERIALIZATION: " << value.region.size << std::endl;
 }
