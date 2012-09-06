@@ -5,7 +5,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 // XXX The type elle::Large may not have a reasonable maximum size, in which
 // case we'll have to change the initial alloc system (and remove these

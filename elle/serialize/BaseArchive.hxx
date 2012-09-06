@@ -2,7 +2,7 @@
 # define ELLE_SERIALIZE_BASEARCHIVE_HXX
 
 # include "BaseArchive.hh"
-# include "ArchiveSerializer.hxx"
+# include "Serializer.hh"
 
 # include <elle/idiom/Close.hh>
 #  include <iostream> // XXX
@@ -27,7 +27,7 @@ namespace elle
     //-------------------------------------------------------------------------
 
     /// Generic save method. Uses an explicit specialization of
-    /// ArchiveSerializer.
+    /// Serializer.
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     template <typename T>
     inline
@@ -40,7 +40,7 @@ namespace elle
             ClassVersionType(ArchivableClass<T>::version)
         );
 
-      typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       // this const_cast is safe since the archive is in output mode
       Serializer::Serialize(
           this->self(),
@@ -52,7 +52,7 @@ namespace elle
     //-------------------------------------------------------------------------
 
     /// Generic load method. Uses an explicit specialization of
-    /// ArchiveSerializer.
+    /// Serializer.
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     template <typename T>
     inline
@@ -63,14 +63,14 @@ namespace elle
       if (StoreClassVersion<T>::value == true)
         Access::Load(this->self(), classVersion);
 
-      typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(this->self(), val, classVersion.version);
     }
 
     //-------------------------------------------------------------------------
 
     /// Generic load construct. Uses an explicit specialization of
-    /// ArchiveSerializer.
+    /// Serializer.
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     template <typename T>
     inline
@@ -81,7 +81,7 @@ namespace elle
       //ClassVersionType classVersion(0);
       //if (StoreClassVersion<T>::value == true)
       //  Access::Load(this->self(), classVersion);
-      typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       ELLE_TRACE("Load construct %p with its concrete type %s",
                  this, ELLE_PRETTY_TYPE(T)

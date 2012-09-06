@@ -80,7 +80,7 @@ struct A
 
 
 namespace elle { namespace serialize {
-  template<> struct ArchiveSerializer<A>
+  template<> struct Serializer<A>
   {
     template<typename Archive>
     static void Serialize(Archive& ar, A& a, unsigned int)
@@ -107,7 +107,7 @@ struct B
 
 
 namespace elle { namespace serialize {
-  template<> struct ArchiveSerializer<B>
+  template<> struct Serializer<B>
   {
     template<typename Archive>
     static void Serialize(Archive& ar, B& b, unsigned int)

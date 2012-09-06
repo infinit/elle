@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
 
 # include <elle/cryptography/PublicKey.hh>

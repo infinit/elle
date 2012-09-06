@@ -3,7 +3,7 @@
 
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 # include <nucleus/Nucleus.hh>
 

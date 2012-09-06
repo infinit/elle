@@ -3,13 +3,13 @@
 
 # include <utility>
 
-# include "ArchiveSerializer.hxx"
+# include "Serializer.hh"
 
 namespace elle { namespace serialize {
 
 
     template<typename First, typename Second>
-      struct ArchiveSerializer<std::pair<First, Second>>
+      struct Serializer<std::pair<First, Second>>
         : public SplitSerializer<std::pair<First, Second>>
       {
         template<typename Archive>

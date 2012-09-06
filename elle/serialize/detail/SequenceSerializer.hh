@@ -3,7 +3,7 @@
 
 # include <boost/foreach.hpp>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 namespace elle { namespace serialize { namespace detail {
 

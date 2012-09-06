@@ -46,7 +46,7 @@ namespace nucleus
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
                       archive,

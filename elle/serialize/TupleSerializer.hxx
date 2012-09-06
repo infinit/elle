@@ -4,7 +4,7 @@
 # include <cassert>
 # include <tuple>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 namespace elle
 {
@@ -46,7 +46,7 @@ namespace elle
 
     // XXX could be done without variadic templates
     template<typename... T>
-      struct ArchiveSerializer<std::tuple<T...>>
+      struct Serializer<std::tuple<T...>>
         : public SplitSerializer<std::tuple<T...>>
       {
         template<typename Archive>

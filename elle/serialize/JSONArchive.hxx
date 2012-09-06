@@ -9,7 +9,7 @@
 namespace elle { namespace serialize {
 
     ///
-    /// an ArchiveSerializer while receive this class which proxies
+    /// an Serializer while receive this class which proxies
     /// calls to a dictionary
     ///
     class OutputJSONArchive::_DictStream
@@ -78,7 +78,7 @@ namespace elle { namespace serialize {
       if (StoreClassVersion<T>::value == true)
         dict << NamedValue<int32_t const>("_class_version", ArchivableClass<T>::version);
 
-      typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(
           dict,
           const_cast<T&>(val),
@@ -144,7 +144,7 @@ namespace elle { namespace serialize {
           unsigned int version = 0;
           if (StoreClassVersion<T>::value == true)
             dstream >> NamedValue<unsigned int>("_class_version", version);
-          typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+          typedef Serializer<typename std::remove_cv<T>::type> Serializer;
           Serializer::Serialize(
               dstream,
               const_cast<T&>(value),
@@ -171,7 +171,7 @@ namespace elle { namespace serialize {
       unsigned int version = 0;
       if (StoreClassVersion<T>::value == true)
         dstream >> NamedValue<unsigned int>("_class_version", version);
-      typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(
           dstream,
           const_cast<T&>(val),

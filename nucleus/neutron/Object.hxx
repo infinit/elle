@@ -4,7 +4,7 @@
 # include <cassert>
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 # include <nucleus/neutron/Author.hh>
 

@@ -223,7 +223,7 @@ namespace nucleus
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
 
 ELLE_SERIALIZE_SIMPLE_T1(nucleus::proton::Contents, ar, value, version)
