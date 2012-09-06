@@ -226,7 +226,7 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(lune::Map,
                              value,
                              version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive << static_cast<
       typename Archive::SequenceSizeType
@@ -246,7 +246,7 @@ ELLE_SERIALIZE_SPLIT_T1_LOAD(lune::Map,
                              value,
                              version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   typename Archive::SequenceSizeType size;
   archive >> size;

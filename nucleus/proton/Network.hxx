@@ -8,7 +8,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Network,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.name;
 }
 

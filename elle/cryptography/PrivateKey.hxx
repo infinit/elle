@@ -98,9 +98,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PrivateKey,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
-  assert(value.key() != nullptr);
+  enforce(value.key() != nullptr);
 
   archive << *value.key()->pkey.rsa->n;
   archive << *value.key()->pkey.rsa->e;
@@ -117,7 +117,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PrivateKey,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   struct ScopeGuard
     {
       bool              track;
@@ -174,7 +174,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PrivateKey,
   value.~PrivateKey();
   new (&value) elle::cryptography::PrivateKey();
 
-  assert(value.key() == nullptr);
+  enforce(value.key() == nullptr);
 
   auto res = value.Create(
       guard.n,

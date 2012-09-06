@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Phrase,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.port;
   archive & value.pass;

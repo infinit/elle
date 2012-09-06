@@ -71,7 +71,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   if (value.digest != nullptr)
     {
@@ -91,7 +91,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   delete value.digest;
   value.digest = nullptr;

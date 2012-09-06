@@ -80,7 +80,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Token,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & elle::serialize::pointer(value._code);
 }

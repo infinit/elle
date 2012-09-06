@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(hole::Model,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.type;
 }

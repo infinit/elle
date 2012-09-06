@@ -69,7 +69,8 @@ namespace elle
     //
 
     template<typename T1>
-    struct ArchiveSerializer<Pointer<T1>>
+    struct ArchiveSerializer<Pointer<T1>>:
+      public BaseArchiveSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
       template<typename Archive>
@@ -79,7 +80,7 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
-          assert(version == 0);
+          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -99,7 +100,7 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
-          assert(version == 0);
+          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
           if (value._ptr != nullptr)
             {
               archive << true
@@ -118,7 +119,8 @@ namespace elle
     };
 
     template<typename T1>
-    struct ArchiveSerializer<AlivePointer<T1>>
+    struct ArchiveSerializer<AlivePointer<T1>>:
+      public BaseArchiveSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
       template<typename Archive>
@@ -128,7 +130,7 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
-          assert(version == 0);
+          BaseArchiveSerializer<AlivePointer<T1>>::enforce(version == 0);
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -144,7 +146,7 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
-          assert(version == 0);
+          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
           if (value._ptr == nullptr)
             throw std::runtime_error("Pointer is null, cannot archive it");
           archive << *(value._ptr);

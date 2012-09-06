@@ -54,7 +54,6 @@ namespace elle
                            std::tuple<T...>& value,
                            unsigned int version)
           {
-            assert(version == 0);
             detail::TupleAccess<sizeof...(T)>::Load(ar, value);
           }
 
@@ -63,7 +62,6 @@ namespace elle
                            std::tuple<T...> const& value,
                            unsigned int version)
           {
-            assert(version == 0);
             detail::TupleAccess<sizeof...(T)>::Save(ar, value);
           }
       };

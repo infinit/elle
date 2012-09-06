@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Location,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.address;
   archive & value.version;

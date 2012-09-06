@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(elle::utility::Duration,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.unit;
   archive & value.value;
 }

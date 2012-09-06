@@ -99,7 +99,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   // Deleter for dupped large
   struct LargeDeleter
@@ -127,7 +127,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
   value.~PublicKey();
   new (&value) elle::cryptography::PublicKey;
 
-  assert(value.key() == nullptr);
+  enforce(value.key() == nullptr);
 
   if (value.Create(n.get(),
                    e.get()) == Status::Error)
@@ -141,7 +141,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
       n.release();
       e.release();
     }
-  assert(value.key() != nullptr);
+  enforce(value.key() != nullptr);
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
@@ -149,8 +149,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
                           value,
                           version)
 {
-  assert(version == 0);
-  assert(value.key() != nullptr);
+  enforce(version == 0);
+  enforce(value.key() != nullptr);
 
   archive << *(value.key()->pkey.rsa->n)
           << *(value.key()->pkey.rsa->e);

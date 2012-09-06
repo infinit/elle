@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Author,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.role;
 

@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::gear::Group,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.location;
   archive & elle::serialize::pointer(value.group);

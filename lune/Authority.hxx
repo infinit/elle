@@ -11,7 +11,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Authority,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.type;
   archive & elle::serialize::alive_pointer(value.cipher);

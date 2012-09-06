@@ -12,7 +12,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value._id;
   archive & value.name;

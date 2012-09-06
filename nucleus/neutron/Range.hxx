@@ -397,7 +397,7 @@ ELLE_SERIALIZE_SPLIT_T1_LOAD(nucleus::neutron::Range,
                              version)
 {
   typedef typename Archive::SequenceSizeType SizeType;
-  assert(version == 0);
+  enforce(version == 0);
 
   SizeType size;
   archive >> size;
@@ -414,7 +414,7 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::neutron::Range,
                              version)
 {
   typedef typename Archive::SequenceSizeType SizeType;
-  assert(version == 0);
+  enforce(version == 0);
   archive << static_cast<SizeType>(value.container.size());
 
   auto it = value.container.begin(),

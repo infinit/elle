@@ -11,7 +11,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Set,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.loci;
 }

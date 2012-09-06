@@ -17,7 +17,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Ensemble,
 {
   typename Archive::SequenceSizeType size;
 
-  assert(version == 0);
+  enforce(version == 0);
 
   archive >> base_class<nucleus::proton::ContentHashBlock>(value);
   archive >> size;
@@ -32,7 +32,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Ensemble,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive << base_class<nucleus::proton::ContentHashBlock>(value);
   archive <<

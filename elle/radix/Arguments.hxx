@@ -2492,7 +2492,6 @@ namespace elle
         template<typename Archive> static void
           Serialize(Archive& ar, Type& value, unsigned int version)
           {
-            assert(version == 0);
             typedef elle::radix::detail::ArgumentsSerializer<sizeof...(T), T...> Serializer;
             _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments<radix::Parameters<T...>>, version, Archive::mode, value)
             {
