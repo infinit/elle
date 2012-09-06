@@ -87,7 +87,7 @@ namespace elle
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 # include <elle/cryptography/LargeSerializer.hxx>
 
