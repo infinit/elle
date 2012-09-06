@@ -38,7 +38,7 @@ namespace elle
     typedef BufferArchive<ArchiveMode::Output>      OutputBufferArchive;
 
     template<typename T>
-    struct ArchiveSerializer;
+    struct Serializer;
 
     template <template<ArchiveMode> class Archive>
     struct _Serializable;
@@ -59,6 +59,6 @@ namespace elle
 /// -----------------
 ///
 #define ELLE_SERIALIZE_FRIEND_FOR(T)                      \
-  friend struct elle::serialize::ArchiveSerializer<T>     \
+  friend struct elle::serialize::Serializer<T>     \
 
 #endif

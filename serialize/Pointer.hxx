@@ -3,7 +3,7 @@
 
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 # include <elle/serialize/Pointer.hh>
 
@@ -15,7 +15,7 @@ namespace elle
     template<typename T>
     class Pointer
     {
-      friend class ArchiveSerializer<Pointer<T>>;
+      friend class Serializer<Pointer<T>>;
     private:
       T*& _ptr;
     public:
@@ -31,7 +31,7 @@ namespace elle
     template<typename T>
     class AlivePointer
     {
-      friend class ArchiveSerializer<AlivePointer<T>>;
+      friend class Serializer<AlivePointer<T>>;
     private:
       T*& _ptr;
     public:
@@ -69,8 +69,8 @@ namespace elle
     //
 
     template<typename T1>
-    struct ArchiveSerializer<Pointer<T1>>:
-      public BaseArchiveSerializer<Pointer<T1>>
+    struct Serializer<Pointer<T1>>:
+      public BaseSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
       template<typename Archive>
@@ -80,7 +80,7 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
-          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
+          BaseSerializer<Pointer<T1>>::enforce(version == 0);
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -100,7 +100,7 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
-          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
+          BaseSerializer<Pointer<T1>>::enforce(version == 0);
           if (value._ptr != nullptr)
             {
               archive << true
@@ -119,8 +119,8 @@ namespace elle
     };
 
     template<typename T1>
-    struct ArchiveSerializer<AlivePointer<T1>>:
-      public BaseArchiveSerializer<Pointer<T1>>
+    struct Serializer<AlivePointer<T1>>:
+      public BaseSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
       template<typename Archive>
@@ -130,7 +130,7 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
-          BaseArchiveSerializer<AlivePointer<T1>>::enforce(version == 0);
+          BaseSerializer<AlivePointer<T1>>::enforce(version == 0);
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -146,7 +146,7 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
-          BaseArchiveSerializer<Pointer<T1>>::enforce(version == 0);
+          BaseSerializer<Pointer<T1>>::enforce(version == 0);
           if (value._ptr == nullptr)
             throw std::runtime_error("Pointer is null, cannot archive it");
           archive << *(value._ptr);

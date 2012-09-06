@@ -29,7 +29,7 @@ namespace elle
     class Buffer
       : public io::Dumpable
     {
-      friend class serialize::ArchiveSerializer<Buffer>;
+      friend class serialize::Serializer<Buffer>;
     public:
       typedef Byte                                          ContentType;
       typedef std::unique_ptr<ContentType, detail::MallocDeleter> ContentPtr;
