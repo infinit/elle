@@ -41,7 +41,7 @@ class Packager(BasePackager):
                 os.path.join(pkgdir, 'Infinit.app'),
                 symlinks=True,
             )
-            for dir_ in ['lib']:
+            for dir_ in ['lib', 'bin']:
                 shutil.copytree(
                     os.path.join(build_env.directory, dir_),
                     os.path.join(pkgdir, 'Infinit.app/Contents/Resources', dir_),
@@ -91,6 +91,7 @@ class Packager(BasePackager):
                 'dmgfile': path,
                 'pkgdir': pkgdir,
             })
+            
             if res != 0:
                 raise Exception("Couldn't create the dmg file")
             shutil.copyfile(

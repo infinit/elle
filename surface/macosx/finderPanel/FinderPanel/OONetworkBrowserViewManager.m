@@ -168,19 +168,22 @@
     }
 }
 
-- (void)updateNetworks
-{
-    NSArray* networkIds = [[OOPhone getInstance] getUserNetworks];
+- (void)perfomeUpdateNetworks:(NSArray*)arg1{
     NSInteger i, n;
-    n = [networkIds count];
+    n = [arg1 count];
     for (i = 0; i < n; i++)
     {
-        NSString* networkId = [networkIds objectAtIndex:i];
+        NSString* networkId = [arg1 objectAtIndex:i];
         [self addNetworkWithId:networkId];
     }
     
     // Update the data source in the main thread.
     [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
+}
+
+- (void)updateNetworks
+{
+    [[OOPhone getInstance] getUserNetworksAndPerformSelector:@selector(perfomeUpdateNetworks:) forObject:self];
 }
 
 

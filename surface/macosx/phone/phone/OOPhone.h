@@ -39,7 +39,7 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (void)update;
 
-- (NSArray*)getUserNetworks;
+- (void)getUserNetworksAndPerformSelector:(SEL)arg1 forObject:(id)arg2;
 
 - (NSURL*)getNetworkMountPointWithId:(NSString*)arg1;
 

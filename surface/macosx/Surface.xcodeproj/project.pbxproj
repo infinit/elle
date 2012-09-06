@@ -16,6 +16,7 @@
 		1C50F8F01574D50D0082F57C /* OOSetupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C50F8EE1574D50D0082F57C /* OOSetupView.m */; };
 		1C50F8F11574D50D0082F57C /* OOSetupWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8EF1574D50D0082F57C /* OOSetupWindow.xib */; };
 		1C50F8F81574EE030082F57C /* setup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C50F8F71574EE030082F57C /* setup-bg.png */; };
+		1C5EACBC15F60A1A0027FCD3 /* update_dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 1C5EACBB15F60A1A0027FCD3 /* update_dsa_pub.pem */; };
 		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C74C3251598713B009210AC /* OOSetupWindowController.m */; };
 		1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */; };
@@ -68,7 +69,6 @@
 		1CDA370A15D00A190078C963 /* fuse4x.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDA370915D00A170078C963 /* fuse4x.bundle */; };
 		1CDA370B15D00CEA0078C963 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
 		1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CDABDA115502B3200F8097E /* infinite-app-icon.icns */; };
-		1CDFFABD15F4B08300904115 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 1CDFFABC15F4B08300904115 /* dsa_pub.pem */; };
 		1CDFFABE15F4B0DD00904115 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
 		1CDFFABF15F4B0F100904115 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
 		1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CF9868115EB8E700095C264 /* ResourceRules.plist */; };
@@ -194,6 +194,7 @@
 		1C50F8EF1574D50D0082F57C /* OOSetupWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OOSetupWindow.xib; sourceTree = "<group>"; };
 		1C50F8F71574EE030082F57C /* setup-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "setup-bg.png"; sourceTree = "<group>"; };
 		1C50F8FC1574F3040082F57C /* OOPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOPreferencesWindowController.h; sourceTree = "<group>"; };
+		1C5EACBB15F60A1A0027FCD3 /* update_dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = update_dsa_pub.pem; sourceTree = "<group>"; };
 		1C74C3241598713B009210AC /* OOSetupWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOSetupWindowController.h; sourceTree = "<group>"; };
 		1C74C3251598713B009210AC /* OOSetupWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOSetupWindowController.m; sourceTree = "<group>"; };
 		1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "infinite-app-icon.icns"; sourceTree = "<group>"; };
@@ -251,7 +252,6 @@
 		1CDA370915D00A170078C963 /* fuse4x.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = fuse4x.bundle; sourceTree = "<group>"; };
 		1CDABDA115502B3200F8097E /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "infinite-app-icon.icns"; path = "icons/infinite-app-icon.icns"; sourceTree = "<group>"; };
 		1CDFFABA15F4A9EC00904115 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
-		1CDFFABC15F4B08300904115 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		1CF9868115EB8E700095C264 /* ResourceRules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ResourceRules.plist; sourceTree = "<group>"; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -310,7 +310,7 @@
 		1C45EE4F152AECAB00EFB356 /* ressources */ = {
 			isa = PBXGroup;
 			children = (
-				1CDFFABC15F4B08300904115 /* dsa_pub.pem */,
+				1C5EACBB15F60A1A0027FCD3 /* update_dsa_pub.pem */,
 				1CDA370915D00A170078C963 /* fuse4x.bundle */,
 				1C50F8F61574EE030082F57C /* setup */,
 				1C7862C41566919800F7D2F5 /* icons */,
@@ -482,9 +482,9 @@
 		36E9F8AB14FF7DE7000B9C12 = {
 			isa = PBXGroup;
 			children = (
+				1CD332EA1553E13F00930842 /* infinite-app-icon.icns */,
 				1CF9868115EB8E700095C264 /* ResourceRules.plist */,
 				1CD2BBCD15D0034F0081FE59 /* medecine.xcodeproj */,
-				1CD332EA1553E13F00930842 /* infinite-app-icon.icns */,
 				1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */,
 				1CB3FF7C15946D2400CFDBA7 /* phone.xcodeproj */,
 				1C45EE44152AECAB00EFB356 /* field */,
@@ -661,7 +661,7 @@
 				1C50F8F81574EE030082F57C /* setup-bg.png in Resources */,
 				1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */,
 				1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */,
-				1CDFFABD15F4B08300904115 /* dsa_pub.pem in Resources */,
+				1C5EACBC15F60A1A0027FCD3 /* update_dsa_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
