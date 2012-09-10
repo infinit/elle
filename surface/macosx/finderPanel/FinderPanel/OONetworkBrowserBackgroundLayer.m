@@ -19,13 +19,11 @@ static CGImageRef backgroundImage()
 // -------------------------------------------------------------------------
 //	init
 // -------------------------------------------------------------------------
-- (id) init
-{
-	if((self = [super init])){
+- (id) init {
+	if((self = [super init])) {
 		//needs to redraw when bounds change
 		[self setNeedsDisplayOnBoundsChange:YES];
 	}
-	
 	return self;
 }
 
@@ -34,8 +32,7 @@ static CGImageRef backgroundImage()
 //
 // always return nil, to never animate
 // -------------------------------------------------------------------------
-- (id<CAAction>)actionForKey:(NSString *)event
-{
+- (id<CAAction>)actionForKey:(NSString *)event {
 	return nil;
 }
 
@@ -44,8 +41,7 @@ static CGImageRef backgroundImage()
 //
 // draw a metal background that scrolls when the image browser scroll
 // -------------------------------------------------------------------------
-- (void)drawInContext:(CGContextRef)context
-{
+- (void)drawInContext:(CGContextRef)context {
 	//retreive bounds and visible rect
 	NSRect visibleRect = [owner visibleRect];
 	NSRect bounds = [owner bounds];

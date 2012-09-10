@@ -9,16 +9,12 @@
 CGImageRef createImageWithName(NSString * imageName)
 {
 	CGImageRef returnValue = NULL;
-	
 	NSString *path = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderPanel"] pathForResource:[imageName stringByDeletingPathExtension] ofType:[imageName pathExtension]];
-	if(path){
+	if(path) {
 		CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:path], NULL);
-		
-		if(imageSource){
+		if(imageSource)
 			returnValue = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
-		}
 	}
-	
 	return returnValue;
 }
 

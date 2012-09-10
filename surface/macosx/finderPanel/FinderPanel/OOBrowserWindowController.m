@@ -2,18 +2,20 @@
 #import "OOUserBrowserBackgroundLayer.h"
 #import <Phone/OOPhone.h>
 
-//==============================================================================
+NSString *OOBrowserWindowControllerSetOffView = @"OOBrowserWindowControllerSetOffView";
+NSString *OOBrowserWindowControllerSetOnView = @"OOBrowserWindowControllerSetOnView";
+
 @implementation OOBrowserWindowController
 
 @synthesize isOpen;
+@synthesize onView, offView;
 
-- (id)initWithWindowNib {
+- (id) initWithWindowNib {
     self = [self initWithWindowNibName:@"OOBrowserWindow"];
     return self;
 }
 
-- (void)awakeFromNib
-{
+- (void) awakeFromNib {
     
     [userBrowserViewManager defineStyle];
     [networkBrowserViewManager defineStyle];
@@ -25,10 +27,11 @@
 		[NSThread detachNewThreadSelector:@selector(addUsersWithIds:) toTarget:userBrowserViewManager withObject:users];
 	}
     [NSThread detachNewThreadSelector:@selector(updateNetworksLoop) toTarget:networkBrowserViewManager withObject:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(switchToOff) name:OOBrowserWindowControllerSetOffView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(switchToOn) name:OOBrowserWindowControllerSetOnView object:nil];
 }
 
-- (IBAction)startAnimations:(id)sender
-{
+- (IBAction) startAnimations:(id)sender {
     if (self.isOpen) {
         [self hideView];
         self.isOpen = NO;
@@ -38,7 +41,7 @@
     }
 }
 
-- (void)hideView {
+- (void) hideView {
     // firstView, secondView are outlets
     NSViewAnimation *theAnim;
     NSRect firstViewFrame;
@@ -73,7 +76,7 @@
     [theAnim startAnimation];
 }
 
-- (void)showView{
+- (void) showView {
     // firstView, secondView are outlets
     NSViewAnimation *theAnim;
     NSRect firstViewFrame;
@@ -114,9 +117,23 @@
 // -------------------------------------------------------------------------
 //	createNetwork:sender
 // ------------------------------------------------------------------------- 
-- (IBAction)createNetwork:(id)sender {
+- (IBAction) createNetwork:(id)sender {
     NSString *networkName = [networkNameTextField stringValue];
     [[OOPhone getInstance] createNetworkWithName:networkName performSelector:@selector(forceUpdateNetworks) forObject:networkBrowserViewManager];
+}
+
+// -------------------------------------------------------------------------
+//	switchToOff:sender
+// -------------------------------------------------------------------------
+
+- (void) switchToOff {
+    if (([[self window] contentView] != self.offView))
+        [[self window] setContentView:self.offView];
+}
+
+- (void) switchToOn {
+    if (([[self window] contentView] != self.onView))
+        [[self window] setContentView:self.onView];
 }
 
 @end

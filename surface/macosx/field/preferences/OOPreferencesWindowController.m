@@ -59,7 +59,7 @@
 
 - (IBAction)switchView:(id)sender {
 	
-	int tag = [sender tag];
+	int tag = (int)[sender tag];
 	
 	NSView *view = [self viewForTag:tag];
 	NSView *previousView = [self viewForTag: currentViewTag];

@@ -12,8 +12,7 @@
 
 @synthesize isFullHeight;
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         self.isFullHeight = YES;

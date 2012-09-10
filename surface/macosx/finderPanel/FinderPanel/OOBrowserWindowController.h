@@ -3,7 +3,13 @@
 #import "OONetworkBrowserViewManager.h"
 #import "OOUserBrowserViewManager.h"
 
+extern NSString *OOBrowserWindowControllerSetOffView;
+extern NSString *OOBrowserWindowControllerSetOnView;
+
 @interface OOBrowserWindowController : NSWindowController {
+    IBOutlet NSView*                        onView;
+    IBOutlet NSView*                        offView;
+    
     IBOutlet IKImageBrowserView*            userBrowser;
     IBOutlet OOUserBrowserViewManager*      userBrowserViewManager;
     
@@ -12,10 +18,15 @@
     
     IBOutlet NSTextField*                   networkNameTextField;
     
-    BOOL isOpen;
+    BOOL                                    isOpen;
 }
 
-@property(nonatomic, assign) BOOL isOpen;
+@property(nonatomic, assign)    BOOL                    isOpen;
+@property(retain)               IBOutlet NSView*        onView;
+@property(retain)               IBOutlet NSView*        offView;
 
-- (id)initWithWindowNib;
+- (id) initWithWindowNib;
+- (void) switchToOn;
+- (void) switchToOff;
+
 @end

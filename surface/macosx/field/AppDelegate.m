@@ -72,9 +72,8 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 }
 
 - (void)setDefaultStatusIcon {
-    if (defaultIcon == nil) {
+    if (defaultIcon == nil)
         defaultIcon = [NSImage imageNamed:@"19px-active"];
-    }
     [defaultIcon setTemplate:YES];
     [statusItem setImage:defaultIcon];
     [statusItem setHighlightMode:YES];
@@ -92,8 +91,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)tryToLogin {
     [statusItem setMenu:statusLoginMenu];
-    NSUserDefaults *pref;
-    pref=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *pref =[NSUserDefaults standardUserDefaults];
     NSString* email = [pref objectForKey:@"Email"];
     NSString* password = [pref objectForKey:@"Password"];
     NSString* machineName = [pref objectForKey:@"ComputerName"];
@@ -121,6 +119,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)showSetupWindow {
     [self addPending];
+    [self stopInfinit];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserLoggedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedNotification:) name:OOUserUnLoggedNotification object:nil];
     OOSetupWindowController *setupWindowsController = [OOSetupWindowController getInstance];
@@ -132,7 +131,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     if (error != 0) {
         NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
-        [[NSUserDefaults standardUserDefaults]synchronize ];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         NSLog(@"Show setup windows");
         [self showSetupWindow];
     }
@@ -167,14 +166,18 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
         NSLog(@"Is loged and is updated");
         [statusItem setMenu:statusMenu];
         [self launch8Watchdog];
-        self.browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
-        [self.browserWindowController showWindow:self];
+        if (!self.browserWindowController)
+            self.browserWindowController = [[OOBrowserWindowController alloc] initWithWindowNib];
+        [self.browserWindowController loadWindow];
+        [[NSNotificationCenter defaultCenter] postNotificationName:OOBrowserWindowControllerSetOnView object:self.browserWindowController];
     }
 }
 
 - (void)stopInfinit {
     [self stop8Watchdog];
-    [self.browserWindowController close];
+    if (self.browserWindowController) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:OOBrowserWindowControllerSetOffView object:self.browserWindowController];
+    }
 }
 
 - (void)updateStatusItemImageWithTimer:(NSTimer*)arg1 {

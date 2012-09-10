@@ -164,7 +164,6 @@ NSString *OODownloadingNotification = @"OODownloadingNotification";
 }
 
 - (void)setExecRight {
-    NSError *error;
     NSDictionary *attr=[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:500] forKey:NSFilePosixPermissions];
     NSString* binPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"bin"];
     NSArray *subPaths = [fileManager subpathsAtPath:binPath];

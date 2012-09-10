@@ -10,7 +10,7 @@
 
 @synthesize updateNetwork, forceUpdateNetwork;
 
-- (id)init {
+- (id) init {
     self = [super init];
     if (self) {
         // Create two arrays : The first is for the data source representation.
@@ -23,7 +23,7 @@
     return self;
 }
 
-- (void)defineStyle {
+- (void) defineStyle {
     // Allow reordering, animations and set the dragging destination delegate.
     [networkBrowser setAllowsReordering:YES];
     //[networkBrowser setAnimates:YES];
@@ -70,8 +70,7 @@
     
 }
 
-- (void)updateDatasource
-{
+- (void) updateDatasource {
     NSLog(@"Update data source");
     // Update the datasource, add recently imported items.
     [networks addObjectsFromArray:importedNetworks];
@@ -100,8 +99,7 @@
 #pragma mark -
 #pragma mark import images from file system
 
-- (BOOL)containsUserId:(NSString*)arg1
-{
+- (BOOL) containsUserId:(NSString*)arg1 {
     for (OONetworkModel* str in importedNetworks) {
         if ([str.uid isEqualToString:arg1])
             return YES;
@@ -113,7 +111,7 @@
     return NO; 
 }
 
-- (OONetworkModel*)updateModel:(OONetworkModel*)arg1 InfoWithId:(NSString*)arg2 {
+- (OONetworkModel*) updateModel:(OONetworkModel*)arg1 InfoWithId:(NSString*)arg2 {
     arg1.name = [[OOPhone getInstance] getNetworkNameWithId:arg2];
     arg1.image = [NSImage imageNamed:NSImageNameNetwork];
     arg1.uid = arg2;
@@ -122,14 +120,13 @@
     return arg1;
 }
 
-- (OONetworkModel*)getModelInfoWithId:(NSString*)arg1 {
+- (OONetworkModel*) getModelInfoWithId:(NSString*)arg1 {
     OONetworkModel* p = [[OONetworkModel alloc] init];
     [self updateModel:p InfoWithId:arg1];
     return p;
 }
 
-- (void)addNetworkWithId:(NSString*)arg1
-{   
+- (void) addNetworkWithId:(NSString*)arg1 {   
 	BOOL addObject = NO;
     
 	if (![self containsUserId:arg1]) {
@@ -143,13 +140,12 @@
 	}
 }
 
-- (void)forceUpdateNetworks {
+- (void) forceUpdateNetworks {
     NSLog(@"Force update network");
     self.forceUpdateNetwork = YES;
 }
 
-- (void)updateNetworksLoop
-{
+- (void) updateNetworksLoop {
     int updateNetworkFrequency = 10;
     static int updateNetworksLoop = 10;
     while (self.updateNetwork) {
@@ -168,11 +164,10 @@
     }
 }
 
-- (void)perfomeUpdateNetworks:(NSArray*)arg1{
+- (void) perfomeUpdateNetworks:(NSArray*)arg1 {
     NSInteger i, n;
     n = [arg1 count];
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         NSString* networkId = [arg1 objectAtIndex:i];
         [self addNetworkWithId:networkId];
     }
@@ -181,8 +176,7 @@
     [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
 }
 
-- (void)updateNetworks
-{
+- (void) updateNetworks {
     [[OOPhone getInstance] getUserNetworksAndPerformSelector:@selector(perfomeUpdateNetworks:) forObject:self];
 }
 
@@ -190,24 +184,20 @@
 #pragma mark -
 #pragma mark IKImageBrowserDataSource
 
-- (NSUInteger)numberOfItemsInImageBrowser:(IKImageBrowserView*)view
-{
+- (NSUInteger) numberOfItemsInImageBrowser:(IKImageBrowserView*)view {
 	// The item count to display is the datadsource item count.
     return [networks count];
 }
 
-- (id)imageBrowser:(IKImageBrowserView *) view itemAtIndex:(NSUInteger) index
-{
+- (id) imageBrowser:(IKImageBrowserView *) view itemAtIndex:(NSUInteger) index {
     return [networks objectAtIndex:index];
 }
 
-- (void)imageBrowser:(IKImageBrowserView*)view removeItemsAtIndexes: (NSIndexSet*)indexes
-{
+- (void) imageBrowser:(IKImageBrowserView*)view removeItemsAtIndexes: (NSIndexSet*)indexes {
 	[networks removeObjectsAtIndexes:indexes];
 }
 
-- (BOOL)imageBrowser:(IKImageBrowserView*)view moveItemsAtIndexes: (NSIndexSet*)indexes toIndex:(unsigned int)destinationIndex
-{
+- (BOOL) imageBrowser:(IKImageBrowserView*)view moveItemsAtIndexes: (NSIndexSet*)indexes toIndex:(unsigned int)destinationIndex {
 	NSInteger		index;
 	NSMutableArray*	temporaryArray;
     
