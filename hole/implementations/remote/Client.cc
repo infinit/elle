@@ -37,7 +37,7 @@ namespace hole
         , _rpc(_channels)
       {
         ELLE_TRACE("Authenticate to the server")
-          if (_rpc.challenge(Hole::Passport))
+          if (_rpc.challenge(Hole::instance().passport()))
             _state = State::authenticated;
       }
 

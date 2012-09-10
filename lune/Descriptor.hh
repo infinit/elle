@@ -163,11 +163,11 @@ namespace lune
     void
     validate(Authority const& authority) const;
     /// XXX
-    Meta&
-    meta();
+    Meta const&
+    meta() const;
     /// XXX
-    Data&
-    data();
+    Data const&
+    data() const;
   private:
     /// XXX
     static
@@ -250,7 +250,7 @@ namespace lune
       everybody_identity() const;
       /// XXX
       nucleus::neutron::Subject const&
-      everybody_subject();
+      everybody_subject() const;
       /// XXX
       elle::Boolean
       history() const;

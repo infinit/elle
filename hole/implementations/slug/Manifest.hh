@@ -19,8 +19,10 @@ namespace hole
       struct RPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
                                                 elle::serialize::OutputBinaryArchive>
       {
-        RemoteProcedure<std::vector<elle::network::Locus>, lune::Passport&> authenticate;
-        RemoteProcedure<void, nucleus::proton::Address const&, nucleus::Derivable&> push;
+        RemoteProcedure<std::vector<elle::network::Locus>,
+                        lune::Passport const&> authenticate;
+        RemoteProcedure<void, nucleus::proton::Address const&,
+                        nucleus::Derivable&> push;
         RemoteProcedure<nucleus::Derivable,
                         nucleus::proton::Address const&,
                         nucleus::proton::Revision const&> pull;

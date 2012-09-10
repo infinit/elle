@@ -430,8 +430,7 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
-    // initialize hole.
-    hole::Hole::Initialize();
+    std::unique_ptr<hole::Hole> hole(new hole::Hole);
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Information") == elle::Status::True) &&
@@ -494,7 +493,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           Group::information(group);
@@ -536,7 +535,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -611,7 +610,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -684,7 +683,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           Group::consult(group);
@@ -713,7 +712,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -786,7 +785,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::Descriptor.meta().everybody_identity();
+              group = hole::Hole::instance().descriptor().meta().everybody_identity();
             }
 
           Group::destroy(group);
@@ -807,8 +806,7 @@ namespace satellite
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
 
-    // clean hole.
-    hole::Hole::Clean();
+    delete hole.release();
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)

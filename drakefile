@@ -90,6 +90,7 @@ def configure(cxx_toolkit, cxx_config):
     'nucleus/neutron/Catalog.hh',
     'nucleus/neutron/Catalog.hxx',
     'nucleus/neutron/Component.hh',
+    'nucleus/neutron/Component.cc',
     'nucleus/neutron/Data.cc',
     'nucleus/neutron/Data.hh',
     'nucleus/neutron/Data.hxx',

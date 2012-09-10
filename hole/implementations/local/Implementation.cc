@@ -40,7 +40,7 @@ namespace hole
         // allocate the machine.
         Local::Computer = new Machine;
 
-        Hole::ready();
+        Hole::instance().ready();
       }
 
       ///

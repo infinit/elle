@@ -111,14 +111,14 @@ namespace lune
       }
   }
 
-  Descriptor::Meta&
-  Descriptor::meta()
+  Descriptor::Meta const&
+  Descriptor::meta() const
   {
     return (this->_meta);
   }
 
-  Descriptor::Data&
-  Descriptor::data()
+  Descriptor::Data const&
+  Descriptor::data() const
   {
     return (this->_data);
   }
@@ -271,10 +271,9 @@ namespace lune
   }
 
   nucleus::neutron::Subject const&
-  Descriptor::Meta::everybody_subject()
+  Descriptor::Meta::everybody_subject() const
   {
-    this->_everybody_subject();
-
+    const_cast<Descriptor::Meta*>(this)->_everybody_subject();
     return (*this->_everybody.subject);
   }
 

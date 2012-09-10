@@ -21,153 +21,127 @@ ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
 namespace hole
 {
+  /*----------------.
+  | Global instance |
+  `----------------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this variable contains the network descriptor.
-  ///
-  lune::Descriptor              Hole::Descriptor;
-
-  ///
-  /// this variable contains the network set of initial nodes.
-  ///
-  lune::Set                     Hole::Set;
-
-  ///
-  /// this variable contains the device passport.
-  ///
-  lune::Passport                Hole::Passport;
-
-  ///
-  /// this variable holds the hole implementation.
-  ///
-  Holeable*                     Hole::Implementation = nullptr;
-
-  ///
-  /// XXX
-  ///
-  Hole::State                   Hole::state = Hole::StateOffline;
-
-  boost::signal<void ()> Hole::_ready;
-
-//
-// ---------- static methods --------------------------------------------------
-//
-
-  void
-  Hole::Initialize()
+  Hole&
+  Hole::instance()
   {
+    assert(Hole::_instance);
+    return *Hole::_instance;
+  }
+
+  Hole* Hole::_instance(nullptr);
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+
+  Hole::Hole()
+  {
+    assert(!Hole::_instance);
+
     nucleus::proton::Network network;
 
-    // disable the meta logging.
+    // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
 
-    //
-    // retrieve the descriptor.
-    //
+    // Retrieve the descriptor.
     {
-      // does the network exist.
       if (lune::Descriptor::exists(Infinit::Network) == false)
         throw reactor::Exception(elle::concurrency::scheduler(),
                         "this network does not seem to exist");
-
-      // load the descriptor.
-      Hole::Descriptor.load(Infinit::Network);
-
-      // validate the descriptor.
-      Hole::Descriptor.validate(Infinit::Authority);
+      _descriptor.load(Infinit::Network);
+      _descriptor.validate(Infinit::Authority);
     }
 
-    //
-    // retrieve the set, if present.
-    //
+    // Retrieve the set, if present.
     if (lune::Set::exists(Infinit::Network) == true)
-      Hole::Set.load(Infinit::Network);
+      _set.load(Infinit::Network);
 
-    //
-    // retrieve the passport.
-    //
+    // Retrieve the passport.
     {
-      // does the network exist.
       if (lune::Passport::exists() == false)
         throw reactor::Exception(elle::concurrency::scheduler(),
                         "the device passport does not seem to exist");
-
-      // load the passport.
-      Hole::Passport.load();
-
-      // validate the passport.
-      if (Hole::Passport.Validate(Infinit::Authority) == elle::Status::Error)
+      _passport.load();
+      if (_passport.Validate(Infinit::Authority) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
                         "unable to validate the passport");
     }
 
-    // enable the meta logging.
+    // Enable the meta logging.
     if (elle::radix::Meta::Enable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to enable the meta logging");
 
-    // create the network instance.
+    // Create the network instance.
     if (network.Create(Infinit::Network) == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to create the network instance");
 
     // create the holeable depending on the model.
-    switch (Hole::Descriptor.meta().model().type)
+    switch (this->descriptor().meta().model().type)
       {
         case Model::TypeLocal:
         {
-          // allocate the instance.
-          Hole::Implementation =
+          this->_implementation =
             new implementations::local::Implementation(network);
-
           break;
         }
         case Model::TypeRemote:
         {
-          // allocate the instance.
-          Hole::Implementation =
+          this->_implementation =
             new implementations::remote::Implementation(network);
-
           break;
         }
         case Model::TypeSlug:
         {
-          // allocate the instance.
-          Hole::Implementation =
+          this->_implementation =
             new implementations::slug::Implementation(network);
-
           break;
         }
         case Model::TypeCirkle:
         {
           /* XXX
           // allocate the instance.
-          Hole::Implementation =
+          this->_implementation =
           new implementations::cirkle::Implementation(network);
           */
-
+          elle::abort("Cirkle implementation is disabled for now");
           break;
         }
         default:
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   str(fmt % Hole::Descriptor.meta().model().type));
+                                   str(fmt % Hole::instance().descriptor().meta().model().type));
         }
       }
+
+    Hole::_instance = this;
   }
+
+  Hole::~Hole()
+  {
+    assert(Hole::_instance);
+    this->_implementation->Leave();
+    delete this->_implementation;
+    Hole::_instance = nullptr;
+  }
+
+  /*-------------.
+  | Joint, leave |
+  `-------------*/
 
   void
   Hole::join()
   {
     // join the network
-    Hole::Implementation->Join();
+    this->_implementation->Join();
   }
 
   void
@@ -176,32 +150,18 @@ namespace hole
     // XXX
   }
 
-  ///
-  /// this method cleans the hole.
-  ///
-  /// the components are recycled just to make sure the memory is
-  /// released before the Meta allocator terminates.
-  ///
-  elle::Status          Hole::Clean()
-  {
-    // leave the network
-    if (Hole::Implementation->Leave() == elle::Status::Error)
-      escape("unable to leave the network");
-
-    // delete the implementation.
-    delete Hole::Implementation;
-
-    return elle::Status::Ok;
-  }
+  /*------.
+  | Ready |
+  `------*/
 
   void
   Hole::ready()
   {
     ELLE_LOG_SCOPE("ready");
-    if (Hole::state != Hole::StateOnline)
+    if (this->_state != State::online)
       {
-        Hole::_ready();
-        Hole::state = Hole::StateOnline;
+        this->_ready();
+        this->_state = Hole::State::online;
       }
   }
 
@@ -211,41 +171,31 @@ namespace hole
     Hole::_ready.connect(f);
   }
 
-  ///
-  /// this method returns the address of the root block i.e the origin.
-  ///
-  elle::Status          Hole::Origin(nucleus::proton::Address& address)
+  nucleus::proton::Address
+  Hole::origin()
   {
     // return the address.
-    address = Hole::Descriptor.meta().root();
-
-    return elle::Status::Ok;
+    return Hole::instance().descriptor().meta().root();
   }
 
-  ///
-  /// this method stores the given block.
-  ///
-  elle::Status          Hole::Push(const nucleus::proton::Address& address,
-                                   const nucleus::proton::Block& block)
+  void
+  Hole::push(const nucleus::proton::Address& address,
+             const nucleus::proton::Block& block)
   {
     ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, address, block);
     // XXX check the block's footprint which should not exceed Extent
 
-    // forward the request depending on the nature of the block which
+    // Forward the request depending on the nature of the block which
     // the address indicates.
     switch (address.family)
       {
       case nucleus::proton::FamilyContentHashBlock:
         {
           const nucleus::proton::ImmutableBlock*        ib;
-
-          // cast to an immutable block.
           ib = static_cast<const nucleus::proton::ImmutableBlock*>(&block);
           assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
                    &block) != nullptr);
-
-          // store the immutable block.
-          Hole::Implementation->Put(address, *ib);
+          this->_implementation->Put(address, *ib);
           break;
         }
       case nucleus::proton::FamilyPublicKeyBlock:
@@ -253,28 +203,23 @@ namespace hole
       case nucleus::proton::FamilyImprintBlock:
         {
           const nucleus::proton::MutableBlock*          mb;
-
-          // cast to a mutable block.
           mb = static_cast<const nucleus::proton::MutableBlock*>(&block);
           assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
                    &block) != nullptr);
-
-          // store the mutable block.
-          Hole::Implementation->Put(address, *mb);
+          this->_implementation->Put(address, *mb);
           break;
         }
       default:
         {
-          escape("unknown block family '%u'",
-                 address.family);
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   elle::sprintf("unknown block family '%u'",
+                                                 address.family));
         }
       }
-
-    return elle::Status::Ok;
   }
 
   std::unique_ptr<nucleus::proton::Block>
-  Hole::Pull(const nucleus::proton::Address& address,
+  Hole::pull(const nucleus::proton::Address& address,
              const nucleus::proton::Revision& revision)
   {
     ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, address, revision);
@@ -284,11 +229,11 @@ namespace hole
     switch (address.family)
       {
         case nucleus::proton::FamilyContentHashBlock:
-          return Hole::Implementation->Get(address);
+          return this->_implementation->Get(address);
         case nucleus::proton::FamilyPublicKeyBlock:
         case nucleus::proton::FamilyOwnerKeyBlock:
         case nucleus::proton::FamilyImprintBlock:
-          return Hole::Implementation->Get(address, revision);
+          return this->_implementation->Get(address, revision);
         default:
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    elle::sprintf("unknown block family '%u'", address.family));
@@ -296,10 +241,19 @@ namespace hole
   }
 
   void
-  Hole::Wipe(nucleus::proton::Address const& address)
+  Hole::wipe(nucleus::proton::Address const& address)
   {
     ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, address);
-    Hole::Implementation->Kill(address);
+    this->_implementation->Kill(address);
   }
 
+  /*-----------.
+  | Attributes |
+  `-----------*/
+
+  nucleus::proton::Network const&
+  Hole::network() const
+  {
+    return _implementation->network;
+  }
 }

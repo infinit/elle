@@ -124,13 +124,9 @@ namespace nucleus
                        Revision const& revision)
     {
       ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, revision);
+      this->load(elle::io::Path(MutableBlock::_path(network, address, "@")));
 
-      // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.meta().history() == false)
-        {
-          this->load(elle::io::Path(MutableBlock::_path(network, address, "@")));
-        }
-      else
+      // XXX: operate depending on the network's support of history.
         {
           /* XXX
           elle::standalone::Region region;
@@ -180,21 +176,20 @@ namespace nucleus
                         Address const& address) const
     {
       ELLE_TRACE_SCOPE("%s: store(%s, %s)", *this, network, address);
+      this->store(
+        elle::io::Path(MutableBlock::_path(network, address, "@")));
 
-      // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.meta().history() == false)
+      // //
+      // if (hole::Hole::Descriptor.history == false)
+      //   {
+      //     //
+      //     // if the history is not supported, store the mutable block
+      //     // in a file without version number extension.
+      //     //
+      //   }
+      // else
         {
-          //
-          // if the history is not supported, store the mutable block
-          // in a file without revision number extension.
-          //
-
-          this->store(
-            elle::io::Path(MutableBlock::_path(network, address, "@")));
-        }
-      else
-        {
-          /* XXX
+          /* XXX: operate depending on the network's support of history.
           //
           // otherwise, store the block in a file with a name of the
           // form [identifier]#[revision number].blk. besides, a special
@@ -272,15 +267,15 @@ namespace nucleus
     {
       ELLE_TRACE_SCOPE("erase(%s, %s)", network, address);
 
-      // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.meta().history() == false)
+      elle::concept::Fileable<>::erase(
+        MutableBlock::_path(network, address, "@"));
+
+      // if (hole::Hole::Descriptor.history == false)
+      //   {
+      //   }
+      // else
         {
-          elle::concept::Fileable<>::erase(
-            MutableBlock::_path(network, address, "@"));
-        }
-      else
-        {
-          /* XXX
+          /* XXX: operate depending on the network's support of history.
           elle::io::Unique unique(address.unique);
           History       history;
           Revision::Type size;
@@ -363,27 +358,26 @@ namespace nucleus
                          Revision const& revision)
     {
       ELLE_TRACE_SCOPE("exists(%s, %s)", network, address);
-
-      // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.meta().history() == false)
+      if (revision == Revision::Last)
         {
-          if (revision == Revision::Last)
-            {
-              return (elle::concept::Fileable<>::exists(
-                MutableBlock::_path(network, address, "@")));
-            }
-          else
-            {
-              elle::String number(
-                boost::lexical_cast<elle::String>(revision.number));
-
-              return (elle::concept::Fileable<>::exists(
-                MutableBlock::_path(network, address, number)));
-            }
+          return (elle::concept::Fileable<>::exists(
+                    MutableBlock::_path(network, address, "@")));
         }
       else
         {
-          /* XXX
+          elle::String number(
+            boost::lexical_cast<elle::String>(revision.number));
+
+          return (elle::concept::Fileable<>::exists(
+                    MutableBlock::_path(network, address, number)));
+        }
+
+      // if (hole::Hole::Descriptor.history == false)
+      //   {
+      //   }
+      // else
+        {
+          /* XXX: operate depending on the network's support of history.
            elle::String unique(address.unique);
            elle::String  number;
 

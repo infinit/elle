@@ -140,8 +140,8 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
-  hole::Hole::Initialize();
-  hole::Hole::join();
+  std::unique_ptr<hole::Hole> hole(new hole::Hole);
+  hole->join();
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)
@@ -175,12 +175,8 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Agent");
 
-  hole::Hole::leave();
-
-  // clean Hole.
-  if (hole::Hole::Clean() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to clean Hole");
+  hole->leave();
+  delete hole.release();
 
   // clean Infinit.
   if (Infinit::Clean() == elle::Status::Error)

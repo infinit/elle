@@ -22,10 +22,7 @@ namespace etoile
     /// this method returns the address of the network's root block.
     elle::Status        Depot::Origin(nucleus::proton::Address& address)
     {
-      // call the Hole.
-      if (hole::Hole::Origin(address) == elle::Status::Error)
-        escape("unable to retrieve the origin");
-
+      address = hole::Hole::instance().origin();
       return elle::Status::Ok;
     }
 
@@ -35,10 +32,7 @@ namespace etoile
     elle::Status        Depot::Push(const nucleus::proton::Address& address,
                                     const nucleus::proton::Block& block)
     {
-      // call the Hole.
-      if (hole::Hole::Push(address, block) == elle::Status::Error)
-        escape("unable to store the block");
-
+      hole::Hole::instance().push(address, block);
       return elle::Status::Ok;
     }
 
@@ -74,7 +68,7 @@ namespace etoile
     elle::Status        Depot::Wipe(const nucleus::proton::Address& address)
     {
       // call the Hole.
-      hole::Hole::Wipe(address);
+      hole::Hole::instance().wipe(address);
 
       return elle::Status::Ok;
     }

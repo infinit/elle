@@ -195,10 +195,13 @@ namespace etoile
                                     Slice&                      slice,
                                     nucleus::proton::Revision& revision)
     {
-      Length                    length;
-      size_t                    start;
-      nucleus::proton::Revision::Type n;
+      // set the slice as being the entire slab.
+      slice = slab;
 
+      // and set the version as being the latest possible.
+      revision = nucleus::proton::Revision::Last;
+
+      /* XXX: handle history
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
       if ((hole::Hole::Descriptor.meta().history() == false) ||
@@ -215,6 +218,9 @@ namespace etoile
           //
           // otherwise, try to handle the history parsing.
           //
+          Length                    length;
+          size_t                    start;
+          nucleus::proton::Revision::Type n;
 
           // compute the start index, should the in-path revisioning be
           // activated.
@@ -268,9 +274,8 @@ namespace etoile
               revision = nucleus::proton::Revision::Last;
             }
         }
-
+      */
       return elle::Status::Ok;
     }
-
   }
 }

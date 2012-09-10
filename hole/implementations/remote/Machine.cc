@@ -76,14 +76,14 @@ namespace hole
 
         // check the number of loci in the set: it should be one for
         // this implementation.
-        if (Hole::Set.loci.size() != 1)
+        if (Hole::instance().set().loci.size() != 1)
           {
             static boost::format fmt("there should be a single locus in the network's set (%u)");
-            throw std::runtime_error(str(fmt % Hole::Set.loci.size()));
+            throw std::runtime_error(str(fmt % Hole::instance().set().loci.size()));
           }
 
         // retrieve the locus.
-        locus = *Hole::Set.loci.begin();
+        locus = *Hole::instance().set().loci.begin();
 
         // try to connect to the server's host.
         ELLE_TRACE("try starting as a client")
@@ -93,7 +93,7 @@ namespace hole
               locus.host.Convert(host);
               auto client = std::unique_ptr<Client>(new Client(host, locus.port));
               this->role = Machine::RoleClient;
-              Hole::ready();
+              Hole::instance().ready();
               this->client = client.release();
               return;
             }

@@ -30,12 +30,12 @@ namespace hole
       {
         // Check if the block already exist.
         if (nucleus::proton::ImmutableBlock::exists(
-              Hole::Implementation->network, address) == true)
+              Hole::instance().network(), address) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "this immutable block seems to already exist");
 
         // Store the block.
-        block.store(Hole::Implementation->network, address);
+        block.store(Hole::instance().network(), address);
       }
 
       void
@@ -65,7 +65,7 @@ namespace hole
                     ) {
                     // Load the access block.
                     std::unique_ptr<nucleus::proton::Block> block
-                      (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
+                      (Hole::instance().pull(object->access(), nucleus::proton::Revision::Last));
                     std::unique_ptr<nucleus::neutron::Access> access
                       (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                     if (access == nullptr)
@@ -115,14 +115,14 @@ namespace hole
           }
 
         ELLE_TRACE("Check if the block derives the current block")
-          if (backends::fs::MutableBlock(Hole::Implementation->network,
+          if (backends::fs::MutableBlock(Hole::instance().network(),
                                          address,
                                          block).derives() == false)
             throw reactor::Exception(
               elle::concurrency::scheduler(),
               "the block does not derive the local one");
 
-        block.store(Hole::Implementation->network, address);
+        block.store(Hole::instance().network(), address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -133,12 +133,12 @@ namespace hole
 
         // Does the block exist.
         if (nucleus::proton::ImmutableBlock::exists(
-              Hole::Implementation->network, address) == false)
+              Hole::instance().network(), address) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // Load the block.
-        block->load(Hole::Implementation->network, address);
+        block->load(Hole::instance().network(), address);
 
         // Validate the block.
         if (block->Validate(address) == elle::Status::Error)
@@ -157,12 +157,12 @@ namespace hole
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, revision) == false)
+              Hole::instance().network(), address, revision) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        block->load(Hole::Implementation->network, address, revision);
+        block->load(Hole::instance().network(), address, revision);
 
         // validate the block, depending on its component.
         //
@@ -182,7 +182,7 @@ namespace hole
                 {
                   // Load the access block.
                   std::unique_ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
+                    (Hole::instance().pull(object->access(), nucleus::proton::Revision::Last));
                   std::unique_ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)
@@ -236,7 +236,7 @@ namespace hole
             {
               // erase the immutable block.
               nucleus::proton::ImmutableBlock::erase(
-                Hole::Implementation->network, address);
+                Hole::instance().network(), address);
 
               break;
             }
@@ -246,7 +246,7 @@ namespace hole
             {
               // retrieve the mutable block.
               nucleus::proton::MutableBlock::erase(
-                Hole::Implementation->network, address);
+                Hole::instance().network(), address);
 
               break;
             }
