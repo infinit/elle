@@ -26,15 +26,15 @@ const elle::String              Infinit::Key{
 };
 
 ///
-/// this constant contains the version string.
+/// this constant contains the version of the current Infinit software.
 ///
-const elle::String              Infinit::Version("Infinit-alpha");
+const Version Infinit::version(0, 4);
 
 ///
 /// this constant contains the copyright string.
 ///
 const elle::String              Infinit::Copyright(
-                                  Infinit::Version +
+                                  elle::sprint(Infinit::version) +
                                   " " +
                                   "Copyright (c) 2012 "
                                   "infinit.io All rights reserved.");

@@ -16,6 +16,8 @@
 
 # include <horizon/Policy.hh>
 
+# include <Version.hh>
+
 namespace lune
 {
 
@@ -54,6 +56,7 @@ namespace lune
   public:
     elle::Status
     Create(const elle::String id,
+           Version const& version,
            const elle::String&,
            const hole::Model&,
            hole::Openness const& openness,
@@ -74,6 +77,9 @@ namespace lune
     /// XXX[is the setter really used? this is probably abnormal]
     void
     id(elle::String const& id);
+    /// XXX
+    Version const&
+    version() const;
     /// XXX
     hole::Openness const&
     openness() const;
@@ -127,7 +133,36 @@ namespace lune
     // attributes
     //
   private:
-    elle::String        _id;
+    elle::String  _id;
+    Version _version;
+
+    /* XXX
+    struct
+    {
+      struct
+      {
+        elle::serialize::Format address;
+        elle::serialize::Format block;
+        elle::serialize::Format content_hash_block;
+        elle::serialize::Format contents;
+        elle::serialize::Format immutable_block;
+        elle::serialize::Format imprint_block;
+        elle::serialize::Format mutable_block;
+        elle::serialize::Format owner_key_block;
+        elle::serialize::Format public_key_block;
+        elle::serialize::Format access;
+        elle::serialize::Format attributes;
+        elle::serialize::Format catalog;
+        elle::serialize::Format data;
+        elle::serialize::Format 
+        elle::serialize::Format 
+        elle::serialize::Format 
+
++identity/descriptor
+
+      } formats;
+    } data;
+    */
 
   public: // XXX
     elle::String        name;

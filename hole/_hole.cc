@@ -47,8 +47,8 @@ namespace hole
     Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Version +
-                                     " "+
+    if (Infinit::Parser->Description(elle::sprint(Infinit::version) +
+                                     " " +
                                      "Copyright (c) 2008, 2009, 2010, 2011, "
                                      "Julien Quintard, All rights "
                                      "reserved.\n") == elle::Status::Error)

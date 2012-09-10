@@ -78,6 +78,7 @@ namespace lune
   ///
   elle::Status
   Descriptor::Create(const elle::String id,
+                     Version const& version,
                      const elle::String&  name,
                      const hole::Model&   model,
                      hole::Openness const& openness,
@@ -91,6 +92,7 @@ namespace lune
   {
     // set the attributes.
     this->_id = id;
+    this->_version = version;
     this->name = name;
     this->model = model;
     this->_openness = openness;
@@ -114,6 +116,7 @@ namespace lune
     if (authority.k->Sign(
           elle::serialize::make_tuple(
             this->_id,
+            this->_version,
             this->name,
             this->model,
             this->_openness,
@@ -141,6 +144,7 @@ namespace lune
           this->signature,
           elle::serialize::make_tuple(
             this->_id,
+            this->_version,
             this->name,
             this->model,
             this->_openness,
@@ -166,6 +170,12 @@ namespace lune
   Descriptor::id(elle::String const& id)
   {
     this->_id = id;
+  }
+
+  Version const&
+  Descriptor::version() const
+  {
+    return (this->_version);
   }
 
   hole::Openness const&
@@ -244,6 +254,9 @@ namespace lune
               << this->_id << std::endl
               << alignment << elle::io::Dumpable::Shift << "[Name] "
               << this->name << std::endl;
+
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Version] "
+              << this->_version << std::endl;
 
     if (this->model.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the model");

@@ -30,6 +30,8 @@
 
 #include <horizon/Policy.hh>
 
+#include <Infinit.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace satellite
@@ -270,6 +272,7 @@ namespace satellite
       // create the descriptor.
       if (descriptor.Create(
             identifier,
+            Infinit::version,
             name,
             model,
             openness,

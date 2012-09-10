@@ -21,6 +21,8 @@
 
 #include <horizon/Policy.hh>
 
+#include <Infinit.hh>
+
 // XXX When Qt is out, remove this
 #ifdef slots
 # undef slots
@@ -71,6 +73,7 @@ generate_network_descriptor(elle::String const& id,
     throw std::runtime_error("Unable to restore access address");
 
   if (descriptor.Create(id,
+                        Infinit::version,
                         name,
                         model,
                         openness,

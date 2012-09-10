@@ -7,6 +7,8 @@
 #include <lune/Authority.hh>
 #include <lune/Configuration.hh>
 
+#include <Version.hh>
+
 class Infinit
 {
 public:
@@ -14,7 +16,7 @@ public:
   // constants
   //
   static const elle::String             Key;
-  static const elle::String             Version;
+  static const Version version;
   static const elle::String             Copyright;
 
   //

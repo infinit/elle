@@ -203,6 +203,7 @@ file(GLOB_RECURSE HEADERS *.hh *.hxx)
 add_definitions(-fPIC)
 add_library(infinit
   Infinit.cc
+  Version.cc
   ${HEADERS}
 )
 add_dependencies(infinit dependencies)
