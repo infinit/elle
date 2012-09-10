@@ -77,7 +77,7 @@ namespace elle
       template<typename T>
       static inline
       typename std::enable_if<!_HasDynamicFormat<T>::value>::type
-      set(T& val, uint16_t)
+      set(T&, uint16_t)
       {/* Do nothing */}
 
     };
