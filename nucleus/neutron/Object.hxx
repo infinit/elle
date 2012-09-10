@@ -4,7 +4,7 @@
 # include <cassert>
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 # include <nucleus/neutron/Author.hh>
 
@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & base_class<nucleus::proton::ImprintBlock>(value);
 

@@ -1,7 +1,7 @@
 #ifndef  ELLE_NETWORK_HEADER_HXX
 # define ELLE_NETWORK_HEADER_HXX
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::network::Header);
 
@@ -10,7 +10,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::network::Header,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.tag;
 }
 
@@ -19,7 +19,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::network::Header,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.tag;
 }
 

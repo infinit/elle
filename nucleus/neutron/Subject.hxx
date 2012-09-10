@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
 
 # include <elle/cryptography/PublicKey.hh>
@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value._type;
 

@@ -4,12 +4,12 @@
 # include <list>
 
 # include "detail/SequenceSerializer.hh"
-# include "ArchiveSerializer.hxx"
+# include "Serializer.hh"
 
 namespace elle { namespace serialize {
 
     template<typename T, typename Allocator>
-      struct ArchiveSerializer<std::list<T, Allocator>>
+      struct Serializer<std::list<T, Allocator>>
         : public detail::SequenceSerializer<std::list<T, Allocator>>
       {};
 

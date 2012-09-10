@@ -8,14 +8,14 @@
 # include <boost/functional/hash.hpp>
 # include <elle/idiom/Open.hh>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::network::Locus,
                       archive,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.host;
   archive & value.port;

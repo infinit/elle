@@ -5,7 +5,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 // XXX The type elle::Large may not have a reasonable maximum size, in which
 // case we'll have to change the initial alloc system (and remove these
@@ -34,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
                           version)
 {
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
-  assert(version == 0);
+  enforce(version == 0);
 
   char unsigned tab[ELLE_LARGE_MAX_BIN_SIZE];
   ELLE_LARGE_BIN_SIZE_TYPE size;
@@ -51,7 +51,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,
                           version)
 {
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
-  assert(version == 0);
+  enforce(version == 0);
 
   unsigned char tab[ELLE_LARGE_MAX_BIN_SIZE];
   size_t size = BN_num_bytes(&n);

@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::gear::File,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & elle::serialize::pointer(value.contents);
 }

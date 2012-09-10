@@ -11,7 +11,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::History,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.container;
 }

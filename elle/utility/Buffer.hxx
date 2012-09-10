@@ -3,7 +3,7 @@
 
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::utility::Buffer)
 
@@ -12,7 +12,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   uint64_t size;
   archive >> size;
   if (sizeof(uint64_t) > sizeof(size_t))
@@ -29,7 +29,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::Buffer,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive << static_cast<uint64_t>(value.Size());
   archive.SaveBinary(value.Contents(), value.Size());
 }
@@ -42,7 +42,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive << static_cast<uint64_t>(value.Size());
   archive.SaveBinary(value.Contents(), value.Size());
 }

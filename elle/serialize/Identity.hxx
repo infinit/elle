@@ -1,7 +1,7 @@
 #ifndef  ELLE_SERIALIZE_IDENTITY_HXX
 # define ELLE_SERIALIZE_IDENTITY_HXX
 
-# include "ArchiveSerializer.hxx"
+# include "Serializer.hh"
 
 namespace elle
 {
@@ -9,7 +9,7 @@ namespace elle
   {
 
     template <typename T>
-    struct ArchiveSerializer<Identity<T>>
+    struct Serializer<Identity<T>>
     {
       template <typename Archive>
       static inline

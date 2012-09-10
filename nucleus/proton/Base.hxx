@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 # include <elle/cryptography/Digest.hh>
 # include <nucleus/proton/Version.hh>
 
@@ -12,7 +12,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.version;
   archive & value.digest;

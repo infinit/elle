@@ -4,7 +4,7 @@
 # include <cassert>
 # include <stdexcept>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::neutron::Group);
 
@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive >> base_class<nucleus::proton::ImprintBlock>(value);
 
@@ -31,8 +31,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
                           value,
                           version)
 {
-  assert(version == 0);
-  assert(value._signature != elle::cryptography::Signature::Null);
+  enforce(version == 0);
+  enforce(value._signature != elle::cryptography::Signature::Null);
 
   archive << base_class<nucleus::proton::ImprintBlock>(value);
 

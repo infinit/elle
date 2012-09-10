@@ -28,8 +28,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
     }
   else
     {
-      // XXX
-      assert(false && "to change with an exception");
+      enforce(false);
     }
 
   if (value.family != nucleus::proton::FamilyContentHashBlock)

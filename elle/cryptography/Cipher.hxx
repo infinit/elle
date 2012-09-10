@@ -3,14 +3,14 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::cryptography::Cipher,
                       archive,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.region;
 }
 

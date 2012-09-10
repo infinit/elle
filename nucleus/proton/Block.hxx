@@ -3,19 +3,19 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Block,
                       archive,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.network;
   archive & value.family;
-  assert(static_cast<int>(value.family) < static_cast<int>(nucleus::proton::Families));
+  enforce(static_cast<int>(value.family) < static_cast<int>(nucleus::proton::Families));
   archive & value.component;
-  assert(static_cast<int>(value.component) < static_cast<int>(nucleus::neutron::Components));
+  enforce(static_cast<int>(value.component) < static_cast<int>(nucleus::neutron::Components));
 }
 
 #endif

@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SPLIT(::QHostAddress);
 
@@ -12,7 +12,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::QHostAddress,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   std::string host;
   archive >> host;
   value.setAddress(host.c_str());
@@ -23,7 +23,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::QHostAddress,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   std::string host(value.toString().toStdString());
 
@@ -35,7 +35,7 @@ ELLE_SERIALIZE_SIMPLE(elle::network::Host,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.type;
   archive & value.location;
 }

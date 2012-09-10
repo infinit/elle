@@ -152,7 +152,7 @@ namespace elle
       ///
       /// Load an object on the heap.  If the constructors need arguments, you
       /// will have to override the LoadConstruct function of the
-      /// ArchiveSerializer<T> specialization.
+      /// Serializer<T> specialization.
       ///
       template <typename T>
       inline

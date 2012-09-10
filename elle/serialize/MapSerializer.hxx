@@ -30,7 +30,7 @@ namespace elle { namespace serialize {
     } // !ns stl_insert
 
     template<typename Key, typename T, typename Compare, typename Allocator>
-      struct ArchiveSerializer<std::map<Key, T, Compare, Allocator>>
+      struct Serializer<std::map<Key, T, Compare, Allocator>>
         : public detail::SequenceSerializer<
               std::map<Key, T, Compare, Allocator>
             , stl_insert::InsertPair
@@ -44,7 +44,7 @@ namespace elle { namespace serialize {
       };
 
     template<typename Key, typename T, typename Compare, typename Allocator>
-      struct ArchiveSerializer<std::unordered_map<Key, T, Compare, Allocator>>
+      struct Serializer<std::unordered_map<Key, T, Compare, Allocator>>
         : public detail::SequenceSerializer<std::unordered_map<Key, T, Compare, Allocator>>
       {};
 

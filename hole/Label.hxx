@@ -54,7 +54,7 @@ ELLE_SERIALIZE_SIMPLE(hole::Label,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & elle::serialize::pointer(value.digest);
 }

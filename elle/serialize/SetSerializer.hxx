@@ -9,7 +9,7 @@
 namespace elle { namespace serialize {
 
     template<typename T, typename Compare, typename Allocator>
-      struct ArchiveSerializer<std::set<T, Compare, Allocator>>
+      struct Serializer<std::set<T, Compare, Allocator>>
         : public detail::AssociativeSerializer<std::set<T, Compare, Allocator>>
       {};
 
@@ -23,7 +23,7 @@ namespace elle { namespace serialize {
 // on other os.
 #if 0
     template<typename T, typename Compare, typename Allocator>
-      struct ArchiveSerializer<std::unordered_set<T, Compare, Allocator>>
+      struct Serializer<std::unordered_set<T, Compare, Allocator>>
         : public detail::AssociativeSerializer<std::unordered_set<T, Compare, Allocator>>
       {};
 

@@ -2378,7 +2378,7 @@ namespace elle
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 namespace elle
 {
@@ -2483,7 +2483,7 @@ namespace elle
   {
 
     template<typename... T>
-      struct ArchiveSerializer< elle::radix::Arguments< radix::Parameters<T...> >>
+      struct Serializer< elle::radix::Arguments< radix::Parameters<T...> >>
       {
       public:
         typedef elle::radix::Arguments< radix::Parameters<T...> > Type;
@@ -2492,7 +2492,6 @@ namespace elle
         template<typename Archive> static void
           Serialize(Archive& ar, Type& value, unsigned int version)
           {
-            assert(version == 0);
             typedef elle::radix::detail::ArgumentsSerializer<sizeof...(T), T...> Serializer;
             _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments<radix::Parameters<T...>>, version, Archive::mode, value)
             {

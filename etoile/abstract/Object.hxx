@@ -11,7 +11,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Object,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   archive & value.genre;
   archive & value.stamps.creation;

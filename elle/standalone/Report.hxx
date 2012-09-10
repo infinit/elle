@@ -40,14 +40,14 @@ namespace elle
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::standalone::Report::Entry,
                       archive,
                       value,
                       version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive & value.location;
   archive & value.time;
   archive & value.message;
@@ -60,14 +60,14 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Report,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
   archive << static_cast<elle::Natural32>(value.container.size());
   auto it = value.container.begin(),
        end = value.container.end();
   for(; it != end; ++it)
     {
       auto entry = *it;
-      assert(entry != nullptr);
+      enforce(entry != nullptr);
       archive << *entry;
     }
 }
@@ -77,7 +77,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Report,
                           value,
                           version)
 {
-  assert(version == 0);
+  enforce(version == 0);
 
   elle::Natural32 size;
   archive >> size;

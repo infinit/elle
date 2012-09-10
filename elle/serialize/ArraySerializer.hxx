@@ -3,10 +3,10 @@
 
 # include <array>
 
-# include "ArchiveSerializer.hxx"
+# include "Serializer.hh"
 
 ///
-/// This file provides ArchiveSerializer specializations
+/// This file provides Serializer specializations
 /// in order to serialize static arrays for both C type (`T[size]')
 /// and C++11 array class (`std::array<T, size>').
 ///
@@ -35,7 +35,7 @@ namespace elle { namespace serialize {
     } // namespace detail
 
     template<typename T, size_t size>
-      struct ArchiveSerializer<T[size]>
+      struct Serializer<T[size]>
         : public detail::ArraySerializer<T[size], size>
       {};
 
@@ -46,7 +46,7 @@ namespace elle { namespace serialize {
       };
 
     template<typename T, size_t size>
-      struct ArchiveSerializer<std::array<T, size>>
+      struct Serializer<std::array<T, size>>
         : public detail::ArraySerializer<std::array<T, size>, size>
       {};
 
