@@ -23,7 +23,7 @@
 //
 // Example 2: Inheritance
 // --------------------------------------------
-// struct B
+// struct B: public A
 // {
 //    ELLE_SERIALIZE_CONSTRUCT(B, A) {}
 // };
@@ -41,7 +41,7 @@
 //
 // Example 4: Separated implementation
 // --------------------------------------------
-// struct D :
+// struct D
 // {
 //   ELLE_SERIALIZE_CONSTRUCT_DECL(D);
 // }
@@ -53,7 +53,7 @@
 //
 // Example 5: Do not forgot pointers !
 // --------------------------------------------
-// struct E :
+// struct E
 // {
 // private:
 //    A* _ptr;
@@ -127,7 +127,6 @@ namespace elle
 # define __ESC_INITIALIZATION_LIST_REPEAT(__r, __data, __i, __elem)           \
   BOOST_PP_IF(__i, BOOST_PP_COMMA, :)                                         \
   __elem{elle::serialize::no_init}                                            \
-
 /**/
 
 # define __ESC_INITIALIZATION_LIST(__T, ...)                                  \
