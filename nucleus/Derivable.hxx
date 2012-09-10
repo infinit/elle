@@ -7,16 +7,7 @@
 
 # include <nucleus/Nucleus.hh>
 
-namespace elle
-{
-  namespace serialize
-  {
-
-    template<> struct StoreClassVersion<nucleus::Derivable>
-      { static bool const value = false; };
-
-  }
-}
+ELLE_SERIALIZE_NO_FORMAT(nucleus::Derivable);
 
 ELLE_SERIALIZE_SPLIT(nucleus::Derivable);
 

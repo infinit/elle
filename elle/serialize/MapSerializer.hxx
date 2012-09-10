@@ -38,7 +38,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename Key, typename T, typename Compare, typename Allocator>
-      struct StoreClassVersion<std::map<Key, T, Compare, Allocator>>
+      struct StoreFormat<std::map<Key, T, Compare, Allocator>>
       {
         static bool const value = false;
       };
@@ -49,7 +49,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename Key, typename T, typename Compare, typename Allocator>
-      struct StoreClassVersion<std::unordered_map<Key, T, Compare, Allocator>>
+      struct StoreFormat<std::unordered_map<Key, T, Compare, Allocator>>
       {
         static bool const value = false;
       };

@@ -75,14 +75,15 @@ namespace elle { namespace serialize {
     >::type OutputJSONArchive::Save(T const& val)
     {
       _DictStream dict(*this);
-      if (StoreClassVersion<T>::value == true)
-        dict << NamedValue<int32_t const>("_class_version", ArchivableClass<T>::version);
+      Format format(AccessDynamicFormat::fetch(val));
+      if (StoreFormat<T>::value == true)
+        dict << NamedValue<int32_t const>("_class_version", format.version);
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(
           dict,
           const_cast<T&>(val),
-          ArchivableClass<T>::version
+          format.version
       );
     }
 
@@ -138,18 +139,19 @@ namespace elle { namespace serialize {
         {
           json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);
           if (dict == nullptr)
-            throw std::runtime_error("Cannot convert '"+ obj.repr() +"' to a dictionary");
-          _DictStream dstream(_in, *dict);
+            throw std::runtime_error{
+                "Cannot convert '"+ obj.repr() +"' to a dictionary"
+            };
 
-          unsigned int version = 0;
-          if (StoreClassVersion<T>::value == true)
-            dstream >> NamedValue<unsigned int>("_class_version", version);
+          _DictStream dstream(_in, *dict);
+          Format format(0);
+          if (StoreFormat<T>::value == true)
+            {
+              dstream >> NamedValue<uint16_t>("_class_version", format.version);
+              AccessDynamicFormat::set(value, format.version);
+            }
           typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-          Serializer::Serialize(
-              dstream,
-              const_cast<T&>(value),
-              version
-          );
+          Serializer::Serialize(dstream, const_cast<T&>(value), format.version);
         }
     };
 
@@ -169,7 +171,7 @@ namespace elle { namespace serialize {
       _DictStream dstream(*this, *dict);
 
       unsigned int version = 0;
-      if (StoreClassVersion<T>::value == true)
+      if (StoreFormat<T>::value == true)
         dstream >> NamedValue<unsigned int>("_class_version", version);
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(

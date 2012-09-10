@@ -40,7 +40,7 @@ namespace elle { namespace serialize { namespace detail {
           static inline void Save(Archive& ar, Container const& container, unsigned int)
             {
               static_assert(
-                  StoreClassVersion<Container>::value == false,
+                  StoreFormat<Container>::value == false,
                   "oups, should not store class version"
               );
               typedef typename Archive::SequenceSizeType SizeType;
@@ -62,7 +62,7 @@ namespace elle { namespace serialize { namespace detail {
           static inline void Load(Archive& ar, Container& container, unsigned int)
             {
               static_assert(
-                  StoreClassVersion<Container>::value == false,
+                  StoreFormat<Container>::value == false,
                   "oups, should not store class version"
               );
               typedef typename Archive::SequenceSizeType SizeType;

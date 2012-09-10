@@ -14,7 +14,7 @@ struct Old
   int32_t     i;
 };
 
-ELLE_SERIALIZE_CLASS_VERSION(Old, 0); // not needed
+ELLE_SERIALIZE_STATIC_FORMAT(Old, 0); // not needed
 
 ELLE_SERIALIZE_SIMPLE(Old, ar, value, version)
 {
@@ -29,7 +29,7 @@ struct New : Old
   double      d;
 };
 
-ELLE_SERIALIZE_CLASS_VERSION(New, 1);
+ELLE_SERIALIZE_STATIC_FORMAT(New, 1);
 
 ELLE_SERIALIZE_SIMPLE(New, ar, value, version)
 {

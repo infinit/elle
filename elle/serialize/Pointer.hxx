@@ -161,13 +161,13 @@ namespace elle
 
 
     template<typename T>
-      struct StoreClassVersion<Pointer<T>>
+      struct StoreFormat<Pointer<T>>
       {
         static bool const value = false;
       };
 
     template<typename T>
-      struct StoreClassVersion<AlivePointer<T>>
+      struct StoreFormat<AlivePointer<T>>
       {
         static bool const value = false;
       };

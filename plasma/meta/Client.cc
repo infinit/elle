@@ -33,7 +33,7 @@ namespace elle
 }
 
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
-  ELLE_SERIALIZE_NO_VERSION(type);                                            \
+  ELLE_SERIALIZE_NO_FORMAT(type);                                             \
   ELLE_SERIALIZE_SIMPLE(type, archive, value, version)                        \
   {                                                                           \
     assert(version == 0);                                                     \

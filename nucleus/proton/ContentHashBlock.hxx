@@ -35,6 +35,6 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
     throw std::runtime_error("Invalid family");
 }
 
-ELLE_SERIALIZE_CLASS_VERSION(nucleus::proton::ContentHashBlock, 1);
+ELLE_SERIALIZE_STATIC_FORMAT(nucleus::proton::ContentHashBlock, 1);
 
 #endif

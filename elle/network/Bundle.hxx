@@ -175,7 +175,7 @@ namespace elle
         elle::network::Tag const G
       , typename... T
     >
-    struct StoreClassVersion<
+    struct StoreFormat<
         elle::network::Bundle::Inputs<
             G
           , elle::radix::Parameters<T...>
@@ -219,7 +219,7 @@ namespace elle
         elle::network::Tag const G
       , typename... T
     >
-    struct StoreClassVersion<
+    struct StoreFormat<
         elle::network::Bundle::Outputs<
             G
           , elle::radix::Parameters<T...>

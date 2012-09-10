@@ -67,7 +67,7 @@ namespace elle
       };
 
     template<typename... T>
-      struct StoreClassVersion<std::tuple<T...>>
+      struct StoreFormat<std::tuple<T...>>
       {
         static bool const value = false;
       };
