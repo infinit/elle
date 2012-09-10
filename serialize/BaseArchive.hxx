@@ -3,6 +3,8 @@
 
 # include "BaseArchive.hh"
 # include "Serializer.hh"
+# include "StoreFormat.hh"
+# include "StaticFormat.hh"
 
 # include <elle/idiom/Close.hh>
 #  include <iostream> // XXX
@@ -26,6 +28,60 @@ namespace elle
 
     //-------------------------------------------------------------------------
 
+
+
+    struct AccessDynamicFormat
+    {
+      template <typename T>
+      struct Clean
+      {
+        typedef typename std::remove_cv<T>::type Type;
+      };
+
+      template <typename T>
+      struct _HasDynamicFormat
+      {
+        typedef typename Clean<T>::Type Derived;
+        typedef DynamicFormat<Derived> Base;
+        static bool const value = std::is_base_of<Derived, Base>::value;
+      };
+
+      template <typename T>
+      static inline
+      typename std::enable_if<_HasDynamicFormat<T>::value, uint16_t>::type
+      fetch(T const& val)
+      {
+        return static_cast<
+            DynamicFormat<typename Clean<T>::Type> const&
+        >(val).version();
+      }
+
+      template <typename T>
+      static inline
+      typename std::enable_if<!_HasDynamicFormat<T>::value, uint16_t>::type
+      fetch(T const&)
+      {
+        return StaticFormat<typename Clean<T>::Type>::version;
+      }
+
+      template <typename T>
+      static inline
+      typename std::enable_if<_HasDynamicFormat<T>::value>::type
+      set(T& val, uint16_t version)
+      {
+        return static_cast<
+            DynamicFormat<typename Clean<T>::Type>&
+        >(val).version(version);
+      }
+
+      template<typename T>
+      static inline
+      typename std::enable_if<!_HasDynamicFormat<T>::value>::type
+      set(T& val, uint16_t)
+      {/* Do nothing */}
+
+    };
+
     /// Generic save method. Uses an explicit specialization of
     /// Serializer.
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
@@ -34,19 +90,14 @@ namespace elle
     typename std::enable_if<std::is_enum<T>::value == false>::type
     BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
     {
-      if (StoreClassVersion<T>::value == true)
-        Access::Save(
-            this->self(),
-            ClassVersionType(ArchivableClass<T>::version)
-        );
+      Format format(AccessDynamicFormat::fetch(val));
+
+      if (StoreFormat<T>::value == true)
+          Access::Save(this->self(), format);
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       // this const_cast is safe since the archive is in output mode
-      Serializer::Serialize(
-          this->self(),
-          const_cast<T&>(val),
-          ArchivableClass<T>::version
-      );
+      Serializer::Serialize(this->self(), const_cast<T&>(val), format.version);
     }
 
     //-------------------------------------------------------------------------
@@ -59,12 +110,15 @@ namespace elle
     typename std::enable_if<std::is_enum<T>::value == false>::type
     BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
     {
-      ClassVersionType classVersion(0);
-      if (StoreClassVersion<T>::value == true)
-        Access::Load(this->self(), classVersion);
+      Format format(0);
+      if (StoreFormat<T>::value == true)
+        {
+          Access::Load(this->self(), format);
+          AccessDynamicFormat::set(val, format.version);
+        }
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-      Serializer::Serialize(this->self(), val, classVersion.version);
+      Serializer::Serialize(this->self(), val, format.version);
     }
 
     //-------------------------------------------------------------------------
@@ -78,8 +132,8 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T*& ptr)
     {
       assert(ptr == nullptr);
-      //ClassVersionType classVersion(0);
-      //if (StoreClassVersion<T>::value == true)
+      //Format classVersion(0);
+      //if (StoreFormat<T>::value == true)
       //  Access::Load(this->self(), classVersion);
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
@@ -427,7 +481,7 @@ namespace elle
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     inline
     void
-    BaseArchive<mode_, Archive, CT, STS>::Save(ClassVersionType const& value)
+    BaseArchive<mode_, Archive, CT, STS>::Save(Format const& value)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       ELLE_TRACE("Saving class version '%s'", value.version);
@@ -440,7 +494,7 @@ namespace elle
     __ELLE_SERIALIZE_BASE_ARCHIVE_TPL
     inline
     void
-    BaseArchive<mode_, Archive, CT, STS>::Load(ClassVersionType& value)
+    BaseArchive<mode_, Archive, CT, STS>::Load(Format& value)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       Access::Load(this->self(), value.version);
@@ -661,10 +715,10 @@ namespace elle
       static inline void Load(Archive& ar, int64_t& val)  { ar.Load(val); }
       static inline void Load(Archive& ar, uint64_t& val) { ar.Load(val); }
 
-      static inline void Save(Archive& ar, ClassVersionType const& version)
+      static inline void Save(Archive& ar, Format const& version)
       { ar.Save(version); }
 
-      static inline void Load(Archive& ar, ClassVersionType& version)
+      static inline void Load(Archive& ar, Format& version)
       { ar.Load(version); }
 
 

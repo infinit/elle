@@ -13,35 +13,18 @@
 # include "fwd.hh"
 
 # include "ArchiveMode.hh"
-# include "ArchivableClass.hh"
+# include "Format.hh"
+# include "DynamicFormat.hh"
 # include "NamedValue.hh"
 # include "Polymorphic.hh"
 # include "Concrete.hh"
 # include "Identity.hh"
-# include "StoreClassVersion.hh"
 # include "detail/BaseArchiveOperators.hh"
 
 namespace elle
 {
   namespace serialize
   {
-
-    ///
-    /// Strong typed unsigned short representing the class version for
-    /// Save()/Load() overloads. (it gives you a chance to catch the call)
-    ///
-    struct ClassVersionType
-    {
-    public:
-      uint16_t version;
-
-    public:
-      ClassVersionType(uint16_t version) : version(version) {}
-      ClassVersionType(ClassVersionType const& other) : version(other.version) {}
-      ClassVersionType& operator =(ClassVersionType const& other)
-      { version = other.version; return *this; }
-    };
-
 
     /// Default stream type selector. Select the right stream type depending on
     /// the archive mode.
@@ -218,7 +201,7 @@ namespace elle
       inline void Save(float val);
       inline void Save(double val);
       inline void Save(std::string const& val);
-      inline void Save(ClassVersionType const& classVersion);
+      inline void Save(Format const& format);
 
       template <typename T>
       inline
@@ -245,7 +228,7 @@ namespace elle
       inline void Load(float& val);
       inline void Load(double& val);
       inline void Load(std::string& val);
-      inline void Load(ClassVersionType& classVersion);
+      inline void Load(Format& format);
 
       template <typename T>
       inline

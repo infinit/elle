@@ -2500,8 +2500,8 @@ namespace elle
           }
       };
 
-    template<typename... T>
-    struct StoreClassVersion< elle::radix::Arguments< radix::Parameters<T...> >>
+    template <typename... T>
+    struct StoreFormat< elle::radix::Arguments< radix::Parameters<T...> >>
     {
       static bool const value = false;
     };

@@ -32,7 +32,7 @@ namespace elle { namespace serialize {
       };
 
     template<typename First, typename Second>
-      struct StoreClassVersion<std::pair<First, Second>>
+      struct StoreFormat<std::pair<First, Second>>
       {
         static bool const value = false;
       };

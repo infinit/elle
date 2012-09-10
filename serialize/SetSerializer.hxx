@@ -14,7 +14,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename T, typename Compare, typename Allocator>
-      struct StoreClassVersion<std::set<T, Compare, Allocator>>
+      struct StoreFormat<std::set<T, Compare, Allocator>>
       {
         static bool const value = false;
       };
@@ -28,7 +28,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename T, typename Compare, typename Allocator>
-      struct StoreClassVersion<std::unordered_set<T, Compare, Allocator>>
+      struct StoreFormat<std::unordered_set<T, Compare, Allocator>>
       {
         static bool const value = false;
       };

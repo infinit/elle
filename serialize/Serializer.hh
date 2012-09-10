@@ -52,10 +52,11 @@
 # include <elle/types.hh>
 # include <elle/print.hh>
 
-# include "ArchivableClass.hh"
 # include "ArchiveMode.hh"
 # include "Concrete.hh"
-# include "StoreClassVersion.hh"
+# include "Format.hh"
+# include "StaticFormat.hh"
+# include "StoreFormat.hh"
 
 namespace elle
 {
@@ -135,7 +136,7 @@ namespace elle
       static void Serialize(Archive&, T&, unsigned int)
       {
         static_assert(
-            ArchivableClass<T>::version != 0,
+            StaticFormat<T>::version != 0,
             "You have to specialize Serializer<T> for your type."
         );
       }
@@ -192,14 +193,14 @@ namespace elle
   }
 } // !namespace elle::serialize
 
-# define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                   \
-  ELLE_LOG_COMPONENT("elle.serialize.Serializer");                       \
-  ELLE_TRACE("%s " #T " (%s): %p",                                              \
-                 mode == ArchiveMode::Input ? "Loading" : "Saving",             \
-                 (elle::serialize::StoreClassVersion<T>::value                  \
-                    ? elle::sprint("version", version)                          \
-                    : "no version"),                                            \
-                 &_value)                                                       \
+# define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                 \
+  ELLE_LOG_COMPONENT("elle.serialize.Serializer");                            \
+  ELLE_TRACE("%s " #T " (%s): %p",                                            \
+                 mode == ArchiveMode::Input ? "Loading" : "Saving",           \
+                 (elle::serialize::StoreFormat<T>::value                      \
+                    ? elle::sprint("version", version)                        \
+                    : "no version"),                                          \
+                 &_value)                                                     \
   /**/
 
 /// Define a simple serializer for the type T
@@ -245,8 +246,8 @@ namespace elle
 # define ELLE_SERIALIZE_SIMPLE_TN(T, archive, value, version, n)              \
 namespace elle { namespace serialize {                                        \
     __ESA_TEMPLATE_DECL_N(n)                                                  \
-    struct Serializer<__ESA_TEMPLATE_TYPE(T, n)>:                      \
-        public BaseSerializer<__ESA_TEMPLATE_TYPE(T, n)>               \
+    struct Serializer<__ESA_TEMPLATE_TYPE(T, n)>:                             \
+        public BaseSerializer<__ESA_TEMPLATE_TYPE(T, n)>                      \
     {                                                                         \
       ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(T, n)                                \
       template<typename Archive>                                              \
@@ -273,7 +274,7 @@ namespace elle { namespace serialize {                                        \
 __ESA_TEMPLATE_DECL(n)                                                        \
 template<typename Archive>                                                    \
 void                                                                          \
-elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(    \
+elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(T, n)>::_Serialize(           \
     Archive& archive,                                                         \
     __ESA_TEMPLATE_TYPE(T, n)& value,                                         \
     unsigned int version)                                                     \
@@ -303,8 +304,8 @@ namespace elle                                                                \
   namespace serialize                                                         \
   {                                                                           \
   __ESA_TEMPLATE_DECL_N(__n)                                                  \
-  struct Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>:                    \
-    public BaseSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>               \
+  struct Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>:                           \
+    public BaseSerializer<__ESA_TEMPLATE_TYPE(__T, __n)>                      \
   {                                                                           \
     ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(__T, __n)                              \
     typedef __ESA_TEMPLATE_TYPE(__T, __n) Type;                               \
@@ -339,7 +340,7 @@ template<typename Archive>                                                    \
 typename std::enable_if<                                                      \
     Archive::mode == elle::serialize::ArchiveMode::input                      \
 >::type                                                                       \
-elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize( \
+elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize(        \
     Archive& __archive,                                                       \
     __ESA_TEMPLATE_TYPE(__T, __n)& __value,                                   \
     unsigned int __version)                                                   \

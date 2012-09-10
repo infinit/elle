@@ -24,7 +24,7 @@ namespace elle
     };
 
     template <typename T>
-    struct StoreClassVersion<Identity<T>>
+    struct StoreFormat<Identity<T>>
     {
       static bool const value = false;
     };

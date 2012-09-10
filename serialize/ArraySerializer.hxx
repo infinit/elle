@@ -40,7 +40,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename T, size_t size>
-      struct StoreClassVersion<T[size]>
+      struct StoreFormat<T[size]>
       {
         static bool const value = false;
       };
@@ -51,7 +51,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename T, size_t size>
-      struct StoreClassVersion<std::array<T, size>>
+      struct StoreFormat<std::array<T, size>>
       {
         static bool const value = false;
       };

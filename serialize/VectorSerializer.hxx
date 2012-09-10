@@ -14,7 +14,7 @@ namespace elle { namespace serialize {
       {};
 
     template<typename T, typename Allocator>
-      struct StoreClassVersion<std::vector<T, Allocator>>
+      struct StoreFormat<std::vector<T, Allocator>>
       {
         static bool const value = false;
       };
