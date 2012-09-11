@@ -1,5 +1,5 @@
-#ifndef HORIZON_LINUX_CRIB_HH
-# define HORIZON_LINUX_CRIB_HH
+#ifndef HORIZON_CRIB_HH
+# define HORIZON_CRIB_HH
 
 # include <elle/types.hh>
 
@@ -32,9 +32,11 @@ namespace horizon
     static elle::Status       Remove(const elle::String&);
 
     static elle::Status       Show(const elle::Natural32 = 0);
+    /// XXX
     static
     void
-    rename(const char* source, const char* target);
+    rename(const char* source,
+           const char* target);
 
     //
     // static attributes

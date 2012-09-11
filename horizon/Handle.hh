@@ -1,5 +1,5 @@
-#ifndef HORIZON_LINUX_HANDLE_HH
-# define HORIZON_LINUX_HANDLE_HH
+#ifndef HORIZON_HANDLE_HH
+# define HORIZON_HANDLE_HH
 
 # include <elle/types.hh>
 

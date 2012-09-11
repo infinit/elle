@@ -3,7 +3,6 @@
 #include <horizon/Handle.hh>
 #include <horizon/Janitor.hh>
 #include <horizon/Policy.hh>
-#include <horizon/linux/Linux.hh>
 
 #include <agent/Agent.hh>
 
@@ -47,7 +46,7 @@ namespace horizon
     {                                                   \
       log(_text_);                                      \
                                                         \
-      linux::Janitor::Clear(_identifiers_);             \
+      Janitor::Clear(_identifiers_);                    \
                                                         \
       return ((_errno_));                               \
     } while (false)
@@ -92,8 +91,7 @@ namespace horizon
     info.fh = reinterpret_cast<uint64_t>(&handle);
 
     // Call Fgetattr().
-    if ((result =
-         Crux::fgetattr(path, stat, &info)) < 0)
+    if ((result = Crux::fgetattr(path, stat, &info)) < 0)
       error("unable to get information on the given file descriptor",
             result,
             identifier);
@@ -130,8 +128,8 @@ namespace horizon
     // user is found, the 'somebody' user is used instead,
     // indicating that the file belongs to someone, with the given
     // permissions, but cannot be mapped to a local user name.
-    if (linux::Linux::Dictionary.users.Lookup(abstract.keys.owner,
-                                       name) == elle::Status::True)
+    if (Horizon::Dictionary.users.Lookup(abstract.keys.owner,
+                                         name) == elle::Status::True)
       {
         // In this case, the object's owner is known locally.
         struct ::passwd*      passwd;
@@ -145,19 +143,19 @@ namespace horizon
         else
           {
             // If an error occured, set the user to 'somebody'.
-            stat->st_uid = linux::Linux::Somebody::UID;
+            stat->st_uid = Horizon::Somebody::UID;
           }
       }
     else
       {
         // Otherwise, this user is unknown locally, so indicate the
         // system that this object belongs to the 'somebody' user.
-        stat->st_uid = linux::Linux::Somebody::UID;
+        stat->st_uid = Horizon::Somebody::UID;
       }
 
     // Since Infinit does not have the concept of current group, the
     // group of this object is set to 'somebody'.
-    stat->st_gid = linux::Linux::Somebody::GID;
+    stat->st_gid = Horizon::Somebody::GID;
 
     // Set the size.
     stat->st_size = static_cast<off_t>(abstract.size);
@@ -772,7 +770,7 @@ namespace horizon
     // list. although this is completely feasible, it has been
     // decided not to do so because it would incur too much cost.
     //
-    // Indeed, on most Linux systems, the umask is set to 022 or is
+    // Indeed, on most Unix systems, the umask is set to 022 or is
     // somewhat equivalent, granting permissions, by default, to the
     // default group and the others.
     //

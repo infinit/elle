@@ -1,8 +1,8 @@
 #include <horizon/macosx/Crux.hh>
 #include <horizon/macosx/MacOSX.hh>
-#include <horizon/macosx/Janitor.hh>
-#include <horizon/macosx/Handle.hh>
-#include <horizon/macosx/Crib.hh>
+#include <horizon/Janitor.hh>
+#include <horizon/Handle.hh>
+#include <horizon/Crib.hh>
 #include <horizon/Policy.hh>
 
 #include <agent/Agent.hh>
@@ -98,69 +98,6 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method returns general-purpose information on the file system
-    /// object identified by _path_.
-    ///
-    int                 Crux::getattr(const char*               path,
-                                      struct ::stat*            stat)
-    {
-      etoile::gear::Identifier  identifier;
-      etoile::path::Way         way(path);
-      etoile::path::Chemin      chemin;
-      struct ::fuse_file_info   info;
-      int                       result;
-
-      // debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
-
-      // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
-        {
-          // purge the error messages since it may be normal not to be able
-          // to resolve the given way.
-          purge();
-
-          return (-ENOENT);
-        }
-
-      // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
-        error("unable to load the object",
-              -ENOENT);
-
-      // create a local handle.
-      Handle                    handle(Handle::OperationGetattr,
-                                       identifier);
-
-      // set the handle in the fuse_file_info structure.
-      //
-      // be careful, the address is local but it is alright since it is
-      // used in fgetattr() only.
-      info.fh = reinterpret_cast<uint64_t>(&handle);
-
-      // call the fgetattr() method.
-      if ((result = Crux::fgetattr(path, stat, &info)) < 0)
-        error("unable to get information on the given file descriptor",
-              result,
-              identifier);
-
-      // discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
-        error("unable to discard the object",
-              -EPERM);
-
-      // debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
-
-      return (0);
-    }
 
     ///
     /// this method returns general-purpose information on the file system

@@ -18,7 +18,6 @@
 
 #include <elle/idiom/Close.hh>
 # include <boost/function.hpp>
-# include <boost/interprocess/sync/interprocess_semaphore.hpp>
 # include <boost/preprocessor/seq/for_each.hpp>
 # include <boost/preprocessor/seq/for_each_i.hpp>
 # include <boost/preprocessor/seq/pop_front.hpp>

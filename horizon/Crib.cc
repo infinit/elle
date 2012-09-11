@@ -78,7 +78,8 @@ namespace horizon
   }
 
   void
-  Crib::rename(const char* source, const char* target)
+  Crib::rename(const char* source,
+               const char* target)
   {
     auto elt = Handles.find(source);
     assert(elt != Handles.end());

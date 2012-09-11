@@ -12,28 +12,6 @@ namespace horizon
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this variable contains the UID of the 'somebody' user, user which
-    /// is used whenever the system cannot map the Infinit user on a local
-    /// user.
-    ///
-    uid_t                               MacOSX::Somebody::UID;
-
-    ///
-    /// this variable contains the GID of the 'somebody' group.
-    ///
-    gid_t                               MacOSX::Somebody::GID;
-
-    ///
-    /// this varaible contains the mappings between local user/group
-    /// identities and Infinit identities.
-    ///
-    lune::Dictionary                    MacOSX::Dictionary;
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -42,33 +20,6 @@ namespace horizon
     ///
     elle::Status        MacOSX::Initialize()
     {
-      //
-      // initialize the 'somebody' entity.
-      //
-      {
-        struct ::passwd*        passwd;
-
-        // retrieve the passwd structure related to the user 'somebody'.
-        // if nullptr, try to fallback to 'nobody'.
-        if ((passwd = ::getpwnam("somebody")) == nullptr &&
-            (passwd = ::getpwnam("nobody")) == nullptr)
-          escape("it seems that the user 'somebody' does not exist");
-
-        // set the uid and gid.
-        MacOSX::Somebody::UID = passwd->pw_uid;
-        MacOSX::Somebody::GID = passwd->pw_gid;
-      }
-
-      //
-      // load the user/group maps which will be used to translate Infinit
-      // user/group identifiers into local identifiers.
-      //
-      {
-        // if the dictionary exist.
-        if (lune::Dictionary::exists(Infinit::User) == true)
-          MacOSX::Dictionary.load(Infinit::User);
-      }
-
       //
       // initialize FUSE.
       //
