@@ -124,7 +124,8 @@ namespace elle
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
                                              length) <= 0)
-        escape("unable to set the RSA key length");
+        escape("unable to set the RSA key length %u: %s",
+               length, ::ERR_error_string(ERR_get_error(), nullptr));
 
       // generate the EVP key.
       if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &scope.key) <= 0)
