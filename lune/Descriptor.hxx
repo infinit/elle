@@ -7,25 +7,45 @@
 # include <nucleus/proton/Address.hxx>
 # include <hole/Model.hh>
 
+ELLE_SERIALIZE_STATIC_FORMAT(lune::Descriptor, 1)
+
 ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
                       archive,
                       value,
                       version)
 {
-  enforce(version == 0);
+  switch (version)
+    {
+    case 0:
+      {
+        archive & value._meta._id;
+        archive & value._data._name;
+        archive & value._meta._model;
+        archive & value._data._openness;
+        archive & value._meta._root;
+        archive & value._meta._everybody.identity;
+        archive & value._meta._history;
+        archive & value._meta._extent;
 
-  archive & value._id;
-  archive & value.name;
-  archive & value.model;
-  archive & value._openness;
-  archive & value.root;
-  archive & value._everybody.identity;
-  archive & value.history;
-  archive & value.extent;
-  archive & value.contention;
-  archive & value.balancing;
-  archive & value._policy;
-  archive & value.signature;
+        elle::Real contention(0.5);
+        elle::Real balancing(0.2);
+
+        archive & contention;
+        archive & balancing;
+
+        archive & value._data._policy;
+        archive & value._meta._signature;
+
+        break;
+      }
+    case 1:
+      {
+        break;
+      }
+    default:
+      throw std::runtime_error(
+        elle::sprintf("unknown format '%s'", version));
+    }
 }
 
 #endif

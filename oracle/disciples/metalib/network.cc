@@ -37,6 +37,7 @@
 static
 elle::io::Unique
 generate_network_descriptor(elle::String const& id,
+                            elle::String const& identity_,
                             elle::String const& name,
                             elle::String const& model_name,
                             elle::io::Unique const& directory_address_,
@@ -48,7 +49,6 @@ generate_network_descriptor(elle::String const& id,
   static horizon::Policy policy = horizon::Policy::accessible;
   static hole::Openness openness = hole::Openness::closed;
 
-  lune::Descriptor descriptor;
   hole::Model model;
   lune::Authority authority;
   elle::io::Path authority_path;
@@ -72,22 +72,24 @@ generate_network_descriptor(elle::String const& id,
   if (group_address.Restore(group_address_) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore access address");
 
-  if (descriptor.Create(id,
-                        Infinit::version,
-                        name,
-                        model,
-                        openness,
-                        directory_address,
-                        group_address,
-                        lune::Descriptor::History,
-                        lune::Descriptor::Extent,
-                        lune::Descriptor::Contention,
-                        lune::Descriptor::Balancing,
-                        policy) != elle::Status::Ok)
-    throw std::runtime_error("Unable to create the network descriptor");
+  lune::Identity identity;
+  if (identity.Restore(identity_) != elle::Status::Ok)
+    throw std::runtime_error("Unable to restore the identity");
 
-  if (descriptor.Seal(authority) != elle::Status::Ok)
-    throw std::runtime_error("Unable to seal the network descriptor");
+  lune::Descriptor descriptor(id,
+                              identity.pair.K,
+                              model,
+                              directory_address,
+                              group_address,
+                              name,
+                              openness,
+                              policy,
+                              lune::Descriptor::History,
+                              lune::Descriptor::Extent,
+                              Infinit::version,
+                              authority);
+
+  descriptor.seal(identity.pair.k);
 
   elle::io::Unique unique;
   if (descriptor.Save(unique) != elle::Status::Ok)
@@ -103,6 +105,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
 {
   (void) self;
   char const* network_id = nullptr,
+            * user_identity = nullptr,
             * network_name = nullptr,
             * network_model = nullptr,
             * directory_address = nullptr,
@@ -111,8 +114,9 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
             * authority_password = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "sssssss:generate_network_descriptor",
+  if (!PyArg_ParseTuple(args, "ssssssss:generate_network_descriptor",
                         &network_id,
+                        &user_identity,
                         &network_name,
                         &network_model,
                         &directory_address,
@@ -128,6 +132,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
     {
       elle::io::Unique descriptor = generate_network_descriptor(
           network_id,
+          user_identity,
           network_name,
           network_model,
           directory_address,

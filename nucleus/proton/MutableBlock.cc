@@ -129,7 +129,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, version);
 
       // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.history == false)
+      if (hole::Hole::Descriptor.meta().history() == false)
         {
           this->load(elle::io::Path(MutableBlock::_path(network, address, "@")));
         }
@@ -185,7 +185,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("%s: store(%s, %s)", *this, network, address);
 
       // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.history == false)
+      if (hole::Hole::Descriptor.meta().history() == false)
         {
           //
           // if the history is not supported, store the mutable block
@@ -276,7 +276,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("erase(%s, %s)", network, address);
 
       // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.history == false)
+      if (hole::Hole::Descriptor.meta().history() == false)
         {
           elle::concept::Fileable<>::erase(
             MutableBlock::_path(network, address, "@"));
@@ -368,7 +368,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("exists(%s, %s)", network, address);
 
       // operate depending on the network's support of history.
-      if (hole::Hole::Descriptor.history == false)
+      if (hole::Hole::Descriptor.meta().history() == false)
         {
           if (version == Version::Last)
             {

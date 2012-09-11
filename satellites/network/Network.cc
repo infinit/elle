@@ -62,7 +62,6 @@ namespace satellite
                                         const elle::String&     administrator)
   {
     lune::Authority     authority;
-    lune::Descriptor    descriptor;
     lune::Identity      identity;
     nucleus::proton::Address directory_address;
     nucleus::proton::Address group_address;
@@ -269,27 +268,21 @@ namespace satellite
     // create the network's descriptor.
     //
     {
-      // create the descriptor.
-      if (descriptor.Create(
-            identifier,
-            Infinit::version,
-            name,
-            model,
-            openness,
-            directory_address,
-            group_address,
-            lune::Descriptor::History,
-            lune::Descriptor::Extent,
-            lune::Descriptor::Contention,
-            lune::Descriptor::Balancing,
-            policy) == elle::Status::Error)
-        escape("unable to create the network's descriptor");
+      lune::Descriptor    descriptor(identifier,
+                                     identity.pair.K,
+                                     model,
+                                     directory_address,
+                                     group_address,
+                                     name,
+                                     openness,
+                                     policy,
+                                     lune::Descriptor::History,
+                                     lune::Descriptor::Extent,
+                                     Infinit::version,
+                                     authority);
 
-      // seal the descriptor.
-      if (descriptor.Seal(authority) == elle::Status::Error)
-        escape("unable to seal the descriptor");
+      descriptor.seal(identity.pair.k);
 
-      // store the descriptor.
       descriptor.store(name);
     }
 
@@ -416,9 +409,11 @@ namespace satellite
       // load the descriptor.
       descriptor.load(name);
 
+      // XXX
+      descriptor.Dump();
+
       // validate the descriptor.
-      if (descriptor.Validate(Infinit::Authority) == elle::Status::Error)
-        escape("unable to validate the descriptor");
+      descriptor.validate(Infinit::Authority);
     }
 
     //

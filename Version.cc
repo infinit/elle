@@ -40,7 +40,9 @@ Version::minor() const
 void
 Version::print(std::ostream& stream) const
 {
-  stream << std::dec << this->_major << ":" << this->_minor;
+  stream << static_cast<elle::Natural32>(this->_major)
+         << ":"
+         << static_cast<elle::Natural32>(this->_minor);
 }
 
 //

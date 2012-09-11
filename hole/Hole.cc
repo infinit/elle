@@ -85,9 +85,7 @@ namespace hole
       Hole::Descriptor.load(Infinit::Network);
 
       // validate the descriptor.
-      if (Hole::Descriptor.Validate(Infinit::Authority) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "unable to validate the descriptor");
+      Hole::Descriptor.validate(Infinit::Authority);
     }
 
     //
@@ -125,7 +123,7 @@ namespace hole
                       "unable to create the network instance");
 
     // create the holeable depending on the model.
-    switch (Hole::Descriptor.model.type)
+    switch (Hole::Descriptor.meta().model().type)
       {
         case Model::TypeLocal:
         {
@@ -165,7 +163,7 @@ namespace hole
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
           throw reactor::Exception(elle::concurrency::scheduler(),
-                          str(fmt % Hole::Descriptor.model.type));
+                                   str(fmt % Hole::Descriptor.meta().model().type));
         }
       }
   }
@@ -224,7 +222,7 @@ namespace hole
   elle::Status          Hole::Origin(nucleus::proton::Address& address)
   {
     // return the address.
-    address = Hole::Descriptor.root;
+    address = Hole::Descriptor.meta().root();
 
     return elle::Status::Ok;
   }

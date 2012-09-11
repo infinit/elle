@@ -302,6 +302,7 @@ class Update(_Page):
 
                 to_save['descriptor'] = metalib.generate_network_descriptor(
                     str(_id),
+                    self.user['identity'],
                     to_save['name'],
                     to_save.get('model', 'slug'),
                     root_address,

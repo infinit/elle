@@ -125,7 +125,7 @@ namespace etoile
           ELLE_TRACE_SCOPE("the ensemble is empty");
 
           // does the network support the history?
-          if (hole::Hole::Descriptor.history == false)
+          if (hole::Hole::Descriptor.meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)
@@ -165,7 +165,7 @@ namespace etoile
           elle::cryptography::KeyPair pass;
 
           // does the network support the history?
-          if (hole::Hole::Descriptor.history == false)
+          if (hole::Hole::Descriptor.meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)

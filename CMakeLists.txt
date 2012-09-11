@@ -68,7 +68,7 @@ if (UNIX)
         -Wno-empty-body  # for ELLE_LOG_TRACE macro
         -DQT_NO_KEYWORDS
     )
-    set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG -UNDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -DDEBUG -UNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
 
     #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")

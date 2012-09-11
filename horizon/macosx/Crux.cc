@@ -640,14 +640,14 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
-      switch (hole::Hole::Descriptor.policy())
+      switch (hole::Hole::Descriptor.data().policy())
         {
         case horizon::Policy::accessible:
           {
             // grant the read permission to the 'everybody' group.
             if (etoile::wall::Access::Grant(
                   subdirectory,
-                  hole::Hole::Descriptor.everybody_subject(),
+                  hole::Hole::Descriptor.meta().everybody_subject(),
                   nucleus::neutron::PermissionRead) == elle::Status::Error)
               error("unable to update the access record",
                     -EPERM,
@@ -1528,14 +1528,14 @@ namespace horizon
               -EPERM,
               directory);
 
-      switch (hole::Hole::Descriptor.policy())
+      switch (hole::Hole::Descriptor.data().policy())
         {
         case horizon::Policy::accessible:
           {
             // grant the read permission to the 'everybody' group.
             if (etoile::wall::Access::Grant(
                   link,
-                  hole::Hole::Descriptor.everybody_subject(),
+                  hole::Hole::Descriptor.meta().everybody_subject(),
                   nucleus::neutron::PermissionRead) == elle::Status::Error)
               error("unable to update the access record",
                     -EPERM,
@@ -1762,14 +1762,14 @@ namespace horizon
                   file, directory);
         }
 
-      switch (hole::Hole::Descriptor.policy())
+      switch (hole::Hole::Descriptor.data().policy())
         {
         case horizon::Policy::accessible:
           {
             // grant the read permission to the 'everybody' group.
             if (etoile::wall::Access::Grant(
                   file,
-                  hole::Hole::Descriptor.everybody_subject(),
+                  hole::Hole::Descriptor.meta().everybody_subject(),
                   nucleus::neutron::PermissionRead) == elle::Status::Error)
               error("unable to update the access record",
                     -EPERM,

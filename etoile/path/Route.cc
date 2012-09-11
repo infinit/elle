@@ -119,7 +119,7 @@ namespace etoile
           // check if the slab represents the root directory i.e starts
           // with '@' and follows with a possible version number, should
           // the network support history though.
-          if ((hole::Hole::Descriptor.history == true) &&
+          if ((hole::Hole::Descriptor.meta().history() == true) &&
               (Infinit::Configuration.etoile.history.status == true) &&
               (slab[0] ==
                Infinit::Configuration.etoile.history.indicator.root))

@@ -886,7 +886,7 @@ namespace etoile
           ELLE_TRACE("the Access block is empty");
 
           // does the network support the history?
-          if (hole::Hole::Descriptor.history == false)
+          if (hole::Hole::Descriptor.meta().history() == false)
             {
               // destroy the access block.
               if (Access::Destroy(context) == elle::Status::Error)
@@ -917,7 +917,7 @@ namespace etoile
           ELLE_TRACE("the Access block is _not_ empty");
 
           // does the network support the history?
-          if (hole::Hole::Descriptor.history == false)
+          if (hole::Hole::Descriptor.meta().history() == false)
             {
               // destroy the access block.
               if (Access::Destroy(context) == elle::Status::Error)

@@ -199,7 +199,7 @@ namespace etoile
 
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
-      if ((hole::Hole::Descriptor.history == false) ||
+      if ((hole::Hole::Descriptor.meta().history() == false) ||
           (Infinit::Configuration.etoile.history.status == false))
         {
           // set the slice as being the entire slab.

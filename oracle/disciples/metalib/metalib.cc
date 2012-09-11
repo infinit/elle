@@ -54,6 +54,7 @@ static PyMethodDef _metalib_methods[] = {
     "Generate a network descriptor\n"
     "\n"
     ":param network_id: The network unique identifier\n"
+    ":param user_identity: The user identity, in a decrypted form\n"
     ":param model: Then network model name\n"
     ":param directory_address: The base64 encoded root block address\n"
     ":param access_address: The base64 encoded access address\n"

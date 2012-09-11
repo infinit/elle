@@ -209,7 +209,7 @@ namespace hole
                                   << address << ':' << this->_port
                                   << std::endl;
                         client.token(agent::Agent::meta_token);
-                        client.network_connect_device(descriptor.id(),
+                        client.network_connect_device(descriptor.meta().id(),
                                                       passport.id,
                                                       &address,
                                                       this->_port);

@@ -247,7 +247,7 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't store the root block.");
     }
 
-  directory.store(network, descriptor.root);
+  directory.store(network, descriptor.meta().root());
 
   nucleus::neutron::Access access;
   nucleus::proton::Address access_address;
