@@ -1,5 +1,7 @@
-#ifndef  ELLE_SERIALIZE_CLASSVERSION_HH
+#ifndef ELLE_SERIALIZE_CLASSVERSION_HH
 # define ELLE_SERIALIZE_CLASSVERSION_HH
+
+# include <elle/Printable.hh>
 
 namespace elle
 {
@@ -10,12 +12,17 @@ namespace elle
     /// Strong typed unsigned short representing the class version for
     /// Save()/Load() overloads. (it gives you a chance to catch the call)
     ///
-    struct Format
+    struct Format:
+      public elle::Printable
     {
     public:
       uint16_t version;
 
     public:
+      Format():
+        version(0)
+      {}
+
       Format(uint16_t version):
         version(version)
       {}
@@ -29,6 +36,13 @@ namespace elle
       {
         version = other.version;
         return *this;
+      }
+
+      // printable
+      void
+      print(std::ostream& stream) const
+      {
+        stream << this->version;
       }
     };
 

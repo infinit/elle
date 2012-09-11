@@ -43,7 +43,7 @@ namespace elle
       {
         typedef typename Clean<T>::Type Derived;
         typedef DynamicFormat<Derived> Base;
-        static bool const value = std::is_base_of<Derived, Base>::value;
+        static bool const value = std::is_base_of<Base, Derived>::value;
       };
 
       template <typename T>
