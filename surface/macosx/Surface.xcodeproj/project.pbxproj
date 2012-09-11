@@ -10,6 +10,7 @@
 		1C03F3361575154200966EC3 /* OOSetupWindowDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C03F3351575154200966EC3 /* OOSetupWindowDelegate.m */; };
 		1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C03F3371575265B00966EC3 /* QuartzCore.framework */; };
 		1C1156FC15ED065B009BE9D5 /* FinderPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C48593E15B569C0003ED64A /* FinderPanel.framework */; };
+		1C2532CC15FE3BD70095D0B0 /* KISSMetricsAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C2532CB15FE3BD70095D0B0 /* KISSMetricsAPI.m */; };
 		1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE45152AECAB00EFB356 /* MainMenu.xib */; };
 		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
 		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
@@ -180,6 +181,8 @@
 		1C03F3341575154200966EC3 /* OOSetupWindowDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOSetupWindowDelegate.h; sourceTree = "<group>"; };
 		1C03F3351575154200966EC3 /* OOSetupWindowDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOSetupWindowDelegate.m; sourceTree = "<group>"; };
 		1C03F3371575265B00966EC3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		1C2532CA15FE3BD70095D0B0 /* KISSMetricsAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KISSMetricsAPI.h; sourceTree = "<group>"; };
+		1C2532CB15FE3BD70095D0B0 /* KISSMetricsAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KISSMetricsAPI.m; sourceTree = "<group>"; };
 		1C437383156A95DF00A7FFD5 /* OONurseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OONurseManager.h; path = ../../medecine/nurse/OONurseManager.h; sourceTree = "<group>"; };
 		1C45EE46152AECAB00EFB356 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1C45EE48152AECAB00EFB356 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInjectorHelper.h; sourceTree = "<group>"; };
@@ -225,6 +228,7 @@
 		1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "19px-pending-anim-red.gif"; sourceTree = "<group>"; };
 		1C8C74B7159894A6002A14A8 /* NSString+Hashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Hashes.h"; sourceTree = "<group>"; };
 		1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Hashes.m"; sourceTree = "<group>"; };
+		1C9AB17615FF1F4600FADD57 /* Infinit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Infinit-Prefix.pch"; sourceTree = "<group>"; };
 		1C9B30BD15529790001EA6EA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1C9B30BF15529790001EA6EA /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
 		1C9B30C215529790001EA6EA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -296,6 +300,8 @@
 		1C45EE47152AECAB00EFB356 /* helpers */ = {
 			isa = PBXGroup;
 			children = (
+				1C2532CA15FE3BD70095D0B0 /* KISSMetricsAPI.h */,
+				1C2532CB15FE3BD70095D0B0 /* KISSMetricsAPI.m */,
 				1C437383156A95DF00A7FFD5 /* OONurseManager.h */,
 				1C45EE48152AECAB00EFB356 /* OOInjectorHelper.h */,
 				1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */,
@@ -323,6 +329,7 @@
 		1C45EE54152AECAB00EFB356 /* supportingFiles */ = {
 			isa = PBXGroup;
 			children = (
+				1C9AB17615FF1F4600FADD57 /* Infinit-Prefix.pch */,
 				1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */,
 			);
 			path = supportingFiles;
@@ -680,6 +687,7 @@
 				1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */,
 				1CD2BB2815CFD3920081FE59 /* OOEnvironmentVar.m in Sources */,
 				1CDA370B15D00CEA0078C963 /* OOInjectorHelper.m in Sources */,
+				1C2532CC15FE3BD70095D0B0 /* KISSMetricsAPI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -728,7 +736,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "";
+				GCC_PREFIX_HEADER = "field/supportingFiles/Infinit-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IBC_PLUGIN_SEARCH_PATHS = "";
@@ -762,7 +770,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "";
+				GCC_PREFIX_HEADER = "field/supportingFiles/Infinit-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IBC_PLUGIN_SEARCH_PATHS = "";

@@ -27,6 +27,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize isUpdating;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [KISSMetricsAPI sharedAPIWithKey:@"19ddf38619b97f743da8326f52ade1b6ce38ae25"];
     // Init variables
     pendingCount = 0;
     [OOEnvironmentVar setEnvironmentVar];
@@ -137,6 +138,12 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
     }
     else {
         NSLog(@"Start Infinit");
+        // Set KISSMetrics user email
+        NSUserDefaults *pref =[NSUserDefaults standardUserDefaults];
+        NSString* email = [pref objectForKey:@"Email"];
+        [[KISSMetricsAPI sharedAPI] identify:email];
+        [[KISSMetricsAPI sharedAPI] recordEvent:@"Is logged on" withProperties:nil];
+        //
         self.isLoginIn = NO;
         [self removePending];
         [self readyToStartInfinit];

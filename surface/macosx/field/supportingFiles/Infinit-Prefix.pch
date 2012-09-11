@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'FinderPanel' target in the 'FinderPanel' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+    #import "KISSMetricsAPI.h"
+#endif
