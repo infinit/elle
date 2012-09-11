@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
+# include <elle/serialize/DynamicFormat.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImmutableBlock.hh>
@@ -23,7 +24,8 @@ namespace nucleus
     /// the creation of a new block.
     ///
     class ContentHashBlock:
-      public ImmutableBlock
+      public ImmutableBlock,
+      public elle::serialize::DynamicFormat<ContentHashBlock>
     {
     public:
       //

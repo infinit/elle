@@ -229,8 +229,9 @@ namespace nucleus
 ELLE_SERIALIZE_SIMPLE_T1(nucleus::proton::Contents, ar, value, version)
 {
   enforce(version == 0);
-#undef base_class
-  ar & base_class< ::nucleus::proton::ContentHashBlock>(value);
+
+  ar & base_class<nucleus::proton::ContentHashBlock>(value);
+
   ar & elle::serialize::alive_pointer(value.cipher);
 }
 
