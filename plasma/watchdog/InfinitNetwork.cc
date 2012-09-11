@@ -233,6 +233,16 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't save the descriptor.");
     }
 
+  //if (descriptor.version() > Infinit::version)
+  //  {
+  //    throw std::runtime_error("you have to update Infinit");
+  //  }
+
+  //if (description.version() < Infinit::version)
+  //  {
+  //     static_assert(false, "migrate the descriptor here and send to meta");
+  //  }
+
   descriptor.store(this->_description._id);
 
   nucleus::proton::Network network;
