@@ -2,7 +2,7 @@
 # define VERSION_HH
 
 # include <elle/types.hh>
-# include <elle/printable.hh>
+# include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
 
 /// This class represents the version of the Infinit software.
