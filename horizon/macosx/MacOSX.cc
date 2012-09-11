@@ -1,6 +1,7 @@
 #include <horizon/macosx/MacOSX.hh>
 #include <horizon/macosx/Crux.hh>
 #include <horizon/macosx/FUSE.hh>
+#include <horizon/Crux.hh>
 
 #include <Infinit.hh>
 
@@ -29,42 +30,42 @@ namespace horizon
         // set all the pointers to zero.
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
-        operations.statfs = Crux::statfs;
-        operations.getattr = Crux::getattr;
-        operations.fgetattr = Crux::fgetattr;
-        operations.utimens = Crux::utimens;
+        operations.statfs = horizon::macosx::Crux::statfs;
+        operations.getattr = horizon::Crux::getattr;
+        operations.fgetattr = horizon::Crux::fgetattr;
+        operations.utimens = horizon::Crux::utimens;
 
-        operations.opendir = Crux::opendir;
-        operations.readdir = Crux::readdir;
-        operations.releasedir = Crux::releasedir;
-        operations.mkdir = Crux::mkdir;
-        operations.rmdir = Crux::rmdir;
+        operations.opendir = horizon::Crux::opendir;
+        operations.readdir = horizon::Crux::readdir;
+        operations.releasedir = horizon::Crux::releasedir;
+        operations.mkdir = horizon::Crux::mkdir;
+        operations.rmdir = horizon::Crux::rmdir;
 
-        operations.access = Crux::access;
-        operations.chmod = Crux::chmod;
-        operations.chown = Crux::chown;
+        operations.access = horizon::Crux::access;
+        operations.chmod = horizon::Crux::chmod;
+        operations.chown = horizon::Crux::chown;
 #if defined(HAVE_SETXATTR)
-        operations.setxattr = Crux::setxattr;
-        operations.getxattr = Crux::getxattr;
-        operations.listxattr = Crux::listxattr;
-        operations.removexattr = Crux::removexattr;
+        operations.setxattr = horizon::macosx::Crux::setxattr;
+        operations.getxattr = horizon::macosx::Crux::getxattr;
+        operations.listxattr = horizon::Crux::listxattr;
+        operations.removexattr = horizon::Crux::removexattr;
 #endif
 
-        operations.link = Crux::link;
-        operations.readlink = Crux::readlink;
-        operations.symlink = Crux::symlink;
+        operations.link = horizon::Crux::link;
+        operations.symlink = horizon::Crux::symlink;
+        operations.readlink = horizon::Crux::readlink;
 
-        operations.create = Crux::create;
+        operations.create = horizon::Crux::create;
         // operations.mknod: not supported
-        operations.open = Crux::open;
-        operations.write = Crux::write;
-        operations.read = Crux::read;
-        operations.truncate = Crux::truncate;
-        operations.ftruncate = Crux::ftruncate;
-        operations.release = Crux::release;
+        operations.open = horizon::Crux::open;
+        operations.write = horizon::Crux::write;
+        operations.read = horizon::Crux::read;
+        operations.truncate = horizon::Crux::truncate;
+        operations.ftruncate = horizon::Crux::ftruncate;
+        operations.release = horizon::Crux::release;
 
-        operations.rename = Crux::rename;
-        operations.unlink = Crux::unlink;
+        operations.rename = horizon::Crux::rename;
+        operations.unlink = horizon::Crux::unlink;
 
         // the following flag being activated prevents the path argument
         // to be passed for functions which take a file descriptor.

@@ -1,6 +1,5 @@
 #include <horizon/macosx/FUker.hh>
 #include <horizon/macosx/FUSE.hh>
-#include <horizon/macosx/Crux.hh>
 #include <horizon/operations.hh>
 
 #include <elle/concurrency/Program.hh>
@@ -86,7 +85,7 @@ namespace horizon
                                                                         \
       try                                                               \
         {                                                               \
-          int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));           \
+          int res = FUSE::Operations.Name(INFINIT_FUSE_EFFECTIVE(Args));\
           ELLE_TRACE("%s returns: %s",                                  \
                      BOOST_PP_STRINGIZE(Name), res);                    \
           return res;                                                   \
@@ -126,33 +125,6 @@ namespace horizon
                          BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
 
     BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
-
-    /* XXX
-#define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
-    , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
-
-#define INFINIT_FUSE_EFFECTIVE(R, Data, I, Elem)        \
-    , BOOST_PP_CAT(a, I)
-
-#define INFINIT_FUSE_BOUNCER(Name, Args)                                \
-    static int                                                          \
-    Name(BOOST_PP_SEQ_HEAD(Args) a0                                     \
-         BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
-                                 BOOST_PP_SEQ_POP_FRONT(Args)))         \
-    {                                                                   \
-      return elle::concurrency::scheduler().mt_run<int>                 \
-        (#Name,                                                         \
-         boost::bind(FUSE::Operations.Name                              \
-                     BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \
-                                             _, Args)));                \
-    }                                                                   \
-
-#define INFINIT_FUSE_BOUNCER_(R, Data, Elem)                            \
-    INFINIT_FUSE_BOUNCER(BOOST_PP_TUPLE_ELEM(2, 0, Elem),               \
-                         BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
-
-    BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
-    */
 
 #undef INFINIT_FUSE_BOUNCER_
 #undef INFINIT_FUSE_BOUNCER

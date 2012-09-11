@@ -1,4 +1,3 @@
-#include <horizon/linux/Crux.hh>
 #include <horizon/linux/FUker.hh>
 #include <horizon/linux/FUSE.hh>
 #include <horizon/operations.hh>
@@ -86,7 +85,7 @@ namespace horizon
                                                                         \
       try                                                               \
         {                                                               \
-          int res = Crux::Name(INFINIT_FUSE_EFFECTIVE(Args));           \
+          int res = FUSE::Operations.Name(INFINIT_FUSE_EFFECTIVE(Args));\
           ELLE_TRACE("%s returns: %s",                                  \
                      BOOST_PP_STRINGIZE(Name), res);                    \
           return res;                                                   \

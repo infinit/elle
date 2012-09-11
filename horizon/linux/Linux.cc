@@ -51,8 +51,8 @@ namespace horizon
 #endif
 
         operations.link = horizon::Crux::link;
-        operations.readlink = horizon::Crux::readlink;
         operations.symlink = horizon::Crux::symlink;
+        operations.readlink = horizon::Crux::readlink;
 
         operations.create = horizon::Crux::create;
         // operations.mknod: not supported

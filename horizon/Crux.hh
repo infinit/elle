@@ -13,7 +13,11 @@
 # include <elle/idiom/Close.hh>
 #  include <fuse.h>
 #  if defined(HAVE_SETXATTR)
-#   include <attr/xattr.h>
+#    if defined(INFINIT_LINUX)
+#     include <attr/xattr.h>
+#    elif defined(INFINIT_MACOSX)
+#     include <sys/xattr.h>
+#    endif
 #  endif
 # include <elle/idiom/Open.hh>
 
@@ -24,7 +28,7 @@ namespace horizon
   {
   public:
     // constants
-    static const nucleus::neutron::Size                Range;
+    static const nucleus::neutron::Size Range;
 
   /*---------.
   | Metadata |

@@ -2,6 +2,8 @@
 
 #include <elle/system/Platform.hh>
 
+#include <Infinit.hh>
+
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/Linux.hh>
 #elif defined(INFINIT_MACOSX)
