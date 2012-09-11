@@ -52,7 +52,7 @@ namespace elle
         template<typename Archive>
           static void Load(Archive& ar,
                            std::tuple<T...>& value,
-                           unsigned int version)
+                           unsigned int)
           {
             detail::TupleAccess<sizeof...(T)>::Load(ar, value);
           }
@@ -60,7 +60,7 @@ namespace elle
         template<typename Archive>
           static void Save(Archive& ar,
                            std::tuple<T...> const& value,
-                           unsigned int version)
+                           unsigned int)
           {
             detail::TupleAccess<sizeof...(T)>::Save(ar, value);
           }
