@@ -518,7 +518,7 @@ namespace horizon
             // grant the read permission to the 'everybody' group.
             if (etoile::wall::Access::Grant(
                   subdirectory,
-                  hole::Hole::Descriptor.meta.().everybody_subject(),
+                  hole::Hole::Descriptor.meta().everybody_subject(),
                   nucleus::neutron::PermissionRead) == elle::Status::Error)
               error("unable to update the access record",
                     -EPERM,
