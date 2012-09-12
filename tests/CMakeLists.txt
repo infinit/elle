@@ -12,6 +12,8 @@ endmacro(simple_test)
 # testing whether or testing system works
 simple_test(testing_tests "" "Tests are working.\n" "")
 
+link_libraries(${INFINIT_LIBRARIES})
+
 add_subdirectory(elle)
 add_subdirectory(nucleus)
 add_subdirectory(surface)

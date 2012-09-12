@@ -146,27 +146,4 @@ add_library(elle
   ${elle_PLATFORM}
 )
 
-add_definitions(-fPIC)
-target_link_libraries(elle
-    protocol
-    ${Boost_LIBRARIES}
-	${INFINIT_OPENSSL_STATIC_LIBRARIES}
-	${INFINIT_MSGPACK_STATIC_LIBRARIES}
-	${INFINIT_JSONCPP_STATIC_LIBRARIES}
-	${INFINIT_CURL_STATIC_LIBRARIES}
-	comet
-	${QT_QTNETWORK_LIBRARIES}
-	${QT_QTCORE_LIBRARIES}
-	pth
-	z
-	readline
-)
 add_dependencies(elle dependencies)
-
-IF(INFINIT_LINUX)
-  TARGET_LINK_LIBRARIES(elle dl)
-ELSEIF(INFINIT_MACOSX)
-  TARGET_LINK_LIBRARIES(elle dl)
-ELSEIF(INFINIT_WINDOWS)
-  TARGET_LINK_LIBRARIES(elle pdcurses)
-ENDIF()

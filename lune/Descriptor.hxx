@@ -48,6 +48,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
         archive & value._meta._history;
         archive & value._meta._extent;
         archive & value._meta._signature;
+
         archive & value._data._name;
         archive & value._data._openness;
         archive & value._data._policy;
@@ -71,6 +72,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
         archive & value._data._formats.user;
         archive & value._data._formats.identity;
         archive & value._data._formats.descriptor;
+        archive & value._data._signature;
 
         break;
       }
@@ -79,5 +81,37 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
         elle::sprintf("unknown format '%s'", version));
     }
 }
+/*
+template <typename T, typename... Args>
+struct Upgrader<T, i, Args>
+{
+  void do_it(int from)
+    {
+      if (i >= from)
+        {
+          up()
+        }
+      Upgrader<i + 1>::do_it(from);
+    }
+  void up(T, Args... args)
+  {
+  }
+
+};
+
+upgrade<2>(val);
+
+{
+  switch (val.format())
+    {
+    case 0:
+    }
+}
+
+ELLE_SERIALIZE_UPGRADE_FORMAT(lune::Descriptor, value, 1, var)
+{
+
+}
+*/
 
 #endif

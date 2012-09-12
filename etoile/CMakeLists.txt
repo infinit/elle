@@ -58,5 +58,3 @@ add_library(etoile
 
   Etoile.cc
 )
-
-target_link_libraries(etoile nucleus lune agent)

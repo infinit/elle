@@ -20,9 +20,7 @@ list(APPEND gap_srcs pygap.cc)
 add_library(_gap SHARED ${gap_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(_gap
-    elle common lune hole metal nucleus infinit
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
-	${Boost_LIBRARIES}
 	${PYTHON3_LIBRARIES}
 )
 set_target_properties(_gap PROPERTIES

@@ -8,6 +8,3 @@ file(GLOB linux_srcs *.cc)
 
 add_library(linux ${linux_srcs})
 
-target_link_libraries(linux
-	etoile fuse pthread ${Boost_LIBRARIES}
-)

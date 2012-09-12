@@ -1,22 +1,8 @@
-PROJECT(Horizon CXX)
+project(Horizon CXX)
 
-add_definitions(-fPIC)
-
-ADD_LIBRARY(horizon
+add_library(horizon
   Horizon.cc
   Policy.cc
 )
 
-IF(INFINIT_LINUX)
-  ADD_SUBDIRECTORY(linux)
-
-  TARGET_LINK_LIBRARIES(horizon linux)
-ELSEIF(INFINIT_MACOSX)
-  ADD_SUBDIRECTORY(macosx)
-
-  TARGET_LINK_LIBRARIES(horizon macosx)
-ELSEIF(INFINIT_WINDOWS)
-  ADD_SUBDIRECTORY(windows)
-
-  TARGET_LINK_LIBRARIES(horizon windows)
-ENDIF()
+add_subdirectory(${INFINIT_PLATFORM_NO_ARCH})

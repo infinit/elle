@@ -1,7 +1,5 @@
-PROJECT(setup CXX)
+project(setup CXX)
 
-ADD_EXECUTABLE(8setup
+add_executable(8setup
   Setup.cc
 )
-
-TARGET_LINK_LIBRARIES(8setup infinit elle lune etoile ${Boost_LIBRARIES})

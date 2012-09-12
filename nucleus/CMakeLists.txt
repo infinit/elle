@@ -1,7 +1,5 @@
 project(Nucleus CXX)
 
-add_definitions(-fPIC)
-
 add_library(nucleus
   Nucleus.cc
   Derivable.cc
@@ -43,6 +41,3 @@ add_library(nucleus
   neutron/Trait.cc
 )
 
-
-
-target_link_libraries(nucleus hole)

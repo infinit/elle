@@ -18,4 +18,3 @@ ADD_LIBRARY(macosx
   ${macosx_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(macosx etoile fuse4x pthread)

@@ -6,7 +6,3 @@ add_library(protocol
   Serializer.cc
   Stream.cc
 )
-
-add_definitions(-fPIC)
-
-target_link_libraries(protocol elle)

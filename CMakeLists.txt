@@ -20,13 +20,13 @@ set(CMAKE_BUILD_TYPE Debug)
 # Platform ####################################################################
 if(APPLE)
   set(INFINIT_MACOSX TRUE)
-  set(INFINIT_PLATFORM macosx)
+  set(INFINIT_PLATFORM_NO_ARCH macosx)
 elseif(WIN32)
   set(INFINIT_WINDOWS TRUE)
-  set(INFINIT_PLATFORM windows)
+  set(INFINIT_PLATFORM_NO_ARCH windows)
 elseif(UNIX)
   set(INFINIT_LINUX TRUE)
-  set(INFINIT_PLATFORM linux)
+  set(INFINIT_PLATFORM_NO_ARCH linux)
 endif()
 
 # Architecture ################################################################
@@ -36,7 +36,7 @@ else()
     set(INFINIT_ARCHITECTURE "32")
 endif()
 
-set(INFINIT_PLATFORM "${INFINIT_PLATFORM}${INFINIT_ARCHITECTURE}")
+set(INFINIT_PLATFORM "${INFINIT_PLATFORM_NO_ARCH}${INFINIT_ARCHITECTURE}")
 
 # Compiler ####################################################################
 
@@ -67,6 +67,7 @@ if (UNIX)
         -Wno-overloaded-virtual
         -Wno-empty-body  # for ELLE_LOG_TRACE macro
         -DQT_NO_KEYWORDS
+		-fPIC
     )
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -DDEBUG -UNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
@@ -174,7 +175,6 @@ include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 
-
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(common)
@@ -185,22 +185,7 @@ add_subdirectory(agent)
 add_subdirectory(lune)
 add_subdirectory(horizon)
 add_subdirectory(hole)
-add_subdirectory(satellites)
-add_subdirectory(plasma)
 
-# XXX[temporarily here so as to bypass surface's compilation failure]
-add_subdirectory(tests)
-
-add_subdirectory(surface)
-
-#if("${INFINIT_PLATFORM}" MATCHES "linux*")
-add_subdirectory(oracle)
-#endif()
-
-# just to make files appears on qtcreator
-file(GLOB_RECURSE HEADERS *.hh *.hxx)
-
-add_definitions(-fPIC)
 add_library(infinit
   Infinit.cc
   Version.cc
@@ -208,16 +193,48 @@ add_library(infinit
 )
 add_dependencies(infinit dependencies)
 
+
+# The whole project is linked against these libraries
+
+set(INFINIT_LIBRARIES
+  etoile
+
+  hole
+  nucleus
+  lune
+  nucleus # circular dependency with lune
+  hole # circular dependency with lune
+
+  horizon
+  ${INFINIT_PLATFORM_NO_ARCH}
+  metal
+  agent
+  common
+  protocol
+  infinit
+  elle
+  comet
+
+  fuse
+  ssl
+  crypto
+  ${Boost_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${QT_LIBRARIES}
+  readline
+)
+
+add_subdirectory(satellites)
+add_subdirectory(plasma)
+add_subdirectory(tests)
+add_subdirectory(surface)
+add_subdirectory(oracle)
+
 add_executable(8infinit
   _infinit.cc
 )
+target_link_libraries(8infinit LINK_PRIVATE ${INFINIT_LIBRARIES})
 add_dependencies(8infinit dependencies)
-target_link_libraries(8infinit
-  infinit
-  ${Boost_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
-  elle etoile nucleus lune agent  hole metal horizon nucleus protocol
-)
 
 # configuration
 configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")

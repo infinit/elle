@@ -1,7 +1,7 @@
-PROJECT(diary CXX)
+project(diary CXX)
 
-IF(INFINIT_LINUX OR INFINIT_MACOSX)
-  ADD_EXECUTABLE(8diary
+if(INFINIT_LINUX OR INFINIT_MACOSX)
+  add_executable(8diary
     Diary.cc
     Memoirs.cc
 
@@ -12,11 +12,4 @@ IF(INFINIT_LINUX OR INFINIT_MACOSX)
     unix/Replay.cc
     unix/Upcall.cc
   )
-ENDIF(INFINIT_LINUX OR INFINIT_MACOSX)
-
-TARGET_LINK_LIBRARIES(
-	8diary
-	infinit elle nucleus lune etoile horizon
-	${Boost_LIBRARIES}
-	boost_thread
-)
+endif(INFINIT_LINUX OR INFINIT_MACOSX)

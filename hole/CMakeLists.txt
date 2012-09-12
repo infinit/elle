@@ -1,5 +1,3 @@
-add_definitions(-fPIC)
-
 add_library(hole
   implementations/local/Implementation.cc
   implementations/local/Local.cc
@@ -37,9 +35,5 @@ add_library(hole
   Openness.cc
 )
 
-target_link_libraries(hole
-   infinit agent nucleus lune metal
-)
-
-add_executable(8hole _hole.cc)
-target_link_libraries(8hole hole)
+#add_executable(8hole _hole.cc)
+#target_link_libraries(8hole hole)

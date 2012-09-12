@@ -5,10 +5,5 @@ file(GLOB gap_srcs
 
 add_library(gap SHARED ${gap_srcs})
 
-target_link_libraries(gap
-	elle common lune infinit metal
-	${Boost_LIBRARIES}
-	${INFINIT_OPENSSL_SHARED_LIBRARIES}
-)
-
+target_link_libraries(gap LINK_PRIVATE ${INFINIT_LIBRARIES})
 add_subdirectory(python)

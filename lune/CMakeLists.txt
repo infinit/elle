@@ -12,7 +12,3 @@ add_library(lune
   Phrase.cc
   Set.cc
 )
-
-add_definitions(-fPIC)
-
-target_link_libraries(lune hole nucleus common horizon)

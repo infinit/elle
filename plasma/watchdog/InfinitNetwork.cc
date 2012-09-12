@@ -238,7 +238,7 @@ void InfinitNetwork::_prepare_directory()
   //    throw std::runtime_error("you have to update Infinit");
   //  }
 
-  //if (description.version() < Infinit::version)
+  //if (description.version() < Infinit::version && je suis owner)
   //  {
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }

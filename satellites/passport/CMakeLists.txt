@@ -1,7 +1,5 @@
-PROJECT(passport CXX)
+project(passport CXX)
 
-ADD_EXECUTABLE(8passport
+add_executable(8passport
   Passport.cc
 )
-
-TARGET_LINK_LIBRARIES(8passport infinit elle nucleus lune etoile hole ${Boost_LIBRARIES})
