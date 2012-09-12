@@ -151,7 +151,7 @@ namespace horizon
       // to activate the debug mode.
       //
       elle::String      ofsname("-ofsname=" +
-                                hole::Hole::Descriptor.name);
+                                hole::Hole::Descriptor.data().name());
       const char*       arguments[] =
         {
           "horizon",
