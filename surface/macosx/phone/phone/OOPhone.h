@@ -19,11 +19,17 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 + (OOPhone *)getInstance;
 
-- (void)metaIsRespondingWithPerformSelector:(SEL)arg1 forObject:(id)arg2;
+- (void)metaIsRespondingWithPerformSelector:(SEL)arg1
+                                  forObject:(id)arg2;
 
-- (NSString *)getHashPasswordWithEmail:(NSString*)arg1 andClearPassword:(NSString*)arg2;
+- (NSString *)getHashPasswordWithEmail:(NSString*)arg1
+                      andClearPassword:(NSString*)arg2;
 
-- (void)loginWithEmail:(NSString*)arg1 password:(NSString*)arg2 machineName:(NSString*)arg3 performSelector:(SEL)arg4 forObject:(id)arg5;
+- (void)loginWithEmail:(NSString*)arg1
+              password:(NSString*)arg2
+           machineName:(NSString*)arg3
+       performSelector:(SEL)arg4
+             forObject:(id)arg5;
 
 - (void)registerWithFullName:(NSString*)arg1 
                        email:(NSString*)arg2 
@@ -39,7 +45,8 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (void)update;
 
-- (void)getUserNetworksAndPerformSelector:(SEL)arg1 forObject:(id)arg2;
+- (void)getUserNetworksAndPerformSelector:(SEL)arg1
+                                forObject:(id)arg2;
 
 - (NSURL*)getNetworkMountPointWithId:(NSString*)arg1;
 
@@ -47,7 +54,8 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (NSArray*)getNetworkUsersWithNetworkId:(NSString*)arg1;
 
-- (void)addUser:(NSString *)arg1 toNetwork:(NSString *)arg2;
+- (void)addUser:(NSString *)arg1
+      toNetwork:(NSString *)arg2;
 
 - (NSString*)getUserFullNameById:(NSString*)arg1;
 

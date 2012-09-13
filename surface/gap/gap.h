@@ -12,9 +12,10 @@ extern "C" {
       gap_error = -1,
       gap_network_error = -2,
       gap_internal_error = -3,
-      gap_api_error = -4,
-      gap_no_device_error = -5,
-      gap_not_logged_in = -6,
+      gap_no_device_error = -4,
+      gap_not_logged_in = -5,
+      gap_api_error = -1000,
+      gap_api_error_not_log_in = -1001,
     } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
