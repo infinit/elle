@@ -47,7 +47,7 @@ namespace reactor
     s << e.what() << std::endl;
     s << e.backtrace();
     if (Exception const* inner = e.inner_exception())
-      s << std::endl << "Exception was triggerd by:" << *inner;
+      s << std::endl << "Exception was triggerd by: " << *inner;
     return s;
   }
 

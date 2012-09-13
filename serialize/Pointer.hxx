@@ -1,6 +1,7 @@
 #ifndef  ELLE_SERIALIZE_POINTER_HXX
 # define ELLE_SERIALIZE_POINTER_HXX
 
+# include <memory>
 # include <stdexcept>
 
 # include <elle/serialize/Serializer.hh>
@@ -173,6 +174,20 @@ namespace elle
       };
 
   }
+}
+
+ELLE_SERIALIZE_SPLIT_T1(std::unique_ptr);
+ELLE_SERIALIZE_SPLIT_T1_LOAD(std::unique_ptr, archive, value, version)
+{
+  typename std::remove_cv<T1>::type* v = nullptr;
+  archive >> pointer(v);
+  value.reset(v);
+}
+
+ELLE_SERIALIZE_SPLIT_T1_SAVE(std::unique_ptr, archive, value, version)
+{
+  T1* p(value.get());
+  archive << pointer(p);
 }
 
 #endif
