@@ -89,16 +89,20 @@ char const* const _metalib_doc =
 
 PyMODINIT_FUNC init_metalib(void)
 {
+  fprintf(stderr, "init module\n");
+
   if (elle::Elle::Initialize() == elle::Status::Error)
     {
       std::cerr << "Cannot initialize elle\n";
       return;
     }
+  fprintf(stderr, "elle initialized\n");
   if (lune::Lune::Initialize() == elle::Status::Error)
     {
       std::cerr << "Cannot initialize lune\n";
       return;
     }
+  fprintf(stderr, "lune initialized\n");
 
   PyObject* module = Py_InitModule3(
       METALIB_MOD_NAME,
@@ -106,6 +110,7 @@ PyMODINIT_FUNC init_metalib(void)
       _metalib_doc
   );
 
+  fprintf(stderr, "python module initialized\n");
   char error_name[] = "metalib.MetaError";
 
   metalib_MetaError = PyErr_NewException(error_name, nullptr, nullptr);
