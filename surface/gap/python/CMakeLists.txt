@@ -6,6 +6,7 @@ find_package(Boost COMPONENTS python3)
 if (NOT Boost_PYTHON3_LIBRARY)
 	#XXX on gentoo boost python package has complete python version suffix
 	find_package(Boost COMPONENTS python-3.2)
+	set(Boost_PYTHON3_LIBRARY ${Boost_PYTHON-3.2_LIBRARY})
 endif()
 
 if (NOT(Boost_LIBRARIES MATCHES ".*boost_python.*"))
