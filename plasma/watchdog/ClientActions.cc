@@ -96,8 +96,14 @@ void ClientActions::_on_run(Connection&,
           std::abort();
         }
       identity_infos.close();
-
-      this->_manager.start_refresh_networks();
+      try
+        {
+          this->_manager.start_refresh_networks();
+        }
+      catch (std::exception const& e)
+        {
+          ELLE_ERR("Cannot refresh networks: %s", e.what());
+        }
       UNREGISTER(run);
       REGISTER_ALL();
     }
