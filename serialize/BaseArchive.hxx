@@ -97,7 +97,13 @@ namespace elle
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       // this const_cast is safe since the archive is in output mode
-      Serializer::Serialize(this->self(), const_cast<T&>(val), format.version);
+      ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
+      ELLE_TRACE(
+          "Save %p with its concrete type %s (format = %d)",
+          &val,
+          ELLE_PRETTY_TYPE(T),
+          format.version
+      ) Serializer::Serialize(this->self(), const_cast<T&>(val), format.version);
     }
 
     //-------------------------------------------------------------------------
