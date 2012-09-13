@@ -91,6 +91,8 @@ generate_network_descriptor(elle::String const& id,
 
   descriptor.seal(identity.pair.k);
 
+  descriptor.Dump();
+
   elle::io::Unique unique;
   if (descriptor.Save(unique) != elle::Status::Ok)
     throw std::runtime_error("Unable to save the network descriptor");

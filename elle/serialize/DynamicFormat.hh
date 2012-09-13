@@ -2,6 +2,7 @@
 # define ELLE_SERIALIZE_DYNAMICFORMAT_HH
 
 # include "Format.hh"
+# include "StaticFormat.hh"
 
 namespace elle
 {
@@ -21,6 +22,10 @@ namespace elle
       uint16_t  _version;
 
     public:
+      DynamicFormat():
+        _version(StaticFormat<T>::version)
+      {}
+
       uint16_t
       version() const
       {
