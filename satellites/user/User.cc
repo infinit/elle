@@ -23,11 +23,6 @@
 namespace satellite
 {
   ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8user";
-
-  ///
   /// this method creates a new user by generating a new key pair and
   /// storing a user block.
   ///

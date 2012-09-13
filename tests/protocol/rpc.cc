@@ -48,10 +48,10 @@ struct DummyRPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchi
   DummyRPC(infinit::protocol::ChanneledStream& channels)
     : infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
                              elle::serialize::OutputBinaryArchive>(channels)
-    , answer(*this)
-    , square(*this)
-    , concat(*this)
-    , raise (*this)
+    , answer("answer", *this)
+    , square("square", *this)
+    , concat("concat", *this)
+    , raise ("raise", *this)
   {}
 
   RemoteProcedure<int> answer;

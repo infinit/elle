@@ -31,6 +31,17 @@ namespace infinit
       return _scheduler;
     }
 
+    /*--------.
+    | Sending |
+    `--------*/
+
+    void
+    Stream::write(Packet& packet)
+    {
+      packet.flush();
+      this->_write(packet);
+    }
+
     /*------------------.
     | Int serialization |
     `------------------*/

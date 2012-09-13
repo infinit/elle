@@ -4,6 +4,7 @@
 # ifdef _MSC_VER
 #  include <SDKDDKVer.h>
 # endif
+# include <elle/idiom/Close.hh>
 # include <boost/asio.hpp>
 # ifdef _MSC_VER
 #  include <Windows.h>

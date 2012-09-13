@@ -1,349 +1,211 @@
 #ifndef ETOILE_PORTAL_MANIFEST_HH
 # define ETOILE_PORTAL_MANIFEST_HH
 
-# include <elle/types.hh>
-# include <elle/Manifest.hh>
-# include <elle/standalone/fwd.hh>
-# include <elle/network/Range.hh>
-# include <etoile/path/fwd.hh>
-# include <etoile/gear/fwd.hh>
-# include <etoile/abstract/fwd.hh>
+# include <etoile/fwd.hh>
+# include <etoile/path/Chemin.hh>
+# include <etoile/path/Way.hh>
+
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>
+# include <nucleus/neutron/Range.hh>
+# include <nucleus/neutron/Record.hh>
 
-# include <elle/idiom/Open.hh>
-
-//
-// ---------- constants -------------------------------------------------------
-//
+# include <protocol/RPC.hh>
 
 namespace etoile
 {
   namespace portal
   {
+    struct RPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+                                              elle::serialize::OutputBinaryArchive>
+    {
+      RPC(infinit::protocol::ChanneledStream& channels);
 
-    ///
-    /// the component name.
-    ///
-    extern const elle::Character        Component[];
+      /*--------.
+      | General |
+      `--------*/
 
-    ///
-    /// this constants defines the number of tags to reserve for
-    /// this implementation.
-    ///
-    const elle::Natural32               Tags = 200;
+      /// Authenticate to the portal.
+      ///
+      /// The phrase which is compared to the current instance's; If
+      /// it's valid, the application is authorised to trigger
+      /// operation on behalf of the current user.
+      RemoteProcedure<bool,
+                      elle::String const&> authenticate;
 
+      /*-----.
+      | Path |
+      `-----*/
+      RemoteProcedure<etoile::path::Chemin,
+                      etoile::path::Way const&> pathresolve;
+      RemoteProcedure<void,
+                      etoile::path::Way const&> pathlocate;
+      RemoteProcedure<void,
+                      etoile::path::Way const&> pathway;
+
+      /*-------.
+      | Object |
+      `-------*/
+      RemoteProcedure<etoile::gear::Identifier,
+                      etoile::path::Chemin const&> objectload;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> objectinformation;
+      RemoteProcedure<void,
+                      etoile::abstract::Object&> objectabstract;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> objectdiscard;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> objectstore;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> objectdestroy;
+
+      /*-----.
+      | File |
+      `-----*/
+      RemoteProcedure<void> filecreate;
+      RemoteProcedure<void,
+                      etoile::path::Chemin&> fileload;
+      RemoteProcedure<void> filewrite;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Offset&,
+                      nucleus::neutron::Size&> fileread;
+      RemoteProcedure<void,
+                      elle::standalone::Region&> fileregion;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Size&> fileadjust;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> filediscard;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> filestore;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> filedestroy;
+
+      /*----------.
+      | Directory |
+      `----------*/
+      RemoteProcedure<void> directorycreate;
+      RemoteProcedure<void,
+                      etoile::path::Chemin&> directoryload;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      etoile::path::Slab&,
+                      etoile::gear::Identifier const&> directoryadd;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      etoile::path::Slab&> directorylookup;
+      RemoteProcedure<void,
+                      nucleus::neutron::Entry&> directoryentry;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Index&,
+                      nucleus::neutron::Size&> directoryconsult;
+      RemoteProcedure<void,
+                      nucleus::neutron::Range<nucleus::neutron::Entry>&> directoryrange;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      etoile::path::Slab&,
+                      etoile::path::Slab&> directoryrename;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      etoile::path::Slab&> directoryremove;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> directorydiscard;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> directorystore;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> directorydestroy;
+
+      /*-----.
+      | Link |
+      `-----*/
+      RemoteProcedure<void> linkcreate;
+      RemoteProcedure<void,
+                      etoile::path::Chemin&> linkload;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      etoile::path::Way const&> linkbind;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> linkresolve;
+      RemoteProcedure<void,
+                      etoile::path::Way const&> linkway;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> linkdiscard;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> linkstore;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> linkdestroy;
+
+      /*-------.
+      | Access |
+      `-------*/
+      RemoteProcedure<nucleus::neutron::Record,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&> accesslookup;
+      RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Record>,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Index const&,
+                      nucleus::neutron::Size const&> accessconsult;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&,
+                      nucleus::neutron::Permissions const&> accessgrant;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&> accessrevoke;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      elle::String const&,
+                      elle::String const&> attributesset;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      elle::String const&> attributesget;
+      RemoteProcedure<void,
+                      nucleus::neutron::Trait&> attributestrait;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> attributesfetch;
+      RemoteProcedure<void,
+                      nucleus::neutron::Range<nucleus::neutron::Trait>&> attributesrange;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      elle::String const&> attributesomit;
+
+      /*------.
+      | Group |
+      `------*/
+      RemoteProcedure<std::pair<typename nucleus::neutron::Group::Identity,
+                                etoile::gear::Identifier>,
+                      elle::String const&> groupcreate;
+      RemoteProcedure<etoile::gear::Identifier,
+                      typename nucleus::neutron::Group::Identity const&> groupload;
+      RemoteProcedure<etoile::abstract::Group,
+                      etoile::gear::Identifier const&> groupinformation;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&> groupadd;
+      RemoteProcedure<nucleus::neutron::Fellow,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&> grouplookup;
+      RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Fellow>,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Index&,
+                      nucleus::neutron::Size&> groupconsult;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Subject const&> groupremove;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> groupdiscard;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> groupstore;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&> groupdestroy;
+    };
   }
 }
-
-//
-// ---------- range -----------------------------------------------------------
-//
-
-///
-/// this macro-function calls reserves a range of tags.
-///
-range(etoile::portal::Component,
-      etoile::portal::Tags,
-      elle::Component);
-
-//
-// ---------- tags ------------------------------------------------------------
-//
-
-namespace etoile
-{
-  namespace portal
-  {
-
-    //
-    // enumerations
-    //
-    enum Tag
-      {
-        // general
-        TagAuthenticate = elle::network::Range<Component>::First + 1,
-        TagAuthenticated,
-        TagIdentifier,
-
-        // path
-        TagPathResolve,
-        TagPathChemin,
-        TagPathLocate,
-        TagPathWay,
-
-        // object
-        TagObjectLoad,
-        TagObjectInformation,
-        TagObjectAbstract,
-        TagObjectDiscard,
-        TagObjectStore,
-        TagObjectDestroy,
-
-        // file
-        TagFileCreate,
-        TagFileLoad,
-        TagFileWrite,
-        TagFileRead,
-        TagFileRegion,
-        TagFileAdjust,
-        TagFileDiscard,
-        TagFileStore,
-        TagFileDestroy,
-
-        // directory
-        TagDirectoryCreate,
-        TagDirectoryLoad,
-        TagDirectoryAdd,
-        TagDirectoryLookup,
-        TagDirectoryEntry,
-        TagDirectoryConsult,
-        TagDirectoryRange,
-        TagDirectoryRename,
-        TagDirectoryRemove,
-        TagDirectoryDiscard,
-        TagDirectoryStore,
-        TagDirectoryDestroy,
-
-        // link
-        TagLinkCreate,
-        TagLinkLoad,
-        TagLinkBind,
-        TagLinkResolve,
-        TagLinkWay,
-        TagLinkDiscard,
-        TagLinkStore,
-        TagLinkDestroy,
-
-        // access
-        TagAccessLookup,
-        TagAccessRecord,
-        TagAccessConsult,
-        TagAccessRange,
-        TagAccessGrant,
-        TagAccessRevoke,
-
-        // attributes
-        TagAttributesSet,
-        TagAttributesGet,
-        TagAttributesTrait,
-        TagAttributesFetch,
-        TagAttributesRange,
-        TagAttributesOmit,
-
-        // group
-        TagGroupCreate,
-        TagGroupIdentity,
-        TagGroupLoad,
-        TagGroupInformation,
-        TagGroupAbstract,
-        TagGroupAdd,
-        TagGroupLookup,
-        TagGroupFellow,
-        TagGroupConsult,
-        TagGroupRange,
-        TagGroupRemove,
-        TagGroupDiscard,
-        TagGroupStore,
-        TagGroupDestroy
-      };
-
-  }
-}
-
-//
-// ---------- manifests -------------------------------------------------------
-//
-
-///
-/// below are the definitions of the portal messages.
-///
-
-// general
-message(etoile::portal::TagAuthenticate,
-        parameters(elle::String&));
-message(etoile::portal::TagAuthenticated,
-        parameters());
-message(etoile::portal::TagIdentifier,
-        parameters(etoile::gear::Identifier&));
-
-// path
-message(etoile::portal::TagPathResolve,
-        parameters(etoile::path::Way&));
-message(etoile::portal::TagPathChemin,
-        parameters(etoile::path::Chemin&));
-message(etoile::portal::TagPathLocate,
-        parameters(etoile::path::Way&));
-message(etoile::portal::TagPathWay,
-        parameters(etoile::path::Way&));
-
-// object
-message(etoile::portal::TagObjectLoad,
-        parameters(etoile::path::Chemin&));
-message(etoile::portal::TagObjectInformation,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagObjectAbstract,
-        parameters(etoile::abstract::Object&));
-message(etoile::portal::TagObjectDiscard,
-       parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagObjectStore,
-       parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagObjectDestroy,
-       parameters(etoile::gear::Identifier&));
-
-// file
-message(etoile::portal::TagFileCreate,
-        parameters());
-message(etoile::portal::TagFileLoad,
-        parameters(etoile::path::Chemin&));
-message(etoile::portal::TagFileWrite,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Offset&,
-                   elle::standalone::Region&));
-message(etoile::portal::TagFileRead,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Offset&,
-                   nucleus::neutron::Size&));
-message(etoile::portal::TagFileRegion,
-        parameters(elle::standalone::Region&));
-message(etoile::portal::TagFileAdjust,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Size&));
-message(etoile::portal::TagFileDiscard,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagFileStore,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagFileDestroy,
-        parameters(etoile::gear::Identifier&));
-
-// directory
-message(etoile::portal::TagDirectoryCreate,
-        parameters());
-message(etoile::portal::TagDirectoryLoad,
-        parameters(etoile::path::Chemin&));
-message(etoile::portal::TagDirectoryAdd,
-        parameters(etoile::gear::Identifier&,
-                   etoile::path::Slab&,
-                   etoile::gear::Identifier&));
-message(etoile::portal::TagDirectoryLookup,
-        parameters(etoile::gear::Identifier&,
-                   etoile::path::Slab&));
-message(etoile::portal::TagDirectoryEntry,
-        parameters(nucleus::neutron::Entry&));
-message(etoile::portal::TagDirectoryConsult,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Index&,
-                   nucleus::neutron::Size&));
-message(etoile::portal::TagDirectoryRange,
-        parameters(nucleus::neutron::Range<
-                     nucleus::neutron::Entry>&));
-message(etoile::portal::TagDirectoryRename,
-        parameters(etoile::gear::Identifier&,
-                   etoile::path::Slab&,
-                   etoile::path::Slab&));
-message(etoile::portal::TagDirectoryRemove,
-        parameters(etoile::gear::Identifier&,
-                   etoile::path::Slab&));
-message(etoile::portal::TagDirectoryDiscard,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagDirectoryStore,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagDirectoryDestroy,
-        parameters(etoile::gear::Identifier&));
-
-// link
-message(etoile::portal::TagLinkCreate,
-        parameters());
-message(etoile::portal::TagLinkLoad,
-        parameters(etoile::path::Chemin&));
-message(etoile::portal::TagLinkBind,
-        parameters(etoile::gear::Identifier&,
-                   etoile::path::Way&));
-message(etoile::portal::TagLinkResolve,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagLinkWay,
-        parameters(etoile::path::Way&));
-message(etoile::portal::TagLinkDiscard,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagLinkStore,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagLinkDestroy,
-        parameters(etoile::gear::Identifier&));
-
-// access
-message(etoile::portal::TagAccessLookup,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&));
-message(etoile::portal::TagAccessRecord,
-        parameters(nucleus::neutron::Record&));
-message(etoile::portal::TagAccessConsult,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Index&,
-                   nucleus::neutron::Size&));
-message(etoile::portal::TagAccessRange,
-        parameters(nucleus::neutron::Range<
-                     nucleus::neutron::Record>&));
-message(etoile::portal::TagAccessGrant,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&,
-                   nucleus::neutron::Permissions&));
-message(etoile::portal::TagAccessRevoke,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&));
-
-// attributes
-message(etoile::portal::TagAttributesSet,
-        parameters(etoile::gear::Identifier&,
-                   elle::String&,
-                   elle::String&));
-message(etoile::portal::TagAttributesGet,
-        parameters(etoile::gear::Identifier&,
-                   elle::String&));
-message(etoile::portal::TagAttributesTrait,
-        parameters(nucleus::neutron::Trait&));
-message(etoile::portal::TagAttributesFetch,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagAttributesRange,
-        parameters(nucleus::neutron::Range<
-                     nucleus::neutron::Trait>&));
-message(etoile::portal::TagAttributesOmit,
-        parameters(etoile::gear::Identifier&,
-                   elle::String&));
-
-// group
-message(etoile::portal::TagGroupCreate,
-        parameters(elle::String&));
-message(etoile::portal::TagGroupIdentity,
-        parameters(typename nucleus::neutron::Group::Identity&,
-                   etoile::gear::Identifier&));
-message(etoile::portal::TagGroupLoad,
-        parameters(typename nucleus::neutron::Group::Identity&));
-message(etoile::portal::TagGroupInformation,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagGroupAbstract,
-        parameters(etoile::abstract::Group&));
-message(etoile::portal::TagGroupAdd,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&));
-message(etoile::portal::TagGroupLookup,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&));
-message(etoile::portal::TagGroupFellow,
-        parameters(nucleus::neutron::Fellow&));
-message(etoile::portal::TagGroupConsult,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Index&,
-                   nucleus::neutron::Size&));
-message(etoile::portal::TagGroupRange,
-        parameters(nucleus::neutron::Range<nucleus::neutron::Fellow>&));
-message(etoile::portal::TagGroupRemove,
-        parameters(etoile::gear::Identifier&,
-                   nucleus::neutron::Subject&));
-message(etoile::portal::TagGroupDiscard,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagGroupStore,
-        parameters(etoile::gear::Identifier&));
-message(etoile::portal::TagGroupDestroy,
-        parameters(etoile::gear::Identifier&));
 
 #endif

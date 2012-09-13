@@ -3,7 +3,10 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
-# include <elle/network/fwd.hh>
+
+# include <reactor/network/fwd.hh>
+
+# include <etoile/portal/Manifest.hh>
 
 namespace etoile
 {
@@ -18,7 +21,8 @@ namespace etoile
     /// use the message interface.
     ///
     class Application:
-      public elle::radix::Entity
+      public elle::radix::Entity,
+      public elle::Printable
     {
     public:
       //
@@ -42,16 +46,16 @@ namespace etoile
           ProcessingOn
         };
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
       Application();
       ~Application();
 
       //
       // methods
       //
-      elle::Status      Create(elle::network::TCPSocket*);
+      elle::Status      Create(reactor::network::TCPSocket*);
 
       //
       // callbacks
@@ -71,9 +75,26 @@ namespace etoile
       State                     state;
       Processing                processing;
 
-      elle::network::TCPSocket* socket;
-    };
+      reactor::network::TCPSocket* socket;
+      infinit::protocol::Serializer* serializer;
+      infinit::protocol::ChanneledStream* channels;
+      etoile::portal::RPC* rpcs;
 
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const;
+
+    /*-------------.
+    | RPC handlers |
+    `-------------*/
+    private:
+      void _run();
+      bool _authenticate(std::string const& pass);
+    };
   }
 }
 

@@ -7,21 +7,10 @@ namespace hole
   {
     namespace slug
     {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-      ///
-      /// this value defines the component's name.
-      ///
-      const elle::Character             Component[] = "slug";
-
       ///
       /// XXX
       ///
       Machine*                          Slug::Computer = nullptr;
-
     }
   }
 }

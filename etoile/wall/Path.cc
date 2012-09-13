@@ -13,38 +13,39 @@ namespace etoile
 {
   namespace wall
   {
-
-    ///
-    /// this method takes a string-based path i.e a way and resolves it
-    /// into a location.
-    ///
-    /// note that the way may contain version indicators for Etoile to
-    /// use a specific version of the named directory, file etc. contained
-    /// in the path.
-    ///
-    elle::Status        Path::Resolve(
-                          const path::Way&                      way,
-                          path::Chemin&                         chemin)
+    path::Chemin
+    Path::resolve(const path::Way& way)
     {
+      ELLE_TRACE_SCOPE("Resolve(%s)", way.path.c_str());
+
       path::Route       route;
       path::Venue       venue;
 
-      ELLE_TRACE_SCOPE("Resolve(%s)", way.path.c_str());
-
-      // create a route from the way.
+      // Create a route from the way.
       if (route.Create(way) == elle::Status::Error)
-        escape("unable to create the route");
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to create the route");
 
-      // resolve the route.
+      // Resolve the route.
       if (path::Path::Resolve(route, venue) == elle::Status::Error)
-        escape("unable to resolve the route");
+        throw NoSuchFileOrDirectory(elle::concurrency::scheduler(), way);
 
-      // create the chemin.
+      // Create the chemin.
+      path::Chemin chemin;
       if (chemin.Create(route, venue) == elle::Status::Error)
-        escape("unable to create the chemin");
-
-      return elle::Status::Ok;
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to create the chemin");
+      return chemin;
     }
 
+    NoSuchFileOrDirectory::NoSuchFileOrDirectory(reactor::Scheduler& sched,
+                                                 path::Way const& path):
+      reactor::Exception(sched,
+                         elle::sprintf("no such file or directory: %s", path)),
+      _path(path)
+    {}
+
+    NoSuchFileOrDirectory::~NoSuchFileOrDirectory() throw ()
+    {}
   }
 }

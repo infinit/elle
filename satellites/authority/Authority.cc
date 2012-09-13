@@ -20,11 +20,6 @@ namespace satellite
 //
 
   ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "8authority";
-
-  ///
   /// this value defines the authority key pair length.
   ///
   /// the length is kept high in order to make attacks more difficult.

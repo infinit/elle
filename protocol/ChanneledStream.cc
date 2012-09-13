@@ -157,7 +157,7 @@ namespace infinit
     `--------*/
 
     void
-    ChanneledStream::write(Packet& packet)
+    ChanneledStream::_write(Packet& packet)
     {
       _default.write(packet);
     }
@@ -170,7 +170,6 @@ namespace infinit
       Packet backend_packet;
       _uint32_put(backend_packet, id);
       backend_packet.write(packet._data, packet.size());
-      backend_packet.flush();
       _backend.write(backend_packet);
     }
 

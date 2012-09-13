@@ -18,15 +18,6 @@ namespace elle
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this value defines the component's name.
-  ///
-  const Character               Component[] = "elle";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 

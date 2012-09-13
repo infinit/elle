@@ -2,6 +2,8 @@
 
 #include <elle/system/Platform.hh>
 
+#include <Infinit.hh>
+
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/Linux.hh>
 #elif defined(INFINIT_MACOSX)
@@ -16,6 +18,28 @@ namespace horizon
 {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this variable contains the UID of the 'somebody' user, user which
+    /// is used whenever the system cannot map the Infinit user on a local
+    /// user.
+    ///
+    uid_t                               Horizon::Somebody::UID;
+
+    ///
+    /// this variable contains the GID of the 'somebody' group.
+    ///
+    gid_t                               Horizon::Somebody::GID;
+
+    ///
+    /// this varaible contains the mappings between local user/group
+    /// identities and Infinit identities.
+    ///
+    lune::Dictionary                    Horizon::Dictionary;
+
+//
 // ---------- static methods --------------------------------------------------
 //
 
@@ -24,6 +48,33 @@ namespace horizon
   ///
   elle::Status          Horizon::Initialize()
   {
+    //
+    // initialize the 'somebody' entity.
+    //
+    {
+      struct ::passwd*        passwd;
+
+      // retrieve the passwd structure related to the user 'somebody'.
+      // if nullptr, try to fallback to 'nobody'.
+      if (((passwd = ::getpwnam("somebody")) == nullptr) &&
+          ((passwd = ::getpwnam("nobody")) == nullptr))
+        escape("it seems that the user 'somebody' does not exist");
+
+      // set the uid and gid.
+      Horizon::Somebody::UID = passwd->pw_uid;
+      Horizon::Somebody::GID = passwd->pw_gid;
+    }
+
+    //
+    // load the user/group maps which will be used to translate Infinit
+    // user/group identifiers into local identifiers.
+    //
+    {
+      // if the dictionary exist.
+      if (lune::Dictionary::exists(Infinit::User) == true)
+        Horizon::Dictionary.load(Infinit::User);
+    }
+
 #if defined(INFINIT_LINUX)
     {
       // initialize the Linux implementation.

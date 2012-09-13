@@ -34,19 +34,12 @@ namespace etoile
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
 
-      try
-        {
-          // XXX[the context should make use of unique_ptr instead
-          //     of releasing here.]
-          context.object =
-            depot::Depot::pull_object(
-              context.location.address,
-              context.location.version).release();
-        }
-      catch (std::runtime_error& e)
-        {
-          escape("unable to retrieve the contents block: %s", e.what());
-        }
+      // XXX[the context should make use of unique_ptr instead
+      //     of releasing here.]
+      context.object =
+        depot::Depot::pull_object(
+          context.location.address,
+          context.location.version).release();
 
       // compute the base in order to seal the block's original state.
       if (context.object->base.Create(*context.object) == elle::Status::Error)

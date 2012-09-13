@@ -3,11 +3,14 @@
 
 # include <elle/types.hh>
 
-# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Fellow.hh>
 # include <nucleus/neutron/Group.hh>
+# include <nucleus/neutron/Range.hh>
+# include <nucleus/neutron/fwd.hh>
 
-# include <etoile/gear/fwd.hh>
 # include <etoile/abstract/fwd.hh>
+# include <etoile/gear/Identifier.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
@@ -23,54 +26,48 @@ namespace etoile
       //
       /// XXX
       static
-      elle::Status
-      Create(elle::String const& description,
-             typename nucleus::neutron::Group::Identity& identity,
-             gear::Identifier& identifier);
+      std::pair<nucleus::neutron::Group::Identity, gear::Identifier>
+      Create(elle::String const& description);
       /// XXX
       static
-      elle::Status
-      Load(typename nucleus::neutron::Group::Identity const& identity,
-           gear::Identifier& identifier);
+      gear::Identifier
+      Load(typename nucleus::neutron::Group::Identity const& identity);
       /// XXX
       static
-      elle::Status
-      Information(const gear::Identifier& identifier,
-                  abstract::Group& abstract);
+      abstract::Group
+      Information(const gear::Identifier& identifier);
       /// XXX
       static
-      elle::Status
+      void
       Add(gear::Identifier const& identifier,
           nucleus::neutron::Subject const& subject);
       /// XXX
       static
-      elle::Status
+      nucleus::neutron::Fellow
       Lookup(gear::Identifier const& identifier,
-             nucleus::neutron::Subject const& subject,
-             nucleus::neutron::Fellow const*& fellow);
+             nucleus::neutron::Subject const& subject);
       /// XXX
       static
-      elle::Status
+      nucleus::neutron::Range<nucleus::neutron::Fellow>
       Consult(gear::Identifier const& identifer,
               nucleus::neutron::Index const& index,
-              nucleus::neutron::Size const& size,
-              nucleus::neutron::Range<nucleus::neutron::Fellow>& range);
+              nucleus::neutron::Size const& size);
       /// XXX
       static
-      elle::Status
+      void
       Remove(gear::Identifier const& identifier,
              nucleus::neutron::Subject const& subject);
       /// XXX
       static
-      elle::Status
+      void
       Discard(gear::Identifier const& identifier);
       /// XXX
       static
-      elle::Status
+      void
       Store(gear::Identifier const& identifier);
       /// XXX
       static
-      elle::Status
+      void
       Destroy(gear::Identifier const& identifier);
       /// XXX
       static

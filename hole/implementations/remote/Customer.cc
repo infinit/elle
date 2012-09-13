@@ -97,7 +97,7 @@ namespace hole
           }
       }
 
-      bool
+      void
       Customer::push(nucleus::proton::Address const& address,
                      nucleus::Derivable const& derivable)
       {
@@ -137,7 +137,6 @@ namespace hole
                                  "unknown block family");
             }
           }
-        return true;
       }
 
       nucleus::Derivable
@@ -185,13 +184,12 @@ namespace hole
         return nucleus::Derivable(address.component, *block);
       }
 
-      bool
+      void
       Customer::wipe(const nucleus::proton::Address& address)
       {
         ELLE_TRACE_SCOPE("Wipe");
         _state_check_authenticated();
         _server.kill(address);
-        return true;
       }
 
       /*------.

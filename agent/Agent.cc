@@ -24,11 +24,6 @@ namespace agent
 //
 
   ///
-  /// this value defines the component's name.
-  ///
-  const elle::Character         Component[] = "agent";
-
-  ///
   /// the user's identity.
   ///
   lune::Identity                Agent::Identity;

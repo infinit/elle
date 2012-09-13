@@ -1214,8 +1214,7 @@ namespace etoile
         }
 
         // store the object which now carries the modified context.
-        if (T::W::Store(actor->identifier) == elle::Status::Error)
-          escape("unable to store the object");
+        T::W::Store(actor->identifier);
 
         // waive the actor and the scope
         guard.track = false;

@@ -6,13 +6,13 @@ namespace hole
   {
     namespace remote
     {
-      RPC::RPC(infinit::protocol::ChanneledStream& channels)
-        : infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
-                                 elle::serialize::OutputBinaryArchive>(channels)
-        , challenge(*this)
-        , push(*this)
-        , pull(*this)
-        , wipe(*this)
+      RPC::RPC(infinit::protocol::ChanneledStream& channels):
+        infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+                               elle::serialize::OutputBinaryArchive>(channels),
+        challenge("challenge", *this),
+        push("push", *this),
+        pull("pull", *this),
+        wipe("wipe", *this)
       {}
     }
   }
