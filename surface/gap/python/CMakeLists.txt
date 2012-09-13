@@ -19,10 +19,14 @@ file(GLOB gap_srcs ../*.cc)
 list(APPEND gap_srcs pygap.cc)
 add_library(_gap SHARED ${gap_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 target_link_libraries(_gap
+	${INFINIT_LIBRARIES}
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
+	${Boost_PYTHON3_LIBRARY}
 	${PYTHON3_LIBRARIES}
 )
+
 set_target_properties(_gap PROPERTIES
 	PREFIX ""
 )
