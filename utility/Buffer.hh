@@ -84,6 +84,11 @@ namespace elle
 
       virtual Status    Dump(const Natural32 shift = 0) const;
 
+      bool
+      operator <(Buffer const& other) const;
+      bool
+      operator ==(Buffer const& other) const;
+
     private:
       static size_t _NextSize(size_t);
     };

@@ -189,7 +189,8 @@ namespace elle
                           elle::log::Logger::Type type,
                           std::string const& msg)
       {
-        if (!Components::instance().enabled(this->_component.name))
+        if (type < Logger::Type::warning &&
+            !Components::instance().enabled(this->_component.name))
           return;
         int indent;
         {
