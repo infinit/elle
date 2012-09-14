@@ -1,9 +1,6 @@
 project(Horizon CXX)
 
-add_library(horizon)
-add_definitions(-fPIC)
-
-ADD_LIBRARY(horizon
+add_library(horizon
   Crib.cc
   Crux.cc
   Handle.cc
