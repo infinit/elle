@@ -81,12 +81,6 @@ namespace hole
           elle::utility::Buffer b2;
           b2.Writer() << *current;
 
-          elle::print("XXX Dumping b1:");
-          b1.Dump();
-          elle::print("XXX Dumping b2:");
-          b2.Dump();
-          elle::print("XXX IS b1 < b2 ??? ", b1 < b2);
-
           /// We need to choose arbitrarly one block as the latest. For that we
           /// decide to compare their content, so we got the same result on
           /// every hosts.
