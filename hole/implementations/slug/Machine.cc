@@ -278,9 +278,14 @@ namespace hole
 
 #ifdef CACHE
             {
+              // We need to clear cached blocks when a new node is connected.
+              // If a block has a new version, or conflict, we need to solve
+              // the problem instead of fetching the block from cache.
+              // @see hole::backends::fs::MutableBlock::derives()
+              // XXX this should be done once the host is authenticated.
               ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
               ELLE_TRACE("cleaning the cache");
-              cache.clear(); // XXX do this once the host is authenticated.
+              cache.clear();
             }
 #endif
 
