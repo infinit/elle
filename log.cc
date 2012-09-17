@@ -189,9 +189,11 @@ namespace elle
                           elle::log::Logger::Type type,
                           std::string const& msg)
       {
-        if (type < Logger::Type::warning &&
-            !Components::instance().enabled(this->_component.name))
-          return;
+        if (!Components::instance().enabled(this->_component.name))
+          {
+            if (type < Logger::Type::warning)
+              return;
+          }
         int indent;
         {
           boost::lock_guard<boost::mutex> lock(_indentation_lock);
