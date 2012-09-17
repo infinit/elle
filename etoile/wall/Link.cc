@@ -7,6 +7,7 @@
 #include <etoile/automaton/Link.hh>
 #include <etoile/automaton/Rights.hh>
 #include <etoile/journal/Journal.hh>
+#include <etoile/path/Way.hh>
 
 #include <elle/log.hh>
 #include <elle/concurrency/Scheduler.hh>
@@ -160,7 +161,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      ELLE_TRACE_SCOPE("Bind()");
+      ELLE_TRACE_SCOPE("Bind(%s, %s)", identifier, way);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

@@ -2,6 +2,7 @@
 # define ETOILE_PATH_WAY_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 # include <elle/radix/Object.hh>
 
 # include <etoile/path/fwd.hh>
@@ -17,7 +18,8 @@ namespace etoile
     /// this class represents a string-based path i.e a way.
     ///
     class Way:
-      public elle::radix::Object
+      public elle::radix::Object,
+      public elle::Printable
     {
     public:
       //
@@ -51,6 +53,10 @@ namespace etoile
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
+
+      // printable
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

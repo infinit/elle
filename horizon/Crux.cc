@@ -1136,11 +1136,11 @@ namespace horizon
   {
     ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
 
-    etoile::gear::Identifier  directory;
-    etoile::gear::Identifier  link;
-    etoile::path::Slab        name;
-    etoile::path::Way         from(etoile::path::Way(source), name);
-    etoile::path::Way         to(target);
+    etoile::gear::Identifier directory;
+    etoile::gear::Identifier link;
+    etoile::path::Slab name;
+    etoile::path::Way from(etoile::path::Way(source), name);
+    etoile::path::Way to(target);
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(from));
@@ -1272,7 +1272,7 @@ namespace horizon
 
     // Check the record.
     if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::PermissionRead) ==
+        ((record.permissions & nucleus::neutron::PermissionRead) !=
          nucleus::neutron::PermissionRead))
       error("the subject does not have the right to read this link",
             -EACCES,
@@ -1515,9 +1515,9 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if (!((record != nucleus::neutron::Record::Null) &&
-          ((record.permissions & nucleus::neutron::PermissionWrite) ==
-           nucleus::neutron::PermissionWrite)))
+    if ((record == nucleus::neutron::Record::Null) ||
+        ((record.permissions & nucleus::neutron::PermissionWrite) !=
+         nucleus::neutron::PermissionWrite))
       error("the subject does not have the right to update this file",
             -EACCES);
 
@@ -1562,9 +1562,9 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if (!((record != nucleus::neutron::Record::Null) &&
-          ((record.permissions & nucleus::neutron::PermissionRead) ==
-           nucleus::neutron::PermissionRead)))
+    if ((record == nucleus::neutron::Record::Null) ||
+        ((record.permissions & nucleus::neutron::PermissionRead) !=
+         nucleus::neutron::PermissionRead))
       error("the subject does not have the right to read this file",
             -EACCES);
 
@@ -1644,9 +1644,9 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if (!((record != nucleus::neutron::Record::Null) &&
-          ((record.permissions & nucleus::neutron::PermissionWrite) ==
-           nucleus::neutron::PermissionWrite)))
+    if ((record == nucleus::neutron::Record::Null) ||
+        ((record.permissions & nucleus::neutron::PermissionWrite) !=
+         nucleus::neutron::PermissionWrite))
       error("the subject does not have the right to modify the size of "
             "this file",
             -EACCES);
@@ -1765,9 +1765,9 @@ namespace horizon
                                                 agent::Agent::Subject);
 
         ELLE_TRACE("check the record")
-          if (!((record != nucleus::neutron::Record::Null) &&
-                ((record.permissions & nucleus::neutron::PermissionWrite) ==
-                 nucleus::neutron::PermissionWrite)))
+          if ((record == nucleus::neutron::Record::Null) ||
+              ((record.permissions & nucleus::neutron::PermissionWrite) !=
+               nucleus::neutron::PermissionWrite))
             error("the subject does not have the right to rename this "
                   "directory entry",
                   -EACCES,
@@ -1850,9 +1850,9 @@ namespace horizon
           etoile::wall::Access::lookup(identifier.to, agent::Agent::Subject));
 
         // Check the record.
-        if (!((record != nucleus::neutron::Record::Null) &&
-              ((record.permissions & nucleus::neutron::PermissionWrite) ==
-               nucleus::neutron::PermissionWrite)))
+        if ((record == nucleus::neutron::Record::Null) ||
+            ((record.permissions & nucleus::neutron::PermissionWrite) !=
+             nucleus::neutron::PermissionWrite))
           error("the subject does not have the right to rename this "
                 "directory entry",
                 -EACCES,
@@ -1874,9 +1874,9 @@ namespace horizon
           identifier.from, agent::Agent::Subject);
 
         // Check the record.
-        if (!((record != nucleus::neutron::Record::Null) &&
-              ((record.permissions & nucleus::neutron::PermissionWrite) ==
-               nucleus::neutron::PermissionWrite)))
+        if ((record == nucleus::neutron::Record::Null) ||
+            ((record.permissions & nucleus::neutron::PermissionWrite) !=
+             nucleus::neutron::PermissionWrite))
           error("the subject does not have the right to rename this "
                 "directory entry",
                 -EACCES,
@@ -2005,9 +2005,9 @@ namespace horizon
       etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if (!((record != nucleus::neutron::Record::Null) &&
-          ((record.permissions & nucleus::neutron::PermissionWrite) ==
-           nucleus::neutron::PermissionWrite)))
+    if ((record == nucleus::neutron::Record::Null) ||
+        ((record.permissions & nucleus::neutron::PermissionWrite) !=
+         nucleus::neutron::PermissionWrite))
       error("the subject does not have the right to remove an entry from "
             "this directory",
             -EACCES,

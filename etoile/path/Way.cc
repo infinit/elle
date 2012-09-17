@@ -164,5 +164,15 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Way::print(std::ostream& stream) const
+    {
+      stream << this->path;
+    }
+
   }
 }
