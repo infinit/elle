@@ -219,9 +219,10 @@ set(INFINIT_LIBRARIES
   ssl
   crypto
   ${Boost_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
+  ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
   ${QT_LIBRARIES}
   readline
+  pthread
 )
 
 add_subdirectory(satellites)
