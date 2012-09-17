@@ -8,6 +8,15 @@ namespace elle
   namespace os
   {
 
+    class KeyError:
+      public std::runtime_error
+    {
+    public:
+      KeyError(std::string const& key):
+        std::runtime_error("KeyError '" + key + "'")
+      {}
+    };
+
     std::string getenv(std::string const& key)
     {
       char const* val = ::getenv(key.c_str());
