@@ -64,14 +64,14 @@ namespace hole
                       this->_address,
                       nucleus::proton::Version::Last);
 
-        ELLE_LOG("Current block version %s and given block version is %s",
-                 current->version, this->_block.version);
+        ELLE_TRACE("Current block version %s and given block version is %s",
+                   current->version, this->_block.version);
 
         if (this->_block.version != current->version)
           return this->_block.derives(*current);
 
-        ELLE_LOG("Block have same version, we need to distinguish them as the"
-                 " latest");
+        ELLE_TRACE("Block have same version, we need to distinguish them "
+                   "as the latest");
 
         // We check if contents are the same.
         {

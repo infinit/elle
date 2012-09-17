@@ -1,4 +1,5 @@
 #include <hole/implementations/local/Machine.hh>
+#include <hole/backends/fs/MutableBlock.hh>
 #include <hole/Holeable.hh>
 #include <hole/Hole.hh>
 
@@ -113,50 +114,15 @@ namespace hole
             }
           }
 
-        // XXX[this kind of check should be provided by a method such as
-        //     hole/backend/fs/MutableBlock::derives()]
         ELLE_TRACE("Check if the block derives the current block")
-          {
-            // does the block already exist.
-            if (nucleus::proton::MutableBlock::exists(
-                  Hole::Implementation->network,
-                  address,
-                  nucleus::proton::Version::Last) == true)
-              {
-                // XXX[use backends/fs/MutableBlock.cc]
+          if (backends::fs::MutableBlock(Hole::Implementation->network,
+                                         address,
+                                         block).derives() == false)
+            throw reactor::Exception(
+              elle::concurrency::scheduler(),
+              "the block does not derive the local one");
 
-                nucleus::proton::MutableBlock* current;
-
-                // build a block according to the component.
-                if (nucleus::Nucleus::Factory.Build(
-                      address.component,
-                      current) == elle::Status::Error)
-                  throw std::runtime_error("unable to build the block");
-
-                std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
-
-                ELLE_TRACE_SCOPE("the mutable block seems to exist "
-                                 "locally: make sure it derives the "
-                                 "current version");
-
-                // load the latest version.
-                current->load(
-                  Hole::Implementation->network,
-                  address,
-                  nucleus::proton::Version::Last);
-
-                if (block.derives(*current) == true)
-                  {
-                    ELLE_TRACE("Store the block %p", &block)
-                      block.store(Hole::Implementation->network, address);
-
-                    ELLE_TRACE("Block %p successfully stored", &block);
-                  }
-                else
-                  ELLE_TRACE("the block %p does not derive the current one",
-                             &block);
-              }
-          }
+        block.store(Hole::Implementation->network, address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
