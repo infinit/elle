@@ -41,7 +41,12 @@ namespace infinit
     | Sending |
     `--------*/
     public:
-      virtual void write(Packet& packet) = 0;
+      void
+      write(Packet& packet);
+    protected:
+      virtual
+      void
+      _write(Packet& packet) = 0;
 
     /*------------------.
     | Int serialization |

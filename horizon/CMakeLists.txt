@@ -1,7 +1,11 @@
 project(Horizon CXX)
 
 add_library(horizon
+  Crib.cc
+  Crux.cc
+  Handle.cc
   Horizon.cc
+  Janitor.cc
   Policy.cc
 )
 

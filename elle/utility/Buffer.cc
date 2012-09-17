@@ -173,6 +173,22 @@ namespace elle
       return (size + size  / 2);
     }
 
+    bool
+    Buffer::operator <(Buffer const& other) const
+    {
+      if (this->_size != other._size)
+        return this->_size < other._size;
+      return ::memcmp(this->_contents, other._contents, this->_size) < 0;
+    }
+
+    bool
+    Buffer::operator ==(Buffer const& other) const
+    {
+      if (this->_size != other._size)
+        return false;
+      return ::memcmp(this->_contents, other._contents, this->_size) == 0;
+    }
+
     elle::serialize::InputBufferArchive  WeakBuffer::Reader() const
     {
       elle::utility::InputBufferStream in(*this);

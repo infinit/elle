@@ -14,7 +14,7 @@ import threading
 import sys
 
 
-sys.exit(0) #XXX tests does not work
+#sys.exit(0) #XXX tests does not work
 
 import platform
 
@@ -28,7 +28,8 @@ BUILD = os.environ.get(
 )
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
-os.environ['ELLE_LOG_COMPONENTS'] = ''
+os.environ['ELLE_LOG_COMPONENTS'] = '*'
+#os.environ['ELLE_LOG_LEVEL'] = 'TRACE'
 MONITOR_SLEEP=10
 
 def monitor(p, cmd):
@@ -207,14 +208,14 @@ class MountPoint:
             '-m', self._mount_dir,
             '-u', self._network.user_name,
         ]
+        print("LAUNCHING INFINIT:", ' '.join(self.__infinit_cmd))
         self.__infinit = subprocess.Popen(self.__infinit_cmd, stdin = subprocess.PIPE)
         self.__infinit_alive = True
         self.__infinit.stdin.write(b'\n')
         self.__infinit.stdin.close()
         self.__monitor_thread = threading.Thread(target=self._monitor)
         self.__monitor_thread.start()
-        time.sleep(10) # XXX how to know when the network is ready ?
-
+        print("INFINIT LAUNCHED:", ' '.join(self.__infinit_cmd))
         return self
 
     def _monitor(self):
@@ -311,11 +312,12 @@ class NetworkPool:
 import hashlib
 
 def simple_file(mount_points, fname, size=4096):
-    print("simple file of", size, "bytes")
     first = mount_points[0]
     others = mount_points[1:]
     assert all(m.alive for m in mount_points)
     md5 = hashlib.md5()
+
+    print("Writing", size, "bytes into", first.file_path(fname))
     with open(first.file_path(fname), 'wb') as f:
         with open('/dev/urandom', 'rb') as src:
             print("Read from random source")

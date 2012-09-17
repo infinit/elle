@@ -53,8 +53,10 @@ namespace infinit
     /*--------.
     | Sending |
     `--------*/
-    public:
-      virtual void write(Packet& packet);
+    protected:
+      virtual
+      void
+      _write(Packet& packet);
 
     /*--------.
     | Details |

@@ -21,21 +21,52 @@ namespace etoile
     class Object
     {
     public:
-      //
-      // static methods
-      //
-      static elle::Status       Load(const path::Chemin&,
-                                     gear::Identifier&);
-
-      static elle::Status       Lock(const gear::Identifier&);
-      static elle::Status       Release(const gear::Identifier&);
-      static elle::Status       Information(const gear::Identifier&,
-                                            abstract::Object&);
-
-      static elle::Status       Discard(const gear::Identifier&);
-      static elle::Status       Store(const gear::Identifier&);
-      static elle::Status       Destroy(const gear::Identifier&);
-      static elle::Status       Purge(const gear::Identifier&);
+      /// Loads the objec identified by \a chemin into a new scope and
+      /// return the scope's identifier.
+      static
+      gear::Identifier
+      Load(path::Chemin const& chemin);
+      /// Lock the object.
+      ///
+      /// \return whether the lock has been acquired.
+      static
+      bool
+      Lock(gear::Identifier const&);
+      /// Release a previously locked object.
+      static
+      void
+      Release(gear::Identifier const&);
+      /// The general abstract regarding the identified object.
+      static
+      abstract::Object
+      Information(gear::Identifier const&);
+      /// Discard the scope, potentially ignoring some
+      /// modifications.
+      static
+      void
+      Discard(gear::Identifier const&);
+      /// Commit the pending modifications by placing the
+      /// scope in the journal.
+      static
+      void
+      Store(const gear::Identifier&);
+      /// Destroy an object.
+      ///
+      /// Use with great care since, not knowing the object's genre, the
+      /// data blocks will not be removed. therefore, the genre-specific
+      /// Destroy() method should always be preferred.
+      static
+      void
+      Destroy(gear::Identifier const&);
+      /// Remove all the blocks of all the versions associated with an
+      /// object.
+      ///
+      /// Use with great care since, not knowing the object's genre, the
+      /// data blocks will not be removed. therefore, the genre-specific
+      /// Destroy() method should always be preferred.
+      static
+      void
+      Purge(gear::Identifier const&);
     };
 
   }

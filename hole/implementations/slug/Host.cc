@@ -2,10 +2,10 @@
 
 #include <elle/utility/Time.hh>
 #include <elle/standalone/Morgue.hh>
-#include <elle/network/TCPSocket.hh>
 
 #include <reactor/network/exception.hh>
 
+#include <nucleus/Derivable.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
@@ -90,13 +90,13 @@ namespace hole
       | API |
       `----*/
 
-      bool
+      void
       Host::push(nucleus::proton::Address const& address,
                  nucleus::proton::Block const& block)
       {
         ELLE_TRACE_SCOPE("%s: push block at address %s", *this, address);
         nucleus::Derivable derivable(address.component, block);
-        return _rpcs.push(address, derivable);
+        _rpcs.push(address, derivable);
       }
 
       std::unique_ptr<nucleus::proton::Block>
@@ -107,11 +107,11 @@ namespace hole
         return _rpcs.pull(address, version).release();
       }
 
-      bool
+      void
       Host::wipe(nucleus::proton::Address const& address)
       {
         ELLE_TRACE_SCOPE("%s: wipe address %s", *this, address);
-        return _rpcs.wipe(address);
+        _rpcs.wipe(address);
       }
 
       std::vector<elle::network::Locus>
@@ -144,7 +144,7 @@ namespace hole
         return _machine.loci();
       }
 
-      bool
+      void
       Host::_push(nucleus::proton::Address const& address,
                   nucleus::Derivable& derivable)
       {
@@ -270,8 +270,6 @@ namespace hole
               throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
             }
           }
-
-        return true;
       }
 
       nucleus::Derivable
@@ -423,7 +421,7 @@ namespace hole
         return nucleus::Derivable(address.component, *block.release());
       }
 
-      bool
+      void
       Host::_wipe(nucleus::proton::Address const& address)
       {
         ELLE_TRACE_SCOPE("%s: peer wipes block at address %s", *this, address);
@@ -467,7 +465,6 @@ namespace hole
               }
             }
         }
-        return true;
       }
 
       /*---------.

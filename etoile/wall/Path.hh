@@ -3,26 +3,37 @@
 
 # include <elle/types.hh>
 
+# include <reactor/exception.hh>
+
 # include <etoile/path/fwd.hh>
+# include <etoile/path/Way.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
-    ///
-    /// this class provides methods for resolving paths into locations.
-    ///
+    /// Path resolving into locations.
     class Path
     {
     public:
-      //
-      // static methods
-      //
-      static elle::Status       Resolve(const path::Way&,
-                                        path::Chemin&);
+      /// Resolve a string-based path i.e a way into a location.
+      ///
+      /// The way may contain version indicators for Etoile to use a
+      /// specific version of the named directory, file etc. contained
+      /// in the path.
+      static
+      path::Chemin
+      resolve(const path::Way&);
     };
 
+    class NoSuchFileOrDirectory: public reactor::Exception
+    {
+    public:
+      NoSuchFileOrDirectory(reactor::Scheduler& sched, path::Way const& path);
+      ~NoSuchFileOrDirectory() throw ();
+    private:
+      path::Way _path;
+    };
   }
 }
 

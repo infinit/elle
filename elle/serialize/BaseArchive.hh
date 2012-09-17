@@ -187,7 +187,6 @@ namespace elle
       void
       Load(Concrete<T> const& value);
 
-
       inline void Save(bool val);
       inline void Save(char val);
       inline void Save(uint8_t val);

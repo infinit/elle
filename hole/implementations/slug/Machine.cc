@@ -22,13 +22,9 @@
 #include <nucleus/Derivable.hh>
 
 #include <elle/cast.hh>
-#include <elle/network/Network.hh>
 #include <elle/network/Interface.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Morgue.hh>
-#include <elle/network/TCPSocket.hh>
 #include <elle/utility/Time.hh>
 #include <elle/utility/Duration.hh>
 
@@ -279,6 +275,19 @@ namespace hole
             std::unique_ptr<reactor::network::TCPSocket> socket(_server->accept());
 
             ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
+
+#ifdef CACHE
+            {
+              // We need to clear cached blocks when a new node is connected.
+              // If a block has a new version, or conflict, we need to solve
+              // the problem instead of fetching the block from cache.
+              // @see hole::backends::fs::MutableBlock::derives()
+              // XXX this should be done once the host is authenticated.
+              ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
+              ELLE_TRACE("cleaning the cache");
+              cache.clear();
+            }
+#endif
 
             // Depending on the machine's state.
             switch (this->_state)
@@ -571,13 +580,18 @@ namespace hole
               if (nucleus::proton::ImmutableBlock::exists(
                     Hole::Implementation->network, address) == false)
                 {
+                  ELLE_TRACE("the immutable block does not exist locally,"
+                             " fetch %s from the peers", address);
                   // Go through the neighbours and retrieve
                   // the block from them.
                   bool found = false;
                   for (auto neighbour: this->_hosts)
                     {
                       Host* host = neighbour.second;
+                      assert(host != nullptr);
+
                       std::unique_ptr<nucleus::proton::ImmutableBlock> iblock;
+                      ELLE_TRACE("fetch %s from peer %s", address, *host);
 
                       try
                         {
@@ -591,6 +605,8 @@ namespace hole
                                     this, e.what());
                           continue;
                         }
+
+                      ELLE_TRACE("block fetched: %s", *iblock);
 
                       // validate the block.
                       if (iblock->Validate(address) == elle::Status::Ok)
@@ -622,12 +638,16 @@ namespace hole
               assert(nucleus::proton::ImmutableBlock::exists(
                        Hole::Implementation->network, address) == true);
 
+              ELLE_TRACE("load the local block at %s", address);
+
               // load the block.
               block->load(Hole::Implementation->network, address);
 
               // validate the block.
               if (block->Validate(address) == elle::Status::Error)
                 throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+
+              ELLE_TRACE("block loaded and validated: %s", *block);
 
               return std::unique_ptr<nucleus::proton::Block>(block);
             }
@@ -832,6 +852,9 @@ namespace hole
                              block);
                   continue;
                 }
+
+            ELLE_TRACE("storing the remote block %s locally", address)
+              block->store(Hole::Implementation->network, address);
           }
 
         // At this point, we may have retrieved one or more versions

@@ -36,8 +36,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<elle::network::TCPSocket*, Application*>       Value;
-      typedef std::map<elle::network::TCPSocket*, Application*>        Container;
+      typedef std::pair<reactor::network::TCPSocket*, Application*>       Value;
+      typedef std::map<reactor::network::TCPSocket*, Application*>        Container;
       typedef Container::iterator                               Iterator;
       typedef Container::const_iterator                         Scoutor;
 
@@ -48,9 +48,9 @@ namespace etoile
       static elle::Status       Clean();
 
       static elle::Status       Add(Application*);
-      static elle::Status       Retrieve(elle::network::TCPSocket*,
+      static elle::Status       Retrieve(reactor::network::TCPSocket*,
                                          Application*&);
-      static elle::Status       Remove(elle::network::TCPSocket*);
+      static elle::Status       Remove(reactor::network::TCPSocket*);
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
@@ -59,10 +59,8 @@ namespace etoile
       //
       // static callbacks
       //
-      static elle::Status       Connection(elle::network::TCPSocket*);
+      static elle::Status       Connection(reactor::network::TCPSocket*);
       static elle::Status       Authenticate(const elle::String&);
-      static elle::Status       Prolog();
-      static elle::Status       Epilog();
 
       //
       // static attributes

@@ -73,7 +73,7 @@ namespace elle
         Status Decrypt(Cipher const& in,
                        elle::serialize::Polymorphic<T> const& out) const
         {
-          return (this->Decrypt<elle::serialize::Polymorphic<T> const>(in, out));
+          return this->Decrypt<elle::serialize::Polymorphic<T> const>(in, out);
         }
 
       //

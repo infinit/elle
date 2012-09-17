@@ -58,10 +58,7 @@ namespace nucleus
     elle::Boolean
     MutableBlock::derives(MutableBlock const& other) const
     {
-      if (this->version > other.version)
-        return (true);
-
-      return (false);
+      return (this->version > other.version);
     }
 
     elle::io::Path

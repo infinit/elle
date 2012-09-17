@@ -22,16 +22,6 @@ namespace hole
   {
     namespace cirkle
     {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-      ///
-      /// this value defines the component's name.
-      ///
-      const elle::Character             Component[] = "cirkle";
-
       ///
       /// XXX
       ///

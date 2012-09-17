@@ -1,7 +1,14 @@
 #ifndef HORIZON_HORIZON_HH
 # define HORIZON_HORIZON_HH
 
-#include <elle/types.hh>
+# include <elle/types.hh>
+
+# include <lune/Dictionary.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <sys/types.h>
+#  include <pwd.h>
+# include <elle/idiom/Open.hh>
 
 ///
 /// this namespace contains several implementations related to the
@@ -22,6 +29,17 @@ namespace horizon
     //
     static elle::Status         Initialize();
     static elle::Status         Clean();
+
+    //
+    // static attributes
+    //
+    struct                    Somebody
+    {
+      static uid_t            UID;
+      static gid_t            GID;
+    };
+
+    static lune::Dictionary   Dictionary;
   };
 
 }

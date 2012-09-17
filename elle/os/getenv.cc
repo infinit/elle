@@ -12,7 +12,7 @@ namespace elle
     {
       char const* val = ::getenv(key.c_str());
       if (val == nullptr)
-        throw std::runtime_error("KeyError: '" + key + "'");
+        throw KeyError(key);
       return std::string{val};
     }
 

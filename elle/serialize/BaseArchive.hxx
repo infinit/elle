@@ -757,6 +757,7 @@ namespace elle
       void
       LoadConstruct(Archive& ar, T*& ptr)
       { ar.template LoadConstruct<T>(ptr); }
+
     };
 
 }}

@@ -42,8 +42,8 @@ add_library(etoile
   wall/Path.cc
 
   portal/Application.cc
+  portal/Manifest.cc
   portal/Portal.cc
-  portal/Wrapper.cc
 
   abstract/Object.cc
   abstract/Group.cc

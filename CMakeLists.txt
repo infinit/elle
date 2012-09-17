@@ -197,6 +197,8 @@ add_dependencies(infinit dependencies)
 # The whole project is linked against these libraries
 
 set(INFINIT_LIBRARIES
+
+
   etoile
 
   hole
@@ -205,8 +207,13 @@ set(INFINIT_LIBRARIES
   nucleus # circular dependency with lune
   hole # circular dependency with lune
 
+
   horizon
   ${INFINIT_PLATFORM_NO_ARCH}
+  horizon  # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
+
+  etoile # circular dependency with horizon
+
   metal
   agent
   common

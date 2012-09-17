@@ -55,13 +55,13 @@ namespace hole
       public:
         bool
         challenge(lune::Passport const& passport);
-        bool
+        void
         push(const nucleus::proton::Address& address,
              nucleus::Derivable const& derivable);
         nucleus::Derivable
         pull(const nucleus::proton::Address& address,
              const nucleus::proton::Version& version);
-        bool
+        void
         wipe(const nucleus::proton::Address&);
 
       /*----------------.
