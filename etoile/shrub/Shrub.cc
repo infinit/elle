@@ -3,6 +3,8 @@
 #include <elle/container/timeline/Bucket.hh>
 #include <elle/container/timeline/Timeline.hh>
 
+#include <reactor/exception.hh>
+
 #include <etoile/shrub/Shrub.hh>
 #include <etoile/path/Route.hh>
 #include <etoile/path/Venue.hh>
@@ -52,6 +54,30 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    void
+    Shrub::clear()
+    {
+      if (Infinit::Configuration.etoile.shrub.status == false)
+        return;
+
+      // delete the shrub content, if present.
+      if (Shrub::Riffles != nullptr)
+        {
+          // flush the riffle.
+          if (Shrub::Riffles->Flush() == elle::Status::Error)
+            throw reactor::Exception(elle::concurrency::scheduler(), "unable to flush the riffles");
+
+          // release the shrub slot.
+          if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+                                  Shrub::Riffles) == elle::Status::Error)
+            throw reactor::Exception(elle::concurrency::scheduler(), "unable to remove the riffle");
+
+          // delete the root riffle.
+          delete Shrub::Riffles;
+          Shrub::Riffles = nullptr;
+        }
+    }
+
     ///
     /// this method cleans the shrub.
     ///
@@ -75,6 +101,7 @@ namespace etoile
 
           // delete the root riffle.
           delete Shrub::Riffles;
+          Shrub::Riffles = nullptr;
         }
 
       return elle::Status::Ok;

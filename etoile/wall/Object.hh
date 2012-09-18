@@ -2,6 +2,7 @@
 # define ETOILE_WALL_OBJECT_HH
 
 # include <elle/types.hh>
+# include <elle/log.hh>
 
 # include <etoile/path/fwd.hh>
 # include <etoile/gear/fwd.hh>
@@ -15,14 +16,14 @@ namespace etoile
     ///
     /// this class provides general-purpose methods for manipulating objects.
     ///
-    /// these are very useful when the caller does not know the genre of
-    /// the object i.e file, directory or link.
+    /// these are very useful when the caller does not know the genre of the
+    /// object i.e file, directory or link.
     ///
     class Object
     {
     public:
-      /// Loads the objec identified by \a chemin into a new scope and
-      /// return the scope's identifier.
+      /// Loads the objec identified by \a chemin into a new scope and return
+      /// the scope's identifier.
       static
       gear::Identifier
       Load(path::Chemin const& chemin);
@@ -40,36 +41,44 @@ namespace etoile
       static
       abstract::Object
       Information(gear::Identifier const&);
-      /// Discard the scope, potentially ignoring some
-      /// modifications.
+      /// Discard the scope, potentially ignoring some modifications.
       static
       void
       Discard(gear::Identifier const&);
-      /// Commit the pending modifications by placing the
-      /// scope in the journal.
+      /// Commit the pending modifications by placing the scope in the journal.
       static
       void
       Store(const gear::Identifier&);
       /// Destroy an object.
       ///
-      /// Use with great care since, not knowing the object's genre, the
-      /// data blocks will not be removed. therefore, the genre-specific
-      /// Destroy() method should always be preferred.
+      /// Use with great care since, not knowing the object's genre, the data
+      /// blocks will not be removed. therefore, the genre-specific Destroy()
+      /// method should always be preferred.
       static
       void
       Destroy(gear::Identifier const&);
       /// Remove all the blocks of all the versions associated with an
       /// object.
       ///
-      /// Use with great care since, not knowing the object's genre, the
-      /// data blocks will not be removed. therefore, the genre-specific
-      /// Destroy() method should always be preferred.
+      /// Use with great care since, not knowing the object's genre, the data
+      /// blocks will not be removed. therefore, the genre-specific Destroy()
+      /// method should always be preferred.
       static
       void
       Purge(gear::Identifier const&);
+
+
+      /// Remove the route entry from the cache (shrub) and try to reload the
+      /// Context of type T.
+      template <typename T>
+      static
+      void
+      reload(gear::Scope& scope);
     };
 
   }
 }
+
+# include "Object.hxx"
 
 #endif

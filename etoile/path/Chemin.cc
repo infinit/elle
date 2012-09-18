@@ -1,5 +1,8 @@
 #include <etoile/path/Chemin.hh>
 #include <elle/standalone/Log.hh>
+#include <elle/concurrency/Scheduler.hh>
+
+#include <reactor/exception.hh>
 
 namespace etoile
 {
@@ -26,6 +29,13 @@ namespace etoile
     {
     }
 
+    Chemin::Chemin(Route const& route,
+                   Venue const& venue)
+    {
+      if (this->Create(route, venue) == elle::Status::Error)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "Cannot create the chemin");
+    }
 //
 // ---------- methods ---------------------------------------------------------
 //

@@ -116,9 +116,16 @@ namespace etoile
         if (chemin.Locate(context->location) == elle::Status::Error)
           escape("unable to locate the directory");
 
-        // apply the load automaton on the context.
-        if (automaton::Directory::Load(*context) == elle::Status::Error)
-          escape("unable to load the directory");
+        try
+          {
+            // apply the load automaton on the context.
+            if (automaton::Directory::Load(*context) == elle::Status::Error)
+              escape("unable to load the directory");
+          }
+        catch (std::exception const&)
+          {
+            Object::reload<gear::Directory>(*scope);
+          }
 
         // waive the scope.
         if (guard.Release() == elle::Status::Error)

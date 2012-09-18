@@ -36,6 +36,7 @@ namespace etoile
 
       // XXX[the context should make use of unique_ptr instead
       //     of releasing here.]
+
       context.object =
         depot::Depot::pull_object(
           context.location.address,

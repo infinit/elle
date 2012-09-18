@@ -38,6 +38,8 @@ namespace etoile
       // constructors & destructors
       //
       Chemin();
+      Chemin(Route const& route,
+             Venue const& venue);
 
       //
       // methods

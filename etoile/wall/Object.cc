@@ -11,6 +11,8 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/journal/Journal.hh>
 #include <etoile/abstract/Object.hh>
+#include <etoile/shrub/Shrub.hh>
+#include <etoile/path/Path.hh>
 
 #include <nucleus/proton/Location.hh>
 #include <nucleus/neutron/Object.hh>
@@ -33,7 +35,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Load()");
+      ELLE_TRACE_SCOPE("Load(%s)", chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -64,10 +66,8 @@ namespace etoile
             }
           catch (std::runtime_error& e)
             {
-              throw reactor::Exception(
-                elle::concurrency::scheduler(),
-                elle::sprintf("unable to retrieve the object block: %s",
-                              e.what()));
+              assert(scope != nullptr);
+              Object::reload<gear::Object>(*scope);
             }
 
           // Depending on the object's genre, a context is allocated
@@ -140,10 +140,18 @@ namespace etoile
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to locate the object");
 
-        // apply the load automaton on the context.
-        if (automaton::Object::Load(*context) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to load the object");
+        try
+          {
+            // apply the load automaton on the context.
+            if (automaton::Object::Load(*context) == elle::Status::Error)
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unable to load the object");
+          }
+        catch (std::exception const& e)
+          {
+            assert(scope != nullptr);
+            Object::reload<gear::Object>(*scope);
+          }
 
         // waive the actor and the scope
         if (guard.Release() == elle::Status::Error)

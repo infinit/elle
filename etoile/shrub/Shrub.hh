@@ -78,6 +78,11 @@ namespace etoile
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
+      static
+      void
+      clear();
+
+
       //
       // static callbacks
       //

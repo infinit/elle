@@ -109,9 +109,17 @@ namespace etoile
         if (chemin.Locate(context->location) == elle::Status::Error)
           escape("unable to locate the link");
 
-        // apply the load automaton on the context.
-        if (automaton::Link::Load(*context) == elle::Status::Error)
-          escape("unable to load the link");
+        try
+          {
+            // apply the load automaton on the context.
+            if (automaton::Link::Load(*context) == elle::Status::Error)
+              escape("unable to load the link");
+          }
+        catch (std::exception const&)
+          {
+            assert(scope != nullptr);
+            Object::reload<gear::Link>(*scope);
+          }
 
         // waive the actor and the scope
         if (guard.Release() == elle::Status::Error)

@@ -111,9 +111,18 @@ namespace etoile
         if (chemin.Locate(context->location) == elle::Status::Error)
           escape("unable to locate the file");
 
-        // apply the load automaton on the context.
-        if (automaton::File::Load(*context) == elle::Status::Error)
-          escape("unable to load the file");
+        try
+          {
+            // apply the load automaton on the context.
+            if (automaton::File::Load(*context) == elle::Status::Error)
+              escape("unable to load the file");
+          }
+        catch (std::exception const&)
+          {
+            assert(scope != nullptr);
+            Object::reload<gear::File>(*scope);
+          }
+
 
         // waive the actor and the scope.
         if (guard.Release() == elle::Status::Error)
