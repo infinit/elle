@@ -94,14 +94,14 @@ namespace hole
         Get(const nucleus::proton::Address&);
         /// Retrieves a mutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&, const nucleus::proton::Version&);
+        Get(const nucleus::proton::Address&, const nucleus::proton::Revision&);
         /// Remove a block.
         void Kill(const nucleus::proton::Address&);
       private:
         std::unique_ptr<nucleus::proton::Block>
         _get_latest(nucleus::proton::Address const&);
         std::unique_ptr<nucleus::proton::Block>
-        _get_specific(nucleus::proton::Address const&, nucleus::proton::Version const&);
+        _get_specific(nucleus::proton::Address const&, nucleus::proton::Revision const&);
 
       /*----------.
       | Printable |

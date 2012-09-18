@@ -64,7 +64,7 @@ namespace hole
                                      const nucleus::proton::Block&);
     /// The block associated with the given address.
     static std::unique_ptr<nucleus::proton::Block>
-    Pull(const nucleus::proton::Address&, const nucleus::proton::Version&);
+    Pull(const nucleus::proton::Address&, const nucleus::proton::Revision&);
     /// Remove the block associated with the given address.
     static void Wipe(const nucleus::proton::Address&);
 

@@ -20,8 +20,8 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Object,
   archive & value.keys.owner;
   archive & value.keys.author;
   archive & value.permissions.owner;
-  archive & value.versions.meta;
-  archive & value.versions.data;
+  archive & value.revisions.meta;
+  archive & value.revisions.data;
 }
 
 #endif

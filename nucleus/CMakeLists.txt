@@ -10,6 +10,7 @@ add_library(nucleus
   proton/Base.cc
   proton/Block.cc
   proton/ContentHashBlock.cc
+  proton/Family.cc
   proton/History.cc
   proton/ImmutableBlock.cc
   proton/ImprintBlock.cc
@@ -22,12 +23,13 @@ add_library(nucleus
   proton/PublicKeyBlock.cc
   proton/Stamp.cc
   proton/Transcript.cc
-  proton/Version.cc
+  proton/Revision.cc
 
   neutron/Access.cc
   neutron/Attributes.cc
   neutron/Author.cc
   neutron/Catalog.cc
+  neutron/Component.cc
   neutron/Data.cc
   neutron/Ensemble.cc
   neutron/Entry.cc

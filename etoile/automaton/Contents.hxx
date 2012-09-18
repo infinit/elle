@@ -1,7 +1,7 @@
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
 # define ETOILE_AUTOMATON_CONTENTS_HXX
 
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Contents.hh>
@@ -157,8 +157,8 @@ namespace etoile
           // the old block should be deleted.
           //
           // however, since the object benefits from history i.e several
-          // versions, removing the content block would render the previous
-          // version inconsistent.
+          // revisions, removing the content block would render the previous
+          // revision inconsistent.
           //
           // therefore, the object is updated with a null content address.
           //
@@ -215,7 +215,7 @@ namespace etoile
           // the object updated accordingly.
           //
           // note that the previous content block is not removed since
-          // objects benefit from the history i.e multiple versions; unless
+          // objects benefit from the history i.e multiple revisions; unless
           // the history support is not activated for this network.
           //
           nucleus::proton::Address address;

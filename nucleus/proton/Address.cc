@@ -261,7 +261,9 @@ namespace nucleus
     void
     Address::print(std::ostream& stream) const
     {
-      stream << this->unique();
+      stream << "address(" << this->family
+             << ", " << this->component << ", "
+             << this->unique() << ")";
     }
 
   }

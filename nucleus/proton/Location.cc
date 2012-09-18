@@ -33,11 +33,11 @@ namespace nucleus
     /// this method creates a location.
     ///
     elle::Status        Location::Create(const Address&         address,
-                                         const Version&         version)
+                                         const Revision&         revision)
     {
       // set the attributes.
       this->address = address;
-      this->version = version;
+      this->revision = revision;
 
       return elle::Status::Ok;
     }
@@ -57,7 +57,7 @@ namespace nucleus
 
       // compare the attributes.
       if ((this->address != element.address) ||
-          (this->version != element.version))
+          (this->revision != element.revision))
         return false;
 
       return true;
@@ -85,9 +85,9 @@ namespace nucleus
       if (this->address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the address");
 
-      // dump the version.
-      if (this->version.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the version");
+      // dump the revision.
+      if (this->revision.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the revision");
 
       return elle::Status::Ok;
     }

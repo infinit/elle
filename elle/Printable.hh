@@ -27,8 +27,9 @@ namespace elle
   };
 
   /// Print pretty representation of \a o to \a stream.
-  std::ostream& operator << (std::ostream& stream,
-                             Printable const& o);
+  std::ostream&
+  operator << (std::ostream& stream,
+               Printable const& o);
 }
 
 #endif

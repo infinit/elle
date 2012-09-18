@@ -2,7 +2,7 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Group.hh>
@@ -44,9 +44,9 @@ namespace etoile
 
     std::unique_ptr<nucleus::neutron::Object>
     Depot::pull_object(nucleus::proton::Address const& address,
-                       nucleus::proton::Version const & version)
+                       nucleus::proton::Revision const & revision)
     {
-      return (Depot::pull<nucleus::neutron::Object>(address, version));
+      return (Depot::pull<nucleus::neutron::Object>(address, revision));
     }
 
     std::unique_ptr<nucleus::neutron::Access>
@@ -57,9 +57,9 @@ namespace etoile
 
     std::unique_ptr<nucleus::neutron::Group>
     Depot::pull_group(nucleus::proton::Address const& address,
-                      nucleus::proton::Version const& version)
+                      nucleus::proton::Revision const& revision)
     {
-      return (Depot::pull<nucleus::neutron::Group>(address, version));
+      return (Depot::pull<nucleus::neutron::Group>(address, revision));
     }
 
     std::unique_ptr<nucleus::neutron::Ensemble>

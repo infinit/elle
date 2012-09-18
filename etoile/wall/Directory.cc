@@ -348,7 +348,7 @@ namespace etoile
 
         // Create routes for both the _from_ and _to_ since these
         // routes are going to be used below several times.
-        ELLE_TRACE("build the route for the previous version of the entry")
+        ELLE_TRACE("build the route for the previous revision of the entry")
           {
             if (routes.from.Create(scope->chemin.route, from) ==
                 elle::Status::Error)
@@ -356,7 +356,7 @@ namespace etoile
             ELLE_TRACE("route: %s", routes.from);
           }
 
-        ELLE_TRACE("build the route for the new version of the entry")
+        ELLE_TRACE("build the route for the new revision of the entry")
           {
             if (routes.to.Create(scope->chemin.route, to) ==
                 elle::Status::Error)
@@ -744,7 +744,7 @@ namespace etoile
 
     ///
     /// this method purges a directory i.e removes all the blocks of all
-    /// the versions associated with this directory.
+    /// the revisions associated with this directory.
     ///
     elle::Status        Directory::Purge(
                           const gear::Identifier&)

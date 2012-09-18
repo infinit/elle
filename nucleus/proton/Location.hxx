@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Location,
   enforce(version == 0);
 
   archive & value.address;
-  archive & value.version;
+  archive & value.revision;
 }
 
 #endif

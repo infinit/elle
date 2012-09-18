@@ -12,7 +12,7 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Access.hh>
@@ -113,7 +113,7 @@ namespace hole
               if (object->access() != nucleus::proton::Address::Null)
                 {
                   std::unique_ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                   std::unique_ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)
@@ -159,7 +159,7 @@ namespace hole
             if (nucleus::proton::MutableBlock::exists(
                   Hole::Implementation->network,
                   address,
-                  nucleus::proton::Version::Last) == true)
+                  nucleus::proton::Revision::Last) == true)
               {
                 nucleus::proton::MutableBlock* current;
 
@@ -173,13 +173,13 @@ namespace hole
 
                 ELLE_TRACE_SCOPE("the mutable block seems to exist "
                                  "locally: make sure it derives the "
-                                 "current version");
+                                 "current revision");
 
-                // load the latest version.
+                // load the latest revision.
                 current->load(
                   Hole::Implementation->network,
                   address,
-                  nucleus::proton::Version::Last);
+                  nucleus::proton::Revision::Last);
 
                 if (block.derives(*current) == true)
                   {
@@ -217,19 +217,19 @@ namespace hole
 
       void
       Server::get(const nucleus::proton::Address& address,
-                  const nucleus::proton::Version& version,
+                  const nucleus::proton::Revision& revision,
                   nucleus::proton::MutableBlock& block)
       {
         ELLE_TRACE_SCOPE("Get[Mutable]");
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, version) == false)
+              Hole::Implementation->network, address, revision) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        block.load(Hole::Implementation->network, address, version);
+        block.load(Hole::Implementation->network, address, revision);
 
         // validate the block, depending on its component.
         //
@@ -250,7 +250,7 @@ namespace hole
                 {
                   // Load the access block.
                   std::unique_ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                   std::unique_ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (!access)

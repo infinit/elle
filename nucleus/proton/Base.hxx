@@ -5,7 +5,7 @@
 
 # include <elle/serialize/Serializer.hh>
 # include <elle/cryptography/Digest.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,
                       archive,
@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,
 {
   enforce(version == 0);
 
-  archive & value.version;
+  archive & value.revision;
   archive & value.digest;
 }
 

@@ -23,7 +23,7 @@ namespace hole
         RemoteProcedure<void, nucleus::proton::Address const&, nucleus::Derivable&> push;
         RemoteProcedure<nucleus::Derivable,
                         nucleus::proton::Address const&,
-                        nucleus::proton::Version const&> pull;
+                        nucleus::proton::Revision const&> pull;
         RemoteProcedure<void, nucleus::proton::Address const&> wipe;
         RPC(infinit::protocol::ChanneledStream& channels);
       };

@@ -546,7 +546,7 @@ namespace etoile
 
     ///
     /// this method purges a file i.e removes all the blocks of all
-    /// the versions associated with this file.
+    /// the revisions associated with this file.
     ///
     elle::Status        File::Purge(
                           const gear::Identifier&)

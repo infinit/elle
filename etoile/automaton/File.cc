@@ -37,9 +37,9 @@ namespace etoile
       if (context.object->Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
-      // create the context's location with an initial version number.
+      // create the context's location with an initial revision number.
       if (context.location.Create(address,
-                                  context.object->version) == elle::Status::Error)
+                                  context.object->revision) == elle::Status::Error)
         escape("unable to create the location");
 
       // set the context's state.

@@ -30,29 +30,29 @@ namespace nucleus
 //
 
     ///
-    /// this method adds a version to the history.
+    /// this method adds a revision to the history.
     ///
-    elle::Status        History::Register(const Version&        version)
+    elle::Status        History::Register(const Revision&        revision)
     {
-      // store the version in the history's vector.
-      this->container.push_back(version);
+      // store the revision in the history's vector.
+      this->container.push_back(revision);
 
       return elle::Status::Ok;
     }
 
     ///
-    /// this method returns the version object corresponding to the given
+    /// this method returns the revision object corresponding to the given
     /// index number.
     ///
-    elle::Status        History::Select(const Version::Type     index,
-                                        Version&                version) const
+    elle::Status        History::Select(const Revision::Type     index,
+                                        Revision&                revision) const
     {
       // check if the index is out of bound.
       if (index >= this->container.size())
-        escape("the version index is out of bound");
+        escape("the revision index is out of bound");
 
-      // return the version.
-      version = this->container[index];
+      // return the revision.
+      revision = this->container[index];
 
       return elle::Status::Ok;
     }
@@ -60,7 +60,7 @@ namespace nucleus
     ///
     /// this method returns the size of the history.
     ///
-    elle::Status        History::Size(Version::Type&            size) const
+    elle::Status        History::Size(Revision::Type&            size) const
     {
       // return the size.
       size = this->container.size();
@@ -86,8 +86,8 @@ namespace nucleus
     ///
     elle::Boolean       History::operator==(const History&      element) const
     {
-      Version::Type     size;
-      Version::Type     i;
+      Revision::Type     size;
+      Revision::Type     i;
 
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -126,7 +126,7 @@ namespace nucleus
     elle::Status        History::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
-      Version::Type     i;
+      Revision::Type     i;
 
       // display the name.
       std::cout << alignment << "[History]" << std::endl;
@@ -134,7 +134,7 @@ namespace nucleus
       // go through the container.
       for (i = 0; i < this->container.size(); i++)
         {
-          Version       version;
+          Revision       revision;
 
           // display the entry.
           std::cout << alignment << elle::io::Dumpable::Shift
@@ -144,12 +144,12 @@ namespace nucleus
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Index] " << i << std::endl;
 
-          // retrieve the version.
-          version = this->container[i];
+          // retrieve the revision.
+          revision = this->container[i];
 
-          // dump the version.
-          if (version.Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the version");
+          // dump the revision.
+          if (revision.Dump(margin + 4) == elle::Status::Error)
+            escape("unable to dump the revision");
         }
 
       return elle::Status::Ok;

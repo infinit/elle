@@ -43,11 +43,11 @@ namespace nucleus
       this->_meta.owner.permissions = PermissionNone;
       this->_meta.owner.record = nullptr;
       this->_meta.genre = GenreUnknown;
-      this->_meta.version = 0;
+      this->_meta.revision = 0;
 
       this->_data.state = proton::StateClean;
       this->_data.size = 0;
-      this->_data.version = 0;
+      this->_data.revision = 0;
     }
 
     Object::~Object()
@@ -206,15 +206,15 @@ namespace nucleus
       // re-sign the data if required.
       if (this->_data.state == proton::StateDirty)
         {
-          // increase the data version.
-          this->_data.version += 1;
+          // increase the data revision.
+          this->_data.revision += 1;
 
           // sign the archive with the author key.
           if (k.Sign(elle::serialize::make_tuple(
                        this->_data.contents,
                        this->_data.size,
                        this->_data.modification_stamp,
-                       this->_data.version,
+                       this->_data.revision,
                        this->_meta.owner.token,
                        this->_meta.access),
                      this->_data.signature) == elle::Status::Error)
@@ -227,8 +227,8 @@ namespace nucleus
       // re-sign the meta data if required.
       if (this->_meta.state == proton::StateDirty)
         {
-          // increase the meta version.
-          this->_meta.version += 1;
+          // increase the meta revision.
+          this->_meta.revision += 1;
 
           // perform the meta signature depending on the presence of a
           // reference to an access block.
@@ -262,7 +262,7 @@ namespace nucleus
                            this->_meta.genre,
                            this->_meta.modification_stamp,
                            this->_meta.attributes,
-                           this->_meta.version,
+                           this->_meta.revision,
                            fingerprint),
                          this->_meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
@@ -280,7 +280,7 @@ namespace nucleus
                            this->_meta.genre,
                            this->_meta.modification_stamp,
                            this->_meta.attributes,
-                           this->_meta.version),
+                           this->_meta.revision),
                          this->_meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
@@ -289,8 +289,8 @@ namespace nucleus
           this->_meta.state = proton::StateConsistent;
         }
 
-      // set the mutable block's version.
-      this->version = this->_meta.version + this->_data.version;
+      // set the mutable block's revision.
+      this->revision = this->_meta.revision + this->_data.revision;
 
       // set the block as consistent.
       this->state = proton::StateConsistent;
@@ -317,7 +317,7 @@ namespace nucleus
     /// the method (i) calls the parent class for validation (iii) verifies
     /// the meta part's signature (iv) retrieves the author's public key
     /// (v) verifies the data signature and (vi) verify that the mutable
-    /// block's general version number matches the object's versions.
+    /// block's general revision number matches the object's revisions.
     ///
     elle::Status        Object::Validate(const proton::Address& address,
                                          const Access&          access)
@@ -356,7 +356,7 @@ namespace nucleus
                     this->_meta.genre,
                     this->_meta.modification_stamp,
                     this->_meta.attributes,
-                    this->_meta.version,
+                    this->_meta.revision,
                     fingerprint)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
@@ -370,7 +370,7 @@ namespace nucleus
                     this->_meta.genre,
                     this->_meta.modification_stamp,
                     this->_meta.attributes,
-                    this->_meta.version)) == elle::Status::Error)
+                    this->_meta.revision)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
       }
@@ -462,7 +462,7 @@ namespace nucleus
                             this->_data.contents,
                             this->_data.size,
                             this->_data.modification_stamp,
-                            this->_data.version,
+                            this->_data.revision,
                             this->_meta.owner.token,
                             this->_meta.access)) == elle::Status::Error)
           escape("unable to verify the data signature");
@@ -470,9 +470,9 @@ namespace nucleus
 
       // (v)
       {
-        // check the mutable block's general version.
-        if (this->version != (this->_data.version + this->_meta.version))
-          escape("invalid version number");
+        // check the mutable block's general revision.
+        if (this->revision != (this->_data.revision + this->_meta.revision))
+          escape("invalid revision number");
       }
 
       return elle::Status::Ok;
@@ -554,16 +554,16 @@ namespace nucleus
       return (this->_meta.modification_stamp);
     }
 
-    proton::Version const&
-    Object::data_version() const
+    proton::Revision const&
+    Object::data_revision() const
     {
-      return (this->_data.version);
+      return (this->_data.revision);
     }
 
-    proton::Version const&
-    Object::meta_version() const
+    proton::Revision const&
+    Object::meta_revision() const
     {
-      return (this->_meta.version);
+      return (this->_meta.revision);
     }
 
     void
@@ -647,8 +647,8 @@ namespace nucleus
       if (this->_meta.access.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta access address");
 
-      if (this->_meta.version.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the meta version");
+      if (this->_meta.revision.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the meta revision");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -680,8 +680,8 @@ namespace nucleus
       if (this->_data.modification_stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data stamp");
 
-      if (this->_data.version.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the data version");
+      if (this->_data.revision.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the data revision");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift

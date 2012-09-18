@@ -5,7 +5,7 @@
 # include <elle/radix/Object.hh>
 
 # include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 
 namespace nucleus
 {
@@ -16,7 +16,7 @@ namespace nucleus
     /// this class represents a storage location both in space and time.
     ///
     /// indeed, a location is composed of the address of the object but
-    /// also the number of the object's version which it relates to.
+    /// also the number of the object's revision which it relates to.
     ///
     class Location:
       public elle::radix::Object
@@ -36,7 +36,7 @@ namespace nucleus
       // methods
       //
       elle::Status      Create(const Address&,
-                               const Version&);
+                               const Revision&);
 
       //
       // interfaces
@@ -53,7 +53,7 @@ namespace nucleus
       // attributes
       //
       Address           address;
-      Version           version;
+      Revision           revision;
     };
 
   }

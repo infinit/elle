@@ -4,7 +4,7 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
 
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Permissions.hh>
@@ -151,7 +151,7 @@ namespace etoile
                           group =
                             depot::Depot::pull_group(
                               record->subject.group(),
-                              nucleus::proton::Version::Last);
+                              nucleus::proton::Revision::Last);
                         }
                       catch (std::exception const& e)
                         {

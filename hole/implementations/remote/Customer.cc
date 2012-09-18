@@ -4,7 +4,7 @@
 #include <lune/Passport.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Server.hh>
@@ -12,7 +12,7 @@
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 
 #include <Infinit.hh>
 
@@ -141,7 +141,7 @@ namespace hole
 
       nucleus::Derivable
       Customer::pull(const nucleus::proton::Address& address,
-                     const nucleus::proton::Version& version)
+                     const nucleus::proton::Revision& revision)
       {
         ELLE_TRACE_SCOPE("Pull");
         _state_check_authenticated();
@@ -171,7 +171,7 @@ namespace hole
               mb = static_cast<nucleus::proton::MutableBlock*>(block);
               assert(dynamic_cast<nucleus::proton::MutableBlock*>(
                        block) != nullptr);
-              _server.get(address, version, *mb);
+              _server.get(address, revision, *mb);
               break;
             }
           default:

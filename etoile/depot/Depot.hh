@@ -35,14 +35,14 @@ namespace etoile
       /// XXX
       static std::unique_ptr<nucleus::neutron::Object>
       pull_object(nucleus::proton::Address const& address,
-                  nucleus::proton::Version const & version);
+                  nucleus::proton::Revision const & revision);
       /// XXX
       static std::unique_ptr<nucleus::neutron::Access>
       pull_access(nucleus::proton::Address const& address);
       /// XXX
       static std::unique_ptr<nucleus::neutron::Group>
       pull_group(nucleus::proton::Address const& address,
-                 nucleus::proton::Version const& version);
+                 nucleus::proton::Revision const& revision);
       /// XXX
       static std::unique_ptr<nucleus::neutron::Ensemble>
       pull_ensemble(nucleus::proton::Address const& address);
@@ -51,8 +51,8 @@ namespace etoile
       template <typename T>
       static std::unique_ptr<T>
       pull(nucleus::proton::Address const& address,
-           nucleus::proton::Version const& version =
-             nucleus::proton::Version::Last);
+           nucleus::proton::Revision const& revision =
+             nucleus::proton::Revision::Last);
 
       static elle::Status       Wipe(const nucleus::proton::Address&);
     };

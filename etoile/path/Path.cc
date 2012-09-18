@@ -7,7 +7,7 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/shrub/Shrub.hh>
 
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Entry.hh>
 
@@ -67,7 +67,7 @@ namespace etoile
                                       Venue&                    venue)
     {
       nucleus::proton::Address address;
-      nucleus::proton::Version version;
+      nucleus::proton::Revision revision;
       Route::Scoutor    scoutor;
 
       // first ask the shrub i.e path cache to resolve as much as it can.
@@ -88,11 +88,11 @@ namespace etoile
             escape("unable to retrieve the address of the root directory");
 
           // parse the very first slab i.e the root slab in order
-          // to extract the version number. note that the root slab is
+          // to extract the revision number. note that the root slab is
           // always empty.
           if (Path::Parse(route.elements[0],
-                          slice, version) == elle::Status::Error)
-            escape("unable to extract the version number from the root slab");
+                          slice, revision) == elle::Status::Error)
+            escape("unable to extract the revision number from the root slab");
 
           // check that the slice is empty, as it should for the root
           // directory.
@@ -100,13 +100,13 @@ namespace etoile
             escape("the root slice should always be empty");
 
           // record the root directory in the venue.
-          if (venue.Record(address, version) == elle::Status::Error)
+          if (venue.Record(address, revision) == elle::Status::Error)
             escape("unable to record the root directory in the venue");
         }
 
-      // set the address/version with the address of the last resolved element.
+      // set the address/revision with the address of the last resolved element.
       address = venue.elements[venue.elements.size() - 1].address;
-      version = venue.elements[venue.elements.size() - 1].version;
+      revision = venue.elements[venue.elements.size() - 1].revision;
 
       // otherwise, resolve manually by retrieving the directory object.
       for (scoutor = route.elements.begin() + venue.elements.size();
@@ -118,11 +118,11 @@ namespace etoile
           gear::Identifier      identifier;
           nucleus::neutron::Entry const* entry;
 
-          // extract the slice/version from the current slab.
+          // extract the slice/revision from the current slab.
           if (Path::Parse(*scoutor,
                           slice,
-                          version) == elle::Status::Error)
-            escape("unable to extract the slice/version from the "
+                          revision) == elle::Status::Error)
+            escape("unable to extract the slice/revision from the "
                    "current slab");
 
           // check that the slice is not empty.
@@ -150,7 +150,7 @@ namespace etoile
               escape("unable to lookup the slice");
             }
 
-          // set the address; the version is already set i.e it has
+          // set the address; the revision is already set i.e it has
           // been extracted from the slab.
           if (entry != nullptr)
             address = entry->address;
@@ -169,8 +169,8 @@ namespace etoile
             escape("unable to locate the directory entry '%s'",
                    slice.c_str());
 
-          // first, record the address/version in the venue.
-          if (venue.Record(address, version) == elle::Status::Error)
+          // first, record the address/revision in the venue.
+          if (venue.Record(address, revision) == elle::Status::Error)
             escape("unable to record the venue address");
         }
 
@@ -183,19 +183,19 @@ namespace etoile
 
     ///
     /// this method takes a slice and tries to extract both the real
-    /// slice and the version number.
+    /// slice and the revision number.
     ///
     /// for instance the slice 'teton.txt%42'---assuming the regexp '%[0-9]+'
-    /// is used for version numbers---would be split into 'teton.txt' and
-    /// the version number 42.
+    /// is used for revision numbers---would be split into 'teton.txt' and
+    /// the revision number 42.
     ///
     elle::Status        Path::Parse(const Slab&                 slab,
                                     Slice&                      slice,
-                                    nucleus::proton::Version& version)
+                                    nucleus::proton::Revision& revision)
     {
       Length                    length;
       size_t                    start;
-      nucleus::proton::Version::Type n;
+      nucleus::proton::Revision::Type n;
 
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
@@ -205,8 +205,8 @@ namespace etoile
           // set the slice as being the entire slab.
           slice = slab;
 
-          // and set the version as being the latest possible.
-          version = nucleus::proton::Version::Last;
+          // and set the revision as being the latest possible.
+          revision = nucleus::proton::Revision::Last;
         }
       else
         {
@@ -214,11 +214,11 @@ namespace etoile
           // otherwise, try to handle the history parsing.
           //
 
-          // compute the start index, should the in-path versioning be
+          // compute the start index, should the in-path revisioning be
           // activated.
           if (Infinit::Configuration.etoile.history.status == true)
             {
-              // try to locate the start index for the version number.
+              // try to locate the start index for the revision number.
               start = slab.find_last_of(
                         Infinit::Configuration.etoile.history.indicator.slab);
             }
@@ -229,7 +229,7 @@ namespace etoile
               start = elle::String::npos;
             }
 
-          // if a version seems to have been found.
+          // if a revision seems to have been found.
           if (start != elle::String::npos)
             {
               // retrieve the slab's length.
@@ -240,17 +240,17 @@ namespace etoile
 
               try
                 {
-                  n = boost::lexical_cast<nucleus::proton::Version::Type>(
+                  n = boost::lexical_cast<nucleus::proton::Revision::Type>(
                       elle::String(slab, start + 1, length - (start + 1))
                   );
                 }
               catch (std::exception const& err)
                 {
-                  escape("unable to retreive the version number: %s", err.what());
+                  escape("unable to retreive the revision number: %s", err.what());
                 }
 
-              if (version.Create(n) == elle::Status::Error)
-                escape("unable to create the version");
+              if (revision.Create(n) == elle::Status::Error)
+                escape("unable to create the revision");
             }
           else
             {
@@ -262,8 +262,8 @@ namespace etoile
               // set the slice as being the entire slab.
               slice = slab;
 
-              // and set the version as being the latest possible.
-              version = nucleus::proton::Version::Last;
+              // and set the revision as being the latest possible.
+              revision = nucleus::proton::Revision::Last;
             }
         }
 

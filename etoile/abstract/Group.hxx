@@ -18,7 +18,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Group,
   archive & value.stamps.modification;
   archive & value.size;
   archive & value.manager;
-  archive & value.version;
+  archive & value.revision;
   archive & value.pass_K;
 }
 

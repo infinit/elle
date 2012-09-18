@@ -38,7 +38,7 @@ namespace hole
     virtual std::unique_ptr<nucleus::proton::Block>
     Get(const nucleus::proton::Address&) = 0;
     virtual std::unique_ptr<nucleus::proton::Block>
-    Get(const nucleus::proton::Address&, const nucleus::proton::Version&) = 0;
+    Get(const nucleus::proton::Address&, const nucleus::proton::Revision&) = 0;
     virtual void Kill(const nucleus::proton::Address&) = 0;
 
     //

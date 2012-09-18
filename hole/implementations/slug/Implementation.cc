@@ -74,9 +74,9 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::Get(const nucleus::proton::Address& address,
-                          const nucleus::proton::Version& version)
+                          const nucleus::proton::Revision& revision)
       {
-        return Slug::Computer->Get(address, version);
+        return Slug::Computer->Get(address, revision);
       }
 
       void

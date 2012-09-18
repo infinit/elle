@@ -499,7 +499,7 @@ namespace etoile
 
     ///
     /// this method purges a link i.e removes all the blocks of all
-    /// the versions associated with this link.
+    /// the revisions associated with this link.
     ///
     elle::Status        Link::Purge(
                           const gear::Identifier&)

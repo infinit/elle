@@ -6,7 +6,7 @@
 #include <etoile/gear/Object.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Permissions.hh>
@@ -209,7 +209,7 @@ namespace etoile
                                 group =
                                   depot::Depot::pull_group(
                                     subject.group(),
-                                    nucleus::proton::Version::Last);
+                                    nucleus::proton::Revision::Last);
                               }
 
                             ELLE_TRACE("update the Access group record")
@@ -294,7 +294,7 @@ namespace etoile
                             group =
                               depot::Depot::pull_group(
                                 subject.group(),
-                                nucleus::proton::Version::Last);
+                                nucleus::proton::Revision::Last);
                           }
 
                         ELLE_TRACE("generate a new group record")
@@ -656,7 +656,7 @@ namespace etoile
                     group =
                       depot::Depot::pull_group(
                         record->subject.group(),
-                        nucleus::proton::Version::Last);
+                        nucleus::proton::Revision::Last);
 
                     record->token =
                       nucleus::neutron::Token(group->pass_K(), key);
@@ -874,8 +874,8 @@ namespace etoile
           // the old block should be deleted.
           //
           // however, since the object benefits from history i.e several
-          // versions, removing the access block would render the previous
-          // version inconsistent.
+          // revisions, removing the access block would render the previous
+          // revision inconsistent.
           //
           // therefore, the object is updated with a null access address.
           //
@@ -909,7 +909,7 @@ namespace etoile
           // update the object accordingly.
           //
           // note that the previous access block is not removed since
-          // objects benefit from the history i.e multiple versions; unless
+          // objects benefit from the history i.e multiple revisions; unless
           // the history support is not activated for this network.
           //
           nucleus::proton::Address address;

@@ -76,10 +76,10 @@ namespace etoile
     /// note that the first slab is always empty in order to represent
     /// the root directory.
     ///
-    /// the following assumes the root version indicator is '@' while the
-    /// slab version indicator is '%'.
+    /// the following assumes the root revision indicator is '@' while the
+    /// slab revision indicator is '%'.
     ///
-    /// note that the ways can embed version numbers as shown next:
+    /// note that the ways can embed revision numbers as shown next:
     ///
     ///   /suce%42/avale/leche.txt%3
     ///
@@ -88,7 +88,7 @@ namespace etoile
     ///
     /// in order to provide this functionality, the following check is made:
     /// if the first non-empty slab starts with '@[0-9]+', then this slab is
-    /// used as the root one with the appropriate version number.
+    /// used as the root one with the appropriate revision number.
     ///
     elle::Status        Route::Create(const Way&                way)
     {
@@ -117,14 +117,14 @@ namespace etoile
           slab = way.path.substr(start, end - start);
 
           // check if the slab represents the root directory i.e starts
-          // with '@' and follows with a possible version number, should
+          // with '@' and follows with a possible revision number, should
           // the network support history though.
           if ((hole::Hole::Descriptor.meta().history() == true) &&
               (Infinit::Configuration.etoile.history.status == true) &&
               (slab[0] ==
                Infinit::Configuration.etoile.history.indicator.root))
             {
-              // modify the '@' character with the version indicator '%'.
+              // modify the '@' character with the revision indicator '%'.
               slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
 
               // record the slab.

@@ -84,12 +84,12 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::Get(const nucleus::proton::Address& address,
-                          const nucleus::proton::Version& version)
+                          const nucleus::proton::Revision& revision)
       {
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the hole is not acting as a remote client as it should");
-        return Remote::Computer->client->get(address, version);
+        return Remote::Computer->client->get(address, revision);
       }
 
       void

@@ -25,13 +25,13 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
   archive & value._meta.modification_stamp;
   archive & value._meta.attributes;
   archive & value._meta.access;
-  archive & value._meta.version;
+  archive & value._meta.revision;
   archive & value._meta.signature;
 
   archive & value._data.contents;
   archive & value._data.size;
   archive & value._data.modification_stamp;
-  archive & value._data.version;
+  archive & value._data.revision;
   archive & value._data.signature;
 }
 

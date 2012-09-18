@@ -8,7 +8,7 @@
 #include <etoile/journal/Journal.hh>
 #include <etoile/wall/Group.hh>
 
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
@@ -107,7 +107,7 @@ namespace etoile
 
         if (context->location.Create(
               identity,
-              nucleus::proton::Version::Last) == elle::Status::Error)
+              nucleus::proton::Revision::Last) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to create the location");
 

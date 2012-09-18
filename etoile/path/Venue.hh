@@ -17,10 +17,10 @@ namespace etoile
   {
 
     ///
-    /// this class contains the addresses/versions corresponding to a route.
+    /// this class contains the addresses/revisions corresponding to a route.
     ///
     /// a venue is therefore composed of a sequence of Location, each
-    /// of which indicates the address and version number of the component.
+    /// of which indicates the address and revision number of the component.
     ///
     class Venue:
       public elle::radix::Object
@@ -48,7 +48,7 @@ namespace etoile
       //
       elle::Status              Record(const nucleus::proton::Location&);
       elle::Status              Record(const nucleus::proton::Address&,
-                                       const nucleus::proton::Version&);
+                                       const nucleus::proton::Revision&);
 
       elle::Status              Derives(const Venue&) const;
 

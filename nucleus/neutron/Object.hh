@@ -8,7 +8,7 @@
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Genre.hh>
 # include <nucleus/neutron/Size.hh>
@@ -141,12 +141,12 @@ namespace nucleus
       /// Returns the stamp associated with the meta section.
       elle::utility::Time const&
       meta_modification_stamp() const;
-      /// Returns the version associated with the data section.
-      proton::Version const&
-      data_version() const;
-      /// Returns the version associated with the meta section.
-      proton::Version const&
-      meta_version() const;
+      /// Returns the revision associated with the data section.
+      proton::Revision const&
+      data_revision() const;
+      /// Returns the revision associated with the meta section.
+      proton::Revision const&
+      meta_revision() const;
 
     private:
       /// Computes the owner's record, if necessary.
@@ -195,7 +195,7 @@ namespace nucleus
 
         proton::Address access;
 
-        proton::Version version;
+        proton::Revision revision;
         elle::cryptography::Signature signature;
 
         proton::State state;
@@ -210,7 +210,7 @@ namespace nucleus
         Size size;
         elle::utility::Time modification_stamp;
 
-        proton::Version version;
+        proton::Revision revision;
         elle::cryptography::Signature signature;
 
         proton::State state;

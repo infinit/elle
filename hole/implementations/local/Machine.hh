@@ -37,7 +37,7 @@ namespace hole
         Get(nucleus::proton::Address const&);
         /// Retrieve a mutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(nucleus::proton::Address const&, nucleus::proton::Version const&);
+        Get(nucleus::proton::Address const&, nucleus::proton::Revision const&);
         /// Remove a block.
         void Kill(const nucleus::proton::Address&);
 

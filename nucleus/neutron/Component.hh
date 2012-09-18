@@ -1,6 +1,8 @@
 #ifndef NUCLEUS_NEUTRON_COMPONENT_HH
 # define NUCLEUS_NEUTRON_COMPONENT_HH
 
+# include <iosfwd>
+
 namespace nucleus
 {
   namespace neutron

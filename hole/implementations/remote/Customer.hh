@@ -60,7 +60,7 @@ namespace hole
              nucleus::Derivable const& derivable);
         nucleus::Derivable
         pull(const nucleus::proton::Address& address,
-             const nucleus::proton::Version& version);
+             const nucleus::proton::Revision& revision);
         void
         wipe(const nucleus::proton::Address&);
 

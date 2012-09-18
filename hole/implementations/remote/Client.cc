@@ -9,7 +9,7 @@
 
 #include <nucleus/Derivable.hh>
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
 
@@ -73,15 +73,15 @@ namespace hole
       Client::get(const nucleus::proton::Address& address)
       {
         ELLE_TRACE("Get[Immutable]")
-          return this->_rpc.pull(address, nucleus::proton::Version::Any).release();
+          return this->_rpc.pull(address, nucleus::proton::Revision::Any).release();
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Client::get(const nucleus::proton::Address& address,
-                  const nucleus::proton::Version& version)
+                  const nucleus::proton::Revision& revision)
       {
         ELLE_TRACE("Get[Mutable]")
-          return this->_rpc.pull(address, version).release();
+          return this->_rpc.pull(address, revision).release();
       }
 
       void

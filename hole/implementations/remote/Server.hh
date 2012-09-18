@@ -80,7 +80,7 @@ namespace hole
         /// Retrieve a mutable block.
         void
         get(const nucleus::proton::Address&,
-            const nucleus::proton::Version&,
+            const nucleus::proton::Revision&,
             nucleus::proton::MutableBlock&);
         /// This method removes a block.
         void

@@ -142,7 +142,7 @@ namespace etoile
     }
 
     elle::Boolean Journal::get_block(nucleus::proton::Address const& address,
-                                     nucleus::proton::Version const& version,
+                                     nucleus::proton::Revision const& revision,
                                      nucleus::proton::Block& out_block)
     {
       BOOST_FOREACH(gear::Scope* scope, Journal::_scopes)
@@ -151,7 +151,7 @@ namespace etoile
             if (address != action->address)
               continue;
 
-            if (version == nucleus::proton::Version::Any)
+            if (revision == nucleus::proton::Revision::Any)
               {
                 if (action->type == nucleus::proton::Action::TypeWipe)
                   {
@@ -165,7 +165,7 @@ namespace etoile
                 switch (address.family)
                   {
                   case nucleus::proton::FamilyContentHashBlock:
-                    throw std::runtime_error("version should be any for an immutable block");
+                    throw std::runtime_error("revision should be any for an immutable block");
                   case nucleus::proton::FamilyPublicKeyBlock:
                   case nucleus::proton::FamilyOwnerKeyBlock:
                   case nucleus::proton::FamilyImprintBlock:

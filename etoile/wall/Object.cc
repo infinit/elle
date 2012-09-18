@@ -60,7 +60,7 @@ namespace etoile
           try
             {
               object = depot::Depot::pull_object(location.address,
-                                                 location.version);
+                                                 location.revision);
             }
           catch (std::runtime_error& e)
             {

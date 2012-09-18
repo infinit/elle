@@ -45,12 +45,12 @@ namespace etoile
     /// this method records the next step of the venue.
     ///
     elle::Status        Venue::Record(const nucleus::proton::Address& address,
-                                      const nucleus::proton::Version& version)
+                                      const nucleus::proton::Revision& revision)
     {
       nucleus::proton::Location location;
 
       // create the location.
-      if (location.Create(address, version) == elle::Status::Error)
+      if (location.Create(address, revision) == elle::Status::Error)
         escape("unable to create the location");
 
       // record the location.

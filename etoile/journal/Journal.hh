@@ -6,7 +6,7 @@
 # include <etoile/gear/fwd.hh>
 
 # include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Block.hh>
 
 namespace etoile
@@ -31,7 +31,7 @@ namespace etoile
       /// Retreive a block from the Journal. returns true if the block is found,
       /// or throws an exception.
       elle::Boolean get_block(nucleus::proton::Address const& address,
-                              nucleus::proton::Version const& version,
+                              nucleus::proton::Revision const& revision,
                               nucleus::proton::Block& out_block);
 
     private:

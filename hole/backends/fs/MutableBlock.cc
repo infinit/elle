@@ -38,9 +38,9 @@ namespace hole
         if (nucleus::proton::MutableBlock::exists(
               this->_network,
               this->_address,
-              nucleus::proton::Version::Last) == false)
+              nucleus::proton::Revision::Last) == false)
           {
-            ELLE_TRACE_SCOPE("this seems to be the first version of the "
+            ELLE_TRACE_SCOPE("this seems to be the first revision of the "
                              "mutable block");
             return true;
           }
@@ -57,20 +57,20 @@ namespace hole
 
         ELLE_TRACE_SCOPE("the mutable block seems to exist "
                          "locally: make sure it derives the "
-                         "current version");
+                         "current revision");
 
-        // load the latest version.
+        // load the latest revision.
         current->load(this->_network,
                       this->_address,
-                      nucleus::proton::Version::Last);
+                      nucleus::proton::Revision::Last);
 
-        ELLE_TRACE("Current block version %s and given block version is %s",
-                   current->version, this->_block.version);
+        ELLE_TRACE("Current block revision %s and given block revision is %s",
+                   current->revision, this->_block.revision);
 
-        if (this->_block.version != current->version)
+        if (this->_block.revision != current->revision)
           return this->_block.derives(*current);
 
-        ELLE_TRACE("Block have same version, we need to distinguish them "
+        ELLE_TRACE("Block have same revision, we need to distinguish them "
                    "as the latest");
 
         // We check if contents are the same.
@@ -91,8 +91,8 @@ namespace hole
               return false;
             }
 
-          ELLE_WARN("conflict detected: blocks have the same version but"
-                    " different content; assuming the latest version is %s",
+          ELLE_WARN("conflict detected: blocks have the same revision but"
+                    " different content; assuming the latest revision is %s",
                     (b1 < b2 ? this->_block : *current));
 
           return (b1 < b2);

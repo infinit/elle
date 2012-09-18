@@ -1,6 +1,6 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/History.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 #include <nucleus/Nucleus.hh>
@@ -36,7 +36,7 @@ namespace nucleus
     MutableBlock::MutableBlock():
       Block(FamilyUnknown, neutron::ComponentUnknown),
 
-      version(Version::First)
+      revision(Revision::First)
     {
     }
 
@@ -47,7 +47,7 @@ namespace nucleus
                                const neutron::Component         component):
       Block(family, component),
 
-      version(Version::First)
+      revision(Revision::First)
     {
     }
 
@@ -58,7 +58,7 @@ namespace nucleus
     elle::Boolean
     MutableBlock::derives(MutableBlock const& other) const
     {
-      return (this->version > other.version);
+      return (this->revision > other.revision);
     }
 
     elle::io::Path
@@ -73,12 +73,12 @@ namespace nucleus
     elle::io::Path
     MutableBlock::_path(Network const& network,
                         Address const& address,
-                        elle::String const& version)
+                        elle::String const& revision)
     {
       return (elle::io::Path(lune::Lune::Network::Shelter::MutableBlock,
                              elle::io::Piece("%NETWORK%", network.name),
                              elle::io::Piece("%ADDRESS%", address.unique()),
-                             elle::io::Piece("%VERSION%", version)));
+                             elle::io::Piece("%REVISION%", revision)));
     }
 
 //
@@ -107,9 +107,9 @@ namespace nucleus
       if (Block::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the parent");
 
-      // dump the version.
-      if (this->version.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the version");
+      // dump the revision.
+      if (this->revision.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the revision");
 
       return elle::Status::Ok;
     }
@@ -121,9 +121,9 @@ namespace nucleus
     void
     MutableBlock::load(Network const& network,
                        Address const& address,
-                       Version const& version)
+                       Revision const& revision)
     {
-      ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, version);
+      ELLE_TRACE_SCOPE("%s: load(%s, %s, %s)", *this, network, address, revision);
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.meta().history() == false)
@@ -137,8 +137,8 @@ namespace nucleus
           elle::String number;
           elle::io::Unique unique(address.unique());
 
-          // if the requested version is the latest...
-          if (version == Version::Last)
+          // if the requested revision is the latest...
+          if (revision == Revision::Last)
             {
               elle::io::Path link(path);
               elle::standalone::Region r;
@@ -146,7 +146,7 @@ namespace nucleus
               // complete the link path.
               if (link.Complete(elle::io::Piece("%NETWORK%", network.name),
                                 elle::io::Piece("%ADDRESS%", unique),
-                                elle::io::Piece("%VERSION%", "@")) ==
+                                elle::io::Piece("%REVISION%", "@")) ==
                   elle::Status::Error)
                 throw std::runtime_error("unable to complete the path");
 
@@ -154,19 +154,19 @@ namespace nucleus
               if (elle::io::File::Read(link, r) == elle::Status::Error)
                 throw std::runtime_error("unable to read the file's content");
 
-              // set the number of the latest version.
+              // set the number of the latest revision.
               number = elle::String(reinterpret_cast<const char*>(r.contents),
                                     r.size);
             }
           else
             {
-              number = boost::lexical_cast<std::string>(version.number);
+              number = boost::lexical_cast<std::string>(revision.number);
             }
 
           // complete the path with the network name.
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
                             elle::io::Piece("%ADDRESS%", unique),
-                            elle::io::Piece("%VERSION%", number)) ==
+                            elle::io::Piece("%REVISION%", number)) ==
               elle::Status::Error)
             throw std::runtime_error("unable to complete the path");
 
@@ -186,7 +186,7 @@ namespace nucleus
         {
           //
           // if the history is not supported, store the mutable block
-          // in a file without version number extension.
+          // in a file without revision number extension.
           //
 
           this->store(
@@ -197,9 +197,9 @@ namespace nucleus
           /* XXX
           //
           // otherwise, store the block in a file with a name of the
-          // form [identifier]#[version number].blk. besides, a special
+          // form [identifier]#[revision number].blk. besides, a special
           // file of the form [identifier]#@.blk contains the number
-          // of the latest version of the mutable block.
+          // of the latest revision of the mutable block.
           //
 
           elle::String number;
@@ -207,25 +207,25 @@ namespace nucleus
           elle::standalone::Region region;
           nucleus::proton::History history;
 
-          number = boost::lexical_cast<std::string>(this->version.number);
+          number = boost::lexical_cast<std::string>(this->revision.number);
 
           // complete the file path.
-          if (file.Complete(elle::io::Piece("%VERSION%", number)) ==
+          if (file.Complete(elle::io::Piece("%REVISION%", number)) ==
               elle::Status::Error)
             throw std::runtime_error("unable to complete the path");
 
           this->store(file);
 
           // complete the link path.
-          if (link.Complete(elle::io::Piece("%VERSION%", "@")) ==
+          if (link.Complete(elle::io::Piece("%REVISION%", "@")) ==
               elle::Status::Error)
             throw std::runtime_error("unable to complete the path");
 
           // if there is a link, remove it.
           if (elle::io::File::Exist(link) == true)
             {
-              // delete the file which references the latest version since a
-              // new version has been created.
+              // delete the file which references the latest revision since a
+              // new revision has been created.
               if (elle::io::File::Erase(link) == elle::Status::Error)
                 throw std::runtime_error("unable to erase the block link");
             }
@@ -241,12 +241,12 @@ namespace nucleus
           // XXX here the history should be loaded before the file is
           // XXX being stored. then the file should be stored only if the
           // XXX file does not already exist. finally, the @ link should be
-          // XXX updated (if the file has been stored) with the latest version
+          // XXX updated (if the file has been stored) with the latest revision
           // XXX number (which is not necessarily the one given here; indeed
-          // XXX this method could be called for version 4 though a version
+          // XXX this method could be called for revision 4 though a revision
           // XXX 32 already exists). finally, the history should be re-worked
           // XXX so as to used a sorted data structure such as a map which
-          // XXX would then be used to retrieve the latest version number.
+          // XXX would then be used to retrieve the latest revision number.
           throw std::runtime_error("XXX");
 
           // if there is a history, load it.
@@ -256,9 +256,9 @@ namespace nucleus
               history.load(network, address);
             }
 
-          // register the new version.
-          if (history.Register(version) == elle::Status::Error)
-            throw std::runtime_error("unable to register the new version");
+          // register the new revision.
+          if (history.Register(revision) == elle::Status::Error)
+            throw std::runtime_error("unable to register the new revision");
 
           // store the history.
           history.store(network, address);
@@ -283,8 +283,8 @@ namespace nucleus
           /* XXX
           elle::io::Unique unique(address.unique);
           History       history;
-          Version::Type size;
-          Version::Type i;
+          Revision::Type size;
+          Revision::Type i;
 
           // complete the path with the network name.
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
@@ -296,35 +296,35 @@ namespace nucleus
           if (history.Load(network, address) == elle::Status::Error)
             throw std::runtime_error("unable to load the history");
 
-          // retrieve the number of versions.
+          // retrieve the number of revisions.
           if (history.Size(size) == elle::Status::Error)
             throw std::runtime_error("unable to retrieve the size of the history");
 
-          // go through the versions.
+          // go through the revisions.
           for (i = 0; i < size; i++)
             {
-              nucleus::proton::Version version;
+              nucleus::proton::Revision revision;
               elle::String      number;
               elle::io::Path        file;
 
-              // select a particular version.
-              if (history.Select(i, version) == elle::Status::Error)
-                throw std::runtime_error("unable to select a particular version");
+              // select a particular revision.
+              if (history.Select(i, revision) == elle::Status::Error)
+                throw std::runtime_error("unable to select a particular revision");
 
               try
                 {
-                  number = boost::lexical_cast<std::string>(version.number);
+                  number = boost::lexical_cast<std::string>(revision.number);
                 }
               catch (std::exception const&)
                 {
-                  throw std::runtime_error("unable to transform the version number into a string");
+                  throw std::runtime_error("unable to transform the revision number into a string");
                 }
 
               // duplicate the generic path.
               file = path;
 
-              // complete the path with the version number.
-              if (file.Complete(elle::io::Piece("%VERSION%",
+              // complete the path with the revision number.
+              if (file.Complete(elle::io::Piece("%REVISION%",
                                             number)) == elle::Status::Error)
                 throw std::runtime_error("unable to complete the path");
 
@@ -337,15 +337,15 @@ namespace nucleus
                 }
             }
 
-          // complete the path with the last version pointer.
-          if (path.Complete(elle::io::Piece("%VERSION%", "@")) ==
+          // complete the path with the last revision pointer.
+          if (path.Complete(elle::io::Piece("%REVISION%", "@")) ==
               elle::Status::Error)
             throw std::runtime_error("unable to complete the path");
 
           // is the file present...
           if (elle::io::File::Exist(path) == elle::Status::True)
             {
-              // delete the link which references the latest version.
+              // delete the link which references the latest revision.
               if (elle::io::File::Erase(path) == elle::Status::Error)
                 throw std::runtime_error("unable to erase the block link");
             }
@@ -360,14 +360,14 @@ namespace nucleus
     elle::Boolean
     MutableBlock::exists(Network const& network,
                          Address const& address,
-                         Version const& version)
+                         Revision const& revision)
     {
       ELLE_TRACE_SCOPE("exists(%s, %s)", network, address);
 
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.meta().history() == false)
         {
-          if (version == Version::Last)
+          if (revision == Revision::Last)
             {
               return (elle::concept::Fileable<>::exists(
                 MutableBlock::_path(network, address, "@")));
@@ -375,7 +375,7 @@ namespace nucleus
           else
             {
               elle::String number(
-                boost::lexical_cast<elle::String>(version.number));
+                boost::lexical_cast<elle::String>(revision.number));
 
               return (elle::concept::Fileable<>::exists(
                 MutableBlock::_path(network, address, number)));
@@ -387,8 +387,8 @@ namespace nucleus
            elle::String unique(address.unique);
            elle::String  number;
 
-          // if the requested version is the latest...
-          if (version == Version::Last)
+          // if the requested revision is the latest...
+          if (revision == Revision::Last)
             {
               elle::io::Path        link;
               elle::standalone::Region      r;
@@ -399,7 +399,7 @@ namespace nucleus
               // complete the link path.
               if (link.Complete(elle::io::Piece("%NETWORK%", network.name),
                                 elle::io::Piece("%ADDRESS%", unique),
-                                elle::io::Piece("%VERSION%", "@")) ==
+                                elle::io::Piece("%REVISION%", "@")) ==
                   elle::Status::Error)
                 flee("unable to complete the path");
 
@@ -407,7 +407,7 @@ namespace nucleus
               if (elle::io::File::Read(link, r) == elle::Status::Error)
                 flee("unable to read the file's content");
 
-              // set the number of the latest version.
+              // set the number of the latest revision.
               number = elle::String(reinterpret_cast<const char*>(r.contents),
                                     r.size);
             }
@@ -415,18 +415,18 @@ namespace nucleus
             {
               try
                 {
-                  number = boost::lexical_cast<std::string>(version.number);
+                  number = boost::lexical_cast<std::string>(revision.number);
                 }
               catch (std::exception const&)
                 {
-                  flee("unable to convert the version number into a string");
+                  flee("unable to convert the revision number into a string");
                 }
             }
 
           // complete the path with the network name.
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
                             elle::io::Piece("%ADDRESS%", unique),
-                            elle::io::Piece("%VERSION%", number)) ==
+                            elle::io::Piece("%REVISION%", number)) ==
               elle::Status::Error)
             flee("unable to complete the path");
 

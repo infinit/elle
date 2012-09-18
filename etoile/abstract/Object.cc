@@ -62,9 +62,9 @@ namespace etoile
       // set the permissions.
       this->permissions.owner = object.owner_permissions();
 
-      // set the versions.
-      this->versions.meta = object.meta_version();
-      this->versions.data = object.data_version();
+      // set the revisions.
+      this->revisions.meta = object.meta_revision();
+      this->revisions.data = object.data_revision();
 
       return elle::Status::Ok;
     }
@@ -91,8 +91,8 @@ namespace etoile
           (this->keys.owner != element.keys.owner) ||
           (this->keys.author != element.keys.author) ||
           (this->permissions.owner != element.permissions.owner) ||
-          (this->versions.meta != element.versions.meta) ||
-          (this->versions.data != element.versions.data))
+          (this->revisions.meta != element.revisions.meta) ||
+          (this->revisions.data != element.revisions.data))
         return false;
 
       return true;
@@ -186,21 +186,21 @@ namespace etoile
       }
 
       //
-      // dump the versions.
+      // dump the revisions.
       //
       {
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Versions]" << std::endl;
+                  << "[Revisions]" << std::endl;
 
-        // dump the meta version.
+        // dump the meta revision.
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
-                  << "[Meta] " << std::dec << this->versions.meta << std::endl;
+                  << "[Meta] " << std::dec << this->revisions.meta << std::endl;
 
-        // dump the data version.
+        // dump the data revision.
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
-                  << "[Data] " << std::dec << this->versions.data << std::endl;
+                  << "[Data] " << std::dec << this->revisions.data << std::endl;
       }
 
       return elle::Status::Ok;

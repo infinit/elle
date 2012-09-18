@@ -10,7 +10,7 @@ namespace etoile
     template <typename T>
     std::unique_ptr<T>
     Depot::pull(nucleus::proton::Address const& address,
-                nucleus::proton::Version const& version)
+                nucleus::proton::Revision const& revision)
     {
       std::unique_ptr<nucleus::proton::Block> block;
 
@@ -25,7 +25,7 @@ namespace etoile
                         address.component, T::component));
 
       // Retrieve the block from the storage layer.
-      block = hole::Hole::Pull(address, version);
+      block = hole::Hole::Pull(address, revision);
 
       // Cast it to make sure a node did not return a block of another
       // type.

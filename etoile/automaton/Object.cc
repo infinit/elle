@@ -39,7 +39,7 @@ namespace etoile
       context.object =
         depot::Depot::pull_object(
           context.location.address,
-          context.location.version).release();
+          context.location.revision).release();
 
       // compute the base in order to seal the block's original state.
       if (context.object->base.Create(*context.object) == elle::Status::Error)
@@ -81,11 +81,11 @@ namespace etoile
 
     ///
     /// this method permanently destroys the object along with all its
-    /// history i.e all its versions.
+    /// history i.e all its revisions.
     ///
     /// therefore, all the blocks are marked as needing to be removed.
     ///
-    /// note however that although the past versions of the objects will
+    /// note however that although the past revisions of the objects will
     /// be destroyed along the way, the referenced access and data blocks
     /// will not.
     ///
@@ -95,7 +95,7 @@ namespace etoile
     /// blocks expire---may be too important.
     ///
     /// therefore, the user willing to completely remove the blocks
-    /// associated with an object, no matter the version, should take a
+    /// associated with an object, no matter the revision, should take a
     /// look at the Purge() functionality.
     ///
     elle::Status        Object::Destroy(

@@ -76,7 +76,7 @@ namespace hole
         authenticate(lune::Passport& passport);
         std::unique_ptr<nucleus::proton::Block>
         pull(nucleus::proton::Address const& address,
-             nucleus::proton::Version const& version);
+             nucleus::proton::Revision const& revision);
         void
         push(nucleus::proton::Address const& address,
              nucleus::proton::Block const& block);
@@ -90,7 +90,7 @@ namespace hole
               nucleus::Derivable& derivable);
         nucleus::Derivable
         _pull(nucleus::proton::Address const&,
-              nucleus::proton::Version const&);
+              nucleus::proton::Revision const&);
         void
         _wipe(nucleus::proton::Address const&);
 

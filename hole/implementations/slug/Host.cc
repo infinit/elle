@@ -101,10 +101,10 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Host::pull(nucleus::proton::Address const& address,
-                 nucleus::proton::Version const& version)
+                 nucleus::proton::Revision const& revision)
       {
-        ELLE_TRACE_SCOPE("%s: pull block at address %s with version %s", *this, address, version);
-        return _rpcs.pull(address, version).release();
+        ELLE_TRACE_SCOPE("%s: pull block at address %s with revision %s", *this, address, revision);
+        return _rpcs.pull(address, revision).release();
       }
 
       void
@@ -206,7 +206,7 @@ namespace hole
                         {
                           // Load the access block.
                           std::unique_ptr<nucleus::proton::Block> block
-                            (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                            (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                           std::unique_ptr<nucleus::neutron::Access> access
                             (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                           if (access == nullptr)
@@ -274,10 +274,10 @@ namespace hole
 
       nucleus::Derivable
       Host::_pull(nucleus::proton::Address const& address,
-                  nucleus::proton::Version const& version)
+                  nucleus::proton::Revision const& revision)
       {
-        ELLE_TRACE_SCOPE("%s: peer retreives block at address %s for version %s",
-                         *this, address, version);
+        ELLE_TRACE_SCOPE("%s: peer retreives block at address %s for revision %s",
+                         *this, address, revision);
 
         using nucleus::proton::Block;
         using nucleus::proton::ImmutableBlock;
@@ -339,10 +339,10 @@ namespace hole
               mb = static_cast<MutableBlock*>(block.get());
 
               if (nucleus::proton::MutableBlock::exists(
-                    Hole::Implementation->network, address, version) == true)
+                    Hole::Implementation->network, address, revision) == true)
                 {
                   // load the block.
-                  mb->load(Hole::Implementation->network, address, version);
+                  mb->load(Hole::Implementation->network, address, revision);
 
                   // validate the block, depending on its component.
                   //
@@ -364,7 +364,7 @@ namespace hole
                           {
                             // Load the access block.
                             std::unique_ptr<Block> block
-                              (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                              (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                             std::unique_ptr<nucleus::neutron::Access> access
                               (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                             if (access == nullptr)

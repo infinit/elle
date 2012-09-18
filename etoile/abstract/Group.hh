@@ -5,7 +5,7 @@
 # include <elle/utility/Time.hh>
 # include <elle/cryptography/PublicKey.hh>
 
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
 
 # include <elle/idiom/Open.hh>
@@ -58,7 +58,7 @@ namespace etoile
 
       nucleus::neutron::Size size;
       elle::cryptography::PublicKey manager;
-      nucleus::proton::Version version;
+      nucleus::proton::Revision revision;
       elle::cryptography::PublicKey pass_K;
     };
 

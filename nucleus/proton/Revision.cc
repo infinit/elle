@@ -1,4 +1,4 @@
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
@@ -17,26 +17,26 @@ namespace nucleus
 //
 
     ///
-    /// this constant represents the first version.
+    /// this constant represents the first revision.
     ///
-    const Version               Version::First;
+    const Revision               Revision::First;
 
     ///
-    /// this constant represents the latest version.
+    /// this constant represents the latest revision.
     ///
-    const Version Version::Last = std::numeric_limits<Version::Type>::max();
+    const Revision Revision::Last = std::numeric_limits<Revision::Type>::max();
 
     ///
-    /// this constant represents any version and is useful whenever
-    /// dealing with immutable blocks for which version do not make any
+    /// this constant represents any revision and is useful whenever
+    /// dealing with immutable blocks for which revision do not make any
     /// sense.
     ///
-    const Version               Version::Any(Version::Last);
+    const Revision               Revision::Any(Revision::Last);
 
     ///
     /// this constant is an alias of Any.
     ///
-    const Version&              Version::Some = Version::Any;
+    const Revision&              Revision::Some = Revision::Any;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -45,7 +45,7 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Version::Version():
+    Revision::Revision():
       number(0)
     {
     }
@@ -53,7 +53,7 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    Version::Version(const Type                                 number):
+    Revision::Revision(const Type                                 number):
       number(number)
     {
     }
@@ -63,9 +63,9 @@ namespace nucleus
 //
 
     ///
-    /// this method creates a version.
+    /// this method creates a revision.
     ///
-    elle::Status        Version::Create(const Type              number)
+    elle::Status        Revision::Create(const Type              number)
     {
       // assign the number.
       this->number = number;
@@ -80,7 +80,7 @@ namespace nucleus
     ///
     /// this method checks if two objects match.
     ///
-    elle::Boolean       Version::operator==(const Version&      element) const
+    elle::Boolean       Revision::operator==(const Revision&      element) const
     {
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -92,7 +92,7 @@ namespace nucleus
     ///
     /// this method compares the objects.
     ///
-    elle::Boolean       Version::operator<(const Version&       element) const
+    elle::Boolean       Revision::operator<(const Revision&       element) const
     {
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -108,7 +108,7 @@ namespace nucleus
     ///
     /// this method compares the objects.
     ///
-    elle::Boolean       Version::operator>(const Version&       element) const
+    elle::Boolean       Revision::operator>(const Revision&       element) const
     {
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -122,9 +122,9 @@ namespace nucleus
     }
 
     ///
-    /// this method increments the version number.
+    /// this method increments the revision number.
     ///
-    Version&            Version::operator+=(const elle::Natural32 increment)
+    Revision&            Revision::operator+=(const elle::Natural32 increment)
     {
       // increment the number.
       this->number += increment;
@@ -133,30 +133,30 @@ namespace nucleus
     }
 
     ///
-    /// this method adds the given version to the current one.
+    /// this method adds the given revision to the current one.
     ///
-    Version             Version::operator+(const Version&       element) const
+    Revision             Revision::operator+(const Revision&       element) const
     {
-      return (Version(this->number + element.number));
+      return (Revision(this->number + element.number));
     }
 
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Version, _());
+    embed(Revision, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the version's internals.
+    /// this method dumps the revision's internals.
     ///
-    elle::Status        Version::Dump(const elle::Natural32     margin) const
+    elle::Status        Revision::Dump(const elle::Natural32     margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Version] " << this->number << std::endl;
+      std::cout << alignment << "[Revision] " << this->number << std::endl;
 
       return elle::Status::Ok;
     }
@@ -167,7 +167,7 @@ namespace nucleus
     `----------*/
 
     void
-    Version::print(std::ostream& s) const
+    Revision::print(std::ostream& s) const
     {
       if (*this == First)
         s << "first";

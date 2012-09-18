@@ -238,7 +238,7 @@ namespace etoile
     }
 
     ///
-    /// this specific-version of the method creates a scope without
+    /// this specific-revision of the method creates a scope without
     /// looking for an existing one.
     ///
     elle::Status        Scope::Supply(Scope*&                   scope)
@@ -1115,11 +1115,11 @@ namespace etoile
           escape("unable to load the object");
 
         // check if the loaded object is indeed newer.
-        if (context->object->version >
-            static_cast<T*>(this->context)->object->version)
+        if (context->object->revision >
+            static_cast<T*>(this->context)->object->revision)
           {
             //
-            // in this case, a newer version exists which has been loaded.
+            // in this case, a newer revision exists which has been loaded.
             //
             // replace the current one with the new one.
             //
@@ -1131,7 +1131,7 @@ namespace etoile
             this->context = context.release();
           }
         //
-        // otherwise, the loaded object is of the same version as the
+        // otherwise, the loaded object is of the same revision as the
         // current one.
         //
         // in this case, nothing is done.
@@ -1225,14 +1225,14 @@ namespace etoile
         // disclosing its modifications.
         //
         // finally, the current scope's context is allocated but initialized
-        // and must therefore be loaded with a fresh version of the object.
+        // and must therefore be loaded with a fresh revision of the object.
         //
 
         // locate the object based on the current scope's chemin.
         if (this->chemin.Locate(context->location) == elle::Status::Error)
           escape("unable to locate the file");
 
-        // load a fresh version of the object which should happen to be
+        // load a fresh revision of the object which should happen to be
         // the one stored above.
         if (T::A::Load(*context) == elle::Status::Error)
           escape("unable to load the object");
@@ -1250,7 +1250,7 @@ namespace etoile
     /// expired.
     ///
     /// if the scope has reached a certain lifetime and has not been modified,
-    /// the supervisor refreshes it by fetching a potentially new version of
+    /// the supervisor refreshes it by fetching a potentially new revision of
     /// the object. this ensures that a scope being still in use because of
     /// an actor never releasing it, will, from time to time, be refreshed
     /// in order to provide the active actors the latest view.

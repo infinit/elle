@@ -19,9 +19,9 @@ namespace etoile
     ///
     /// a route is a sequence of slabs forming a path, each slab representing
     /// the name of subdirectory down to the target object along with their
-    /// version numbers.
+    /// revision numbers.
     ///
-    /// note that this class also contains the version number of the root
+    /// note that this class also contains the revision number of the root
     /// directory. indeed, the first slab is always used for representing
     /// the root directory even though its slab is empty.
     ///

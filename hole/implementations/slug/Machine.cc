@@ -14,7 +14,7 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/neutron/Object.hh>
@@ -429,7 +429,7 @@ namespace hole
                         {
                           // Load the access block.
                           std::unique_ptr<nucleus::proton::Block> block
-                            (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                            (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                           std::unique_ptr<nucleus::neutron::Access> access
                             (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                           if (access == nullptr)
@@ -514,11 +514,11 @@ namespace hole
         {
           ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
 
-          // Finally, now that the block has been accepted as a valid version
+          // Finally, now that the block has been accepted as a valid revision
           // of the mutable block, record it in the cache so that the machine
           // will no longer have to fetch the block from the other peers since
-          // it already has the last version and the other nodes will publish
-          // any new version.
+          // it already has the last revision and the other nodes will publish
+          // any new revision.
           elle::String unique = address.unique();
           auto iterator = cache.find(unique);
 
@@ -604,7 +604,7 @@ namespace hole
                         {
                           iblock =
                             elle::cast<ImmutableBlock>::runtime(
-                              host->pull(address, nucleus::proton::Version::Any));
+                              host->pull(address, nucleus::proton::Revision::Any));
                         }
                       catch (std::exception const& e)
                         {
@@ -676,13 +676,13 @@ namespace hole
       Machine::_get_latest(const nucleus::proton::Address&    address)
       {
         // Contact all the hosts in order to retrieve the latest
-        // version of the block.
+        // revision of the block.
         //
         // This is required since no synchronisation mechanism is
         // present yet so the current machine may have missed some
-        // versions when disconnected.
+        // revisions when disconnected.
         using nucleus::proton::MutableBlock;
-        using nucleus::proton::Version;
+        using nucleus::proton::Revision;
         using nucleus::neutron::Object;
         using nucleus::proton::Block;
 
@@ -694,11 +694,11 @@ namespace hole
 
           // First, check whether the address is already contained in the
           // cache. If so, the local block is used rather than issuing network
-          // communication. The goal of this cache is to say 'the local version
+          // communication. The goal of this cache is to say 'the local revision
           // of the block is the latest, so use it instead of bothering everyone
           // else'. Note that this optimization works because all nodes are
           // supposed to be trustworthy (in the 'slug' implementation) and
-          // therefore to send the newest version of every modified block.
+          // therefore to send the newest revision of every modified block.
 
           if (iterator != cache.end())
             {
@@ -727,14 +727,14 @@ namespace hole
                   if (nucleus::proton::MutableBlock::exists(
                         Hole::Implementation->network,
                         address,
-                        Version::Last) == true)
+                        Revision::Last) == true)
                     {
                       ELLE_DEBUG("%s: cache hit on %s", *this, unique);
 
                       // Load the block.
                       block->load(Hole::Implementation->network,
                                   address,
-                                  Version::Last);
+                                  Revision::Last);
 
                       return (ptr);
                     }
@@ -771,7 +771,7 @@ namespace hole
               {
                 block =
                   elle::cast<MutableBlock>::runtime(
-                    host->pull(address, Version::Last));
+                    host->pull(address, Revision::Last));
               }
             catch (std::exception const& e)
               {
@@ -794,7 +794,7 @@ namespace hole
                   // a referenced access block.
                   if (object.access() != nucleus::proton::Address::Null)
                     {
-                      Ptr<Block> block(Hole::Pull(object.access(), Version::Last));
+                      Ptr<Block> block(Hole::Pull(object.access(), Revision::Last));
                       Ptr<nucleus::neutron::Access> access
                         (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                       if (access == nullptr)
@@ -864,11 +864,11 @@ namespace hole
               block->store(Hole::Implementation->network, address);
           }
 
-        // At this point, we may have retrieved one or more versions
+        // At this point, we may have retrieved one or more revisions
         // of the mutable block but we do not have any guarantee.
 
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, nucleus::proton::Version::Last) == false)
+              Hole::Implementation->network, address, nucleus::proton::Revision::Last) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to retrieve the mutable block");
 
@@ -877,7 +877,7 @@ namespace hole
         nucleus::Nucleus::Factory.Build(address.component, block);
 
         // load the block.
-        block->load(Hole::Implementation->network, address, Version::Last);
+        block->load(Hole::Implementation->network, address, Revision::Last);
 
         // Validate the block, depending on its component.
         // although every stored block has been checked, the block
@@ -898,7 +898,7 @@ namespace hole
                 {
                   // Load the access block.
                   Ptr<Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                   Ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)
@@ -945,7 +945,7 @@ namespace hole
           // the network, the cache is updated by marking this mutable
           // block as up-to-date locally, meaning that the machine no
           // longer needs to fetch it from the other peers. Instead
-          // the peers will notify everyone of the updated versions.
+          // the peers will notify everyone of the updated revisions.
           iterator = cache.find(unique);
 
           if (iterator == cache.end())
@@ -991,10 +991,10 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Machine::_get_specific(const nucleus::proton::Address& address,
-                             nucleus::proton::Version const& version)
+                             nucleus::proton::Revision const& revision)
       {
         // Go through the neighbours and retrieve the
-        // specific version of the block.
+        // specific revision of the block.
 
         using nucleus::neutron::Object;
         using nucleus::proton::MutableBlock;
@@ -1009,7 +1009,7 @@ namespace hole
         // Does the block exist: if it does not, retrieve it from the
         // peers.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, version) == false)
+              Hole::Implementation->network, address, revision) == false)
           {
             bool found = false;
             for (auto neighbour: this->_hosts)
@@ -1022,7 +1022,7 @@ namespace hole
                   {
                     block =
                       elle::cast<MutableBlock>::runtime(
-                        host->pull(address, version));
+                        host->pull(address, revision));
                   }
                 catch (std::exception const& e)
                   {
@@ -1050,7 +1050,7 @@ namespace hole
                       if (object.access() != nucleus::proton::Address::Null)
                         {
                           Ptr<nucleus::proton::Block> block
-                            (Hole::Pull(object.access(), nucleus::proton::Version::Last));
+                            (Hole::Pull(object.access(), nucleus::proton::Revision::Last));
                           Ptr<nucleus::neutron::Access> access
                             (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                           if (access == nullptr)
@@ -1110,7 +1110,7 @@ namespace hole
                 found = true;
 
                 // stop since a block for this specific
-                // version has been retrieved.
+                // revision has been retrieved.
                 break;
               }
 
@@ -1127,10 +1127,10 @@ namespace hole
         assert(nucleus::proton::MutableBlock::exists(
                  Hole::Implementation->network,
                  address,
-                 version) == true);
+                 revision) == true);
 
         // Load the block.
-        block->load(Hole::Implementation->network, address, version);
+        block->load(Hole::Implementation->network, address, revision);
 
         // validate the block, depending on its component.
         // although every stored block has been checked, the
@@ -1152,7 +1152,7 @@ namespace hole
                 {
                   // Load the access block.
                   Ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                   Ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)
@@ -1196,9 +1196,9 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Machine::Get(const nucleus::proton::Address&    address,
-                   const nucleus::proton::Version&    version)
+                   const nucleus::proton::Revision&    revision)
       {
-        ELLE_TRACE_SCOPE("%s: get(%s, %s)", *this, address, version);
+        ELLE_TRACE_SCOPE("%s: get(%s, %s)", *this, address, revision);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
@@ -1209,10 +1209,10 @@ namespace hole
                           "to request operations on the storage layer",
                           this->_state));
 
-        if (version == nucleus::proton::Version::Last)
+        if (revision == nucleus::proton::Revision::Last)
           return _get_latest(address);
         else
-          return _get_specific(address, version);
+          return _get_specific(address, revision);
       }
 
       void

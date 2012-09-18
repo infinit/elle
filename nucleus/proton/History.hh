@@ -6,7 +6,7 @@
 # include <elle/radix/Object.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <vector>
@@ -18,7 +18,7 @@ namespace nucleus
   {
 
     ///
-    /// this class contains all the version numbers associated with
+    /// this class contains all the revision numbers associated with
     /// a given mutable block.
     ///
     class History:
@@ -35,19 +35,19 @@ namespace nucleus
       //
       // types
       //
-      typedef std::vector<Version>                      Container;
+      typedef std::vector<Revision>                      Container;
       typedef typename Container::iterator              Iterator;
       typedef typename Container::const_iterator        Scoutor;
 
       //
       // methods
       //
-      elle::Status      Register(const Version&);
+      elle::Status      Register(const Revision&);
 
-      elle::Status      Select(const Version::Type,
-                               Version&) const;
+      elle::Status      Select(const Revision::Type,
+                               Revision&) const;
 
-      elle::Status      Size(Version::Type&) const;
+      elle::Status      Size(Revision::Type&) const;
 
     private:
       /// XXX

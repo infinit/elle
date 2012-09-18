@@ -2,7 +2,7 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
 
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/neutron/Ensemble.hh>
@@ -113,8 +113,8 @@ namespace etoile
           // the old block should be deleted.
           //
           // however, since the group benefits from history i.e several
-          // versions, removing the ensemble block would render the previous
-          // version inconsistent.
+          // revisions, removing the ensemble block would render the previous
+          // revision inconsistent.
           //
           // therefore, the group is updated with a null content address.
           //
@@ -155,7 +155,7 @@ namespace etoile
           // the group updated accordingly.
           //
           // note that the previous ensemble block is not removed since
-          // groups benefit from the history i.e multiple versions; unless
+          // groups benefit from the history i.e multiple revisions; unless
           // the history support is not activated for this network.
           //
 

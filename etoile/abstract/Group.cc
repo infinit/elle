@@ -37,7 +37,7 @@ namespace etoile
 
       this->manager = group.manager_K();
 
-      this->version = group.version;
+      this->revision = group.revision;
 
       this->pass_K = group.pass_K();
 
@@ -64,7 +64,7 @@ namespace etoile
           (this->stamps.modification != element.stamps.modification) ||
           (this->size != element.size) ||
           (this->manager != element.manager) ||
-          (this->version != element.version) ||
+          (this->revision != element.revision) ||
           (this->pass_K != element.pass_K))
         return false;
 
@@ -128,7 +128,7 @@ namespace etoile
         escape("unable to dump the manager public key");
 
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Version] " << std::dec << this->version << std::endl;
+                << "[Revision] " << std::dec << this->revision << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Pass K]" << std::endl;

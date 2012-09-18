@@ -349,7 +349,7 @@ namespace lune
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
             "#" +
-            "%VERSION%" +
+            "%REVISION%" +
             nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
@@ -404,7 +404,7 @@ namespace lune
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
             "#" +
-            "%VERSION%" +
+            "%REVISION%" +
             nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 

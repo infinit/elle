@@ -5,7 +5,7 @@
 # include <elle/cryptography/Digest.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -15,7 +15,7 @@ namespace nucleus
   {
 
     ///
-    /// a base references a precise version of a mutable block.
+    /// a base references a precise revision of a mutable block.
     ///
     /// this construct is useful to make sure a mutable block derives
     /// from another one, and another one down to the original mutable
@@ -32,7 +32,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const Version&,
+      elle::Status      Create(const Revision&,
                                elle::cryptography::Digest const&);
       elle::Status      Create(const MutableBlock&);
 
@@ -52,7 +52,7 @@ namespace nucleus
       //
       // attributes
       //
-      Version           version;
+      Revision           revision;
       elle::cryptography::Digest      digest;
     };
 

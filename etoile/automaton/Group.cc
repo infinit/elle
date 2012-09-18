@@ -46,9 +46,9 @@ namespace etoile
       if (context.group->Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
-      // create the context's location with an initial version number.
+      // create the context's location with an initial revision number.
       if (context.location.Create(address,
-                                  context.group->version) == elle::Status::Error)
+                                  context.group->revision) == elle::Status::Error)
         escape("unable to create the location");
 
       context.state = gear::Context::StateCreated;
@@ -74,7 +74,7 @@ namespace etoile
           context.group =
             depot::Depot::pull_group(
               context.location.address,
-              context.location.version).release();
+              context.location.revision).release();
         }
       catch (std::exception const& e)
         {

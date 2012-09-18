@@ -30,7 +30,7 @@ namespace etoile
                                         Venue&);
       static elle::Status       Parse(const Slab&,
                                       Slice&,
-                                      nucleus::proton::Version&);
+                                      nucleus::proton::Revision&);
     };
 
   }

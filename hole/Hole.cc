@@ -274,9 +274,9 @@ namespace hole
 
   std::unique_ptr<nucleus::proton::Block>
   Hole::Pull(const nucleus::proton::Address& address,
-             const nucleus::proton::Version& version)
+             const nucleus::proton::Revision& revision)
   {
-    ELLE_TRACE_SCOPE("pull(%s, %s)", address, version);
+    ELLE_TRACE_SCOPE("pull(%s, %s)", address, revision);
 
     // Forward the request depending on the nature of the block which
     // the addres indicates.
@@ -287,7 +287,7 @@ namespace hole
         case nucleus::proton::FamilyPublicKeyBlock:
         case nucleus::proton::FamilyOwnerKeyBlock:
         case nucleus::proton::FamilyImprintBlock:
-          return Hole::Implementation->Get(address, version);
+          return Hole::Implementation->Get(address, revision);
         default:
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    elle::sprintf("unknown block family '%u'", address.family));

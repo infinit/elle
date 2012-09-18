@@ -112,8 +112,8 @@ namespace nucleus
                              this->_signature) == elle::Status::Error)
               throw Exception("unable to sign the group"); // XXX[to remove in the future]
 
-            // Increase the mutable block's version.
-            this->version += 1;
+            // Increase the mutable block's revision.
+            this->revision += 1;
 
             break;
           }

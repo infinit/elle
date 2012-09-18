@@ -4,7 +4,7 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Family.hh>
-# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Base.hh>
 # include <nucleus/neutron/Component.hh>
 
@@ -19,15 +19,15 @@ namespace nucleus
     /// is computed in a way that it does not change over time no matter
     /// how the content does.
     ///
-    /// note that a version number is included in order to distinguish the
-    /// different version of a block's history.
+    /// note that a revision number is included in order to distinguish the
+    /// different revision of a block's history.
     ///
     /// a specific file ending with the '@' character links to the
-    /// last version of the mutable block. this way, the history does
+    /// last revision of the mutable block. this way, the history does
     /// not have to be loaded which would incurr a huge performance overhead.
     ///
     /// noteworthy is that altough a symbolic link would have been perfect
-    /// for this, the number of the last version is manually stored in
+    /// for this, the number of the last revision is manually stored in
     /// a regular file in order to be portable since Windows, for instance,
     /// does not support symbolic links.
     ///
@@ -50,7 +50,7 @@ namespace nucleus
       //
     public:
       /// Returns true if the instance derives the given
-      /// mutable block i.e its version is strictly higher than
+      /// mutable block i.e its revision is strictly higher than
       /// the given one's.
       elle::Boolean
       derives(MutableBlock const& other) const;
@@ -66,7 +66,7 @@ namespace nucleus
       elle::io::Path
       _path(Network const& network,
             Address const& address,
-            elle::String const& version);
+            elle::String const& revision);
 
       //
       // interfaces
@@ -88,7 +88,7 @@ namespace nucleus
       void
       load(Network const& network,
            Address const& address,
-           Version const& version);
+           Revision const& revision);
       void
       store(Network const& network,
             Address const& address) const;
@@ -100,12 +100,12 @@ namespace nucleus
       elle::Boolean
       exists(Network const& network,
              Address const& address,
-             Version const& version = Version::Any);
+             Revision const& revision = Revision::Any);
 
       //
       // attributes
       //
-      Version           version;
+      Revision           revision;
 
       Base              base;
     };

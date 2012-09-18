@@ -16,13 +16,13 @@ namespace nucleus
 //
 
     ///
-    /// this method creates a base according to a version and digest.
+    /// this method creates a base according to a revision and digest.
     ///
-    elle::Status        Base::Create(const Version&             version,
+    elle::Status        Base::Create(const Revision&             revision,
                                      elle::cryptography::Digest const&        digest)
     {
       // set the attributes.
-      this->version = version;
+      this->revision = revision;
       this->digest = digest;
 
       return elle::Status::Ok;
@@ -33,8 +33,8 @@ namespace nucleus
     ///
     elle::Status        Base::Create(const MutableBlock&        block)
     {
-      // set the version.
-      this->version = block.version;
+      // set the revision.
+      this->revision = block.revision;
 
       // compute the block's digest.
       if (elle::cryptography::OneWay::Hash(block, this->digest)
@@ -52,8 +52,8 @@ namespace nucleus
     {
       elle::cryptography::Digest      digest;
 
-      // check the versions.
-      if (this->version != block.version)
+      // check the revisions.
+      if (this->revision != block.revision)
         return elle::Status::False;
 
       // compute the block's digest.
@@ -84,7 +84,7 @@ namespace nucleus
         return true;
 
       // compare the attributes.
-      if ((this->version != element.version) ||
+      if ((this->revision != element.revision) ||
           (this->digest != element.digest))
         return false;
 
@@ -109,9 +109,9 @@ namespace nucleus
 
       std::cout << alignment << "[Base]" << std::endl;
 
-      // dump the version.
-      if (this->version.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the version");
+      // dump the revision.
+      if (this->revision.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the revision");
 
       // dump the digest.
       if (this->digest.Dump(margin + 2) == elle::Status::Error)

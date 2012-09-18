@@ -1,5 +1,5 @@
-#ifndef NUCLEUS_PROTON_VERSION_HH
-# define NUCLEUS_PROTON_VERSION_HH
+#ifndef NUCLEUS_PROTON_REVISION_HH
+# define NUCLEUS_PROTON_REVISION_HH
 
 # include <elle/Printable.hh>
 # include <elle/idiom/Open.hh>
@@ -12,10 +12,10 @@ namespace nucleus
   {
 
     ///
-    /// this class represents a version number which are used to distinguish
-    /// the versions related to a mutable block.
+    /// this class represents a revision number which are used to distinguish
+    /// the revisions related to a mutable block.
     ///
-    class Version:
+    class Revision:
       public elle::radix::Object,
       public elle::Printable
     {
@@ -28,17 +28,17 @@ namespace nucleus
       //
       // constants
       //
-      static const Version              First;
-      static const Version              Last;
+      static const Revision              First;
+      static const Revision              Last;
 
-      static const Version              Any;
-      static const Version&             Some;
+      static const Revision              Any;
+      static const Revision&             Some;
 
       //
       // constructors & destructors
       //
-      Version();
-      Version(const Type);
+      Revision();
+      Revision(const Type);
 
       //
       // methods
@@ -50,12 +50,12 @@ namespace nucleus
       //
 
       // object
-      declare(Version);
-      elle::Boolean             operator==(const Version&) const;
-      elle::Boolean             operator<(const Version&) const;
-      elle::Boolean             operator>(const Version&) const;
-      Version&                  operator+=(const elle::Natural32);
-      Version                   operator+(const Version&) const;
+      declare(Revision);
+      elle::Boolean             operator==(const Revision&) const;
+      elle::Boolean             operator<(const Revision&) const;
+      elle::Boolean             operator>(const Revision&) const;
+      Revision&                  operator+=(const elle::Natural32);
+      Revision                   operator+(const Revision&) const;
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
@@ -77,6 +77,6 @@ namespace nucleus
   }
 }
 
-# include <nucleus/proton/Version.hxx>
+# include <nucleus/proton/Revision.hxx>
 
 #endif

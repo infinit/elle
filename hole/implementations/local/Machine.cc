@@ -6,7 +6,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
-#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/Nucleus.hh>
@@ -65,7 +65,7 @@ namespace hole
                     ) {
                     // Load the access block.
                     std::unique_ptr<nucleus::proton::Block> block
-                      (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                      (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                     std::unique_ptr<nucleus::neutron::Access> access
                       (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                     if (access == nullptr)
@@ -150,19 +150,19 @@ namespace hole
 
       std::unique_ptr<nucleus::proton::Block>
       Machine::Get(const nucleus::proton::Address&    address,
-                   const nucleus::proton::Version&    version)
+                   const nucleus::proton::Revision&    revision)
       {
         nucleus::proton::MutableBlock* block;
         nucleus::Nucleus::Factory.Build(address.component, block);
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(
-              Hole::Implementation->network, address, version) == false)
+              Hole::Implementation->network, address, revision) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        block->load(Hole::Implementation->network, address, version);
+        block->load(Hole::Implementation->network, address, revision);
 
         // validate the block, depending on its component.
         //
@@ -182,7 +182,7 @@ namespace hole
                 {
                   // Load the access block.
                   std::unique_ptr<nucleus::proton::Block> block
-                    (Hole::Pull(object->access(), nucleus::proton::Version::Last));
+                    (Hole::Pull(object->access(), nucleus::proton::Revision::Last));
                   std::unique_ptr<nucleus::neutron::Access> access
                     (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                   if (access == nullptr)

@@ -26,7 +26,7 @@ namespace nucleus
     class PublicKeyBlock;
     class Stamp;
     class Transcript;
-    class Version;
+    class Revision;
 
   }
 }
