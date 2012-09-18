@@ -443,6 +443,7 @@ void test_path_get_helpers() {
         ("bool", true)
         ("int", 42)
         ("real", 52.3)
+        ("realint", 12)
         ;
     Value v(foo);
 
@@ -453,7 +454,57 @@ void test_path_get_helpers() {
     assert_eq(v.getInt("int"), 42);
     assert_eq(v.getInt64("int"), (boost::int64_t)42);
     assert_eq(v.getUInt64("int"), (boost::uint64_t)42);
-    assert_eq(v.getReal("real"), 52.3);
+    assert_eq(v.getReal("realint"), 12.f);
+}
+
+// Test that get helpers *don't* get defaults when the values are available
+void test_path_get_helpers_not_defaults() {
+    // Test the helpers that extract values directly by path. Provide
+    // one of each type
+    const Object obj = map_list_of("a", 2)("b", 3);
+    const Array arr = list_of(2)(3);
+    const Object foo = map_list_of
+        ("string", Value("a string"))
+        ("object", obj)
+        ("array", arr)
+        ("bool", true)
+        ("int", 42)
+        ("real", 52.3)
+        ("realint", 12)
+        ;
+    Value v(foo);
+
+    const Object bad_obj = map_list_of("x", 4)("y", 5);
+    const Array bad_arr = list_of(7)(8);
+
+    assert_eq(v.getString("string", "not a string"), "a string");
+    assert_eq(v.getObject("object", bad_obj), obj);
+    assert_eq(v.getArray("array", bad_arr), arr);
+    assert_eq(v.getBool("bool", false), true);
+    assert_eq(v.getInt("int", 0), 42);
+    assert_eq(v.getInt64("int", (boost::int64_t)0), (boost::int64_t)42);
+    assert_eq(v.getUInt64("int", (boost::uint64_t)0), (boost::uint64_t)42);
+    assert_eq(v.getReal("realint", 0.f), 12.f);
+}
+
+// Test defaults are retrieved when fields are not available
+void test_path_get_helpers_defaults() {
+    // Test the helpers that extract values directly by path. Provide
+    // one of each type
+    const Object foo = map_list_of("x", 2);
+    Value v(foo);
+
+    const Object default_obj = map_list_of("x", 4)("y", 5);
+    const Array default_arr = list_of(7)(8);
+
+    assert_eq(v.getString("string", "not a string"), "not a string");
+    assert_eq(v.getObject("object", default_obj), default_obj);
+    assert_eq(v.getArray("array", default_arr), default_arr);
+    assert_eq(v.getBool("bool", false), false);
+    assert_eq(v.getInt("int", 0), 0);
+    assert_eq(v.getInt64("int", (boost::int64_t)0), (boost::int64_t)0);
+    assert_eq(v.getUInt64("int", (boost::uint64_t)0), (boost::uint64_t)0);
+    assert_eq(v.getReal("realint", 0.f), 0.f);
 }
 
 void test_path_insert() {

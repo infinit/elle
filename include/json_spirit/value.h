@@ -954,7 +954,7 @@ template<class Config>
 double BasicValue<Config>::getReal(const typename Config::String_type& path, double default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
-    if (val.type() != REAL_TYPE) return default_;
+    if (val.type() != REAL_TYPE && val.type() != INT_TYPE) return default_;
     return val.getReal();
 }
 
