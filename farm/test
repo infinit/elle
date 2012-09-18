@@ -389,13 +389,14 @@ def test_all(mount_points, test_timeout=100):
 
 
 def test_openssl():
-  start = time.time()
-  with Network("user", "network") as network:
-      run(['tar', '-xzf', '/home/buildslave/openssl-1.0.0g.tar.gz', '-C', network.mount_dir])
-      run(['./config'], cwd = '%s/openssl-1.0.0g' % network.mount_dir)
-      run(['make'], cwd = '%s/openssl-1.0.0g' % network.mount_dir)
-      end = time.time()
-  print('OpenSSL compilation time: %ss' % (end - start))
+    start = time.time()
+    with Network("user", "network") as network:
+        with network.mount() as mount_point:
+            run(['tar', '-xzf', '/home/buildslave/openssl-1.0.0g.tar.gz', '-C', mount_point.mount_dir])
+            run(['./config'], cwd = '%s/openssl-1.0.0g' % mount_point.mount_dir)
+            run(['make'], cwd = '%s/openssl-1.0.0g' % mount_point.mount_dir)
+    end = time.time()
+    print('OpenSSL compilation time: %ss' % (end - start))
 
 if __name__ == '__main__':
     test_openssl()
