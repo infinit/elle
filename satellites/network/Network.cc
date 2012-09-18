@@ -399,9 +399,6 @@ namespace satellite
       // load the descriptor.
       descriptor.load(name);
 
-      // XXX
-      descriptor.Dump();
-
       // validate the descriptor.
       descriptor.validate(Infinit::Authority);
     }
