@@ -18,11 +18,14 @@
     
     IBOutlet NSTextField *accountAccountName;
     IBOutlet NSTextField *accountComputerName;
+    IBOutlet NSButtonCell *isLaunchAtStartupButton;
 	int currentViewTag;
 }
 + (OOPreferencesWindowController *)getInstance;
 - (NSView *)viewForTag:(int)tag;
 - (IBAction)switchView:(id)sender;
 - (NSRect)newFrameForNewContentView:(NSView *)view;
+- (BOOL)isLaunchAtStartup;
+- (IBAction)toggleLaunchAtStartup:(id)sender;
 
 @end

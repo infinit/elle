@@ -7,8 +7,7 @@
 //
 // utilty function that creates, caches and returns the image named glossy.png
 //---------------------------------------------------------------------------------
-static CGImageRef glossyImage()
-{
+static CGImageRef glossyImage() {
 	static CGImageRef image = NULL;
 	
 	if(image == NULL)
@@ -22,8 +21,7 @@ static CGImageRef glossyImage()
 //
 // utilty function that creates, caches and returns the image named pin.tiff
 //---------------------------------------------------------------------------------
-static CGImageRef pinImage()
-{
+static CGImageRef pinImage() {
 	static CGImageRef image = NULL;
 	
 	if(image == NULL)
@@ -39,8 +37,7 @@ static CGImageRef pinImage()
 //
 // provides the layers for the given types
 //---------------------------------------------------------------------------------
-- (CALayer *) layerForType:(NSString*) type
-{
+- (CALayer *) layerForType:(NSString*) type {
 	CGColorRef color;
 	
 	//retrieve some usefull rects
@@ -181,8 +178,7 @@ static CGImageRef pinImage()
 //
 // define where the image should be drawn
 //---------------------------------------------------------------------------------
-- (NSRect) imageFrame
-{
+- (NSRect) imageFrame {
 	//get default imageFrame and aspect ratio
 	NSRect imageFrame = [super imageFrame];
 	
@@ -225,8 +221,7 @@ static CGImageRef pinImage()
 //
 // override the default image container frame
 //---------------------------------------------------------------------------------
-- (NSRect) imageContainerFrame
-{
+- (NSRect) imageContainerFrame {
 	NSRect container = [super frame];
 	
 	//make the image container 15 pixels up
@@ -240,8 +235,7 @@ static CGImageRef pinImage()
 //
 // override the default frame for the title
 //---------------------------------------------------------------------------------
-- (NSRect) titleFrame
-{
+- (NSRect) titleFrame {
 	//get the default frame for the title
 	NSRect titleFrame = [super titleFrame];
 	
@@ -262,8 +256,7 @@ static CGImageRef pinImage()
 //
 // make the selection frame a little bit larger than the default one
 //---------------------------------------------------------------------------------
-- (NSRect) selectionFrame
-{
+- (NSRect) selectionFrame {
 	return NSInsetRect([self frame], -5, -5);
 }
 

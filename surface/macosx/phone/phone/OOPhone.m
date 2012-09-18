@@ -7,7 +7,6 @@
 //
 
 #import "OOPhone.h"
-#import "OOManifestParser.h"
 
 #define countof(X) ( (size_t) ( sizeof(X)/sizeof*(X) ) )
 
@@ -19,8 +18,8 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 + (OOPhone *)getInstance {
     static OOPhone *singleton;
-    @synchronized(self){
-        if (!singleton){
+    @synchronized(self) {
+        if (!singleton) {
             // Singleton has not been instancied
             singleton = [[OOPhone alloc] init];
         }
@@ -75,11 +74,11 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 }
 
 - (void)registerWithFullName:(NSString*)arg1
-                       email:(NSString*)arg2 
-                    password:(NSString*)arg3 
-                 machineName:(NSString*)arg4 
-              activationCode:(NSString*)arg5 
-             performSelector:(SEL)arg6 
+                       email:(NSString*)arg2
+                    password:(NSString*)arg3
+                 machineName:(NSString*)arg4
+              activationCode:(NSString*)arg5
+             performSelector:(SEL)arg6
                    forObject:(id)arg7 {
     [self addOperationWithBlock:^(void) {
         gap_logout(self._gap_State);
@@ -139,8 +138,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
             }
         }
         
-        NSArray* returnArray = [agregateIds
-                                componentsSeparatedByString:@" "];
+        NSArray* returnArray = [agregateIds componentsSeparatedByString:@" "];
         [arg2 performSelectorOnMainThread:arg1 withObject:returnArray waitUntilDone:NO];
     }];
     return;
@@ -162,7 +160,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 }
 
 //
-//  GET NETWORK INFO
+//  Get network info
 //
 - (NSString*)getNetworkNameWithId:(NSString*)arg1 {
     char const* name = gap_network_name(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -175,13 +173,8 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     return [NSURL fileURLWithPath:[[NSString alloc] initWithUTF8String:path]];
 }
 
-- (void)update {
-    OOManifestParser *parser = [[OOManifestParser alloc] init];
-    [parser startParse:@"http://download.infinit.im/macosx64/manifest.xml"];
-}
-
 //
-//  GET USER INFO
+//  Get user info
 //
 - (NSString*)getUserFullNameById:(NSString*)arg1 {
     char const* fullName = gap_user_fullname(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -210,6 +203,7 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 - (void)launchWatchdog {
     gap_launch_watchdog(self._gap_State);
 }
+
 //
 //  Stop watchdog
 //

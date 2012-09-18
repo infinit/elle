@@ -13,14 +13,13 @@
 + (OOSetupWindowController *)getInstance {
     
     static OOSetupWindowController *singleton;
-    @synchronized(self){
+    @synchronized(self) {
         if (![singleton window]){
             // Le singleton n'a pas encore été instancié
             singleton = [[OOSetupWindowController alloc] init];
         }
         return singleton;
     }
-    
 }
 
 - (id) init {
@@ -29,8 +28,7 @@
     return self;
 }
 
-- (void)windowDidLoad
-{
+- (void)windowDidLoad {
     [super windowDidLoad];
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
 }

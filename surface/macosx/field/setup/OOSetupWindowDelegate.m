@@ -45,8 +45,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 @synthesize registerViewContinue;
 @synthesize registerViewError;
 
-- (void)awakeFromNib
-{
+- (void)awakeFromNib {
     NSView *contentView = [[self window] contentView];
     [contentView setWantsLayer:YES];
     [contentView addSubview:[self currentView]];
@@ -83,8 +82,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     self.isLogged = NO;
 }
 
-- (void)swapView:(OOSetupView*)newView
-{
+- (void)swapView:(OOSetupView*)newView {
     if (!currentView) {
         currentView = newView;
         return;
@@ -95,8 +93,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     currentView = newView;
 }
 
-- (IBAction)welcomeViewContinue:(id)sender
-{
+- (IBAction)welcomeViewContinue:(id)sender {
     [transition setSubtype:kCATransitionFromRight];
     if ([welcomeMatrix selectedRow] == 0) {
         [self swapView:registerView];
@@ -106,17 +103,16 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 }
 
 // Login View
-- (IBAction)loginViewGoBack:(id)sender
-{
+- (IBAction)loginViewGoBack:(id)sender {
     [transition setSubtype:kCATransitionFromLeft];
     [self swapView:welcomeView];
 }
 
-- (IBAction)loginViewContinue:(id)sender
-{
+- (IBAction)loginViewContinue:(id)sender {
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
-    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.loginViewEmail stringValue] andClearPassword:[self.loginViewPassword stringValue]];
+    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.loginViewEmail stringValue]
+                                                            andClearPassword:[self.loginViewPassword stringValue]];
     [pref setObject:[self.loginViewEmail stringValue]  forKey:@"Email"];
     [pref setObject:hashPassword  forKey:@"Password"];
     [pref setObject:[self.loginViewComputerName stringValue]  forKey:@"ComputerName"];
@@ -135,8 +131,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     if (error != 0) {
         NSLog(@"User login failled");
         [self.loginViewError setStringValue:@"An error occurred..."];
-    }
-    else {
+    } else {
         NSLog(@"User login succeed");
         [transition setSubtype:kCATransitionFromRight];
         [self swapView:loggedView];
@@ -152,20 +147,18 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 - (IBAction)acceptTermOfService:(id)sender {
     [transition setSubtype:kCATransitionFromLeft];
     [self.registerViewContinue setEnabled:([self.registerViewTermOfService state] == NSOnState)];
-    
 }
 
-- (IBAction)registerViewGoBack:(id)sender
-{
+- (IBAction)registerViewGoBack:(id)sender {
     [transition setSubtype:kCATransitionFromLeft];
     [self swapView:welcomeView];
 }
 
-- (IBAction)registerViewContinue:(id)sender
-{
+- (IBAction)registerViewContinue:(id)sender {
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
-    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.registerViewEmail stringValue] andClearPassword:[self.registerViewPassword stringValue]];
+    NSString* hashPassword = [[OOPhone getInstance] getHashPasswordWithEmail:[self.registerViewEmail stringValue]
+                                                            andClearPassword:[self.registerViewPassword stringValue]];
     [pref setObject:[self.registerViewFullName stringValue] forKey:@"FullName"];
     [pref setObject:[self.registerViewEmail stringValue] forKey:@"Email"];
     [pref setObject:hashPassword forKey:@"Password"];
@@ -184,9 +177,9 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 
 - (void)registerResult:(NSNumber *)arg1 {
     int error = [arg1 intValue];
-    if (error != 0)
+    if (error != 0) {
         [self.registerViewError setStringValue:@"An error occurred..."];
-    else {
+    } else {
         [transition setSubtype:kCATransitionFromRight];
         [self swapView:loggedView];
         

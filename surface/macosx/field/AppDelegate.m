@@ -27,6 +27,17 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 @synthesize isUpdating;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    // First launch
+    NSUserDefaults *pref =[NSUserDefaults standardUserDefaults];
+    BOOL email = [pref boolForKey:@"hasAlreadyBeenLaunched"];
+    
+    if (!email) {
+        if (![[OOPreferencesWindowController getInstance] isLaunchAtStartup])
+            [[OOPreferencesWindowController getInstance] toggleLaunchAtStartup:self];
+        [pref setBool:YES forKey:@"hasAlreadyBeenLaunched"];
+        [pref synchronize];
+    }
+    
     // Init variables
     pendingCount = 0;
     [OOEnvironmentVar setEnvironmentVar];
@@ -51,7 +62,7 @@ NSString *OOOpenSetupWindowAndStopWatchdog = @"OOOpenSetupWindowAndStopWatchdog"
 
 - (void)addPending {
     pendingCount += 1;
-    if (pendingCount > 0 && !self.isPending){
+    if (pendingCount > 0 && !self.isPending) {
         currentFrame = 0;
         animTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/7.0 
                                                      target:self 
