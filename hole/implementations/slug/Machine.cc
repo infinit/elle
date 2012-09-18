@@ -278,9 +278,17 @@ namespace hole
 
 #ifdef CACHE
             {
-              // We need to clear cached blocks when a new node is connected.
-              // If a block has a new version, or conflict, we need to solve
-              // the problem instead of fetching the block from cache.
+              // We need to clear cached blocks whenever a node joins the
+              // network.
+              //
+              // Indeed, assuming the block B is in cache at revision 4
+              // and considering the new node actually as a newer revision
+              // of the block, say 5.
+              //
+              // By clearing the cache, the system will make sure to ask
+              // the peers for the latest revision of the block. Without it,
+              // the block revision 5 would still be used.
+              //
               // @see hole::backends::fs::MutableBlock::derives()
               // XXX this should be done once the host is authenticated.
               ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
