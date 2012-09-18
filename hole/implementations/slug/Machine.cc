@@ -201,9 +201,8 @@ namespace hole
                       }
                     else
                       {
-                        std::cout << "Register instance address: "
-                                  << address << ':' << this->_port
-                                  << std::endl;
+                        ELLE_LOG("Register instance address: %s:%d", address,
+                                 this->_port);
                         client.token(agent::Agent::meta_token);
                         client.network_connect_device(descriptor.meta().id(),
                                                       passport.id,
