@@ -191,7 +191,7 @@ namespace elle
       {
         if (!Components::instance().enabled(this->_component.name))
           {
-            if (type < Logger::Type::warning)
+            if (level != Logger::Level::log)
               return;
           }
         int indent;
