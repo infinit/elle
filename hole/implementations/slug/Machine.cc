@@ -24,7 +24,6 @@
 #include <elle/cast.hh>
 #include <elle/network/Interface.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Morgue.hh>
 #include <elle/utility/Time.hh>
 #include <elle/utility/Duration.hh>
 

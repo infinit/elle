@@ -1,7 +1,6 @@
 #include <Infinit.hh>
 
 #include <elle/serialize/PairSerializer.hxx>
-#include <elle/standalone/Morgue.hh>
 
 #include <reactor/network/tcp-socket.hh>
 

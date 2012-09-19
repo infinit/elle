@@ -1,7 +1,6 @@
 #include <memory>
 
 #include <elle/utility/Time.hh>
-#include <elle/standalone/Morgue.hh>
 
 #include <reactor/network/exception.hh>
 
