@@ -25,7 +25,6 @@ add_library(elle
   Printable.cc
 
   standalone/Log.cc
-  standalone/Morgue.cc
   standalone/Region.cc
   standalone/Report.cc
   standalone/Standalone.cc
