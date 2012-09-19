@@ -400,7 +400,7 @@ def test_openssl():
 
 if __name__ == '__main__':
     test_openssl()
-    sys.exit(1)
+    sys.exit(0)
     with Network('user1', 'network1') as network:
         with NetworkPool(network, 2, start_port=8171) as pool:
             print("Network pool ready:")
