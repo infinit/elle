@@ -4,8 +4,6 @@
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace horizon
 {
   namespace linux
