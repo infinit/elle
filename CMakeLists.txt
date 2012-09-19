@@ -138,6 +138,8 @@ add_library(elle
   reactor/src/reactor/thread.cc
   reactor/src/reactor/waitable.cc
 
+  Version.cc
+
   ${elle_MOCS}
   ${elle_PLATFORM}
 )
