@@ -205,6 +205,7 @@ def configure(cxx_toolkit, cxx_config):
     )
 
   sources += drake.nodes(
+    'Version.cc',
     'serialize/ArchivableClass.hh',
     'serialize/ArchiveMode.cc',
     'serialize/ArchiveMode.hh',
@@ -284,7 +285,6 @@ def configure(cxx_toolkit, cxx_config):
     'utility/Time.hxx',
     'utility/URI.hh',
     'utility/Unicode-unix.cc',
-    #'utility/Unicode-win32.cc',
     'utility/Unicode.hh',
     'utility/Utility.hh',
     'utility/fwd.hh',
