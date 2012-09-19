@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_NETWORK_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -14,39 +13,44 @@ namespace nucleus
     ///
     /// this class identifies a network through a unique name.
     ///
-    class Network:
-      public elle::radix::Object
+    class Network
     {
-    public:
       //
       // constants
       //
+    public:
       static const Network      Null;
 
       //
       // constructors & destructors
       //
-      Network();
+    public:
+      Network(elle::String const& name);
 
       //
       // methods
       //
-      elle::Status      Create(const elle::String&);
+    public:
+      elle::String const&
+      name() const;
 
       //
       // attributes
       //
-      elle::String      name;
+    private:
+      elle::String _name;
+
+      //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator==(const Network&) const;
 
       //
       // interfaces
       //
-
-      // object
-      declare(Network);
-      elle::Boolean     operator==(const Network&) const;
-      elle::Boolean     operator<(const Network&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
     };
