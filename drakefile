@@ -149,6 +149,7 @@ def configure(cxx_toolkit, cxx_config):
     'nucleus/proton/Contents.hh',
     'nucleus/proton/Contents.hxx',
     'nucleus/proton/Family.hh',
+    'nucleus/proton/Family.cc',
     'nucleus/proton/History.cc',
     'nucleus/proton/History.hh',
     'nucleus/proton/History.hxx',
@@ -181,9 +182,9 @@ def configure(cxx_toolkit, cxx_config):
     'nucleus/proton/State.hh',
     'nucleus/proton/Transcript.cc',
     'nucleus/proton/Transcript.hh',
-    'nucleus/proton/Version.cc',
-    'nucleus/proton/Version.hh',
-    'nucleus/proton/Version.hxx',
+    'nucleus/proton/Revision.cc',
+    'nucleus/proton/Revision.hh',
+    'nucleus/proton/Revision.hxx',
     'nucleus/proton/fwd.hh',
     )
   nucleus_lib = drake.cxx.DynLib('lib/nucleus', nucleus_sources,
@@ -572,11 +573,10 @@ def configure(cxx_toolkit, cxx_config):
                                      drake.nodes('_infinit.cc') + infinit_slibs,
                                      cxx_toolkit, infinit_bin_config)
 
-  # # 8hole
-  # hole_bin = drake.cxx.Executable('hole/8hole',
-  #                                 drake.nodes('hole/_hole.cc') +
-  #                                 [infinit_lib, elle.lib, reactor.lib_dynamic],
-  #                                 cxx_toolkit, cxx_config)
+  # 8hole
+  hole_bin = drake.cxx.Executable('bin/8hole',
+                                  drake.nodes('hole/_hole.cc') + infinit_libs,
+                                  cxx_toolkit, cxx_config)
 
   # 8group
   group_sources = drake.nodes(
