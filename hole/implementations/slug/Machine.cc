@@ -124,6 +124,7 @@ namespace hole
         , _port(0)
         , _server(new reactor::network::TCPServer
                   (elle::concurrency::scheduler()))
+        , _acceptor()
       {
         elle::network::Locus     locus;
         ELLE_TRACE_SCOPE("launch");
@@ -215,10 +216,9 @@ namespace hole
                                    err.what()); // XXX[to improve]
                   }
               }
-              new reactor::Thread(elle::concurrency::scheduler(),
-                                  "Slug accept",
-                                  boost::bind(&Machine::_accept, this),
-                                  true);
+              _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
+                                                  "Slug accept",
+                                                  boost::bind(&Machine::_accept, this)));
             }
           catch (reactor::Exception& e)
             {
@@ -231,7 +231,9 @@ namespace hole
       }
 
       Machine::~Machine()
-      {}
+      {
+        _acceptor->terminate_now();
+      }
 
       /*------.
       | Hosts |

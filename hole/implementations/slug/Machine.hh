@@ -80,6 +80,7 @@ namespace hole
         elle::network::Port _port;
         void _accept();
         std::unique_ptr<reactor::network::TCPServer> _server;
+        std::unique_ptr<reactor::Thread> _acceptor;
 
       /*----.
       | API |
