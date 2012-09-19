@@ -46,6 +46,10 @@ namespace nucleus
     /// For that purpose, whenever the group manager (i.e owner/creator)
     /// modifies the composition, a new pass is generated i.e the public
     /// pass is updated and the fellows' tokens are re-generated.
+    ///
+    /// XXX[note that a new pass must be generated only when a fellow is
+    ///     removed. otherwise, there is not security threat in keeping the
+    ///     same pass for new fellows]
     class Group:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Group>,

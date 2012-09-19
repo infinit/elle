@@ -24,7 +24,95 @@
 namespace lune
 {
 
-  /// This class represents a network descriptor.
+  /// This class represents a network descriptor which, as the name
+  /// indicates, describes a network's parameters such as the
+  /// administrator's public key, the network unique identifier etc.
+  /// along with configuration values which could change over time
+  /// should the administrator decide so. These configuration values
+  /// include a network name, an openness which defines how open
+  /// the network is to other users and the policy which defines the
+  /// sharing behaviour i.e are files/directories/etc. shared in
+  /// read-only with everybody by default, in read-write or kept
+  /// private to the object owner. Finally the configuration embeds
+  /// the reference version of the Infinit software and the reference
+  /// formats of the blocks. These are provided in order to overcome
+  /// the issue described below.
+  ///
+  /// Let us recall that every block when manipulated, lives in main
+  /// memory but when transmitted over the network or stored in serialized
+  /// (i.e in an architecture-independent format) so as to be rebuilt
+  /// by any other computer no matter its platform, operating system etc.
+  /// Besides, since the Infinit software evolves, a block, say the
+  /// ContentHashBlock for explanatory puroposes, could embed an additional
+  /// attribute, for example a timestamp. Therefore, depending on the version
+  /// of the Infinit software, a block could be represented (in main memory)
+  /// and serialized in two ways, depending on the Infinit software manipulating
+  /// it. More precisely, the way a block is serialized and deserialized
+  /// (i.e rebuilt in main memory) depends on the serializer, in this case
+  /// the ContentHashBlock serializer.
+  ///
+  /// Let us imagine a scenario involving two nodes. The first X, runs
+  /// Infinit in its version 8 while the second, Y, runs Infinit in a newer
+  /// version, say 10. X decides to update a block B and therefore publish it
+  /// to the network to replicate it. Since X runs Infinit in its version 8,
+  /// the block B has been serialized in the latest ContentHashBlock's format
+  /// supported by Infinit version 8. Let us say this version of Infinit has
+  /// a ContentHashBlock serializer which produces blocks in the format 2.
+  /// However, Infinit version 10 embeds an additional attribute so that
+  /// such blocks are now serialized in format 3. Therefore, when the block
+  /// B, serialized in format 2, is received, the node Y must be able to
+  /// deserialize and manipulate it though it has been serialized in an
+  /// older format. In this case, Y will load the block B and actually
+  /// manipulate a block in the format 2 though the node Y's Infinit version
+  /// can support the format 3. This means the additional attribute is
+  /// not set.
+  ///
+  /// Note that one could think that node Y could upgrade the block B to
+  /// the newest version. Unfortunately this is not possible because, often,
+  /// after having been deserialized, a block is validated. If one upgrades
+  /// the block, the validation will fail because of an invalid signature
+  /// (generate in format 2) failing to match the current content (recently
+  /// upgraded to format 3 with an additional field which did not exist
+  /// in format 2). Consequently, the operation consisting in upgrading
+  /// a block from a format to the next should be performed at a very
+  /// specific moment, depending on the nature of the block. For a
+  /// ContentHashBlock (such as B) for instance, since such a block's address
+  /// is function of its content, upgrading the block would modify its
+  /// content and therefore its address. Thus, any other block referencing
+  /// B would have to be updated as well. This is too difficult since we
+  /// do not know which block references it. Besides, for some blocks,
+  /// especially the ones which embed signatures, these signatures must be
+  /// re-generated. Since only certain users can re-generate the signatures
+  /// (often the block owner), the upgrading process can only be performed
+  /// by the right user, such as the block owner. As a example, for a
+  /// ContentHashBlock, the system will perform the upgrading process
+  /// (i) the block has been modified so as to minimize the network
+  /// communications (ii) if the user is the block owner (iii) and right
+  /// before the call to bind() which computes the block address so as
+  /// to take all the modifications (the upgrade) into account.
+  ///
+  /// In order to counter attacks from malicious nodes, the descriptor
+  /// embeds the reference formats which are the ones supported by the
+  /// version of Infinit also provided in the descriptor. As a rule of
+  /// thumb, the network administrator uses its own Infinit version as
+  /// a reference. Thus, whenever the administrator updates the Infinit
+  /// software, its version along with the supported format are recorded
+  /// in the descriptor which is re-sealed. These reference formats are
+  /// used whenever a node receives a block in an unkown format e.g a
+  /// format higher than the one supported by the user's Infinit version.
+  /// In this case, either the version of Infinit is too old to understand
+  /// this format or the block is invalid, embedding a format 12345 for
+  /// example though this format is supported by no Infinit version. Should
+  /// a node receive such a block, it would check the format against the
+  /// reference format of the given block type e.g ContentHashBlock. If the
+  /// format is higher that the reference, the node would discard the block
+  /// as invalid and would continue. Otherwise, a warning would be displayed
+  /// to the user so as to update the Infinit software in order to be able
+  /// to understand the latest formats.
+  ///
+  /// Noteworthy is that formats should evolve quite rarely. Thus, the
+  /// impropriety of forcing the user to update the Infinit software
+  /// should not be too important.
   class Descriptor:
     public elle::concept::MakeFileable<Descriptor>,
     public elle::concept::MakeUniquable<Descriptor>,

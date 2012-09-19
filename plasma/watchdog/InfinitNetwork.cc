@@ -233,11 +233,17 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't save the descriptor.");
     }
 
+  // XXX[pas forcement necessaire si le format n'a pas change entre
+  //     la version du descriptor et celle d'Infinit. il faudrait
+  //     comparer static format avec ceux de reference dans le descriptor]
   //if (descriptor.version() > Infinit::version)
   //  {
   //    throw std::runtime_error("you have to update Infinit");
   //  }
 
+  // XXX[ici plutot compare static/dynamic format car on peut passer
+  //     a une nouvelle version sans que le descriptor n'ait change
+  //     de format]
   //if (description.version() < Infinit::version && je suis owner)
   //  {
   //     static_assert(false, "migrate the descriptor here and send to meta");
