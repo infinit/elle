@@ -30,17 +30,26 @@ namespace etoile
     elle::Status        Object::Load(
                           gear::Object&                         context)
     {
+      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        return elle::Status::Ok;
+        {
+          ELLE_DEBUG("the object's context is already loaded");
+          return elle::Status::Ok;
+        }
 
       // XXX[the context should make use of unique_ptr instead
       //     of releasing here.]
 
-      context.object =
-        depot::Depot::pull_object(
-          context.location.address,
-          context.location.revision).release();
+      ELLE_TRACE("pull the object from depot")
+      {
+        assert(context.object == nullptr);
+        context.object = depot::Depot::pull_object(
+            context.location.address,
+            context.location.revision
+        ).release();
+      }
 
       // compute the base in order to seal the block's original state.
       if (context.object->base.Create(*context.object) == elle::Status::Error)

@@ -3,6 +3,9 @@
 
 # include <hole/Hole.hh>
 
+# include <reactor/exception.hh>
+# include <elle/concurrency/Scheduler.hh>
+
 namespace etoile
 {
   namespace depot
@@ -19,10 +22,12 @@ namespace etoile
       // a block of type Group, the block's address must embed
       // a component 'group'.
       if (address.component != T::component)
-        throw std::runtime_error(
-          elle::sprintf("the address' component '%s' does not "
+        throw reactor::Exception{
+            elle::concurrency::scheduler(),
+            elle::sprintf("the address' component '%s' does not "
                         "match the type's '%s'",
-                        address.component, T::component));
+                        address.component, T::component)
+        };
 
       // Retrieve the block from the storage layer.
       block = hole::Hole::Pull(address, revision);
@@ -32,8 +37,10 @@ namespace etoile
       std::unique_ptr<T> type(dynamic_cast<T*>(block.release()));
 
       if (type.get() == nullptr)
-        throw std::runtime_error("the retrieved block is not a "
-                                 "corresponding block");
+        throw reactor::Exception{
+            elle::concurrency::scheduler(),
+            "the retrieved block type does not match the requested one"
+        };
 
       return type;
     }

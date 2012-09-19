@@ -66,67 +66,65 @@ namespace etoile
       // set the context's state.
       scope->context->state = gear::Context::StateJournaled;
 
-      // XXX[to improve in the future]
-      // Go through the blocks which needs to be pushed.
-      for (scoutor = scope->context->transcript.container.begin();
-           scoutor != scope->context->transcript.container.end();
-           scoutor++)
-        {
-          nucleus::proton::Action* action = *scoutor;
-
-          // perform the action.
-          switch (action->type)
-            {
-            case nucleus::proton::Action::TypePush:
+      ELLE_TRACE("pushing the blocks")
+      {
+        // XXX[to improve in the future]
+        // Go through the blocks which needs to be pushed.
+        for (auto action: scope->context->transcript.container)
+          {
+            // perform the action.
+            switch (action->type)
               {
-                // store the block in the depot.
-                if (depot::Depot::Push(action->address,
-                                       *action->block) == elle::Status::Error)
-                  escape("unable to push the block in the depot");
+              case nucleus::proton::Action::TypePush:
+                {
+                  // store the block in the depot.
+                  if (depot::Depot::Push(action->address,
+                                         *action->block) == elle::Status::Error)
+                    escape("unable to push the block in the depot");
 
-                break;
-              }
-            case nucleus::proton::Action::TypeWipe:
-              {
-                // Ignore these actions for now.
+                  break;
+                }
+              case nucleus::proton::Action::TypeWipe:
+                {
+                  // Ignore these actions for now.
 
-                break;
+                  break;
+                }
+              case nucleus::proton::Action::TypeUnknown:
+                {
+                  escape("unknown action type");
+                }
               }
-            case nucleus::proton::Action::TypeUnknown:
-              {
-                escape("unknown action type");
-              }
-            }
-        }
+          }
+      }
 
-      // Then, process the blocks to wipe.
-      for (scoutor = scope->context->transcript.container.begin();
-           scoutor != scope->context->transcript.container.end();
-           scoutor++)
-        {
-          nucleus::proton::Action* action = *scoutor;
+      ELLE_TRACE("wiping the blocks")
+      {
+        // Then, process the blocks to wipe.
+        for (auto action: scope->context->transcript.container)
+          {
+            // perform the action.
+            switch (action->type)
+              {
+              case nucleus::proton::Action::TypePush:
+                {
+                  break;
+                }
+              case nucleus::proton::Action::TypeWipe:
+                {
+                  // wipe the block from the depot.
+                  if (depot::Depot::Wipe(action->address) == elle::Status::Error)
+                    escape("unable to wipe the block from the depot");
 
-          // perform the action.
-          switch (action->type)
-            {
-            case nucleus::proton::Action::TypePush:
-              {
-                break;
+                  break;
+                }
+              case nucleus::proton::Action::TypeUnknown:
+                {
+                  escape("unknown action type");
+                }
               }
-            case nucleus::proton::Action::TypeWipe:
-              {
-                // wipe the block from the depot.
-                if (depot::Depot::Wipe(action->address) == elle::Status::Error)
-                  escape("unable to wipe the block from the depot");
-
-                break;
-              }
-            case nucleus::proton::Action::TypeUnknown:
-              {
-                escape("unknown action type");
-              }
-            }
-        }
+          }
+      }
 
       // flush the transcript since the actions have been performed.
       if (scope->context->transcript.Flush() == elle::Status::Error)

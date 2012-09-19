@@ -20,7 +20,7 @@ namespace etoile
         ELLE_LOG_COMPONENT("etoile.wall.Object");
         ELLE_TRACE_SCOPE("reload(%s)", scope);
 
-        ELLE_TRACE("remove a dirty block %s", scope.chemin.route)
+        ELLE_TRACE("clearing the cache in order to evict %s", scope.chemin.route)
           shrub::Shrub::clear();
 
         ELLE_TRACE("try to resolve the route now that the cache was cleaned")
@@ -36,13 +36,27 @@ namespace etoile
           scope.chemin = path::Chemin(scope.chemin.route, venue);
         }
 
-        ELLE_TRACE("Route was successfully resolved into %s, loading object",
-                   scope.chemin.route)
+        ELLE_DEBUG("route was successfully resolved into %s",
+                   scope.chemin.route);
+
+        ELLE_TRACE("loading object ");
         {
           T* context = nullptr;
           if (scope.Use(context) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to use the context");
+
+          // Reset location
+          nucleus::proton::Location location;
+          if (scope.chemin.Locate(location) == elle::Status::Error)
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                "unable to locate the object");
+
+          context->location = location;
+          // XXX We force the loading.
+          delete context->object;
+          context->object = nullptr;
+          context->state = gear::Context::StateUnknown;
 
           if (T::A::Load(*context) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),

@@ -228,6 +228,7 @@ namespace hole
   elle::Status          Hole::Push(const nucleus::proton::Address& address,
                                    const nucleus::proton::Block& block)
   {
+    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, address, block);
     // XXX check the block's footprint which should not exceed Extent
 
     // forward the request depending on the nature of the block which
@@ -276,7 +277,7 @@ namespace hole
   Hole::Pull(const nucleus::proton::Address& address,
              const nucleus::proton::Revision& revision)
   {
-    ELLE_TRACE_SCOPE("pull(%s, %s)", address, revision);
+    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, address, revision);
 
     // Forward the request depending on the nature of the block which
     // the addres indicates.
@@ -297,6 +298,7 @@ namespace hole
   void
   Hole::Wipe(nucleus::proton::Address const& address)
   {
+    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, address);
     Hole::Implementation->Kill(address);
   }
 

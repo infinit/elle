@@ -98,7 +98,7 @@ namespace horizon
         }                                                               \
       catch (std::exception const& e)                                   \
         {                                                               \
-          ELLE_ERR("%s killed by exception: %s",                        \
+          ELLE_ERR("%s killed by standard exception: %s",               \
                    BOOST_PP_STRINGIZE(Name), e.what());                 \
           return -EIO;                                                  \
         }                                                               \

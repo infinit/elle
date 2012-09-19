@@ -86,6 +86,7 @@ namespace horizon
     // Create a local handle.
     Handle handle(Handle::OperationGetattr, identifier);
 
+
     // Set the handle in the fuse_file_info structure.  Be careful,
     // the address is local but it is alright since it is used in
     // Fgetattr() only.

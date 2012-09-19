@@ -29,6 +29,10 @@ namespace nucleus
         Components
       };
 
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Component component);
+
   }
 }
 

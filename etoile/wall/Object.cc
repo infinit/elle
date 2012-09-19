@@ -30,15 +30,15 @@ namespace etoile
   namespace wall
   {
     gear::Identifier
-    Object::Load(const path::Chemin& chemin)
+    Object::Load(const path::Chemin& chemin_)
     {
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Load(%s)", chemin);
+      ELLE_TRACE_SCOPE("Load(%s)", chemin_);
 
       // acquire the scope.
-      if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
+      if (gear::Scope::Acquire(chemin_, scope) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
                                  "unable to acquire the scope");
 
@@ -54,7 +54,7 @@ namespace etoile
           nucleus::proton::Location location;
           std::unique_ptr<nucleus::neutron::Object> object;
 
-          if (chemin.Locate(location) == elle::Status::Error)
+          if (scope->chemin.Locate(location) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to locate the object");
 
@@ -67,7 +67,27 @@ namespace etoile
           catch (std::runtime_error& e)
             {
               assert(scope != nullptr);
-              Object::reload<gear::Object>(*scope);
+              ELLE_TRACE("clearing the cache in order to evict %s", scope->chemin.route)
+                shrub::Shrub::clear();
+
+              ELLE_TRACE("try to resolve the route now that the cache was cleaned")
+              {
+                path::Venue venue;
+                if (path::Path::Resolve(scope->chemin.route,
+                                        venue) == elle::Status::Error)
+                  throw reactor::Exception{
+                      elle::concurrency::scheduler(),
+                      elle::sprintf("unable to resolve the route %s", scope->chemin.route)
+                  };
+                scope->chemin = path::Chemin(scope->chemin.route, venue);
+                if (scope->chemin.Locate(location) == elle::Status::Error)
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                      "unable to locate the object");
+              }
+
+              ELLE_TRACE("trying to load the object again from %s", location)
+                object = depot::Depot::pull_object(location.address,
+                                                   location.revision);
             }
 
           // Depending on the object's genre, a context is allocated
@@ -119,6 +139,7 @@ namespace etoile
           // At this point, the context represents the real object so
           // that, assuming it is a directory, both Object::* and
           // Directory::* methods could be used.
+          assert(scope->context != nullptr);
         }
 
       // declare a critical section.
@@ -136,7 +157,7 @@ namespace etoile
         gear::Identifier identifier = guard.actor()->identifier;
 
         // locate the object based on the chemin.
-        if (chemin.Locate(context->location) == elle::Status::Error)
+        if (scope->chemin.Locate(context->location) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to locate the object");
 

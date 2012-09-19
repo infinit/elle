@@ -74,8 +74,6 @@ namespace etoile
       if (shrub::Shrub::Resolve(route, venue) == elle::Status::Error)
         escape("unable to resolve part of the route through the shrub");
 
-      route.Dump();
-      venue.Dump();
       assert(venue.elements.size() <= route.elements.size());
 
       // if complete, return the address i.e without updating the cache.
