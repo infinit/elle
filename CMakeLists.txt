@@ -188,7 +188,6 @@ add_subdirectory(hole)
 
 add_library(infinit
   Infinit.cc
-  Version.cc
   ${HEADERS}
 )
 add_dependencies(infinit dependencies)

@@ -1,6 +1,7 @@
 #ifndef LUNE_DESCRIPTOR_HH
 # define LUNE_DESCRIPTOR_HH
 
+# include <elle/Version.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/cryptography/Signature.hh>
 # include <elle/idiom/Open.hh>
@@ -17,8 +18,6 @@
 # include <nucleus/neutron/Group.hh>
 
 # include <horizon/Policy.hh>
-
-# include <Version.hh>
 
 # include <boost/noncopyable.hpp>
 

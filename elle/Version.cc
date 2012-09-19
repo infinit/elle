@@ -1,4 +1,4 @@
-#include <Version.hh>
+#include <elle/Version.hh>
 
 //
 // ---------- construction ----------------------------------------------------

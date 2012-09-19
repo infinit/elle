@@ -63,6 +63,6 @@ private:
   elle::Natural8 _minor;
 };
 
-# include <Version.hxx>
+# include <elle/Version.hxx>
 
 #endif
