@@ -35,33 +35,16 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    Block::Block(const Family                                   family,
-                 const neutron::Component                       component):
-      family(family),
-      component(component),
-      state(StateClean)
+    Block::Block(Network const network,
+                 Family const family,
+                 neutron::Component const component,
+                 elle::cryptography::PublicKey const& creator_K):
+      _network(network),
+      _family(family),
+      _component(component),
+      _creator_K(creator_K),
+      _state(StateClean)
     {
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method computes the address of the block.
-    ///
-    elle::Status        Block::Bind(Address&) const
-    {
-      escape("this method should never have been called");
-    }
-
-    ///
-    /// this method returns Status::True if the block is valid, Status::False
-    /// otherwise.
-    ///
-    elle::Status        Block::Validate(const Address&) const
-    {
-      escape("this method should never have been called");
     }
 
 //
@@ -86,21 +69,20 @@ namespace nucleus
 
       std::cout << alignment << "[Block]" << std::endl;
 
-      // dump the network.
-      if (this->network.Dump(margin + 2) == elle::Status::Error)
+      if (this->_network.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the network");
 
-      // dump the family.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
-                << std::dec << this->family << std::endl;
+                << std::dec << this->_family << std::endl;
 
-      // dump the component.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
-                << std::dec << this->component << std::endl;
+                << std::dec << this->_component << std::endl;
 
-      // dump the state.
+      if (this->_creator_K.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the creator's public key");
+
       std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
-                << std::dec << this->state << std::endl;
+                << std::dec << this->_state << std::endl;
 
       return elle::Status::Ok;
     }

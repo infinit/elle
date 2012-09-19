@@ -62,22 +62,6 @@ namespace nucleus
     }
 
     ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Network::operator<(const Network&       element) const
-    {
-      // check the network as this may actually be the same object.
-      if (this == &element)
-        return false;
-
-      // compare the names.
-      if (this->name < element.name)
-        return false;
-
-      return false;
-    }
-
-    ///
     /// this macro-function call generates the object.
     ///
     embed(Network, _());

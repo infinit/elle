@@ -37,13 +37,15 @@ namespace nucleus
     class MutableBlock:
       public Block
     {
-    public:
       //
       // constructors & destructors
       //
-      MutableBlock();
-      MutableBlock(const Family,
-                   const neutron::Component);
+    public:
+      MutableBlock(); /// XXX[to deserialization]
+      MutableBlock(Network const network,
+                   Family const family,
+                   neutron::Component const component,
+                   elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -59,13 +61,11 @@ namespace nucleus
       /// XXX
       static
       elle::io::Path
-      _path(Network const& network,
-            Address const& address);
+      _path(Address const& address);
       /// XXX
       static
       elle::io::Path
-      _path(Network const& network,
-            Address const& address,
+      _path(Address const& address,
             elle::String const& revision);
 
       //
@@ -86,28 +86,24 @@ namespace nucleus
       ELLE_CONCEPT_FILEABLE_METHODS();
     public:
       void
-      load(Network const& network,
-           Address const& address,
+      load(Address const& address,
            Revision const& revision);
       void
-      store(Network const& network,
-            Address const& address) const;
+      store(Address const& address) const;
       static
       void
-      erase(Network const& network,
-            Address const& address);
+      erase(Address const& address);
       static
       elle::Boolean
-      exists(Network const& network,
-             Address const& address,
+      exists(Address const& address,
              Revision const& revision = Revision::Any);
 
       //
       // attributes
       //
-      Revision           revision;
-
-      Base              base;
+    private:
+      Revision _revision;
+      Base _base;
     };
 
   }

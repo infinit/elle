@@ -69,29 +69,39 @@ namespace nucleus
       >,
       public elle::concept::Fileable<>
     {
-    public:
       //
       // constants
       //
+    public:
       static const elle::String         Extension;
 
       //
       // constructors & destructors
       //
-      Block();
-      Block(const Family,
-            const neutron::Component);
+    public:
+      Block(); // XXX[to deserialize]
+      Block(Network const network,
+            Family const family,
+            neutron::Component const component,
+            elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
       //
-      virtual elle::Status      Bind(Address&) const;
-      virtual elle::Status      Validate(const Address&) const;
+    public:
+      /// Computes the address of the block.
+      virtual
+      Address
+      bind() const = 0;
+      /// Validates the block's content according to its address.
+      virtual
+      void
+      validate(Address const& address) const = 0;
 
       //
       // interfaces
       //
-
+    public:
       // object
 # include <elle/idiom/Open.hh>
       declare(Block);
@@ -103,16 +113,18 @@ namespace nucleus
       __NPB_BREAK_SERIALIZABLE_CONTRACT(elle::serialize::BufferArchive);
 
       // dumpable
-      elle::Status              Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Network                   network; // XXX seems to be always empty??? it should not! must be added to the constructor.
-      Family                    family;
-      neutron::Component        component;
-
-      State                     state;
+    private:
+      Network _network;
+      Family _family;
+      neutron::Component _component;
+      elle::cryptography::PublicKey _creator_K;
+      State _state;
     };
 
   }
