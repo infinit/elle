@@ -1,4 +1,7 @@
 -I.
 -std=c++11
 -x c++
--I/usr/include/QtNetwork -I/usr/include/QtCore
+-I/usr/include/QtNetwork
+-I/usr/include/QtCore
+-I/home/hotgloupi/local/include
+-Ielle/reactor/src

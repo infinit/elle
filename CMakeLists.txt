@@ -14,8 +14,27 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules"
 set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
-set(CMAKE_BUILD_TYPE Debug)
 
+# - Build type ----------------------------------------------------------------
+
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "Build type" FORCE)
+	set(BUILD_TYPE DEBUG)
+endif()
+
+if(BUILD_TYPE)
+	string(TOUPPER "${BUILD_TYPE}" BUILD_TYPE)
+endif()
+string(TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE)
+
+if(BUILD_TYPE AND NOT(BUILD_TYPE STREQUAL CMAKE_BUILD_TYPE))
+	set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE BOOL "Build type" FORCE)
+	message(STATUS "Force build type: ${CMAKE_BUILD_TYPE}")
+	set(BUILD_TYPE_CHANGED TRUE)
+else()
+	set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
+	set(BUILD_TYPE_CHANGED FALSE)
+endif()
 
 # Platform ####################################################################
 if(APPLE)
@@ -76,6 +95,12 @@ if (UNIX)
     #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
 endif()
 
+if(INFINIT_MACOSX)
+  include_directories(/usr/local/include /opt/local/include)
+  link_directories(/usr/local/lib /opt/local/lib)
+  list(APPEND CUSTOM_CXX_FLAGS "-Wno-deprecated-declarations")
+endif(INFINIT_MACOSX)
+
 foreach(flag ${CUSTOM_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 endforeach()
@@ -83,23 +108,17 @@ endforeach()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
-#
-# MSVC CXXFLAGS
-#
-# XXX is is still relevant?
-#
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
-endiF(MSVC)
+# - Libraries linking method --------------------------------------------------
 
-#
-# MACOSX FLAGS
-#
-if(INFINIT_MACOSX)
-  include_directories(/usr/local/include /opt/local/include)
-  link_directories(/usr/local/lib /opt/local/lib)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-endif(INFINIT_MACOSX)
+if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
+	set(USE_STATIC_LIBS ON)
+	set(LINK_METHOD STATIC)
+else()
+	set(USE_STATIC_LIBS OFF)# CACHE BOOL "use static libraries for linking")
+	set(LINK_METHOD SHARED)
+endif()
+
+
 
 # Workaround to remove '-rdynamic' flag
 # fix scheduled for 2.8.1
