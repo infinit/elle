@@ -52,6 +52,7 @@ namespace nucleus
 
     Object::~Object()
     {
+      delete this->_meta.owner.record;
       delete this->_author;
     }
 

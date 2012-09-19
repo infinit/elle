@@ -47,9 +47,10 @@ namespace etoile
 
       gear::Guard guard(scope);
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -92,9 +93,10 @@ namespace etoile
 
       gear::Guard guard(scope);
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -141,9 +143,10 @@ namespace etoile
 
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -176,9 +179,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -212,9 +216,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -254,9 +259,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -291,9 +297,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -327,9 +334,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -419,9 +427,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -512,9 +521,10 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+      // Declare a critical section.
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),

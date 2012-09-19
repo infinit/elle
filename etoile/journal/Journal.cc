@@ -136,6 +136,7 @@ namespace etoile
       scope->context->state = gear::Context::StateCleaned;
 
       Journal::_scopes.erase(scope);
+      delete scope;
 
       return elle::Status::Ok;
     }
