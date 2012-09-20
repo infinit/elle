@@ -1,0 +1,26 @@
+
+All scripts are in the form "name.XX.EXT" where :
+	* name should be a descriptive short string for the test
+	* XX is the number of instances that this test requires
+	* EXT is the extension of the script
+
+all script expect environment variables MNT{1 .. XX} and HOME{1 .. XX} that are
+respectively the mount point of the instance i and the INFINIT_HOME related to
+the spawned instance.
+
+For example, a test could be:
+
+cat > testing_env.3.sh << EOF
+
+# Checking that env var are defined
+
+[ -z "$MNT1" ] && exit 1
+[ -z "$HOME1" ] && exit 1
+[ -z "$MNT2" ] && exit 1
+[ -z "$HOME2" ] && exit 1
+[ -z "$MNT3" ] && exit 1
+[ -z "$HOME3" ] && exit 1
+
+EOF
+
+
