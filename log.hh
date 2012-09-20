@@ -4,6 +4,7 @@
 # include <elle/log/Logger.hh>
 # include <elle/assert.hh>
 # include <elle/printf.hh>
+# include <elle/print.hh>
 
 namespace elle
 {
@@ -43,6 +44,14 @@ namespace elle
 # define ELLE_TRACE(...) ELLE_LOG_LEVEL(trace, info,    __VA_ARGS__)
 # define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, info,    __VA_ARGS__)
 # define ELLE_DUMP(...)  ELLE_LOG_LEVEL(dump,  info,    __VA_ARGS__)
+
+/// Shortcut to trace a function name and its arguments.
+///
+/// @param  the list of arguments
+# define ELLE_TRACE_FUNCTION(...)                                             \
+    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, elle::sprint(                    \
+          elle::iomanip::Separator(','), #__VA_ARGS__                         \
+    ))                                                                        \
 
     namespace detail
     {
