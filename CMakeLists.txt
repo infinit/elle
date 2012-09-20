@@ -6,16 +6,54 @@ set(HAS_XCODE TRUE CACHE BOOL
 
 # follow symlink when copying
 cmake_policy(SET CMP0009 NEW)
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 project(Infinit C CXX)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules")
+# - Infinit version -----------------------------------------------------------
+#
+# Defines INFINIT_VERSION
+#
 
 set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 
+# - Infinit platform ----------------------------------------------------------
+#
+# Defines INFINIT_PLATFORM
+#
+
+if(APPLE)
+  set(INFINIT_MACOSX TRUE)
+  set(INFINIT_PLATFORM_NO_ARCH macosx)
+elseif(WIN32)
+  set(INFINIT_WINDOWS TRUE)
+  set(INFINIT_PLATFORM_NO_ARCH windows)
+elseif(UNIX)
+  set(INFINIT_LINUX TRUE)
+  set(INFINIT_PLATFORM_NO_ARCH linux)
+endif()
+
+# - Infinit architecture ------------------------------------------------------
+#
+# Defines INFINIT_ARCHITECTURE
+#
+
+if(CMAKE_SIZEOF_VOID_P MATCHES "8")
+    set(INFINIT_ARCHITECTURE "64")
+else()
+    set(INFINIT_ARCHITECTURE "32")
+endif()
+
+set(INFINIT_PLATFORM "${INFINIT_PLATFORM_NO_ARCH}${INFINIT_ARCHITECTURE}")
+
+message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
+
 # - Build type ----------------------------------------------------------------
+#
+# Handle cmake build type changes and set BUILD_TYPE_CHANGED when appropriate.
+#
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "Build type" FORCE)
@@ -36,28 +74,9 @@ else()
 	set(BUILD_TYPE_CHANGED FALSE)
 endif()
 
-# Platform ####################################################################
-if(APPLE)
-  set(INFINIT_MACOSX TRUE)
-  set(INFINIT_PLATFORM_NO_ARCH macosx)
-elseif(WIN32)
-  set(INFINIT_WINDOWS TRUE)
-  set(INFINIT_PLATFORM_NO_ARCH windows)
-elseif(UNIX)
-  set(INFINIT_LINUX TRUE)
-  set(INFINIT_PLATFORM_NO_ARCH linux)
-endif()
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# Architecture ################################################################
-if(CMAKE_SIZEOF_VOID_P MATCHES "8")
-    set(INFINIT_ARCHITECTURE "64")
-else()
-    set(INFINIT_ARCHITECTURE "32")
-endif()
-
-set(INFINIT_PLATFORM "${INFINIT_PLATFORM_NO_ARCH}${INFINIT_ARCHITECTURE}")
-
-# Compiler ####################################################################
+# - Compiler ------------------------------------------------------------------
 
 # XXX[problem with distcc, fuck you very much CMake]
 #if(CMAKE_COMPILER_IS_GNUCXX)
@@ -70,7 +89,8 @@ set(INFINIT_PLATFORM "${INFINIT_PLATFORM_NO_ARCH}${INFINIT_ARCHITECTURE}")
 #	endif()
 #endif()
 
-# Compilation flags ###########################################################
+# - Compilation flags ---------------------------------------------------------
+
 set(CUSTOM_CXX_FLAGS)
 set(CUSTOM_C_FLAGS)
 if (UNIX)
@@ -105,10 +125,13 @@ foreach(flag ${CUSTOM_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 endforeach()
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 # - Libraries linking method --------------------------------------------------
+#
+# Defines USE_STATIS_LIBS to TRUE if build type is release.
+# Defines LINK_METHOD to STATIC if build type is release, SHARED otherwise.
+#
 
 if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
 	set(USE_STATIC_LIBS ON)
@@ -118,7 +141,8 @@ else()
 	set(LINK_METHOD SHARED)
 endif()
 
-
+# tell cmake to not build shared libraries by default
+set(BUILD_SHARED_LIBS OFF)
 
 # Workaround to remove '-rdynamic' flag
 # fix scheduled for 2.8.1
@@ -127,7 +151,7 @@ endif()
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
-message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
+# - Infinit internal dependencies ---------------------------------------------
 
 set(INFINIT_LIBRARIES_PREFIX
 	"${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
@@ -152,6 +176,7 @@ set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
   ${INFINIT_QJSON_SHARED_LIBRARIES}
 )
+
 message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
 message("-- External libraries: ${INFINIT_EXTERNAL_LIBRARIES}")
 
@@ -169,26 +194,26 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies
 )
 
-##
+# - Dependencies --------------------------------------------------------------
+
 ## Loading boost
-##
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS system thread signals filesystem unit_test_framework REQUIRED)
+find_package(Boost
+	COMPONENTS system thread signals filesystem unit_test_framework
+	REQUIRED
+)
 
 include_directories(${Boost_INCLUDE_DIRS})
+
 message("-- Boost libraries: ${Boost_LIBRARIES}")
 
-
-
+## Loading Qt
 find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 set(QT_DONT_USE_QTGUI true)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDES})
-
-# tell cmake to not build shared libraries by default
-set(BUILD_SHARED_LIBS OFF)
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
@@ -215,8 +240,6 @@ add_dependencies(infinit dependencies)
 # The whole project is linked against these libraries
 
 set(INFINIT_LIBRARIES
-
-
   etoile
 
   hole
@@ -224,7 +247,6 @@ set(INFINIT_LIBRARIES
   lune
   nucleus # circular dependency with lune
   hole # circular dependency with lune
-
 
   horizon
   ${INFINIT_PLATFORM_NO_ARCH}
@@ -263,4 +285,7 @@ target_link_libraries(8infinit LINK_PRIVATE ${INFINIT_LIBRARIES})
 add_dependencies(8infinit dependencies)
 
 # configuration
-configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
+configure_file(
+	"${CMAKE_SOURCE_DIR}/config.hh.cmake"
+	"${CMAKE_SOURCE_DIR}/config.hh"
+)
