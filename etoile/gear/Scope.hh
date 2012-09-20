@@ -135,6 +135,9 @@ namespace etoile
       elle::Status      Shutdown();
 
       template <typename T>
+      elle::Status      _shutdown();
+
+      template <typename T>
       elle::Status      Refresh();
       template <typename T>
       elle::Status      Disclose();

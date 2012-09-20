@@ -15,6 +15,8 @@ namespace etoile
   namespace gear
   {
 
+    ELLE_LOG_COMPONENT("infinit.etoile.gear.Scope");
+
 //
 // ---------- definitions -----------------------------------------------------
 //
@@ -797,6 +799,36 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    template <typename T>
+    elle::Status Scope::_shutdown()
+    {
+      T* context = static_cast<T*>(this->context);
+      assert(dynamic_cast<T*>(this->context) != nullptr);
+
+      // depending on the closing operation...
+      switch (this->context->operation)
+      {
+      case OperationDiscard:
+        // call the shutdown method.
+        if (T::A::Discard(*context) == elle::Status::Error)
+          escape("an error occured in the shutdown method");
+        break;
+      case OperationStore:
+        // call the shutdown method.
+        if (T::A::Store(*context) == elle::Status::Error)
+          escape("an error occured in the shutdown method");
+        break;
+      case OperationDestroy:
+        // call the shutdown method.
+        if (T::A::Destroy(*context) == elle::Status::Error)
+          escape("an error occured in the shutdown method");
+        break;
+      case OperationUnknown:
+        escape("unknown operation '%u'\n", this->context->operation);
+      }
+      return elle::Status::Ok;
+    }
+
     ///
     /// this method triggers the shutdown method whose role is to close
     /// a context it order for it to be recorded in the journal.
@@ -805,9 +837,10 @@ namespace etoile
     /// method does nothing as one the last actor triggers the actual
     /// closing operation.
     ///
-    elle::Status        Scope::Shutdown()
+    elle::Status Scope::Shutdown()
     {
-      ELLE_TRACE_SCOPE("%s()", __FUNCTION__);
+      ELLE_TRACE_FUNCTION();
+
       // if actors remain, do nothing.
       //
       // indeed, only the final actor will trigger the shutdown operation. this
@@ -832,240 +865,21 @@ namespace etoile
 
       // depending on the context's nature.
       switch (this->context->nature)
-        {
-        case NatureObject:
-          {
-            gear::Object*           context =
-              static_cast<gear::Object*>(this->context);
-            assert(dynamic_cast<gear::Object*>(this->context) != nullptr);
-
-            // depending on the closing operation...
-            switch (this->context->operation)
-              {
-              case OperationDiscard:
-                {
-                  // call the shutdown method.
-                  if (gear::Object::A::Discard(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationStore:
-                {
-                  // call the shutdown method.
-                  if (gear::Object::A::Store(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationDestroy:
-                {
-                  // call the shutdown method.
-                  if (gear::Object::A::Destroy(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationUnknown:
-                {
-                  escape("unknown operation '%u'\n",
-                         this->context->operation);
-                }
-              }
-
-            break;
-          }
-        case NatureFile:
-          {
-            gear::File*             context =
-              static_cast<gear::File*>(this->context);
-            assert(dynamic_cast<gear::File*>(this->context) != nullptr);
-
-            // depending on the closing operation...
-            switch (this->context->operation)
-              {
-              case OperationDiscard:
-                {
-                  // call the shutdown method.
-                  if (gear::File::A::Discard(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationStore:
-                {
-                  // call the shutdown method.
-                  if (gear::File::A::Store(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationDestroy:
-                {
-                  // call the shutdown method.
-                  if (gear::File::A::Destroy(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationUnknown:
-                {
-                  escape("unknown operation '%u'\n",
-                         this->context->operation);
-                }
-              }
-
-            break;
-          }
-        case NatureDirectory:
-          {
-            gear::Directory*        context =
-              static_cast<gear::Directory*>(this->context);
-            assert(dynamic_cast<gear::Directory*>(
-                     this->context) != nullptr);
-
-            // depending on the closing operation...
-            switch (this->context->operation)
-              {
-              case OperationDiscard:
-                {
-                  // call the shutdown method.
-                  if (gear::Directory::A::Discard(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationStore:
-                {
-                  // call the shutdown method.
-                  if (gear::Directory::A::Store(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationDestroy:
-                {
-                  // call the shutdown method.
-                  if (gear::Directory::A::Destroy(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationUnknown:
-                {
-                  escape("unknown operation '%u'\n",
-                         this->context->operation);
-                }
-              }
-
-            break;
-          }
-        case NatureLink:
-          {
-            gear::Link*             context =
-              static_cast<gear::Link*>(this->context);
-            assert(dynamic_cast<gear::Link*>(this->context) != nullptr);
-
-            // depending on the closing operation...
-            switch (this->context->operation)
-              {
-              case OperationDiscard:
-                {
-                  // call the shutdown method.
-                  if (gear::Link::A::Discard(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationStore:
-                {
-                  // call the shutdown method.
-                  if (gear::Link::A::Store(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationDestroy:
-                {
-                  // call the shutdown method.
-                  if (gear::Link::A::Destroy(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationUnknown:
-                {
-                  escape("unknown operation '%u'\n",
-                         this->context->operation);
-                }
-              }
-
-            break;
-          }
-        case NatureGroup:
-          {
-            gear::Group* context =
-              static_cast<gear::Group*>(this->context);
-            assert(dynamic_cast<gear::Group*>(this->context) != nullptr);
-
-            // depending on the closing operation...
-            switch (this->context->operation)
-              {
-              case OperationDiscard:
-                {
-                  // call the shutdown method.
-                  if (gear::Group::A::Discard(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationStore:
-                {
-                  // call the shutdown method.
-                  if (gear::Group::A::Store(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationDestroy:
-                {
-                  // call the shutdown method.
-                  if (gear::Group::A::Destroy(
-                        *context) == elle::Status::Error)
-                    escape("an error occured in the shutdown method");
-
-                  break;
-                }
-              case OperationUnknown:
-                {
-                  escape("unknown operation '%u'\n",
-                         this->context->operation);
-                }
-              }
-
-            break;
-          }
-        case NatureUnknown:
-        default:
-          {
-            escape("unknown context nature '%u'",
-                   this->context->nature);
-          }
-        }
+      {
+      case NatureObject:
+        return this->_shutdown<gear::Object>();
+      case NatureFile:
+        return this->_shutdown<gear::File>();
+      case NatureDirectory:
+        return this->_shutdown<gear::Directory>();
+      case NatureLink:
+        return this->_shutdown<gear::Link>();
+      case NatureGroup:
+        return this->_shutdown<gear::Group>();
+      case NatureUnknown:
+      default:
+        escape("unknown context nature '%u'", this->context->nature);
+      }
 
       return elle::Status::Ok;
     }

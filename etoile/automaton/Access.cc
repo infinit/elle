@@ -38,7 +38,7 @@ namespace etoile
     elle::Status        Access::Open(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // check if the access has already been opened.
       if (context.access != nullptr)
@@ -83,8 +83,7 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           const nucleus::neutron::Permissions& permissions)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s, %s)",
-                       __FUNCTION__, context, subject, permissions);
+      ELLE_TRACE_FUNCTION(context, subject, permissions);
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -382,7 +381,7 @@ namespace etoile
                           const nucleus::neutron::Subject& subject,
                           nucleus::neutron::Record const*& record)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, subject);
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -464,8 +463,7 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Record>& range)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s, %s)", __FUNCTION__,
-                       context, index, size);
+      ELLE_TRACE_FUNCTION(context, index, size);
 
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
@@ -511,7 +509,7 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::neutron::Subject& subject)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, subject);
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -593,7 +591,7 @@ namespace etoile
                           gear::Object&                         context,
                           elle::cryptography::SecretKey const&                key)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, key);
+      ELLE_TRACE_FUNCTION(context, key);
 
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
@@ -736,7 +734,7 @@ namespace etoile
     elle::Status        Access::Downgrade(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
@@ -808,7 +806,7 @@ namespace etoile
     elle::Status        Access::Destroy(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // if the block is present.
       if (context.object->access() != nucleus::proton::Address::Null)
@@ -838,7 +836,7 @@ namespace etoile
     {
       nucleus::neutron::Size size;
 
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -973,7 +971,7 @@ namespace etoile
     elle::Status        Access::Audit(gear::Object&             context,
                                       const nucleus::neutron::Subject& subject)
     {
-      ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, context, subject);
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // depending on the current author's role.
       switch (context.object->author().role)
@@ -1064,7 +1062,7 @@ namespace etoile
     {
       nucleus::neutron::Author author;
 
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // build a new author, representing the object's owner.
       if (author.Create() == elle::Status::Error)

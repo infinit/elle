@@ -29,18 +29,12 @@ namespace etoile
     {
       nucleus::proton::Address address;
 
-      ELLE_TRACE_SCOPE("Create()");
+      ELLE_TRACE_FUNCTION(context, description, identity);
 
-      // XXX[remove try/catch later]
-      try
-        {
-          context.group = new nucleus::neutron::Group(agent::Agent::Subject.user(),
-                                                      description);
-        }
-      catch (std::exception const& e)
-        {
-          escape("%s", e.what());
-        }
+      context.group = new nucleus::neutron::Group{
+          agent::Agent::Subject.user(),
+          description
+      };
 
       // bind the object to its address i.e this will never changed.
       if (context.group->Bind(address) == elle::Status::Error)
@@ -62,7 +56,7 @@ namespace etoile
     elle::Status
     Group::Load(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Load()");
+      ELLE_TRACE_FUNCTION(context);
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
@@ -106,7 +100,7 @@ namespace etoile
     Group::Add(gear::Group& context,
                nucleus::neutron::Subject const& subject)
     {
-      ELLE_TRACE_SCOPE("Add()");
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -167,7 +161,7 @@ namespace etoile
                   nucleus::neutron::Subject const& subject,
                   nucleus::neutron::Fellow const*& fellow)
     {
-      ELLE_TRACE_SCOPE("Lookup()");
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // Ty to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -232,8 +226,7 @@ namespace etoile
                    nucleus::neutron::Size const& size,
                    nucleus::neutron::Range<nucleus::neutron::Fellow>& range)
     {
-      ELLE_TRACE_SCOPE("Consult(%s, %s, %s, %s)",
-                           context, index, size, range);
+      ELLE_TRACE_FUNCTION(context, index, size, range);
 
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
@@ -292,7 +285,7 @@ namespace etoile
     Group::Remove(gear::Group& context,
                   nucleus::neutron::Subject const& subject)
     {
-      ELLE_TRACE_SCOPE("Remove()");
+      ELLE_TRACE_FUNCTION(context, subject);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -349,7 +342,7 @@ namespace etoile
     elle::Status
     Group::Discard(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Discard()");
+      ELLE_TRACE_FUNCTION(context);
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
@@ -360,7 +353,7 @@ namespace etoile
     elle::Status
     Group::Destroy(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_FUNCTION(context);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -392,7 +385,7 @@ namespace etoile
     elle::Status
     Group::Store(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Store()");
+      ELLE_TRACE_FUNCTION(context);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -414,15 +407,7 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the group is dirty");
 
-          // XXX[remove try/catch]
-          try
-            {
-              context.group->seal(agent::Agent::Identity.pair.k);
-            }
-          catch (...)
-            {
-              escape("unable to seal the group");
-            }
+          context.group->seal(agent::Agent::Identity.pair.k);
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(context.location.address,

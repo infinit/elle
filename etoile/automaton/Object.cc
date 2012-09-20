@@ -30,7 +30,7 @@ namespace etoile
     elle::Status        Object::Load(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
@@ -83,6 +83,7 @@ namespace etoile
     elle::Status        Object::Discard(
                           gear::Object&                         context)
     {
+      ELLE_TRACE_FUNCTION(context);
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -111,6 +112,8 @@ namespace etoile
     elle::Status        Object::Destroy(
                           gear::Object&                         context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
@@ -137,7 +140,7 @@ namespace etoile
     elle::Status        Object::Store(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       // close the access.
       if (Access::Close(context) == elle::Status::Error)
