@@ -120,14 +120,15 @@ def to_add(lib):
 
     patterns_include = {
         'startswith': [
+        ],
+        'contains': [
             "libetoile.",
             "libelle.",
             "libhole.",
             "libnucleus.",
             "libinfinit.",
             "liblune.",
-        ],
-        'contains': [
+
             "libgcc_s",
             "libstdc++",
             "libpth.",
