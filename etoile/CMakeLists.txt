@@ -1,6 +1,6 @@
 project(Etoile CXX)
 
-add_library(etoile
+add_library(etoile ${LINK_METHOD}
   path/Path.cc
   path/Route.cc
   path/Chemin.cc

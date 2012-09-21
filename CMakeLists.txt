@@ -230,7 +230,7 @@ add_subdirectory(lune)
 add_subdirectory(horizon)
 add_subdirectory(hole)
 
-add_library(infinit
+add_library(infinit ${LINK_METHOD}
   Infinit.cc
   ${HEADERS}
 )

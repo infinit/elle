@@ -1,6 +1,6 @@
 project(Nucleus CXX)
 
-add_library(nucleus
+add_library(nucleus ${LINK_METHOD}
   Nucleus.cc
   Derivable.cc
   Exception.cc

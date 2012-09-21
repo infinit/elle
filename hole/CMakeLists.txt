@@ -1,4 +1,4 @@
-add_library(hole
+add_library(hole ${LINK_METHOD}
   implementations/local/Implementation.cc
   implementations/local/Local.cc
   implementations/local/Machine.cc

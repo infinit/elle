@@ -16,7 +16,7 @@ set_property(
     PROPERTY LANGUAGE C
 )
 
-add_library(elle
+add_library(elle ${LINK_METHOD}
 
   assert.cc
 
@@ -76,7 +76,7 @@ add_library(elle
   utility/BufferStream.cc
   utility/Duration.cc
   utility/Factory.cc
-  utility/HTTP.cc
+  #utility/HTTP.cc
   utility/Parser.cc
   utility/Settings.cc
   utility/Time.cc
