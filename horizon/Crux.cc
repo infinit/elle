@@ -62,7 +62,7 @@ namespace horizon
   Crux::getattr(const char*               path,
                 struct ::stat*            stat)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
+    ELLE_TRACE_FUNCTION(path, stat);
 
     etoile::path::Way         way(path);
     struct ::fuse_file_info   info;
@@ -111,7 +111,7 @@ namespace horizon
                  struct ::stat*           stat,
                  struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
+    ELLE_TRACE_FUNCTION(path, stat);
 
     Handle*                           handle;
     elle::String*                     name;
@@ -284,7 +284,7 @@ namespace horizon
   Crux::utimens(const char* path,
                 const struct ::timespec[2])
   {
-    ELLE_TRACE_SCOPE("%s(%s, ...)", __FUNCTION__, path);
+    ELLE_TRACE_FUNCTION(path);
 
     // XXX not supported: do something about it
 
@@ -296,7 +296,7 @@ namespace horizon
   Crux::opendir(const char* path,
                 struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+    ELLE_TRACE_FUNCTION(path, info);
 
     etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
@@ -327,9 +327,7 @@ namespace horizon
                 off_t offset,
                 struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
-                     __FUNCTION__, path, buffer, filler,
-                     static_cast<elle::Natural64>(offset), info);
+    ELLE_TRACE_FUNCTION(path, buffer, filler, static_cast<elle::Natural64>(offset), info);
 
     Handle*           handle;
     off_t             next;
@@ -413,7 +411,7 @@ namespace horizon
   Crux::releasedir(const char* path,
                    struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+    ELLE_TRACE_FUNCTION(path, info);
 
     // Set the handle pointer to the file handle that has been
     // filled by Opendir().
@@ -437,7 +435,7 @@ namespace horizon
   Crux::mkdir(const char* path,
               mode_t mode)
   {
-    ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
+    ELLE_TRACE_FUNCTION(path, std::oct, mode);
 
     nucleus::neutron::Permissions permissions =
       nucleus::neutron::PermissionNone;
@@ -552,7 +550,7 @@ namespace horizon
   int
   Crux::rmdir(const char* path)
   {
-    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
+    ELLE_TRACE_FUNCTION(path);
 
     etoile::path::Slab                name;
     etoile::path::Way                 child(path);
@@ -637,7 +635,7 @@ namespace horizon
   Crux::access(const char* path,
                int mask)
   {
-    ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
+    ELLE_TRACE_FUNCTION(path, std::oct, mask);
 
     etoile::path::Way way(path);
     etoile::abstract::Object abstract;
@@ -764,7 +762,7 @@ namespace horizon
     etoile::path::Way                 way(path);
     nucleus::neutron::Subject subject;
 
-    ELLE_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
+    ELLE_TRACE_FUNCTION(path, std::oct, mode);
 
     // Note that this method ignores both the group and other
     // permissions.
@@ -895,7 +893,7 @@ namespace horizon
               uid_t uid,
               gid_t gid)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %d, %d)", __FUNCTION__, path, uid, gid);
+    ELLE_TRACE_FUNCTION(path, uid, gid);
 
     // Xxx to implement.
 
@@ -913,8 +911,7 @@ namespace horizon
                  size_t size,
                  int flags)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)",
-                     __FUNCTION__, path, name, value, size, flags);
+    ELLE_TRACE_FUNCTION(path, name, value, size, std::hex, flags);
 
     etoile::path::Way way(path);
     nucleus::neutron::Subject subject;
@@ -964,7 +961,7 @@ namespace horizon
                  char* value,
                  size_t size)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
+    ELLE_TRACE_FUNCTION(path, name, value, size);
 
     etoile::path::Way way(path);
     nucleus::neutron::Trait const* trait;
@@ -1013,7 +1010,7 @@ namespace horizon
                   char* list,
                   size_t size)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
+    ELLE_TRACE_FUNCTION(path, list, size);
 
     etoile::path::Way way(path);
     nucleus::neutron::Range<nucleus::neutron::Trait> range;
@@ -1079,7 +1076,7 @@ namespace horizon
   Crux::removexattr(const char* path,
                     const char* name)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
+    ELLE_TRACE_FUNCTION(path, name);
 
     etoile::path::Way way(path);
     nucleus::neutron::Subject subject;
@@ -1125,7 +1122,7 @@ namespace horizon
   Crux::link(const char* target,
              const char* source)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+    ELLE_TRACE_FUNCTION(target, source);
 
     return -ENOSYS;
   }
@@ -1135,7 +1132,7 @@ namespace horizon
   Crux::symlink(const char* target,
                 const char* source)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
+    ELLE_TRACE_FUNCTION(target, source);
 
     etoile::gear::Identifier directory;
     etoile::gear::Identifier link;
@@ -1252,8 +1249,7 @@ namespace horizon
                  char* buffer,
                  size_t size)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer,
-                     static_cast<elle::Natural64>(size));
+    ELLE_TRACE_FUNCTION(path, buffer, static_cast<elle::Natural64>(size));
 
     etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
@@ -1307,7 +1303,7 @@ namespace horizon
                mode_t mode,
                struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
+    ELLE_TRACE_FUNCTION(path, mode, info);
 
     nucleus::neutron::Permissions permissions =
       nucleus::neutron::PermissionNone;
@@ -1469,7 +1465,7 @@ namespace horizon
   Crux::open(const char* path,
              struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+    ELLE_TRACE_FUNCTION(path, info);
 
     etoile::path::Way         way(path);
     etoile::path::Chemin      chemin;
@@ -1499,11 +1495,11 @@ namespace horizon
               off_t offset,
               struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
-                     __FUNCTION__, path,
-                     reinterpret_cast<const void*>(buffer),
-                     static_cast<elle::Natural64>(size),
-                     static_cast<elle::Natural64>(offset), info);
+    ELLE_TRACE_FUNCTION(path,
+                        reinterpret_cast<const void*>(buffer),
+                        static_cast<elle::Natural64>(size),
+                        static_cast<elle::Natural64>(offset),
+                        info);
 
     Handle*           handle;
     elle::standalone::Region      region;
@@ -1547,10 +1543,10 @@ namespace horizon
              off_t offset,
              struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
-                     __FUNCTION__, path, buffer,
-                     static_cast<elle::Natural64>(size),
-                     static_cast<elle::Natural64>(offset), info);
+    ELLE_TRACE_FUNCTION(path,
+                        buffer,
+                        static_cast<elle::Natural64>(size),
+                        static_cast<elle::Natural64>(offset), info);
 
     Handle*           handle;
     elle::standalone::Region      region;
@@ -1589,8 +1585,7 @@ namespace horizon
   Crux::truncate(const char* path,
                  off_t size)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %d)", __FUNCTION__, path,
-                     static_cast<elle::Natural64>(size));
+    ELLE_TRACE_FUNCTION(path, static_cast<elle::Natural64>(size));
 
     etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
@@ -1632,8 +1627,7 @@ namespace horizon
                   off_t size,
                   struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path,
-                     static_cast<elle::Natural64>(size), info);
+    ELLE_TRACE_FUNCTION(path, static_cast<elle::Natural64>(size), info);
 
     Handle*           handle;
 
@@ -1666,7 +1660,7 @@ namespace horizon
   Crux::release(const char* path,
                 struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
+    ELLE_TRACE_FUNCTION(path, info);
 
     etoile::path::Way way(path);
     Handle*           handle;
@@ -1733,7 +1727,7 @@ namespace horizon
   Crux::rename(const char* source,
                const char* target)
   {
-    ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, source, target);
+    ELLE_TRACE_FUNCTION(source, target);
 
     etoile::path::Slab f;
     etoile::path::Way from(etoile::path::Way(source), f);
@@ -1956,7 +1950,7 @@ namespace horizon
   int
   Crux::unlink(const char* path)
   {
-    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
+    ELLE_TRACE_FUNCTION(path);
 
     etoile::path::Slab                name;
     etoile::path::Way                 child(path);
