@@ -55,16 +55,21 @@ namespace elle
 /// Shortcut to trace a function name and its arguments.
 ///
 /// @param  the list of arguments
-/// XXX does not work with empty call
 # define ELLE_TRACE_FUNCTION(...)                                             \
-    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, elle::sprint(                    \
-          elle::iomanip::Separator(','),                                      \
-          ##__VA_ARGS__                                                       \
-    ))                                                                        \
+    ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__,                                  \
+        elle::log::detail::print_function_params(__VA_ARGS__)                 \
+    )                                                                         \
 /**/
 
     namespace detail
     {
+
+      template <typename... Args>
+      std::string
+      print_function_params(Args const&... args)
+      {
+        return elle::sprint(elle::iomanip::Separator(", "), args...);
+      }
 
       struct TraceComponent
       {
