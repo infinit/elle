@@ -21,6 +21,7 @@ add_library(elle
   assert.cc
 
   Buffer.cc
+  Exception.cc
   IOStream.cc
   Printable.cc
 
