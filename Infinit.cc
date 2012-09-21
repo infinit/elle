@@ -28,7 +28,7 @@ const elle::String              Infinit::Key{
 ///
 /// this constant contains the version of the current Infinit software.
 ///
-const Version Infinit::version(0, 4);
+const elle::Version Infinit::version(0, 4);
 
 ///
 /// this constant contains the copyright string.

@@ -149,7 +149,7 @@ namespace lune
                horizon::Policy const& policy,
                elle::Boolean history,
                elle::Natural32 extent,
-               Version const& version,
+               elle::Version const& version,
                Authority const& authority);
 
     //
@@ -306,7 +306,7 @@ namespace lune
       Data(elle::String const& name,
            hole::Openness const& openness,
            horizon::Policy const& policy,
-           Version const& version);
+           elle::Version const& version);
 
       //
       // methods
@@ -328,7 +328,7 @@ namespace lune
       horizon::Policy const&
       policy() const;
       /// XXX
-      Version const&
+      elle::Version const&
       version() const;
       /// The methods below enables one to access the reference format for
       /// every block type supported by Infinit.
@@ -389,7 +389,7 @@ namespace lune
       elle::String _name;
       hole::Openness _openness;
       horizon::Policy _policy;
-      Version _version;
+      elle::Version _version;
 
       struct
       {

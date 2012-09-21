@@ -56,7 +56,7 @@ namespace lune
                          horizon::Policy const& policy,
                          elle::Boolean history,
                          elle::Natural32 extent,
-                         Version const& version,
+                         elle::Version const& version,
                          Authority const& authority):
     _meta(id, administrator_K, model, root, everybody, history, extent,
           authority),
@@ -357,7 +357,7 @@ namespace lune
   Descriptor::Data::Data(elle::String const& name,
                          hole::Openness const& openness,
                          horizon::Policy const& policy,
-                         Version const& version):
+                         elle::Version const& version):
     _name(name),
     _openness(openness),
     _policy(policy),
@@ -452,7 +452,7 @@ namespace lune
     return (this->_policy);
   }
 
-  Version const&
+  elle::Version const&
   Descriptor::Data::version() const
   {
     return (this->_version);

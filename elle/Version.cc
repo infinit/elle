@@ -1,88 +1,93 @@
 #include <elle/Version.hh>
 
-//
-// ---------- construction ----------------------------------------------------
-//
-
-Version::Version():
-  _major(0),
-  _minor(0)
+namespace elle
 {
-}
 
-Version::Version(elle::Natural8 major,
-                 elle::Natural8 minor):
-  _major(major),
-  _minor(minor)
-{
-}
+  //
+  // ---------- construction ----------------------------------------------------
+  //
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+  Version::Version():
+    _major(0),
+    _minor(0)
+  {
+  }
 
-elle::Natural8
-Version::major() const
-{
-  return (this->_major);
-}
+  Version::Version(elle::Natural8 major,
+                   elle::Natural8 minor):
+    _major(major),
+    _minor(minor)
+  {
+  }
 
-elle::Natural8
-Version::minor() const
-{
-  return (this->_minor);
-}
+  //
+  // ---------- methods ---------------------------------------------------------
+  //
 
-//
-// ---------- printable -------------------------------------------------------
-//
+  elle::Natural8
+  Version::major() const
+  {
+    return (this->_major);
+  }
 
-void
-Version::print(std::ostream& stream) const
-{
-  stream << static_cast<elle::Natural32>(this->_major)
-         << ":"
-         << static_cast<elle::Natural32>(this->_minor);
-}
+  elle::Natural8
+  Version::minor() const
+  {
+    return (this->_minor);
+  }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+  //
+  // ---------- printable -------------------------------------------------------
+  //
 
-elle::Boolean
-Version::operator ==(Version const& other) const
-{
-  return ((this->_major == other._major) && (this->_minor == other._minor));
-}
+  void
+  Version::print(std::ostream& stream) const
+  {
+    stream << static_cast<elle::Natural32>(this->_major)
+           << ":"
+           << static_cast<elle::Natural32>(this->_minor);
+  }
 
-elle::Boolean
-Version::operator !=(Version const& other) const
-{
-  return (!this->operator ==(other));
-}
+  //
+  // ---------- operators -------------------------------------------------------
+  //
 
-elle::Boolean
-Version::operator <(Version const& other) const
-{
-  return ((this->_major < other._major) ||
-          ((this->_major == other._major) && (this->_minor < other._minor)));
-}
+  elle::Boolean
+  Version::operator ==(Version const& other) const
+  {
+    return ((this->_major == other._major) && (this->_minor == other._minor));
+  }
 
-elle::Boolean
-Version::operator >(Version const& other) const
-{
-  return ((this->_major > other._major) ||
-          ((this->_major == other._major) && (this->_minor > other._minor)));
-}
+  elle::Boolean
+  Version::operator !=(Version const& other) const
+  {
+    return (!this->operator ==(other));
+  }
 
-elle::Boolean
-Version::operator <=(Version const& other) const
-{
-  return (!this->operator >(other));
-}
+  elle::Boolean
+  Version::operator <(Version const& other) const
+  {
+    return ((this->_major < other._major) ||
+            ((this->_major == other._major) && (this->_minor < other._minor)));
+  }
 
-elle::Boolean
-Version::operator >=(Version const& other) const
-{
-  return (!this->operator <(other));
+  elle::Boolean
+  Version::operator >(Version const& other) const
+  {
+    return ((this->_major > other._major) ||
+            ((this->_major == other._major) && (this->_minor > other._minor)));
+  }
+
+  elle::Boolean
+  Version::operator <=(Version const& other) const
+  {
+    return (!this->operator >(other));
+  }
+
+  elle::Boolean
+  Version::operator >=(Version const& other) const
+  {
+    return (!this->operator <(other));
+  }
+
 }
