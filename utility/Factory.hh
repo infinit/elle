@@ -60,11 +60,11 @@ namespace elle
         /// since template methods cannot be virtual, the argument is assumed
         /// to be a derived entity.
         ///
-        virtual Status  Allocate(radix::Meta*&) const = 0;
+        virtual Status  Allocate(void*&) const = 0;
       };
 
       ///
-      /// this functionoid contains a method for generating a Meta object
+      /// this functionoid contains a method for generating a void object
       /// of the given type.
       ///
       template <typename T>
@@ -80,7 +80,7 @@ namespace elle
         //
         // methods
         //
-        Status          Allocate(radix::Meta*&) const;
+        Status          Allocate(void*&) const;
 
         //
         // attributes

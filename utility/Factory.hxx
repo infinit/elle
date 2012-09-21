@@ -27,7 +27,7 @@ namespace elle
     /// this method allocates a new object of the type of the functionoid.
     ///
     template <typename T>
-    Status      Factory::Generatoid<T>::Allocate(radix::Meta*& meta) const
+    Status      Factory::Generatoid<T>::Allocate(void*& meta) const
     {
       // allocate the object.
       meta = new T;
@@ -84,7 +84,7 @@ namespace elle
 
       // allocate an object of the type handled by the generatoid.
       if (scoutor->second->Allocate(
-            reinterpret_cast<Meta*&>(object)) == Status::Error)
+            reinterpret_cast<void*&>(object)) == Status::Error)
         escape("unable to allocate the object");
 
       return Status::Ok;
