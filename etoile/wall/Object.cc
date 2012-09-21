@@ -35,7 +35,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Load(%s)", chemin_);
+      ELLE_TRACE_FUNCTION(chemin_);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin_, scope) == elle::Status::Error)
@@ -166,6 +166,8 @@ namespace etoile
         // waive the actor and the scope
         if (guard.Release() == elle::Status::Error)
           throw elle::Exception("unable to release the guard");
+
+        ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
         return identifier;
       }
     }
@@ -196,7 +198,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Information()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -228,7 +230,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Discard(%s)", identifier);
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -314,7 +316,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Store()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -400,7 +402,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ELLE_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

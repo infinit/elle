@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
+# include <elle/Printable.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -16,7 +17,8 @@ namespace etoile
     /// to act on scopes.
     ///
     class Identifier:
-      public elle::radix::Object
+      public elle::radix::Object,
+      public elle::Printable
     {
     public:
       //
@@ -51,6 +53,8 @@ namespace etoile
       elle::Boolean             operator<(const Identifier&) const;
 
       // dumpable
+      void
+      print(std::ostream& out) const;
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
       //

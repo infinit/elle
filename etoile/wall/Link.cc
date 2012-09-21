@@ -37,7 +37,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      ELLE_TRACE_SCOPE("Create()");
+      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -66,11 +66,14 @@ namespace etoile
         // set the actor's state.
         guard.actor()->state = gear::Actor::StateUpdated;
 
+        ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
+
         // waive the actor and the scope.
         if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
       }
 
+      ELLE_DEBUG("returning identifier %s", identifier);
       return elle::Status::Ok;
     }
 
@@ -85,7 +88,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      ELLE_TRACE_SCOPE("Load()");
+      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -122,6 +125,8 @@ namespace etoile
             assert(scope != nullptr);
             Object::reload<gear::Link>(*scope);
           }
+
+        ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
 
         // waive the actor and the scope
         if (guard.Release() == elle::Status::Error)

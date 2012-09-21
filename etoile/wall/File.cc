@@ -39,7 +39,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Create()");
+      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -68,6 +68,8 @@ namespace etoile
         // set the actor's state.
         guard.actor()->state = gear::Actor::StateUpdated;
 
+        ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
+
         // waive the scope.
         if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
@@ -87,7 +89,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Load()");
+      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -125,6 +127,7 @@ namespace etoile
             Object::reload<gear::File>(*scope);
           }
 
+        ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
 
         // waive the actor and the scope.
         if (guard.Release() == elle::Status::Error)
@@ -143,7 +146,7 @@ namespace etoile
     elle::Status        File::Lock(
                           const gear::Identifier&)
     {
-      ELLE_TRACE_SCOPE("Lock()");
+      ELLE_TRACE_FUNCTION("");
 
       // XXX to implement.
 
@@ -175,7 +178,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Write()");
+      ELLE_TRACE_FUNCTION(identifier, offset, region);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -218,7 +221,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Read()");
+      ELLE_TRACE_FUNCTION(identifier, offset, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -256,7 +259,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Adjust()");
+      ELLE_TRACE_FUNCTION(identifier, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -296,7 +299,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Discard()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -388,7 +391,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Store()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -479,7 +482,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      ELLE_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -567,7 +570,7 @@ namespace etoile
     elle::Status        File::Purge(
                           const gear::Identifier&)
     {
-      ELLE_TRACE_SCOPE("Purge()");
+      ELLE_TRACE_FUNCTION("");
 
       // XXX to implement.
 

@@ -22,6 +22,7 @@
 #include <nucleus/Derivable.hh>
 
 #include <elle/cast.hh>
+#include <elle/Exception.hh>
 #include <elle/network/Interface.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/utility/Time.hh>
@@ -647,10 +648,11 @@ namespace hole
               assert(nucleus::proton::ImmutableBlock::exists(
                        Hole::instance().network(), address) == true);
 
-              ELLE_TRACE("load the local block at %s", address);
-
-              // load the block.
-              block->load(Hole::instance().network(), address);
+              ELLE_TRACE("load the local block at %s", address)
+              {
+                // load the block.
+                block->load(Hole::instance().network(), address);
+              }
 
               // validate the block.
               if (block->Validate(address) == elle::Status::Error)
@@ -879,8 +881,12 @@ namespace hole
         nucleus::Nucleus::Factory.Build(address.component, block);
 
         // load the block.
-        block->load(Hole::instance().network(), address, Revision::Last);
+        ELLE_TRACE("loading the local block at %s", address)
+          block->load(Hole::instance().network(), address, Revision::Last);
 
+        ELLE_DEBUG("loaded block %s has revision %s", block, block->revision);
+
+        ELLE_TRACE("validating the block %s", block)
         // Validate the block, depending on its component.
         // although every stored block has been checked, the block
         // may have been corrupt while on the hard disk.
@@ -1201,16 +1207,15 @@ namespace hole
       Machine::Get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Revision&    revision)
       {
-        ELLE_TRACE_SCOPE("%s: get(%s, %s)", *this, address, revision);
+        ELLE_TRACE_FUNCTION(address, revision);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
         if (this->_state != State::attached)
-          throw reactor::Exception(
-            elle::concurrency::scheduler(),
-            elle::sprintf("the machine's state '%u' does not allow one "
-                          "to request operations on the storage layer",
-                          this->_state));
+          throw elle::Exception{
+              "the machine's state '%u' does not allow one "
+              "to request operations on the storage layer",
+              this->_state};
 
         if (revision == nucleus::proton::Revision::Last)
           return _get_latest(address);
@@ -1221,7 +1226,7 @@ namespace hole
       void
       Machine::Kill(const nucleus::proton::Address&   address)
       {
-        ELLE_TRACE("Kill");
+        ELLE_TRACE_FUNCTION(address);
 
         // depending on the machine's state.
         switch (this->_state)
@@ -1265,7 +1270,7 @@ namespace hole
                     }
                   default:
                     {
-                      throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
+                      throw elle::Exception("unknown block family %d", address.family);
                     }
                   }
               }
@@ -1279,7 +1284,7 @@ namespace hole
                 // If the address is present in the cache, remove it.
                 if (iterator != cache.end())
                   cache.erase(iterator);
-        }
+              }
 #endif
 
               // Notify the other hosts of the removal.
@@ -1306,10 +1311,11 @@ namespace hole
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("the machine's state '%u' does not allow one to "
-                                                     "request operations on the storage layer",
-                                                     this->_state));
+              throw elle::Exception{
+                  "the machine's state '%u' does not allow one to "
+                  "request operations on the storage layer",
+                  this->_state
+              };
             }
           }
       }

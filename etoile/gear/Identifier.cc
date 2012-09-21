@@ -111,5 +111,13 @@ namespace etoile
       stream << id.value;
       return stream;
     }
+
+
+    void
+    Identifier::print(std::ostream& out) const
+    {
+      out << this->value;
+    }
+
   }
 }

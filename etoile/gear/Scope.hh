@@ -1,7 +1,8 @@
 #ifndef ETOILE_GEAR_SCOPE_HH
 # define ETOILE_GEAR_SCOPE_HH
 
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <etoile/gear/fwd.hh>
 # include <etoile/gear/Actor.hh>
@@ -32,7 +33,8 @@ namespace etoile
     /// structure for as long as necessary.
     ///
     class Scope:
-      public elle::radix::Object
+      public elle::radix::Object,
+      public elle::Printable
     {
     public:
       //
@@ -141,6 +143,10 @@ namespace etoile
       elle::Status      Refresh();
       template <typename T>
       elle::Status      Disclose();
+
+    public:
+      void
+      print(std::ostream& out) const;
 
       //
       // callbacks

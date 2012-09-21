@@ -824,6 +824,7 @@ namespace etoile
           escape("an error occured in the shutdown method");
         break;
       case OperationUnknown:
+      default:
         escape("unknown operation '%u'\n", this->context->operation);
       }
       return elle::Status::Ok;
@@ -839,7 +840,7 @@ namespace etoile
     ///
     elle::Status Scope::Shutdown()
     {
-      ELLE_TRACE_FUNCTION();
+      ELLE_TRACE_FUNCTION("");
 
       // if actors remain, do nothing.
       //
@@ -1274,6 +1275,27 @@ namespace etoile
         }
 
       return elle::Status::Ok;
+    }
+
+    void
+    Scope::print(std::ostream& out) const
+    {
+      out << "<gear::Scope at " << this << " of " << this->chemin;
+      if (this->actors.size())
+        {
+          out << " with actors: ";
+          bool is_first = true;
+          for (auto const& actor: this->actors)
+            {
+              if (is_first)
+                is_first = false;
+              else
+                out << ", ";
+              out << actor->identifier;
+            }
+          out << ")";
+        }
+        out << ">";
     }
 
 //
