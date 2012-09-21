@@ -9,8 +9,7 @@ m2 = os.environ['MNT2']
 p1 = os.path.join(m1, 'pif')
 p2 = os.path.join(m2, 'pif')
 
-DATA = """
-bolos /bɔ.los/ masculin, singulier et pluriel identiques
+DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
 
     1. (France) (Argot) Client du marché noir, qui achète de la drogue à un
        dealer[2].
@@ -49,6 +48,7 @@ while tries < MAX_TRIES:
     if os.path.exists(p2):
         break
     tries += 1
+    print("Waiting for the file to be replicated (%d sec)" % tries)
     time.sleep(1)
 
 if tries == MAX_TRIES:
