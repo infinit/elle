@@ -27,11 +27,8 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
-    Catalog::Catalog(proton::Contents<Catalog>&                 contents):
-      contents(contents)
+    Catalog::Catalog(proton::Contents<Catalog>& other):
+      contents(other)
     {
     }
 
@@ -44,7 +41,7 @@ namespace nucleus
     ///
     elle::Status        Catalog::Create()
     {
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -63,7 +60,7 @@ namespace nucleus
         escape("unable to add the entry in the range");
 
       // range the object as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -148,7 +145,7 @@ namespace nucleus
         escape("unable to remove the entry");
 
       // range the object as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -181,7 +178,7 @@ namespace nucleus
       entry->name = to;
 
       // range the object as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }

@@ -185,8 +185,14 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (access_block.Restore(access_block_) == elle::Status::Error)
       throw std::runtime_error("Cannot restore access block");
 
-    if (access_block.Validate(access_address) != elle::Status::Ok)
-      return false;
+    try
+      {
+        access_block.validate(access_address);
+      }
+    catch (nucleus::Exception const& e)
+      {
+        return false;
+      }
   }
 
   // root block ---------------------------------------------------------------
@@ -199,8 +205,14 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (root_block.Restore(root_block_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore root block: <" + root_block_ + ">");
 
-    if (root_block.Validate(root_address, access_block) != elle::Status::Ok)
-      return false;
+    try
+      {
+        root_block.validate(root_address, access_block);
+      }
+    catch (nucleus::Exception const& e)
+      {
+        return false;
+      }
 
     if (root_block.owner_K() != K)
       return false;
@@ -217,8 +229,14 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (group_block.Restore(group_block_) == elle::Status::Error)
       throw std::runtime_error("Cannot restore group block");
 
-    if (group_block.Validate(group_address) != elle::Status::Ok)
-      return false;
+    try
+      {
+        group_block.validate(group_address);
+      }
+    catch (nucleus::Exception const& e)
+      {
+        return false;
+      }
 
     if (group_block.owner_K() != K)
       return false;

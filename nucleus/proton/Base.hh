@@ -25,26 +25,37 @@ namespace nucleus
     /// in the legitimate block's history, in other words, branches have
     /// not been author .
     ///
-    class Base:
-      public elle::radix::Object
+    class Base
     {
+      //
+      // construction
+      //
     public:
+      Base();
+      Base(MutableBlock const& block);
+
       //
       // methods
       //
+    public:
       elle::Status      Create(const Revision&,
                                elle::cryptography::Digest const&);
-      elle::Status      Create(const MutableBlock&);
 
       elle::Status      Match(const MutableBlock&) const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator==(Base const&) const;
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Base);
-      elle::Boolean     operator==(const Base&) const;
+    public:
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Base);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -52,13 +63,14 @@ namespace nucleus
       //
       // attributes
       //
-      Revision           revision;
-      elle::cryptography::Digest      digest;
+    private:
+      Revision _revision;
+      elle::cryptography::Digest _digest;
     };
 
   }
 }
 
-#include <nucleus/proton/Base.hxx>
+# include <nucleus/proton/Base.hxx>
 
 #endif

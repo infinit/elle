@@ -202,7 +202,7 @@ namespace satellite
     if (agent::Agent::Initialize() == elle::Status::Error)
       escape("unable to initialize Agent");
 
-    hole::Hole::Initialize();
+    std::unique_ptr<hole::Hole> hole(new hole::Hole);
 
     // wait for and trigger commands.
     while ((line = ::readline("$> ")) != nullptr)
@@ -231,9 +231,7 @@ namespace satellite
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
 
-    // clean Hole.
-    if (hole::Hole::Clean() == elle::Status::Error)
-      escape("unable to clean Hole");
+    delete hole.release();
 
     // clean the Agent library.
     if (agent::Agent::Clean() == elle::Status::Error)

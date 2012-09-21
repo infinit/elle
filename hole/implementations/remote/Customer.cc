@@ -109,7 +109,7 @@ namespace hole
 
         // forward the request depending on the nature of the block which
         // the addres indicates.
-        switch (address.family)
+        switch (address.family())
           {
           case nucleus::proton::FamilyContentHashBlock:
             {
@@ -147,12 +147,12 @@ namespace hole
         _state_check_authenticated();
         nucleus::proton::Block* block = 0;
         // Build the block according to the component.
-        if (nucleus::Nucleus::Factory.Build(address.component,
+        if (nucleus::Nucleus::Factory.Build(address.component(),
                                             block) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(), "unable to build the block");
         // Forward the request depending on the nature of the block which
         // the addres indicates.
-        switch (address.family)
+        switch (address.family())
           {
           case nucleus::proton::FamilyContentHashBlock:
             {
@@ -181,7 +181,7 @@ namespace hole
           }
 
         assert(block);
-        return nucleus::Derivable(address.component, *block);
+        return nucleus::Derivable(address.component(), *block);
       }
 
       void

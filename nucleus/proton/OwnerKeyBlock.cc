@@ -18,81 +18,64 @@ namespace nucleus
     /// default constructor.
     ///
     OwnerKeyBlock::OwnerKeyBlock():
-      MutableBlock()
+      MutableBlock(),
+
+      _owner_subject(nullptr)
     {
     }
 
     ///
     /// specific constructor.
     ///
-    OwnerKeyBlock::OwnerKeyBlock(const neutron::Component       component):
-      MutableBlock(FamilyOwnerKeyBlock, component)
+    OwnerKeyBlock::OwnerKeyBlock(
+        Network const& network,
+        neutron::Component const component,
+        elle::cryptography::PublicKey const& creator_K):
+      MutableBlock(network, FamilyOwnerKeyBlock, component, creator_K)
     {
+      elle::cryptography::KeyPair pair;
+
+      // retrieve the current time.
+      if (this->_stamp.Current() == elle::Status::Error)
+        throw Exception("unable to retrieve the current time");
+
+      // generate a key pair for the OKB.
+      if (pair.Generate() == elle::Status::Error)
+        throw Exception("unable to generate a key pair");
+
+      // set the block's public key.
+      this->_K = pair.K;
+
+      // set the owner's public key.
+      this->_owner_K = creator_K; // XXX[?]
+      this->_owner_subject = nullptr;
+
+      // sign the owner's public key with the block's private key.
+      if (pair.k.Sign(this->_owner_K,
+                      this->_owner_signature) == elle::Status::Error)
+        throw Exception("unable to sign the owner's identity");
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates an OKB based on the given owner's public key.
-    ///
-    elle::Status        OwnerKeyBlock::Create(elle::cryptography::PublicKey const& owner)
+    Address
+    OwnerKeyBlock::bind() const
     {
-      elle::cryptography::KeyPair     pair;
+      Address address;
 
-      // retrieve the current time.
-      if (this->stamp.Current() == elle::Status::Error)
-        escape("unable to retrieve the current time");
+      if (address.Create(this->network(), this->family(), this->component(),
+                         this->_K) == elle::Status::Error)
+        throw Exception("unable to compute the OKB's address");
 
-      // generate a key pair for the OKB.
-      if (pair.Generate() == elle::Status::Error)
-        escape("unable to generate a key pair");
-
-      // set the block's public key.
-      this->K = pair.K;
-
-      // set the owner's public key.
-      this->owner.K = owner;
-
-      // sign the owner's public key with the block's private key.
-      if (pair.k.Sign(this->owner.K,
-                      this->owner.signature) == elle::Status::Error)
-        escape("unable to sign the owner's identity");
-
-      // create a subject corresponding to the user. note that this
-      // subject will never be serialized hence is not really part of
-      // the object but is used to ease the process of access control.
-      if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
-        escape("unable to create the owner subject");
-
-      return elle::Status::Ok;
+      return (address);
     }
 
-    ///
-    /// this method computes the block's address.
-    ///
-    elle::Status        OwnerKeyBlock::Bind(Address&            address)
-      const
+    void
+    OwnerKeyBlock::validate(Address const& address) const
     {
-      // compute the address.
-      if (address.Create(this->family, this->component,
-                         this->network,
-                         this->family,
-                         this->component,
-                         this->K) == elle::Status::Error)
-        escape("unable to compute the OKB's address");
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method verifies the block's validity.
-    ///
-    elle::Status        OwnerKeyBlock::Validate(const Address&  address)
-      const
-    {
-      Address           self;
+      Address self;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -100,33 +83,33 @@ namespace nucleus
       //
 
       // compute the address.
-      if (self.Create(this->family, this->component,
-                      this->network,
-                      this->family,
-                      this->component,
-                      this->K) == elle::Status::Error)
-        escape("unable to compute the OKB's address");
+      if (self.Create(this->network(), this->family(), this->component(),
+                      this->_K) == elle::Status::Error)
+        throw Exception("unable to compute the OKB's address");
 
       // verify with the recorded address.
       if (address != self)
-        escape("the address does not correspond to the block's public key");
+        throw Exception("the address does not correspond to the block's public key");
 
       // verify the owner's key signature with the block's public key.
-      if (this->K.Verify(this->owner.signature,
-                         this->owner.K) == elle::Status::Error)
-        escape("unable to verify the owner's signature");
-
-      return elle::Status::Ok;
+      if (this->_K.Verify(this->_owner_signature,
+                          this->_owner_K) == elle::Status::Error)
+        throw Exception("unable to verify the owner's signature");
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
+    neutron::Subject const&
+    ImprintBlock::owner_subject()
+    {
+      // Create the subject corresponding to the block owner, if necessary.
+      // Note that this subject will never be serialized but is used to ease
+      // the process of access control since most method require a subject.
+      if (this->_owner_subject == nullptr)
+        this->_owner_subject = new neutron::Subject(this->_owner_K);
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(OwnerKeyBlock, _());
+      assert(this->_owner_subject != nullptr);
+
+      return (*this->_owner_subject);
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -150,7 +133,7 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[K]" << std::endl;
 
-      if (this->K.Dump(margin + 4) == elle::Status::Error)
+      if (this->_K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
 
       // dump the stamp.
@@ -158,7 +141,7 @@ namespace nucleus
                 << elle::io::Dumpable::Shift
                 << "[Stamp]" << std::endl;
 
-      if (this->stamp.Dump(margin + 6) == elle::Status::Error)
+      if (this->_stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the stamp");
 
       // dump the owner part.
@@ -169,17 +152,17 @@ namespace nucleus
                 << elle::io::Dumpable::Shift
                 << "[K]" << std::endl;
 
-      if (this->owner.K.Dump(margin + 6) == elle::Status::Error)
+      if (this->_owner_K.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the owner's public key");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
                 << "[Signature]" << std::endl;
 
-      if (this->owner.signature.Dump(margin + 6) == elle::Status::Error)
+      if (this->_owner_signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the owner's signature");
 
-      if (this->owner.subject.Dump(margin + 6) == elle::Status::Error)
+      if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the subject");
 
       return elle::Status::Ok;

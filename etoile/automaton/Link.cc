@@ -22,23 +22,17 @@ namespace etoile
     elle::Status        Link::Create(
                           gear::Link&                           context)
     {
-      nucleus::proton::Address address;
+      context.object =
+        new nucleus::neutron::Object(hole::Hole::instance().network(),
+                                     agent::Agent::Identity.pair.K,
+                                     nucleus::neutron::GenreLink);
 
-      context.object = new nucleus::neutron::Object;
-
-      // create the link.
-      if (context.object->Create(
-            nucleus::neutron::GenreLink,
-            agent::Agent::Identity.pair.K) == elle::Status::Error)
-        escape("unable to create the link object");
-
-      // bind the object to its address i.e this will never changed.
-      if (context.object->Bind(address) == elle::Status::Error)
-        escape("unable to bind the object");
+      nucleus::proton::Address address(context.object->bind());
 
       // create the context's location with an initial revision number.
       if (context.location.Create(address,
-                                  context.object->revision) == elle::Status::Error)
+                                  context.object->revision()) ==
+          elle::Status::Error)
         escape("unable to create the location");
 
       // set the context's state.

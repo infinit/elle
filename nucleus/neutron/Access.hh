@@ -44,11 +44,14 @@ namespace nucleus
       // construction
       //
     public:
-      Access();
+      Access(); // XXX[to deserialize]
+      Access(proton::Network const& network,
+             elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
       //
+    public:
       elle::Status      Add(Record*);
       elle::Status      Exist(const Subject&) const;
       elle::Status      Lookup(const Subject&,
@@ -86,15 +89,21 @@ namespace nucleus
       end() const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator==(Access const& other) const;
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Access);
-      elle::Boolean     operator==(const Access&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Access);
 
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
@@ -103,7 +112,8 @@ namespace nucleus
       //
       // attributes
       //
-      Range<Record>     range;
+    private:
+      Range<Record> _range;
     };
 
   }

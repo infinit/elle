@@ -41,7 +41,7 @@ namespace plasma
     private:
       void _prepare_directory();
       void _update();
-      void _create_network_root_block();
+      void _create_network_root_block(std::string const& id);
       void _on_got_descriptor(meta::UpdateNetworkResponse const& response);
       void _on_any_error(meta::Error error,
                          std::string const& reason);

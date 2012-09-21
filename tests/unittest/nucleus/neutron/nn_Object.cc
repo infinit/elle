@@ -20,24 +20,14 @@ int main()
 
   CHECK(kp.Generate());
 
-  nucleus::neutron::Object blk;
-
-  printf("HERE\n");
-
-  CHECK(blk.Create(nucleus::neutron::GenreDirectory, kp.K));
-
-  printf("HERE\n");
+  nucleus::proton::Network network("name");
+  nucleus::neutron::Object blk(network,
+                               kp.K,
+                               nucleus::neutron::GenreDirectory);
 
   CHECK(blk.Seal(kp.k, nucleus::neutron::Access::Null));
 
-  printf("HERE\n");
-
-  nucleus::proton::Address addr;
-
-  CHECK(blk.Bind(addr));
-
-  elle::print("INITIAL BLOCK:");
-  blk.Dump();
+  nucleus::proton::Address addr(blk.bind());
 
   std::string unique;
   static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
@@ -50,12 +40,9 @@ int main()
       nucleus::neutron::Object blk_copy;
       buf.Reader() >> blk_copy;
 
-      elle::print("DESERIALIZED BLOCK:");
-      blk_copy.Dump();
+      blk_copy.validate(addr, nucleus::neutron::Access::Null);
 
-      CHECK(blk_copy.Validate(addr, nucleus::neutron::Access::Null));
       assert(blk.owner_subject() == blk_copy.owner_subject());
-
     }
 
   std::cout << "tests done.\n";

@@ -27,22 +27,19 @@ namespace etoile
                   elle::String const& description,
                   typename nucleus::neutron::Group::Identity& identity)
     {
-      nucleus::proton::Address address;
-
       ELLE_TRACE_FUNCTION(context, description, identity);
 
-      context.group = new nucleus::neutron::Group{
-          agent::Agent::Subject.user(),
-          description
-      };
+      context.group =
+        new nucleus::neutron::Group(hole::Hole::instance().network(),
+                                    agent::Agent::Subject.user(),
+                                    description);
 
-      // bind the object to its address i.e this will never changed.
-      if (context.group->Bind(address) == elle::Status::Error)
-        escape("unable to bind the object");
+      nucleus::proton::Address address(context.group->bind());
 
       // create the context's location with an initial revision number.
       if (context.location.Create(address,
-                                  context.group->revision) == elle::Status::Error)
+                                  context.group->revision()) ==
+          elle::Status::Error)
         escape("unable to create the location");
 
       context.state = gear::Context::StateCreated;
@@ -76,8 +73,7 @@ namespace etoile
         }
 
       // compute the base in order to seal the block's original state.
-      if (context.group->base.Create(*context.group) == elle::Status::Error)
-        escape("unable to compute the base");
+      context.group->base(nucleus::proton::Base(*context.group));
 
       // set the context's state.
       context.state = gear::Context::StateLoaded;
@@ -400,7 +396,7 @@ namespace etoile
         escape("unable to close the ensemble");
 
       // if the group has been modified i.e is dirty.
-      if (context.group->state == nucleus::proton::StateDirty)
+      if (context.group->state() == nucleus::proton::StateDirty)
         {
           // seal the group, depending on the presence of a referenced
           // access block.

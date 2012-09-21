@@ -8,6 +8,8 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/gear/Chronicle.hh>
 
+#include <elle/log.hh>
+
 #include <Infinit.hh>
 
 namespace etoile
@@ -941,8 +943,8 @@ namespace etoile
           escape("unable to load the object");
 
         // check if the loaded object is indeed newer.
-        if (context->object->revision >
-            static_cast<T*>(this->context)->object->revision)
+        if (context->object->revision() >
+            static_cast<T*>(this->context)->object->revision())
           {
             //
             // in this case, a newer revision exists which has been loaded.

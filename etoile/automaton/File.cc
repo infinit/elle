@@ -23,23 +23,17 @@ namespace etoile
     elle::Status        File::Create(
                           gear::File&                           context)
     {
-      nucleus::proton::Address address;
+      context.object =
+        new nucleus::neutron::Object(hole::Hole::instance().network(),
+                                     agent::Agent::Identity.pair.K,
+                                     nucleus::neutron::GenreFile);
 
-      context.object = new nucleus::neutron::Object;
-
-      // create the file.
-      if (context.object->Create(
-            nucleus::neutron::GenreFile,
-            agent::Agent::Identity.pair.K) == elle::Status::Error)
-        escape("unable to create the file object");
-
-      // bind the object to its address i.e this will never changed.
-      if (context.object->Bind(address) == elle::Status::Error)
-        escape("unable to bind the object");
+      nucleus::proton::Address address(context.object->bind());
 
       // create the context's location with an initial revision number.
       if (context.location.Create(address,
-                                  context.object->revision) == elle::Status::Error)
+                                  context.object->revision()) ==
+          elle::Status::Error)
         escape("unable to create the location");
 
       // set the context's state.

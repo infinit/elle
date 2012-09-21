@@ -1,6 +1,8 @@
 #include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -26,9 +28,9 @@ namespace nucleus
     /// default constructor.
     ///
     Block::Block():
-      family(FamilyUnknown),
-      component(neutron::ComponentUnknown),
-      state(StateClean)
+      _family(FamilyUnknown),
+      _component(neutron::ComponentUnknown),
+      _state(StateClean)
     {
     }
 
@@ -48,13 +50,20 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Block, _());
+    Address
+    Block::bind() const
+    {
+      throw Exception("unable to bind a pure block");
+    }
+
+    void
+    Block::validate(Address const&) const
+    {
+      throw Exception("unable to validate a pure block");
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------

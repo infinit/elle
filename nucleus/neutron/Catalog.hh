@@ -22,8 +22,7 @@ namespace nucleus
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///
-    class Catalog:
-      public elle::radix::Object
+    class Catalog
     {
       //
       // constants
@@ -46,7 +45,7 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Catalog(proton::Contents<Catalog>&);
+      Catalog(proton::Contents<Catalog>& other);
 
       //
       // methods

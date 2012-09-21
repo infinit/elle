@@ -24,7 +24,13 @@ namespace nucleus
 //
 
     Ensemble::Ensemble():
-      proton::ContentHashBlock(ComponentEnsemble)
+      proton::ContentHashBlock()
+    {
+    }
+
+    Ensemble::Ensemble(proton::Network const& network,
+                       elle::cryptography::PublicKey const& creator_K):
+      proton::ContentHashBlock(network, ComponentEnsemble, creator_K)
     {
     }
 
@@ -43,7 +49,7 @@ namespace nucleus
 
       this->_container.push_back(fellow.release());
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
     }
 
     elle::Boolean
@@ -209,7 +215,7 @@ namespace nucleus
             }
         }
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
     }
 
     void
@@ -225,7 +231,7 @@ namespace nucleus
 
       this->_container.erase(iterator);
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
     }
 
     Size

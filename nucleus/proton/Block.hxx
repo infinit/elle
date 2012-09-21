@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_PROTON_BLOCK_HXX
+#ifndef NUCLEUS_PROTON_BLOCK_HXX
 # define NUCLEUS_PROTON_BLOCK_HXX
 
 # include <cassert>
@@ -11,11 +11,17 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Block,
                       version)
 {
   enforce(version == 0);
-  archive & value.network;
-  archive & value.family;
+
+  archive & value._network;
+  archive & value._family;
+  archive & value._component;
+  archive & value._creator_K;
+
+  // XXX[make these check cleaner]
+  /* XXX[problem with operator <]
   enforce(static_cast<int>(value.family) < static_cast<int>(nucleus::proton::Families));
-  archive & value.component;
   enforce(static_cast<int>(value.component) < static_cast<int>(nucleus::neutron::Components));
+  */
 }
 
 #endif

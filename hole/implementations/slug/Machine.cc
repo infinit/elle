@@ -351,11 +351,8 @@ namespace hole
                   throw reactor::Exception(elle::concurrency::scheduler(),
                                            "this immutable block seems to already exist");
 
-                if (block.Validate(address) == elle::Status::Error)
-                  throw reactor::Exception(elle::concurrency::scheduler(),
-                                           "unable to validate the block");
-
-                block.store(this->_hole.network(), address);
+                block.validate(address);
+                block.store(address);
               }
 
               // Publish it onto the network.
@@ -417,7 +414,7 @@ namespace hole
                 //
                 // indeed, the Object component requires as additional
                 // block for being validated.
-                switch (address.component)
+                switch (address.component())
                   {
                   case nucleus::neutron::ComponentObject:
                     {
@@ -441,17 +438,12 @@ namespace hole
                                                      "expected an access block");
 
                           // validate the object, providing the
-                          if (object->Validate(address,
-                                               *access) == elle::Status::Error)
-                            throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                          object->validate(address, *access);
                         }
                       else
                         {
                           // validate the object.
-                          if (object->Validate(
-                                address,
-                                nucleus::neutron::Access::Null) == elle::Status::Error)
-                            throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                          object->validate(address, nucleus::neutron::Access::Null);
                         }
 
                       break;
@@ -459,8 +451,7 @@ namespace hole
                   default:
                     {
                       // validate the block through the common interface.
-                      if (block.Validate(address) == elle::Status::Error)
-                        throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+                      block.validate(address);
 
                       break;
                     }
@@ -468,19 +459,18 @@ namespace hole
                     {
                       throw reactor::Exception(elle::concurrency::scheduler(),
                                                elle::sprintf("unknown component '%u'",
-                                                             address.component));
+                                                             address.component()));
                     }
                   }
 
                 ELLE_TRACE("Check if the block derives the current block")
-                  if (backends::fs::MutableBlock(this->_hole.network(),
-                                                 address,
+                  if (backends::fs::MutableBlock(address,
                                                  block).derives() == false)
                     throw reactor::Exception(
                       elle::concurrency::scheduler(),
                       "the block does not derive the local one");
 
-                block.store(this->_hole.network(), address);
+                block.store(address);
               }
 
               // Publish it onto the network.
@@ -585,7 +575,10 @@ namespace hole
               //
               nucleus::proton::ImmutableBlock* block;
 
-              nucleus::Nucleus::Factory.Build(address.component, block);
+              nucleus::Nucleus::Factory.Build(address.component(), block);
+
+              // XXX
+              block->network(Hole::instance().network());
 
               // does the block exist.
               if (nucleus::proton::ImmutableBlock::exists(
@@ -620,17 +613,17 @@ namespace hole
                       ELLE_TRACE("block fetched: %s", *iblock);
 
                       // validate the block.
-                      if (iblock->Validate(address) == elle::Status::Ok)
+                      try
                         {
-                          // finally, store it locally.
-                          iblock->store(this->_hole.network(), address);
+                          iblock->validate(address);
+                          iblock->store(address);
 
                           found = true;
 
                           // No need to continue since the block is immutable.
                           break;
                         }
-                      else
+                      catch (nucleus::Exception const& e)
                         {
                           ELLE_WARN("%s: unable to validate the block '%s'",
                                     this, address);
@@ -650,14 +643,10 @@ namespace hole
                        this->_hole.network(), address) == true);
 
               ELLE_TRACE("load the local block at %s", address)
-              {
-                // load the block.
-                block->load(this->_hole.network(), address);
-              }
+                block->load(address);
 
               // validate the block.
-              if (block->Validate(address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+              block->validate(address);
 
               ELLE_TRACE("block loaded and validated: %s", *block);
 
@@ -723,7 +712,10 @@ namespace hole
                   // be used.
                   MutableBlock* block;
 
-                  nucleus::Nucleus::Factory.Build(address.component, block);
+                  nucleus::Nucleus::Factory.Build(address.component(), block);
+
+                  // XXX
+                  block->network(Hole::instance().network());
 
                   Ptr<nucleus::proton::Block> ptr(block);
 
@@ -737,9 +729,7 @@ namespace hole
                       ELLE_DEBUG("%s: cache hit on %s", *this, unique);
 
                       // Load the block.
-                      block->load(this->_hole.network(),
-                                  address,
-                                  Revision::Last);
+                      block->load(address, Revision::Last);
 
                       return (ptr);
                     }
@@ -788,7 +778,7 @@ namespace hole
             // Validate the block, depending on its component.
             // Indeed, the Object component requires as additional
             // block for being validated.
-            switch (address.component)
+            switch (address.component())
               {
               case nucleus::neutron::ComponentObject:
                 {
@@ -810,8 +800,11 @@ namespace hole
                         }
 
                       // validate the object, providing the
-                      if (object.Validate(address, *access) ==
-                          elle::Status::Error)
+                      try
+                        {
+                          object.validate(address, *access);
+                        }
+                      catch (nucleus::Exception const& e)
                         {
                           ELLE_WARN("%s: unable to validate the access block",
                                     this);
@@ -821,10 +814,11 @@ namespace hole
                   else
                     {
                       // Validate the object.
-                      if (object.Validate(
-                            address,
-                            nucleus::neutron::Access::Null) ==
-                          elle::Status::Error)
+                      try
+                        {
+                          object.validate(address, nucleus::neutron::Access::Null);
+                        }
+                      catch (nucleus::Exception const& e)
                         {
                           ELLE_WARN("%s: unable to validate the access block",
                                     this);
@@ -838,7 +832,11 @@ namespace hole
                 {
                   // validate the block through the common
                   // interface.
-                  if (block->Validate(address) == elle::Status::Error)
+                  try
+                    {
+                      block->validate(address);
+                    }
+                  catch (nucleus::Exception const& e)
                     {
                       ELLE_WARN("%s: unable to validate the block",
                                 this);
@@ -851,13 +849,12 @@ namespace hole
                 {
                   throw reactor::Exception(elle::concurrency::scheduler(),
                                            elle::sprintf("unknown component '%u'",
-                                                         address.component));
+                                                         address.component()));
                 }
               }
 
             ELLE_TRACE("Check if the block derives the current block")
-              if (backends::fs::MutableBlock(this->_hole.network(),
-                                             address,
+              if (backends::fs::MutableBlock(address,
                                              *block).derives() == false)
                 {
                   ELLE_TRACE("the block %p does not derive the local one",
@@ -866,7 +863,7 @@ namespace hole
                 }
 
             ELLE_TRACE("storing the remote block %s locally", address)
-              block->store(this->_hole.network(), address);
+              block->store(address);
           }
 
         // At this point, we may have retrieved one or more revisions
@@ -879,11 +876,14 @@ namespace hole
 
         MutableBlock* block;
 
-        nucleus::Nucleus::Factory.Build(address.component, block);
+        nucleus::Nucleus::Factory.Build(address.component(), block);
+
+        // XXX
+        block->network(Hole::instance().network());
 
         // load the block.
         ELLE_TRACE("loading the local block at %s", address)
-          block->load(this->_hole.network(), address, Revision::Last);
+          block->load(address, Revision::Last);
 
         ELLE_DEBUG("loaded block %s has revision %s", block, block->revision);
 
@@ -894,7 +894,7 @@ namespace hole
         //
         // Note that the Object component requires as additional
         // block for being validated.
-        switch (address.component)
+        switch (address.component())
           {
           case nucleus::neutron::ComponentObject:
             {
@@ -914,18 +914,12 @@ namespace hole
                     throw reactor::Exception(elle::concurrency::scheduler(),
                                              "expected an access block");
                   // Validate the object, providing the
-                  if (object->Validate(address, *access) ==
-                      elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                  object->validate(address, *access);
                 }
               else
                 {
                   // Validate the object.
-                  if (object->Validate(
-                        address,
-                        nucleus::neutron::Access::Null) ==
-                      elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                  object->validate(address, nucleus::neutron::Access::Null);
                 }
 
               break;
@@ -933,8 +927,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block->Validate(address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+              block->validate(address);
 
               break;
             }
@@ -942,7 +935,7 @@ namespace hole
             {
               throw reactor::Exception(elle::concurrency::scheduler(),
                                        elle::sprintf("unknown component '%u'",
-                                                     address.component));
+                                                     address.component()));
             }
           }
 
@@ -1011,7 +1004,11 @@ namespace hole
         Ptr<MutableBlock> block;
         {
           MutableBlock* raw;
-          nucleus::Nucleus::Factory.Build(address.component, raw);
+          nucleus::Nucleus::Factory.Build(address.component(), raw);
+
+          // XXX
+          raw->network(Hole::instance().network());
+
           block = Ptr<MutableBlock>(raw);
         }
 
@@ -1045,7 +1042,7 @@ namespace hole
                 //
                 // indeed, the Object component requires as
                 // additional block for being validated.
-                switch (address.component)
+                switch (address.component())
                   {
                   case nucleus::neutron::ComponentObject:
                     {
@@ -1072,9 +1069,11 @@ namespace hole
                             }
 
                           // validate the object, providing the
-                          if (object.Validate(
-                                address,
-                                *access) == elle::Status::Error)
+                          try
+                            {
+                              object.validate(address, *access);
+                            }
+                          catch (nucleus::Exception const& e)
                             {
                               ELLE_WARN("%s: unable to validate the object",
                                         this);
@@ -1084,10 +1083,11 @@ namespace hole
                       else
                         {
                           // validate the object.
-                          if (object.Validate(
-                                address,
-                                nucleus::neutron::Access::Null) ==
-                              elle::Status::Error)
+                          try
+                            {
+                              object.validate(address, nucleus::neutron::Access::Null);
+                            }
+                          catch (nucleus::Exception const& e)
                             {
                               ELLE_WARN("%s: unable to validate the object",
                                         this);
@@ -1101,8 +1101,11 @@ namespace hole
                     {
                       // Validate the block through the common
                       // interface.
-                      if (derivable.block().Validate(address) ==
-                          elle::Status::Error)
+                      try
+                        {
+                          derivable.block().validate(address);
+                        }
+                      catch (nucleus::Exception const& e)
                         {
                           ELLE_WARN("%s: unable to validate the block",
                                     this);
@@ -1113,7 +1116,7 @@ namespace hole
                     {
                       throw reactor::Exception(elle::concurrency::scheduler(),
                                                elle::sprintf("unknown component '%u'",
-                                                             address.component));
+                                                             address.component()));
                     }
                   }
 
@@ -1140,7 +1143,7 @@ namespace hole
                  revision) == true);
 
         // Load the block.
-        block->load(this->_hole.network(), address, revision);
+        block->load(address, revision);
 
         // validate the block, depending on its component.
         // although every stored block has been checked, the
@@ -1148,7 +1151,7 @@ namespace hole
         //
         // note that the Object component requires as additional
         // block for being validated.
-        switch (address.component)
+        switch (address.component())
           {
           case nucleus::neutron::ComponentObject:
             {
@@ -1170,17 +1173,12 @@ namespace hole
                                              "expected an access block");
 
                   // Validate the object.
-                  if (object->Validate(address, *access) == elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                  object->validate(address, *access);
                 }
               else
                 {
                   // validate the object.
-                  if (object->Validate(
-                        address,
-                        nucleus::neutron::Access::Null) ==
-                      elle::Status::Error)
-                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
+                  object->validate(address, nucleus::neutron::Access::Null);
                 }
 
               break;
@@ -1188,8 +1186,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block->Validate(address) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
+              block->validate(address);
 
               break;
             }
@@ -1197,7 +1194,7 @@ namespace hole
             {
               throw reactor::Exception(elle::concurrency::scheduler(),
                                        elle::sprintf("unknown component '%u'",
-                                                     address.component));
+                                                     address.component()));
             }
           }
 
@@ -1248,7 +1245,7 @@ namespace hole
               {
                 // treat the request depending on the nature of the block which
                 // the addres indicates.
-                switch (address.family)
+                switch (address.family())
                   {
                   case nucleus::proton::FamilyContentHashBlock:
                     {

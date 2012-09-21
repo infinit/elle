@@ -4,6 +4,8 @@
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/concept/Fileable.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
@@ -61,7 +63,6 @@ namespace nucleus
     /// immutable.
     ///
     class Block:
-      public elle::radix::Object,
       public elle::io::Dumpable,
       public elle::serialize::Serializable<>,
       public elle::serialize::Serializable<
@@ -90,27 +91,28 @@ namespace nucleus
       //
     public:
       /// Computes the address of the block.
+      // XXX[should be virtual pure]
       virtual
       Address
-      bind() const = 0;
+      bind() const;
       /// Validates the block's content according to its address.
+      // XXX[should be virtual pure]
       virtual
       void
-      validate(Address const& address) const = 0;
+      validate(Address const& address) const;
 
       //
       // interfaces
       //
     public:
-      // object
-# include <elle/idiom/Open.hh>
-      declare(Block);
-# include <elle/idiom/Close.hh>
 
       // XXX breaks serializable contract. Remove when Block can be an
       // abstract class.
       __NPB_BREAK_SERIALIZABLE_CONTRACT();
       __NPB_BREAK_SERIALIZABLE_CONTRACT(elle::serialize::BufferArchive);
+
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Block);
 
       // dumpable
       elle::Status
@@ -120,11 +122,11 @@ namespace nucleus
       // attributes
       //
     private:
-      Network _network;
-      Family _family;
-      neutron::Component _component;
-      elle::cryptography::PublicKey _creator_K;
-      State _state;
+      ELLE_ATTRIBUTE_RW(Network, network); // XXX[remove W]
+      ELLE_ATTRIBUTE_R(Family, family);
+      ELLE_ATTRIBUTE_R(neutron::Component, component);
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, creator_K);
+      ELLE_ATTRIBUTE_RW(State, state);
     };
 
   }

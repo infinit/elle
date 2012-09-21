@@ -43,17 +43,15 @@ namespace etoile
       //     of releasing here.]
 
       ELLE_TRACE("pull the object from depot")
-      {
-        assert(context.object == nullptr);
-        context.object = depot::Depot::pull_object(
+        {
+          assert(context.object == nullptr);
+          context.object = depot::Depot::pull_object(
             context.location.address,
-            context.location.revision
-        ).release();
-      }
+            context.location.revision).release();
+        }
 
-      // compute the base in order to seal the block's original state.
-      if (context.object->base.Create(*context.object) == elle::Status::Error)
-        escape("unable to compute the base");
+      // Compute the block base.
+      context.object->base(nucleus::proton::Base(*context.object));
 
       // set the context's state.
       context.state = gear::Context::StateLoaded;
@@ -147,7 +145,7 @@ namespace etoile
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
-      if (context.object->state == nucleus::proton::StateDirty)
+      if (context.object->state() == nucleus::proton::StateDirty)
         {
           // seal the object, depending on the presence of a referenced
           // access block.

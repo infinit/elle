@@ -130,7 +130,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.
-        if (context.contents->state == nucleus::proton::StateClean)
+        if (context.contents->state() == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
 
@@ -219,8 +219,6 @@ namespace etoile
           // objects benefit from the history i.e multiple revisions; unless
           // the history support is not activated for this network.
           //
-          nucleus::proton::Address address;
-
           ELLE_TRACE("the Contents block is _not_ empty");
 
           // does the network support the history?
@@ -241,11 +239,10 @@ namespace etoile
             escape("unable to encrypt the contents");
 
           // bind the contents i.e seal it by computing its address.
-          if (context.contents->Bind(address) == elle::Status::Error)
-            escape("unable to bind the contents");
+          nucleus::proton::Address address(context.contents->bind());
 
           // set the content as consistent.
-          context.contents->state = nucleus::proton::StateConsistent;
+          context.contents->state(nucleus::proton::StateConsistent);
 
           // update the object.
           if (context.object->Update(

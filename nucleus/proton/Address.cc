@@ -1,6 +1,6 @@
 #include <elle/standalone/Log.hh>
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
 
 namespace nucleus
 {
@@ -43,10 +43,9 @@ namespace nucleus
 
       // create the any address with default meaningless values.
       if (Address::Any.Create(
-            Address::Any.family, Address::Any.component,
-            Address::Any.family,
-            Address::Any.component) ==
-          elle::Status::Error)
+            Address::Any.network(),
+            Address::Any.family(),
+            Address::Any.component()) == elle::Status::Error)
         escape("unable to create the any address");
 
     // enable the meta logging.
@@ -74,31 +73,26 @@ namespace nucleus
     /// this method initializes the object.
     ///
     Address::Address():
-      family(FamilyUnknown),
-      component(neutron::ComponentUnknown),
-      digest(nullptr)
+      _family(FamilyUnknown),
+      _component(neutron::ComponentUnknown),
+      _digest(nullptr)
     {
     }
 
     ///
     /// this is the copy constructor.
     ///
-    Address::Address(const Address&                             address):
-      Object(address)
+    Address::Address(Address const& other):
+      _network(other._network),
+      _family(other._family),
+      _component(other._component)
     {
-      // set the family/component;
-      this->family = address.family;
-      this->component = address.component;
+      delete this->_digest;
 
-      // copy the digest, if present.
-      if (address.digest != nullptr)
-        {
-          this->digest = new elle::cryptography::Digest(*address.digest);
-        }
+      if (other._digest != nullptr)
+        this->_digest = new elle::cryptography::Digest(*other._digest);
       else
-        {
-          this->digest = nullptr;
-        }
+        this->_digest = nullptr;
     }
 
     ///
@@ -106,9 +100,7 @@ namespace nucleus
     ///
     Address::~Address()
     {
-      // release the resources.
-      if (this->digest != nullptr)
-        delete this->digest;
+      delete this->_digest;
     }
 
 //
@@ -118,7 +110,7 @@ namespace nucleus
     elle::String const
     Address::unique() const
     {
-      assert(this->digest != nullptr);
+      assert(this->_digest != nullptr);
 
       // note that a unique element i.e the digest has already been computed
       // when the address was created.
@@ -141,14 +133,14 @@ namespace nucleus
       elle::String alphabet("0123456789abcdef");
       elle::String string;
 
-      for (i = 0; i < this->digest->region.size; i++)
+      for (i = 0; i < this->_digest->region.size; i++)
         {
           elle::Character hexadecimal[2];
 
           hexadecimal[0] =
-            alphabet[(this->digest->region.contents[i] >> 4) & 0xf];
+            alphabet[(this->_digest->region.contents[i] >> 4) & 0xf];
           hexadecimal[1] =
-            alphabet[this->digest->region.contents[i] & 0xf];
+            alphabet[this->_digest->region.contents[i] & 0xf];
 
           string.append(hexadecimal, 2);
         }
@@ -157,61 +149,88 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Address::operator==(const Address&      element) const
+    elle::Boolean
+    Address::operator ==(Address const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // if both are nullptr or equal return true, false otherwise
-      if ((this->digest == nullptr) || (element.digest == nullptr))
+      if ((this->_digest == nullptr) || (other._digest == nullptr))
         {
-          if (this->digest != element.digest)
+          if (this->_digest != other._digest)
             return false;
         }
       else
         {
-          if (*this->digest != *element.digest)
+          if (*this->_digest != *other._digest)
             return false;
         }
 
       return true;
     }
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Address::operator<(const Address&       element) const
+    elle::Boolean
+    Address::operator !=(Address const& other) const
+    {
+      return (!this->operator ==(other));
+    }
+
+    elle::Boolean
+    Address::operator <(Address const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return false;
 
       // test for a null digest.
-      if ((this->digest == nullptr) && (element.digest == nullptr))
+      if ((this->_digest == nullptr) && (other._digest == nullptr))
         return false;
-      else if (this->digest == nullptr)
+      else if (this->_digest == nullptr)
         return true;
-      else if (element.digest == nullptr)
+      else if (other._digest == nullptr)
         return false;
 
       // compare the digests.
-      if (*this->digest < *element.digest)
+      if (*this->_digest < *other._digest)
         return true;
 
       return false;
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Address, _());
+    elle::Boolean
+    Address::operator <=(Address const& other) const
+    {
+      // check the address as this may actually be the same object.
+      if (this == &other)
+        return true;
+
+      // test for a null digest.
+      if ((this->_digest == nullptr) && (other._digest == nullptr))
+        return true;
+      else if (this->_digest == nullptr)
+        return true;
+      else if (other._digest == nullptr)
+        return false;
+
+      return (*this->_digest < *other._digest);
+    }
+
+    elle::Boolean
+    Address::operator >(Address const& other) const
+    {
+      return (!this->operator <=(other));
+    }
+
+    elle::Boolean
+    Address::operator >=(Address const& other) const
+    {
+      return (!this->operator <(other));
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -238,16 +257,19 @@ namespace nucleus
           // display the name.
           std::cout << alignment << "[Address]" << std::endl;
 
+          if (this->_network.Dump(margin + 2) == elle::Status::Error)
+            escape("XXX");
+
           // display the family.
           std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
-                    << this->family << std::endl;
+                    << this->_family << std::endl;
 
           // display the component.
           std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
-                    << this->component << std::endl;
+                    << this->_component << std::endl;
 
           // dump the digest.
-          if (this->digest->Dump(margin + 2) == elle::Status::Error)
+          if (this->_digest->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the digest");
         }
 
@@ -261,9 +283,15 @@ namespace nucleus
     void
     Address::print(std::ostream& stream) const
     {
-      stream << "address(" << this->family
-             << ", " << this->component << ", "
-             << this->unique() << ")";
+      stream << "address("
+             << this->_network
+             << ", "
+             << this->_family
+             << ", "
+             << this->_component
+             << ", "
+             << this->unique()
+             << ")";
     }
 
   }

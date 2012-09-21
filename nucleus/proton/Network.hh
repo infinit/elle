@@ -2,6 +2,9 @@
 # define NUCLEUS_PROTON_NETWORK_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/Printable.hh>
+# include <elle/serialize/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -13,7 +16,8 @@ namespace nucleus
     ///
     /// this class identifies a network through a unique name.
     ///
-    class Network
+    class Network:
+      public elle::Printable
     {
       //
       // constants
@@ -25,34 +29,35 @@ namespace nucleus
       // constructors & destructors
       //
     public:
+      Network(); // XXX[to deserialization]
       Network(elle::String const& name);
-
-      //
-      // methods
-      //
-    public:
-      elle::String const&
-      name() const;
-
-      //
-      // attributes
-      //
-    private:
-      elle::String _name;
 
       //
       // operators
       //
     public:
       elle::Boolean
-      operator==(const Network&) const;
+      operator==(Network const& other) const;
 
       //
       // interfaces
       //
     public:
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Network);
+
+      // printable
+      void
+      print(std::ostream& stream) const;
+
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      //
+      // attributes
+      //
+    public:
+      ELLE_ATTRIBUTE_R(elle::String, name);
     };
 
   }

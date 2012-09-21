@@ -24,9 +24,11 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      ImmutableBlock();
-      ImmutableBlock(const Family,
-                     const neutron::Component);
+      ImmutableBlock(); // XXX[to deserialize]
+      ImmutableBlock(Network const& network,
+                     Family const family,
+                     neutron::Component const component,
+                     elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -42,21 +44,14 @@ namespace nucleus
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(ImmutableBlock);
-#include <elle/idiom/Close.hh>
-
       // fileable
     protected:
       ELLE_CONCEPT_FILEABLE_METHODS();
     public:
       void
-      load(Network const& network,
-           Address const& address);
+      load(Address const& address);
       void
-      store(Network const& network,
-            Address const& address) const;
+      store(Address const& address) const;
       static
       void
       erase(Network const& network,

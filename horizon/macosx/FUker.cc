@@ -160,10 +160,12 @@ namespace horizon
       // a blocked FUSE program could block an entire system through
       // applications such as the Finder for instance.
       //
-      elle::String      ofsname("-ofsname=" +
-                                horizon::hole().descriptor().data().name());
-      elle::String      ovolname("-ovolname=" +
-                                 horizon::hole().descriptor().data().name());
+      elle::String ofsname(
+        "-ofsname=" +
+        hole::Hole::instance().descriptor().data().name());
+      elle::String ovolname(
+        "-ovolname=" +
+        hole::Hole::instance().descriptor().data().name());
       const char*       arguments[] =
         {
           "horizon",
@@ -317,11 +319,11 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      switch (horizon::hole().state())
+      switch (hole::Hole::instance().state())
         {
         case hole::Hole::State::offline:
           {
-            horizon::hole().readyHook(&FUker::run);
+            hole::Hole::instance().ready_hook(&FUker::run);
             break;
           }
         case hole::Hole::State::online:

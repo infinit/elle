@@ -1,12 +1,12 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
 # define NUCLEUS_PROTON_ADDRESS_HH
 
-# include <elle/radix/Object.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/Printable.hh>
 
 # include <nucleus/proton/Family.hh>
+# include <nucleus/proton/Network.hh>
 
 # include <nucleus/neutron/Component.hh>
 
@@ -33,14 +33,13 @@ namespace nucleus
     /// the generation of the address' digest.
     ///
     class Address:
-      public elle::radix::Object,
       public elle::Printable,
       public elle::concept::MakeUniquable<Address>
     {
-    public:
       //
       // constants
       //
+    public:
       static const Address      Null;
       static Address            Any;
       static Address&           Some;
@@ -48,53 +47,73 @@ namespace nucleus
       //
       // static methods
       //
+    public:
       static elle::Status       Initialize();
       static elle::Status       Clean();
 
       //
-      // constructors & destructors
+      // construction
       //
-      Address();
-      Address(const Address&);
+    public:
+      Address(); // XXX[to deserialize]
+      Address(Address const& other);
       ~Address();
 
       //
       // methods
       //
-      template <typename T,
-                typename... TT>
-      elle::Status              Create(const Family&,
+    public:
+      template <typename... T>
+      elle::Status              Create(Network const& network,
+                                       const Family&,
                                        const neutron::Component&,
-                                       const T&,
-                                       const TT&...);
+                                       const T&...);
 
       /// this method returns a unique representation of the address.
       elle::String const
       unique() const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Address const& other) const;
+      elle::Boolean
+      operator !=(Address const& other) const;
+      elle::Boolean
+      operator <(Address const& other) const;
+      elle::Boolean
+      operator <=(Address const& other) const;
+      elle::Boolean
+      operator >(Address const& other) const;
+      elle::Boolean
+      operator >=(Address const& other) const;
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Address);
-      elle::Boolean             operator==(const Address&) const;
-      elle::Boolean             operator<(const Address&) const;
-
+    public:
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Address);
+
       // printable
-      virtual void
+      virtual
+      void
       print(std::ostream& stream) const;
 
       //
       // attributes
       //
-      Family                    family;
-      neutron::Component        component;
+    private:
+      ELLE_ATTRIBUTE_R(Network, network);
+      ELLE_ATTRIBUTE_R(Family, family);
+      ELLE_ATTRIBUTE_R(neutron::Component, component);
 
-      elle::cryptography::Digest* digest;
+      elle::cryptography::Digest* _digest;
     };
 
   }

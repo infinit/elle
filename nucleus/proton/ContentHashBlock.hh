@@ -27,28 +27,29 @@ namespace nucleus
       public ImmutableBlock,
       public elle::serialize::DynamicFormat<ContentHashBlock>
     {
+      //
+      // construction
+      //
     public:
-      //
-      // constructors & destructors
-      //
-      ContentHashBlock();
-      ContentHashBlock(const neutron::Component);
+      ContentHashBlock(); // XXX[to deserialize]
+      ContentHashBlock(Network const& network,
+                       neutron::Component const component,
+                       elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
       //
-      elle::Status      Bind(Address&) const;
-      elle::Status      Validate(const Address&) const;
+      /// XXX
+      Address
+      bind() const;
+      /// XXX
+      void
+      validate(Address const& address) const;
 
       //
       // interfaces
       //
-
-      // object
-# include <elle/idiom/Open.hh>
-      declare(ContentHashBlock);
-# include <elle/idiom/Close.hh>
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -69,7 +70,7 @@ namespace nucleus
       /// Note that referencing counting is not possible in a decentralised
       /// environment, at least without resorting to complicating protocols.
       /// This is why deduplication is not used.
-      elle::utility::Time _creation_stamp;
+      elle::utility::Time _creation_stamp; // XXX[to move in Block?]
       elle::Natural64 _salt;
     };
 

@@ -25,7 +25,9 @@ void test_group()
       CHECK(owner.Generate());
     }
 
-  nucleus::neutron::Group group(owner.K, "everybody");
+  nucleus::proton::Network network("test");
+
+  nucleus::neutron::Group group(network, owner.K, "everybody");
 
   elle::cryptography::KeyPair pass;
 
@@ -49,7 +51,7 @@ void test_group()
           std::move(std::unique_ptr<nucleus::neutron::Fellow>(
             new nucleus::neutron::Fellow(subject))));
 
-        assert(group.state == nucleus::proton::StateDirty);
+        assert(group.state() == nucleus::proton::StateDirty);
       }
 
   ELLE_TRACE("Update the ensemble with the private pass")
@@ -57,12 +59,8 @@ void test_group()
       ensemble.update(pass.k);
     }
 
-  nucleus::proton::Address ensemble_address;
-
-  ELLE_TRACE("Bind the ensemble block")
-    {
-      CHECK(ensemble.Bind(ensemble_address));
-    }
+  ELLE_TRACE("Bind the ensemble block");
+  nucleus::proton::Address ensemble_address(ensemble.bind());
 
   ELLE_TRACE("Upgrade the group")
     {
@@ -70,22 +68,18 @@ void test_group()
 
       group.upgrade(ensemble_address, pass.K, manager_token);
 
-      assert(group.state == nucleus::proton::StateDirty);
+      assert(group.state() == nucleus::proton::StateDirty);
     }
 
   ELLE_TRACE("Seal the group")
     {
       group.seal(owner.k);
 
-      assert(group.state == nucleus::proton::StateConsistent);
+      assert(group.state() == nucleus::proton::StateConsistent);
     }
 
-  nucleus::proton::Address group_address;
-
-  ELLE_TRACE("Bind the group block")
-    {
-      CHECK(group.Bind(group_address));
-    }
+  ELLE_TRACE("Bind the group block");
+  nucleus::proton::Address group_address(group.bind());
 
   elle::utility::Buffer buffer;
 
@@ -103,10 +97,10 @@ void test_group()
     }
 
   ELLE_TRACE("Validate the group")
-    CHECK(g.Validate(group_address));
+    g.validate(group_address);
 
   ELLE_TRACE("Validate the ensemble")
-    CHECK(e.Validate(ensemble_address));
+    e.validate(ensemble_address);
 }
 
 int main(int, char** argv)

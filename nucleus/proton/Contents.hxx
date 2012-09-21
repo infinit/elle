@@ -57,12 +57,15 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// the default constructor.
-    ///
     template <typename T>
-    Contents<T>::Contents():
-      proton::ContentHashBlock(ContentsMap<T>::Component),
+    Contents<T>::Contents()
+    {
+    }
+
+    template <typename T>
+    Contents<T>::Contents(Network const& network,
+                          elle::cryptography::PublicKey const& creator_K):
+      proton::ContentHashBlock(network, ContentsMap<T>::Component, creator_K),
 
       content(nullptr),
       cipher(nullptr)

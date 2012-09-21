@@ -54,7 +54,7 @@ namespace hole
       Client::put(const nucleus::proton::Address& address,
                   const nucleus::proton::ImmutableBlock& block)
       {
-        nucleus::Derivable derivable(address.component, block,
+        nucleus::Derivable derivable(address.component(), block,
                                      nucleus::Derivable::Kind::output);
 
         ELLE_TRACE("Put[Immutable]")
@@ -65,7 +65,7 @@ namespace hole
       Client::put(const nucleus::proton::Address& address,
                   const nucleus::proton::MutableBlock& block)
       {
-        nucleus::Derivable derivable(address.component, block);
+        nucleus::Derivable derivable(address.component(), block);
         ELLE_TRACE("Put[Mutable]")
           this->_rpc.push(address, derivable);
       }

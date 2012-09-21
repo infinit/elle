@@ -35,7 +35,7 @@ namespace nucleus
     elle::Status        History::Register(const Revision&        revision)
     {
       // store the revision in the history's vector.
-      this->container.push_back(revision);
+      this->_container.push_back(revision);
 
       return elle::Status::Ok;
     }
@@ -48,11 +48,11 @@ namespace nucleus
                                         Revision&                revision) const
     {
       // check if the index is out of bound.
-      if (index >= this->container.size())
+      if (index >= this->_container.size())
         escape("the revision index is out of bound");
 
       // return the revision.
-      revision = this->container[index];
+      revision = this->_container[index];
 
       return elle::Status::Ok;
     }
@@ -63,7 +63,7 @@ namespace nucleus
     elle::Status        History::Size(Revision::Type&            size) const
     {
       // return the size.
-      size = this->container.size();
+      size = this->_container.size();
 
       return elle::Status::Ok;
     }
@@ -73,48 +73,41 @@ namespace nucleus
                    Address const& address)
     {
       return (elle::io::Path(lune::Lune::Network::Shelter::History,
-                             elle::io::Piece("%NETWORK%", network.name),
+                             elle::io::Piece("%NETWORK%", network.name()),
                              elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       History::operator==(const History&      element) const
+    elle::Boolean
+    History::operator==(History const& other) const
     {
-      Revision::Type     size;
-      Revision::Type     i;
+      Revision::Type size;
+      Revision::Type i;
 
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // check the containers' size.
-      if (this->container.size() != element.container.size())
+      if (this->_container.size() != other._container.size())
         return false;
 
       // retrieve the size.
-      size = this->container.size();
+      size = this->_container.size();
 
       // go through the container and compare.
       for (i = 0; i < size; i++)
         {
           // compare the containers.
-          if (this->container[i] != element.container[i])
+          if (this->_container[i] != other._container[i])
             return false;
         }
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(History, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -132,7 +125,7 @@ namespace nucleus
       std::cout << alignment << "[History]" << std::endl;
 
       // go through the container.
-      for (i = 0; i < this->container.size(); i++)
+      for (i = 0; i < this->_container.size(); i++)
         {
           Revision       revision;
 
@@ -145,7 +138,7 @@ namespace nucleus
                     << "[Index] " << i << std::endl;
 
           // retrieve the revision.
-          revision = this->container[i];
+          revision = this->_container[i];
 
           // dump the revision.
           if (revision.Dump(margin + 4) == elle::Status::Error)

@@ -56,7 +56,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
   enforce(version == 0);
 
   archive & base_class<nucleus::proton::ContentHashBlock>(value);
-  archive & value.range;
+  archive & value._range;
 }
 
 #endif

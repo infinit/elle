@@ -22,7 +22,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
   archive >> value._size;
   archive >> value._modification_stamp;
   archive >> value._ensemble;
-  archive >> value._manager.token;
+  archive >> value._manager_token;
   archive >> value._signature;
 }
 
@@ -41,7 +41,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
   archive << value._size;
   archive << value._modification_stamp;
   archive << value._ensemble;
-  archive << value._manager.token;
+  archive << value._manager_token;
   archive << value._signature;
 }
 

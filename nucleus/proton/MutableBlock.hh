@@ -61,25 +61,24 @@ namespace nucleus
       /// XXX
       static
       elle::io::Path
-      _path(Address const& address);
+      _path(Network const& network,
+            Address const& address);
       /// XXX
       static
       elle::io::Path
-      _path(Address const& address,
+      _path(Network const& network,
+            Address const& address,
             elle::String const& revision);
 
       //
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(MutableBlock);
-#include <elle/idiom/Close.hh>
-
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);
 
       // fileable
     protected:
@@ -92,18 +91,20 @@ namespace nucleus
       store(Address const& address) const;
       static
       void
-      erase(Address const& address);
+      erase(Network const& network,
+            Address const& address);
       static
       elle::Boolean
-      exists(Address const& address,
+      exists(Network const& network,
+             Address const& address,
              Revision const& revision = Revision::Any);
 
       //
       // attributes
       //
     private:
-      Revision _revision;
-      Base _base;
+      ELLE_ATTRIBUTE_RW(Revision, revision);
+      ELLE_ATTRIBUTE_RW(Base, base);
     };
 
   }

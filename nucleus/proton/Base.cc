@@ -1,5 +1,6 @@
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/cryptography/OneWay.hh>
@@ -12,6 +13,23 @@ namespace nucleus
   {
 
 //
+// ---------- construction ----------------------------------------------------
+//
+
+    Base::Base()
+    {
+    }
+
+    Base::Base(MutableBlock const& block):
+      _revision(block.revision())
+    {
+      // compute the block's digest.
+      if (elle::cryptography::OneWay::Hash(block, this->_digest)
+          == elle::Status::Error)
+        throw Exception("unable to hash the mutable block");
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -22,24 +40,8 @@ namespace nucleus
                                      elle::cryptography::Digest const&        digest)
     {
       // set the attributes.
-      this->revision = revision;
-      this->digest = digest;
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method creates a base according to the referenced mutable block.
-    ///
-    elle::Status        Base::Create(const MutableBlock&        block)
-    {
-      // set the revision.
-      this->revision = block.revision;
-
-      // compute the block's digest.
-      if (elle::cryptography::OneWay::Hash(block, this->digest)
-          == elle::Status::Error)
-        escape("unable to hash the mutable block");
+      this->_revision = revision;
+      this->_digest = digest;
 
       return elle::Status::Ok;
     }
@@ -53,7 +55,7 @@ namespace nucleus
       elle::cryptography::Digest      digest;
 
       // check the revisions.
-      if (this->revision != block.revision)
+      if (this->_revision != block.revision())
         return elle::Status::False;
 
       // compute the block's digest.
@@ -64,37 +66,30 @@ namespace nucleus
         flee("unable to hash the mutable block");
 
       // compare the digests.
-      if (this->digest != digest)
+      if (this->_digest != digest)
         return elle::Status::False;
 
       return elle::Status::True;
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Base::operator==(const Base&            element) const
+    elle::Boolean
+    Base::operator==(Base const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the attributes.
-      if ((this->revision != element.revision) ||
-          (this->digest != element.digest))
+      if ((this->_revision != other._revision) ||
+          (this->_digest != other._digest))
         return false;
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Base, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -110,11 +105,11 @@ namespace nucleus
       std::cout << alignment << "[Base]" << std::endl;
 
       // dump the revision.
-      if (this->revision.Dump(margin + 2) == elle::Status::Error)
+      if (this->_revision.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the revision");
 
       // dump the digest.
-      if (this->digest.Dump(margin + 2) == elle::Status::Error)
+      if (this->_digest.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the digest");
 
       return elle::Status::Ok;

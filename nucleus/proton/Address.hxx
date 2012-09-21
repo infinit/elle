@@ -18,34 +18,30 @@ namespace nucleus
     /// create the address based on an object by serializing it before
     /// hashing it.
     ///
-    template <typename T,
-              typename... TT>
-    elle::Status        Address::Create(const Family&           family,
+    template <typename... T>
+    elle::Status        Address::Create(Network const& network,
+                                        const Family&           family,
                                         const
                                           neutron::Component&   component,
-                                        const T&                parameter,
-                                        const TT&...            parameters)
+                                        const T&...            parameters)
     {
-      // set the family.
-      this->family = family;
+      this->_network = network;
+      this->_family = family;
+      this->_component = component;
 
-      // set the component.
-      this->component = component;
-
-      // release the previous digest.
-      if (this->digest != nullptr)
-        delete this->digest;
-
-      // allocate the digest object.
-      this->digest = new elle::cryptography::Digest;
+      delete this->_digest;
+      this->_digest = new elle::cryptography::Digest;
 
       // compute the digest based on the parameters. note that most of
       // the components requesting this method pass family and component
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
       if (elle::cryptography::OneWay::Hash(
-            elle::serialize::make_tuple(parameter, parameters...),
-            *this->digest) == elle::Status::Error)
+            elle::serialize::make_tuple(this->_network,
+                                        this->_family,
+                                        this->_component,
+                                        parameters...),
+            *this->_digest) == elle::Status::Error)
         escape("unable to hash the given parameter(s)");
 
       return elle::Status::Ok;
@@ -72,18 +68,12 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
                           version)
 {
   enforce(version == 0);
+  enforce(value._digest != nullptr);
 
-  if (value.digest != nullptr)
-    {
-      archive << true
-              << value.family
-              << value.component
-              << *(value.digest);
-    }
-  else
-    {
-      archive << false;
-    }
+  archive << value._network
+          << value._family
+          << value._component
+          << *(value._digest);
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
@@ -93,17 +83,13 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
 {
   enforce(version == 0);
 
-  delete value.digest;
-  value.digest = nullptr;
+  delete value._digest;
+  value._digest = nullptr;
 
-  bool has_digest;
-  archive >> has_digest;
-
-  if (!has_digest)
-    return; // XXX reset family & component ?
-
-  archive >> value.family >> value.component;
-  value.digest = archive.template Construct<elle::cryptography::Digest>().release();
+  archive >> value._network;
+  archive >> value._family;
+  archive >> value._component;
+  value._digest = archive.template Construct<elle::cryptography::Digest>().release();
 }
 
 #endif

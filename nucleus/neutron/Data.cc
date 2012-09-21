@@ -28,7 +28,7 @@ namespace nucleus
     ///
     elle::Status        Data::Create()
     {
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -54,7 +54,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -110,7 +110,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }

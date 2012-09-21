@@ -31,7 +31,7 @@ namespace hole
 
   Hole::Hole()
   {
-    nucleus::proton::Network network;
+    assert(!Hole::_instance);
 
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
@@ -67,10 +67,7 @@ namespace hole
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to enable the meta logging");
 
-    // Create the network instance.
-    if (network.Create(Infinit::Network) == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to create the network instance");
+    nucleus::proton::Network network(Infinit::Network);
 
     // create the holeable depending on the model.
     switch (this->descriptor().meta().model().type)
@@ -155,7 +152,7 @@ namespace hole
   }
 
   void
-  Hole::readyHook(boost::function<void ()> const& f)
+  Hole::ready_hook(boost::function<void ()> const& f)
   {
     Hole::_ready.connect(f);
   }
@@ -176,7 +173,7 @@ namespace hole
 
     // Forward the request depending on the nature of the block which
     // the address indicates.
-    switch (address.family)
+    switch (address.family())
       {
       case nucleus::proton::FamilyContentHashBlock:
         {
@@ -202,7 +199,7 @@ namespace hole
         {
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    elle::sprintf("unknown block family '%u'",
-                                                 address.family));
+                                                 address.family()));
         }
       }
   }
@@ -215,7 +212,7 @@ namespace hole
 
     // Forward the request depending on the nature of the block which
     // the addres indicates.
-    switch (address.family)
+    switch (address.family())
       {
         case nucleus::proton::FamilyContentHashBlock:
           return this->_implementation->Get(address);
@@ -225,7 +222,7 @@ namespace hole
           return this->_implementation->Get(address, revision);
         default:
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   elle::sprintf("unknown block family '%u'", address.family));
+                                   elle::sprintf("unknown block family '%u'", address.family()));
       }
   }
 
