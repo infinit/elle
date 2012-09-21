@@ -19,6 +19,18 @@ namespace elle
   {
 
     bool
+    fprint_value(std::ostream&                      out,
+                 PrintFlags&                        flags,
+                 bool                               is_first,
+                 elle::Printable const&             value)
+    {
+      if (!is_first && flags.sep != '\0')
+          out << flags.sep;
+      value.print(out);
+      return false;
+    }
+
+    bool
     fprint_value(std::ostream&                      /*out*/,
                  PrintFlags&                        flags,
                  bool                               is_first,

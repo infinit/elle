@@ -2,6 +2,7 @@
 # define ELLE_PRINTF_HXX
 
 # include <elle/assert.hh>
+# include <elle/print.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <cstddef>
@@ -15,29 +16,6 @@ namespace elle
 {
   namespace detail
   {
-
-
-    template<typename _OStream, typename _T> struct IsPrintable
-    {
-    private:
-      template<typename K>
-        struct Clean
-        {
-          typedef typename std::remove_cv<
-            typename std::remove_reference<K>::type
-          >::type type;
-        };
-      typedef typename Clean<_OStream>::type  OStream;
-      typedef typename Clean<_T>::type        T;
-      typedef char No;
-      typedef struct { No _[2];} Yes;
-      static No f(...);
-      template<size_t> struct Helper {};
-      template<typename U>
-        static Yes f(U*,  Helper<sizeof(*((OStream*) 0) << *((U*)0))>* sfinae = 0);
-    public:
-      static bool const value = (sizeof f((T*)0) == sizeof(Yes));
-    };
 
     // Select the right feeder.
     // Feeder for "printable" objects.
