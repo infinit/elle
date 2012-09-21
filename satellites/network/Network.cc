@@ -53,9 +53,6 @@ namespace satellite
   {
     lune::Authority     authority;
     lune::Identity      identity;
-    nucleus::proton::Address directory_address;
-    nucleus::proton::Address group_address;
-    nucleus::proton::Address access_address;
 
     //
     // test the arguments.
@@ -126,35 +123,20 @@ namespace satellite
         escape("unable to decrypt the identity");
     }
 
-    nucleus::proton::Network network;
-
-    // create the network object.
-    if (network.Create(name) == elle::Status::Error)
-      escape("unable to create the network object");
+    nucleus::proton::Network network(name);
 
     //
     // create an "everybody" group.
     //
-    nucleus::neutron::Group group(identity.pair.K,
+    nucleus::neutron::Group group(network,
+                                  identity.pair.K,
                                   "everybody");
-    {
-      // XXX[remove try/catch in the future]
-      try
-        {
-          group.seal(identity.pair.k);
-        }
-      catch (...)
-        {
-          escape("unable to seal the group");
-        }
-
-      if (group.Bind(group_address) == elle::Status::Error)
-        escape("unable to bind the group");
-
-      group.store(network, group_address);
-    }
+    group.seal(identity.pair.k);
+    nucleus::proton::Address group_address(group.bind());
+    group.store(group_address);
 
     nucleus::neutron::Access access;
+    nucleus::proton::Address* access_address(nullptr);
 
     // depending on the policy.
     switch (policy)
@@ -212,10 +194,8 @@ namespace satellite
           if (access.Add(record) == elle::Status::Error)
             escape("unable to add the record to the access");
 
-          if (access.Bind(access_address) == elle::Status::Error)
-            escape("unable to bind the access");
-
-          access.store(network, access_address);
+          access_address = new nucleus::proton::Address(access.bind());
+          access.store(*access_address);
 
           break;
         }
@@ -225,34 +205,28 @@ namespace satellite
         }
       }
 
+    assert(access_address != nullptr);
+
     //
     // create the root directory.
     //
-    nucleus::neutron::Object directory;
-    {
-      // create directory object, setting the user's as the administrator.
-      if (directory.Create(nucleus::neutron::GenreDirectory,
-                           identity.pair.K) == elle::Status::Error)
-        escape("unable to create the object directory");
+    nucleus::neutron::Object directory(network,
+                                       identity.pair.K,
+                                       nucleus::neutron::GenreDirectory);
 
-      if (directory.Update(directory.author(),
-                           directory.contents(),
-                           directory.size(),
-                           access_address,
-                           directory.owner_token()) == elle::Status::Error)
-        escape("unable to update the directory");
+    if (directory.Update(directory.author(),
+                         directory.contents(),
+                         directory.size(),
+                         *access_address,
+                         directory.owner_token()) == elle::Status::Error)
+      escape("unable to update the directory");
 
-      // seal the directory.
-      if (directory.Seal(identity.pair.k, access) == elle::Status::Error)
-        escape("unable to seal the object");
+    // seal the directory.
+    if (directory.Seal(identity.pair.k, access) == elle::Status::Error)
+      escape("unable to seal the object");
 
-      // compute the directory's address.
-      if (directory.Bind(directory_address) == elle::Status::Error)
-        escape("unable to bind the object to an address");
-
-      // store the block.
-      directory.store(network, directory_address);
-    }
+    nucleus::proton::Address directory_address(directory.bind());
+    directory.store(directory_address);
 
     //
     // create the network's descriptor.

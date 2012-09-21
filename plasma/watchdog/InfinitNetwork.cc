@@ -113,7 +113,7 @@ void InfinitNetwork::_update()
   if (!path::exists(description_filename))
     {
       if (!this->_description.descriptor.size())
-        return this->_create_network_root_block();
+        return this->_create_network_root_block(this->_description._id);
       else
           this->_prepare_directory();
     }
@@ -122,7 +122,7 @@ void InfinitNetwork::_update()
 }
 
 /// Called when the network does not have any descriptor
-void InfinitNetwork::_create_network_root_block()
+void InfinitNetwork::_create_network_root_block(std::string const& id)
 {
   LOG("Creating the network descriptor.");
   // XXX this value depends on the network policy and openness.
@@ -132,19 +132,19 @@ void InfinitNetwork::_create_network_root_block()
   auto e              = elle::Status::Error;
   auto genreDirectory = nucleus::neutron::GenreDirectory;
 
+  nucleus::proton::Network network(id);
+
   //- identity ----------------------------------------------------------------
   lune::Identity                identity;
   if (identity.Restore(this->_manager.identity())             == e)
     throw std::runtime_error("Couldn't restore the identity.");
 
   //- group -------------------------------------------------------------------
-  nucleus::neutron::Group group(identity.pair.K, "everybody");
+  nucleus::neutron::Group group(network, identity.pair.K, "everybody");
   group.seal(identity.pair.k);
 
   //- group address -----------------------------------------------------------
-  nucleus::proton::Address      group_address;
-  if (group.Bind(group_address) == elle::Status::Error)
-    throw std::runtime_error("unable to bind the group");
+  nucleus::proton::Address      group_address(group.bind());
 
   //- subject -----------------------------------------------------------------
   nucleus::neutron::Subject subject;
@@ -161,14 +161,12 @@ void InfinitNetwork::_create_network_root_block()
     throw std::runtime_error("unable to add the record to the access");
 
   //- access address ----------------------------------------------------------
-  nucleus::proton::Address      access_address;
-  if (access.Bind(access_address) == elle::Status::Error)
-    throw std::runtime_error("unable to bind the access");
+  nucleus::proton::Address      access_address(access.bind());
 
   //- directory ---------------------------------------------------------------
-  nucleus::neutron::Object      directory;
-  if (directory.Create(genreDirectory, identity.pair.K)       == e)
-    throw std::runtime_error("Couldn't create the root block.");
+  nucleus::neutron::Object      directory(network,
+                                          identity.pair.K,
+                                          genreDirectory);
 
   if (directory.Update(directory.author(),
                        directory.contents(),
@@ -181,9 +179,7 @@ void InfinitNetwork::_create_network_root_block()
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------
-  nucleus::proton::Address      directory_address;
-  if (directory.Bind(directory_address)                       == e)
-    throw std::runtime_error("Couldn't bind the address.");
+  nucleus::proton::Address      directory_address(directory.bind());
 
   {
     elle::io::Unique root_block_;
@@ -251,11 +247,9 @@ void InfinitNetwork::_prepare_directory()
 
   descriptor.store(this->_description._id);
 
-  nucleus::proton::Network network;
   nucleus::neutron::Object directory;
 
-  if (network.Create(this->_description._id)          == e ||
-      directory.Restore(this->_description.root_block) == e)
+  if (directory.Restore(this->_description.root_block) == e)
     {
 #include <elle/idiom/Open.hh>
       show();
@@ -263,7 +257,7 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't store the root block.");
     }
 
-  directory.store(network, descriptor.meta().root());
+  directory.store(descriptor.meta().root());
 
   nucleus::neutron::Access access;
   nucleus::proton::Address access_address;
@@ -271,7 +265,7 @@ void InfinitNetwork::_prepare_directory()
       access_address.Restore(this->_description.access_address) == e)
     throw std::runtime_error("Couldn't store the access block");
 
-  access.store(network, access_address);
+  access.store(access_address);
 
   nucleus::neutron::Group group;
   nucleus::proton::Address group_address;
@@ -279,7 +273,7 @@ void InfinitNetwork::_prepare_directory()
       group_address.Restore(this->_description.group_address) == e)
     throw std::runtime_error("Couldn't store the group block");
 
-  group.store(network, group_address);
+  group.store(group_address);
 
   LOG("Root block stored.");
 

@@ -80,16 +80,16 @@ namespace nucleus
       // constructors & destructors
       //
     public:
-      Object();
+      Object(); // XXX[to deserialize]
+      Object(proton::Network const& network,
+             elle::cryptography::PublicKey const& owner_K,
+             Genre const genre);
       ~Object();
 
       //
       // methods
       //
     public:
-      elle::Status      Create(const Genre,
-                               elle::cryptography::PublicKey const&);
-
       elle::Status      Update(const Author& author,
                                const proton::Address& contents,
                                const Size& size,
@@ -101,9 +101,18 @@ namespace nucleus
       elle::Status      Seal(elle::cryptography::PrivateKey const&,
                              const Access&);
 
-      elle::Status      Validate(const proton::Address&) const;
-      elle::Status      Validate(const proton::Address&,
-                                 const Access&) const;
+      /// Implements the Block's validate() interface method.
+      ///
+      /// However, since the Object requires additional information in
+      /// order to be validated, this method must *never* be used and therefore
+      /// returns an error.
+      void
+      validate(proton::Address const& address) const;
+      /// Verifies that the object has been properly author
+      /// i.e that every signature has been produced by legitimate users.
+      void
+      validate(proton::Address const& address,
+               Access const& access) const;
       /// Returns the address of the referenced Access block.
       proton::Address const&
       access() const;

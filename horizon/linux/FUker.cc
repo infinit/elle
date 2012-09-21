@@ -292,9 +292,9 @@ namespace horizon
     {
       switch (hole::Hole::instance().state())
         {
-          case hole::Hole::State::offline:
+        case hole::Hole::State::offline:
           {
-            hole::Hole::instance().readyHook(&FUker::run);
+            hole::Hole::instance().ready_hook(&FUker::run);
             break;
           }
           case hole::Hole::State::online:

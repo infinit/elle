@@ -30,27 +30,35 @@ namespace nucleus
     class OwnerKeyBlock:
       public MutableBlock
     {
-    public:
       //
       // constructors & destructors
       //
-      OwnerKeyBlock();
-      OwnerKeyBlock(const neutron::Component);
+    public:
+      OwnerKeyBlock(); // XXX[to deserialize]
+      OwnerKeyBlock(Network const& network,
+                    neutron::Component component,
+                    elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
       //
-      elle::Status      Create(elle::cryptography::PublicKey const&);
-
-      elle::Status      Bind(Address&) const;
-      elle::Status      Validate(const Address&) const;
+    public:
+      /// XXX
+      Address
+      bind() const;
+      /// XXX
+      void
+      validate(Address const& address) const;
+      /// The subject of the block owner.
+      neutron::Subject const&
+      owner_subject();
 
       //
       // interfaces
       //
-
-      // object
-      declare(OwnerKeyBlock);
+    public:
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(OwnerKeyBlock);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -58,18 +66,13 @@ namespace nucleus
       //
       // attributes
       //
-      elle::cryptography::PublicKey           K;
+    private:
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, K);
+      ELLE_ATTRIBUTE_R(elle::utility::Time, stamp); // XXX[creation_stamp]
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, owner_K);
+      ELLE_ATTRIBUTE_R(elle::cryptography::Signature, owner_signature);
 
-      elle::utility::Time                stamp;
-
-      struct
-      {
-        elle::cryptography::PublicKey         K;
-
-        elle::cryptography::Signature         signature;
-
-        neutron::Subject        subject;
-      }                         owner;
+      neutron::Subject* _owner_subject;
     };
 
   }

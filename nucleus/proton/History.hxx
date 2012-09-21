@@ -13,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::History,
 {
   enforce(version == 0);
 
-  archive & value.container;
+  archive & value._container;
 }
 
 #endif

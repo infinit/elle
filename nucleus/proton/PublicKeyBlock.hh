@@ -30,33 +30,33 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      PublicKeyBlock();
-      PublicKeyBlock(const neutron::Component);
+      PublicKeyBlock(); // XXX[to deserialize]
+      PublicKeyBlock(Network const& network,
+                     neutron::Component const component,
+                     elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
       //
-      elle::Status      Create(elle::cryptography::PublicKey const&);
-
-      elle::Status      Bind(Address&) const;
-      elle::Status      Validate(const Address&) const;
+      /// XXX
+      Address
+      bind() const;
+      /// XXX
+      void
+      validate(Address const& address) const;
 
       //
       // interfaces
       //
-
-      // object
-#include <elle/idiom/Open.hh>
-      declare(PublicKeyBlock);
-#include <elle/idiom/Close.hh>
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      elle::cryptography::PublicKey   K;
+    public:
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, K);
     };
 
   }

@@ -27,11 +27,37 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
+    Object::Object():
+      proton::ImprintBlock()
+    {
+      this->_meta.state = proton::StateClean;
+      this->_meta.owner.permissions = PermissionNone;
+      this->_meta.owner.record = nullptr;
+      this->_meta.genre = GenreUnknown;
+      this->_meta.revision = 0;
+
+      this->_data.state = proton::StateClean;
+      this->_data.size = 0;
+      this->_data.revision = 0;
+    }
+
     ///
     /// this method initializes the object.
     ///
-    Object::Object():
-      proton::ImprintBlock(ComponentObject),
+    /// XXX
+    ///
+    ///
+    /// this method creates the object given the owner public and the
+    /// genre of the object to create.
+    ///
+    /// the method (i) starts by initializing the underlying public key block
+    /// (ii) sets the meta data, and finally (iv) initializes the data
+    /// part by setting the owner as the author.
+    ///
+    Object::Object(proton::Network const& network,
+                   elle::cryptography::PublicKey const& owner_K,
+                   Genre const genre):
+      proton::ImprintBlock(network, ComponentObject, owner_K),
 
       _author(new Author)
     {
@@ -48,6 +74,35 @@ namespace nucleus
       this->_data.state = proton::StateClean;
       this->_data.size = 0;
       this->_data.revision = 0;
+
+      // (i)
+      {
+        // set the meta genre.
+        this->_meta.genre = genre;
+
+        // set the initial owner permissions to all with an empty key.
+        if (this->Administrate(
+              this->_meta.attributes,
+              PermissionRead | PermissionWrite) == elle::Status::Error)
+          throw Exception("unable to set the initial meta data");
+      }
+
+      // (ii)
+      {
+        Author          author;
+
+        // set an owner author.
+        if (author.Create() == elle::Status::Error)
+          throw Exception("unable to create an author");
+
+        // set the initial data with no contents and the owner as the author.
+        if (this->Update(author,
+                         proton::Address::Null,
+                         0,
+                         proton::Address::Null,
+                         this->_meta.owner.token) == elle::Status::Error)
+          throw Exception("unable to set the initial data");
+      }
     }
 
     Object::~Object()
@@ -59,56 +114,6 @@ namespace nucleus
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    ///
-    /// this method creates the object given the owner public and the
-    /// genre of the object to create.
-    ///
-    /// the method (i) starts by initializing the underlying public key block
-    /// (ii) sets the meta data, and finally (iv) initializes the data
-    /// part by setting the owner as the author.
-    ///
-    elle::Status        Object::Create(const Genre              genre,
-                                       elle::cryptography::PublicKey const&   owner)
-    {
-      // (i)
-      {
-        // create the underlying owner key block.
-        if (proton::ImprintBlock::Create(owner) == elle::Status::Error)
-          escape("unable to create the underlying owner key block");
-      }
-
-      // (ii)
-      {
-        // set the meta genre.
-        this->_meta.genre = genre;
-
-        // set the initial owner permissions to all with an empty key.
-        if (this->Administrate(
-              this->_meta.attributes,
-              PermissionRead | PermissionWrite) == elle::Status::Error)
-          escape("unable to set the initial meta data");
-      }
-
-      // (iii)
-      {
-        Author          author;
-
-        // set an owner author.
-        if (author.Create() == elle::Status::Error)
-          escape("unable to create an author");
-
-        // set the initial data with no contents and the owner as the author.
-        if (this->Update(author,
-                         proton::Address::Null,
-                         0,
-                         proton::Address::Null,
-                         this->_meta.owner.token) == elle::Status::Error)
-          escape("unable to set the initial data");
-      }
-
-      return elle::Status::Ok;
-    }
 
     ///
     /// this method updates the data section.
@@ -154,7 +159,7 @@ namespace nucleus
       this->_data.state = proton::StateDirty;
 
       // mark the block as dirty.
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -193,7 +198,7 @@ namespace nucleus
         escape("unable to create the owner access record");
 
       // set the the block as dirty.
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -291,46 +296,36 @@ namespace nucleus
         }
 
       // set the mutable block's revision.
-      this->revision = this->_meta.revision + this->_data.revision;
+      assert((this->_meta.revision + this->_data.revision) > this->revision());
+      this->revision(this->_meta.revision + this->_data.revision);
 
       // set the block as consistent.
-      this->state = proton::StateConsistent;
+      this->state(proton::StateConsistent);
 
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method implements the Block's Validate() interface method.
-    ///
-    /// however, since the Object requires additional information in
-    /// order to be validated, this method must *never* be used and therefore
-    /// returns an error.
-    ///
-    elle::Status        Object::Validate(const proton::Address&) const
+    void
+    Object::validate(proton::Address const&) const
     {
-      escape("this method should never have been called");
+      throw Exception("this method should never have been called");
     }
 
-    ///
-    /// this method verifies that the object has been properly author
-    /// i.e that every signature has been produced by legitimate users.
-    ///
-    /// the method (i) calls the parent class for validation (iii) verifies
-    /// the meta part's signature (iv) retrieves the author's public key
-    /// (v) verifies the data signature and (vi) verify that the mutable
-    /// block's general revision number matches the object's revisions.
-    ///
-    elle::Status        Object::Validate(const proton::Address& address,
-                                         const Access&          access)
-      const
+    void
+    Object::validate(proton::Address const& address,
+                     Access const& access) const
     {
+      /// The method (i) calls the parent class for validation (iii) verifies
+      /// the meta part's signature (iv) retrieves the author's public key
+      /// (v) verifies the data signature and (vi) verify that the mutable
+      /// block's general revision number matches the object's revisions.
+
       elle::cryptography::PublicKey author;
 
       // (i)
       {
         // call the parent class.
-        if (proton::ImprintBlock::Validate(address) == elle::Status::Error)
-          escape("unable to verify the underlying physical block");
+        proton::ImprintBlock::validate(address);
       }
 
       // (ii)
@@ -341,13 +336,13 @@ namespace nucleus
 
             // test if there is an access block.
             if (access == Access::Null)
-              escape("the Validate() method must take the object's "
-                     "access block");
+              throw Exception("the Validate() method must take the object's "
+                              "access block");
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
             if (access.Fingerprint(fingerprint) == elle::Status::Error)
-              escape("unable to compute the access block fingerprint");
+              throw Exception("unable to compute the access block fingerprint");
 
             // verify the meta part, including the access fingerprint.
             if (this->owner_K().Verify(
@@ -359,7 +354,7 @@ namespace nucleus
                     this->_meta.attributes,
                     this->_meta.revision,
                     fingerprint)) == elle::Status::Error)
-              escape("unable to verify the meta's signature");
+              throw Exception("unable to verify the meta's signature");
           }
         else
           {
@@ -372,7 +367,7 @@ namespace nucleus
                     this->_meta.modification_stamp,
                     this->_meta.attributes,
                     this->_meta.revision)) == elle::Status::Error)
-              escape("unable to verify the meta's signature");
+              throw Exception("unable to verify the meta's signature");
           }
       }
 
@@ -414,25 +409,25 @@ namespace nucleus
 
               // check that an access block has been provided.
               if (access == Access::Null)
-                escape("the Validate() method must take the object's "
-                       "access block");
+                throw Exception("the Validate() method must take the object's "
+                                "access block");
 
               // retrieve the access record corresponding to the author's
               // index.
               if (access.Lookup(this->_author->lord.index,
                                 record) == elle::Status::Error)
-                escape("unable to retrieve the access record");
+                throw Exception("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
               if ((record->permissions & PermissionWrite) !=
                   PermissionWrite)
-                escape("the object's author does not seem to have had "
-                       "the permission to modify this object");
+                throw Exception("the object's author does not seem to have had "
+                                "the permission to modify this object");
 
               // check that the subject is indeed a user.
               if (record->subject.type() != Subject::TypeUser)
-                escape("the author references an access record which is "
-                       "not related to a user");
+                throw Exception("the author references an access record which is "
+                                "not related to a user");
 
               // finally, set the user's public key.
               //
@@ -449,8 +444,9 @@ namespace nucleus
             }
           default:
             {
-              escape("unexpected author's role '%u'",
-                     this->_author->role);
+              throw Exception(
+                elle::sprintf("unexpected author's role '%u'",
+                              this->_author->role));
             }
           }
       }
@@ -466,17 +462,15 @@ namespace nucleus
                             this->_data.revision,
                             this->_meta.owner.token,
                             this->_meta.access)) == elle::Status::Error)
-          escape("unable to verify the data signature");
+          throw Exception("unable to verify the data signature");
       }
 
       // (v)
       {
         // check the mutable block's general revision.
-        if (this->revision != (this->_data.revision + this->_meta.revision))
-          escape("invalid revision number");
+        if (this->revision() != (this->_data.revision + this->_meta.revision))
+          throw Exception("invalid revision number");
       }
-
-      return elle::Status::Ok;
     }
 
     proton::Address const&
@@ -580,15 +574,6 @@ namespace nucleus
 
       assert (this->_meta.owner.record != nullptr);
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Object, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

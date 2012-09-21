@@ -47,7 +47,7 @@ namespace hole
     void
     ready();
     void
-    readyHook(boost::function<void ()> const& f);
+    ready_hook(boost::function<void ()> const& f);
   private:
     boost::signal<void ()> _ready;
 

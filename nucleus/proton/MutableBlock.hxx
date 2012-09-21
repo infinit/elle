@@ -9,8 +9,11 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::MutableBlock,
                       version)
 {
   enforce(version == 0);
+
   archive & base_class<nucleus::proton::Block>(value);
-  archive & value.revision;
+
+  archive & value._revision;
+  archive & value._base;
 }
 
 #endif

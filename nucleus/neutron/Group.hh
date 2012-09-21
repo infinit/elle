@@ -101,7 +101,8 @@ namespace nucleus
       //
     public:
       Group();
-      Group(elle::cryptography::PublicKey const& manager_K,
+      Group(proton::Network const& network,
+            elle::cryptography::PublicKey const& manager_K,
             elle::String const& description);
 
       //
@@ -123,45 +124,16 @@ namespace nucleus
       /// private key.
       void
       seal(elle::cryptography::PrivateKey const& manager_k);
-      /// Returns the group description.
-      elle::String const&
-      description() const;
-      /// Returns the group's public pass.
-      elle::cryptography::PublicKey const&
-      pass_K() const;
-      /// Returns the address of the Ensemble block which contains the
-      /// list of the group fellows.
-      proton::Address const&
-      ensemble() const;
       /// Returns the public key of the group manager.
       elle::cryptography::PublicKey const&
       manager_K() const;
       /// Returns the subject associated with the group manager.
       Subject const&
       manager_subject();
-      /// Returns the token associated with the group manager.
-      Token const&
-      manager_token() const;
       /// Returns the fellow associated with the group manager.
       /// XXX[put the const back on the return type]
       Fellow&
       manager_fellow();
-      /// Returns the size of the group i.e the number of fellows
-      /// composing the group, including the manager.
-      Size const&
-      size() const;
-      /// Update the group's size, following the addition/removal
-      /// of fellows in the referenced ensemble for instance.
-      void
-      size(Size const& size);
-      /// Returns the modification stamp.
-      elle::utility::Time const&
-      modification_stamp() const;
-
-    private:
-      /// Computes the manager's fellow, if necessary.
-      void
-      _manager_fellow();
 
       //
       // interfaces
@@ -181,19 +153,15 @@ namespace nucleus
       // attributes
       //
     private:
-      elle::String _description;
-      elle::cryptography::PublicKey _pass_K;
-      Size _size;
-      elle::utility::Time _modification_stamp;
-      proton::Address _ensemble;
-
-      struct
-      {
-        Token token;
-        Fellow* fellow;
-      } _manager;
-
-      elle::cryptography::Signature _signature;
+      ELLE_ATTRIBUTE_R(elle::String, description);
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, pass_K);
+      ELLE_ATTRIBUTE_RW(Size, size);
+      ELLE_ATTRIBUTE_R(elle::utility::Time, modification_stamp);
+      ELLE_ATTRIBUTE_R(proton::Address, ensemble);
+      ELLE_ATTRIBUTE_R(Token, manager_token);
+      // XXX[not serialized]
+      ELLE_ATTRIBUTE(Fellow*, manager_fellow);
+      ELLE_ATTRIBUTE(elle::cryptography::Signature, signature);
     };
 
   }

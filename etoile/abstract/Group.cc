@@ -37,7 +37,7 @@ namespace etoile
 
       this->manager = group.manager_K();
 
-      this->revision = group.revision;
+      this->revision = group.revision();
 
       this->pass_K = group.pass_K();
 

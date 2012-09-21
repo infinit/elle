@@ -34,8 +34,11 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    ContentHashBlock::ContentHashBlock(const neutron::Component component):
-      ImmutableBlock(FamilyContentHashBlock, component)
+    ContentHashBlock::ContentHashBlock(
+        Network const& network,
+        neutron::Component const component,
+        elle::cryptography::PublicKey const& creator_K):
+      ImmutableBlock(network, FamilyContentHashBlock, component, creator_K)
     {
       // Compute the creation timestamp.
       if (this->_creation_stamp.Current() == elle::Status::Error)
@@ -50,29 +53,23 @@ namespace nucleus
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method computes the address of the block.
-    ///
-    elle::Status        ContentHashBlock::Bind(Address&         address)
-      const
+    Address
+    ContentHashBlock::bind() const
     {
-      // compute the address.
-      if (address.Create(
-            this->family, this->component,
-            *this) == elle::Status::Error)
-        escape("unable to compute the CHB's address");
+      Address address;
 
-      return elle::Status::Ok;
+      // compute the address.
+      if (address.Create(this->network(), this->family(), this->component(),
+                         *this) == elle::Status::Error)
+        throw Exception("unable to compute the CHB's address");
+
+      return (address);
     }
 
-    ///
-    /// this method verifies that the block is valid according to the
-    /// given requested address.
-    ///
-    elle::Status        ContentHashBlock::Validate(const Address& address)
-      const
+    void
+    ContentHashBlock::validate(Address const& address) const
     {
-      Address           self;
+      Address self;
 
       // compute the address of this object.
       //
@@ -88,25 +85,14 @@ namespace nucleus
       // the address of a PKB is computed this way: hash(network, family,
       // component, K). therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
-      if (self.Create(this->family, this->component,
+      if (self.Create(this->network(), this->family(), this->component(),
                       *this) == elle::Status::Error)
-        escape("unable to compute the CHB's address");
+        throw Exception("unable to compute the CHB's address");
 
       // compare the address with the given one.
       if (address != self)
-        escape("the recorded address does not correspond to this block");
-
-      return elle::Status::Ok;
+        throw Exception("the recorded address does not correspond to this block");
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(ContentHashBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -3,7 +3,7 @@
 
 # include <elle/concept/Fileable.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/radix/Object.hh>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
@@ -22,7 +22,6 @@ namespace nucleus
     /// a given mutable block.
     ///
     class History:
-      public elle::radix::Object,
       public elle::serialize::SerializableMixin<History>,
       public elle::concept::Fileable<>
     {
@@ -57,13 +56,16 @@ namespace nucleus
             Address const& address);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator==(History const& other) const;
+
+      //
       // interfaces
       //
     public:
-      // object
-      declare(History);
-      elle::Boolean     operator==(const History&) const;
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -88,7 +90,8 @@ namespace nucleus
       //
       // attributes
       //
-      Container         container;
+    private:
+      ELLE_ATTRIBUTE(Container, container);
     };
 
   }

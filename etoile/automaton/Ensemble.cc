@@ -96,7 +96,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the ensemble has not changed, do nothing.
-        if (context.ensemble->state == nucleus::proton::StateClean)
+        if (context.ensemble->state() == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
 
@@ -161,7 +161,6 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
 
-          nucleus::proton::Address address;
           elle::cryptography::KeyPair pass;
 
           // does the network support the history?
@@ -212,12 +211,10 @@ namespace etoile
               escape("unable to upgrade the ensemble with a new pass");
             }
 
-          // bind the ensemble i.e seal it by computing its address.
-          if (context.ensemble->Bind(address) == elle::Status::Error)
-            escape("unable to bind the ensemble");
+          nucleus::proton::Address address(context.ensemble->bind());
 
           // set the content as consistent.
-          context.ensemble->state = nucleus::proton::StateConsistent;
+          context.ensemble->state(nucleus::proton::StateConsistent);
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(address,

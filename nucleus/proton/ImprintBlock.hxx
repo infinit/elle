@@ -15,7 +15,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ImprintBlock,
   archive & base_class<nucleus::proton::MutableBlock>(value);
   archive & value._creation_stamp;
   archive & value._salt;
-  archive & value._owner.K;
+  archive & value._owner_K;
 }
 
 #endif

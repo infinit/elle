@@ -23,48 +23,38 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     Network::Network()
     {
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// create a network object based on its name.
-    ///
-    elle::Status        Network::Create(const elle::String&     name)
+    Network::Network(elle::String const& name):
+      _name(name)
     {
-      // assign the name.
-      this->name = name;
-
-      return elle::Status::Ok;
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Network::operator==(const Network&      element) const
+    elle::Boolean
+    Network::operator==(Network const& other) const
     {
       // check the network as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
-      return (this->name == element.name);
+      return (this->_name == other._name);
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Network, _());
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Network::print(std::ostream& stream) const
+    {
+      stream << this->_name;
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -79,7 +69,7 @@ namespace nucleus
 
       // display the network's name.
       std::cout << alignment << "[Network] "
-                << this->name << std::endl;
+                << this->_name << std::endl;
 
       return elle::Status::Ok;
     }

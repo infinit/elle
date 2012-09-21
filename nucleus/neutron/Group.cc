@@ -23,23 +23,24 @@ namespace nucleus
 //
 
     Group::Group():
-      ImprintBlock::ImprintBlock(ComponentGroup),
+      ImprintBlock::ImprintBlock(),
 
-      _size(1)
+      _size(1),
+      _manager_fellow(nullptr)
     {
-      this->_manager.fellow = nullptr;
     }
 
-    Group::Group(elle::cryptography::PublicKey const& owner_K,
+    Group::Group(proton::Network const& network,
+                 elle::cryptography::PublicKey const& manager_K,
                  elle::String const& description):
-      ImprintBlock::ImprintBlock(ComponentGroup, owner_K),
+      ImprintBlock::ImprintBlock(network, ComponentGroup, manager_K),
 
       _description(description),
       _size(1)
     {
-      this->_manager.fellow = nullptr;
+      this->_manager_fellow = nullptr;
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
 
       /* XXX[this is a hack which consists in generating a unique pass
              which will not evolve over time. */
@@ -69,9 +70,9 @@ namespace nucleus
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
       this->_ensemble = ensemble;
-      this->_manager.token = manager_token;
+      this->_manager_token = manager_token;
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
     }
 
     void
@@ -82,13 +83,13 @@ namespace nucleus
 
       this->_ensemble = proton::Address::Null;
 
-      this->state = proton::StateDirty;
+      this->state(proton::StateDirty);
     }
 
     void
     Group::seal(elle::cryptography::PrivateKey const& owner_k)
     {
-      switch (this->state)
+      switch (this->state())
         {
         case proton::StateClean:
         // XXX[duplicate case for now] case proton::StateConsistent:
@@ -108,12 +109,12 @@ namespace nucleus
                                this->_size,
                                this->_modification_stamp,
                                this->_ensemble,
-                               this->_manager.token),
+                               this->_manager_token),
                              this->_signature) == elle::Status::Error)
               throw Exception("unable to sign the group"); // XXX[to remove in the future]
 
             // Increase the mutable block's revision.
-            this->revision += 1;
+            this->revision(this->revision() + 1);
 
             break;
           }
@@ -121,25 +122,7 @@ namespace nucleus
 
       // Now that the group has been sealed, the block can be considered
       // as consistent.
-      this->state = proton::StateConsistent;
-    }
-
-    elle::String const&
-    Group::description() const
-    {
-      return (this->_description);
-    }
-
-    elle::cryptography::PublicKey const&
-    Group::pass_K() const
-    {
-      return (this->_pass_K);
-    }
-
-    proton::Address const&
-    Group::ensemble() const
-    {
-      return (this->_ensemble);
+      this->state(proton::StateConsistent);
     }
 
     elle::cryptography::PublicKey const&
@@ -157,51 +140,19 @@ namespace nucleus
       return (this->owner_subject());
     }
 
-    Token const&
-    Group::manager_token() const
-    {
-      assert(this->_manager.token != Token::Null);
-
-      return (this->_manager.token);
-    }
-
     Fellow&
     Group::manager_fellow()
-    {
-      this->_manager_fellow();
-
-      return (*this->_manager.fellow);
-    }
-
-    void
-    Group::_manager_fellow()
     {
       // Create the fellow corresponding to the group manager, if necessary.
       // Note that this fellow will never be serialized but is used to ease
       // the process of group management since most method manipulate fellows.
-      if (this->_manager.fellow == nullptr)
-        this->_manager.fellow = new Fellow(this->manager_subject(),
-                                           this->_manager.token);
+      if (this->_manager_fellow == nullptr)
+        this->_manager_fellow = new Fellow(this->manager_subject(),
+                                           this->_manager_token);
 
-      assert (this->_manager.fellow != nullptr);
-    }
+      assert (this->_manager_fellow != nullptr);
 
-    Size const&
-    Group::size() const
-    {
-      return (this->_size);
-    }
-
-    void
-    Group::size(Size const& size)
-    {
-      this->_size = size;
-    }
-
-    elle::utility::Time const&
-    Group::modification_stamp() const
-    {
-      return (this->_modification_stamp);
+      return (*this->_manager_fellow);
     }
 
 //
@@ -236,12 +187,12 @@ namespace nucleus
       if (this->_ensemble.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the ensemble's address");
 
-      if (this->_manager.token.Dump(margin + 2) == elle::Status::Error)
+      if (this->_manager_token.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
 
-      if (this->_manager.fellow != nullptr)
+      if (this->_manager_fellow != nullptr)
         {
-          if (this->_manager.fellow->Dump(margin + 2) == elle::Status::Error)
+          if (this->_manager_fellow->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the fellow");
         }
       else

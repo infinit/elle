@@ -160,7 +160,7 @@ namespace etoile
               }
             else
               {
-                switch (address.family)
+                switch (address.family())
                   {
                   case nucleus::proton::FamilyContentHashBlock:
                     throw std::runtime_error("revision should be any for an immutable block");

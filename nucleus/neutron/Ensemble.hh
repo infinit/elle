@@ -44,7 +44,9 @@ namespace nucleus
       // construction
       //
     public:
-      Ensemble();
+      Ensemble(); // XXX[to deserialize]
+      Ensemble(proton::Network const& network,
+               elle::cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -109,7 +111,7 @@ namespace nucleus
       // attributes
       //
     private:
-      Container _container;
+      ELLE_ATTRIBUTE(Container, container);
     };
 
   }

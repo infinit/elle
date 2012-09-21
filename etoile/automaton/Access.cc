@@ -679,7 +679,7 @@ namespace etoile
           // Acccess block is referenced, hence a new one is created), we
           // do not want the new block to be added to the storage layer,
           // since unreferenced.
-          context.access->state = nucleus::proton::StateDirty;
+          context.access->state(nucleus::proton::StateDirty);
         }
 
       // then, create a new object's owner token.
@@ -765,7 +765,7 @@ namespace etoile
           // Acccess block is referenced, hence a new one is created), we
           // do not want the new block to be added to the storage layer,
           // since unreferenced.
-          context.access->state = nucleus::proton::StateDirty;
+          context.access->state(nucleus::proton::StateDirty);
         }
 
       ELLE_TRACE("update the Object's owner token to null")
@@ -847,7 +847,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the access has not changed, do nothing.
-        if (context.access->state == nucleus::proton::StateClean)
+        if (context.access->state() == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
 
@@ -910,8 +910,6 @@ namespace etoile
           // objects benefit from the history i.e multiple revisions; unless
           // the history support is not activated for this network.
           //
-          nucleus::proton::Address address;
-
           ELLE_TRACE("the Access block is _not_ empty");
 
           // does the network support the history?
@@ -924,11 +922,10 @@ namespace etoile
 
           // bind the access as, since the block has changed, its address
           // is going to be different.
-          if (context.access->Bind(address) == elle::Status::Error)
-            escape("unable to bind the access");
+          nucleus::proton::Address address(context.access->bind());
 
           // set the state as consistent.
-          context.access->state = nucleus::proton::StateConsistent;
+          context.access->state(nucleus::proton::StateConsistent);
 
           // finally, update the object with the new access address.
           if (context.object->Update(

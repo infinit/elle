@@ -14,8 +14,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,
 {
   enforce(version == 0);
 
-  archive & value.revision;
-  archive & value.digest;
+  archive & value._revision;
+  archive & value._digest;
 }
 
 #endif

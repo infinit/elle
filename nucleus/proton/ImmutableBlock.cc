@@ -21,20 +21,16 @@ namespace nucleus
 // ---------- construction ----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     ImmutableBlock::ImmutableBlock():
-      Block(FamilyUnknown, neutron::ComponentUnknown)
+      Block()
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
-    ImmutableBlock::ImmutableBlock(const Family                 family,
-                                   const neutron::Component     component):
-      Block(family, component)
+    ImmutableBlock::ImmutableBlock(Network const& network,
+                                   Family const family,
+                                   neutron::Component const component,
+                                   elle::cryptography::PublicKey const& creator_K):
+      Block(network, family, component, creator_K)
     {
     }
 
@@ -47,42 +43,32 @@ namespace nucleus
                           Address const& address)
     {
       return (elle::io::Path(lune::Lune::Network::Shelter::ImmutableBlock,
-                             elle::io::Piece("%NETWORK%", network.name),
+                             elle::io::Piece("%NETWORK%", network.name()),
                              elle::io::Piece("%ADDRESS%", address.unique())));
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(ImmutableBlock, _());
 
 //
 // ---------- fileable --------------------------------------------------------
 //
 
     void
-    ImmutableBlock::load(Network const& network,
-                         Address const& address)
+    ImmutableBlock::load(Address const& address)
     {
-      this->load(ImmutableBlock::_path(network, address));
+      this->load(ImmutableBlock::_path(this->network(), address));
     }
 
     void
-    ImmutableBlock::store(Network const& network,
-                          Address const& address) const
+    ImmutableBlock::store(Address const& address) const
     {
-      this->store(ImmutableBlock::_path(network, address));
+      this->store(ImmutableBlock::_path(this->network(), address));
     }
 
     void
     ImmutableBlock::erase(Network const& network,
                           Address const& address)
     {
-      elle::concept::Fileable<>::erase(ImmutableBlock::_path(network, address));
+      elle::concept::Fileable<>::erase(
+        ImmutableBlock::_path(network, address));
     }
 
     elle::Boolean

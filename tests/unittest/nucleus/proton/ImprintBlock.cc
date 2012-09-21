@@ -17,23 +17,21 @@ int main()
   CHECK(nucleus::Nucleus::Initialize());
 
     {
+      nucleus::proton::Network network("test");
 
       elle::cryptography::KeyPair kp;
-
       CHECK(kp.Generate());
 
-      nucleus::proton::ImprintBlock blk;
+      nucleus::proton::ImprintBlock blk(network,
+                                        nucleus::neutron::ComponentObject,
+                                        kp.K);
 
-      CHECK(blk.Create(kp.K));
-
-      nucleus::proton::Address addr;
-
-      CHECK(blk.Bind(addr));
+      nucleus::proton::Address addr(blk.bind());
 
       assert(addr != nucleus::proton::Address::Null);
       assert(addr != nucleus::proton::Address::Some);
 
-      CHECK(blk.Validate(addr));
+      blk.validate(addr);
 
       elle::utility::Buffer buf;
 
@@ -50,7 +48,7 @@ int main()
 
           reader >> elle::serialize::concrete(blk_copy);
 
-          CHECK(blk_copy.Validate(addr));
+          blk_copy.validate(addr);
         }
     }
 

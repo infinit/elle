@@ -1,6 +1,7 @@
 #include <nucleus/proton/PublicKeyBlock.hh>
 #include <nucleus/proton/Family.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -13,19 +14,18 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     PublicKeyBlock::PublicKeyBlock():
       MutableBlock()
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
-    PublicKeyBlock::PublicKeyBlock(const neutron::Component     component):
-      MutableBlock(FamilyPublicKeyBlock, component)
+    PublicKeyBlock::PublicKeyBlock(
+        Network const& network,
+        neutron::Component const component,
+        elle::cryptography::PublicKey const& creator_K):
+      MutableBlock(network, FamilyPublicKeyBlock, component, creator_K),
+
+      _K(creator_K)
     {
     }
 
@@ -33,41 +33,23 @@ namespace nucleus
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates a PKB based on the given public key.
-    ///
-    elle::Status        PublicKeyBlock::Create(elle::cryptography::PublicKey const& K)
+    Address
+    PublicKeyBlock::bind() const
     {
-      // copy the public key.
-      this->K = K;
+      Address address;
 
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method computes the block's address.
-    ///
-    elle::Status        PublicKeyBlock::Bind(Address&           address)
-      const
-    {
       // compute the address.
-      if (address.Create(this->family, this->component,
-                         this->network,
-                         this->family,
-                         this->component,
-                         this->K) == elle::Status::Error)
-        escape("unable to compute the PKB's address");
+      if (address.Create(this->network(), this->family(), this->component(),
+                         this->_K) == elle::Status::Error)
+        throw Exception("unable to compute the PKB's address");
 
-      return elle::Status::Ok;
+      return (address);
     }
 
-    ///
-    /// this method verifies the block's validity.
-    ///
-    elle::Status        PublicKeyBlock::Validate(const Address& address)
-      const
+    void
+    PublicKeyBlock::validate(Address const& address) const
     {
-      Address           self;
+      Address self;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -75,33 +57,19 @@ namespace nucleus
       //
 
       // compute the address.
-      if (self.Create(this->family, this->component,
-                      this->network,
-                      this->family,
-                      this->component,
-                      this->K) == elle::Status::Error)
-        escape("unable to compute the PKB's address");
+      if (self.Create(this->network(), this->family(), this->component(),
+                      this->_K) == elle::Status::Error)
+        throw Exception("unable to compute the PKB's address");
 
       // verify with the recorded address.
       if (address != self)
-        escape("the address does not correspond to the block's public key");
+        throw Exception("the address does not correspond to the block's public key");
 
       //
       // at this point the node knows that the recorded address corresponds
       // to the recorded public key and identifies the block requested.
       //
-
-      return elle::Status::Ok;
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(PublicKeyBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -124,7 +92,7 @@ namespace nucleus
       // dump the PKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift << "[K]" << std::endl;
 
-      if (this->K.Dump(margin + 4) == elle::Status::Error)
+      if (this->_K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
 
       return elle::Status::Ok;

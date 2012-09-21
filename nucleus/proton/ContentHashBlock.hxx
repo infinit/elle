@@ -42,8 +42,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
         elle::sprintf("unknown format '%s'", version));
     }
 
-  if (value.family != nucleus::proton::FamilyContentHashBlock)
-    throw std::runtime_error("Invalid family");
+  if (value.family() != nucleus::proton::FamilyContentHashBlock)
+    throw Exception("Invalid family");
 }
 
 #endif

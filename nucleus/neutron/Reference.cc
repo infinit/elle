@@ -28,7 +28,7 @@ namespace nucleus
     ///
     elle::Status        Reference::Create()
     {
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -42,7 +42,7 @@ namespace nucleus
       this->target = target;
 
       // set the reference as dirty.
-      this->contents.state = proton::StateDirty;
+      this->contents.state(proton::StateDirty);
 
       return elle::Status::Ok;
     }

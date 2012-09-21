@@ -4,7 +4,6 @@
 # include <elle/types.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Network.hh>
 # include <nucleus/proton/Address.hh>
 
 namespace hole
@@ -20,8 +19,7 @@ namespace hole
         // construction
         //
       public:
-        MutableBlock(nucleus::proton::Network const& network,
-                     nucleus::proton::Address const& address,
+        MutableBlock(nucleus::proton::Address const& address,
                      nucleus::proton::MutableBlock const& block);
 
         //
@@ -35,7 +33,6 @@ namespace hole
         // attributes
         //
       private:
-        nucleus::proton::Network _network;
         nucleus::proton::Address _address;
         nucleus::proton::MutableBlock const& _block;
       };

@@ -40,31 +40,22 @@ namespace nucleus
       // construction
       //
     public:
-      ImprintBlock();
-      ImprintBlock(neutron::Component const);
-      ImprintBlock(neutron::Component const,
-                   elle::cryptography::PublicKey const&);
+      ImprintBlock(); // XXX[to deserialize]
+      ImprintBlock(Network const& network,
+                   neutron::Component const component,
+                   elle::cryptography::PublicKey const& creator_K);
       ~ImprintBlock();
 
       //
       // methods
       //
     public:
-      /// Creates an imprint based on the given owner's public key.
-      elle::Status
-      Create(elle::cryptography::PublicKey const& owner_K);
       /// Computes the address of the block.
-      elle::Status
-      Bind(Address&) const;
-      /// Returns true if the block is consistent with the given address.
-      elle::Status
-      Validate(Address const& address) const;
-      /// The timestamp associated with the creating of the block.
-      elle::utility::Time const&
-      creation_stamp() const;
-      /// The public key of the block's owner.
-      elle::cryptography::PublicKey const&
-      owner_K() const;
+      Address
+      bind() const;
+      /// Makes sure the block is consistent with the given address.
+      void
+      validate(Address const& address) const;
       /// The subject of the block's owner.
       neutron::Subject const&
       owner_subject();
@@ -73,18 +64,11 @@ namespace nucleus
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(ImprintBlock);
-#include <elle/idiom/Close.hh>
-
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
 
       // serializable
-      // XXX[should not be the case since in-the-middle class] ELLE_SERIALIZE_SERIALIZABLE_METHODS(ImprintBlock);
-
       ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 
       //
@@ -92,24 +76,19 @@ namespace nucleus
       //
     private:
       /// The block creation timestamp.
-      elle::utility::Time _creation_stamp;
+      ELLE_ATTRIBUTE_R(elle::utility::Time, creation_stamp);
       /// A random salt so as to differentiate two ImprintBlocks being
       /// created by the same user at the exact same time.
-      elle::Natural64 _salt;
-
-      struct
-      {
-        /// The block's owner public key: the complementary private key
-        /// must be used to sign the block's content. Note that the signature
-        /// is not embeded in this class. Instead the higher-level classes
-        /// include the signature, or several ones should it be necessary.
-        elle::cryptography::PublicKey K;
-
-        /// This subject is generated on-demand in order to ease the management
-        /// of the block owner's identity. The attribute is therefore never
-        /// serialized.
-        neutron::Subject* subject;
-      } _owner;
+      ELLE_ATTRIBUTE(elle::Natural64, salt);
+      /// The block's owner public key: the complementary private key
+      /// must be used to sign the block's content. Note that the signature
+      /// is not embeded in this class. Instead the higher-level classes
+      /// include the signature, or several ones should it be necessary.
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, owner_K);
+      /// This subject is generated on-demand in order to ease the management
+      /// of the block owner's identity. The attribute is therefore never
+      /// serialized.
+      neutron::Subject* _owner_subject;
     };
 
   }

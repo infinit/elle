@@ -1,4 +1,5 @@
 #include <hole/backends/fs/MutableBlock.hh>
+#include <hole/Hole.hh>
 
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/Nucleus.hh>
@@ -18,10 +19,8 @@ namespace hole
 // ---------- construction ----------------------------------------------------
 //
 
-      MutableBlock::MutableBlock(nucleus::proton::Network const& network,
-                                 nucleus::proton::Address const& address,
+      MutableBlock::MutableBlock(nucleus::proton::Address const& address,
                                  nucleus::proton::MutableBlock const& block):
-        _network(network),
         _address(address),
         _block(block)
       {
@@ -36,7 +35,7 @@ namespace hole
       {
         // does the block already exist.
         if (nucleus::proton::MutableBlock::exists(
-              this->_network,
+              this->_block.network(),
               this->_address,
               nucleus::proton::Revision::Last) == false)
           {
@@ -49,9 +48,12 @@ namespace hole
 
         // build a block according to the component.
         if (nucleus::Nucleus::Factory.Build(
-              this->_address.component,
+              this->_address.component(),
               current) == elle::Status::Error)
           throw std::runtime_error("unable to build the block");
+
+        // XXX
+        current->network(Hole::instance().network());
 
         std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 
@@ -60,14 +62,13 @@ namespace hole
                          "current revision");
 
         // load the latest revision.
-        current->load(this->_network,
-                      this->_address,
+        current->load(this->_address,
                       nucleus::proton::Revision::Last);
 
         ELLE_TRACE("Current block revision %s and given block revision is %s",
-                   current->revision, this->_block.revision);
+                   current->revision(), this->_block.revision());
 
-        if (this->_block.revision != current->revision)
+        if (this->_block.revision() != current->revision())
           return this->_block.derives(*current);
 
         ELLE_TRACE("Block have same revision, we need to distinguish them "

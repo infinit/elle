@@ -51,7 +51,9 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Contents();
+      Contents(); // XXX[to deserialize]
+      Contents(Network const& network,
+               elle::cryptography::PublicKey const& creator_K);
       ~Contents();
 
       //
