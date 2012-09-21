@@ -39,13 +39,13 @@ namespace elle
     struct PrintFlags
     {
     public:
-      char endl;
-      char sep;
+      std::string endl;
+      std::string sep;
 
     public:
       PrintFlags()
-        : endl('\n')
-        , sep(' ')
+        : endl("\n")
+        , sep(" ")
       {}
     };
 
@@ -57,7 +57,7 @@ namespace elle
                  bool                               is_first,
                  T const&                           value)
     {
-      if (!is_first && flags.sep != '\0')
+      if (!is_first)
           out << flags.sep;
       out << value;
       return false;
@@ -70,9 +70,9 @@ namespace elle
                  bool                               is_first,
                  T const&                           value)
     {
-      if (!is_first && flags.sep != '\0')
+      if (!is_first)
           out << flags.sep;
-      out << '<'<< typeid(T).name() << "instance at "
+      out << '<' << typeid(T).name() << "instance at "
           << std::hex << static_cast<void const*>(&value) << '>';
       return false;
     }

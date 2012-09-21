@@ -42,8 +42,15 @@ namespace elle
     /// separators are defined as constants.
     struct Separator
     {
-      char sep;
-      Separator(char c) : sep(c) {}
+      std::string sep;
+
+      Separator(std::string const& s):
+        sep(s)
+      {}
+
+      Separator(char c):
+        sep(c != '\0' ? std::string(&c, 1) : "")
+      {}
     };
 
     /// no separator

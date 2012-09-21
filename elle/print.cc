@@ -24,7 +24,7 @@ namespace elle
                  bool                               is_first,
                  elle::Printable const&             value)
     {
-      if (!is_first && flags.sep != '\0')
+      if (!is_first)
           out << flags.sep;
       value.print(out);
       return false;
@@ -55,8 +55,8 @@ namespace elle
            PrintFlags&                              flags,
            bool                                     /*is_first*/)
     {
-      if (flags.endl != '\0')
-          out.put(flags.endl);
+      if (flags.endl.size())
+          out << flags.endl;
     }
 
   }
