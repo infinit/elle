@@ -125,6 +125,13 @@ namespace elle
             }
         }
 
+        void
+        update_max_size(std::string const& name)
+        {
+          if (name.size() > this->_max_string_size)
+            this->_max_string_size = name.size();
+        }
+
         bool enabled(std::string const& name) const
         {
           auto it = this->_enabled.find(name);
@@ -193,6 +200,8 @@ namespace elle
           {
             if (level != Logger::Level::log)
               return;
+            else
+              Components::instance().update_max_size(this->_component.name);
           }
         int indent;
         {

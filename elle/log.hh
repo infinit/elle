@@ -10,28 +10,32 @@ namespace elle
 {
   namespace log
   {
-# define ELLE_LOG_COMPONENT(component)                                  \
-    static ::elle::log::detail::TraceComponent                          \
-    __trace_component__(component)                                      \
+# define ELLE_LOG_COMPONENT(component)                                        \
+    static ::elle::log::detail::TraceComponent                                \
+    __trace_component__(component)                                            \
+/**/
 
-# define ETC_LOG_FUNCTION __PRETTY_FUNCTION__
+// XXX Move to elle/compiler.hh
+# define ELLE_PRETTY_FUNCTION __PRETTY_FUNCTION__
 
 
-# define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                              \
-    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
-      ::elle::log::detail::TraceContext                                 \
-      (elle::log::Logger::Level::Lvl,                                   \
-       elle::log::Logger::Type::T,                                      \
-       __trace_component__,                                             \
-       __FILE__, __LINE__, ETC_LOG_FUNCTION,                            \
-       elle::sprintf(__VA_ARGS__))                                      \
+# define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                                    \
+    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                               \
+      ::elle::log::detail::TraceContext                                       \
+      (elle::log::Logger::Level::Lvl,                                         \
+       elle::log::Logger::Type::T,                                            \
+       __trace_component__,                                                   \
+       __FILE__, __LINE__, ELLE_PRETTY_FUNCTION,                              \
+       elle::sprintf(__VA_ARGS__))                                            \
+/**/
 
-# define ELLE_LOG_LEVEL(Lvl, Type, ...)                                 \
-    if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                   \
-      {                                                                 \
-        elle::unreachable();                                            \
-      }                                                                 \
-    else                                                                \
+# define ELLE_LOG_LEVEL(Lvl, Type, ...)                                       \
+    if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                         \
+      {                                                                       \
+        elle::unreachable();                                                  \
+      }                                                                       \
+    else                                                                      \
+/**/
 
 # define ELLE_LOG_SCOPE(...)   ELLE_LOG_LEVEL_SCOPE(log,   info, __VA_ARGS__)
 # define ELLE_TRACE_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(trace, info, __VA_ARGS__)
@@ -45,13 +49,19 @@ namespace elle
 # define ELLE_DEBUG(...) ELLE_LOG_LEVEL(debug, info,    __VA_ARGS__)
 # define ELLE_DUMP(...)  ELLE_LOG_LEVEL(dump,  info,    __VA_ARGS__)
 
+# include <boost/preprocessor/tuple/size.hpp>
+# include <boost/preprocessor/punctuation/comma_if.hpp>
+
 /// Shortcut to trace a function name and its arguments.
 ///
 /// @param  the list of arguments
+/// XXX does not work with empty call
 # define ELLE_TRACE_FUNCTION(...)                                             \
     ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, elle::sprint(                    \
-          elle::iomanip::Separator(','), #__VA_ARGS__                         \
+          elle::iomanip::Separator(','),                                      \
+          ##__VA_ARGS__                                                       \
     ))                                                                        \
+/**/
 
     namespace detail
     {
