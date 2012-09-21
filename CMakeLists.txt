@@ -148,8 +148,8 @@ set(BUILD_SHARED_LIBS OFF)
 # fix scheduled for 2.8.1
 # http://www.itk.org/Bug/view.php?id=9985
 # http://www.itk.org/Bug/view.php?id=5833
-set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+#set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+#set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 # - Infinit internal dependencies ---------------------------------------------
 
