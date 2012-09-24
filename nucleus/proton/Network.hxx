@@ -3,10 +3,12 @@
 
 # include <elle/serialize/Serializer.hh>
 
-ELLE_SERIALIZE_SIMPLE(nucleus::proton::Network,
-                      archive,
-                      value,
-                      version)
+ELLE_SERIALIZE_SPLIT(nucleus::proton::Network);
+
+ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Network,
+                          archive,
+                          value,
+                          version)
 {
   ELLE_LOG_COMPONENT("infinit.nucleus.proton.Network");
 
@@ -17,7 +19,19 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Network,
   if (value._name.length() == 0)
     ELLE_WARN("the network name is empty");
 
-  archive & value._name;
+  archive << value._name;
+}
+
+ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Network,
+                          archive,
+                          value,
+                          version)
+{
+  ELLE_LOG_COMPONENT("infinit.nucleus.proton.Network");
+
+  enforce(version == 0);
+
+  archive >> value._name;
 }
 
 #endif
