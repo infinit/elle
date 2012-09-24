@@ -108,7 +108,8 @@ namespace nucleus
       //
       // attributes
       //
-    private:
+      // XXX private:
+    public:
       ELLE_ATTRIBUTE_R(Network, network);
       ELLE_ATTRIBUTE_R(Family, family);
       ELLE_ATTRIBUTE_R(neutron::Component, component);

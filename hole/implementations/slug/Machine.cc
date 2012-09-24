@@ -885,7 +885,8 @@ namespace hole
         ELLE_TRACE("loading the local block at %s", address)
           block->load(address, Revision::Last);
 
-        ELLE_DEBUG("loaded block %s has revision %s", block, block->revision);
+        ELLE_DEBUG("loaded block %s has revision %s",
+                   block, block->revision());
 
         ELLE_TRACE("validating the block")
         // Validate the block, depending on its component.
@@ -1268,7 +1269,8 @@ namespace hole
                     }
                   default:
                     {
-                      throw elle::Exception("unknown block family %d", address.family);
+                      throw elle::Exception("unknown block family %s",
+                                            address.family());
                     }
                   }
               }
@@ -1310,7 +1312,7 @@ namespace hole
           default:
             {
               throw elle::Exception{
-                  "the machine's state '%u' does not allow one to "
+                  "the machine's state '%s' does not allow one to "
                   "request operations on the storage layer",
                   this->_state
               };

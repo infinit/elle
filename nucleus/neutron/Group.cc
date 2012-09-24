@@ -55,6 +55,11 @@ namespace nucleus
       }
     }
 
+    Group::~Group()
+    {
+      delete this->_manager_fellow;
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //

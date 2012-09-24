@@ -98,7 +98,7 @@ namespace nucleus
     }
 
     neutron::Subject const&
-    ImprintBlock::owner_subject()
+    OwnerKeyBlock::owner_subject()
     {
       // Create the subject corresponding to the block owner, if necessary.
       // Note that this subject will never be serialized but is used to ease

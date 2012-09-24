@@ -2,6 +2,8 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 
+#include <Infinit.hh>
+
 namespace nucleus
 {
   namespace proton

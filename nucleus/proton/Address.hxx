@@ -4,6 +4,8 @@
 # include <elle/cryptography/OneWay.hh>
 
 # include <elle/serialize/TupleSerializer.hxx>
+# include <elle/serialize/Serializer.hh>
+# include <elle/serialize/Pointer.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <tuple>
@@ -47,6 +49,7 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+
   }
 }
 
@@ -68,12 +71,22 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
                           version)
 {
   enforce(version == 0);
-  enforce(value._digest != nullptr);
 
-  archive << value._network
-          << value._family
-          << value._component
-          << *(value._digest);
+  // XXX[a null address should never exist?]
+  if (value._digest != nullptr)
+    {
+      archive << true
+              << value._network
+              << value._family
+              << value._component
+        // XXX[why can't we use this?]
+        //<< elle::serialize::alive_pointer(value._digest);
+              << *value._digest;
+    }
+  else
+    {
+      archive << false;
+    }
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
@@ -85,6 +98,12 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
 
   delete value._digest;
   value._digest = nullptr;
+
+  bool has_digest;
+  archive >> has_digest;
+
+  if (has_digest == false)
+    return;
 
   archive >> value._network;
   archive >> value._family;

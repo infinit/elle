@@ -8,8 +8,14 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Network,
                       value,
                       version)
 {
+  ELLE_LOG_COMPONENT("infinit.nucleus.proton.Network");
+
   enforce(version == 0);
-  enforce(value._name.length() != 0);
+
+  // XXX[to add when Addess::Any no longer exists]
+  // enforce(value._name.length() != 0);
+  if (value._name.length() == 0)
+    ELLE_WARN("the network name is empty");
 
   archive & value._name;
 }
