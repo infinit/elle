@@ -272,7 +272,7 @@ namespace etoile
 
         // trigger the shutdown.
         if (scope->Shutdown() == elle::Status::Error)
-          throw elle::Exception("unable to trigger the shutdown");
+          throw elle::Exception("Unable to shutdown");
       }
 
       // depending on the context's state.
@@ -303,7 +303,7 @@ namespace etoile
             //
             // otherwise, some actors are probably still working on it.
             //
-
+            assert(!scope->actors.empty() && "The scope should have some actors");
             break;
           }
         }

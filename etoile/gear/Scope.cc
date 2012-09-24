@@ -1,4 +1,4 @@
-#include <elle/concurrency/Scheduler.hh>
+#include <elle/Exception.hh>
 
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Directory.hh>
@@ -811,21 +811,21 @@ namespace etoile
       case OperationDiscard:
         // call the shutdown method.
         if (T::A::Discard(*context) == elle::Status::Error)
-          escape("an error occured in the shutdown method");
+          throw elle::Exception("an error occured in the shutdown method");
         break;
       case OperationStore:
         // call the shutdown method.
         if (T::A::Store(*context) == elle::Status::Error)
-          escape("an error occured in the shutdown method");
+          throw elle::Exception("an error occured in the shutdown method");
         break;
       case OperationDestroy:
         // call the shutdown method.
         if (T::A::Destroy(*context) == elle::Status::Error)
-          escape("an error occured in the shutdown method");
+          throw elle::Exception("an error occured in the shutdown method");
         break;
       case OperationUnknown:
       default:
-        escape("unknown operation '%u'\n", this->context->operation);
+        throw elle::Exception("unknown operation '%u'\n", this->context->operation);
       }
       return elle::Status::Ok;
     }
@@ -864,23 +864,37 @@ namespace etoile
       // context's type i.e File in this example.
       //
 
-      // depending on the context's nature.
-      switch (this->context->nature)
-      {
-      case NatureObject:
-        return this->_shutdown<gear::Object>();
-      case NatureFile:
-        return this->_shutdown<gear::File>();
-      case NatureDirectory:
-        return this->_shutdown<gear::Directory>();
-      case NatureLink:
-        return this->_shutdown<gear::Link>();
-      case NatureGroup:
-        return this->_shutdown<gear::Group>();
-      case NatureUnknown:
-      default:
-        escape("unknown context nature '%u'", this->context->nature);
-      }
+      try
+        {
+          // depending on the context's nature.
+          switch (this->context->nature)
+          {
+          case NatureObject:
+            return this->_shutdown<gear::Object>();
+          case NatureFile:
+            return this->_shutdown<gear::File>();
+          case NatureDirectory:
+            return this->_shutdown<gear::Directory>();
+          case NatureLink:
+            return this->_shutdown<gear::Link>();
+          case NatureGroup:
+            return this->_shutdown<gear::Group>();
+          case NatureUnknown:
+          default:
+            escape("unknown context nature '%u'", this->context->nature);
+          }
+        }
+      catch (std::exception const& err)
+        {
+          if (this->actors.empty())
+            {
+              ELLE_DEBUG("destroy the scope %s", *this);
+              if (Scope::Relinquish(this) == elle::Status::Error)
+                throw elle::Exception("unable to relinquish the scope");
+            }
+          std::string what{err.what()};
+          throw elle::Exception("the shutdown process failed: %s", what);
+        }
 
       return elle::Status::Ok;
     }

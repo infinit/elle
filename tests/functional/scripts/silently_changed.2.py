@@ -41,7 +41,9 @@ def check_convergence(path1, path2):
             if data1 != data2:
                 raise Exception("'%s' != '%s'" % (data1, data2))
 
-for test in [write_serial, write_interlaced, write_interlaced_slow]:
+for test in [write_serial,
+             write_interlaced,
+             write_interlaced_slow]:
     try:
         test(path1, path2)
         check_convergence(path1, path2)

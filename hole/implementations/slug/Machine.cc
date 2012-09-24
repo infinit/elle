@@ -40,7 +40,7 @@ ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 // XXX[to improve later with a configuration variable]
 #define CACHE
-#define CACHE_LIFESPAN 300 /* in seconds */
+#define CACHE_LIFESPAN 30 /* in seconds */
 
 namespace hole
 {
@@ -886,7 +886,7 @@ namespace hole
 
         ELLE_DEBUG("loaded block %s has revision %s", block, block->revision);
 
-        ELLE_TRACE("validating the block %s", block)
+        ELLE_TRACE("validating the block")
         // Validate the block, depending on its component.
         // although every stored block has been checked, the block
         // may have been corrupt while on the hard disk.
