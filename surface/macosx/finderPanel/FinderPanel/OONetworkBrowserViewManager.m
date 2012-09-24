@@ -8,7 +8,7 @@
 
 @implementation OONetworkBrowserViewManager
 
-@synthesize updateNetwork, forceUpdateNetwork;
+@synthesize updateNetwork, forceUpdateNetwork, defaultNetworkImage;
 
 - (id) init {
     self = [super init];
@@ -19,6 +19,8 @@
         importedNetworks = [[NSMutableArray alloc] init];
         self.updateNetwork = YES;
         //[importedNetworks addObject:[[OONetworkAddButton alloc] init]];
+        NSString *imagePath = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderPanel"] pathForResource:@"infinit-drive" ofType:@"png"];
+        self.defaultNetworkImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
     }
     return self;
 }
@@ -33,12 +35,12 @@
 	
 	// customize the appearance
     [networkBrowser setAllowsMultipleSelection:NO];
-	[networkBrowser setCellsStyleMask:IKCellsStyleTitled | IKCellsStyleOutlined];
+	[networkBrowser setCellsStyleMask:IKCellsStyleTitled];
 	
 	// background layer
-	//OONetworkBrowserBackgroundLayer *backgroundLayer = [[OONetworkBrowserBackgroundLayer alloc] init];
-	//[networkBrowser setBackgroundLayer:backgroundLayer];
-	//backgroundLayer.owner = networkBrowser;
+	OONetworkBrowserBackgroundLayer *backgroundLayer = [[OONetworkBrowserBackgroundLayer alloc] init];
+	[networkBrowser setBackgroundLayer:backgroundLayer];
+	backgroundLayer.owner = networkBrowser;
 	
 	//-- change default font 
 	// create a centered paragraph style
@@ -57,7 +59,7 @@
 	[attributes setObject:paraphStyle forKey:NSParagraphStyleAttributeName];	
 	[attributes setObject:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
 	
-	//[networkBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];
+	[networkBrowser setValue:attributes forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];
 	
 	//change intercell spacing
 	[networkBrowser setIntercellSpacing:NSMakeSize(20, 20)];
@@ -66,7 +68,7 @@
 	[networkBrowser setValue:[NSColor colorWithCalibratedRed:1 green:0 blue:0.5 alpha:1.0] forKey:IKImageBrowserSelectionColorKey];
 	
 	//set initial zoom value
-	[networkBrowser setZoomValue:0.3];
+	[networkBrowser setZoomValue:0.5];
     
 }
 
@@ -113,7 +115,7 @@
 
 - (OONetworkModel*) updateModel:(OONetworkModel*)arg1 InfoWithId:(NSString*)arg2 {
     arg1.name = [[OOPhone getInstance] getNetworkNameWithId:arg2];
-    arg1.image = [NSImage imageNamed:NSImageNameNetwork];
+    arg1.image = self.defaultNetworkImage;
     arg1.uid = arg2;
     arg1.members = [[OOPhone getInstance] getNetworkUsersWithNetworkId:arg2];
     arg1.mountPoint = [[OOPhone getInstance] getNetworkMountPointWithId:arg2];

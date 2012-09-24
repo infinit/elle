@@ -58,6 +58,7 @@ extern NSString *OOUpdateProgessChangedNotification;
       toNetwork:(NSString *)arg2;
 
 - (NSString*)getUserFullNameById:(NSString*)arg1;
+- (NSString*)getUserEMailById:(NSString*)arg1;
 
 - (NSArray*)searchUsersWithString:(NSString*)arg1;
 

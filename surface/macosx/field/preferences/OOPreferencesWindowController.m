@@ -77,7 +77,6 @@
 	[[self.window animator] setFrame:newFrame display:YES];
 	
 	[NSAnimationContext endGrouping];
-	
 }
 
 - (NSRect)newFrameForNewContentView:(NSView *)view {
@@ -98,19 +97,23 @@
 }
 
 - (IBAction)unlinkInfinitAccount:(id)sender {
+    
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
     [pref setObject:@"NO" forKey:@"RememberMe"];
     [pref synchronize];
     [[self window] close];
-    [[NSNotificationCenter defaultCenter] postNotificationName:OOOpenSetupWindowAndStopWatchdog object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOOpenSetupWindowAndStopWatchdog
+                                                        object:self];
 }
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar {
+    
 	return [[toolbar items] valueForKey:@"itemIdentifier"];
 }
 
 - (BOOL)isLaunchAtStartup {
+    
     // See if the app is currently in LoginItems.
     LSSharedFileListItemRef itemRef = [self itemRefInLoginItems];
     // Store away that boolean.
@@ -122,6 +125,7 @@
 }
 
 - (IBAction)toggleLaunchAtStartup:(id)sender {
+    
     // Toggle the state.
     BOOL shouldBeToggled = ![self isLaunchAtStartup];
     // Get the LoginItems list.
@@ -143,6 +147,7 @@
 }
 
 - (LSSharedFileListItemRef)itemRefInLoginItems {
+    
     LSSharedFileListItemRef itemRef = nil;
     NSURL *itemUrl = nil;
     

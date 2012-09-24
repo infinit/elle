@@ -180,6 +180,10 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
     char const* fullName = gap_user_fullname(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
     return [[NSString alloc] initWithUTF8String:fullName];
 }
+- (NSString*)getUserEMailById:(NSString*)arg1 {
+    char const* email = gap_user_email(self._gap_State, [arg1 cStringUsingEncoding:NSUTF8StringEncoding]);
+    return [[NSString alloc] initWithUTF8String:email];
+}
 
 
 - (NSArray*)searchUsersWithString:(NSString*)arg1 {

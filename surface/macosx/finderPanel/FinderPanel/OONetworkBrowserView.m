@@ -3,7 +3,7 @@
 
 @implementation OONetworkBrowserView
 
-- (IKImageBrowserCell *) newCellForRepresentedItem:(id) cell {
+- (IKImageBrowserCell *)newCellForRepresentedItem:(id)cell {
 	return [[OONetworkBrowserCell alloc] init];
 }
 

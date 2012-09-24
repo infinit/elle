@@ -3,8 +3,7 @@
 
 @implementation OOUserBrowserView
 
-- (IKImageBrowserCell *) newCellForRepresentedItem:(id) cell
-{
+- (IKImageBrowserCell *)newCellForRepresentedItem:(id)cell {
 	return [[OOUserBrowserCell alloc] init];
 }
 

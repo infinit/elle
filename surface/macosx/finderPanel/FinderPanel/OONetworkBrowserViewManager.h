@@ -9,9 +9,11 @@
     NSMutableArray*                     networks;
     NSMutableArray*                     importedNetworks;
     BOOL                                updateNetwork, forceUpdateNetwork;
+    NSImage*                            defaultNetworkImage;
 }
 
 @property BOOL updateNetwork, forceUpdateNetwork;
+@property(retain) NSImage* defaultNetworkImage;
 
 - (void)defineStyle;
 - (void)forceUpdateNetworks;

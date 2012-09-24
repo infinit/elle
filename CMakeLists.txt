@@ -138,7 +138,7 @@ if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
 	set(LINK_METHOD STATIC)
 else()
 	set(USE_STATIC_LIBS OFF)# CACHE BOOL "use static libraries for linking")
-	set(LINK_METHOD SHARED)
+	set(LINK_METHOD STATIC)
 endif()
 
 # tell cmake to not build shared libraries by default

@@ -160,9 +160,9 @@ namespace horizon
       // applications such as the Finder for instance.
       //
       elle::String      ofsname("-ofsname=" +
-                                hole::Hole::Descriptor.data().name());
+                                hole::Hole::instance().descriptor().data().name());
       elle::String      ovolname("-ovolname=" +
-                                 hole::Hole::Descriptor.data().name());
+                                 hole::Hole::instance().descriptor().data().name());
       const char*       arguments[] =
         {
           "horizon",
@@ -316,14 +316,14 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      switch (hole::Hole::state)
+      switch (hole::Hole::instance().state())
         {
-        case hole::Hole::StateOffline:
+        case hole::Hole::State::offline:
           {
-            hole::Hole::readyHook(&FUker::run);
+            hole::Hole::instance().readyHook(&FUker::run);
             break;
           }
-        case hole::Hole::StateOnline:
+        case hole::Hole::State::online:
           {
             FUker::run();
             break;

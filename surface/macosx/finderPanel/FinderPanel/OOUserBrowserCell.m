@@ -78,7 +78,7 @@ static CGImageRef pinImage() {
 	}
 	
 	/* foreground layer */
-	if(type == IKImageBrowserCellForegroundLayer){
+	if(type == IKImageBrowserCellForegroundLayer) {
 		//no foreground layer on place holders
 		if([self cellState] != IKImageStateReady)
 			return nil;
@@ -107,30 +107,30 @@ static CGImageRef pinImage() {
     
 	/* selection layer */
 	/*if(type == IKImageBrowserCellSelectionLayer){
-        
-		//create a selection layer
-		CALayer *selectionLayer = [CALayer layer];
-		selectionLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-		
-		float fillComponents[4] = {1.0, 0, 0.5, 0.3};
-		float strokeComponents[4] = {1.0, 0.0, 0.5, 1.0};
-		
-		//set a background color
-		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-		color = CGColorCreate(colorSpace, fillComponents);
-		[selectionLayer setBackgroundColor:color];
-		CFRelease(color);
-		
-		//set a border color
-		color = CGColorCreate(colorSpace, strokeComponents);
-		[selectionLayer setBorderColor:color];
-		CFRelease(color);
-        
-		[selectionLayer setBorderWidth:2.0];
-		[selectionLayer setCornerRadius:5];
-		
-		return selectionLayer;
-	}*/
+     
+     //create a selection layer
+     CALayer *selectionLayer = [CALayer layer];
+     selectionLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+     
+     float fillComponents[4] = {1.0, 0, 0.5, 0.3};
+     float strokeComponents[4] = {1.0, 0.0, 0.5, 1.0};
+     
+     //set a background color
+     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+     color = CGColorCreate(colorSpace, fillComponents);
+     [selectionLayer setBackgroundColor:color];
+     CFRelease(color);
+     
+     //set a border color
+     color = CGColorCreate(colorSpace, strokeComponents);
+     [selectionLayer setBorderColor:color];
+     CFRelease(color);
+     
+     [selectionLayer setBorderWidth:2.0];
+     [selectionLayer setCornerRadius:5];
+     
+     return selectionLayer;
+     }*/
 	
 	/* background layer */
 	if(type == IKImageBrowserCellBackgroundLayer){
@@ -141,7 +141,7 @@ static CGImageRef pinImage() {
 		CALayer *layer = [CALayer layer];
 		layer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
 		
-		NSRect backgroundRect = NSMakeRect(0, 0, frame.size.width, frame.size.height);		
+		NSRect backgroundRect = NSMakeRect(0, 0, frame.size.width, frame.size.height);
 		
 		CALayer *photoBackgroundLayer = [CALayer layer];
 		photoBackgroundLayer.frame = *(CGRect*) &backgroundRect;
@@ -194,15 +194,15 @@ static CGImageRef pinImage() {
 	
 	float containerAspectRatio = container.size.width / container.size.height;
 	
-	if(containerAspectRatio > aspectRatio){
+	if(containerAspectRatio > aspectRatio) {
 		imageFrame.size.height = container.size.height;
 		imageFrame.origin.y = container.origin.y;
 		imageFrame.size.width = imageFrame.size.height * aspectRatio;
 		imageFrame.origin.x = container.origin.x + (container.size.width - imageFrame.size.width)*0.5;
 	}
-	else{
+	else {
 		imageFrame.size.width = container.size.width;
-		imageFrame.origin.x = container.origin.x;		
+		imageFrame.origin.x = container.origin.x;
 		imageFrame.size.height = imageFrame.size.width / aspectRatio;
 		imageFrame.origin.y = container.origin.y + container.size.height - imageFrame.size.height;
 	}

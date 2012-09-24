@@ -77,6 +77,12 @@
 		1CBD903A15A1997100D03CBD /* OOUserBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903915A1997100D03CBD /* OOUserBrowserCell.m */; };
 		1CBD903C15A1CF0400D03CBD /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBD903B15A1CF0400D03CBD /* Quartz.framework */; };
 		1CE2BA7515A437D400A58E68 /* OOUserBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CE2BA7415A437D400A58E68 /* OOUserBrowserViewManager.m */; };
+		1CF6FCD41609FCE800C49C36 /* OOUserProfileImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CF6FCD21609FCE800C49C36 /* OOUserProfileImage.h */; };
+		1CF6FCD51609FCE800C49C36 /* OOUserProfileImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CF6FCD31609FCE800C49C36 /* OOUserProfileImage.m */; };
+		1CF6FCDA1609FE3800C49C36 /* NSString+Hashes.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CF6FCD81609FE3800C49C36 /* NSString+Hashes.h */; };
+		1CF6FCDB1609FE3800C49C36 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CF6FCD91609FE3800C49C36 /* NSString+Hashes.m */; };
+		1CF6FCE1160A0C4000C49C36 /* infinit-drive.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */; };
+		1CF6FCE2160A0C6900C49C36 /* infinit-drive.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +124,7 @@
 			dstSubfolderSpec = 7;
 			files = (
 				1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */,
+				1CF6FCE2160A0C6900C49C36 /* infinit-drive.png in CopyFiles */,
 				1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */,
 				1C96022515C84B4B001C864F /* glossy.png in CopyFiles */,
 			);
@@ -192,6 +199,11 @@
 		1CBD903B15A1CF0400D03CBD /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		1CE2BA7315A437D400A58E68 /* OOUserBrowserViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOUserBrowserViewManager.h; sourceTree = "<group>"; };
 		1CE2BA7415A437D400A58E68 /* OOUserBrowserViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOUserBrowserViewManager.m; sourceTree = "<group>"; };
+		1CF6FCD21609FCE800C49C36 /* OOUserProfileImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOUserProfileImage.h; sourceTree = "<group>"; };
+		1CF6FCD31609FCE800C49C36 /* OOUserProfileImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOUserProfileImage.m; sourceTree = "<group>"; };
+		1CF6FCD81609FE3800C49C36 /* NSString+Hashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Hashes.h"; sourceTree = "<group>"; };
+		1CF6FCD91609FE3800C49C36 /* NSString+Hashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Hashes.m"; sourceTree = "<group>"; };
+		1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "infinit-drive.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,6 +289,10 @@
 				1C045BC2159CAA7900162909 /* App Supporting Files */,
 				1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */,
 				1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */,
+				1CF6FCD21609FCE800C49C36 /* OOUserProfileImage.h */,
+				1CF6FCD31609FCE800C49C36 /* OOUserProfileImage.m */,
+				1CF6FCD81609FE3800C49C36 /* NSString+Hashes.h */,
+				1CF6FCD91609FE3800C49C36 /* NSString+Hashes.m */,
 			);
 			path = FinderPanel;
 			sourceTree = "<group>";
@@ -344,6 +360,7 @@
 		1C90973115A2F6D4002F0B1E /* ressources */ = {
 			isa = PBXGroup;
 			children = (
+				1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */,
 				1C90973215A2F6F7002F0B1E /* handmadepaper.png */,
 				1C90973415A2F8DE002F0B1E /* pin.tiff */,
 				1C90973615A2F8E6002F0B1E /* glossy.png */,
@@ -381,8 +398,8 @@
 				1C9451A315A5A5E400370E90 /* OONetworkBrowserViewManager.h */,
 				1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */,
 				1C94519D15A5A5E400370E90 /* OONetworkBrowserBackgroundLayer.h */,
-				1C9451A115A5A5E400370E90 /* OONetworkBrowserView.h */,
 				1C94519E15A5A5E400370E90 /* OONetworkBrowserBackgroundLayer.m */,
+				1C9451A115A5A5E400370E90 /* OONetworkBrowserView.h */,
 				1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */,
 				1C94519F15A5A5E400370E90 /* OONetworkBrowserCell.h */,
 				1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */,
@@ -455,6 +472,8 @@
 				1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */,
 				1C49943E15B6F32E00BADF60 /* OONetworkAddButton.h in Headers */,
 				1C486ED415D2B4FE008AFCE3 /* OOAppDelegate.h in Headers */,
+				1CF6FCD41609FCE800C49C36 /* OOUserProfileImage.h in Headers */,
+				1CF6FCDA1609FE3800C49C36 /* NSString+Hashes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,6 +621,7 @@
 				1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */,
 				1C136A7C15B58D7D003D41B9 /* pin.tiff in Resources */,
 				1C136A7D15B58D81003D41B9 /* glossy.png in Resources */,
+				1CF6FCE1160A0C4000C49C36 /* infinit-drive.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -674,6 +694,8 @@
 				1C30B5CC15B56A490056A382 /* OOBrowserUtilities.m in Sources */,
 				1C49944015B6F32E00BADF60 /* OONetworkAddButton.m in Sources */,
 				1C486ED115D2B4EF008AFCE3 /* OOAppDelegate.m in Sources */,
+				1CF6FCD51609FCE800C49C36 /* OOUserProfileImage.m in Sources */,
+				1CF6FCDB1609FE3800C49C36 /* NSString+Hashes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

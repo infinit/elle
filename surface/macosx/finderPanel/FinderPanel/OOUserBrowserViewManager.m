@@ -1,5 +1,6 @@
 #import "OOUserBrowserViewManager.h"
 #import "OOUserBrowserBackgroundLayer.h"
+#import "OOUserProfileImage.h"
 #import "OOUserModel.h"
 #import <Phone/OOPhone.h>
 
@@ -25,12 +26,12 @@
     //[userBrowser setDraggingDestinationDelegate:self];
 	
 	// customize the appearance
-	[userBrowser setCellsStyleMask:IKCellsStyleTitled | IKCellsStyleOutlined];
+	[userBrowser setCellsStyleMask:IKCellsStyleTitled];
     
 	// background layer
-	//OOUserBrowserBackgroundLayer *backgroundLayer = [[OOUserBrowserBackgroundLayer alloc] init];
-	//[userBrowser setBackgroundLayer:backgroundLayer];
-	//backgroundLayer.owner = userBrowser;
+	OOUserBrowserBackgroundLayer *backgroundLayer = [[OOUserBrowserBackgroundLayer alloc] init];
+	[userBrowser setBackgroundLayer:backgroundLayer];
+	backgroundLayer.owner = userBrowser;
 	
 	//-- change default font 
 	// create a centered paragraph style
@@ -58,7 +59,7 @@
 	[userBrowser setValue:[NSColor colorWithCalibratedRed:1 green:0 blue:0.5 alpha:1.0] forKey:IKImageBrowserSelectionColorKey];
 	
 	//set initial zoom value
-	[userBrowser setZoomValue:0.3];
+	[userBrowser setZoomValue:0.5];
     
 }
 
@@ -95,7 +96,7 @@
     // Add a path to the temporary images array.
     OOUserModel* p = [[OOUserModel alloc] init];
     p.fullName =[[OOPhone getInstance] getUserFullNameById:arg1];
-    p.image = [NSImage imageNamed:NSImageNameUser];
+    p.image = [[OOUserProfileImage alloc] initWithGravatarEmail:[[OOPhone getInstance] getUserEMailById:arg1]];
     p.uid = arg1;
     return p;
 }
@@ -173,8 +174,7 @@
     
 	// Then insert the removed items at the appropriate location.
 	NSInteger n = [temporaryArray count];
-	for (index = 0; index < n; index++)
-	{
+	for (index = 0; index < n; index++) {
 		[filteredUsers insertObject:[temporaryArray objectAtIndex:index] atIndex:destinationIndex];
 	}
     
@@ -242,9 +242,9 @@
 
         // Make the image browser reload the data source.
         [self updateDatasource];
-    }
+    }*/
 
-    // Accept the drag operation.*/
+    // Accept the drag operation.
     return YES;
 }
 
