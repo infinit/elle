@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import os
+import re
+import sys
+import pool
+import copy
+import time
+import pprint
+import argparse
+import subprocess as sp
+import infinitools
+
+pattern = re.compile(r"(?P<name>.*)\.(?P<nb>\d+)\.(py|sh)")
+
+def main(scriptdir):
+    for root, dirs, scripts in os.walk(scriptdir):
+        with open("report", "w") as report:
+            for script in scripts:
+                m = pattern.match(script)
+                if m == None:
+                    print("script", script, "name don't match the specification")
+                    continue
+
+                script_data = m.groupdict()
+                nb_instance = int(script_data["nb"])
+                print("launch the test [\033[32m", script_data["name"],
+                        "\033[0m] with",
+                        nb_instance, "instances")
+                with pool.Pool(number_of_networks=nb_instance,
+                        low_port=5656, high_port=5660) as p:
+
+                    # Wait for the mountpoints to be ready
+                    p.wait_ready()
+                    print("\033[32mAll the filesystems are effectivly mounted, start the testing...\033[0m")
+
+                    environ = copy.deepcopy(os.environ)
+                    script_path = os.path.join(root, script)
+
+                    # The scripts needs MNT$i variables to point to the
+                    # mountpoints
+                    for (i, mountpoint) in enumerate(p.mountpoints):
+                        environ["MNT{0}".format(i + 1)] = mountpoint
+                    try:
+                        sp.check_call([script_path], env=environ)
+                        print("\033[32mtest", script_data["name"],"success\033[0m")
+                        report.write("{0}: success\n".format(script_data["name"]))
+                    except sp.CalledProcessError:
+                        print("script", script_data["name"], "failed")
+                        report.write("{0}: failed\n".format(script_data["name"]))
+                        print("\033[31mtest", script_data["name"],"failed\033[0m")
+
+
+if __name__ == "__main__":
+    infinitools.patch_satellites_path()
+    parser = argparse.ArgumentParser(description="Run the infinit test suite")
+    parser.add_argument('scriptdir', metavar="DIR", 
+            help="the dir containing the scripts to be run")
+    args = parser.parse_args()
+    main(args.scriptdir)
