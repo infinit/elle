@@ -8,7 +8,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 
-#define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
+#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
 
 int main()
 {
@@ -22,11 +22,17 @@ int main()
       elle::cryptography::KeyPair kp;
       CHECK(kp.Generate());
 
+      printf("HERE\n");
+
       nucleus::proton::ImprintBlock blk(network,
                                         nucleus::neutron::ComponentObject,
                                         kp.K);
 
+      printf("HERE\n");
+
       nucleus::proton::Address addr(blk.bind());
+
+      printf("HERE\n");
 
       assert(addr != nucleus::proton::Address::Null);
       assert(addr != nucleus::proton::Address::Some);

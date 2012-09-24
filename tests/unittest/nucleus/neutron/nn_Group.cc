@@ -36,7 +36,7 @@ void test_group()
       CHECK(pass.Generate());
     }
 
-  nucleus::neutron::Ensemble ensemble;
+  nucleus::neutron::Ensemble ensemble(network, owner.K);
 
   ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
@@ -87,7 +87,7 @@ void test_group()
     {
       buffer.Writer() << group << ensemble;
     }
-
+  {
   nucleus::neutron::Group g;
   nucleus::neutron::Ensemble e;
 
@@ -101,6 +101,10 @@ void test_group()
 
   ELLE_TRACE("Validate the ensemble")
     e.validate(ensemble_address);
+  }
+
+  // XXX
+  group.Dump();
 }
 
 int main(int, char** argv)

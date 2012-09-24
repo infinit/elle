@@ -104,6 +104,7 @@ namespace nucleus
       Group(proton::Network const& network,
             elle::cryptography::PublicKey const& manager_K,
             elle::String const& description);
+      ~Group();
 
       //
       // methods

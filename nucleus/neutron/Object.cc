@@ -28,7 +28,9 @@ namespace nucleus
 //
 
     Object::Object():
-      proton::ImprintBlock()
+      proton::ImprintBlock(),
+
+      _author(nullptr)
     {
       this->_meta.state = proton::StateClean;
       this->_meta.owner.permissions = PermissionNone;
