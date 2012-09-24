@@ -14,7 +14,7 @@
 namespace hole
 {
   void
-  Hole(elle::Natural32 argc, elle::Character* argv[])
+  hole(elle::Natural32 argc, elle::Character* argv[])
   {
     // XXX Infinit::Parser is not deleted in case of error
 
@@ -99,8 +99,8 @@ namespace hole
       }
 
     // initialize the Hole library.
-    hole::Hole::Initialize();
-    hole::Hole::join();
+    std::unique_ptr<hole::Hole> hole(new hole::Hole);
+    hole->join();
 
     // launch the program.
     elle::concurrency::Program::Launch();
@@ -109,12 +109,7 @@ namespace hole
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
 
-    hole::Hole::leave();
-
-    // clean Hole.
-    if (hole::Hole::Clean() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to clean Hole");
+    hole->leave();
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
@@ -143,7 +138,7 @@ Main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
     {
-      hole::Hole(argc, argv);
+      hole::hole(argc, argv);
     }
   catch (std::exception const& e)
     {
