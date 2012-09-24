@@ -15,6 +15,7 @@ def configure(cxx_toolkit, cxx_config):
   cxx_config += boost.config_signals()
   cxx_config += boost.config_system()
   cxx_config += boost.config_filesystem()
+  cxx_config += boost.config_thread()
   # OpenSSL
   openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h')
   cxx_config += openssl.config()
