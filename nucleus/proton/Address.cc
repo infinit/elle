@@ -1,8 +1,5 @@
-#include <elle/standalone/Log.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
-
-#include <Infinit.hh>
 
 namespace nucleus
 {
@@ -39,20 +36,12 @@ namespace nucleus
     ///
     elle::Status        Address::Initialize()
     {
-      // disable the meta logging.
-      if (elle::radix::Meta::Disable() == elle::Status::Error)
-        escape("unable to disable the meta logging");
-
       // create the any address with default meaningless values.
       if (Address::Any.Create(
             Address::Any.network(),
             Address::Any.family(),
             Address::Any.component()) == elle::Status::Error)
         escape("unable to create the any address");
-
-    // enable the meta logging.
-    if (elle::radix::Meta::Enable() == elle::Status::Error)
-      escape("unable to enable the meta logging");
 
       return elle::Status::Ok;
     }
@@ -92,9 +81,15 @@ namespace nucleus
       delete this->_digest;
 
       if (other._digest != nullptr)
+        {
+          printf("XXX DUPLICATE\n");
         this->_digest = new elle::cryptography::Digest(*other._digest);
+        }
       else
+        {
+          printf("XXX DO NOT DUPLICATE\n");
         this->_digest = nullptr;
+        }
     }
 
     ///
@@ -177,12 +172,6 @@ namespace nucleus
     }
 
     elle::Boolean
-    Address::operator !=(Address const& other) const
-    {
-      return (!this->operator ==(other));
-    }
-
-    elle::Boolean
     Address::operator <(Address const& other) const
     {
       // check the address as this may actually be the same object.
@@ -222,18 +211,6 @@ namespace nucleus
       return (*this->_digest < *other._digest);
     }
 
-    elle::Boolean
-    Address::operator >(Address const& other) const
-    {
-      return (!this->operator <=(other));
-    }
-
-    elle::Boolean
-    Address::operator >=(Address const& other) const
-    {
-      return (!this->operator <(other));
-    }
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -257,7 +234,7 @@ namespace nucleus
       else
         {
           // display the name.
-          std::cout << alignment << "[Address]" << std::endl;
+          std::cout << alignment << "[Address] " << this << std::endl;
 
           if (this->_network.Dump(margin + 2) == elle::Status::Error)
             escape("XXX");

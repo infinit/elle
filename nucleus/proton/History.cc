@@ -82,7 +82,7 @@ namespace nucleus
 //
 
     elle::Boolean
-    History::operator==(History const& other) const
+    History::operator ==(History const& other) const
     {
       Revision::Type size;
       Revision::Type i;

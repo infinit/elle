@@ -97,31 +97,24 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Record::operator==(const Record&        element) const
+    elle::Boolean
+    Record::operator ==(Record const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the attributes.
-      if ((this->subject != element.subject) ||
-          (this->permissions != element.permissions) ||
-          (this->token != element.token))
+      if ((this->subject != other.subject) ||
+          (this->permissions != other.permissions) ||
+          (this->token != other.token))
         return false;
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Record, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

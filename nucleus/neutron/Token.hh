@@ -2,8 +2,7 @@
 # define NUCLEUS_NEUTRON_TOKEN_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
-
+# include <elle/operator.hh>
 # include <elle/cryptography/fwd.hh>
 
 namespace nucleus
@@ -13,9 +12,9 @@ namespace nucleus
 
     /// A token is a secret information enabling a user to access encrypted
     /// data. However, in order to allow only the proper user to
-    /// use this secret information, it is encrypted with the user's public key.
-    class Token:
-      public elle::radix::Object
+    /// use this secret information, it is encrypted with the user's public
+    /// key.
+    class Token
     {
       //
       // constants
@@ -55,15 +54,18 @@ namespace nucleus
       code() const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Token const& other) const;
+      ELLE_OPERATOR_NEQ(Token);
+      ELLE_OPERATOR_ASSIGNMENT(Token);
+
+      //
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Token);
-#include <elle/idiom/Close.hh>
-      elle::Boolean     operator==(const Token&) const;
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

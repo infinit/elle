@@ -56,31 +56,24 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Stamp::operator==(const Stamp&          element) const
+    elle::Boolean
+    Stamp::operator ==(Stamp const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the attributes.
-      if ((this->master != element.master) ||
-          (this->slave != element.slave) ||
-          (this->signature != element.signature))
+      if ((this->master != other.master) ||
+          (this->slave != other.slave) ||
+          (this->signature != other.signature))
         return false;
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Stamp, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

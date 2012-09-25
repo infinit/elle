@@ -4,6 +4,7 @@
 # include <elle/concept/Fileable.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
@@ -11,6 +12,8 @@
 # include <elle/idiom/Close.hh>
 #  include <vector>
 # include <elle/idiom/Open.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -23,7 +26,8 @@ namespace nucleus
     ///
     class History:
       public elle::serialize::SerializableMixin<History>,
-      public elle::concept::Fileable<>
+      public elle::concept::Fileable<>,
+      private boost::noncopyable
     {
     public:
       //
@@ -60,7 +64,8 @@ namespace nucleus
       //
     public:
       elle::Boolean
-      operator==(History const& other) const;
+      operator ==(History const& other) const;
+      ELLE_OPERATOR_NEQ(History);
 
       //
       // interfaces

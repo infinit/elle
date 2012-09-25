@@ -276,7 +276,7 @@ namespace nucleus
 //
 
     elle::Boolean
-    Access::operator==(Access const& other) const
+    Access::operator ==(Access const& other) const
     {
       // check the address as this may actually be the same object.
       if (this == &other)

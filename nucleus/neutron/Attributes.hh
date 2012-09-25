@@ -2,13 +2,15 @@
 # define NUCLEUS_NEUTRON_ATTRIBUTES_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Range.hh>
 # include <nucleus/neutron/Trait.hh>
 
 # include <elle/idiom/Open.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -19,8 +21,10 @@ namespace nucleus
     /// this class contains a list of (key, data) tuples that can be
     /// used for storing object-specific extra information.
     ///
-    class Attributes:
-      public elle::radix::Object
+    class Attributes
+      // XXX[when Object::Administrate() no longer sets the attributes but
+      //     they are set separately instead]
+      // private boost::noncopyable
     {
     public:
       //
@@ -39,13 +43,17 @@ namespace nucleus
       elle::Status      Capacity(Size&) const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Attributes const& other) const;
+      ELLE_OPERATOR_NEQ(Attributes);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Attributes);
-      elle::Boolean     operator==(const Attributes&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

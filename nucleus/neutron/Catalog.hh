@@ -9,6 +9,8 @@
 # include <nucleus/neutron/Entry.hh>
 # include <nucleus/neutron/Component.hh>
 
+# include <boost/noncopyable.hpp>
+
 namespace nucleus
 {
   namespace neutron
@@ -22,7 +24,8 @@ namespace nucleus
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///
-    class Catalog
+    class Catalog:
+      private boost::noncopyable
     {
       //
       // constants

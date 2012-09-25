@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Signature.hh>
 
@@ -30,8 +31,7 @@ namespace nucleus
     /// thanks to the very light mechanism, vassals cannot lie regarding
     /// their memberships or permissions.
     ///
-    class Stamp:
-      public elle::radix::Object
+    class Stamp
     {
     public:
       //
@@ -44,13 +44,18 @@ namespace nucleus
       elle::Status      Validate();
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Stamp const& other) const;
+      ELLE_OPERATOR_NEQ(Stamp);
+      ELLE_OPERATOR_ASSIGNMENT(Stamp);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Stamp);
-      elle::Boolean     operator==(const Stamp&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

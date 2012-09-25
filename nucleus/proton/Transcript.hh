@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_TRANSCRIPT_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Action.hh>
@@ -21,8 +20,7 @@ namespace nucleus
     /// storage layer such as pushing this block, removing this one and so
     /// on.
     ///
-    class Transcript:
-      public elle::radix::Object
+    class Transcript
     {
     public:
       //

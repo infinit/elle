@@ -2,7 +2,6 @@
 # define NUCLEUS_NEUTRON_RANGE_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/neutron/fwd.hh>
 
@@ -25,8 +24,7 @@ namespace nucleus
     ///     being used to retrieve the key value of a given item.
     ///
     template <typename T>
-    class Range:
-      public elle::radix::Object
+    class Range
     {
     public:
       //
@@ -82,13 +80,17 @@ namespace nucleus
       elle::Status      Detach();
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Range<T> const& other) const;
+      // XXX ELLE_OPERATOR_NEQ_T1(Range<T>);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Range<T>);
-      elle::Boolean     operator==(const Range<T>&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

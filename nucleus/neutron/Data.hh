@@ -2,11 +2,12 @@
 # define NUCLEUS_NEUTRON_DATA_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 # include <elle/standalone/Region.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/fwd.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -21,7 +22,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Data:
-      public elle::radix::Object
+      private boost::noncopyable
     {
       //
       // constants

@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_TRAIT_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 namespace nucleus
 {
@@ -15,8 +15,7 @@ namespace nucleus
     /// a trait is characterised by a string name and while a value string
     /// is associated with it.
     ///
-    class Trait:
-      public elle::radix::Object
+    class Trait
     {
     public:
       //
@@ -37,15 +36,18 @@ namespace nucleus
             const elle::String&);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Trait const& other) const;
+      ELLE_OPERATOR_NEQ(Trait);
+      ELLE_OPERATOR_ASSIGNMENT(Trait);
+
+      //
       // interfaces
       //
-
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Trait);
-#include <elle/idiom/Close.hh>
-      elle::Boolean     operator==(const Trait&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

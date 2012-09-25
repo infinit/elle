@@ -37,7 +37,7 @@ namespace nucleus
 //
 
     elle::Boolean
-    Network::operator==(Network const& other) const
+    Network::operator ==(Network const& other) const
     {
       // check the network as this may actually be the same object.
       if (this == &other)

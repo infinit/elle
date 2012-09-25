@@ -2,7 +2,6 @@
 # define NUCLEUS_NEUTRON_RECORD_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/neutron/Subject.hh>
 # include <nucleus/neutron/Permissions.hh>
@@ -18,8 +17,7 @@ namespace nucleus
     /// of the subject, its permissions and the token allowing the subject
     /// to access the data.
     ///
-    class Record:
-      public elle::radix::Object
+    class Record
     {
     public:
       //
@@ -60,15 +58,18 @@ namespace nucleus
              Token const& token);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Record const& other) const;
+      ELLE_OPERATOR_NEQ(Record);
+      ELLE_OPERATOR_ASSIGNMENT(Record);
+
+      //
       // interfaces
       //
-
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Record);
-#include <elle/idiom/Close.hh>
-      elle::Boolean     operator==(const Record&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_LOCATION_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Revision.hh>
@@ -18,8 +18,7 @@ namespace nucleus
     /// indeed, a location is composed of the address of the object but
     /// also the number of the object's revision which it relates to.
     ///
-    class Location:
-      public elle::radix::Object
+    class Location
     {
     public:
       //
@@ -39,13 +38,18 @@ namespace nucleus
                                const Revision&);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Location const& other) const;
+      ELLE_OPERATOR_NEQ(Location);
+      ELLE_OPERATOR_ASSIGNMENT(Location);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Location);
-      elle::Boolean     operator==(const Location&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

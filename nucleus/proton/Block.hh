@@ -13,6 +13,8 @@
 # include <nucleus/proton/State.hh>
 # include <nucleus/neutron/Component.hh>
 
+# include <boost/noncopyable.hpp>
+
 // XXX remove this when design allows Serializable contract to be enforced
 # define __NPB_OARCHIVE(...)                                                  \
   elle::serialize::Serializable<__VA_ARGS__>::OutputArchive                   \
@@ -68,7 +70,8 @@ namespace nucleus
       public elle::serialize::Serializable<
         elle::serialize::BufferArchive
       >,
-      public elle::concept::Fileable<>
+      public elle::concept::Fileable<>,
+      private boost::noncopyable
     {
       //
       // constants

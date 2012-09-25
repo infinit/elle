@@ -142,15 +142,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Contents<T>, _(template <typename T>));
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 

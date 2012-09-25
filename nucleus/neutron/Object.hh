@@ -166,11 +166,6 @@ namespace nucleus
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Object);
-#include <elle/idiom/Close.hh>
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

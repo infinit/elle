@@ -43,30 +43,23 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this method checks if two objects match.
-    ///
-    elle::Boolean       Location::operator==(const Location&    element) const
+    elle::Boolean
+    Location::operator ==(Location const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the attributes.
-      if ((this->address != element.address) ||
-          (this->revision != element.revision))
+      if ((this->address != other.address) ||
+          (this->revision != other.revision))
         return false;
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Location, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_ENTRY_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/Address.hh>
 
@@ -17,8 +17,7 @@ namespace nucleus
     /// this class represents a directory i.e catalog entry which is
     /// composed of a name and its object's corresponding address.
     ///
-    class Entry:
-      public elle::radix::Object
+    class Entry
     {
     public:
       //
@@ -39,13 +38,18 @@ namespace nucleus
             const proton::Address&);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Entry const& other) const;
+      ELLE_OPERATOR_NEQ(Entry);
+      ELLE_OPERATOR_ASSIGNMENT(Entry);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Entry);
-      elle::Boolean     operator==(const Entry&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -63,6 +67,6 @@ namespace nucleus
   }
 }
 
-#include <nucleus/neutron/Entry.hxx>
+# include <nucleus/neutron/Entry.hxx>
 
 #endif

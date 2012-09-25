@@ -2,11 +2,11 @@
 # define NUCLEUS_NEUTRON_AUTHOR_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/neutron/Object.hh>
 # include <nucleus/neutron/Index.hh>
 
+# include <elle/operator.hh>
 # include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -18,8 +18,7 @@ namespace nucleus
     /// this class represents the last user to have modified an object i.e
     /// the author.
     ///
-    class Author:
-      public elle::radix::Object
+    class Author
     {
     public:
       //
@@ -40,13 +39,18 @@ namespace nucleus
       elle::Status      Create(const Index&);
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Author const& other) const;
+      ELLE_OPERATOR_NEQ(Author);
+      ELLE_OPERATOR_ASSIGNMENT(Author);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Author);
-      elle::Boolean     operator==(const Author&) const;
-
+    public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -54,9 +58,7 @@ namespace nucleus
       // attributes
       //
 
-      // XXX[nucleus::neutron:: can be removed when Author no longer derive
-      //     radix::Object]
-      nucleus::neutron::Object::Role role;
+      Object::Role role;
 
       union
       {

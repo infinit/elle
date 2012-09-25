@@ -143,6 +143,7 @@ namespace etoile
                                      nucleus::proton::Revision const& revision,
                                      nucleus::proton::Block& out_block)
     {
+      /* XXX
       BOOST_FOREACH(gear::Scope* scope, Journal::_scopes)
         BOOST_FOREACH(nucleus::proton::Action* action, scope->context->transcript.container)
           {
@@ -174,6 +175,7 @@ namespace etoile
                   }
               }
           }
+      */
       return false;
     }
 

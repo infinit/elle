@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_ACCESS_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/serialize/BufferArchive.hh>
 
@@ -93,7 +94,8 @@ namespace nucleus
       //
     public:
       elle::Boolean
-      operator==(Access const& other) const;
+      operator ==(Access const& other) const;
+      ELLE_OPERATOR_NEQ(Access);
 
       //
       // interfaces
@@ -107,7 +109,8 @@ namespace nucleus
 
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access, elle::serialize::BufferArchive);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access,
+                                          elle::serialize::BufferArchive);
 
       //
       // attributes

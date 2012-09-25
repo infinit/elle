@@ -40,30 +40,23 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Trait::operator==(const Trait&          element) const
+    elle::Boolean
+    Trait::operator ==(Trait const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the name and value.
-      if ((this->name != element.name) ||
-          (this->value != element.value))
+      if ((this->name != other.name) ||
+          (this->value != other.value))
         return false;
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Trait, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

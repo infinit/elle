@@ -2,7 +2,7 @@
 # define NUCLEUS_NEUTRON_SUBJECT_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/User.hh>
@@ -15,8 +15,7 @@ namespace nucleus
 
     /// This class is used to represent a subject i.e an entity which
     /// can be granted access such as a user or a group.
-    class Subject:
-      public elle::radix::Object
+    class Subject
     {
       //
       // enumerations
@@ -96,15 +95,18 @@ namespace nucleus
       group() const;
 
       //
+      // operators
+      //
+    public:
+      elle::Boolean
+      operator ==(Subject const& other) const;
+      ELLE_OPERATOR_NEQ(Subject);
+      ELLE_OPERATOR_ASSIGNMENT(Subject);
+
+      //
       // interfaces
       //
     public:
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Subject);
-#include <elle/idiom/Close.hh>
-      elle::Boolean     operator==(const Subject&) const;
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 

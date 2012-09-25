@@ -74,57 +74,49 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this method checks if two objects match.
-    ///
-    elle::Boolean       Revision::operator==(const Revision&      element) const
+    elle::Boolean
+    Revision::operator ==(Revision const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
-      return (this->number == element.number);
+      return (this->number == other.number);
     }
 
-    ///
-    /// this method compares the objects.
-    ///
-    elle::Boolean       Revision::operator<(const Revision&       element) const
+    elle::Boolean
+    Revision::operator <(Revision const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the numbers.
-      if (this->number >= element.number)
+      if (this->number >= other.number)
         return false;
 
       return true;
     }
 
-    ///
-    /// this method compares the objects.
-    ///
-    elle::Boolean       Revision::operator>(const Revision&       element) const
+    elle::Boolean
+    Revision::operator >(Revision const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the numbers.
-      if (this->number <= element.number)
+      if (this->number <= other.number)
         return false;
 
       return true;
     }
 
-    ///
-    /// this method increments the revision number.
-    ///
-    Revision&            Revision::operator+=(const elle::Natural32 increment)
+    Revision&
+    Revision::operator +=(elle::Natural32 const increment)
     {
       // increment the number.
       this->number += increment;
@@ -132,18 +124,11 @@ namespace nucleus
       return (*this);
     }
 
-    ///
-    /// this method adds the given revision to the current one.
-    ///
-    Revision             Revision::operator+(const Revision&       element) const
+    Revision
+    Revision::operator +(Revision const& other) const
     {
-      return (Revision(this->number + element.number));
+      return (Revision(this->number + other.number));
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Revision, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

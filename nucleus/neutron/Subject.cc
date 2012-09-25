@@ -94,8 +94,7 @@ namespace nucleus
     {
     }
 
-    Subject::Subject(Subject const& other):
-      Object(other)
+    Subject::Subject(Subject const& other)
     {
       this->_type = other.type();
 
@@ -198,17 +197,18 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    elle::Boolean       Subject::operator==(const Subject&      element) const
+    elle::Boolean
+    Subject::operator ==(Subject const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the type.
-      if (this->_type != element.type())
+      if (this->_type != other.type())
         return false;
 
       // compare the identifier.
@@ -216,11 +216,11 @@ namespace nucleus
         {
         case Subject::TypeUser:
           {
-            return (*this->_user == element.user());
+            return (*this->_user == other.user());
           }
         case Subject::TypeGroup:
           {
-            return (*this->_group == element.group());
+            return (*this->_group == other.group());
           }
         default:
           {
@@ -230,8 +230,6 @@ namespace nucleus
 
       return true;
     }
-
-    embed(Subject, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

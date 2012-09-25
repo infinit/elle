@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_BASE_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/cryptography/Digest.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -48,7 +49,9 @@ namespace nucleus
       //
     public:
       elle::Boolean
-      operator==(Base const&) const;
+      operator ==(Base const& other) const;
+      ELLE_OPERATOR_NEQ(Base);
+      ELLE_OPERATOR_ASSIGNMENT(Base);
 
       //
       // interfaces

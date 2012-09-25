@@ -77,7 +77,7 @@ namespace nucleus
 //
 
     elle::Boolean
-    Base::operator==(Base const& other) const
+    Base::operator ==(Base const& other) const
     {
       // check the address as this may actually be the same object.
       if (this == &other)

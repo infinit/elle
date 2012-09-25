@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
 
@@ -37,7 +38,9 @@ namespace nucleus
       //
     public:
       elle::Boolean
-      operator==(Network const& other) const;
+      operator ==(Network const& other) const;
+      ELLE_OPERATOR_NEQ(Network);
+      ELLE_OPERATOR_ASSIGMNENT(Network);
 
       //
       // interfaces

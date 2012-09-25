@@ -3,8 +3,8 @@
 
 # include <elle/Printable.hh>
 # include <elle/idiom/Open.hh>
-# include <elle/radix/Object.hh>
 # include <elle/types.hh>
+# include <elle/operator.hh>
 
 namespace nucleus
 {
@@ -16,7 +16,6 @@ namespace nucleus
     /// the revisions related to a mutable block.
     ///
     class Revision:
-      public elle::radix::Object,
       public elle::Printable
     {
     public:
@@ -46,17 +45,27 @@ namespace nucleus
       elle::Status              Create(const Type);
 
       //
+      // operators
+      //
+      elle::Boolean
+      operator ==(Revision const& other) const;
+      elle::Boolean
+      operator <(Revision const& other) const;
+      elle::Boolean
+      operator >(const Revision&) const;
+      Revision&
+      operator +=(elle::Natural32 const increment);
+      Revision
+      operator +(Revision const& other) const;
+      ELLE_OPERATOR_NEQ(Revision);
+      ELLE_OPERATOR_LTE(Revision);
+      ELLE_OPERATOR_GTE(Revision);
+      ELLE_OPERATOR_ASSIGNMENT(Revision);
+
+      //
       // interfaces
       //
-
-      // object
-      declare(Revision);
-      elle::Boolean             operator==(const Revision&) const;
-      elle::Boolean             operator<(const Revision&) const;
-      elle::Boolean             operator>(const Revision&) const;
-      Revision&                  operator+=(const elle::Natural32);
-      Revision                   operator+(const Revision&) const;
-
+    public:
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 

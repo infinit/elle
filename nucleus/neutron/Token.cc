@@ -27,8 +27,7 @@ namespace nucleus
     {
     }
 
-    Token::Token(const Token& other):
-      Object(other)
+    Token::Token(const Token& other)
     {
       if (other._code != nullptr)
         {
@@ -55,31 +54,30 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    elle::Boolean       Token::operator==(const Token&          element) const
+    elle::Boolean
+    Token::operator ==(Token const& other) const
     {
       // check if the objects are the same.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the code.
-      if ((this->_code == nullptr) || (element.code() == nullptr))
+      if ((this->_code == nullptr) || (other._code == nullptr))
         {
-          if (this->_code != element.code())
+          if (this->_code != other._code)
             return false;
         }
       else
         {
-          if (*this->_code != *element.code())
+          if (*this->_code != *other._code)
             return false;
         }
 
       return true;
     }
-
-    embed(Token, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

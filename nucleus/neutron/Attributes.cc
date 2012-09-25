@@ -129,25 +129,18 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Attributes::operator==(const Attributes& element) const
+    elle::Boolean
+    Attributes::operator ==(Attributes const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
-      return (this->range == element.range);
+      return (this->range == other.range);
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Attributes, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -9,9 +9,6 @@ namespace nucleus
   namespace neutron
   {
 
-    // XXX[remove all nucleus::neutron:: before Object when Author will
-    //     no longer derive radix::Object]
-
 //
 // ---------- definitions -----------------------------------------------------
 //
@@ -29,7 +26,7 @@ namespace nucleus
     /// the constructor.
     ///
     Author::Author():
-      role(nucleus::neutron::Object::RoleUnknown)
+      role(Object::RoleUnknown)
     {
     }
 
@@ -50,7 +47,7 @@ namespace nucleus
     elle::Status        Author::Create()
     {
       // set the role.
-      this->role = nucleus::neutron::Object::RoleOwner;
+      this->role = Object::RoleOwner;
 
       return elle::Status::Ok;
     }
@@ -63,7 +60,7 @@ namespace nucleus
     elle::Status        Author::Create(const Index&             index)
     {
       // set the role.
-      this->role = nucleus::neutron::Object::RoleLord;
+      this->role = Object::RoleLord;
 
       // set the index.
       this->lord.index = index;
@@ -72,26 +69,24 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Author::operator==(const Author&        element) const
+    elle::Boolean
+    Author::operator ==(Author const& other) const
     {
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the role.
-      if (this->role != element.role)
+      if (this->role != other.role)
         return false;
 
       // depending on the role.
       switch (this->role)
         {
-        case nucleus::neutron::Object::RoleOwner:
+        case Object::RoleOwner:
           {
             //
             // nothing more to compare.
@@ -99,19 +94,19 @@ namespace nucleus
 
             break;
           }
-        case nucleus::neutron::Object::RoleLord:
+        case Object::RoleLord:
           {
             //
             // compare the index to the entry in the Access block.
             //
 
             // compare the indexes.
-            if (this->lord.index != element.lord.index)
+            if (this->lord.index != other.lord.index)
               return false;
 
             break;
           }
-        case nucleus::neutron::Object::RoleVassal:
+        case Object::RoleVassal:
           {
             // XXX to implement.
 
@@ -129,11 +124,6 @@ namespace nucleus
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Author, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -155,7 +145,7 @@ namespace nucleus
       // depending on the role.
       switch (this->role)
         {
-        case nucleus::neutron::Object::RoleOwner:
+        case Object::RoleOwner:
           {
             //
             // nothing more to dump.
@@ -163,7 +153,7 @@ namespace nucleus
 
             break;
           }
-        case nucleus::neutron::Object::RoleLord:
+        case Object::RoleLord:
           {
             //
             // dump the index to the entry in the Access block.
@@ -176,14 +166,14 @@ namespace nucleus
 
             break;
           }
-        case nucleus::neutron::Object::RoleVassal:
+        case Object::RoleVassal:
           {
             // XXX to implement.
 
             break;
           }
-        case nucleus::neutron::Object::RoleUnknown:
-        case nucleus::neutron::Object::RoleNone:
+        case Object::RoleUnknown:
+        case Object::RoleNone:
           {
             break;
           }

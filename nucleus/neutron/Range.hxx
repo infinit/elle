@@ -27,8 +27,6 @@ namespace nucleus
     ///
     template <typename T>
     Range<T>::Range(const Range<T>&                             element):
-      Object(element),
-
       options(element.options)
     {
       Range<T>::Scoutor         scoutor;
@@ -305,28 +303,26 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- operators -------------------------------------------------------
 //
 
-    ///
-    /// this operator compares two objects.
-    ///
     template <typename T>
-    elle::Boolean       Range<T>::operator==(const Range<T>&    element) const
+    elle::Boolean
+    Range<T>::operator ==(Range<T> const& other) const
     {
       Range<T>::Scoutor s;
       Range<T>::Scoutor t;
 
       // check the address as this may actually be the same object.
-      if (this == &element)
+      if (this == &other)
         return true;
 
       // compare the sizes.
-      if (this->container.size() != element.container.size())
+      if (this->container.size() != other.container.size())
         return false;
 
-      // go through the elements.
-      for (s = this->container.begin(), t = element.container.begin();
+      // go through the others.
+      for (s = this->container.begin(), t = other.container.begin();
            s != this->container.end();
            s++, t++)
         {
@@ -337,11 +333,6 @@ namespace nucleus
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Range<T>, _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

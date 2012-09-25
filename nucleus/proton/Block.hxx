@@ -18,10 +18,10 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Block,
   archive & value._creator_K;
 
   // XXX[make these check cleaner]
-  /* XXX[problem with operator <]
-  enforce(static_cast<int>(value.family) < static_cast<int>(nucleus::proton::Families));
-  enforce(static_cast<int>(value.component) < static_cast<int>(nucleus::neutron::Components));
-  */
+  enforce(static_cast<int>(value._family) <
+          static_cast<int>(nucleus::proton::Families));
+  enforce(static_cast<int>(value._component) <
+          static_cast<int>(nucleus::neutron::Components));
 }
 
 #endif

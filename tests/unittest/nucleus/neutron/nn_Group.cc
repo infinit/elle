@@ -102,9 +102,6 @@ void test_group()
   ELLE_TRACE("Validate the ensemble")
     e.validate(ensemble_address);
   }
-
-  // XXX
-  group.Dump();
 }
 
 int main(int, char** argv)

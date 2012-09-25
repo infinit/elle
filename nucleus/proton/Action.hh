@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_ACTION_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Address.hh>
@@ -16,8 +15,7 @@ namespace nucleus
     /// this class defines an action related to the blocks being either
     /// pushed/wiped to/from the storage layer.
     ///
-    class Action:
-      public elle::radix::Object
+    class Action
     {
     public:
       //

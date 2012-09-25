@@ -10,6 +10,7 @@
 
 # include <nucleus/neutron/Component.hh>
 
+# include <elle/operator.hh>
 # include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -80,15 +81,13 @@ namespace nucleus
       elle::Boolean
       operator ==(Address const& other) const;
       elle::Boolean
-      operator !=(Address const& other) const;
-      elle::Boolean
       operator <(Address const& other) const;
       elle::Boolean
       operator <=(Address const& other) const;
-      elle::Boolean
-      operator >(Address const& other) const;
-      elle::Boolean
-      operator >=(Address const& other) const;
+      ELLE_OPERATOR_NEQ(Address);
+      ELLE_OPERATOR_GT(Address);
+      ELLE_OPERATOR_GTE(Address);
+      ELLE_OPERATOR_ASSIGNMENT(Address);
 
       //
       // interfaces

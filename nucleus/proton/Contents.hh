@@ -29,12 +29,12 @@ namespace nucleus
     /// benefit in encrypting the data for fun.
     ///
     template <typename T>
-    class Contents
-      : public proton::ContentHashBlock
-      , public elle::serialize::SerializableMixin<Contents<T>>
-      , public elle::serialize::SerializableMixin<
-            Contents<T>, elle::serialize::BufferArchive
-        >
+    class Contents:
+      public proton::ContentHashBlock,
+      public elle::serialize::SerializableMixin<Contents<T>>,
+      public elle::serialize::SerializableMixin<
+        Contents<T>, elle::serialize::BufferArchive
+      >
     {
       //
       // constants
@@ -67,13 +67,11 @@ namespace nucleus
       //
       // interfaces
       //
-
-      // object
-      declare(Contents<T>);
-
+    public:
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>, elle::serialize::BufferArchive);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>,
+                                          elle::serialize::BufferArchive);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
