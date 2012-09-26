@@ -1,8 +1,11 @@
 #ifndef HOLE_HOLEABLE_HH
 # define HOLE_HOLEABLE_HH
 
-# include <elle/types.hh>
+# include <elle/attribute.hh>
 # include <elle/radix/Entity.hh>
+# include <elle/types.hh>
+
+# include <hole/fwd.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
@@ -20,7 +23,8 @@ namespace hole
     //
     // constructors & destructors
     //
-    Holeable(const nucleus::proton::Network&);
+    Holeable(Hole& hole,
+             const nucleus::proton::Network&);
     virtual ~Holeable();
 
     //
@@ -52,6 +56,8 @@ namespace hole
     // attributes
     //
     nucleus::proton::Network            network;
+  private:
+    ELLE_ATTRIBUTE_RX(Hole&, hole);
   };
 
 }

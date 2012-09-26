@@ -124,8 +124,9 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the ensemble is empty");
 
+          // XXX: restore history handling
           // does the network support the history?
-          if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (hole::Hole::instance().descriptor().meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)
@@ -164,8 +165,9 @@ namespace etoile
           nucleus::proton::Address address;
           elle::cryptography::KeyPair pass;
 
+          // XXX: restore history handling
           // does the network support the history?
-          if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (hole::Hole::instance().descriptor().meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)

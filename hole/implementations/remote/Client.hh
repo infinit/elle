@@ -31,7 +31,7 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Client(std::string const& host, int port);
+        Client(lune::Passport const& passport, std::string const& host, int port);
         ~Client();
 
       /*----.

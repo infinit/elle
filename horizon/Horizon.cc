@@ -16,6 +16,30 @@
 
 namespace horizon
 {
+    /*-----------------------------.
+    | Global Hole instance (FIXME) |
+    `-----------------------------*/
+    static
+    hole::Hole*&
+    _hole()
+    {
+      static hole::Hole* hole(nullptr);
+      return hole;
+    }
+
+    hole::Hole&
+    hole()
+    {
+      assert(_hole());
+      return *_hole();
+    }
+
+    void
+    hole(hole::Hole* hole)
+    {
+      assert(!_hole() || !hole);
+      _hole() = hole;
+    }
 
 //
 // ---------- definitions -----------------------------------------------------

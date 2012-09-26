@@ -14,6 +14,30 @@ namespace etoile
 {
   namespace depot
   {
+    /*-----------------------------.
+    | Global Hole instance (FIXME) |
+    `-----------------------------*/
+    static
+    hole::Hole*&
+    _hole()
+    {
+      static hole::Hole* hole(nullptr);
+      return hole;
+    }
+
+    hole::Hole&
+    hole()
+    {
+      assert(_hole());
+      return *_hole();
+    }
+
+    void
+    hole(hole::Hole* hole)
+    {
+      assert(!_hole() || !hole);
+      _hole() = hole;
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -22,7 +46,7 @@ namespace etoile
     /// this method returns the address of the network's root block.
     elle::Status        Depot::Origin(nucleus::proton::Address& address)
     {
-      address = hole::Hole::instance().origin();
+      address = hole().origin();
       return elle::Status::Ok;
     }
 
@@ -32,7 +56,7 @@ namespace etoile
     elle::Status        Depot::Push(const nucleus::proton::Address& address,
                                     const nucleus::proton::Block& block)
     {
-      hole::Hole::instance().push(address, block);
+      hole().push(address, block);
       return elle::Status::Ok;
     }
 
@@ -68,7 +92,7 @@ namespace etoile
     elle::Status        Depot::Wipe(const nucleus::proton::Address& address)
     {
       // call the Hole.
-      hole::Hole::instance().wipe(address);
+      hole().wipe(address);
 
       return elle::Status::Ok;
     }

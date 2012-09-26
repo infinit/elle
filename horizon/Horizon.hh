@@ -10,12 +10,22 @@
 #  include <pwd.h>
 # include <elle/idiom/Open.hh>
 
+# include <hole/fwd.hh>
+
 ///
 /// this namespace contains several implementations related to the
 /// operating system as the system call interface changes.
 ///
 namespace horizon
 {
+
+  /*-----------------------------.
+  | Global Hole instance (FIXME) |
+  `-----------------------------*/
+  hole::Hole&
+  hole();
+  void
+  hole(hole::Hole* hole);
 
   ///
   /// this class contains general-purpose methods for initializing and

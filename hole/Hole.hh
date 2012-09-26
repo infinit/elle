@@ -20,17 +20,17 @@ namespace hole
   /// The storage layer of an Infinit filesystem.
   class Hole
   {
-  /*------------------------.
-  | Global instance (FIXME) |
-  `------------------------*/
-  public:
-    static
-    Hole&
-    instance();
-  private:
-    static
-    Hole*
-    _instance;
+  // /*------------------------.
+  // | Global instance (FIXME) |
+  // `------------------------*/
+  // public:
+  //   static
+  //   Hole&
+  //   instance();
+  // private:
+  //   static
+  //   Hole*
+  //   _instance;
 
   /*-------------.
   | Construction |

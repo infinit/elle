@@ -493,7 +493,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           Group::information(group);
@@ -535,7 +535,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -610,7 +610,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -683,7 +683,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           Group::consult(group);
@@ -712,7 +712,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -785,7 +785,7 @@ namespace satellite
             }
           else
             {
-              group = hole::Hole::instance().descriptor().meta().everybody_identity();
+              group = hole->descriptor().meta().everybody_identity();
             }
 
           Group::destroy(group);

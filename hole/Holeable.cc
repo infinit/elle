@@ -15,10 +15,11 @@ namespace hole
   ///
   /// default constructor.
   ///
-  Holeable::Holeable(const nucleus::proton::Network& network):
-    network(network)
-  {
-  }
+  Holeable::Holeable(Hole& hole,
+                     const nucleus::proton::Network& network):
+    network(network),
+    _hole(hole)
+  {}
 
   ///
   /// destructor.

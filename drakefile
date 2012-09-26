@@ -576,9 +576,11 @@ def configure(cxx_toolkit, cxx_config):
                                      cxx_toolkit, infinit_bin_config)
 
   # 8hole
+  hole_cxx_config = drake.cxx.Config(cxx_config)
+  hole_cxx_config.lib('fuse')
   hole_bin = drake.cxx.Executable('bin/8hole',
                                   drake.nodes('hole/_hole.cc') + infinit_libs,
-                                  cxx_toolkit, cxx_config)
+                                  cxx_toolkit, hole_cxx_config)
 
   # 8group
   group_sources = drake.nodes(

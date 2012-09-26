@@ -13,6 +13,7 @@
 
 # include <nucleus/fwd.hh>
 
+# include <hole/fwd.hh>
 # include <hole/implementations/remote/Customer.hh>
 
 # include <lune/fwd.hh>
@@ -41,8 +42,10 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Server(int port);
+        Server(Hole& hole, int port);
         ~Server();
+      private:
+        Hole& _hole;
 
       /*----------.
       | Customers |

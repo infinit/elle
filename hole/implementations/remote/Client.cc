@@ -29,7 +29,9 @@ namespace hole
       | Construction |
       `-------------*/
 
-      Client::Client(std::string const& host, int port)
+      Client::Client(lune::Passport const& passport,
+                     std::string const& host,
+                     int port)
         : _state(State::connected)
         , _stream(elle::concurrency::scheduler(), host, port)
         , _serializer(elle::concurrency::scheduler(), _stream)
@@ -37,7 +39,7 @@ namespace hole
         , _rpc(_channels)
       {
         ELLE_TRACE("Authenticate to the server")
-          if (_rpc.challenge(Hole::instance().passport()))
+          if (_rpc.challenge(passport))
             _state = State::authenticated;
       }
 

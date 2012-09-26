@@ -8,6 +8,8 @@
 # include <nucleus/neutron/Object.hh>
 # include <nucleus/proton/fwd.hh>
 
+# include <hole/Hole.hh>
+
 namespace etoile
 {
   ///
@@ -17,6 +19,14 @@ namespace etoile
   ///
   namespace depot
   {
+
+    /*-----------------------------.
+    | Global Hole instance (FIXME) |
+    `-----------------------------*/
+    hole::Hole&
+    hole();
+    void
+    hole(hole::Hole* hole);
 
     ///
     /// this class abstracts the storage layer.

@@ -3,6 +3,7 @@
 
 # include <unordered_map>
 
+# include <elle/attribute.hh>
 # include <elle/network/Locus.hh>
 # include <elle/radix/Entity.hh>
 # include <elle/types.hh>
@@ -11,6 +12,8 @@
 #  include <reactor/network/fwd.hh>
 #  include <reactor/duration.hh>
 # include <elle/idiom/Open.hh>
+
+# include <hole/fwd.hh>
 
 # include <nucleus/fwd.hh>
 
@@ -40,8 +43,9 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Machine();
+        Machine(Hole& hole);
         ~Machine();
+        ELLE_ATTRIBUTE_RX(Hole&, hole);
 
       /*------.
       | State |

@@ -1,7 +1,8 @@
-#include <hole/implementations/remote/Implementation.hh>
-#include <hole/implementations/remote/Remote.hh>
-#include <hole/implementations/remote/Machine.hh>
+#include <hole/Hole.hh>
 #include <hole/implementations/remote/Client.hh>
+#include <hole/implementations/remote/Implementation.hh>
+#include <hole/implementations/remote/Machine.hh>
+#include <hole/implementations/remote/Remote.hh>
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/standalone/Report.hh>
@@ -22,10 +23,10 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::proton::Network& network):
-        Holeable(network)
-      {
-      }
+      Implementation::Implementation(Hole& hole,
+                                     const nucleus::proton::Network& network):
+        Holeable(hole, network)
+      {}
 
 //
 // ---------- holeable --------------------------------------------------------
@@ -38,7 +39,7 @@ namespace hole
       void
       Implementation::Join()
       {
-        Remote::Computer = new Machine;
+        Remote::Computer = new Machine(this->hole());
         Remote::Computer->Launch();
       }
 

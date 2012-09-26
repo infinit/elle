@@ -1,10 +1,15 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
 
+# include <elle/network/Locus.hh>
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
+# include <elle/network/Locus.hh>
 
+# include <hole/fwd.hh>
 # include <hole/implementations/remote/fwd.hh>
+
+# include <lune/Passport.hh>
 
 namespace hole
 {
@@ -30,16 +35,18 @@ namespace hole
             RoleClient
           };
 
-        //
-        // constructors & destructors
-        //
-        Machine();
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
+        Machine(Hole& hole);
         ~Machine();
+      private:
+        Hole& _hole;
 
-        //
-        // methods
-        //
-        void Launch();
+      public:
+        void
+        Launch();
 
         //
         // interfaces

@@ -24,7 +24,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Implementation(const nucleus::proton::Network&);
+        Implementation(Hole& hole, const nucleus::proton::Network&);
 
         //
         // interfaces

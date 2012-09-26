@@ -30,7 +30,7 @@ namespace etoile
         };
 
       // Retrieve the block from the storage layer.
-      block = hole::Hole::instance().pull(address, revision);
+      block = hole().pull(address, revision);
 
       // Cast it to make sure a node did not return a block of another
       // type.

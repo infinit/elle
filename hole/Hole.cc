@@ -1,10 +1,14 @@
 #include <elle/log.hh>
 
+#include <etoile/depot/Depot.hh>
+
 #include <hole/Hole.hh>
 #include <hole/Holeable.hh>
 #include <hole/implementations/local/Implementation.hh>
 #include <hole/implementations/remote/Implementation.hh>
 #include <hole/implementations/slug/Implementation.hh>
+
+#include <horizon/Horizon.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
@@ -21,27 +25,12 @@ ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
 namespace hole
 {
-  /*----------------.
-  | Global instance |
-  `----------------*/
-
-  Hole&
-  Hole::instance()
-  {
-    assert(Hole::_instance);
-    return *Hole::_instance;
-  }
-
-  Hole* Hole::_instance(nullptr);
-
   /*-------------.
   | Construction |
   `-------------*/
 
   Hole::Hole()
   {
-    assert(!Hole::_instance);
-
     nucleus::proton::Network network;
 
     // Disable the meta logging.
@@ -89,19 +78,19 @@ namespace hole
         case Model::TypeLocal:
         {
           this->_implementation =
-            new implementations::local::Implementation(network);
+            new implementations::local::Implementation(*this, network);
           break;
         }
         case Model::TypeRemote:
         {
           this->_implementation =
-            new implementations::remote::Implementation(network);
+            new implementations::remote::Implementation(*this, network);
           break;
         }
         case Model::TypeSlug:
         {
           this->_implementation =
-            new implementations::slug::Implementation(network);
+            new implementations::slug::Implementation(*this, network);
           break;
         }
         case Model::TypeCirkle:
@@ -118,19 +107,19 @@ namespace hole
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   str(fmt % Hole::instance().descriptor().meta().model().type));
+                                   str(fmt % this->descriptor().meta().model().type));
         }
       }
 
-    Hole::_instance = this;
+    etoile::depot::hole(this);
+    horizon::hole(this);
   }
 
   Hole::~Hole()
   {
-    assert(Hole::_instance);
     this->_implementation->Leave();
     delete this->_implementation;
-    Hole::_instance = nullptr;
+    etoile::depot::hole(nullptr);
   }
 
   /*-------------.
@@ -175,7 +164,7 @@ namespace hole
   Hole::origin()
   {
     // return the address.
-    return Hole::instance().descriptor().meta().root();
+    return this->descriptor().meta().root();
   }
 
   void

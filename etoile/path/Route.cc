@@ -116,26 +116,27 @@ namespace etoile
           // create the slab.
           slab = way.path.substr(start, end - start);
 
-          // check if the slab represents the root directory i.e starts
-          // with '@' and follows with a possible revision number, should
-          // the network support history though.
-          if ((hole::Hole::instance().descriptor().meta().history() == true) &&
-              (Infinit::Configuration.etoile.history.status == true) &&
-              (slab[0] ==
-               Infinit::Configuration.etoile.history.indicator.root))
-            {
-              // modify the '@' character with the revision indicator '%'.
-              slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
+          // XXX: restore history handling
+          // // check if the slab represents the root directory i.e starts
+          // // with '@' and follows with a possible revision number, should
+          // // the network support history though.
+          // if ((hole::Hole::instance().descriptor().meta().history() == true) &&
+          //     (Infinit::Configuration.etoile.history.status == true) &&
+          //     (slab[0] ==
+          //      Infinit::Configuration.etoile.history.indicator.root))
+          //   {
+          //     // modify the '@' character with the revision indicator '%'.
+          //     slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
 
-              // record the slab.
-              this->elements.push_back(slab);
+          //     // record the slab.
+          //     this->elements.push_back(slab);
 
-              // compute the next offsets.
-              start =
-                way.path.find_first_not_of(elle::system::System::Path::Separator, end);
-              end =
-                way.path.find_first_of(elle::system::System::Path::Separator, start);
-            }
+          //     // compute the next offsets.
+          //     start =
+          //       way.path.find_first_not_of(elle::system::System::Path::Separator, end);
+          //     end =
+          //       way.path.find_first_of(elle::system::System::Path::Separator, start);
+          //   }
         }
 
       // if no slab is present or the first slab does not represent the

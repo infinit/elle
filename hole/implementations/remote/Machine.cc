@@ -20,17 +20,14 @@ namespace hole
     namespace remote
     {
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-      ///
-      /// default constructor.
-      ///
-      Machine::Machine():
+      Machine::Machine(Hole& hole):
+        _hole(hole),
         role(Machine::RoleUnknown)
-      {
-      }
+      {}
 
       ///
       /// destructor.
@@ -76,14 +73,14 @@ namespace hole
 
         // check the number of loci in the set: it should be one for
         // this implementation.
-        if (Hole::instance().set().loci.size() != 1)
+        if (this->_hole.set().loci.size() != 1)
           {
             static boost::format fmt("there should be a single locus in the network's set (%u)");
-            throw std::runtime_error(str(fmt % Hole::instance().set().loci.size()));
+            throw std::runtime_error(str(fmt % this->_hole.set().loci.size()));
           }
 
         // retrieve the locus.
-        locus = *Hole::instance().set().loci.begin();
+        locus = *this->_hole.set().loci.begin();
 
         // try to connect to the server's host.
         ELLE_TRACE("try starting as a client")
@@ -91,9 +88,10 @@ namespace hole
             {
               std::string host;
               locus.host.Convert(host);
-              auto client = std::unique_ptr<Client>(new Client(host, locus.port));
+              auto client = std::unique_ptr<Client>(
+                new Client(this->_hole.passport(), host, locus.port));
               this->role = Machine::RoleClient;
-              Hole::instance().ready();
+              this->_hole.ready();
               this->client = client.release();
               return;
             }
@@ -108,7 +106,7 @@ namespace hole
         // if the client did not succeed, create a server a wait for a client.
         ELLE_TRACE("start as a server")
         {
-          this->server = new Server(locus.port);
+          this->server = new Server(_hole, locus.port);
           this->role = Machine::RoleServer;
           return;
         }

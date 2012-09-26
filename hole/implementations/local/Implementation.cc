@@ -21,10 +21,9 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::proton::Network& network):
-        Holeable(network)
-      {
-      }
+      Implementation::Implementation(Hole& hole, const nucleus::proton::Network& network):
+        Holeable(hole, network)
+      {}
 
 //
 // ---------- holeable --------------------------------------------------------
@@ -38,9 +37,9 @@ namespace hole
       Implementation::Join()
       {
         // allocate the machine.
-        Local::Computer = new Machine;
+        Local::Computer = new Machine(this->hole());
 
-        Hole::instance().ready();
+        this->hole().ready();
       }
 
       ///

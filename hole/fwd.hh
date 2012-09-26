@@ -5,11 +5,10 @@
 
 namespace hole
 {
-
+  class Hole;
   class Holeable;
   class Label;
   class Model;
-
 }
 
 #endif
