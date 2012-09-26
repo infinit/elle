@@ -180,9 +180,8 @@ namespace hole
                 // XXX should be done with a signal
                 plasma::meta::Client client(common::meta::host(), common::meta::port());
                 lune::Passport passport;
-                lune::Descriptor descriptor;
+                lune::Descriptor descriptor(Infinit::Network);
                 passport.load();
-                descriptor.load(Infinit::Network);
                 try
                   {
                     std::string address;

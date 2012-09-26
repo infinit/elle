@@ -1,9 +1,12 @@
+#include <Infinit.hh>
+
 #include <lune/Descriptor.hh>
 #include <lune/Authority.hh>
 #include <lune/Lune.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
+#include <elle/concurrency/Scheduler.hh>
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/standalone/Log.hh>
 
@@ -42,8 +45,13 @@ namespace lune
 // ---------- descriptor ------------------------------------------------------
 //
 
-  Descriptor::Descriptor()
+  Descriptor::Descriptor(elle::String const& network)
   {
+    if (lune::Descriptor::exists(network) == false)
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "this network does not seem to exist");
+    this->load(this->_path(network));
+    this->validate(Infinit::Authority);
   }
 
   Descriptor::Descriptor(elle::String const& id,
@@ -144,12 +152,6 @@ namespace lune
       escape("XXX");
 
     return elle::Status::Ok;
-  }
-
-  void
-  Descriptor::load(elle::String const& network)
-  {
-    this->load(Descriptor::_path(network));
   }
 
   void

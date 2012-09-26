@@ -30,20 +30,12 @@ namespace hole
   `-------------*/
 
   Hole::Hole()
+    : _descriptor(Infinit::Network)
   {
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
-
-    // Retrieve the descriptor.
-    {
-      if (lune::Descriptor::exists(Infinit::Network) == false)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "this network does not seem to exist");
-      _descriptor.load(Infinit::Network);
-      _descriptor.validate(Infinit::Authority);
-    }
 
     // Retrieve the set, if present.
     if (lune::Set::exists(Infinit::Network) == true)

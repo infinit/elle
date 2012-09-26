@@ -138,7 +138,7 @@ namespace lune
     // construction
     //
   public:
-    Descriptor(); // XXX[deserializatio instead]
+    Descriptor(elle::String const& network);
     Descriptor(elle::String const& id,
                elle::cryptography::PublicKey const& administrator_K,
                hole::Model const& model,
@@ -188,8 +188,6 @@ namespace lune
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
 
-    void
-    load(elle::String const& network);
     void
     store(elle::String const& network) const;
     static
