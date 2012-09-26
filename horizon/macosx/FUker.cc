@@ -1,6 +1,7 @@
 #include <horizon/macosx/FUker.hh>
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/operations.hh>
+#include <horizon/Horizon.hh>
 
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
@@ -160,9 +161,9 @@ namespace horizon
       // applications such as the Finder for instance.
       //
       elle::String      ofsname("-ofsname=" +
-                                hole::Hole::instance().descriptor().data().name());
+                                horizon::hole().descriptor().data().name());
       elle::String      ovolname("-ovolname=" +
-                                 hole::Hole::instance().descriptor().data().name());
+                                 horizon::hole().descriptor().data().name());
       const char*       arguments[] =
         {
           "horizon",
@@ -316,11 +317,11 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      switch (hole::Hole::instance().state())
+      switch (horizon::hole().state())
         {
         case hole::Hole::State::offline:
           {
-            hole::Hole::instance().readyHook(&FUker::run);
+            horizon::hole().readyHook(&FUker::run);
             break;
           }
         case hole::Hole::State::online:
