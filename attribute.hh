@@ -11,7 +11,7 @@
 
 # define ELLE_ATTRIBUTE_R_ACCESSOR(Type, Name)                          \
   public:                                                               \
-  Type const&                                                           \
+  typename std::remove_reference<Type>::type const&                     \
   Name() const                                                          \
   {                                                                     \
     return (this->BOOST_PP_CAT(_, Name));                               \
@@ -20,14 +20,14 @@
 # define ELLE_ATTRIBUTE_W_ACCESSOR(Type, Name)                          \
   public:                                                               \
   void                                                                  \
-  Name(Type const& name)                                                \
+  Name(typename std::remove_reference<Type>::type const& name)          \
   {                                                                     \
     this->BOOST_PP_CAT(_, Name) = name;                                 \
   }
 
 # define ELLE_ATTRIBUTE_X_ACCESSOR(Type, Name)                          \
   public:                                                               \
-  Type&                                                                 \
+  typename std::remove_reference<Type>::type&                           \
   Name()                                                                \
   {                                                                     \
     return (this->BOOST_PP_CAT(_, Name));                               \
