@@ -55,11 +55,30 @@ namespace elle
 /// Shortcut to trace a function name and its arguments.
 ///
 /// @param  the list of arguments
+<<<<<<< HEAD
 # define ELLE_TRACE_FUNCTION(...)                                             \
     ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__,                                  \
         elle::log::detail::print_function_params(__VA_ARGS__)                 \
     )                                                                         \
 /**/
+=======
+/// XXX does not work with empty call
+# define ELLE_TRACE_FUNCTION(...)                                       \
+  ELLE_TRACE_SCOPE("%s(%s)",                                            \
+                   __FUNCTION__,                                        \
+                   elle::sprint(elle::iomanip::Separator(','),          \
+                                ##__VA_ARGS__))
+
+/// Shortcut to trace a method name, the instance and its arguments.
+///
+/// @param  the list of arguments
+/// XXX does not work with empty call
+# define ELLE_TRACE_METHOD(...)                                         \
+  ELLE_TRACE_SCOPE("#%s %s(%s)",                                        \
+                   this, __FUNCTION__,                                  \
+                   elle::sprint(elle::iomanip::Separator(','),          \
+                                ##__VA_ARGS__))
+>>>>>>> Temporary.
 
     namespace detail
     {
