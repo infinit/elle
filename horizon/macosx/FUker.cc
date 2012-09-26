@@ -307,7 +307,10 @@ namespace horizon
       //        is a bad idea since teardown() could have been called, still
       //        the pointer would not be nullptr. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
-      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
+      if (::pthread_create(&FUker::Thread,
+                           nullptr,
+                           &FUker::Setup,
+                           nullptr) != 0)
         throw reactor::Exception(elle::concurrency::scheduler(),
                                  "unable to create the FUSE-specific thread");
     }
@@ -323,7 +326,7 @@ namespace horizon
         {
         case hole::Hole::State::offline:
           {
-            hole::Hole::instance().ready_hook(&FUker::run);
+            hole().ready_hook(&FUker::run);
             break;
           }
         case hole::Hole::State::online:

@@ -53,7 +53,7 @@ namespace etoile
           ELLE_TRACE_SCOPE("the group does not reference an ensemble");
 
           context.ensemble =
-            new nucleus::neutron::Ensemble(hole::Hole::instance().network(),
+            new nucleus::neutron::Ensemble(depot::hole().network(),
                                            agent::Agent::Identity.pair.K);
         }
 
@@ -127,7 +127,7 @@ namespace etoile
 
           // XXX: restore history handling
           // does the network support the history?
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)
@@ -167,7 +167,7 @@ namespace etoile
 
           // XXX: restore history handling
           // does the network support the history?
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)

@@ -30,7 +30,7 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context, description, identity);
 
       context.group =
-        new nucleus::neutron::Group(hole::Hole::instance().network(),
+        new nucleus::neutron::Group(depot::hole().network(),
                                     agent::Agent::Subject.user(),
                                     description);
 

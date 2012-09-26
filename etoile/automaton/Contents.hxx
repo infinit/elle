@@ -68,7 +68,7 @@ namespace etoile
           // otherwise create a new contents according to the context's type.
           context.contents =
             new nucleus::proton::Contents<typename T::C>(
-              hole::Hole::instance().network(),
+              depot::hole().network(),
               agent::Agent::Identity.pair.K);
 
           // otherwise, create an empty contents.
@@ -175,7 +175,7 @@ namespace etoile
 
           // does the network support the history?
           // XXX: restore history handling
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the contents block.
               if (Contents::Destroy(context) == elle::Status::Error)
@@ -228,7 +228,7 @@ namespace etoile
 
           // does the network support the history?
           // XXX: restore history handling
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the contents block.
               if (Contents::Destroy(context) == elle::Status::Error)

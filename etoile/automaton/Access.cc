@@ -69,7 +69,7 @@ namespace etoile
                      "allocate one");
 
           context.access =
-            new nucleus::neutron::Access(hole::Hole::instance().network(),
+            new nucleus::neutron::Access(depot::hole().network(),
                                          agent::Agent::Identity.pair.K);
         }
 
@@ -887,7 +887,7 @@ namespace etoile
 
           // XXX: restore history handling
           // does the network support the history?
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the access block.
               if (Access::Destroy(context) == elle::Status::Error)
@@ -917,7 +917,7 @@ namespace etoile
 
           // XXX: restore history handling
           // does the network support the history?
-          // if (hole::Hole::instance().descriptor().meta().history() == false)
+          // if (depot::hole().descriptor().meta().history() == false)
             {
               // destroy the access block.
               if (Access::Destroy(context) == elle::Status::Error)

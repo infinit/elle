@@ -23,7 +23,7 @@ namespace etoile
                           gear::Link&                           context)
     {
       context.object =
-        new nucleus::neutron::Object(hole::Hole::instance().network(),
+        new nucleus::neutron::Object(depot::hole().network(),
                                      agent::Agent::Identity.pair.K,
                                      nucleus::neutron::GenreLink);
 

@@ -31,8 +31,6 @@ namespace hole
 
   Hole::Hole()
   {
-    assert(!Hole::_instance);
-
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
