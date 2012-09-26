@@ -18,8 +18,8 @@
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Object.hh>
 
-#include <agent/Agent.hh>
 #include <hole/Hole.hh>
+#include <agent/Agent.hh>
 
 ELLE_LOG_COMPONENT("infinit.etoile.automaton.Access");
 
@@ -68,7 +68,9 @@ namespace etoile
           ELLE_TRACE("the Object does _not_ reference an Access block: "
                      "allocate one");
 
-          context.access = new nucleus::neutron::Access;
+          context.access =
+            new nucleus::neutron::Access(hole::Hole::instance().network(),
+                                         agent::Agent::Identity.pair.K);
         }
 
       return elle::Status::Ok;

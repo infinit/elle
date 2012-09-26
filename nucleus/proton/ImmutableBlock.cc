@@ -39,12 +39,12 @@ namespace nucleus
 //
 
     elle::io::Path
-    ImmutableBlock::_path(Network const& network,
-                          Address const& address)
+    ImmutableBlock::_path(Address const& address)
     {
-      return (elle::io::Path(lune::Lune::Network::Shelter::ImmutableBlock,
-                             elle::io::Piece("%NETWORK%", network.name()),
-                             elle::io::Piece("%ADDRESS%", address.unique())));
+      return (elle::io::Path(
+                lune::Lune::Network::Shelter::ImmutableBlock,
+                elle::io::Piece("%NETWORK%", address.network().name()),
+                elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
 //
@@ -54,29 +54,27 @@ namespace nucleus
     void
     ImmutableBlock::load(Address const& address)
     {
-      this->load(ImmutableBlock::_path(this->network(), address));
+      this->load(ImmutableBlock::_path(address));
     }
 
     void
     ImmutableBlock::store(Address const& address) const
     {
-      this->store(ImmutableBlock::_path(this->network(), address));
+      this->store(ImmutableBlock::_path(address));
     }
 
     void
-    ImmutableBlock::erase(Network const& network,
-                          Address const& address)
+    ImmutableBlock::erase(Address const& address)
     {
       elle::concept::Fileable<>::erase(
-        ImmutableBlock::_path(network, address));
+        ImmutableBlock::_path(address));
     }
 
     elle::Boolean
-    ImmutableBlock::exists(Network const& network,
-                           Address const& address)
+    ImmutableBlock::exists(Address const& address)
     {
       return (elle::concept::Fileable<>::exists(
-        ImmutableBlock::_path(network, address)));
+        ImmutableBlock::_path(address)));
     }
 
   }

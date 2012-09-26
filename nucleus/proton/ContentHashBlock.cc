@@ -71,6 +71,13 @@ namespace nucleus
     {
       Address self;
 
+      if ((this->network() != address.network()) ||
+          (this->family() != address.family()) ||
+          (this->component() != address.component()))
+        throw Exception(
+          elle::sprint("the address %s does not seem to represent the given "
+                       "block", address));
+
       // compute the address of this object.
       //
       // note that compared to the other physical blocks such as PKB, OWB,
@@ -91,7 +98,8 @@ namespace nucleus
 
       // compare the address with the given one.
       if (address != self)
-        throw Exception("the recorded address does not correspond to this block");
+        throw Exception("the recorded address does not correspond "
+                        "to this block");
     }
 
 //

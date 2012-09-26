@@ -94,15 +94,13 @@ namespace nucleus
       //
     public:
       /// Computes the address of the block.
-      // XXX[should be virtual pure]
       virtual
       Address
-      bind() const;
+      bind() const = 0;
       /// Validates the block's content according to its address.
-      // XXX[should be virtual pure]
       virtual
       void
-      validate(Address const& address) const;
+      validate(Address const& address) const = 0;
 
       //
       // interfaces
@@ -125,7 +123,7 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_RW(Network, network); // XXX[remove W]
+      ELLE_ATTRIBUTE_R(Network, network);
       ELLE_ATTRIBUTE_R(Family, family);
       ELLE_ATTRIBUTE_R(neutron::Component, component);
       ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, creator_K);

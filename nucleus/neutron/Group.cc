@@ -77,11 +77,6 @@ namespace nucleus
       this->_ensemble = ensemble;
       this->_manager_token = manager_token;
 
-      // XXX
-      printf("HERE\n");
-      ensemble.Dump();
-      this->_ensemble.Dump();
-
       this->state(proton::StateDirty);
     }
 

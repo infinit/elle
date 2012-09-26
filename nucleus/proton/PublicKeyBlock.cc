@@ -51,6 +51,13 @@ namespace nucleus
     {
       Address self;
 
+      if ((this->network() != address.network()) ||
+          (this->family() != address.family()) ||
+          (this->component() != address.component()))
+        throw Exception(
+          elle::sprint("the address %s does not seem to represent the given "
+                       "block", address));
+
       //
       // make sure the address has not be tampered and correspond to the
       // hash of the public key.
@@ -63,7 +70,8 @@ namespace nucleus
 
       // verify with the recorded address.
       if (address != self)
-        throw Exception("the address does not correspond to the block's public key");
+        throw Exception("the address does not correspond to the "
+                        "block's public key");
 
       //
       // at this point the node knows that the recorded address corresponds

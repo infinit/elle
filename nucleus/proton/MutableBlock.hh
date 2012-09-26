@@ -61,13 +61,11 @@ namespace nucleus
       /// XXX
       static
       elle::io::Path
-      _path(Network const& network,
-            Address const& address);
+      _path(Address const& address);
       /// XXX
       static
       elle::io::Path
-      _path(Network const& network,
-            Address const& address,
+      _path(Address const& address,
             elle::String const& revision);
 
       //
@@ -91,12 +89,10 @@ namespace nucleus
       store(Address const& address) const;
       static
       void
-      erase(Network const& network,
-            Address const& address);
+      erase(Address const& address);
       static
       elle::Boolean
-      exists(Network const& network,
-             Address const& address,
+      exists(Address const& address,
              Revision const& revision = Revision::Any);
 
       //

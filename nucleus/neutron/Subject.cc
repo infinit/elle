@@ -94,10 +94,10 @@ namespace nucleus
     {
     }
 
-    Subject::Subject(Subject const& other)
+    Subject::Subject(Subject const& other):
+      _type(other._type),
+      _user(nullptr)
     {
-      this->_type = other.type();
-
       switch (this->_type)
         {
         case Subject::TypeUser:

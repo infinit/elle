@@ -76,20 +76,11 @@ namespace nucleus
     Address::Address(Address const& other):
       _network(other._network),
       _family(other._family),
-      _component(other._component)
+      _component(other._component),
+      _digest(nullptr)
     {
-      delete this->_digest;
-
       if (other._digest != nullptr)
-        {
-          printf("XXX DUPLICATE\n");
         this->_digest = new elle::cryptography::Digest(*other._digest);
-        }
-      else
-        {
-          printf("XXX DO NOT DUPLICATE\n");
-        this->_digest = nullptr;
-        }
     }
 
     ///

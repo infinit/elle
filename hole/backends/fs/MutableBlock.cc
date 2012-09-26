@@ -35,7 +35,6 @@ namespace hole
       {
         // does the block already exist.
         if (nucleus::proton::MutableBlock::exists(
-              this->_block.network(),
               this->_address,
               nucleus::proton::Revision::Last) == false)
           {
@@ -51,9 +50,6 @@ namespace hole
               this->_address.component(),
               current) == elle::Status::Error)
           throw std::runtime_error("unable to build the block");
-
-        // XXX
-        current->network(Hole::instance().network());
 
         std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 

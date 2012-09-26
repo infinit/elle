@@ -81,7 +81,8 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
         elle::sprintf("unknown format '%s'", version));
     }
 }
-/*
+
+/* XXX
 template <typename T, typename... Args>
 struct Upgrader<T, i, Args>
 {

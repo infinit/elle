@@ -34,10 +34,10 @@ namespace hole
                    const nucleus::proton::ImmutableBlock& block)
       {
         // Check if the block already exist.
-        if (nucleus::proton::ImmutableBlock::exists(
-              this->_hole.network(), address) == true)
+        if (nucleus::proton::ImmutableBlock::exists(address) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "this immutable block seems to already exist");
+                                   "this immutable block seems to already "
+                                   "exist");
 
         // Store the block.
         block.store(address);
@@ -127,12 +127,8 @@ namespace hole
         nucleus::proton::ImmutableBlock* block;
         nucleus::Nucleus::Factory.Build(address.component(), block);
 
-        // XXX
-        block->network(Hole::instance().network());
-
         // Does the block exist.
-        if (nucleus::proton::ImmutableBlock::exists(
-              this->_hole.network(), address) == false)
+        if (nucleus::proton::ImmutableBlock::exists(address) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -152,12 +148,8 @@ namespace hole
         nucleus::proton::MutableBlock* block;
         nucleus::Nucleus::Factory.Build(address.component(), block);
 
-        // XXX
-        block->network(Hole::instance().network());
-
         // does the block exist.
-        if (nucleus::proton::MutableBlock::exists(
-              this->_hole.network(), address, revision) == false)
+        if (nucleus::proton::MutableBlock::exists(address, revision) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -227,8 +219,7 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              nucleus::proton::ImmutableBlock::erase(
-                this->_hole.network(), address);
+              nucleus::proton::ImmutableBlock::erase(address);
 
               break;
             }
@@ -237,8 +228,7 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              nucleus::proton::MutableBlock::erase(
-                this->_hole.network(), address);
+              nucleus::proton::MutableBlock::erase(address);
 
               break;
             }

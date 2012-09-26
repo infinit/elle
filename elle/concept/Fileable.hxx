@@ -47,8 +47,8 @@ namespace elle
       catch (std::exception const& e)
         {
           throw std::runtime_error(
-            elle::sprintf("unable to deserialize the instance from the file: ",
-                          e));
+            elle::sprintf("unable to deserialize the instance from "
+                          "the file: %s", e.what()));
         }
     }
 
@@ -83,8 +83,8 @@ namespace elle
       catch (std::exception const& e)
         {
           throw std::runtime_error(
-            elle::sprintf("unable to serialize the instance to the file: ",
-                          e));
+            elle::sprintf("unable to serialize the instance to the file: %s",
+                          e.what()));
         }
     }
 

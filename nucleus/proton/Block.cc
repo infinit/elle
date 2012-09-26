@@ -50,22 +50,6 @@ namespace nucleus
     }
 
 //
-// ---------- methods ---------------------------------------------------------
-//
-
-    Address
-    Block::bind() const
-    {
-      throw Exception("unable to bind a pure block");
-    }
-
-    void
-    Block::validate(Address const&) const
-    {
-      throw Exception("unable to validate a pure block");
-    }
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 

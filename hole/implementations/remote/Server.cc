@@ -81,10 +81,10 @@ namespace hole
         ELLE_TRACE_SCOPE("Put[Immutable]");
 
         // does the block already exist.
-        if (nucleus::proton::ImmutableBlock::exists(
-              this->_hole.network(), address) == true)
+        if (nucleus::proton::ImmutableBlock::exists(address) == true)
           throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "this immutable block seems to already exist");
+                                   "this immutable block seems to already "
+                                   "exist");
 
         // store the block.
         block.store(address);
@@ -153,7 +153,6 @@ namespace hole
           {
             // does the block already exist.
             if (nucleus::proton::MutableBlock::exists(
-                  this->_hole.network(),
                   address,
                   nucleus::proton::Revision::Last) == true)
               {
@@ -165,9 +164,6 @@ namespace hole
                       current) == elle::Status::Error)
                   throw std::runtime_error("unable to build the block");
 
-                // XXX
-                current->network(Hole::instance().network());
-
                 std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 
                 ELLE_TRACE_SCOPE("the mutable block seems to exist "
@@ -175,9 +171,7 @@ namespace hole
                                  "current revision");
 
                 // load the latest revision.
-                current->load(
-                  address,
-                  nucleus::proton::Revision::Last);
+                current->load(address, nucleus::proton::Revision::Last);
 
                 if (block.derives(*current) == true)
                   {
@@ -200,8 +194,7 @@ namespace hole
         ELLE_TRACE_SCOPE("Get[Immutable]");
 
         // does the block exist.
-        if (nucleus::proton::ImmutableBlock::exists(
-              this->_hole.network(), address) == false)
+        if (nucleus::proton::ImmutableBlock::exists(address) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -220,8 +213,7 @@ namespace hole
         ELLE_TRACE_SCOPE("Get[Mutable]");
 
         // does the block exist.
-        if (nucleus::proton::MutableBlock::exists(
-              this->_hole.network(), address, revision) == false)
+        if (nucleus::proton::MutableBlock::exists(address, revision) == false)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
@@ -293,8 +285,7 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              nucleus::proton::ImmutableBlock::erase(
-                this->_hole.network(), address);
+              nucleus::proton::ImmutableBlock::erase(address);
 
               break;
             }
@@ -303,8 +294,7 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              nucleus::proton::MutableBlock::erase(
-                this->_hole.network(), address);
+              nucleus::proton::MutableBlock::erase(address);
 
               break;
             }

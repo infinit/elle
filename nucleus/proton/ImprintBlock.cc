@@ -76,7 +76,14 @@ namespace nucleus
     {
       Address self;
 
-      ELLE_TRACE_SCOPE("Validate() this(%p)", this);
+      ELLE_TRACE_METHOD(address);
+
+      if ((this->network() != address.network()) ||
+          (this->family() != address.family()) ||
+          (this->component() != address.component()))
+        throw Exception(
+          elle::sprint("the address %s does not seem to represent the given "
+                       "block", address));
 
       // Make sure the block has not be tampered and correspond to the
       // given original address. In order to do that, the address is
@@ -90,7 +97,8 @@ namespace nucleus
       // Finally, compare the recomputed address with the theoretical address
       // of the block.
       if (address != self)
-        throw Exception("the address does not correspond to the block's public key");
+        throw Exception("the address does not correspond to the block's "
+                        "public key");
     }
 
     neutron::Subject const&

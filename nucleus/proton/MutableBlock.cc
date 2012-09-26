@@ -62,23 +62,23 @@ namespace nucleus
     }
 
     elle::io::Path
-    MutableBlock::_path(Network const& network,
-                        Address const& address)
+    MutableBlock::_path(Address const& address)
     {
-      return (elle::io::Path(lune::Lune::Network::Shelter::MutableBlock,
-                             elle::io::Piece("%NETWORK%", network.name()),
-                             elle::io::Piece("%ADDRESS%", address.unique())));
+      return (elle::io::Path(
+                lune::Lune::Network::Shelter::MutableBlock,
+                elle::io::Piece("%NETWORK%", address.network().name()),
+                elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
     elle::io::Path
-    MutableBlock::_path(Network const& network,
-                        Address const& address,
+    MutableBlock::_path(Address const& address,
                         elle::String const& revision)
     {
-      return (elle::io::Path(lune::Lune::Network::Shelter::MutableBlock,
-                             elle::io::Piece("%NETWORK%", network.name()),
-                             elle::io::Piece("%ADDRESS%", address.unique()),
-                             elle::io::Piece("%REVISION%", revision)));
+      return (elle::io::Path(
+                lune::Lune::Network::Shelter::MutableBlock,
+                elle::io::Piece("%NETWORK%", address.network().name()),
+                elle::io::Piece("%ADDRESS%", address.unique()),
+                elle::io::Piece("%REVISION%", revision)));
     }
 
 //
@@ -117,8 +117,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("%s: load(%s, %s)",
                        *this, address, revision);
 
-      this->load(
-        elle::io::Path(MutableBlock::_path(this->network(), address, "@")));
+      this->load(elle::io::Path(MutableBlock::_path(address, "@")));
 
         {
           /* XXX
@@ -169,8 +168,7 @@ namespace nucleus
     {
       ELLE_TRACE_SCOPE("%s: store(%s)", *this, address);
 
-      this->store(
-        elle::io::Path(MutableBlock::_path(this->network(), address, "@")));
+      this->store(elle::io::Path(MutableBlock::_path(address, "@")));
 
       // //
       // if (hole::Hole::Descriptor.history == false)
@@ -255,13 +253,11 @@ namespace nucleus
     }
 
     void
-    MutableBlock::erase(Network const& network,
-                        Address const& address)
+    MutableBlock::erase(Address const& address)
     {
-      ELLE_TRACE_SCOPE("erase(%s, %s)", network, address);
+      ELLE_TRACE_SCOPE("erase(%s)", address);
 
-      elle::concept::Fileable<>::erase(
-        MutableBlock::_path(network, address, "@"));
+      elle::concept::Fileable<>::erase(MutableBlock::_path(address, "@"));
 
       // if (hole::Hole::Descriptor.history == false)
       //   {
@@ -346,16 +342,15 @@ namespace nucleus
     }
 
     elle::Boolean
-    MutableBlock::exists(Network const& network,
-                         Address const& address,
+    MutableBlock::exists(Address const& address,
                          Revision const& revision)
     {
-      ELLE_TRACE_SCOPE("exists(%s, %s, %s)", network, address, revision);
+      ELLE_TRACE_SCOPE("exists(%s, %s)", address, revision);
 
       if (revision == Revision::Last)
         {
           return (elle::concept::Fileable<>::exists(
-                    MutableBlock::_path(network, address, "@")));
+                    MutableBlock::_path(address, "@")));
         }
       else
         {
@@ -363,7 +358,7 @@ namespace nucleus
             boost::lexical_cast<elle::String>(revision.number));
 
           return (elle::concept::Fileable<>::exists(
-                    MutableBlock::_path(network, address, number)));
+                    MutableBlock::_path(address, number)));
         }
 
       // if (hole::Hole::Descriptor.history == false)

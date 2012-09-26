@@ -58,7 +58,9 @@ namespace nucleus
 //
 
     template <typename T>
-    Contents<T>::Contents()
+    Contents<T>::Contents():
+      content(nullptr),
+      cipher(nullptr)
     {
     }
 
@@ -127,11 +129,7 @@ namespace nucleus
       if (this->cipher == nullptr)
         escape("unable to decrypt a non-existing cipher");
 
-      // if the block already exist, delete it.
-      if (this->content != nullptr)
-        delete this->content;
-
-      // allocate a new block.
+      delete this->content;
       this->content = new T(*this);
 
       // decrypt the cipher.

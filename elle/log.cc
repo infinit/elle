@@ -219,16 +219,28 @@ namespace elle
           std::string(pad / 2 + pad % 2, ' ')
         );
 
-        boost::posix_time::ptime time;
-        static const bool universal = ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
-        if (universal)
-          time = boost::posix_time::second_clock::universal_time();
-        else
-          time = boost::posix_time::second_clock::local_time();
-        static boost::format model("%s: [%s] [%s] %s%s");
+        boost::posix_time::ptime ptime;
+        static const bool time =
+          ::getenv("ELLE_LOG_TIME") != nullptr;
+        static boost::format model(time ?
+                                   "%s: [%s] [%s] %s%s" :
+                                   "[%s] [%s] %s%s");
+        if (time)
+          {
+            static const bool universal =
+              ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
+
+            if (universal)
+              ptime = boost::posix_time::second_clock::universal_time();
+            else
+              ptime = boost::posix_time::second_clock::local_time();
+          }
         boost::format fmt(model);
         reactor::Thread* t = elle::concurrency::scheduler().current();
-        fmt % time % s % (t ? t->name() : std::string(" ")) % align % msg;
+        if (time)
+          fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
+        else
+          fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
         default_logger().message(level, type, str(fmt));
       }
 

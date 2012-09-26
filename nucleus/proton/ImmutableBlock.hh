@@ -37,8 +37,7 @@ namespace nucleus
       /// XXX
       static
         elle::io::Path
-        _path(Network const& network,
-              Address const& address);
+        _path(Address const& address);
 
       //
       // interfaces
@@ -54,12 +53,10 @@ namespace nucleus
       store(Address const& address) const;
       static
       void
-      erase(Network const& network,
-            Address const& address);
+      erase(Address const& address);
       static
       elle::Boolean
-      exists(Network const& network,
-             Address const& address);
+      exists(Address const& address);
     };
 
   }

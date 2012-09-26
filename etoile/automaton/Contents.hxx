@@ -15,6 +15,7 @@
 # include <etoile/depot/Depot.hh>
 
 # include <hole/Hole.hh>
+# include <agent/Agent.hh>
 
 namespace etoile
 {
@@ -52,7 +53,8 @@ namespace etoile
             escape("unable to determine the user's rights");
 
           // if the user has the permission to read, decrypt the content.
-          if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
+          if ((context.rights.permissions &
+               nucleus::neutron::PermissionRead) ==
               nucleus::neutron::PermissionRead)
             {
               // decrypt the contents i.e the contents.
@@ -64,7 +66,10 @@ namespace etoile
       else
         {
           // otherwise create a new contents according to the context's type.
-          context.contents = new nucleus::proton::Contents<typename T::C>;
+          context.contents =
+            new nucleus::proton::Contents<typename T::C>(
+              hole::Hole::instance().network(),
+              agent::Agent::Identity.pair.K);
 
           // otherwise, create an empty contents.
           if (context.contents->Create() == elle::Status::Error)

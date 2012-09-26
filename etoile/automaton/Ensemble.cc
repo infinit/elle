@@ -10,9 +10,8 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/log.hh>
 
-#include <agent/Agent.hh>
-
 #include <hole/Hole.hh>
+#include <agent/Agent.hh>
 
 ELLE_LOG_COMPONENT("infinit.etoile.automaton.Ensemble");
 
@@ -53,7 +52,9 @@ namespace etoile
         {
           ELLE_TRACE_SCOPE("the group does not reference an ensemble");
 
-          context.ensemble = new nucleus::neutron::Ensemble;
+          context.ensemble =
+            new nucleus::neutron::Ensemble(hole::Hole::instance().network(),
+                                           agent::Agent::Identity.pair.K);
         }
 
       assert(context.ensemble);

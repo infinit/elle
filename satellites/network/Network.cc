@@ -132,10 +132,11 @@ namespace satellite
                                   identity.pair.K,
                                   "everybody");
     group.seal(identity.pair.k);
+
     nucleus::proton::Address group_address(group.bind());
     group.store(group_address);
 
-    nucleus::neutron::Access access;
+    nucleus::neutron::Access access(network, identity.pair.K);
     nucleus::proton::Address* access_address(nullptr);
 
     // depending on the policy.
@@ -194,6 +195,7 @@ namespace satellite
           if (access.Add(record) == elle::Status::Error)
             escape("unable to add the record to the access");
 
+          printf("[XXX] ABOUT TO BIND\n");
           access_address = new nucleus::proton::Address(access.bind());
           access.store(*access_address);
 
