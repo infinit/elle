@@ -18,6 +18,8 @@
     this->~Type();                                                      \
                                                                         \
     new (this) Type(other);                                             \
+                                                                        \
+    return (*this);                                                     \
   }
 
 /// Generates the operator ==() method. Note that this method relies on

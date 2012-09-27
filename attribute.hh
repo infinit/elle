@@ -11,7 +11,11 @@
 
 # define ELLE_ATTRIBUTE_R_ACCESSOR(Type, Name)                          \
   public:                                                               \
-  typename std::remove_reference<Type>::type const&                     \
+  typename std::remove_cv<                                              \
+    typename std::remove_reference<                                     \
+      Type                                                              \
+    >::type                                                             \
+  >::type const&                                                        \
   Name() const                                                          \
   {                                                                     \
     return (this->BOOST_PP_CAT(_, Name));                               \
@@ -20,14 +24,22 @@
 # define ELLE_ATTRIBUTE_W_ACCESSOR(Type, Name)                          \
   public:                                                               \
   void                                                                  \
-  Name(typename std::remove_reference<Type>::type const& name)          \
+  Name(typename std::remove_cv<                                         \
+         typename std::remove_reference<                                \
+           Type                                                         \
+         >::type                                                        \
+       >::type const& name)                                             \
   {                                                                     \
     this->BOOST_PP_CAT(_, Name) = name;                                 \
   }
 
 # define ELLE_ATTRIBUTE_X_ACCESSOR(Type, Name)                          \
   public:                                                               \
-  typename std::remove_reference<Type>::type&                           \
+  typename std::remove_cv<                                              \
+    typename std::remove_reference<                                     \
+      Type                                                              \
+    >::type                                                             \
+  >::type&                                                              \
   Name()                                                                \
   {                                                                     \
     return (this->BOOST_PP_CAT(_, Name));                               \
