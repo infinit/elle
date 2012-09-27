@@ -121,9 +121,7 @@ namespace etoile
         escape("unable to destroy the access");
 
       // mark the object as needing to be removed.
-      if (context.transcript.Wipe(context.location.address) ==
-          elle::Status::Error)
-        escape("unable to record the object for removal");
+      context.transcript.wipe(context.location.address);
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -171,9 +169,7 @@ namespace etoile
             }
 
           // mark the block as needing to be stored.
-          if (context.transcript.Push(context.location.address,
-                                      context.object) == elle::Status::Error)
-            escape("unable to record the object for storing");
+          context.transcript.push(context.location.address, context.object);
         }
 
       // set the context's state.

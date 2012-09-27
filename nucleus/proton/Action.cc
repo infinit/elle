@@ -9,36 +9,39 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- construction ----------------------------------------------------
 //
 
-    ///
-    /// push-specifc constructor.
-    ///
-    Action::Action(const Address&                               address,
-                   const Block*                                 block):
-      type(Action::TypePush),
-      address(address),
-      block(block)
+    Action::Action(Address const& address,
+                   Block const* block):
+      _type(Action::Type::push),
+      _address(address),
+      _block(block)
     {
     }
 
-    ///
-    /// wipe-specifc constructor.
-    ///
-    Action::Action(const Address&                               address):
-      type(Action::TypeWipe),
-      address(address)
+    Action::Action(Address const& address):
+      _type(Action::Type::wipe),
+      _address(address)
     {
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    Block const&
+    Action::block() const
+    {
+      assert(this->_block != nullptr);
+
+      return (*this->_block);
     }
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this method dumps an action.
-    ///
     elle::Status        Action::Dump(const elle::Natural32      margin) const
     {
       elle::String      alignment(margin, ' ');
@@ -47,38 +50,71 @@ namespace nucleus
 
       // display the type.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Type] "
-                << this->type << std::endl;
+                << this->_type << std::endl;
 
       // dump according to the type.
-      switch (this->type)
+      switch (this->_type)
         {
-        case Action::TypePush:
+        case Action::Type::push:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::Status::Error)
+            if (this->_address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             // display the block.
-            if (this->block->Dump(margin + 2) == elle::Status::Error)
+            if (this->_block->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the block");
 
             break;
           }
-        case Action::TypeWipe:
+        case Action::Type::wipe:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::Status::Error)
+            if (this->_address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             break;
           }
-        case Action::TypeUnknown:
-          {
-            escape("unknown action type");
-          }
         }
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Action::print(std::ostream& stream) const
+    {
+      stream << "action{"
+             << this->_type
+             << ", "
+             << this->_address
+             << ", "
+             << this->_block
+             << "}";
+    }
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Action::Type type)
+    {
+      switch (type)
+        {
+        case Action::Type::push:
+          {
+            stream << "push";
+            break;
+          }
+        case Action::Type::wipe:
+          {
+            stream << "wipe";
+            break;
+          }
+        }
+
+      return (stream);
     }
 
   }

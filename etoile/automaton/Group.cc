@@ -368,9 +368,7 @@ namespace etoile
         escape("unable to destroy the ensemble");
 
       // mark the group as needing to be removed.
-      if (context.transcript.Wipe(context.location.address) ==
-          elle::Status::Error)
-        escape("unable to record the group for removal");
+      context.transcript.wipe(context.location.address);
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -406,9 +404,7 @@ namespace etoile
           context.group->seal(agent::Agent::Identity.pair.k);
 
           // mark the block as needing to be stored.
-          if (context.transcript.Push(context.location.address,
-                                      context.group) == elle::Status::Error)
-            escape("unable to record the group for storing");
+          context.transcript.push(context.location.address, context.group);
         }
 
       // set the context's state.

@@ -4,8 +4,10 @@
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/concept/Fileable.hh>
-# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/fwd.hh>
+# include <elle/cryptography/Digest.hh>
 # include <elle/attribute.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
@@ -71,6 +73,7 @@ namespace nucleus
         elle::serialize::BufferArchive
       >,
       public elle::concept::Fileable<>,
+      public elle::Printable,
       private boost::noncopyable
     {
       //
@@ -106,7 +109,6 @@ namespace nucleus
       // interfaces
       //
     public:
-
       // XXX breaks serializable contract. Remove when Block can be an
       // abstract class.
       __NPB_BREAK_SERIALIZABLE_CONTRACT();
@@ -119,6 +121,10 @@ namespace nucleus
       elle::Status
       Dump(const elle::Natural32 = 0) const;
 
+      // printable
+      void
+      print(std::ostream& stream) const;
+
       //
       // attributes
       //
@@ -126,7 +132,17 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(Network, network);
       ELLE_ATTRIBUTE_R(Family, family);
       ELLE_ATTRIBUTE_R(neutron::Component, component);
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, creator_K);
+      /// The creator attribute is used for authenticating certain
+      /// actions such as deleting a block. Given such a request,
+      /// a node holding a replica of the block would have to make
+      /// sure the requesting user is the block creator. For that
+      /// purpose information is kept in the block so as to authenticate
+      /// this creator.
+      ///
+      /// Note however, that just enough information is kept. In this
+      /// case, the creator's public key is not kept. Instead, only a
+      /// hash is serialized since enough to proceed to an authentication.
+      ELLE_ATTRIBUTE_R(elle::cryptography::Digest, creator);
       ELLE_ATTRIBUTE_RW(State, state);
     };
 

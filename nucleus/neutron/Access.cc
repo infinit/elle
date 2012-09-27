@@ -259,18 +259,6 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    typename Range<Record>::Scoutor
-    Access::begin() const
-    {
-      return (this->_range.container.begin());
-    }
-
-    typename Range<Record>::Scoutor
-    Access::end() const
-    {
-      return (this->_range.container.end());
-    }
-
 //
 // ---------- operators -------------------------------------------------------
 //
@@ -303,6 +291,22 @@ namespace nucleus
         escape("unable to dump the range");
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- iterable --------------------------------------------------------
+//
+
+    typename Range<Record>::Scoutor
+    Access::begin() const
+    {
+      return (this->_range.container.begin());
+    }
+
+    typename Range<Record>::Scoutor
+    Access::end() const
+    {
+      return (this->_range.container.end());
     }
 
   }

@@ -162,10 +162,10 @@ namespace horizon
       //
       elle::String ofsname(
         "-ofsname=" +
-        hole::Hole::instance().descriptor().data().name());
+        hole().descriptor().data().name());
       elle::String ovolname(
         "-ovolname=" +
-        hole::Hole::instance().descriptor().data().name());
+        hole().descriptor().data().name());
       const char*       arguments[] =
         {
           "horizon",
@@ -322,7 +322,7 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      switch (hole::Hole::instance().state())
+      switch (hole().state())
         {
         case hole::Hole::State::offline:
           {

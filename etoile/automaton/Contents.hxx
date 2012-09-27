@@ -96,12 +96,8 @@ namespace etoile
       if (context.object->contents() != nucleus::proton::Address::Null)
         {
           ELLE_TRACE("record the Contents block '%s' for removal",
-                     context.object->contents());
-
-          // mark the content block for removal.
-          if (context.transcript.Wipe(
-                context.object->contents()) == elle::Status::Error)
-            escape("unable to mark the content block for removal");
+                     context.object->contents())
+            context.transcript.wipe(context.object->contents());
         }
 
       return elle::Status::Ok;
@@ -259,9 +255,7 @@ namespace etoile
             escape("unable to update the object");
 
           // mark the block as needing to be stored.
-          if (context.transcript.Push(address,
-                                      context.contents) == elle::Status::Error)
-            escape("unable to record the object for storing");
+          context.transcript.push(address, context.contents);
 
           //
           // finally, since the data has been re-encrypted, the key must be

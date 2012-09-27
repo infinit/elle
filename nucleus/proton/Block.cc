@@ -1,4 +1,5 @@
-#include <elle/standalone/Log.hh>
+#include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/PublicKey.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -44,9 +45,11 @@ namespace nucleus
       _network(network),
       _family(family),
       _component(component),
-      _creator_K(creator_K),
       _state(StateClean)
     {
+      if (elle::cryptography::OneWay::Hash(
+            creator_K, this->_creator) == elle::Status::Error)
+        throw Exception("unable to hash the creator's public key");
     }
 
 //
@@ -71,13 +74,25 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
                 << std::dec << this->_component << std::endl;
 
-      if (this->_creator_K.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the creator's public key");
+      if (this->_creator.Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the creator's digest");
 
       std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
                 << std::dec << this->_state << std::endl;
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Block::print(std::ostream& stream) const
+    {
+      stream << "block{"
+             << this->_state
+             << "}";
     }
 
   }

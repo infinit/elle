@@ -82,13 +82,6 @@ namespace nucleus
       elle::Status      Capacity(Size&) const;
       elle::Status      Fingerprint(elle::cryptography::Digest&) const;
 
-      /// XXX
-      typename Range<Record>::Scoutor
-      begin() const;
-      /// XXX
-      typename Range<Record>::Scoutor
-      end() const;
-
       //
       // operators
       //
@@ -111,6 +104,12 @@ namespace nucleus
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access,
                                           elle::serialize::BufferArchive);
+
+      // iterable
+      typename Range<Record>::Scoutor
+      begin() const;
+      typename Range<Record>::Scoutor
+      end() const;
 
       //
       // attributes

@@ -814,12 +814,8 @@ namespace etoile
       if (context.object->access() != nucleus::proton::Address::Null)
         {
           ELLE_TRACE("record the Access block '%s' for removal",
-                     context.object->access());
-
-          // mark the access block for removal.
-          if (context.transcript.Wipe(
-                context.object->access()) == elle::Status::Error)
-            escape("unable to mark the access block for removal");
+                     context.object->access())
+            context.transcript.wipe(context.object->access());
         }
 
       return elle::Status::Ok;
@@ -941,13 +937,7 @@ namespace etoile
             escape("unable to update the object");
 
           ELLE_TRACE("record the Access block '%s' for storing", address)
-            {
-              // mark the block as needing to be stored.
-              if (context.transcript.Push(
-                    address,
-                    context.access) == elle::Status::Error)
-                escape("unable to record the object for storing");
-            }
+            context.transcript.push(address, context.access);
         }
 
       return elle::Status::Ok;

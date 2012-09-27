@@ -72,12 +72,8 @@ namespace etoile
       // if a block is referenced by the object, mark it as needing removal.
       if (context.group->ensemble() != nucleus::proton::Address::Null)
         {
-          ELLE_TRACE_SCOPE("record the ensemble block in the transcript");
-
-          // mark the content block for removal.
-          if (context.transcript.Wipe(context.group->ensemble()) ==
-              elle::Status::Error)
-            escape("unable to mark the ensemble block for removal");
+          ELLE_TRACE("record the ensemble block in the transcript")
+            context.transcript.wipe(context.group->ensemble());
         }
 
       return elle::Status::Ok;
@@ -220,9 +216,7 @@ namespace etoile
           context.ensemble->state(nucleus::proton::StateConsistent);
 
           // mark the block as needing to be stored.
-          if (context.transcript.Push(address,
-                                      context.ensemble) == elle::Status::Error)
-            escape("unable to record the ensemble for storing");
+          context.transcript.push(address, context.ensemble);
 
           // ugrade the group.
           // XXX[remove try/catch]

@@ -57,8 +57,6 @@ namespace etoile
 
     elle::Status        Journal::_Record(gear::Scope*            scope)
     {
-      nucleus::proton::Transcript::Scoutor      scoutor;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] journal::Journal::Record()\n");
@@ -70,29 +68,25 @@ namespace etoile
       {
         // XXX[to improve in the future]
         // Go through the blocks which needs to be pushed.
-        for (auto action: scope->context->transcript.container)
+        for (auto action: scope->context->transcript)
           {
             // perform the action.
-            switch (action->type)
+            switch (action->type())
               {
-              case nucleus::proton::Action::TypePush:
+              case nucleus::proton::Action::Type::push:
                 {
                   // store the block in the depot.
-                  if (depot::Depot::Push(action->address,
-                                         *action->block) == elle::Status::Error)
+                  if (depot::Depot::Push(action->address(),
+                                         action->block()) == elle::Status::Error)
                     escape("unable to push the block in the depot");
 
                   break;
                 }
-              case nucleus::proton::Action::TypeWipe:
+              case nucleus::proton::Action::Type::wipe:
                 {
                   // Ignore these actions for now.
 
                   break;
-                }
-              case nucleus::proton::Action::TypeUnknown:
-                {
-                  escape("unknown action type");
                 }
               }
           }
@@ -101,34 +95,28 @@ namespace etoile
       ELLE_TRACE("wiping the blocks")
       {
         // Then, process the blocks to wipe.
-        for (auto action: scope->context->transcript.container)
+        for (auto action: scope->context->transcript)
           {
             // perform the action.
-            switch (action->type)
+            switch (action->type())
               {
-              case nucleus::proton::Action::TypePush:
+              case nucleus::proton::Action::Type::push:
                 {
+                  // Ignore these actions as already handled above.
+
                   break;
                 }
-              case nucleus::proton::Action::TypeWipe:
+              case nucleus::proton::Action::Type::wipe:
                 {
                   // wipe the block from the depot.
-                  if (depot::Depot::Wipe(action->address) == elle::Status::Error)
+                  if (depot::Depot::Wipe(action->address()) == elle::Status::Error)
                     escape("unable to wipe the block from the depot");
 
                   break;
                 }
-              case nucleus::proton::Action::TypeUnknown:
-                {
-                  escape("unknown action type");
-                }
               }
           }
       }
-
-      // flush the transcript since the actions have been performed.
-      if (scope->context->transcript.Flush() == elle::Status::Error)
-        escape("unable to clear the transcript");
 
       // set the context's state.
       scope->context->state = gear::Context::StateCleaned;

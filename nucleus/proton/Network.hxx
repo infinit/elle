@@ -17,7 +17,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Network,
   // XXX[to add when Addess::Any no longer exists]
   // enforce(value._name.length() != 0);
   if (value._name.length() == 0)
-    ELLE_WARN("the network name is empty");
+    { // XXX[braces useless]
+      ELLE_WARN("the network name is empty");
+    }
 
   archive << value._name;
 }
