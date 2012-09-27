@@ -30,9 +30,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::PublicKeyBlock,
 
   archive >> value.K;
 
-  /* XXX
   enforce(value.family() == nucleus::proton::FamilyPublicKeyBlock);
-  */
 }
 
 #endif

@@ -994,7 +994,6 @@ namespace hole
         {
           MutableBlock* raw;
           nucleus::Nucleus::Factory.Build(address.component(), raw);
-
           block = Ptr<MutableBlock>(raw);
         }
 

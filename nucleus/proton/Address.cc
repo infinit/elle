@@ -230,6 +230,9 @@ namespace nucleus
           if (this->_network.Dump(margin + 2) == elle::Status::Error)
             escape("XXX");
 
+          if (this->_network.Dump(margin + 2) == elle::Status::Error)
+            escape("XXX");
+
           // display the family.
           std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
                     << this->_family << std::endl;

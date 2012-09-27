@@ -58,8 +58,7 @@ namespace hole
                          "current revision");
 
         // load the latest revision.
-        current->load(this->_address,
-                      nucleus::proton::Revision::Last);
+        current->load(this->_address, nucleus::proton::Revision::Last);
 
         ELLE_TRACE("Current block revision %s and given block revision is %s",
                    current->revision(), this->_block.revision());
