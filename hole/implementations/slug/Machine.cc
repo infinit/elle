@@ -3,7 +3,6 @@
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
-#include <hole/backends/fs/MutableBlock.hh>
 
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
@@ -345,12 +344,13 @@ namespace hole
 
               // Store the block locally.
               {
-                if (nucleus::proton::ImmutableBlock::exists(address) == true)
+                if (this->_hole.storage().exist(address))
                   throw reactor::Exception(elle::concurrency::scheduler(),
                                            "this immutable block seems to already exist");
 
                 block.validate(address);
-                block.store(address);
+
+                block.store(this->_hole.storage().path(address));
               }
 
               // Publish it onto the network.
@@ -462,13 +462,12 @@ namespace hole
                   }
 
                 ELLE_TRACE("Check if the block derives the current block")
-                  if (backends::fs::MutableBlock(address,
-                                                 block).derives() == false)
+                  if (this->_hole.conflict(address, block))
                     throw reactor::Exception(
                       elle::concurrency::scheduler(),
                       "the block does not derive the local one");
 
-                block.store(address);
+                block.store(this->_hole.storage().path(address));
               }
 
               // Publish it onto the network.
@@ -576,7 +575,7 @@ namespace hole
               nucleus::factory().Build(address.component(), block);
 
               // does the block exist.
-              if (nucleus::proton::ImmutableBlock::exists(address) == false)
+              if (!this->_hole.storage().exist(address))
                 {
                   ELLE_TRACE("the immutable block does not exist locally,"
                              " fetch %s from the peers", address);
@@ -609,8 +608,8 @@ namespace hole
                       // validate the block.
                       try
                         {
-                          iblock->validate(address);
-                          iblock->store(address);
+                          // finally, store it locally.
+                          iblock->store(this->_hole.storage().path(address));
 
                           found = true;
 
@@ -633,10 +632,13 @@ namespace hole
                       "the given address from the other peers");
                 }
 
-              assert(nucleus::proton::ImmutableBlock::exists(address) == true);
+              assert(this->_hole.storage().exist(address));
 
               ELLE_TRACE("load the local block at %s", address)
-                block->load(address);
+              {
+                // load the block.
+                block->load(this->_hole.storage().path(address));
+              }
 
               // validate the block.
               block->validate(address);
@@ -711,14 +713,12 @@ namespace hole
 
                   // Make sure the block exists, otherwise, fall down to the
                   // usual case: retrieving the block from the network.
-                  if (nucleus::proton::MutableBlock::exists(
-                        address,
-                        Revision::Last) == true)
+                  if (this->_hole.storage().exist(address))
                     {
                       ELLE_DEBUG("%s: cache hit on %s", *this, unique);
 
                       // Load the block.
-                      block->load(address, Revision::Last);
+                      block->load(this->_hole.storage().path(address));
 
                       return (ptr);
                     }
@@ -843,8 +843,7 @@ namespace hole
               }
 
             ELLE_TRACE("Check if the block derives the current block")
-              if (backends::fs::MutableBlock(address,
-                                             *block).derives() == false)
+              if (this->_hole.conflict(address, *block))
                 {
                   ELLE_TRACE("the block %p does not derive the local one",
                              block);
@@ -852,15 +851,13 @@ namespace hole
                 }
 
             ELLE_TRACE("storing the remote block %s locally", address)
-              block->store(address);
+              block->store(this->_hole.storage().path(address));
           }
 
         // At this point, we may have retrieved one or more revisions
         // of the mutable block but we do not have any guarantee.
 
-        if (nucleus::proton::MutableBlock::exists(
-              address,
-              nucleus::proton::Revision::Last) == false)
+        if (!this->_hole.storage().exist(address))
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to retrieve the mutable block");
 
@@ -870,7 +867,7 @@ namespace hole
 
         // load the block.
         ELLE_TRACE("loading the local block at %s", address)
-          block->load(address, Revision::Last);
+          block->load(this->_hole.storage().path(address));
 
         ELLE_DEBUG("loaded block %s has revision %s",
                    block, block->revision());
@@ -996,9 +993,8 @@ namespace hole
           block = Ptr<MutableBlock>(raw);
         }
 
-        // Does the block exist: if it does not, retrieve it from the
-        // peers.
-        if (nucleus::proton::MutableBlock::exists(address, revision) == false)
+        // If the block does not exist, retrieve it from the peers.
+        if (!this->_hole.storage().exist(address, revision))
           {
             bool found = false;
             for (auto neighbour: this->_hosts)
@@ -1117,14 +1113,11 @@ namespace hole
                                        "the given address from the other peers");
           }
 
-        // Now let us try to retrieve the block from the local
-        // storage.
-
-        assert(nucleus::proton::MutableBlock::exists(
-                 address, revision) == true);
+        // Try to retrieve the block from the local storage.
+        assert(this->_hole.storage().exist(address, revision));
 
         // Load the block.
-        block->load(address, revision);
+        block->load(this->_hole.storage().path(address, revision));
 
         // validate the block, depending on its component.
         // although every stored block has been checked, the
@@ -1231,7 +1224,8 @@ namespace hole
                   case nucleus::proton::FamilyContentHashBlock:
                     {
                       // erase the immutable block.
-                      nucleus::proton::ImmutableBlock::erase(address);
+                      nucleus::proton::ImmutableBlock::erase(
+                        this->_hole.storage().path(address));
 
                       break;
                     }
@@ -1240,7 +1234,8 @@ namespace hole
                   case nucleus::proton::FamilyImprintBlock:
                     {
                       // retrieve the mutable block.
-                      nucleus::proton::MutableBlock::erase(address);
+                      nucleus::proton::MutableBlock::erase(
+                        this->_hole.storage().path(address));
 
                       break;
                     }

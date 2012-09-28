@@ -32,11 +32,15 @@
   __NPB_OARCHIVE(__VA_ARGS__)::StreamType                                     \
   /**/
 
-# define __NPB_DUMP_METHODS(oa, ia, os, is)                                   \
-virtual void serialize(oa&) const { throw false; }                            \
-virtual void deserialize(ia&) { throw false; }                                \
-virtual void serialize(os&, oa* = nullptr) const { throw false; }             \
-virtual void deserialize(is&, ia* = nullptr) { throw false; }                 \
+# define __NPB_DUMP_METHODS(oa, ia, os, is)                             \
+  virtual void serialize(oa&) const                                     \
+  { elle::unreachable(); }                                              \
+  virtual void deserialize(ia&)                                         \
+  { elle::unreachable(); }                                              \
+  virtual void serialize(os&, oa* = nullptr) const                      \
+  { elle::unreachable(); }                                              \
+  virtual void deserialize(is&, ia* = nullptr)                          \
+  { elle::unreachable(); }                                              \
   /**/
 
 

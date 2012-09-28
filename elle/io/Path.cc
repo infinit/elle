@@ -16,8 +16,11 @@ namespace elle
 //
 
     Path::Path()
-    {
-    }
+    {}
+
+    Path::Path(std::string const& path):
+      Path(Pattern(path))
+    {}
 
     Path::Path(Pattern const& pattern):
       _string(pattern.string)

@@ -16,7 +16,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Server");
+ELLE_LOG_COMPONENT("infinit.hole.remote.Server");
 
 namespace hole
 {
@@ -101,7 +101,7 @@ namespace hole
       Customer::push(nucleus::proton::Address const& address,
                      nucleus::Derivable const& derivable)
       {
-        ELLE_TRACE_SCOPE("Push");
+        ELLE_TRACE_SCOPE("%s: push block at %s", *this, address);
 
         _state_check_authenticated();
 
@@ -143,7 +143,7 @@ namespace hole
       Customer::pull(const nucleus::proton::Address& address,
                      const nucleus::proton::Revision& revision)
       {
-        ELLE_TRACE_SCOPE("Pull");
+        ELLE_TRACE_SCOPE("%s: pull block at %s, %s", *this, address, revision);
         _state_check_authenticated();
         nucleus::proton::Block* block = 0;
         // Build the block according to the component.
@@ -225,7 +225,7 @@ namespace hole
       void
       Customer::print(std::ostream& s) const
       {
-        s << "Customer "; // FIXME: print remote endpoint
+        s << "Customer"; // FIXME: print remote endpoint
       }
 
       std::ostream& operator << (std::ostream& s, Customer const& c)

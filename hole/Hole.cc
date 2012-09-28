@@ -10,10 +10,11 @@
 
 #include <horizon/Horizon.hh>
 
+#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Network.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/Network.hh>
 
 #include <Infinit.hh>
 
@@ -29,8 +30,9 @@ namespace hole
   | Construction |
   `-------------*/
 
-  Hole::Hole()
-    : _descriptor(Infinit::Network)
+  Hole::Hole(storage::Storage& storage)
+    : _storage(storage)
+    , _descriptor(Infinit::Network)
   {
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
@@ -221,6 +223,75 @@ namespace hole
   {
     ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, address);
     this->_implementation->Kill(address);
+  }
+
+  /*----------.
+  | Utilities |
+  `----------*/
+
+  bool
+  Hole::conflict(nucleus::proton::Address const& address,
+                 nucleus::proton::MutableBlock const& block) const
+  {
+    // If the block doesn't exist locally, this is the first version
+    // we know of and there is no conflict.
+    if (!this->_storage.exist(address))
+      {
+        ELLE_DEBUG("This is the first revision of the block")
+          return false;
+      }
+
+    ELLE_DEBUG_SCOPE("the mutable block seems to exist "
+                     "locally: make sure it derives the "
+                     "current revision");
+
+    nucleus::proton::MutableBlock* current;
+
+    // build a block according to the component.
+    if (nucleus::factory().Build(
+          address.component(),
+          current) == elle::Status::Error)
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to build the block");
+
+    std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
+
+    // load the latest revision.
+    current->load(this->_storage.path(address));
+
+    ELLE_DEBUG("Current block revision %s and given block revision is %s",
+               current->revision(), block.revision());
+
+    if (block.revision() != current->revision())
+      return !block.derives(*current);
+
+    ELLE_DEBUG("Block have same revision, we need to distinguish them "
+               "as the latest");
+
+    // We check if contents are the same.
+    {
+      elle::utility::Buffer b1;
+      b1.Writer() << block;
+
+      elle::utility::Buffer b2;
+      b2.Writer() << *current;
+
+      /// We need to choose arbitrarly one block as the latest. For that we
+      /// decide to compare their content, so we got the same result on
+      /// every hosts.
+      if (b1 == b2)
+        {
+          ELLE_TRACE("Both block contents match. Let's say the remote one "
+                     "doesn't derive the local one");
+          return false;
+        }
+
+      ELLE_WARN("conflict detected: blocks have the same revision but"
+                " different content; assuming the latest revision is %s",
+                (b1 < b2 ? block : *current));
+
+      return (b1 < b2);
+    }
   }
 
   /*-----------.

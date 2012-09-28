@@ -1,12 +1,14 @@
 #include <Infinit.hh>
 
-#include <elle/types.hh>
 #include <elle/Elle.hh>
-#include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/io/Piece.hh>
+#include <elle/types.hh>
+#include <elle/utility/Parser.hh>
 
 #include <lune/Lune.hh>
 #include <hole/Hole.hh>
+#include <hole/storage/Directory.hh>
 #include <lune/Lune.hh>
 #include <nucleus/Nucleus.hh>
 
@@ -93,7 +95,10 @@ namespace hole
       }
 
     // initialize the Hole library.
-    std::unique_ptr<hole::Hole> hole(new hole::Hole);
+    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
+    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+    hole::storage::Directory storage(shelter.string());
+    std::unique_ptr<hole::Hole> hole(new hole::Hole(storage));
     hole->join();
 
     // launch the program.

@@ -16,7 +16,6 @@
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 #include <hole/implementations/slug/Slug.hh>
-#include <hole/backends/fs/MutableBlock.hh>
 
 #include <Infinit.hh>
 
@@ -167,11 +166,11 @@ namespace hole
               nucleus::proton::ImmutableBlock const& ib =
                 static_cast<nucleus::proton::ImmutableBlock const&>(*block);
 
-              if (nucleus::proton::ImmutableBlock::exists(address) == true)
+              if (this->_machine.hole().storage().exist(address))
                 throw reactor::Exception(elle::concurrency::scheduler(),
                                          "this immutable block seems to already exist");
 
-              ib.store(address);
+              ib.store(this->_machine.hole().storage().path(address));
 
               break;
             }
@@ -243,15 +242,12 @@ namespace hole
                   }
 
                 ELLE_TRACE("Check if the block derives the current block")
-                  if (backends::fs::MutableBlock(address,
-                                                 *mb).derives() == false)
+                  if (this->_machine.hole().conflict(address, *mb))
                     throw reactor::Exception(elle::concurrency::scheduler(),
                                              "the block doest not derive "
                                              "the last one");
-
-                mb->store(address);
+                mb->store(this->_machine.hole().storage().path(address));
               }
-
               break;
             }
           default:
@@ -301,12 +297,14 @@ namespace hole
               ib = static_cast<ImmutableBlock*>(block.get());
 
               // does the block exist.
-              if (nucleus::proton::ImmutableBlock::exists(address) == false)
+              if (!this->_machine.hole().storage().exist(address))
                 throw reactor::Exception(elle::concurrency::scheduler(),
                                          "the block does not seem to exist");
 
-              // Load and validate the block.
-              ib->load(address);
+              // load the block.
+              ib->load(this->_machine.hole().storage().path(address));
+
+              // validate the block.
               ib->validate(address);
 
               break;
@@ -322,12 +320,10 @@ namespace hole
               assert(dynamic_cast<MutableBlock*>(block.get()) != nullptr);
               mb = static_cast<MutableBlock*>(block.get());
 
-              if (nucleus::proton::MutableBlock::exists(
-                    address, revision) == true)
+              if (this->_machine.hole().storage().exist(address, revision))
                 {
                   // load the block.
-                  mb->load(address, revision);
-
+                  mb->load(this->_machine.hole().storage().path(address, revision));
                   // validate the block, depending on its component.
                   //
                   // indeed, the Object component requires as additional
@@ -418,7 +414,8 @@ namespace hole
             case nucleus::proton::FamilyContentHashBlock:
               {
                 // erase the immutable block.
-                nucleus::proton::ImmutableBlock::erase(address);
+                nucleus::proton::ImmutableBlock::erase(
+                  this->_machine.hole().storage().path(address));
 
                 break;
               }
@@ -427,8 +424,8 @@ namespace hole
             case nucleus::proton::FamilyImprintBlock:
               {
                 // retrieve the mutable block.
-                nucleus::proton::MutableBlock::erase(address);
-
+                nucleus::proton::MutableBlock::erase(
+                  this->_machine.hole().storage().path(address));
                 break;
               }
             default:

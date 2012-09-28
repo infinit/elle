@@ -130,6 +130,8 @@ def configure(cxx_toolkit, cxx_config):
     'format/json/String.hh',
     'format/json/_detail.hh',
     'format/json/fwd.hh',
+    'format/hexadecimal.cc',
+    'format/hexadecimal.hh',
     'fwd.hh',
     'idiom/Close.hh',
     'idiom/Open.hh',

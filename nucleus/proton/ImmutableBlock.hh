@@ -48,19 +48,8 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
       // fileable
-    protected:
-      ELLE_CONCEPT_FILEABLE_METHODS();
     public:
-      void
-      load(Address const& address);
-      void
-      store(Address const& address) const;
-      static
-      void
-      erase(Address const& address);
-      static
-      elle::Boolean
-      exists(Address const& address);
+      ELLE_CONCEPT_FILEABLE_METHODS();
     };
 
   }

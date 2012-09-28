@@ -56,36 +56,5 @@ namespace nucleus
     {
       stream << "immutable block";
     }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-    void
-    ImmutableBlock::load(Address const& address)
-    {
-      this->load(ImmutableBlock::_path(address));
-    }
-
-    void
-    ImmutableBlock::store(Address const& address) const
-    {
-      this->store(ImmutableBlock::_path(address));
-    }
-
-    void
-    ImmutableBlock::erase(Address const& address)
-    {
-      elle::concept::Fileable<>::erase(
-        ImmutableBlock::_path(address));
-    }
-
-    elle::Boolean
-    ImmutableBlock::exists(Address const& address)
-    {
-      return (elle::concept::Fileable<>::exists(
-        ImmutableBlock::_path(address)));
-    }
-
   }
 }

@@ -59,17 +59,6 @@ namespace nucleus
       elle::Boolean
       derives(MutableBlock const& other) const;
 
-    private:
-      /// XXX
-      static
-      elle::io::Path
-      _path(Address const& address);
-      /// XXX
-      static
-      elle::io::Path
-      _path(Address const& address,
-            elle::String const& revision);
-
       //
       // interfaces
       //
@@ -84,21 +73,8 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);
       // fileable
-    protected:
-      ELLE_CONCEPT_FILEABLE_METHODS();
     public:
-      void
-      load(Address const& address,
-           Revision const& revision);
-      void
-      store(Address const& address) const;
-      static
-      void
-      erase(Address const& address);
-      static
-      elle::Boolean
-      exists(Address const& address,
-             Revision const& revision = Revision::Any);
+      ELLE_CONCEPT_FILEABLE_METHODS();
 
       //
       // attributes

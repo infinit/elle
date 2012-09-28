@@ -22,7 +22,7 @@
 
 #include <Infinit.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Server");
+ELLE_LOG_COMPONENT("infinit.hole.remote.Server");
 
 namespace hole
 {
@@ -36,6 +36,7 @@ namespace hole
 
       Server::Server(Hole& hole, int port)
         : _hole(hole)
+        , _port(port)
         , _server(new reactor::network::TCPServer
                   (elle::concurrency::scheduler()))
         , _acceptor(new reactor::Thread(elle::concurrency::scheduler(),
@@ -78,23 +79,23 @@ namespace hole
       Server::put(const nucleus::proton::Address& address,
                   const nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("Put[Immutable]");
+        ELLE_TRACE_SCOPE("%s: put immutable block at %s", *this, address);
 
         // does the block already exist.
-        if (nucleus::proton::ImmutableBlock::exists(address) == true)
+        if (this->_hole.storage().exist(address))
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "this immutable block seems to already "
                                    "exist");
 
         // store the block.
-        block.store(address);
+        block.store(this->_hole.storage().path(address));
       }
 
       void
       Server::put(const nucleus::proton::Address& address,
                   const nucleus::proton::MutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("Put[Mutable]");
+        ELLE_TRACE_SCOPE("%s: put mutable block at %s", *this, address);
 
         // Validate the block, depending on its component.
         //
@@ -109,24 +110,18 @@ namespace hole
               assert(dynamic_cast<const nucleus::neutron::Object*>(
                        &block) != nullptr);
 
-              // validate the object according to the presence of
-              // a referenced access block.
+              // Validate the object according to the presence of a
+              // referenced access block.
               if (object->access() != nucleus::proton::Address::null)
                 {
-                  std::unique_ptr<nucleus::proton::Block> block
-                    (this->_hole.pull(object->access(), nucleus::proton::Revision::Last));
-                  std::unique_ptr<nucleus::neutron::Access> access
-                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
-                  if (access == nullptr)
-                    throw reactor::Exception(elle::concurrency::scheduler(),
-                                             "expected an access block");
-
-                  // validate the object, providing the
-                  object->validate(address, *access);
+                  nucleus::neutron::Access access;
+                  this->get(object->access(), access);
+                  // Validate the object, providing the access block
+                  object->validate(address, access);
                 }
               else
                 {
-                  // validate the object.
+                  // Validate the object.
                   object->validate(address, nucleus::neutron::Access::Null);
                 }
 
@@ -152,38 +147,15 @@ namespace hole
         ELLE_TRACE("Check if the block derives the current block")
           {
             // does the block already exist.
-            if (nucleus::proton::MutableBlock::exists(
-                  address,
-                  nucleus::proton::Revision::Last) == true)
+            if (!this->_hole.conflict(address, block))
               {
-                nucleus::proton::MutableBlock* current;
-
-                // build a block according to the component.
-                if (nucleus::factory().Build(
-                      address.component(),
-                      current) == elle::Status::Error)
-                  throw std::runtime_error("unable to build the block");
-
-                std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
-
-                ELLE_TRACE_SCOPE("the mutable block seems to exist "
-                                 "locally: make sure it derives the "
-                                 "current revision");
-
-                // load the latest revision.
-                current->load(address, nucleus::proton::Revision::Last);
-
-                if (block.derives(*current) == true)
-                  {
-                    ELLE_TRACE("Store the block %p", &block)
-                      block.store(address);
-
-                    ELLE_TRACE("Block %p successfully stored", &block);
-                  }
-                else
-                  ELLE_TRACE("the block %p does not derive the current one",
-                             &block);
+                ELLE_TRACE("Store the block %p", &block)
+                  block.store(this->_hole.storage().path(address));
               }
+            else
+              throw reactor::Exception(
+                elle::concurrency::scheduler(),
+                "the block does not derive the local one");
           }
       }
 
@@ -191,15 +163,15 @@ namespace hole
       Server::get(const nucleus::proton::Address& address,
                   nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("Get[Immutable]");
+        ELLE_TRACE_SCOPE("%s: get immutable block at %s", *this, address);
 
         // does the block exist.
-        if (nucleus::proton::ImmutableBlock::exists(address) == false)
+        if (!this->_hole.storage().exist(address))
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        block.load(address);
+        block.load(this->_hole.storage().path(address));
 
         // validate the block.
         block.validate(address);
@@ -210,15 +182,16 @@ namespace hole
                   const nucleus::proton::Revision& revision,
                   nucleus::proton::MutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("Get[Mutable]");
+        ELLE_TRACE_SCOPE("%s: get mutable block at %s, %s",
+                         *this, address, revision);
 
         // does the block exist.
-        if (nucleus::proton::MutableBlock::exists(address, revision) == false)
+        if (!this->_hole.storage().exist(address, revision))
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "the block does not seem to exist");
 
         // load the block.
-        block.load(address, revision);
+        block.load(this->_hole.storage().path(address, revision));
 
         // validate the block, depending on its component.
         //
@@ -237,17 +210,10 @@ namespace hole
               // a referenced access block.
               if (object->access() != nucleus::proton::Address::null)
                 {
-                  // Load the access block.
-                  std::unique_ptr<nucleus::proton::Block> block
-                    (this->_hole.pull(object->access(), nucleus::proton::Revision::Last));
-                  std::unique_ptr<nucleus::neutron::Access> access
-                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
-                  if (!access)
-                    throw reactor::Exception(elle::concurrency::scheduler(),
-                                             "expected an access block");
-
+                  nucleus::neutron::Access access;
+                  this->get(object->access(), access);
                   // validate the object, providing the
-                  object->validate(address, *access);
+                  object->validate(address, access);
                 }
               else
                 {
@@ -285,7 +251,8 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              nucleus::proton::ImmutableBlock::erase(address);
+              nucleus::proton::ImmutableBlock::erase(
+                this->_hole.storage().path(address));
 
               break;
             }
@@ -294,7 +261,8 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              nucleus::proton::MutableBlock::erase(address);
+              nucleus::proton::MutableBlock::erase(
+                this->_hole.storage().path(address));
 
               break;
             }
@@ -304,6 +272,20 @@ namespace hole
             }
           }
       }
+
+      /*----------.
+      | Printable |
+      `----------*/
+
+       void
+       Server::print(std::ostream& stream) const
+       {
+         stream << "Server " << this->_port;
+       }
+
+      /*---------.
+      | Dumpable |
+      `---------*/
 
       elle::Status      Server::Dump(const elle::Natural32      margin) const
       {

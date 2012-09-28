@@ -30,6 +30,7 @@ namespace hole
     //
     // interface
     //
+    public:
     virtual void                Join() = 0;
     virtual elle::Status        Leave() = 0;
 

@@ -5,6 +5,7 @@
 
 # include <unordered_set>
 
+# include <elle/Printable.hh>
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
 
@@ -32,6 +33,7 @@ namespace hole
       class Server
         : public elle::radix::Entity
         , public boost::noncopyable
+        , public elle::Printable
       {
       /*------.
       | Types |
@@ -46,6 +48,7 @@ namespace hole
         ~Server();
       private:
         Hole& _hole;
+        int _port;
 
       /*----------.
       | Customers |
@@ -88,6 +91,15 @@ namespace hole
         /// This method removes a block.
         void
         kill(const nucleus::proton::Address&);
+
+
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        virtual
+        void
+        print(std::ostream& stream) const;
 
       /*---------.
       | Dumpable |

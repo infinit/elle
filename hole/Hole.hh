@@ -14,29 +14,18 @@
 # include <lune/Passport.hh>
 
 # include <hole/fwd.hh>
+# include <hole/storage/Storage.hh>
 
 namespace hole
 {
   /// The storage layer of an Infinit filesystem.
   class Hole
   {
-  // /*------------------------.
-  // | Global instance (FIXME) |
-  // `------------------------*/
-  // public:
-  //   static
-  //   Hole&
-  //   instance();
-  // private:
-  //   static
-  //   Hole*
-  //   _instance;
-
   /*-------------.
   | Construction |
   `-------------*/
   public:
-    Hole();
+    Hole(storage::Storage& storage);
     virtual ~Hole();
 
   /*------.
@@ -78,6 +67,17 @@ namespace hole
     /// Remove a block.
     void
     wipe(const nucleus::proton::Address& address);
+  private:
+    ELLE_ATTRIBUTE_R(storage::Storage&, storage);
+
+  /*----------.
+  | Utilities |
+  `----------*/
+  public:
+    /// Whether the given block conflicts with the one stored locally.
+    bool
+    conflict(nucleus::proton::Address const& address,
+             nucleus::proton::MutableBlock const& block) const;
 
   /*-----------.
   | Attributes |

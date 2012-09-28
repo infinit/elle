@@ -1,13 +1,15 @@
 #include <Infinit.hh>
 
 #include <elle/Elle.hh>
-#include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/io/Piece.hh>
+#include <elle/utility/Parser.hh>
 
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
+#include <hole/storage/Directory.hh>
 #include <horizon/Horizon.hh>
 
 void
@@ -134,7 +136,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
-  std::unique_ptr<hole::Hole> hole(new hole::Hole);
+  elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
+  shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+  hole::storage::Directory storage(shelter.string());
+  std::unique_ptr<hole::Hole> hole(new hole::Hole(storage));
   hole->join();
 
   // initialize the Etoile library.

@@ -27,6 +27,7 @@ namespace elle
       // constructors & destructors
       //
       Path();
+      Path(std::string const& path);
       Path(Pattern const& pattern);
       template <typename T,
                 typename... TT>
