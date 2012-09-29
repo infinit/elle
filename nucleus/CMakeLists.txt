@@ -19,7 +19,6 @@ add_library(nucleus ${LINK_METHOD}
   proton/Network.cc
   proton/OwnerKeyBlock.cc
 # XXX  proton/Porcupine.cc
-  proton/Proton.cc
   proton/PublicKeyBlock.cc
   proton/Stamp.cc
   proton/Transcript.cc
@@ -34,6 +33,7 @@ add_library(nucleus ${LINK_METHOD}
   neutron/Ensemble.cc
   neutron/Entry.cc
   neutron/Fellow.cc
+  neutron/Genre.cc
   neutron/Group.cc
   neutron/Object.cc
   neutron/Record.cc

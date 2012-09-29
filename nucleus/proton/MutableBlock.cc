@@ -28,17 +28,11 @@ namespace nucleus
 // ---------- constructs & destructors ----------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     MutableBlock::MutableBlock():
       Block()
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
     MutableBlock::MutableBlock(Network const network,
                                Family const family,
                                neutron::Component const component,
@@ -83,10 +77,8 @@ namespace nucleus
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this method dumps the block's internals.
-    ///
-    elle::Status        MutableBlock::Dump(const elle::Natural32 margin) const
+    elle::Status
+    MutableBlock::Dump(const elle::Natural32 margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -102,6 +94,18 @@ namespace nucleus
         escape("unable to dump the revision");
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    MutableBlock::print(std::ostream& stream) const
+    {
+      stream << "mutable block{"
+             << this->_revision
+             << "}";
     }
 
 //

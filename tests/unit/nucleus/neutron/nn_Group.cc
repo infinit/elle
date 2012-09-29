@@ -16,7 +16,7 @@
 
 ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
-void test_group()
+void test()
 {
   elle::cryptography::KeyPair owner;
 
@@ -111,7 +111,7 @@ int main(int, char** argv)
       CHECK(elle::Elle::Initialize());
       CHECK(nucleus::Nucleus::Initialize());
 
-      test_group();
+      test();
 
       CHECK(elle::Elle::Clean());
       CHECK(nucleus::Nucleus::Clean());

@@ -14,8 +14,8 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Object,
   enforce(version == 0);
 
   archive & value.genre;
-  archive & value.stamps.creation;
-  archive & value.stamps.modification;
+  archive & value.timestamps.creation;
+  archive & value.timestamps.modification;
   archive & value.size;
   archive & value.keys.owner;
   archive & value.keys.author;

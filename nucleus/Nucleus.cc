@@ -1,5 +1,4 @@
 #include <nucleus/Nucleus.hh>
-#include <nucleus/proton/Proton.hh>
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/neutron/Neutron.hh>
 #include <nucleus/neutron/Object.hh>
@@ -67,10 +66,6 @@ namespace nucleus
         escape("unable to register the factory product");
     }
 
-    // initialize the proton.
-    if (proton::Proton::Initialize() == elle::Status::Error)
-      escape("unable to initialize the proton");
-
     return elle::Status::Ok;
   }
 
@@ -79,10 +74,6 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Clean()
   {
-    // clean the proton.
-    if (proton::Proton::Clean() == elle::Status::Error)
-      escape("unable to clean the proton");
-
     // clear the nucleus factory.
     if (Nucleus::Factory.Clear() == elle::Status::Error)
       escape("unable to clear the factory");

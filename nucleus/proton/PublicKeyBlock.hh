@@ -13,16 +13,18 @@ namespace nucleus
   namespace proton
   {
 
+    /// This class represents a public-key-based mutable block.
     ///
-    /// this class represents a public key block i.e a mutable block.
-    ///
-    /// for this construct, a key pair is generated whenever such a block
-    /// is author . then, since the address of such a block is computed
+    /// For this construct, a key pair is generated whenever such a block
+    /// is created. Then, since the address of such a block is computed
     /// by applying a one-way function on the generated public key, and
     /// since this public key never changes, the block's content can be
     /// modified without implying the creation of a new block as for
-    /// ContentHashBlocks.
+    /// immutable block such as ContentHashBlocks.
     ///
+    /// NOTE: the public key given at construction must be unique i.e
+    ///       must have been generated while the private key should be
+    ///       used to sign the block.
     class PublicKeyBlock:
       public MutableBlock
     {
@@ -33,30 +35,32 @@ namespace nucleus
       PublicKeyBlock(); // XXX[to deserialize]
       PublicKeyBlock(Network const& network,
                      neutron::Component const component,
-                     elle::cryptography::PublicKey const& creator_K);
-
-      //
-      // methods
-      //
-      /// XXX
-      Address
-      bind() const;
-      /// XXX
-      void
-      validate(Address const& address) const;
+                     elle::cryptography::PublicKey const& creator_K,
+                     elle::cryptography::PublicKey const& block_K);
 
       //
       // interfaces
       //
     public:
+      // block
+      Address
+      bind() const;
+      void
+      validate(Address const& address) const;
+
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+
+      // printable
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes
       //
     public:
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, K);
+      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, block_K);
     };
 
   }

@@ -163,7 +163,7 @@ namespace elle
                                  std::string const& message)
         : _component(component)
       {
-        _indent();
+        this->_indent();
         this->_send(level, type, file, line, function, message);
       }
 

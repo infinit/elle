@@ -2,10 +2,11 @@
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
 # include <elle/cryptography/OneWay.hh>
-
 # include <elle/serialize/TupleSerializer.hxx>
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
+
+# include <nucleus/Exception.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <tuple>
@@ -16,24 +17,15 @@ namespace nucleus
   namespace proton
   {
 
-    ///
-    /// create the address based on an object by serializing it before
-    /// hashing it.
-    ///
     template <typename... T>
-    elle::Status        Address::Create(Network const& network,
-                                        const Family&           family,
-                                        const
-                                          neutron::Component&   component,
-                                        const T&...            parameters)
+    Address::Address(Network const& network,
+                     const Family& family,
+                     const neutron::Component& component,
+                     const T&... parameters):
+      _network(network),
+      _family(family),
+      _component(component)
     {
-      this->_network = network;
-      this->_family = family;
-      this->_component = component;
-
-      delete this->_digest;
-      this->_digest = new elle::cryptography::Digest;
-
       // compute the digest based on the parameters. note that most of
       // the components requesting this method pass family and component
       // in the parameters as well. for examples, please refer to
@@ -43,12 +35,9 @@ namespace nucleus
                                         this->_family,
                                         this->_component,
                                         parameters...),
-            *this->_digest) == elle::Status::Error)
-        escape("unable to hash the given parameter(s)");
-
-      return elle::Status::Ok;
+            this->_digest) == elle::Status::Error)
+        throw Exception("unable to hash the given parameter(s)");
     }
-
 
   }
 }
@@ -63,52 +52,17 @@ namespace nucleus
 
 # include <elle/cryptography/Digest.hh>
 
-ELLE_SERIALIZE_SPLIT(nucleus::proton::Address);
-
-ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
-                          archive,
-                          value,
-                          version)
+ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
+                      archive,
+                      value,
+                      version)
 {
   enforce(version == 0);
 
-  // XXX[a null address should never exist?]
-  if (value._digest != nullptr)
-    {
-      archive << true
-              << value._network
-              << value._family
-              << value._component
-        // XXX[why can't we use this?]
-        //<< elle::serialize::alive_pointer(value._digest);
-              << *value._digest;
-    }
-  else
-    {
-      archive << false;
-    }
-}
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-
-  delete value._digest;
-  value._digest = nullptr;
-
-  bool has_digest;
-  archive >> has_digest;
-
-  if (has_digest == false)
-    return;
-
-  archive >> value._network;
-  archive >> value._family;
-  archive >> value._component;
-  value._digest = archive.template Construct<elle::cryptography::Digest>().release();
+  archive & value._network;
+  archive & value._family;
+  archive & value._component;
+  archive & value._digest;
 }
 
 #endif

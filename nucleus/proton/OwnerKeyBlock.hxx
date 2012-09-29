@@ -12,8 +12,6 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,
 
   archive & base_class<nucleus::proton::MutableBlock>(value);
 
-  archive & value._K;
-  archive & value._stamp;
   archive & value._owner_K;
   archive & value._owner_signature;
 }

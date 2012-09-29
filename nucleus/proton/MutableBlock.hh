@@ -8,6 +8,8 @@
 # include <nucleus/proton/Base.hh>
 # include <nucleus/neutron/Component.hh>
 
+# include <elle/Printable.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -74,6 +76,10 @@ namespace nucleus
     public:
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      // printable
+      void
+      print(std::ostream& stream) const;
 
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);

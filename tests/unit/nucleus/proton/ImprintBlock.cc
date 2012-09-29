@@ -10,29 +10,19 @@
 
 #define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
 
-int main()
+void test()
 {
-
-  CHECK(elle::Elle::Initialize());
-  CHECK(nucleus::Nucleus::Initialize());
-
     {
       nucleus::proton::Network network("test");
 
       elle::cryptography::KeyPair kp;
       CHECK(kp.Generate());
 
-      printf("HERE\n");
-
       nucleus::proton::ImprintBlock blk(network,
                                         nucleus::neutron::ComponentObject,
                                         kp.K);
 
-      printf("HERE\n");
-
       nucleus::proton::Address addr(blk.bind());
-
-      printf("HERE\n");
 
       assert(addr != nucleus::proton::Address::Null);
       assert(addr != nucleus::proton::Address::Some);
@@ -57,12 +47,33 @@ int main()
           blk_copy.validate(addr);
         }
     }
-
-  std::cout << "tests done.\n";
-
-  CHECK(nucleus::Nucleus::Clean());
-  CHECK(elle::Elle::Clean());
-
-  return 0;
 }
 
+int main(int, char** argv)
+{
+  try
+    {
+      CHECK(elle::Elle::Initialize());
+      CHECK(nucleus::Nucleus::Initialize());
+
+      test();
+
+      CHECK(elle::Elle::Clean());
+      CHECK(nucleus::Nucleus::Clean());
+
+      std::cout << "tests done.\n";
+      return 0;
+    }
+  catch (std::exception const& e)
+    {
+      // XXX
+      show();
+
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      if (reactor::Exception const* re =
+          dynamic_cast<reactor::Exception const*>(&e))
+        std::cerr << re->backtrace() << std::endl;
+
+      return 1;
+    }
+}

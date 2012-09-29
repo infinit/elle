@@ -30,8 +30,8 @@ namespace etoile
     {
       this->description = group.description();
 
-      this->stamps.creation = group.creation_stamp();
-      this->stamps.modification = group.modification_stamp();
+      this->timestamps.creation = group.creation_timestamp();
+      this->timestamps.modification = group.modification_timestamp();
 
       this->size = group.size();
 
@@ -60,8 +60,8 @@ namespace etoile
 
       // compare the attributes.
       if ((this->description != element.description) ||
-          (this->stamps.creation != element.stamps.creation) ||
-          (this->stamps.modification != element.stamps.modification) ||
+          (this->timestamps.creation != element.timestamps.creation) ||
+          (this->timestamps.modification != element.timestamps.modification) ||
           (this->size != element.size) ||
           (this->manager != element.manager) ||
           (this->revision != element.revision) ||
@@ -93,18 +93,18 @@ namespace etoile
                 << this->description << std::endl;
 
       //
-      // dump the stamps.
+      // dump the timestamps.
       //
       {
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Stamps]" << std::endl;
+                  << "[Timestamps]" << std::endl;
 
         // dump the creation time.
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Creation]" << std::endl;
 
-        if (this->stamps.creation.Dump(margin + 6) == elle::Status::Error)
+        if (this->timestamps.creation.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the creation time");
 
         // dump the modification time.
@@ -112,7 +112,7 @@ namespace etoile
                   << elle::io::Dumpable::Shift
                   << "[Modification]" << std::endl;
 
-        if (this->stamps.modification.Dump(margin + 6) == elle::Status::Error)
+        if (this->timestamps.modification.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the modification time");
       }
 

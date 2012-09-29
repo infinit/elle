@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Network,
 
   enforce(version == 0);
 
-  // XXX[to add when Addess::Any no longer exists]
+  // XXX[to remove when Addess::Any no longer exists]
   // enforce(value._name.length() != 0);
   if (value._name.length() == 0)
     { // XXX[braces useless]

@@ -78,7 +78,7 @@ void test_signature()
   K = kp.K;
   k = kp.k;
 
-  CHECK(k.Sign(plain, signature));
+  signature = k.sign(plain);
 
   CHECK(K.Verify(signature, plain));
 }

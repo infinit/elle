@@ -6,6 +6,7 @@
 # include <elle/concept/Fileable.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Digest.hh>
+# include <elle/utility/Time.hh>
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 
@@ -129,8 +130,13 @@ namespace nucleus
       // attributes
       //
     private:
+      /// Identifies the network in which lies the block.
       ELLE_ATTRIBUTE_R(Network, network);
+      /// Identifies the physical nature of the block i.e its
+      /// construct so as to ensure its integrity.
       ELLE_ATTRIBUTE_R(Family, family);
+      /// Indicates the logical nature of the block i.e the high-level
+      /// information.
       ELLE_ATTRIBUTE_R(neutron::Component, component);
       /// The creator attribute is used for authenticating certain
       /// actions such as deleting a block. Given such a request,
@@ -142,7 +148,15 @@ namespace nucleus
       /// Note however, that just enough information is kept. In this
       /// case, the creator's public key is not kept. Instead, only a
       /// hash is serialized since enough to proceed to an authentication.
-      ELLE_ATTRIBUTE_R(elle::cryptography::Digest, creator);
+      ELLE_ATTRIBUTE(elle::cryptography::Digest, creator);
+      /// The block creation timestamp. This timestamp is especially
+      /// useful to distinguish two block created by the same creator.
+      ELLE_ATTRIBUTE_R(elle::utility::Time, creation_timestamp);
+      /// A random salt so as to further differentiate two blocks being
+      /// created by the same user at the exact same time.
+      ELLE_ATTRIBUTE_R(elle::Natural64, salt);
+      /// Indicates the state of the block such as clean or dirty for
+      /// example.
       ELLE_ATTRIBUTE_RW(State, state);
     };
 

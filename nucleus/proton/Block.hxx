@@ -16,6 +16,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Block,
   archive & value._family;
   archive & value._component;
   archive & value._creator;
+  archive & value._creation_timestamp;
+  archive & value._salt;
 
   // XXX[make these check cleaner]
   enforce(static_cast<int>(value._family) <

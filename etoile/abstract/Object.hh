@@ -56,7 +56,7 @@ namespace etoile
       {
         elle::utility::Time creation;
         elle::utility::Time modification;
-      } stamps;
+      } timestamps;
 
       nucleus::neutron::Size size;
 

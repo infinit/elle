@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_PROTON_IMPRINTBLOCK_HXX
+#ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HXX
 # define NUCLEUS_PROTON_IMPRINTBLOCK_HXX
 
 # include <cassert>
@@ -13,8 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ImprintBlock,
   enforce(version == 0);
 
   archive & base_class<nucleus::proton::MutableBlock>(value);
-  archive & value._creation_stamp;
-  archive & value._salt;
+
   archive & value._owner_K;
 }
 

@@ -37,7 +37,7 @@ namespace nucleus
     /// the object is considered private i.e only its owner has access.
     ///
     /// in addition, several meta information are contained such as the
-    /// owner permissions, some stamps, the attributes etc.
+    /// owner permissions, some timestamps, the attributes etc.
     ///
     /// finally, the data section contains the address of the object's
     /// contents though the nature of the contents depends upon the
@@ -101,18 +101,6 @@ namespace nucleus
       elle::Status      Seal(elle::cryptography::PrivateKey const&,
                              const Access&);
 
-      /// Implements the Block's validate() interface method.
-      ///
-      /// However, since the Object requires additional information in
-      /// order to be validated, this method must *never* be used and therefore
-      /// returns an error.
-      void
-      validate(proton::Address const& address) const;
-      /// Verifies that the object has been properly author
-      /// i.e that every signature has been produced by legitimate users.
-      void
-      validate(proton::Address const& address,
-               Access const& access) const;
       /// Returns the address of the referenced Access block.
       proton::Address const&
       access() const;
@@ -144,12 +132,12 @@ namespace nucleus
       /// Returns the size of the object's content.
       Size const&
       size() const;
-      /// Returns the stamp associated with the data section.
+      /// Returns the timestamp associated with the data section.
       elle::utility::Time const&
-      data_modification_stamp() const;
-      /// Returns the stamp associated with the meta section.
+      data_modification_timestamp() const;
+      /// Returns the timestamp associated with the meta section.
       elle::utility::Time const&
-      meta_modification_stamp() const;
+      meta_modification_timestamp() const;
       /// Returns the revision associated with the data section.
       proton::Revision const&
       data_revision() const;
@@ -166,6 +154,13 @@ namespace nucleus
       // interfaces
       //
     public:
+      // block
+      void
+      validate(proton::Address const& address) const;
+      void
+      validate(proton::Address const& address,
+               Access const& access) const;
+
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -193,7 +188,7 @@ namespace nucleus
         } owner;
 
         Genre genre;
-        elle::utility::Time modification_stamp;
+        elle::utility::Time modification_timestamp;
 
         Attributes attributes;
 
@@ -212,7 +207,7 @@ namespace nucleus
         proton::Address contents;
 
         Size size;
-        elle::utility::Time modification_stamp;
+        elle::utility::Time modification_timestamp;
 
         proton::Revision revision;
         elle::cryptography::Signature signature;

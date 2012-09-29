@@ -33,9 +33,7 @@ namespace nucleus
     elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      if (k.Sign(elle::serialize::make_tuple(this->master, this->slave),
-                 this->signature) == elle::Status::Error)
-        escape("unable to sign the attributes");
+      this->signature = k.sign(elle::serialize::make_tuple(this->master, this->slave));
 
       return elle::Status::Ok;
     }

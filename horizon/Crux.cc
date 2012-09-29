@@ -76,7 +76,7 @@ namespace horizon
       }
     catch (etoile::wall::NoSuchFileOrDirectory const&)
       {
-        return -ENOENT;
+        return (-ENOENT);
       }
 
     etoile::gear::Identifier  identifier;
@@ -101,7 +101,7 @@ namespace horizon
     // Discard the object.
     etoile::wall::Object::Discard(identifier);
 
-    return 0;
+    return (0);
   }
 
   /// General-purpose information on the file system object
@@ -177,14 +177,14 @@ namespace horizon
     // Convert the times into time_t structures.
     stat->st_atime = time(nullptr);
 
-    if (abstract.stamps.creation.Get(stat->st_ctime) ==
+    if (abstract.timestamps.creation.Get(stat->st_ctime) ==
         elle::Status::Error)
-      error("unable to convert the time stamps",
+      error("unable to convert the time timestamps",
             -EPERM);
 
-    if (abstract.stamps.modification.Get(stat->st_mtime) ==
+    if (abstract.timestamps.modification.Get(stat->st_mtime) ==
         elle::Status::Error)
-      error("unable to convert the time stamps",
+      error("unable to convert the time timestamps",
             -EPERM);
 
     // Set the mode and permissions.
@@ -895,7 +895,7 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path, uid, gid);
 
-    // Xxx to implement.
+    // XXX to implement.
 
     return (0);
   }
@@ -980,6 +980,16 @@ namespace horizon
             -EPERM,
             identifier);
 
+    // A unique_ptr is used for creating a copy of the trait (if necessary)
+    // so as to release it right when leaving the scope. This way, one can
+    // discard the object but later return some of the trait's property such
+    // as its length.
+    //
+    // Without such a copy, the trait (i.e pointer) could be invalid since
+    // the object's memory could have been released on discarding.
+    std::unique_ptr<nucleus::neutron::Trait> t(
+      trait != nullptr ? new nucleus::neutron::Trait(*trait) : nullptr);
+
     // Discard the object.
     etoile::wall::Object::Discard(identifier);
 
@@ -992,15 +1002,15 @@ namespace horizon
     // value.
     if (size == 0)
       {
-        return (trait->value.length());
+        return (t->value.length());
       }
     else
       {
         // Otherwise, copy the trait value in the value buffer.
-        ::memcpy(value, trait->value.data(), trait->value.length());
+        ::memcpy(value, t->value.data(), t->value.length());
 
         // Return the length of the value.
-        return (trait->value.length());
+        return (t->value.length());
       }
   }
 
@@ -1030,9 +1040,6 @@ namespace horizon
             -EPERM,
             identifier);
 
-    // Discard the object.
-    etoile::wall::Object::Discard(identifier);
-
     // If the size is zero, this call must return the size required
     // to store the list.
     if (size == 0)
@@ -1046,6 +1053,10 @@ namespace horizon
             // Compute the size.
             size = size + trait->name.length() + 1;
           }
+
+        // Discard the object, now that it will no longer be
+        // accessed.
+        etoile::wall::Object::Discard(identifier);
 
         return (size);
       }
@@ -1066,6 +1077,10 @@ namespace horizon
             // Adjust the offset.
             offset = offset + trait->name.length() + 1;
           }
+
+        // Discard the object now that it will no longer be
+        // accessed.
+        etoile::wall::Object::Discard(identifier);
 
         return (offset);
       }
@@ -1124,7 +1139,9 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(target, source);
 
-    return -ENOSYS;
+    // XXX[not supported]
+
+    return (-ENOSYS);
   }
 
   /// This method creates a symbolic link.

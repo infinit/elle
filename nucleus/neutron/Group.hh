@@ -157,7 +157,7 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(elle::String, description);
       ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, pass_K);
       ELLE_ATTRIBUTE_RW(Size, size);
-      ELLE_ATTRIBUTE_R(elle::utility::Time, modification_stamp);
+      ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
       ELLE_ATTRIBUTE_R(proton::Address, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
       // XXX[not serialized]

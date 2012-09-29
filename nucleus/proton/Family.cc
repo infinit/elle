@@ -12,7 +12,7 @@ namespace nucleus
 
     std::ostream&
     operator <<(std::ostream& stream,
-                Family family)
+                Family const family)
     {
       switch (family)
         {

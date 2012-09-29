@@ -14,9 +14,9 @@ namespace elle
   {
   public:
     template<typename... Args>
-    Exception(char const* fmt, Args&... args):
+    Exception(char const* fmt, Args&&... args):
       reactor::Exception(elle::concurrency::scheduler(),
-                         elle::sprintf(fmt, args...) + _add_report())
+                         elle::sprintf(fmt, std::forward<Args>(args)...) + _add_report())
     {}
 
     static

@@ -11,12 +11,9 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- construction ----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     OwnerKeyBlock::OwnerKeyBlock():
       MutableBlock(),
 
@@ -24,50 +21,43 @@ namespace nucleus
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
     OwnerKeyBlock::OwnerKeyBlock(
         Network const& network,
         neutron::Component const component,
         elle::cryptography::PublicKey const& creator_K):
-      MutableBlock(network, FamilyOwnerKeyBlock, component, creator_K)
+      OwnerKeyBlock(network, component, creator_K,
+                    elle::cryptography::KeyPair::generate())
     {
-      elle::cryptography::KeyPair pair;
+    }
 
-      // retrieve the current time.
-      if (this->_stamp.Current() == elle::Status::Error)
-        throw Exception("unable to retrieve the current time");
+    OwnerKeyBlock::OwnerKeyBlock(
+        Network const& network,
+        neutron::Component const component,
+        elle::cryptography::PublicKey const& creator_K,
+        elle::cryptography::KeyPair const& block_pair):
+      MutableBlock(network, FamilyOwnerKeyBlock, component, creator_K),
 
-      // generate a key pair for the OKB.
-      if (pair.Generate() == elle::Status::Error)
-        throw Exception("unable to generate a key pair");
+      _block_K(block_pair.K),
+      _owner_K(creator_K),
+      _owner_signature(block_pair.k.sign(this->_owner_K)),
+      _owner_subject(nullptr)
+    {
+    }
 
-      // set the block's public key.
-      this->_K = pair.K;
-
-      // set the owner's public key.
-      this->_owner_K = creator_K; // XXX[?]
-      this->_owner_subject = nullptr;
-
-      // sign the owner's public key with the block's private key.
-      if (pair.k.Sign(this->_owner_K,
-                      this->_owner_signature) == elle::Status::Error)
-        throw Exception("unable to sign the owner's identity");
+    OwnerKeyBlock::~OwnerKeyBlock()
+    {
+      delete this->_owner_subject;
     }
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- block -----------------------------------------------------------
 //
 
     Address
     OwnerKeyBlock::bind() const
     {
-      Address address;
-
-      if (address.Create(this->network(), this->family(), this->component(),
-                         this->_K) == elle::Status::Error)
-        throw Exception("unable to compute the OKB's address");
+      Address address(this->network(), this->family(), this->component(),
+                      this->_block_K);
 
       return (address);
     }
@@ -75,8 +65,6 @@ namespace nucleus
     void
     OwnerKeyBlock::validate(Address const& address) const
     {
-      Address self;
-
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
@@ -88,11 +76,8 @@ namespace nucleus
       // make sure the address has not be tampered and correspond to the
       // hash of the public key.
       //
-
-      // compute the address.
-      if (self.Create(this->network(), this->family(), this->component(),
-                      this->_K) == elle::Status::Error)
-        throw Exception("unable to compute the OKB's address");
+      Address self(this->network(), this->family(), this->component(),
+                   this->_block_K);
 
       // verify with the recorded address.
       if (address != self)
@@ -100,8 +85,8 @@ namespace nucleus
                         "public key");
 
       // verify the owner's key signature with the block's public key.
-      if (this->_K.Verify(this->_owner_signature,
-                          this->_owner_K) == elle::Status::Error)
+      if (this->_block_K.Verify(this->_owner_signature,
+                                this->_owner_K) == elle::Status::Error)
         throw Exception("unable to verify the owner's signature");
     }
 
@@ -123,11 +108,8 @@ namespace nucleus
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this function dumps an block object.
-    ///
-    elle::Status        OwnerKeyBlock::Dump(const
-                                               elle::Natural32  margin) const
+    elle::Status
+    OwnerKeyBlock::Dump(const elle::Natural32  margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -139,18 +121,10 @@ namespace nucleus
 
       // dump the OKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[K]" << std::endl;
+                << "[Block K]" << std::endl;
 
-      if (this->_K.Dump(margin + 4) == elle::Status::Error)
+      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
-
-      // dump the stamp.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << elle::io::Dumpable::Shift
-                << "[Stamp]" << std::endl;
-
-      if (this->_stamp.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the stamp");
 
       // dump the owner part.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Owner]"
@@ -170,10 +144,25 @@ namespace nucleus
       if (this->_owner_signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the owner's signature");
 
-      if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the subject");
+      if (this->_owner_subject != nullptr)
+        if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
+          escape("unable to dump the subject");
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    OwnerKeyBlock::print(std::ostream& stream) const
+    {
+      stream << "owner key block{"
+             << this->_block_K
+             << ", "
+             << this->_owner_K
+             << "}";
     }
 
   }

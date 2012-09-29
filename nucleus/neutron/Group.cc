@@ -71,7 +71,7 @@ namespace nucleus
     {
       this->_pass_K = pass_K;
 
-      if (this->_modification_stamp.Current() == elle::Status::Error)
+      if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
       this->_ensemble = ensemble;
@@ -83,7 +83,7 @@ namespace nucleus
     void
     Group::downgrade()
     {
-      if (this->_modification_stamp.Current() == elle::Status::Error)
+      if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
       this->_ensemble = proton::Address::Null;
@@ -105,18 +105,14 @@ namespace nucleus
           }
         case proton::StateDirty:
           {
-            // XXX[can this be improved with a single make_tuple()
-            //     and elle::serialize::pointer()? though we do not have
-            //     pointers left here!]
-            if (owner_k.Sign(elle::serialize::make_tuple(
-                               this->_description,
-                               this->_pass_K,
-                               this->_size,
-                               this->_modification_stamp,
-                               this->_ensemble,
-                               this->_manager_token),
-                             this->_signature) == elle::Status::Error)
-              throw Exception("unable to sign the group"); // XXX[to remove in the future]
+            this->_signature =
+              owner_k.sign(elle::serialize::make_tuple(
+                             this->_description,
+                             this->_pass_K,
+                             this->_size,
+                             this->_modification_timestamp,
+                             this->_ensemble,
+                             this->_manager_token));
 
             // Increase the mutable block's revision.
             this->revision(this->revision() + 1);
@@ -186,8 +182,8 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Modifcation Time]" << std::endl;
 
-      if (this->_modification_stamp.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the stamp");
+      if (this->_modification_timestamp.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the timestamp");
 
       if (this->_ensemble.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the ensemble's address");

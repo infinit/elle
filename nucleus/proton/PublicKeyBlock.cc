@@ -22,26 +22,25 @@ namespace nucleus
     PublicKeyBlock::PublicKeyBlock(
         Network const& network,
         neutron::Component const component,
-        elle::cryptography::PublicKey const& creator_K):
+        elle::cryptography::PublicKey const& creator_K,
+        elle::cryptography::PublicKey const& block_K):
       MutableBlock(network, FamilyPublicKeyBlock, component, creator_K),
 
-      _K(creator_K)
+      _block_K(block_K)
     {
     }
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- block -----------------------------------------------------------
 //
 
     Address
     PublicKeyBlock::bind() const
     {
-      Address address;
-
-      // compute the address.
-      if (address.Create(this->network(), this->family(), this->component(),
-                         this->_K) == elle::Status::Error)
-        throw Exception("unable to compute the PKB's address");
+      /// The computation of the address simply consists in hashing the public
+      /// key of the block.
+      Address address(this->network(), this->family(), this->component(),
+                      this->_block_K);
 
       return (address);
     }
@@ -49,8 +48,6 @@ namespace nucleus
     void
     PublicKeyBlock::validate(Address const& address) const
     {
-      Address self;
-
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
@@ -62,11 +59,8 @@ namespace nucleus
       // make sure the address has not be tampered and correspond to the
       // hash of the public key.
       //
-
-      // compute the address.
-      if (self.Create(this->network(), this->family(), this->component(),
-                      this->_K) == elle::Status::Error)
-        throw Exception("unable to compute the PKB's address");
+      Address self(this->network(), this->family(), this->component(),
+                   this->_block_K);
 
       // verify with the recorded address.
       if (address != self)
@@ -100,10 +94,22 @@ namespace nucleus
       // dump the PKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift << "[K]" << std::endl;
 
-      if (this->_K.Dump(margin + 4) == elle::Status::Error)
+      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    PublicKeyBlock::print(std::ostream& stream) const
+    {
+      stream << "public key block{"
+             << this->_block_K
+             << "}";
     }
 
   }

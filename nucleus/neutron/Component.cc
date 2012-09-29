@@ -12,7 +12,7 @@ namespace nucleus
 
     std::ostream&
     operator <<(std::ostream& stream,
-                Component component)
+                Component const component)
     {
       switch (component)
         {

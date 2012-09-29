@@ -5,6 +5,7 @@
 #include <elle/cryptography/Seed.hh>
 
 #include <elle/types.hh>
+#include <elle/Exception.hh>
 
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
@@ -53,18 +54,7 @@ namespace elle
     const String                KeyPair::Extension = ".pair";
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    KeyPair::KeyPair()
-    {
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
@@ -94,6 +84,31 @@ namespace elle
 
       return Status::Ok;
     }
+
+    KeyPair
+    KeyPair::generate(elle::Natural32 const length)
+    {
+      return (KeyPair(length));
+    }
+
+//
+// ---------- construction ----------------------------------------------------
+//
+
+    KeyPair::KeyPair()
+    {
+    }
+
+    KeyPair::KeyPair(elle::Natural32 const length)
+    {
+      // XXX[to do better with constructors]
+      if (this->Generate(length) == Status::Error)
+        throw Exception("unable to generate the key pair");
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
 
     ///
     /// this method generate a RSA keypair.

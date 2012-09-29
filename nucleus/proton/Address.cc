@@ -1,6 +1,10 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 
+#include <elle/format/hexadecimal.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.Address");
+
 namespace nucleus
 {
   namespace proton
@@ -28,67 +32,34 @@ namespace nucleus
     Address&                    Address::Some = Address::Any;
 
 //
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method initializes the address system.
-    ///
-    elle::Status        Address::Initialize()
-    {
-      // create the any address with default meaningless values.
-      if (Address::Any.Create(
-            Address::Any.network(),
-            Address::Any.family(),
-            Address::Any.component()) == elle::Status::Error)
-        escape("unable to create the any address");
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method cleans the address system.
-    ///
-    elle::Status        Address::Clean()
-    {
-      // nothing to do.
-
-      return elle::Status::Ok;
-    }
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// this method initializes the object.
-    ///
     Address::Address():
       _family(FamilyUnknown),
-      _component(neutron::ComponentUnknown),
-      _digest(nullptr)
+      _component(neutron::ComponentUnknown)
     {
+      // XXX[to remove later since this contructor should not exist]
+      // XXX[besides, this does not work because the address is constructed
+      //     statically. thus, OneWay::Hash is called while nothing has been
+      //     initialized nor the cryptography module, nor the log mechanism
+      //     etc.]
+      /* XXX
+      if (elle::cryptography::OneWay::Hash(
+            elle::serialize::make_tuple(this->_network,
+                                        this->_family,
+                                        this->_component),
+            this->_digest) == elle::Status::Error)
+        throw Exception("unable to hash the given parameter(s)");
+      */
     }
 
-    ///
-    /// this is the copy constructor.
-    ///
     Address::Address(Address const& other):
       _network(other._network),
       _family(other._family),
       _component(other._component),
-      _digest(nullptr)
+      _digest(other._digest)
     {
-      if (other._digest != nullptr)
-        this->_digest = new elle::cryptography::Digest(*other._digest);
-    }
-
-    ///
-    /// this method reinitializes the object.
-    ///
-    Address::~Address()
-    {
-      delete this->_digest;
     }
 
 //
@@ -98,42 +69,14 @@ namespace nucleus
     elle::String const
     Address::unique() const
     {
-      assert(this->_digest != nullptr);
-
       // note that a unique element i.e the digest has already been computed
       // when the address was created.
       //
       // therefore, this method simply returns a string representation of
       // the digest.
-      /* XXX[this does not work because Save() call the serialization which
-             prepends a version number etc. leading to a non-uniform hexadecimal
-             representation]
-         elle::io::Unique unique;
-         this->digest->Save(unique);
-      */
-      /* XXX[likewise for this one which consists in serializing in hexadecimal]
-         std::stringstream ss;
-         elle::serialize::HexadecimalArchive<elle::serialize::ArchiveMode::Output>
-           archive(ss);
-         archive << *this->digest;
-      */
-      elle::Natural32 i;
-      elle::String alphabet("0123456789abcdef");
-      elle::String string;
-
-      for (i = 0; i < this->_digest->region.size; i++)
-        {
-          elle::Character hexadecimal[2];
-
-          hexadecimal[0] =
-            alphabet[(this->_digest->region.contents[i] >> 4) & 0xf];
-          hexadecimal[1] =
-            alphabet[this->_digest->region.contents[i] & 0xf];
-
-          string.append(hexadecimal, 2);
-        }
-
-      return (string);
+      return (elle::format::hexadecimal::encode(
+                reinterpret_cast<const char*>(this->_digest.region.contents),
+                this->_digest.region.size));
     }
 
 //
@@ -147,19 +90,7 @@ namespace nucleus
       if (this == &other)
         return true;
 
-      // if both are nullptr or equal return true, false otherwise
-      if ((this->_digest == nullptr) || (other._digest == nullptr))
-        {
-          if (this->_digest != other._digest)
-            return false;
-        }
-      else
-        {
-          if (*this->_digest != *other._digest)
-            return false;
-        }
-
-      return true;
+      return (this->_digest == other._digest);
     }
 
     elle::Boolean
@@ -169,19 +100,7 @@ namespace nucleus
       if (this == &other)
         return false;
 
-      // test for a null digest.
-      if ((this->_digest == nullptr) && (other._digest == nullptr))
-        return false;
-      else if (this->_digest == nullptr)
-        return true;
-      else if (other._digest == nullptr)
-        return false;
-
-      // compare the digests.
-      if (*this->_digest < *other._digest)
-        return true;
-
-      return false;
+      return (this->_digest < other._digest);
     }
 
     elle::Boolean
@@ -191,25 +110,15 @@ namespace nucleus
       if (this == &other)
         return true;
 
-      // test for a null digest.
-      if ((this->_digest == nullptr) && (other._digest == nullptr))
-        return true;
-      else if (this->_digest == nullptr)
-        return true;
-      else if (other._digest == nullptr)
-        return false;
-
-      return (*this->_digest < *other._digest);
+      return (this->_digest <= other._digest);
     }
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
-    ///
-    /// this function dumps an address object.
-    ///
-    elle::Status        Address::Dump(elle::Natural32           margin) const
+    elle::Status
+    Address::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -230,9 +139,6 @@ namespace nucleus
           if (this->_network.Dump(margin + 2) == elle::Status::Error)
             escape("XXX");
 
-          if (this->_network.Dump(margin + 2) == elle::Status::Error)
-            escape("XXX");
-
           // display the family.
           std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
                     << this->_family << std::endl;
@@ -242,7 +148,7 @@ namespace nucleus
                     << this->_component << std::endl;
 
           // dump the digest.
-          if (this->_digest->Dump(margin + 2) == elle::Status::Error)
+          if (this->_digest.Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the digest");
         }
 

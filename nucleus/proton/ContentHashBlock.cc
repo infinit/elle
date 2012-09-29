@@ -56,12 +56,8 @@ namespace nucleus
     Address
     ContentHashBlock::bind() const
     {
-      Address address;
-
-      // compute the address.
-      if (address.Create(this->network(), this->family(), this->component(),
-                         *this) == elle::Status::Error)
-        throw Exception("unable to compute the CHB's address");
+      Address address(this->network(), this->family(), this->component(),
+                      *this);
 
       return (address);
     }
@@ -69,8 +65,6 @@ namespace nucleus
     void
     ContentHashBlock::validate(Address const& address) const
     {
-      Address self;
-
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
@@ -92,9 +86,8 @@ namespace nucleus
       // the address of a PKB is computed this way: hash(network, family,
       // component, K). therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
-      if (self.Create(this->network(), this->family(), this->component(),
-                      *this) == elle::Status::Error)
-        throw Exception("unable to compute the CHB's address");
+      Address self(this->network(), this->family(), this->component(),
+                   *this);
 
       // compare the address with the given one.
       if (address != self)

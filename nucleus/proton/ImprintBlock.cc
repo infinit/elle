@@ -30,19 +30,11 @@ namespace nucleus
     ImprintBlock::ImprintBlock(Network const& network,
                                neutron::Component const component,
                                elle::cryptography::PublicKey const& creator_K):
-      MutableBlock(network, FamilyImprintBlock, component, creator_K)
+      MutableBlock(network, FamilyImprintBlock, component, creator_K),
+
+      _owner_K(creator_K),
+      _owner_subject(nullptr)
     {
-      // Compute the creation timestamp.
-      if (this->_creation_stamp.Current() == elle::Status::Error)
-        throw Exception("unable to retrieve the current time");
-
-      // Generate a random number for the salt.
-      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
-        throw Exception("unable to generate the seed");
-
-      // Set the owner public key.
-      this->_owner_K = creator_K; // XXX[?]
-      this->_owner_subject = nullptr;
     }
 
     ImprintBlock::~ImprintBlock()
@@ -53,53 +45,6 @@ namespace nucleus
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    Address
-    ImprintBlock::bind() const
-    {
-      Address address;
-
-      ELLE_TRACE_SCOPE("[%p] Bind()", this);
-
-      // Compute the address of the block by hashing the following
-      // elements: network, family, component, stamp, salt and owner_K..
-      if (address.Create(this->network(), this->family(), this->component(),
-                         this->_creation_stamp, this->_salt, this->_owner_K) ==
-          elle::Status::Error)
-        throw Exception("unable to compute the imprint address");
-
-      return (address);
-    }
-
-    void
-    ImprintBlock::validate(Address const& address) const
-    {
-      Address self;
-
-      ELLE_TRACE_METHOD(address);
-
-      if ((this->network() != address.network()) ||
-          (this->family() != address.family()) ||
-          (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
-
-      // Make sure the block has not be tampered and correspond to the
-      // given original address. In order to do that, the address is
-      // recomputed by hashing the tuple (network, family, component,
-      // stamp, salt, owner_K).
-      if (self.Create(this->network(), this->family(), this->component(),
-                      this->_creation_stamp, this->_salt, this->_owner_K) ==
-          elle::Status::Error)
-        throw Exception("unable to compute the imprint address");
-
-      // Finally, compare the recomputed address with the theoretical address
-      // of the block.
-      if (address != self)
-        throw Exception("the address does not correspond to the block's "
-                        "public key");
-    }
 
     neutron::Subject const&
     ImprintBlock::owner_subject()
@@ -116,6 +61,50 @@ namespace nucleus
     }
 
 //
+// ---------- block -----------------------------------------------------------
+//
+
+    Address
+    ImprintBlock::bind() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      /// The computation of an Imprint block's address consists in hashing
+      /// the creation timestamp and salt along with the owner's public key so as
+      /// to ensure the uniqueness of the address.
+      Address address(this->network(), this->family(), this->component(),
+                      this->creation_timestamp(), this->salt(), this->_owner_K);
+
+      return (address);
+    }
+
+    void
+    ImprintBlock::validate(Address const& address) const
+    {
+      ELLE_TRACE_METHOD(address);
+
+      if ((this->network() != address.network()) ||
+          (this->family() != address.family()) ||
+          (this->component() != address.component()))
+        throw Exception(
+          elle::sprint("the address %s does not seem to represent the given "
+                       "block", address));
+
+      // Make sure the block has not be tampered and correspond to the
+      // given original address. In order to do that, the address is
+      // recomputed by hashing the tuple (network, family, component,
+      // timestamp, salt, owner_K).
+      Address self(this->network(), this->family(), this->component(),
+                   this->creation_timestamp(), this->salt(), this->_owner_K);
+
+      // Finally, compare the recomputed address with the theoretical address
+      // of the block.
+      if (address != self)
+        throw Exception("the address does not correspond to the block's "
+                        "public key");
+    }
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -128,15 +117,6 @@ namespace nucleus
 
       if (MutableBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Creation Stamp]" << std::endl;
-
-      if (this->_creation_stamp.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the stamp");
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Salt] " << this->_salt << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Owner]" << std::endl;

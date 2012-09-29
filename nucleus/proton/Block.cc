@@ -1,5 +1,6 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/Random.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -47,9 +48,22 @@ namespace nucleus
       _component(component),
       _state(StateClean)
     {
+      // XXX[to improve and put in the list above]
+
+      // Compute the hash of the creator's key so as to be able to authenticate
+      // it later.
       if (elle::cryptography::OneWay::Hash(
             creator_K, this->_creator) == elle::Status::Error)
         throw Exception("unable to hash the creator's public key");
+
+      // Compute the creation timetimestamp.
+      if (this->_creation_timestamp.Current() == elle::Status::Error)
+        throw Exception("unable to retrieve the current time");
+
+      // Generate a random number for the salt.
+      if (elle::cryptography::Random::Generate(this->_salt) ==
+          elle::Status::Error)
+        throw Exception("unable to generate the salt");
     }
 
 //
@@ -77,6 +91,15 @@ namespace nucleus
       if (this->_creator.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the creator's digest");
 
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Creation Timestamp]" << std::endl;
+
+      if (this->_creation_timestamp.Dump(margin + 4) == elle::Status::Error)
+        escape("unable to dump the timestamp");
+
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Salt] " << this->_salt << std::endl;
+
       std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
                 << std::dec << this->_state << std::endl;
 
@@ -91,6 +114,12 @@ namespace nucleus
     Block::print(std::ostream& stream) const
     {
       stream << "block{"
+             << this->_network
+             << ", "
+             << this->_family
+             << ", "
+             << this->_component
+             << ", "
              << this->_state
              << "}";
     }

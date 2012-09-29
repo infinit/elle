@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 
-# include <elle/utility/Time.hh>
 # include <elle/cryptography/PublicKey.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -50,12 +49,6 @@ namespace nucleus
       // methods
       //
     public:
-      /// Computes the address of the block.
-      Address
-      bind() const;
-      /// Makes sure the block is consistent with the given address.
-      void
-      validate(Address const& address) const;
       /// The subject of the block's owner.
       neutron::Subject const&
       owner_subject();
@@ -64,6 +57,12 @@ namespace nucleus
       // interfaces
       //
     public:
+      // block
+      Address
+      bind() const;
+      void
+      validate(Address const& address) const;
+
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
@@ -75,11 +74,6 @@ namespace nucleus
       // attributes
       //
     private:
-      /// The block creation timestamp.
-      ELLE_ATTRIBUTE_R(elle::utility::Time, creation_stamp);
-      /// A random salt so as to differentiate two ImprintBlocks being
-      /// created by the same user at the exact same time.
-      ELLE_ATTRIBUTE(elle::Natural64, salt);
       /// The block's owner public key: the complementary private key
       /// must be used to sign the block's content. Note that the signature
       /// is not embeded in this class. Instead the higher-level classes
@@ -88,7 +82,7 @@ namespace nucleus
       /// This subject is generated on-demand in order to ease the management
       /// of the block owner's identity. The attribute is therefore never
       /// serialized.
-      neutron::Subject* _owner_subject;
+      ELLE_ATTRIBUTE(neutron::Subject*, owner_subject);
     };
 
   }

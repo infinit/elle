@@ -13,7 +13,7 @@ namespace nucleus
     ///
     enum Component
       {
-        ComponentUnknown = 0,
+        ComponentUnknown = 0, // XXX
 
         ComponentObject,
         ComponentData,
@@ -26,12 +26,12 @@ namespace nucleus
         ComponentSeamCatalog,
         ComponentQuillCatalog,
 
-        Components
+        Components // XXX
       };
 
     std::ostream&
     operator <<(std::ostream& stream,
-                Component component);
+                Component const component);
 
   }
 }

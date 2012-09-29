@@ -13,19 +13,19 @@ namespace nucleus
     ///
     enum Family
       {
-        FamilyUnknown = 0,
+        FamilyUnknown = 0, // XXX
 
         FamilyContentHashBlock,
         FamilyPublicKeyBlock,
         FamilyOwnerKeyBlock,
         FamilyImprintBlock,
 
-        Families = FamilyImprintBlock + 1
+        Families = FamilyImprintBlock + 1 // XXX
       };
 
     std::ostream&
     operator <<(std::ostream& stream,
-                Family family);
+                Family const family);
 
   }
 }

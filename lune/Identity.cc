@@ -142,9 +142,9 @@ namespace lune
       escape("unable to seal an unencrypted identity");
 
     // sign the pair with the authority.
-    if (authority.k->Sign(elle::serialize::make_tuple(this->_id, this->name, *this->cipher),
-                          this->signature) == elle::Status::Error)
-      escape("unable to sign the pair with the authority");
+    this->signature =
+      authority.k->sign(
+        elle::serialize::make_tuple(this->_id, this->name, *this->cipher));
 
     return elle::Status::Ok;
   }

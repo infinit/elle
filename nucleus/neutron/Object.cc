@@ -135,7 +135,7 @@ namespace nucleus
       //
       {
         // set the last update time.
-        if (this->_data.modification_stamp.Current() == elle::Status::Error)
+        if (this->_data.modification_timestamp.Current() == elle::Status::Error)
           escape("unable to set the last update time");
 
         // set the address.
@@ -173,7 +173,7 @@ namespace nucleus
                                              const Permissions& permissions)
     {
       // set the last management time.
-      if (this->_meta.modification_stamp.Current() == elle::Status::Error)
+      if (this->_meta.modification_timestamp.Current() == elle::Status::Error)
         escape("unable to set the last management time");
 
       // set the attributes.
@@ -218,15 +218,14 @@ namespace nucleus
           this->_data.revision += 1;
 
           // sign the archive with the author key.
-          if (k.Sign(elle::serialize::make_tuple(
-                       this->_data.contents,
-                       this->_data.size,
-                       this->_data.modification_stamp,
-                       this->_data.revision,
-                       this->_meta.owner.token,
-                       this->_meta.access),
-                     this->_data.signature) == elle::Status::Error)
-            escape("unable to sign the data archive");
+          this->_data.signature =
+            k.sign(elle::serialize::make_tuple(
+                     this->_data.contents,
+                     this->_data.size,
+                     this->_data.modification_timestamp,
+                     this->_data.revision,
+                     this->_meta.owner.token,
+                     this->_meta.access));
 
           // mark the section as consistent.
           this->_data.state = proton::StateConsistent;
@@ -265,15 +264,14 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
-              if (k.Sign(elle::serialize::make_tuple(
-                           this->_meta.owner.permissions,
-                           this->_meta.genre,
-                           this->_meta.modification_stamp,
-                           this->_meta.attributes,
-                           this->_meta.revision,
-                           fingerprint),
-                         this->_meta.signature) == elle::Status::Error)
-                escape("unable to sign the meta archive");
+              this->_meta.signature =
+                k.sign(elle::serialize::make_tuple(
+                         this->_meta.owner.permissions,
+                         this->_meta.genre,
+                         this->_meta.modification_timestamp,
+                         this->_meta.attributes,
+                         this->_meta.revision,
+                         fingerprint));
             }
           else
             {
@@ -283,14 +281,13 @@ namespace nucleus
               //
 
               // sign the meta data.
-              if (k.Sign(elle::serialize::make_tuple(
-                           this->_meta.owner.permissions,
-                           this->_meta.genre,
-                           this->_meta.modification_stamp,
-                           this->_meta.attributes,
-                           this->_meta.revision),
-                         this->_meta.signature) == elle::Status::Error)
-                escape("unable to sign the meta archive");
+              this->_meta.signature =
+                k.sign(elle::serialize::make_tuple(
+                         this->_meta.owner.permissions,
+                         this->_meta.genre,
+                         this->_meta.modification_timestamp,
+                         this->_meta.attributes,
+                         this->_meta.revision));
             }
 
           // mark the section as consistent.
@@ -307,6 +304,117 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    proton::Address const&
+    Object::access() const
+    {
+      return (this->_meta.access);
+    }
+
+    Record&
+    Object::owner_record()
+    {
+      _owner_record();
+
+      return (*this->_meta.owner.record);
+    }
+
+    Token const&
+    Object::owner_token() const
+    {
+      return (this->_meta.owner.token);
+    }
+
+    Permissions const&
+    Object::owner_permissions() const
+    {
+      return (this->_meta.owner.permissions);
+    }
+
+    Genre const&
+    Object::genre() const
+    {
+      return (this->_meta.genre);
+    }
+
+    Author const&
+    Object::author() const
+    {
+      assert(this->_author != nullptr);
+
+      return (*this->_author);
+    }
+
+    proton::Address const&
+    Object::contents() const
+    {
+      return (this->_data.contents);
+    }
+
+    Attributes const&
+    Object::attributes() const
+    {
+      return (this->_meta.attributes);
+    }
+
+    Attributes&
+    Object::attributes()
+    {
+      return (this->_meta.attributes);
+    }
+
+    Size const&
+    Object::size() const
+    {
+      return (this->_data.size);
+    }
+
+    elle::utility::Time const&
+    Object::data_modification_timestamp() const
+    {
+      return (this->_data.modification_timestamp);
+    }
+
+    elle::utility::Time const&
+    Object::meta_modification_timestamp() const
+    {
+      return (this->_meta.modification_timestamp);
+    }
+
+    proton::Revision const&
+    Object::data_revision() const
+    {
+      return (this->_data.revision);
+    }
+
+    proton::Revision const&
+    Object::meta_revision() const
+    {
+      return (this->_meta.revision);
+    }
+
+    void
+    Object::_owner_record()
+    {
+      // Create the record corresponding to the object owner, if necessary.
+      // Note that this record will never be serialized but is used to ease
+      // the process of access control since most method return a record.
+      if (this->_meta.owner.record == nullptr)
+        this->_meta.owner.record = new Record(this->owner_subject(),
+                                              this->_meta.owner.permissions,
+                                              this->_meta.owner.token);
+
+      assert (this->_meta.owner.record != nullptr);
+    }
+
+//
+// ---------- block -----------------------------------------------------------
+//
+
+    /// Implements the Block's validate() interface method.
+    ///
+    /// However, since the Object requires additional information in
+    /// order to be validated, this method must *never* be used and therefore
+    /// returns an error.
     void
     Object::validate(proton::Address const&) const
     {
@@ -352,7 +460,7 @@ namespace nucleus
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
-                    this->_meta.modification_stamp,
+                    this->_meta.modification_timestamp,
                     this->_meta.attributes,
                     this->_meta.revision,
                     fingerprint)) == elle::Status::Error)
@@ -366,7 +474,7 @@ namespace nucleus
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
-                    this->_meta.modification_stamp,
+                    this->_meta.modification_timestamp,
                     this->_meta.attributes,
                     this->_meta.revision)) == elle::Status::Error)
               throw Exception("unable to verify the meta's signature");
@@ -460,7 +568,7 @@ namespace nucleus
                           elle::serialize::make_tuple(
                             this->_data.contents,
                             this->_data.size,
-                            this->_data.modification_stamp,
+                            this->_data.modification_timestamp,
                             this->_data.revision,
                             this->_meta.owner.token,
                             this->_meta.access)) == elle::Status::Error)
@@ -473,108 +581,6 @@ namespace nucleus
         if (this->revision() != (this->_data.revision + this->_meta.revision))
           throw Exception("invalid revision number");
       }
-    }
-
-    proton::Address const&
-    Object::access() const
-    {
-      return (this->_meta.access);
-    }
-
-    Record&
-    Object::owner_record()
-    {
-      _owner_record();
-
-      return (*this->_meta.owner.record);
-    }
-
-    Token const&
-    Object::owner_token() const
-    {
-      return (this->_meta.owner.token);
-    }
-
-    Permissions const&
-    Object::owner_permissions() const
-    {
-      return (this->_meta.owner.permissions);
-    }
-
-    Genre const&
-    Object::genre() const
-    {
-      return (this->_meta.genre);
-    }
-
-    Author const&
-    Object::author() const
-    {
-      assert(this->_author != nullptr);
-
-      return (*this->_author);
-    }
-
-    proton::Address const&
-    Object::contents() const
-    {
-      return (this->_data.contents);
-    }
-
-    Attributes const&
-    Object::attributes() const
-    {
-      return (this->_meta.attributes);
-    }
-
-    Attributes&
-    Object::attributes()
-    {
-      return (this->_meta.attributes);
-    }
-
-    Size const&
-    Object::size() const
-    {
-      return (this->_data.size);
-    }
-
-    elle::utility::Time const&
-    Object::data_modification_stamp() const
-    {
-      return (this->_data.modification_stamp);
-    }
-
-    elle::utility::Time const&
-    Object::meta_modification_stamp() const
-    {
-      return (this->_meta.modification_stamp);
-    }
-
-    proton::Revision const&
-    Object::data_revision() const
-    {
-      return (this->_data.revision);
-    }
-
-    proton::Revision const&
-    Object::meta_revision() const
-    {
-      return (this->_meta.revision);
-    }
-
-    void
-    Object::_owner_record()
-    {
-      // Create the record corresponding to the object owner, if necessary.
-      // Note that this record will never be serialized but is used to ease
-      // the process of access control since most method return a record.
-      if (this->_meta.owner.record == nullptr)
-        this->_meta.owner.record = new Record(this->owner_subject(),
-                                              this->_meta.owner.permissions,
-                                              this->_meta.owner.token);
-
-      assert (this->_meta.owner.record != nullptr);
     }
 
 //
@@ -622,9 +628,9 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Modification Stamp] " << std::endl;
-      if (this->_meta.modification_stamp.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta stamp");
+                << "[Modification Timestamp] " << std::endl;
+      if (this->_meta.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
+        escape("unable to dump the meta timestamp");
 
       if (this->_meta.attributes.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta attributess");
@@ -664,9 +670,9 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Modification Stamp]" << std::endl;
-      if (this->_data.modification_stamp.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the data stamp");
+                << "[Modification Timestamp]" << std::endl;
+      if (this->_data.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
+        escape("unable to dump the data timestamp");
 
       if (this->_data.revision.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the data revision");

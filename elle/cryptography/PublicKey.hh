@@ -2,6 +2,7 @@
 #define ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
 
 #include <elle/types.hh>
+#include <elle/Printable.hh>
 
 #include <elle/radix/Object.hh>
 
@@ -29,9 +30,10 @@ namespace elle
     ///
     /// this class represents a public key.
     ///
-    class PublicKey
-      : public radix::Object
-      , public elle::concept::MakeUniquable<PublicKey>
+    class PublicKey:
+      public radix::Object,
+      public elle::concept::MakeUniquable<PublicKey>,
+      public elle::Printable
     {
     public:
       //
@@ -116,13 +118,17 @@ namespace elle
       //
       // interfaces
       //
-
+    public:
       // object
       declare(PublicKey);
       Boolean           operator==(const PublicKey&) const;
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
+
+      // printable
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

@@ -198,18 +198,16 @@ namespace lune
     if (authority.type != Authority::TypePair)
       throw std::runtime_error("unable to sign with a public authority");
 
-    if (authority.k->Sign(
-          elle::serialize::make_tuple(
-            this->_id,
-            this->_administrator_K,
-            this->_model,
-            this->_root,
-            this->_everybody.identity,
-            this->_history,
-            this->_extent),
-          this->_signature) == elle::Status::Error)
-      throw std::runtime_error("unable to sign the meta section "
-                               "with the authority's key");
+    this->_signature =
+      authority.k->sign(
+        elle::serialize::make_tuple(
+          this->_id,
+          this->_administrator_K,
+          this->_model,
+          this->_root,
+          this->_everybody.identity,
+          this->_history,
+          this->_extent));
   }
 
   void
@@ -370,34 +368,32 @@ namespace lune
   void
   Descriptor::Data::seal(elle::cryptography::PrivateKey const& administrator_k)
   {
-    if (administrator_k.Sign(
-          elle::serialize::make_tuple(
-            this->_name,
-            this->_openness,
-            this->_policy,
-            this->_version,
-            this->_formats.block,
-            this->_formats.content_hash_block,
-            this->_formats.contents,
-            this->_formats.immutable_block,
-            this->_formats.imprint_block,
-            this->_formats.mutable_block,
-            this->_formats.owner_key_block,
-            this->_formats.public_key_block,
-            this->_formats.access,
-            this->_formats.attributes,
-            this->_formats.catalog,
-            this->_formats.data,
-            this->_formats.ensemble,
-            this->_formats.group,
-            this->_formats.object,
-            this->_formats.reference,
-            this->_formats.user,
-            this->_formats.identity,
-            this->_formats.descriptor),
-          this->_signature) == elle::Status::Error)
-      throw std::runtime_error("unable to sign the data section "
-                               "with the administrator's key");
+    this->_signature =
+      administrator_k.sign(
+        elle::serialize::make_tuple(
+          this->_name,
+          this->_openness,
+          this->_policy,
+          this->_version,
+          this->_formats.block,
+          this->_formats.content_hash_block,
+          this->_formats.contents,
+          this->_formats.immutable_block,
+          this->_formats.imprint_block,
+          this->_formats.mutable_block,
+          this->_formats.owner_key_block,
+          this->_formats.public_key_block,
+          this->_formats.access,
+          this->_formats.attributes,
+          this->_formats.catalog,
+          this->_formats.data,
+          this->_formats.ensemble,
+          this->_formats.group,
+          this->_formats.object,
+          this->_formats.reference,
+          this->_formats.user,
+          this->_formats.identity,
+          this->_formats.descriptor));
   }
 
   void
