@@ -5,6 +5,7 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Seed.hh>
+#include <elle/Exception.hh>
 
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Code.hh>
@@ -76,10 +77,10 @@ namespace elle
       if (this->_contexts.encrypt != nullptr)
         ::EVP_PKEY_CTX_free(this->_contexts.encrypt);
 
-      this->_key                = nullptr;
-      this->_contexts.decrypt  = nullptr;
-      this->_contexts.sign      = nullptr;
-      this->_contexts.encrypt   = nullptr;
+      this->_key = nullptr;
+      this->_contexts.decrypt = nullptr;
+      this->_contexts.sign = nullptr;
+      this->_contexts.encrypt = nullptr;
     }
 
 //
@@ -282,31 +283,29 @@ namespace elle
       return Status::Ok;
     }
 
-    ///
-    /// this method signs a plain text.
-    ///
-    Status PrivateKey::Sign(elle::utility::WeakBuffer const&  buffer,
-                            Signature&                        signature) const
+    Signature
+    PrivateKey::sign(elle::utility::WeakBuffer const&  plain) const
     {
-      Digest            digest;
-      size_t            size;
+      Signature signature;
+      Digest digest;
+      ::size_t size;
 
-      // compute the plain's digest.
-      if (OneWay::Hash(buffer, digest) == Status::Error)
-        escape("unable to hash the plain");
+      // Compute the plain's digest.
+      if (OneWay::Hash(plain, digest) == Status::Error)
+        throw Exception("unable to hash the plain");
 
-      // sign the portion.
+      // Retrieve information on the size of the output signature.
       if (::EVP_PKEY_sign(
             this->_contexts.sign,
             nullptr,
             &size,
             reinterpret_cast<const unsigned char*>(digest.region.contents),
             digest.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // prepare the signature so it can receive the upcoming portion.
+      // Prepare the signature so it can receive the upcoming portion.
       if (signature.region.Prepare(size) == Status::Error)
-        escape("unable to prepare the signature");
+        throw Exception("unable to prepare the signature");
 
       // actually sign the portion.
       if (::EVP_PKEY_sign(
@@ -315,12 +314,12 @@ namespace elle
             &size,
             reinterpret_cast<const unsigned char*>(digest.region.contents),
             digest.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // set the code size.
       signature.region.size = size;
 
-      return Status::Ok;
+      return (signature);
     }
 
     Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,

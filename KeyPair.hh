@@ -31,8 +31,15 @@ namespace elle
       //
       // static methods
       //
+    public:
       static Status     Initialize();
       static Status     Clean();
+
+      /// Returns a brand new, freshly generated key pair of the
+      /// given length, or default one if not provided.
+      static
+      KeyPair
+      generate(elle::Natural32 const length = Default::Length);
 
       //
       // constants
@@ -49,11 +56,15 @@ namespace elle
       //
       // constructors & destructors
       //
+    public:
       KeyPair();
+    private:
+      KeyPair(elle::Natural32 length);
 
       //
       // methods
       //
+    public:
       Status            Generate();
       Status            Generate(const Natural32);
 

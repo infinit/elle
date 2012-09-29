@@ -440,5 +440,15 @@ namespace elle
       return Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    PublicKey::print(std::ostream& stream) const
+    {
+      stream << "public key(XXX)";
+    }
+
   }
 }
