@@ -58,26 +58,18 @@ namespace elle
         );
       }
 
-    template<typename T>  Status
-      PrivateKey::Sign(T const& in, Signature& out) const
-      {
-        static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
-            "explicit cast to WeakBuffer needed"
-        );
+    template <typename T>
+    Signature
+    PrivateKey::sign(T const& plain) const
+    {
+      assert((!std::is_same<T, elle::utility::Buffer>::value));
 
-        elle::utility::Buffer buf;
-        try
-          {
-            buf.Writer() << in;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
+      elle::utility::Buffer buffer;
 
-        return this->Sign(elle::utility::WeakBuffer(buf), out);
-      }
+      buffer.Writer() << plain;
+
+      return (this->sign(elle::utility::WeakBuffer(buffer)));
+    }
 
   }
 }

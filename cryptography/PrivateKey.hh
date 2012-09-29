@@ -7,6 +7,7 @@
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Plain.hh>
+# include <elle/cryptography/Signature.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -90,15 +91,21 @@ namespace elle
       /// secret key with the symmetrically-encrypted data.
       ///
       Status
-      Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
+      Encrypt(elle::utility::WeakBuffer const& in,
+              Code& out) const;
       template<typename T> Status
-      Encrypt(T const& in, Code& out) const;
+      Encrypt(T const& in,
+              Code& out) const;
 
     public:
-      Status
-      Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
-      template<typename T> Status
-      Sign(T const& in, Signature& out) const;
+      /// Returns a signature of the given buffer.
+      Signature
+      sign(elle::utility::WeakBuffer const& plain) const;
+      /// Returns a signature of any given type. Note that the given compound
+      /// must be serializable.
+      template <typename T>
+      Signature
+      sign(T const& plain) const;
 
     public:
       Status

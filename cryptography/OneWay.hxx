@@ -26,6 +26,9 @@ namespace elle
     OneWay::Hash(T const&     value,
                  Digest&      digest)
     {
+      ELLE_LOG_COMPONENT("elle.cryptography.OneWay");
+      ELLE_TRACE_FUNCTION(value);
+
       try
         {
           elle::utility::Buffer buffer;
@@ -37,6 +40,7 @@ namespace elle
         {
           escape("%s", err.what());
         }
+
       // never reached
       throw false;
     }
