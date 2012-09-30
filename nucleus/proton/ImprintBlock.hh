@@ -58,8 +58,10 @@ namespace nucleus
       //
     public:
       // block
+      virtual
       Address
       bind() const;
+      virtual
       void
       validate(Address const& address) const;
 

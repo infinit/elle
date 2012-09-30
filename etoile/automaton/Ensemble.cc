@@ -30,7 +30,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // check if there exists a ensemble. if so, load the block.
-      if (context.group->ensemble() != nucleus::proton::Address::Null)
+      if (context.group->ensemble() != nucleus::proton::Address::null)
         {
           ELLE_TRACE_SCOPE("pull the ensemble block from the storage layer");
 
@@ -70,7 +70,7 @@ namespace etoile
       assert(context.group != nullptr);
 
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.group->ensemble() != nucleus::proton::Address::Null)
+      if (context.group->ensemble() != nucleus::proton::Address::null)
         {
           ELLE_TRACE("record the ensemble block in the transcript")
             context.transcript.wipe(context.group->ensemble());

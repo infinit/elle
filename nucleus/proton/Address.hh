@@ -41,15 +41,31 @@ namespace nucleus
       // constants
       //
     public:
-      static const Address Null; // XXX
-      static Address Any; // XXX
-      static Address& Some; // XXX
+      /// Defines an unused address.
+      static Address const null;
+      /// Defines a not-yet-used address i.e an address with a irrelevant
+      /// value (for now) but whose state, once serialized, should reflect
+      /// the one of a valid address; the size of the address once serialized
+      /// should be extremely close (or equal) to the one of a valid address.
+      static Address const some;
+
+      //
+      // enumerations
+      //
+    public:
+      enum class Type
+      {
+        null,
+        some,
+        valid
+      };
 
       //
       // construction
       //
     public:
       Address(); // XXX[to deserialize]
+      Address(Type const type);
       template <typename... T>
       Address(Network const& network,
               const Family&,
@@ -100,6 +116,7 @@ namespace nucleus
       // attributes
       //
     private:
+      ELLE_ATTRIBUTE(Type, type);
       ELLE_ATTRIBUTE_R(Network, network);
       ELLE_ATTRIBUTE_R(Family, family);
       ELLE_ATTRIBUTE_R(neutron::Component, component);

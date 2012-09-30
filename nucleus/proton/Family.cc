@@ -42,8 +42,9 @@ namespace nucleus
             break;
           }
         default:
-          throw std::runtime_error(
-            elle::sprintf("invalid family: '%s'", family));
+          {
+            throw Exception("unknown family: '%s'", component);
+          }
         }
 
       return (stream);

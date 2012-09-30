@@ -10,23 +10,17 @@ namespace nucleus
   {
 
 //
-// ---------- types -----------------------------------------------------------
+// ---------- enumerations ----------------------------------------------------
 //
 
-    ///
-    /// the genre defines the type of object: file, directory or link.
-    ///
-    /// XXX[change in enum class]
-    typedef elle::Natural8              Genre;
-
-//
-// ---------- constants -------------------------------------------------------
-//
-
-    const Genre                 GenreUnknown = 0;
-    const Genre                 GenreDirectory = 1;
-    const Genre                 GenreFile = 2;
-    const Genre                 GenreLink = 3;
+    /// Defines the nature of a file system object being either a file,
+    /// directory or link (i.e symbolic link in UNIX terms).
+    enum class Genre
+    {
+      file,
+      directory,
+      link
+    };
 
     std::ostream&
     operator <<(std::ostream& stream,

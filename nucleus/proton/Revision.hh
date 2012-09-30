@@ -68,20 +68,15 @@ namespace nucleus
     public:
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& s) const;
 
       //
       // attributes
       //
       Type                      number;
-
-    /*----------.
-    | Printable |
-    `----------*/
-
-    public:
-      virtual
-      void
-      print(std::ostream& s) const;
     };
   }
 }

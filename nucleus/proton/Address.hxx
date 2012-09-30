@@ -22,6 +22,7 @@ namespace nucleus
                      const Family& family,
                      const neutron::Component& component,
                      const T&... parameters):
+      _type(Type::valid),
       _network(network),
       _family(family),
       _component(component)
@@ -59,6 +60,10 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
 {
   enforce(version == 0);
 
+  // XXX[to handle for porcupine]
+  enforce(value._type != nucleus::proton::Address::Type::some);
+
+  archive & value._type;
   archive & value._network;
   archive & value._family;
   archive & value._component;

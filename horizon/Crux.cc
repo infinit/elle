@@ -190,27 +190,6 @@ namespace horizon
     // Set the mode and permissions.
     switch (abstract.genre)
       {
-      case nucleus::neutron::GenreDirectory:
-        {
-          // Set the object as being a directory.
-          stat->st_mode = S_IFDIR;
-
-          // If the user has the read permission, allow her to
-          // access and read the directory.
-          if ((abstract.permissions.owner &
-               nucleus::neutron::PermissionRead) ==
-              nucleus::neutron::PermissionRead)
-            stat->st_mode |= S_IRUSR | S_IXUSR;
-
-          // If the user has the write permission, allow her to
-          // modify the directory content.
-          if ((abstract.permissions.owner &
-               nucleus::neutron::PermissionWrite) ==
-              nucleus::neutron::PermissionWrite)
-            stat->st_mode |= S_IWUSR;
-
-          break;
-        }
       case nucleus::neutron::GenreFile:
         {
           nucleus::neutron::Trait const* trait;
@@ -245,6 +224,27 @@ namespace horizon
               // Active the exec bit.
               stat->st_mode |= S_IXUSR;
             }
+
+          break;
+        }
+      case nucleus::neutron::GenreDirectory:
+        {
+          // Set the object as being a directory.
+          stat->st_mode = S_IFDIR;
+
+          // If the user has the read permission, allow her to
+          // access and read the directory.
+          if ((abstract.permissions.owner &
+               nucleus::neutron::PermissionRead) ==
+              nucleus::neutron::PermissionRead)
+            stat->st_mode |= S_IRUSR | S_IXUSR;
+
+          // If the user has the write permission, allow her to
+          // modify the directory content.
+          if ((abstract.permissions.owner &
+               nucleus::neutron::PermissionWrite) ==
+              nucleus::neutron::PermissionWrite)
+            stat->st_mode |= S_IWUSR;
 
           break;
         }
@@ -667,16 +667,6 @@ namespace horizon
       {
         switch (abstract.genre)
           {
-          case nucleus::neutron::GenreDirectory:
-            {
-              // Check if the user has the read permission meaning
-              // the exec bit
-              if ((record.permissions & nucleus::neutron::PermissionRead) !=
-                  nucleus::neutron::PermissionRead)
-                goto _access;
-
-              break;
-            }
           case nucleus::neutron::GenreFile:
             {
               nucleus::neutron::Trait const* trait;
@@ -692,6 +682,16 @@ namespace horizon
               // Check the trait.
               if (!((trait != nullptr) &&
                     (trait->value == "true")))
+                goto _access;
+
+              break;
+            }
+          case nucleus::neutron::GenreDirectory:
+            {
+              // Check if the user has the read permission meaning
+              // the exec bit
+              if ((record.permissions & nucleus::neutron::PermissionRead) !=
+                  nucleus::neutron::PermissionRead)
                 goto _access;
 
               break;
@@ -2038,6 +2038,11 @@ namespace horizon
 
           break;
         }
+      case nucleus::neutron::GenreDirectory:
+        {
+          error("meaningless operation: unlink on a directory object",
+                -EPERM);
+        }
       case nucleus::neutron::GenreLink:
         {
           // Destroy the link.
@@ -2047,11 +2052,6 @@ namespace horizon
                   directory);
 
           break;
-        }
-      case nucleus::neutron::GenreDirectory:
-        {
-          error("meaningless operation: unlink on a directory object",
-                -EPERM);
         }
       };
 

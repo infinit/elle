@@ -56,6 +56,10 @@ namespace nucleus
     Address
     OwnerKeyBlock::bind() const
     {
+      // Note that the address computation of an owner key block is similar
+      // to the one of a pubilc key block: the block's public key K is hashed
+      // while the creation timestamp and salt do not need to be included
+      // because such a public key is believed to be unique.
       Address address(this->network(), this->family(), this->component(),
                       this->_block_K);
 

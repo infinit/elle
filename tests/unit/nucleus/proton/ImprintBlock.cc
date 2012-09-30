@@ -24,8 +24,8 @@ void test()
 
       nucleus::proton::Address addr(blk.bind());
 
-      assert(addr != nucleus::proton::Address::Null);
-      assert(addr != nucleus::proton::Address::Some);
+      assert(addr != nucleus::proton::Address::null);
+      assert(addr != nucleus::proton::Address::some);
 
       blk.validate(addr);
 

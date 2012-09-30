@@ -69,19 +69,19 @@ namespace nucleus
       //
     public:
       // block
+      virtual
       Address
       bind() const;
+      virtual
       void
       validate(Address const& address) const;
-
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // printable
+      virtual
       void
       print(std::ostream& stream) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(OwnerKeyBlock);
 

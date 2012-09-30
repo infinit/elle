@@ -160,9 +160,9 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
       ELLE_ATTRIBUTE_R(proton::Address, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
+      ELLE_ATTRIBUTE(elle::cryptography::Signature, signature);
       // XXX[not serialized]
       ELLE_ATTRIBUTE(Fellow*, manager_fellow);
-      ELLE_ATTRIBUTE(elle::cryptography::Signature, signature);
     };
 
   }

@@ -13,44 +13,24 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- construction ----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
     ContentHashBlock::ContentHashBlock():
       ImmutableBlock()
     {
-      // Compute the creation timestamp.
-      if (this->_creation_stamp.Current() == elle::Status::Error)
-        throw Exception("unable to retrieve the current time");
-
-      // Generate a random number for the salt.
-      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
-        throw Exception("unable to generate the seed");
     }
 
-    ///
-    /// specific constructor.
-    ///
     ContentHashBlock::ContentHashBlock(
         Network const& network,
         neutron::Component const component,
         elle::cryptography::PublicKey const& creator_K):
       ImmutableBlock(network, FamilyContentHashBlock, component, creator_K)
     {
-      // Compute the creation timestamp.
-      if (this->_creation_stamp.Current() == elle::Status::Error)
-        throw Exception("unable to retrieve the current time");
-
-      // Generate a random number for the salt.
-      if (elle::cryptography::Random::Generate(this->_salt) == elle::Status::Error)
-        throw Exception("unable to generate the seed");
     }
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- block -----------------------------------------------------------
 //
 
     Address

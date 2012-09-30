@@ -34,6 +34,15 @@ namespace etoile
                                     agent::Agent::Subject.user(),
                                     description);
 
+      // Manually set the group as dirty for the automata to consider it
+      // new and ready to be serialized. Otherwise, the group would be ignored.
+      //
+      // This is required because creating an empty group is not meaningless
+      // since a group always has at least one member, its manager. One could
+      // therefore want to create a group a later add users. The group, when
+      // "empty" should therefore be considered as valid.
+      context.group->state(proton::StateDirty);
+
       nucleus::proton::Address address(context.group->bind());
 
       // create the context's location with an initial revision number.

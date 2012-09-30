@@ -155,18 +155,16 @@ namespace nucleus
       //
     public:
       // block
+      virtual
       void
       validate(proton::Address const& address) const;
       void
       validate(proton::Address const& address,
                Access const& access) const;
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Object);
-
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Object);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 

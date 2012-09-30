@@ -9,28 +9,20 @@ namespace nucleus
   {
 
 //
-// ---------- types -----------------------------------------------------------
+// ---------- enumerations ----------------------------------------------------
 //
 
+    /// Defines the permissions a subject (i.e user or group) can be granted
+    /// on a file system object.
     ///
-    /// this enumeration represents the different permissions a subject can
-    /// be granted.
-    ///
-    typedef elle::Natural16 Permissions;
-
-//
-// ---------- constants -------------------------------------------------------
-//
-
-    ///
-    /// default permission values.
-    ///
-    /// note that for convenience, the write permission implictly includes
+    /// Note that for convenience, the write permission implictly includes
     /// the read permission as well.
-    ///
-    const Permissions PermissionNone = 0;
-    const Permissions PermissionRead = (1 << 0);
-    const Permissions PermissionWrite = PermissionRead | (1 << 1);
+    enum class Permissions
+    {
+      none = 0,
+      read = (1 << 0),
+      write = read | (1 << 1)
+    };
 
   }
 }

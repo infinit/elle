@@ -1,6 +1,5 @@
 #include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Contents.hh>
-#include <nucleus/neutron/Neutron.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Data.hh>
 #include <nucleus/neutron/Catalog.hh>

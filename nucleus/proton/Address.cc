@@ -14,47 +14,38 @@ namespace nucleus
 // ---------- definitions -----------------------------------------------------
 //
 
-    ///
-    /// this variable can easily be used for comparing with invalid addresses.
-    ///
-    const Address               Address::Null;
-
-    ///
-    /// this variable is similar to Null except that it is constructed
-    /// so as not to be considered "empty". this constant is particularly
-    /// useful when one wants to know the footprint of such an Address type.
-    ///
-    Address                     Address::Any;
-
-    ///
-    /// this variable is an alias of Any.
-    ///
-    Address&                    Address::Some = Address::Any;
+    Address const Address::null(Address::Type::null);
+    Address const Address::some(Address::Type::some);
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-    Address::Address():
-      _family(FamilyUnknown),
-      _component(neutron::ComponentUnknown)
+    Address::Address()
     {
-      // XXX[to remove later since this contructor should not exist]
-      // XXX[besides, this does not work because the address is constructed
-      //     statically. thus, OneWay::Hash is called while nothing has been
-      //     initialized nor the cryptography module, nor the log mechanism
-      //     etc.]
-      /* XXX
-      if (elle::cryptography::OneWay::Hash(
-            elle::serialize::make_tuple(this->_network,
-                                        this->_family,
-                                        this->_component),
-            this->_digest) == elle::Status::Error)
-        throw Exception("unable to hash the given parameter(s)");
-      */
+    }
+
+    Address::Address(Type const type):
+      _type(type)
+    {
+      switch (type)
+        {
+        case Type::valid:
+          {
+            throw Exception("valid addresses cannot be built through this "
+                            "constructor");
+          }
+        case Type::null:
+        case Type::some:
+          {
+            // Nothing to do; this is the right way to construct such special
+            // addresses
+          }
+        }
     }
 
     Address::Address(Address const& other):
+      _type(other._type),
       _network(other._network),
       _family(other._family),
       _component(other._component),
@@ -69,6 +60,8 @@ namespace nucleus
     elle::String const
     Address::unique() const
     {
+      assert(this->_type == Type::valid);
+
       // note that a unique element i.e the digest has already been computed
       // when the address was created.
       //
@@ -86,31 +79,46 @@ namespace nucleus
     elle::Boolean
     Address::operator ==(Address const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return true;
+        return (true);
 
-      return (this->_digest == other._digest);
+      if (this->_type != other._type)
+        return (false);
+
+      if (this->_type == Type::valid)
+        return (this->_digest == other._digest);
+      else
+        return (true);
     }
 
     elle::Boolean
     Address::operator <(Address const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return false;
+        return (false);
 
-      return (this->_digest < other._digest);
+      if (this->_type != other._type)
+        return (this->_type < other._type);
+
+      if (this->_type == Type::valid)
+        return (this->_digest < other._digest);
+      else
+        return (false);
     }
 
     elle::Boolean
     Address::operator <=(Address const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return true;
+        return (true);
 
-      return (this->_digest <= other._digest);
+      if (this->_type != other._type)
+        return (this->_type <= other._type);
+
+      if (this->_type == Type::valid)
+        return (this->_digest <= other._digest);
+      else
+        return (false);
     }
 
 //
@@ -123,11 +131,11 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       // check the value.
-      if (*this == Address::Null)
+      if (*this == Address::null)
         {
           std::cout << alignment << "[Address] " << elle::none << std::endl;
         }
-      else if (*this == Address::Some)
+      else if (*this == Address::some)
         {
           std::cout << alignment << "[Address] " << "(undef)" << std::endl;
         }
@@ -162,15 +170,32 @@ namespace nucleus
     void
     Address::print(std::ostream& stream) const
     {
-      stream << "address("
-             << this->_network
-             << ", "
-             << this->_family
-             << ", "
-             << this->_component
-             << ", "
-             << this->unique()
-             << ")";
+      switch (this->_type)
+        {
+        case Type::valid:
+          {
+            stream << "address{"
+                   << this->_network
+                   << ", "
+                   << this->_family
+                   << ", "
+                   << this->_component
+                   << ", "
+                   << this->unique()
+                   << "}";
+            break;
+          }
+        case Type::null:
+          {
+            stream << "address(null)";
+            break;
+          }
+        case Type::some:
+          {
+            stream << "address(some)";
+            break;
+          }
+        }
     }
 
   }

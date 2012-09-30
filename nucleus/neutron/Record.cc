@@ -23,7 +23,8 @@ namespace nucleus
     ///
     /// empty constructor.
     ///
-    Record::Record()
+    Record::Record():
+      token(new Token)
     {
     }
 
@@ -35,7 +36,7 @@ namespace nucleus
                    Token const& token):
       subject(subject),
       permissions(permissions),
-      token(token)
+      token(new Token(token))
     {
     }
 
@@ -91,7 +92,9 @@ namespace nucleus
     {
       this->subject = subject;
       this->permissions = permissions;
-      this->token = token;
+
+      delete this->token;
+      this->token = new Token(token);
 
       return elle::Status::Ok;
     }
@@ -110,7 +113,7 @@ namespace nucleus
       // compare the attributes.
       if ((this->subject != other.subject) ||
           (this->permissions != other.permissions) ||
-          (this->token != other.token))
+          (*this->token != *other.token)) // XXX[WARNING: to improve as can be null]
         return false;
 
       return true;
@@ -139,7 +142,7 @@ namespace nucleus
                 << (int)this->permissions << std::endl;
 
       // dump the token.
-      if (this->token.Dump(margin + 2) == elle::Status::Error)
+      if (this->token->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
 
       return elle::Status::Ok;

@@ -37,8 +37,14 @@ namespace nucleus
     Address
     PublicKeyBlock::bind() const
     {
-      /// The computation of the address simply consists in hashing the public
-      /// key of the block.
+      // The computation of the address simply consists in hashing the public
+      // key of the block.
+      //
+      // Note that the address computation of a public key block does not
+      // require the inclusion of the creation timestamp and salt as it is
+      // for imprint blocks for example because the block's public key K
+      // is supposed to be unique since it is though extremely unlikely to
+      // generate the same public keys.
       Address address(this->network(), this->family(), this->component(),
                       this->_block_K);
 

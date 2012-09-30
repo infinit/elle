@@ -151,7 +151,7 @@ namespace etoile
       // remove the pod from the containers.
       //
 
-      if (pod->address != nucleus::Address::Null)
+      if (pod->address != nucleus::Address::null)
         Nest::Addresses.erase(pod->address);
 
       Nest::Placements.erase(pod->placement);
@@ -288,7 +288,7 @@ namespace etoile
           if (pod->Load(handle) == elle::Status::Error)
             escape("unable to load the pod");
         }
-      else if (handle.address != nucleus::Address::Null)
+      else if (handle.address != nucleus::Address::null)
         {
           Pod*              pod;
 

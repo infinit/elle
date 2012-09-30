@@ -57,8 +57,9 @@ namespace nucleus
             break;
           }
         default:
-          throw std::runtime_error(
-            elle::sprintf("invalid component: '%s'", component));
+          {
+            throw Exception("unknown component: '%s'", component);
+          }
         }
 
       return (stream);

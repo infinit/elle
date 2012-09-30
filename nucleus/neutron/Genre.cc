@@ -16,9 +16,9 @@ namespace nucleus
     {
       switch (genre)
         {
-        case GenreUnknown:
+        case GenreFile:
           {
-            stream << "unknown";
+            stream << "file";
             break;
           }
         case GenreDirectory:
@@ -26,15 +26,14 @@ namespace nucleus
             stream << "directory";
             break;
           }
-        case GenreFile:
-          {
-            stream << "file";
-            break;
-          }
         case GenreLink:
           {
             stream << "link";
             break;
+          }
+        default
+          {
+            throw Exception("unknown genre '%s'", genre);
           }
         }
     }

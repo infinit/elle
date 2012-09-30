@@ -36,12 +36,9 @@ namespace nucleus
       ImprintBlock::ImprintBlock(network, ComponentGroup, manager_K),
 
       _description(description),
-      _size(1)
+      _size(1),
+      _manager_fellow(nullptr)
     {
-      this->_manager_fellow = nullptr;
-
-      this->state(proton::StateDirty);
-
       /* XXX[this is a hack which consists in generating a unique pass
              which will not evolve over time. */
       {
@@ -51,7 +48,7 @@ namespace nucleus
           throw Exception("unable to generate the pass"); // XXX[to remove in the future]
 
         Token token(this->manager_subject().user(), pass.k);
-        this->upgrade(proton::Address::Null, pass.K, token);
+        this->upgrade(proton::Address::null, pass.K, token);
       }
     }
 
@@ -86,7 +83,7 @@ namespace nucleus
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = proton::Address::Null;
+      this->_ensemble = proton::Address::null;
 
       this->state(proton::StateDirty);
     }

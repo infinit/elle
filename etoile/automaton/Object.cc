@@ -147,7 +147,7 @@ namespace etoile
         {
           // seal the object, depending on the presence of a referenced
           // access block.
-          if (context.object->access() != nucleus::proton::Address::Null)
+          if (context.object->access() != nucleus::proton::Address::null)
             {
               // make sure the access block is loaded.
               if (Access::Open(context) == elle::Status::Error)
