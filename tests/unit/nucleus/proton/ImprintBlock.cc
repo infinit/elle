@@ -4,7 +4,6 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/utility/Buffer.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 
@@ -54,12 +53,10 @@ int main(int, char** argv)
   try
     {
       CHECK(elle::Elle::Initialize());
-      CHECK(nucleus::Nucleus::Initialize());
 
       test();
 
       CHECK(elle::Elle::Clean());
-      CHECK(nucleus::Nucleus::Clean());
 
       std::cout << "tests done.\n";
       return 0;

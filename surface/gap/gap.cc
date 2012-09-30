@@ -3,13 +3,16 @@
 
 #include <elle/log.hh>
 #include <elle/Elle.hh>
+#include <elle/standalone/Report.hh>
+
 #include <lune/Lune.hh>
-#include <nucleus/Nucleus.hh>
 
 #include <elle/idiom/Close.hh>
 
 #include "gap.h"
 #include "State.hh"
+
+#include <string.h>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
 
@@ -91,8 +94,7 @@ extern "C"
         {
           initialized = true;
           if (elle::Elle::Initialize() == elle::Status::Error ||
-              lune::Lune::Initialize() == elle::Status::Error ||
-              nucleus::Nucleus::Initialize() == elle::Status::Error)
+              lune::Lune::Initialize() == elle::Status::Error)
             {
 #include <elle/idiom/Open.hh>
               show();

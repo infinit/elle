@@ -125,7 +125,7 @@ namespace hole
       Machine::Get(const nucleus::proton::Address& address)
       {
         nucleus::proton::ImmutableBlock* block;
-        nucleus::Nucleus::Factory.Build(address.component(), block);
+        nucleus::factory().Build(address.component(), block);
 
         // Does the block exist.
         if (nucleus::proton::ImmutableBlock::exists(address) == false)
@@ -146,7 +146,7 @@ namespace hole
                    const nucleus::proton::Revision&    revision)
       {
         nucleus::proton::MutableBlock* block;
-        nucleus::Nucleus::Factory.Build(address.component(), block);
+        nucleus::factory().Build(address.component(), block);
 
         // does the block exist.
         if (nucleus::proton::MutableBlock::exists(address, revision) == false)

@@ -46,7 +46,7 @@ namespace hole
         nucleus::proton::MutableBlock* current;
 
         // build a block according to the component.
-        if (nucleus::Nucleus::Factory.Build(
+        if (nucleus::factory().Build(
               this->_address.component(),
               current) == elle::Status::Error)
           throw std::runtime_error("unable to build the block");

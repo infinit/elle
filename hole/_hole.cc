@@ -5,7 +5,6 @@
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <hole/Hole.hh>
 #include <lune/Lune.hh>
@@ -22,11 +21,6 @@ namespace hole
     if (elle::Elle::Initialize() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to initialize Elle");
-
-    // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to initialize Nucleus");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
@@ -120,11 +114,6 @@ namespace hole
     if (lune::Lune::Clean() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to clean Lune");
-
-    // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::Status::Error)

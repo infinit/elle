@@ -1,4 +1,5 @@
 #include <nucleus/Nucleus.hh>
+#include <nucleus/Exception.hh>
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Data.hh>
@@ -11,73 +12,51 @@
 namespace nucleus
 {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// the nucleus factory which enables one to generate nucleus instances
-  /// based on its component identifier.
-  ///
-  elle::utility::Factory                 Nucleus::Factory;
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-  ///
-  /// this method initializes the nucleus by registering the component
-  /// types to the factory.
-  ///
-  elle::Status          Nucleus::Initialize()
+  static
+  elle::utility::Factory const*
+  setup()
   {
-    //
-    // register the nucleus products.
-    //
-    {
-      // register the component types.
-      if (Nucleus::Factory.Register< neutron::Object >
-          (neutron::ComponentObject) == elle::Status::Error)
-        escape("unable to register the factory product");
+    elle::utility::Factory* factory = new elle::utility::Factory;
 
-      if (Nucleus::Factory.Register< proton::Contents<neutron::Data> >
-          (neutron::ComponentData) == elle::Status::Error)
-        escape("unable to register the factory product");
+    if (factory->Register< neutron::Object >
+        (neutron::ComponentObject) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-      if (Nucleus::Factory.Register< proton::Contents<neutron::Catalog> >
-          (neutron::ComponentCatalog) == elle::Status::Error)
-        escape("unable to register the factory product");
+    if (factory->Register< proton::Contents<neutron::Data> >
+        (neutron::ComponentData) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-      if (Nucleus::Factory.Register< proton::Contents<neutron::Reference> >
-          (neutron::ComponentReference) == elle::Status::Error)
-        escape("unable to register the factory product");
+    if (factory->Register< proton::Contents<neutron::Catalog> >
+        (neutron::ComponentCatalog) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-      if (Nucleus::Factory.Register< neutron::Access >
-          (neutron::ComponentAccess) == elle::Status::Error)
-        escape("unable to register the factory product");
+    if (factory->Register< proton::Contents<neutron::Reference> >
+        (neutron::ComponentReference) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-      if (Nucleus::Factory.Register< neutron::Group >
-          (neutron::ComponentGroup) == elle::Status::Error)
-        escape("unable to register the factory product");
+    if (factory->Register< neutron::Access >
+        (neutron::ComponentAccess) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-      if (Nucleus::Factory.Register< neutron::Ensemble >
-          (neutron::ComponentEnsemble) == elle::Status::Error)
-        escape("unable to register the factory product");
-    }
+    if (factory->Register< neutron::Group >
+        (neutron::ComponentGroup) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
 
-    return elle::Status::Ok;
+    if (factory->Register< neutron::Ensemble >
+        (neutron::ComponentEnsemble) == elle::Status::Error)
+      throw Exception("unable to register the factory product");
+
+    return (factory);
   }
 
-  ///
-  /// this method cleans the nucleus
-  ///
-  elle::Status          Nucleus::Clean()
+  elle::utility::Factory const&
+  factory()
   {
-    // clear the nucleus factory.
-    if (Nucleus::Factory.Clear() == elle::Status::Error)
-      escape("unable to clear the factory");
+    static elle::utility::Factory const* factory = setup();
 
-    return elle::Status::Ok;
+    assert(factory != nullptr);
+
+    return (*factory);
   }
 
 }

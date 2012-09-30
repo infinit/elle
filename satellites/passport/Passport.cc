@@ -8,8 +8,6 @@
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
-#include <nucleus/Nucleus.hh>
-
 #include <etoile/Etoile.hh>
 
 #include <hole/Hole.hh>
@@ -176,10 +174,6 @@ namespace satellite
     if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
-    // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
-      escape("unable to initialize Nucleus");
-
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
       escape("unable to initialize Lune");
@@ -336,10 +330,6 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
-
-    // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::Status::Error)
-      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::Status::Error)

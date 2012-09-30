@@ -574,7 +574,7 @@ namespace hole
               //
               nucleus::proton::ImmutableBlock* block;
 
-              nucleus::Nucleus::Factory.Build(address.component(), block);
+              nucleus::factory().Build(address.component(), block);
 
               // does the block exist.
               if (nucleus::proton::ImmutableBlock::exists(address) == false)
@@ -706,7 +706,7 @@ namespace hole
                   // be used.
                   MutableBlock* block;
 
-                  nucleus::Nucleus::Factory.Build(address.component(), block);
+                  nucleus::factory().Build(address.component(), block);
 
                   Ptr<nucleus::proton::Block> ptr(block);
 
@@ -867,7 +867,7 @@ namespace hole
 
         MutableBlock* block;
 
-        nucleus::Nucleus::Factory.Build(address.component(), block);
+        nucleus::factory().Build(address.component(), block);
 
         // load the block.
         ELLE_TRACE("loading the local block at %s", address)
@@ -993,7 +993,7 @@ namespace hole
         Ptr<MutableBlock> block;
         {
           MutableBlock* raw;
-          nucleus::Nucleus::Factory.Build(address.component(), raw);
+          nucleus::factory().Build(address.component(), raw);
           block = Ptr<MutableBlock>(raw);
         }
 

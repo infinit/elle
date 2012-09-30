@@ -4,7 +4,6 @@
 #include <elle/print.hh>
 #include <elle/cryptography/KeyPair.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 #include <nucleus/neutron/Fellow.hh>
@@ -109,12 +108,10 @@ int main(int, char** argv)
   try
     {
       CHECK(elle::Elle::Initialize());
-      CHECK(nucleus::Nucleus::Initialize());
 
       test();
 
       CHECK(elle::Elle::Clean());
-      CHECK(nucleus::Nucleus::Clean());
 
       std::cout << "tests done.\n";
       return 0;

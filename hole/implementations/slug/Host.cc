@@ -279,7 +279,7 @@ namespace hole
                                    "unable to process a request from an unauthenticated host");
 
         // build the block according to the component.
-        if (nucleus::Nucleus::Factory.Build(address.component(),
+        if (nucleus::factory().Build(address.component(),
                                             raw_block) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to build the block");

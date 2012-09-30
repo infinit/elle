@@ -157,13 +157,11 @@ static void _init_daemon(std::string const& infinit_home)
 
 #include <elle/types.hh>
 #include "lune/Lune.hh"
-#include "nucleus/Nucleus.hh"
 
 static void _initAll()
 {
   if (elle::Elle::Initialize() == elle::Status::Error ||
-      lune::Lune::Initialize() == elle::Status::Error ||
-      nucleus::Nucleus::Initialize() == elle::Status::Error)
+      lune::Lune::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
 
   // XXX use elle here

@@ -20,7 +20,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::Derivable, archive, value, version)
   if (value._dynamic_construct)
     {
       enforce(value._block == nullptr);
-      auto res = nucleus::Nucleus::Factory.Build(value._component, value._block);
+      auto res = nucleus::factory().Build(value._component, value._block);
       if (res == elle::Status::Error)
         throw std::runtime_error("Cannot build the block");
     }

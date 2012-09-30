@@ -5,7 +5,6 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/utility/Buffer.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 
@@ -14,7 +13,6 @@
 int main()
 {
   CHECK(elle::Elle::Initialize());
-  CHECK(nucleus::Nucleus::Initialize());
 
   elle::cryptography::KeyPair kp;
 

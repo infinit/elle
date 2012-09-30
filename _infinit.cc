@@ -4,7 +4,6 @@
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
@@ -120,11 +119,6 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                       "unable to retrieve the mount point");
     }
 
-  // initialize the nucleus library.
-  if (nucleus::Nucleus::Initialize() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to initialize Nucleus");
-
   // initialize the Lune library.
   if (lune::Lune::Initialize() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
@@ -187,11 +181,6 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   if (lune::Lune::Clean() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Lune");
-
-  // clean the nucleus library.
-  if (nucleus::Nucleus::Clean() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to clean Nucleus");
 
   // clean Elle.
   if (elle::Elle::Clean() == elle::Status::Error)

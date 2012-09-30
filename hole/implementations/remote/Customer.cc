@@ -147,7 +147,7 @@ namespace hole
         _state_check_authenticated();
         nucleus::proton::Block* block = 0;
         // Build the block according to the component.
-        if (nucleus::Nucleus::Factory.Build(address.component(),
+        if (nucleus::factory().Build(address.component(),
                                             block) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(), "unable to build the block");
         // Forward the request depending on the nature of the block which
