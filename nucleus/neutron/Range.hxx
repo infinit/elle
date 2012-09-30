@@ -369,6 +369,19 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    template <typename T>
+    void
+    Range<T>::print(std::ostream& stream) const
+    {
+      stream << "range("
+             << "#" << this->container.size()
+             << ")";
+    }
+
   }
 }
 

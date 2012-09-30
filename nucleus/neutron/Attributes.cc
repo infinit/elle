@@ -163,5 +163,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Attributes::print(std::ostream& stream) const
+    {
+      stream << "attributes("
+             << this->range
+             << ")";
+    }
+
   }
 }

@@ -89,5 +89,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Reference::print(std::ostream& stream) const
+    {
+      stream << "reference("
+             << this->target
+             << ")";
+    }
+
   }
 }

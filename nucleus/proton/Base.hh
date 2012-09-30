@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 # include <elle/cryptography/Digest.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -26,7 +27,8 @@ namespace nucleus
     /// in the legitimate block's history, in other words, branches have
     /// not been author .
     ///
-    class Base
+    class Base:
+      public elle::Printable
     {
       //
       // construction
@@ -62,6 +64,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

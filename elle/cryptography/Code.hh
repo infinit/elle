@@ -2,6 +2,7 @@
 # define ELLE_CRYPTOGRAPHY_CODE_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <elle/standalone/Region.hh>
 
@@ -18,6 +19,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Code:
+      public Printable,
       public radix::Object
     {
     public:
@@ -43,9 +45,12 @@ namespace elle
       // object
       declare(Code);
       Boolean           operator==(const Code&) const;
-
       // dumpable
       Status            Dump(const Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

@@ -95,5 +95,15 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    ContentHashBlock::print(std::ostream& stream) const
+    {
+      stream << "content hash block";
+    }
+
   }
 }

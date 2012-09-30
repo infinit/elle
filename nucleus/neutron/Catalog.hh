@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_CATALOG_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -25,6 +26,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Catalog:
+      public elle::Printable,
       private boost::noncopyable
     {
       //
@@ -74,6 +76,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

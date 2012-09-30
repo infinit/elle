@@ -294,6 +294,18 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Access::print(std::ostream& stream) const
+    {
+      stream << "access("
+             << this->_range
+             << ")";
+    }
+
+//
 // ---------- iterable --------------------------------------------------------
 //
 

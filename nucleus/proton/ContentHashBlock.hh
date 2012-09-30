@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImmutableBlock.hh>
@@ -49,6 +50,10 @@ namespace nucleus
       Dump(const elle::Natural32 = 0) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(ContentHashBlock);
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
     };
 
   }

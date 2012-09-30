@@ -64,6 +64,10 @@ namespace nucleus
       virtual
       void
       validate(Address const& address) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;

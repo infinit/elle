@@ -79,6 +79,20 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Entry::print(std::ostream& stream) const
+    {
+      stream << "entry{"
+             << this->name
+             << ", "
+             << this->address
+             << "}";
+    }
+
+//
 // ---------- rangeable -------------------------------------------------------
 //
 

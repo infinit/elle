@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Revision.hh>
@@ -18,7 +19,8 @@ namespace nucleus
     /// indeed, a location is composed of the address of the object but
     /// also the number of the object's revision which it relates to.
     ///
-    class Location
+    class Location:
+      public elle::Printable
     {
     public:
       //
@@ -53,6 +55,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

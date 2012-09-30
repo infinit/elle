@@ -94,6 +94,22 @@ namespace nucleus
 //
 
     ///
+    /// this method simply allocates the fundamental attributes.
+    ///
+    template <typename T>
+    elle::Status Contents<T>::Create()
+    {
+      // allocate the block.
+      this->content = new T(*this);
+
+      // create the content.
+      if (this->content->Create() == elle::Status::Error)
+        escape("unable to create the content");
+
+      return elle::Status::Ok;
+    }
+
+    ///
     /// this method takes the contents in its block form, serialises it
     /// and encrypts the archive.
     ///
@@ -144,22 +160,6 @@ namespace nucleus
 //
 
     ///
-    /// this method simply allocates the fundamental attributes.
-    ///
-    template <typename T>
-    elle::Status Contents<T>::Create()
-    {
-      // allocate the block.
-      this->content = new T(*this);
-
-      // create the content.
-      if (this->content->Create() == elle::Status::Error)
-        escape("unable to create the content");
-
-      return elle::Status::Ok;
-    }
-
-    ///
     /// this method dumps the contents.
     ///
     template <typename T>
@@ -204,6 +204,17 @@ namespace nucleus
         }
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    template <typename T>
+    void
+    Contents<T>::print(std::ostream& stream) const
+    {
+      stream << "contents(" << T::component << ")";
     }
 
   }

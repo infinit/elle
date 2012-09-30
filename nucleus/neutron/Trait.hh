@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 namespace nucleus
 {
@@ -15,7 +16,8 @@ namespace nucleus
     /// a trait is characterised by a string name and while a value string
     /// is associated with it.
     ///
-    class Trait
+    class Trait:
+      public elle::Printable
     {
     public:
       //
@@ -51,7 +53,12 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // rangeable
+      virtual
       elle::String&
       symbol();
 

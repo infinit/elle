@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/Address.hh>
 
@@ -17,7 +18,8 @@ namespace nucleus
     /// this class represents a directory i.e catalog entry which is
     /// composed of a name and its object's corresponding address.
     ///
-    class Entry
+    class Entry:
+      public elle::Printable
     {
     public:
       //
@@ -53,7 +55,12 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // rangeable
+      virtual
       elle::String&
       symbol();
 

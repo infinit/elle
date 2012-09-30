@@ -35,6 +35,7 @@ add_library(nucleus ${LINK_METHOD}
   neutron/Genre.cc
   neutron/Group.cc
   neutron/Object.cc
+  neutron/Permissions.cc
   neutron/Record.cc
   neutron/Reference.cc
   neutron/Subject.cc

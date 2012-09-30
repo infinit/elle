@@ -116,8 +116,7 @@ namespace nucleus
     MutableBlock::load(Address const& address,
                        Revision const& revision)
     {
-      ELLE_TRACE_SCOPE("%s: load(%s, %s)",
-                       *this, address, revision);
+      ELLE_TRACE_METHOD(address, revision);
 
       this->load(elle::io::Path(MutableBlock::_path(address, "@")));
 
@@ -168,7 +167,7 @@ namespace nucleus
     void
     MutableBlock::store(Address const& address) const
     {
-      ELLE_TRACE_SCOPE("%s: store(%s)", *this, address);
+      ELLE_TRACE_METHOD(address);
 
       this->store(elle::io::Path(MutableBlock::_path(address, "@")));
 
@@ -257,7 +256,7 @@ namespace nucleus
     void
     MutableBlock::erase(Address const& address)
     {
-      ELLE_TRACE_SCOPE("erase(%s)", address);
+      ELLE_TRACE_FUNCTION(address);
 
       elle::concept::Fileable<>::erase(MutableBlock::_path(address, "@"));
 
@@ -347,7 +346,7 @@ namespace nucleus
     MutableBlock::exists(Address const& address,
                          Revision const& revision)
     {
-      ELLE_TRACE_SCOPE("exists(%s, %s)", address, revision);
+      ELLE_TRACE_FUNCTION(address, revision);
 
       if (revision == Revision::Last)
         {

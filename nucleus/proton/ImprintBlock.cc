@@ -105,6 +105,18 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    ImprintBlock::print(std::ostream& stream) const
+    {
+      stream << "imprint block{"
+             << this->_owner_K
+             << "}";
+    }
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 

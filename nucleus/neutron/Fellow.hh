@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_FELLOW_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 # include <elle/io/Dumpable.hh>
 
 # include <nucleus/neutron/Subject.hh>
@@ -17,6 +18,7 @@ namespace nucleus
     /// and a token which is the encrypted version of the group's private
     /// pass.
     class Fellow:
+      public elle::Printable,
       public elle::io::Dumpable
     {
       //
@@ -67,6 +69,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 margin = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
       // rangeable

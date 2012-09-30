@@ -5,6 +5,7 @@
 # include <elle/serialize/Serializable.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
@@ -27,6 +28,7 @@ namespace nucleus
     class History:
       public elle::serialize::SerializableMixin<History>,
       public elle::concept::Fileable<>,
+      public elle::Printable,
       private boost::noncopyable
     {
     public:
@@ -74,6 +76,12 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(History);
       // fileable
       ELLE_CONCEPT_FILEABLE_METHODS();
       void

@@ -109,5 +109,19 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Stamp::print(std::ostream& stream) const
+    {
+      stream << "stamp{"
+             << this->master
+             << ", "
+             << this->slave
+             << "}";
+    }
+
   }
 }

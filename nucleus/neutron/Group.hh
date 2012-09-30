@@ -143,6 +143,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 margin = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serialize
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group, elle::serialize::BufferArchive);

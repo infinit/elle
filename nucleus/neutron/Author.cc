@@ -22,18 +22,8 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// the constructor.
-    ///
     Author::Author():
       role(Object::RoleUnknown)
-    {
-    }
-
-    ///
-    /// the destructor.
-    ///
-    Author::~Author()
     {
     }
 
@@ -184,6 +174,18 @@ namespace nucleus
         }
 
       return elle::Status::Ok;
+    }
+
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Author::print(std::ostream& stream) const
+    {
+      stream << "author("
+             << this->role
+             << ")";
     }
 
   }

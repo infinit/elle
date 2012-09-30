@@ -149,6 +149,18 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    History::print(std::ostream& stream) const
+    {
+      stream << "history("
+             << "#" << this->_container.size()
+             << ")";
+    }
+
+//
 // ---------- fileable --------------------------------------------------------
 //
 

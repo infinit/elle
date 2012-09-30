@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/User.hh>
@@ -15,7 +16,8 @@ namespace nucleus
 
     /// This class is used to represent a subject i.e an entity which
     /// can be granted access such as a user or a group.
-    class Subject
+    class Subject:
+      public elle::Printable
     {
       //
       // enumerations
@@ -110,6 +112,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Subject);
 

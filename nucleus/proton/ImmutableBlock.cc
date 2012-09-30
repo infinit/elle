@@ -48,6 +48,16 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    ImmutableBlock::print(std::ostream& stream) const
+    {
+      stream << "immutable block";
+    }
+
+//
 // ---------- fileable --------------------------------------------------------
 //
 

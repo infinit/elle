@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Signature.hh>
 
@@ -31,7 +32,8 @@ namespace nucleus
     /// thanks to the very light mechanism, vassals cannot lie regarding
     /// their memberships or permissions.
     ///
-    class Stamp
+    class Stamp:
+      public elle::Printable
     {
     public:
       //
@@ -59,6 +61,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

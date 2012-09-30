@@ -85,5 +85,19 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Location::print(std::ostream& stream) const
+    {
+      stream << "location{"
+             << this->address
+             << ", "
+             << this->revision
+             << "}";
+    }
+
   }
 }

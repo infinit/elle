@@ -307,5 +307,17 @@ namespace nucleus
       return (elle::Status::Ok);
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Ensemble::print(std::ostream& stream) const
+    {
+      stream << "ensemble("
+             << "#" << this->_container.size()
+             << ")";
+    }
+
   }
 }

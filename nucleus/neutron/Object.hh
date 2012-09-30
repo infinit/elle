@@ -69,7 +69,7 @@ namespace nucleus
       /// This defines the roles that a user can play on an object.
       enum Role
         {
-          RoleUnknown = 0,
+          RoleUnknown,
           RoleOwner,
           RoleLord,
           RoleVassal,
@@ -162,7 +162,12 @@ namespace nucleus
       validate(proton::Address const& address,
                Access const& access) const;
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Object);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Object);
@@ -213,6 +218,10 @@ namespace nucleus
         proton::State state;
       } _data;
     };
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Object::Role const role);
 
   }
 }

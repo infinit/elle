@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_RECORD_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/neutron/Subject.hh>
 # include <nucleus/neutron/Permissions.hh>
@@ -17,7 +18,8 @@ namespace nucleus
     /// of the subject, its permissions and the token allowing the subject
     /// to access the data.
     ///
-    class Record
+    class Record:
+      public elle::Printable
     {
     public:
       //
@@ -73,7 +75,12 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // rangeable
+      virtual
       Subject&
       symbol();
 

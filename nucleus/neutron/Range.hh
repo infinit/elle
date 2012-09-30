@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_RANGE_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/neutron/fwd.hh>
 
@@ -24,7 +25,8 @@ namespace nucleus
     ///     being used to retrieve the key value of a given item.
     ///
     template <typename T>
-    class Range
+    class Range:
+      public elle::Printable
     {
     public:
       //
@@ -94,6 +96,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

@@ -688,5 +688,63 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Object::print(std::ostream& stream) const
+    {
+      stream << "object{"
+             << this->_meta.genre
+             << ", "
+             << this->_data.size
+             << "}";
+    }
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Object::Role const role)
+    {
+      switch (role)
+        {
+        case Object::RoleUnknown:
+          {
+            stream << "unknown";
+            break;
+          }
+        case Object::RoleOwner:
+          {
+            stream << "owner";
+            break;
+          }
+        case Object::RoleLord:
+          {
+            stream << "lord";
+            break;
+          }
+        case Object::RoleVassal:
+          {
+            stream << "vassal";
+            break;
+          }
+        case Object::RoleNone:
+          {
+            stream << "none";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown object roel '%s'", role);
+          }
+        }
+
+      return (stream);
+    }
+
   }
 }

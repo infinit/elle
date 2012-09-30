@@ -146,5 +146,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Data::print(std::ostream& stream) const
+    {
+      stream << "data("
+             << this->region.size
+             << ")";
+    }
+
   }
 }

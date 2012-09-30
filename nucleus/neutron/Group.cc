@@ -206,5 +206,15 @@ namespace nucleus
       return (elle::Status::Ok);
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Group::print(std::ostream& stream) const
+    {
+      stream << "group()";
+    }
+
   }
 }

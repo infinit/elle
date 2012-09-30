@@ -115,5 +115,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Base::print(std::ostream& stream) const
+    {
+      stream << "base{"
+             << this->_revision
+             << "}";
+    }
+
   }
 }

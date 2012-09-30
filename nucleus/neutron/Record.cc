@@ -145,6 +145,24 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Record::print(std::ostream& stream) const
+    {
+      stream << "record("
+             << this->subject
+             << ", "
+             << this->permissions
+             << ")";
+    }
+
+//
+// ---------- rangeable -------------------------------------------------------
+//
+
     ///
     /// this method returns the symbol of a record i.e the subject.
     ///

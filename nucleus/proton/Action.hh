@@ -67,6 +67,10 @@ namespace nucleus
       ELLE_ATTRIBUTE(Block const*, block);
     };
 
+//
+// ---------- operators -------------------------------------------------------
+//
+
     std::ostream&
     operator <<(std::ostream& stream,
                 Action::Type type);

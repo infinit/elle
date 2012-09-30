@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 # include <elle/cryptography/fwd.hh>
 
 namespace nucleus
@@ -14,7 +15,8 @@ namespace nucleus
     /// data. However, in order to allow only the proper user to
     /// use this secret information, it is encrypted with the user's public
     /// key.
-    class Token
+    class Token:
+      public elle::Printable
     {
       //
       // constants
@@ -69,6 +71,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Token);
 

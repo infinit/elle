@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_AUTHOR_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/neutron/Object.hh>
 # include <nucleus/neutron/Index.hh>
@@ -18,7 +19,8 @@ namespace nucleus
     /// this class represents the last user to have modified an object i.e
     /// the author.
     ///
-    class Author
+    class Author:
+      public elle::Printable
     {
     public:
       //
@@ -30,7 +32,6 @@ namespace nucleus
       // constructors & destructors
       //
       Author();
-      ~Author();
 
       //
       // methods
@@ -54,6 +55,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

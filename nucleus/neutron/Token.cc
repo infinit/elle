@@ -103,5 +103,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Token::print(std::ostream& stream) const
+    {
+      stream << "code("
+             << *this->_code
+             << ")";
+    }
+
   }
 }

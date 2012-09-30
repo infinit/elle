@@ -92,5 +92,17 @@ namespace elle
       return Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Code::print(std::ostream& stream) const
+    {
+      stream << "code("
+             << this->region.size
+             << ")";
+    }
+
   }
 }

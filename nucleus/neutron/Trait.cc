@@ -83,6 +83,20 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Trait::print(std::ostream& stream) const
+    {
+      stream << "trait("
+             << this->name
+             << ", "
+             << this->value
+             << ")";
+    }
+
+//
 // ---------- rangeable -------------------------------------------------------
 //
 

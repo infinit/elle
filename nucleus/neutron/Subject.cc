@@ -275,5 +275,40 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Subject::print(std::ostream& stream) const
+    {
+      switch (this->_type)
+        {
+        case TypeUnknown:
+          {
+            stream << "subject(unknown)";
+            break;
+          }
+        case TypeUser:
+          {
+            stream << "user("
+                   << this->_user
+                   << ")";
+            break;
+          }
+        case TypeGroup:
+          {
+            stream << "group("
+                   << this->_group
+                   << ")";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown subject '%s'", this->_type);
+          }
+        }
+    }
+
   }
 }

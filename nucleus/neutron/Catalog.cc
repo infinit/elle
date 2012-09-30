@@ -215,5 +215,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+//
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Catalog::print(std::ostream& stream) const
+    {
+      stream << "catalog("
+             << this->range
+             << ")";
+    }
+
   }
 }

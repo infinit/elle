@@ -82,6 +82,18 @@ namespace nucleus
     }
 
 //
+// ---------- printable -------------------------------------------------------
+//
+
+    void
+    Fellow::print(std::ostream& stream) const
+    {
+      stream << "fellow("
+             << this->_subject
+             << ")";
+    }
+
+//
 // ---------- rangeable -------------------------------------------------------
 //
 

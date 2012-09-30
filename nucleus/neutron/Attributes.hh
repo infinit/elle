@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Range.hh>
@@ -21,7 +22,8 @@ namespace nucleus
     /// this class contains a list of (key, data) tuples that can be
     /// used for storing object-specific extra information.
     ///
-    class Attributes
+    class Attributes:
+      public elle::Printable
       // XXX[when Object::Administrate() no longer sets the attributes but
       //     they are set separately instead]
       // private boost::noncopyable
@@ -57,6 +59,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

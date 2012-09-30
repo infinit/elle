@@ -43,6 +43,10 @@ namespace nucleus
       // interfaces
       //
     public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // fileable
     protected:
       ELLE_CONCEPT_FILEABLE_METHODS();
