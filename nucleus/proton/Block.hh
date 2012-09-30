@@ -77,15 +77,15 @@ namespace nucleus
       public elle::Printable,
       private boost::noncopyable
     {
-      //
-      // constants
-      //
+      /*----------.
+      | constants |
+      `----------*/
     public:
       static const elle::String         Extension;
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | construction |
+      `-------------*/
     public:
       Block(); // XXX[to deserialize]
       Block(Network const network,
@@ -93,9 +93,9 @@ namespace nucleus
             neutron::Component const component,
             elle::cryptography::PublicKey const& creator_K);
 
-      //
-      // methods
-      //
+      /*--------.
+      | methods |
+      `--------*/
     public:
       /// Computes the address of the block.
       virtual
@@ -106,9 +106,9 @@ namespace nucleus
       void
       validate(Address const& address) const = 0;
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | interfaces |
+      `-----------*/
     public:
       // XXX breaks serializable contract. Remove when Block can be an
       // abstract class.
@@ -124,9 +124,9 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | attributes |
+      `-----------*/
     private:
       /// Identifies the network in which lies the block.
       ELLE_ATTRIBUTE_R(Network, network);

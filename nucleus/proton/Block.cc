@@ -13,22 +13,16 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*------------.
+    | definitions |
+    `------------*/
 
-  ///
-  /// this string defines the block files extension.
-  ///
-  const elle::String            Block::Extension = ".blk";
+    const elle::String            Block::Extension = ".blk";
 
-//
-// ---------- constructs & destructors ----------------------------------------
-//
+    /*-------------.
+    | construction |
+    `-------------*/
 
-    ///
-    /// default constructor.
-    ///
     Block::Block():
       _family(FamilyUnknown),
       _component(neutron::ComponentUnknown),
@@ -36,9 +30,6 @@ namespace nucleus
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
     Block::Block(Network const network,
                  Family const family,
                  neutron::Component const component,
@@ -66,14 +57,12 @@ namespace nucleus
         throw Exception("unable to generate the salt");
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | dumpable |
+    `---------*/
 
-    ///
-    /// this method dumps the block's internals.
-    ///
-    elle::Status        Block::Dump(const elle::Natural32       margin) const
+    elle::Status
+    Block::Dump(const elle::Natural32       margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -106,9 +95,9 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | printable |
+    `----------*/
 
     void
     Block::print(std::ostream& stream) const
