@@ -1,5 +1,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/format/hexadecimal.hh>
 

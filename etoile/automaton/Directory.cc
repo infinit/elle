@@ -28,7 +28,7 @@ namespace etoile
       context.object =
         new nucleus::neutron::Object(depot::hole().network(),
                                      agent::Agent::Identity.pair.K,
-                                     nucleus::neutron::GenreDirectory);
+                                     nucleus::neutron::Genre::directory);
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -62,7 +62,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a directory.
-      if (context.object->genre() != nucleus::neutron::GenreDirectory)
+      if (context.object->genre() != nucleus::neutron::Genre::directory)
         escape("this object does not seem to be a directory");
 
       // set the context's state.
@@ -87,8 +87,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to write "
                "this directory");
 
@@ -148,8 +148,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) !=
+          nucleus::neutron::permissions::read)
         escape("%s", (
             "the user does not seem to have the permission to read "
             "this directory (permissions=" +
@@ -193,8 +193,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) !=
+          nucleus::neutron::permissions::read)
         escape("the user does not seem to have the permission to read "
                "this directory");
 
@@ -234,8 +234,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to write "
                "this directory");
 
@@ -289,8 +289,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to write "
                "this directory");
 

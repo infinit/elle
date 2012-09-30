@@ -22,6 +22,10 @@ namespace nucleus
       link
     };
 
+//
+// ---------- operators -------------------------------------------------------
+//
+
     std::ostream&
     operator <<(std::ostream& stream,
                 Genre const genre);

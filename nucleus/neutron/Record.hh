@@ -82,10 +82,7 @@ namespace nucleus
       //
       Subject subject;
       Permissions permissions;
-      /// XXX[for convenience, a pointer is used because this should be improved
-      //      so that a token is serialized only if necessary i.e if the user
-      //      has the read permission]
-      Token* token;
+      Token token;
     };
 
   }

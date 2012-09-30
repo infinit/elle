@@ -131,7 +131,7 @@ struct Access
   {
     auto res = this->block.Add(new nucleus::neutron::Record(
         group.subject,
-        nucleus::neutron::PermissionRead,
+        nucleus::neutron::permissions::read,
         nucleus::neutron::Token::Null
     ));
     if (res == elle::Status::Error)
@@ -149,7 +149,7 @@ struct Directory
 
   Directory(lune::Identity& identity, Access& access)
   {
-    if (this->block.Create(nucleus::neutron::GenreDirectory,
+    if (this->block.Create(nucleus::neutron::Genre::directory,
                            identity.pair.K) == elle::Status::Error)
       throw std::runtime_error("Couldn't create the root block.");
     if (this->block.Update(block.author(),

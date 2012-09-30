@@ -54,8 +54,8 @@ namespace etoile
 
           // if the user has the permission to read, decrypt the content.
           if ((context.rights.permissions &
-               nucleus::neutron::PermissionRead) ==
-              nucleus::neutron::PermissionRead)
+               nucleus::neutron::permissions::read) ==
+              nucleus::neutron::permissions::read)
             {
               // decrypt the contents i.e the contents.
               if (context.contents->Decrypt(context.rights.key) ==

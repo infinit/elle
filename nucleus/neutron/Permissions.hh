@@ -9,7 +9,7 @@ namespace nucleus
   {
 
 //
-// ---------- enumerations ----------------------------------------------------
+// ---------- types -----------------------------------------------------------
 //
 
     /// Defines the permissions a subject (i.e user or group) can be granted
@@ -17,12 +17,26 @@ namespace nucleus
     ///
     /// Note that for convenience, the write permission implictly includes
     /// the read permission as well.
-    enum class Permissions
+    typedef elle::Natural8 Permissions;
+
+//
+// ---------- values ----------------------------------------------------------
+//
+
+    namespace permissions
     {
-      none = 0,
-      read = (1 << 0),
-      write = read | (1 << 1)
-    };
+      Permissions const none = 0;
+      Permissions const read = (1 << 0);
+      Permissions const write = read | (1 << 1);
+    }
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Permissions const permissions);
 
   }
 }

@@ -127,10 +127,10 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   LOG("Creating the network descriptor.");
   // XXX this value depends on the network policy and openness.
   static nucleus::neutron::Permissions permissions =
-    nucleus::neutron::PermissionRead;
+    nucleus::neutron::permissions::read;
 
   auto e              = elle::Status::Error;
-  auto genreDirectory = nucleus::neutron::GenreDirectory;
+  auto genreDirectory = nucleus::neutron::Genre::directory;
 
   nucleus::proton::Network network(id);
 

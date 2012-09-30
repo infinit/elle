@@ -631,9 +631,9 @@ namespace surface
                       >> public_key
                       >> permissions;
           int gap_perm = (int) gap_none;
-          if (permissions & nucleus::neutron::PermissionRead)
+          if (permissions & nucleus::neutron::permissions::read)
             gap_perm |= gap_read;
-          if (permissions & nucleus::neutron::PermissionWrite)
+          if (permissions & nucleus::neutron::permissions::write)
             gap_perm |= gap_write;
           std::string const& user_id = this->user_from_public_key(public_key)._id;
           infos->accesses[user_id] = gap_perm;

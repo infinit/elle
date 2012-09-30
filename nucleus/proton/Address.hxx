@@ -53,10 +53,12 @@ namespace nucleus
 
 # include <elle/cryptography/Digest.hh>
 
-ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
-                      archive,
-                      value,
-                      version)
+ELLE_SERIALIZE_SPLIT(nucleus::proton::Address);
+
+ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
+                          archive,
+                          value,
+                          version)
 {
   enforce(version == 0);
 
@@ -68,6 +70,23 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
   archive & value._family;
   archive & value._component;
   archive & value._digest;
+}
+
+ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
+                          archive,
+                          value,
+                          version)
+{
+  enforce(version == 0);
+
+  archive & value._type;
+  archive & value._network;
+  archive & value._family;
+  archive & value._component;
+  archive & value._digest;
+
+  // A deserialized address can be either valid or null, nothing else.
+  enforce(value._type != nucleus::proton::Address::Type::some);
 }
 
 #endif

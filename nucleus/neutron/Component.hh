@@ -8,6 +8,10 @@ namespace nucleus
   namespace neutron
   {
 
+//
+// ---------- enumerations ----------------------------------------------------
+//
+
     ///
     /// this enumeration defines the block's logical component.
     ///
@@ -28,6 +32,10 @@ namespace nucleus
 
         Components // XXX
       };
+
+//
+// ---------- operators -------------------------------------------------------
+//
 
     std::ostream&
     operator <<(std::ostream& stream,

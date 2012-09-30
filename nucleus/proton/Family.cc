@@ -1,6 +1,5 @@
 #include <nucleus/proton/Family.hh>
-
-#include <elle/printf.hh>
+#include <nucleus/Exception.hh>
 
 #include <iostream>
 #include <stdexcept>
@@ -43,7 +42,7 @@ namespace nucleus
           }
         default:
           {
-            throw Exception("unknown family: '%s'", component);
+            throw Exception("unknown family: '%s'", family);
           }
         }
 

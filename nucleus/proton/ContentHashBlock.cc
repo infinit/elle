@@ -48,9 +48,8 @@ namespace nucleus
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
+        throw Exception("the address %s does not seem to represent the given "
+                        "block", address);
 
       // compute the address of this object.
       //
@@ -92,9 +91,6 @@ namespace nucleus
       // dump the parent class.
       if (ImmutableBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Salt] " << this->_salt << std::endl;
 
       return elle::Status::Ok;
     }

@@ -41,7 +41,7 @@ namespace etoile
       // since a group always has at least one member, its manager. One could
       // therefore want to create a group a later add users. The group, when
       // "empty" should therefore be considered as valid.
-      context.group->state(proton::StateDirty);
+      context.group->state(nucleus::proton::StateDirty);
 
       nucleus::proton::Address address(context.group->bind());
 

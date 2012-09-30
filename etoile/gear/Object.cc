@@ -26,7 +26,7 @@ namespace etoile
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
-      this->rights.permissions = nucleus::neutron::PermissionNone;
+      this->rights.permissions = nucleus::neutron::permissions::none;
     }
 
     ///
@@ -40,7 +40,7 @@ namespace etoile
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
-      this->rights.permissions = nucleus::neutron::PermissionNone;
+      this->rights.permissions = nucleus::neutron::permissions::none;
     }
 
     ///

@@ -557,15 +557,15 @@ namespace satellite
             }
 
           // initialize the permissions to none.
-          permissions = nucleus::neutron::PermissionNone;
+          permissions = nucleus::neutron::permissions::none;
 
           // grant the read permission, if requested.
           if (Infinit::Parser->Test("Read") == elle::Status::True)
-            permissions |= nucleus::neutron::PermissionRead;
+            permissions |= nucleus::neutron::permissions::read;
 
           // grant the write permission, if requested.
           if (Infinit::Parser->Test("Write") == elle::Status::True)
-            permissions |= nucleus::neutron::PermissionWrite;
+            permissions |= nucleus::neutron::permissions::write;
 
           // declare additional local variables.
           etoile::path::Way             way(path);

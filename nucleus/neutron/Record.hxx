@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Record,
 
   archive & value.subject;
   archive & value.permissions;
-  archive & elle::serialize::pointer(value.token);
+  archive & value.token;
 }
 
 #endif

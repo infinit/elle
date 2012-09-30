@@ -129,7 +129,7 @@ namespace etoile
               ELLE_TRACE("the target subject exists in the Access block");
 
               // update the access block according to the given permissions.
-              if (permissions == nucleus::neutron::PermissionNone)
+              if (permissions == nucleus::neutron::permissions::none)
                 {
                   //
                   // in this case, the subject is being removed all his
@@ -532,7 +532,7 @@ namespace etoile
           // update the permissions.
           if (context.object->Administrate(
                 context.object->attributes(),
-                nucleus::neutron::PermissionNone) == elle::Status::Error)
+                nucleus::neutron::permissions::none) == elle::Status::Error)
             escape("unable to administrate the object");
         }
       else
@@ -570,7 +570,7 @@ namespace etoile
         {
           // update the context rights.
           if (Rights::Update(context,
-                             nucleus::neutron::PermissionNone) == elle::Status::Error)
+                             nucleus::neutron::permissions::none) == elle::Status::Error)
             escape("unable to update the rigths");
         }
 
@@ -614,8 +614,8 @@ namespace etoile
         {
           // Ignore records which relate to subjects which do not have
           // the read permission; these ones do not have a token.
-          if ((record->permissions & nucleus::neutron::PermissionRead) !=
-              nucleus::neutron::PermissionRead)
+          if ((record->permissions & nucleus::neutron::permissions::read) !=
+              nucleus::neutron::permissions::read)
             continue;
 
           switch (record->subject.type())
@@ -710,8 +710,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) ==
+          nucleus::neutron::permissions::read)
         {
           // recompute the rights with the new key.
           if (Rights::Recompute(context) == elle::Status::Error)
@@ -753,12 +753,12 @@ namespace etoile
       for (auto record: *context.access)
         {
           // Check if the subject has the proper permissions.
-          if ((record->permissions & nucleus::neutron::PermissionRead) !=
-              nucleus::neutron::PermissionRead)
+          if ((record->permissions & nucleus::neutron::permissions::read) !=
+              nucleus::neutron::permissions::read)
             continue;
 
           // Reset the token.
-          record->token = nucleus::neutron::Token::Null;
+          record->token = nucleus::neutron::Token(nucleus::neutron::Token::Null);
 
           // Set the access block as being dirty.
           //
@@ -787,8 +787,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) ==
+          nucleus::neutron::permissions::read)
         {
           // recompute the rights.
           if (Rights::Recompute(context) == elle::Status::Error)
@@ -1010,8 +1010,8 @@ namespace etoile
                 // write permission.
                 //
                 // if he has, nothing has to be done.
-                if ((record->permissions & nucleus::neutron::PermissionWrite) ==
-                    nucleus::neutron::PermissionWrite)
+                if ((record->permissions & nucleus::neutron::permissions::write) ==
+                    nucleus::neutron::permissions::write)
                   break;
               }
 

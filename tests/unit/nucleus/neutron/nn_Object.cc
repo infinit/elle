@@ -23,7 +23,7 @@ int main()
   nucleus::proton::Network network("name");
   nucleus::neutron::Object blk(network,
                                kp.K,
-                               nucleus::neutron::GenreDirectory);
+                               nucleus::neutron::Genre::directory);
 
   CHECK(blk.Seal(kp.k, nucleus::neutron::Access::Null));
 

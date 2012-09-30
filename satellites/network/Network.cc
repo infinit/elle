@@ -155,13 +155,13 @@ namespace satellite
             {
             case horizon::Policy::accessible:
               {
-                permissions = nucleus::neutron::PermissionRead;
+                permissions = nucleus::neutron::permissions::read;
 
                 break;
               }
             case horizon::Policy::editable:
               {
-                permissions = nucleus::neutron::PermissionWrite;
+                permissions = nucleus::neutron::permissions::write;
 
                 // XXX
                 assert(false && "not yet supported");
@@ -213,7 +213,7 @@ namespace satellite
     //
     nucleus::neutron::Object directory(network,
                                        identity.pair.K,
-                                       nucleus::neutron::GenreDirectory);
+                                       nucleus::neutron::Genre::directory);
 
     if (directory.Update(directory.author(),
                          directory.contents(),

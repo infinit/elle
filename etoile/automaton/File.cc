@@ -26,7 +26,7 @@ namespace etoile
       context.object =
         new nucleus::neutron::Object(depot::hole().network(),
                                      agent::Agent::Identity.pair.K,
-                                     nucleus::neutron::GenreFile);
+                                     nucleus::neutron::Genre::file);
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -59,7 +59,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a file.
-      if (context.object->genre() != nucleus::neutron::GenreFile)
+      if (context.object->genre() != nucleus::neutron::Genre::file)
         escape("this object does not seem to be a file");
 
       // set the context's state.
@@ -83,8 +83,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the write the data.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to write "
                "this file");
 
@@ -136,8 +136,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) !=
+          nucleus::neutron::permissions::read)
         escape("the user does not seem to have the permission to read "
                "this file");
 
@@ -174,8 +174,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the adjust the file.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to adjust "
                "this file");
 

@@ -1,6 +1,5 @@
 #include <nucleus/neutron/Genre.hh>
-
-#include <elle/printf.hh>
+#include <nucleus/Exception.hh>
 
 #include <iostream>
 #include <stdexcept>
@@ -16,26 +15,28 @@ namespace nucleus
     {
       switch (genre)
         {
-        case GenreFile:
+        case Genre::file:
           {
             stream << "file";
             break;
           }
-        case GenreDirectory:
+        case Genre::directory:
           {
             stream << "directory";
             break;
           }
-        case GenreLink:
+        case Genre::link:
           {
             stream << "link";
             break;
           }
-        default
+        default:
           {
             throw Exception("unknown genre '%s'", genre);
           }
         }
+
+      return (stream);
     }
 
   }

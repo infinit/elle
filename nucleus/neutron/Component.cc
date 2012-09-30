@@ -1,4 +1,5 @@
 #include <nucleus/neutron/Component.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/printf.hh>
 

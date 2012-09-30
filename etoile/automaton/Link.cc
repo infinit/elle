@@ -25,7 +25,7 @@ namespace etoile
       context.object =
         new nucleus::neutron::Object(depot::hole().network(),
                                      agent::Agent::Identity.pair.K,
-                                     nucleus::neutron::GenreLink);
+                                     nucleus::neutron::Genre::link);
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -57,7 +57,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a link.
-      if (context.object->genre() != nucleus::neutron::GenreLink)
+      if (context.object->genre() != nucleus::neutron::Genre::link)
         escape("this object does not seem to be a link");
 
       // set the context's state.
@@ -80,8 +80,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the bind the link.
-      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
-          nucleus::neutron::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::permissions::write) !=
+          nucleus::neutron::permissions::write)
         escape("the user does not seem to have the permission to bind "
                "this link");
 
@@ -130,8 +130,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the resolve the link..
-      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
-          nucleus::neutron::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::permissions::read) !=
+          nucleus::neutron::permissions::read)
         escape("the user does not seem to have the permission to resolve "
                "this link");
 

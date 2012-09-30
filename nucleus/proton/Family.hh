@@ -8,6 +8,10 @@ namespace nucleus
   namespace proton
   {
 
+//
+// ---------- enumerations ----------------------------------------------------
+//
+
     ///
     /// this enumeration defines the block's physical family.
     ///
@@ -22,6 +26,10 @@ namespace nucleus
 
         Families = FamilyImprintBlock + 1 // XXX
       };
+
+//
+// ---------- operators -------------------------------------------------------
+//
 
     std::ostream&
     operator <<(std::ostream& stream,

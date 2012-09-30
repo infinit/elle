@@ -33,9 +33,8 @@ namespace nucleus
       _author(nullptr)
     {
       this->_meta.state = proton::StateClean;
-      this->_meta.owner.permissions = PermissionNone;
+      this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.record = nullptr;
-      this->_meta.genre = GenreUnknown;
       this->_meta.revision = 0;
 
       this->_data.state = proton::StateClean;
@@ -68,9 +67,8 @@ namespace nucleus
       // because they belong to a sub-structure.
       //
       this->_meta.state = proton::StateClean;
-      this->_meta.owner.permissions = PermissionNone;
+      this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.record = nullptr;
-      this->_meta.genre = GenreUnknown;
       this->_meta.revision = 0;
 
       this->_data.state = proton::StateClean;
@@ -85,7 +83,7 @@ namespace nucleus
         // set the initial owner permissions to all with an empty key.
         if (this->Administrate(
               this->_meta.attributes,
-              PermissionRead | PermissionWrite) == elle::Status::Error)
+              permissions::read | permissions::write) == elle::Status::Error)
           throw Exception("unable to set the initial meta data");
       }
 
@@ -529,8 +527,8 @@ namespace nucleus
                 throw Exception("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
-              if ((record->permissions & PermissionWrite) !=
-                  PermissionWrite)
+              if ((record->permissions & permissions::write) !=
+                  permissions::write)
                 throw Exception("the object's author does not seem to have had "
                                 "the permission to modify this object");
 

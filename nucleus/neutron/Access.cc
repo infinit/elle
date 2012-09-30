@@ -161,7 +161,7 @@ namespace nucleus
         escape("unable to retrieve the subject's record");
 
       record->permissions = permissions;
-      record->token = token;
+      record->token = nucleus::neutron::Token(token);
 
       // set the block as dirty.
       this->state(proton::StateDirty);

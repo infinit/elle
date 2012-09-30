@@ -90,7 +90,7 @@ namespace etoile
           // for the scope.
           switch (object->genre())
             {
-              case nucleus::neutron::GenreFile:
+              case nucleus::neutron::Genre::file:
               {
                 gear::File* context;
 
@@ -99,7 +99,7 @@ namespace etoile
 
                 break;
               }
-              case nucleus::neutron::GenreDirectory:
+              case nucleus::neutron::Genre::directory:
               {
                 gear::Directory* context;
 
@@ -108,7 +108,7 @@ namespace etoile
 
                 break;
               }
-              case nucleus::neutron::GenreLink:
+              case nucleus::neutron::Genre::link:
               {
                 gear::Link* context;
 

@@ -325,7 +325,7 @@ namespace etoile
                   ELLE_TRACE("the user has no rights over the object");
 
                   context.rights.role = nucleus::neutron::Object::RoleNone;
-                  context.rights.permissions = nucleus::neutron::PermissionNone;
+                  context.rights.permissions = nucleus::neutron::permissions::none;
                 }
               else
                 {
