@@ -3,8 +3,9 @@
 
 # include <reactor/exception.hh>
 
-# include <elle/concurrency/Scheduler.hh>
+# include <elle/types.hh>
 # include <elle/printf.hh>
+# include <elle/concurrency/Scheduler.hh>
 
 namespace elle
 {
@@ -14,9 +15,10 @@ namespace elle
   {
   public:
     template<typename... Args>
-    Exception(char const* fmt, Args&&... args):
+    Exception(elle::String const& fmt, Args&&... args):
       reactor::Exception(elle::concurrency::scheduler(),
-                         elle::sprintf(fmt, std::forward<Args>(args)...) + _add_report())
+                         elle::sprintf(fmt.c_str(),
+                                       std::forward<Args>(args)...) + _add_report())
     {}
 
     static
