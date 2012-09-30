@@ -108,8 +108,8 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Subject);
 

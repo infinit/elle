@@ -75,15 +75,14 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // printable
       virtual
       void
       print(std::ostream& stream) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);
-
       // fileable
     protected:
       ELLE_CONCEPT_FILEABLE_METHODS();

@@ -72,9 +72,9 @@ namespace nucleus
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>,
                                           elle::serialize::BufferArchive);
-
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

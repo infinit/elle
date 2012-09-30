@@ -60,11 +60,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // printable
+      virtual
       void
       print(std::ostream& stream) const;
-
       // iterable
       Scoutor
       begin() const;

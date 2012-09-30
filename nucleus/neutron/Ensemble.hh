@@ -103,7 +103,6 @@ namespace nucleus
 
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Ensemble);
-
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble, elle::serialize::BufferArchive);
 

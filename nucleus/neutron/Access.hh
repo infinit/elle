@@ -95,16 +95,14 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Access);
-
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access,
                                           elle::serialize::BufferArchive);
-
       // iterable
       typename Range<Record>::Scoutor
       begin() const;

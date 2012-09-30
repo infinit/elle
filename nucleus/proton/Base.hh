@@ -59,9 +59,9 @@ namespace nucleus
     public:
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Base);
-
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

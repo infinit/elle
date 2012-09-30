@@ -64,11 +64,9 @@ namespace nucleus
       virtual
       void
       validate(Address const& address) const;
-
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 

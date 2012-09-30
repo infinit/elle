@@ -72,11 +72,10 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // fileable
       ELLE_CONCEPT_FILEABLE_METHODS();
-
       void
       load(Network const& network,
            Address const& address);

@@ -67,8 +67,8 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Token);
 

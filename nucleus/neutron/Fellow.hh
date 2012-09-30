@@ -67,10 +67,8 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 margin = 0) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
-
       // rangeable
       Subject&
       symbol();

@@ -114,15 +114,13 @@ namespace nucleus
       // abstract class.
       __NPB_BREAK_SERIALIZABLE_CONTRACT();
       __NPB_BREAK_SERIALIZABLE_CONTRACT(elle::serialize::BufferArchive);
-
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Block);
-
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // printable
+      virtual
       void
       print(std::ostream& stream) const;
 

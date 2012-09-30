@@ -48,13 +48,13 @@ namespace nucleus
     public:
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Network);
-
       // printable
+      virtual
       void
       print(std::ostream& stream) const;
-
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

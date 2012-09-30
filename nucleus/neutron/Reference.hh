@@ -48,9 +48,10 @@ namespace nucleus
       //
       // interfaces
       //
-
+    public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
