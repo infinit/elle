@@ -2,8 +2,10 @@
 # -*- python -*-
 
 import sys
-import configparser
 import copy
+import configparser
+
+from collections import OrderedDict
 
 class Conf:
     def __init__(self):
@@ -19,6 +21,15 @@ class Conf:
     @property
     def conf(self):
         return self._conf
+
+    def to_dict(self):
+        tmp = OrderedDict()
+        for (section, values) in self._conf.items():
+            for (key, val) in values.items():
+                if section not in tmp:
+                    tmp[section] = OrderedDict()
+                tmp[section][key] = val
+        return tmp
 
     def dump(self):
         import pprint

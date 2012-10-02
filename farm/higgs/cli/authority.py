@@ -29,7 +29,7 @@ class Authority:
         #     ],
         #     stdin=subprocess.PIPE)
         # p.communicate("{auth}\n".format(auth=passphrase).encode("ascii"))
-        auth_src = os.path.join(os.environ["INFINIT_ROOT"],
+        auth_src = os.path.join(os.environ["INFINIT_BUILD"],
                 "oracle/infinit.auth")
         auth_dst = os.path.join(os.environ["INFINIT_HOME"], "infinit.auth")
         shutil.copyfile(auth_src, auth_dst)

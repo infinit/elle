@@ -52,14 +52,18 @@ class Infinit:
         self.stop()
 
     def stop(self):
-        #print("terminating instance", self)
         self._infinit.terminate()
         self.wait()
-        #print(self, "terminated")
-        self.home.destroy()
+        if self._infinit.returncode == None:
+            self._infinit.kill()
+            self.wait()
 
     def wait(self):
         self._infinit.wait()
+
+    @property
+    def pid(self):
+        return self._infinit.pid
 
     @property
     def stderr(self):

@@ -8,6 +8,7 @@ import copy
 import shutil
 import tempfile
 import infinitools
+import subprocess as sp
 
 class Home:
     def __init__(self, auth, user, mode, network, home, conf):
@@ -84,11 +85,11 @@ class Home:
 
     def destroy(self):
         #print("removing home at ", self)
-        shutil.rmtree(self.home, ignore_errors=True)
-        #print("home removed at ", self)
-
-def duplicate():
-    pass
+        try:
+            shutil.rmtree(self.home)
+        except OSError as e:
+            print(e)
+        print("home removed at ", self)
 
 def gen(home_names, auth=None):
     if "INFINIT_HOMEDIR" in os.environ:

@@ -4,58 +4,333 @@
 import os
 import re
 import sys
-import pool
+import stat
 import copy
+import pool
 import time
+import email
 import pprint
 import argparse
-import subprocess as sp
+import datetime
+import threading
+import email.mime
 import infinitools
+import smtplib as sml
+import subprocess as sp
+import pygooglechart as pgc
+
+from collections import OrderedDict
+from collections import namedtuple
 
 pattern = re.compile(r"(?P<name>.*)\.(?P<nb>\d+)\.(py|sh)")
 
-def main(scriptdir):
-    for root, dirs, scripts in os.walk(scriptdir):
-        with open("report", "w") as report:
+
+with open("mail_template.in") as template:
+    mail_template = template.read()
+
+MAIL_TARGETS = (
+        "pichot.fabien@gmail.com",
+        )
+
+MANDRILL_USERNAME = 'infinitdotio'
+MANDRILL_PASSWORD = 'ca159fe5-a0f7-47eb-b9e1-2a8f03b9da86'
+MANDRILL_SMTP_HOST = 'smtp.mandrillapp.com'
+MANDRILL_SMTP_PORT = 587
+
+CHART_W_SIZE = 400
+CHART_H_SIZE = 250
+
+class StatusCode():
+    SUCCESS = 0
+    FAILURE = 1
+    def __init__(self):
+        self.status = StatusCode.FAILURE
+        pass
+
+class Watcher:
+    def pre_run(self, environ={}): pass
+
+    def post_run(self, res): pass
+
+    def post_shutdown(self, all_reports): pass
+
+class Timing(Watcher):
+    def __init__(self, script_name, report):
+        report[script_name]["timing"] = OrderedDict()
+        self.timing_report = report[script_name]["timing"]
+        pass
+
+    def pre_run(self, environ={}):
+        self.t0 = datetime.datetime.now()
+
+    def post_run(self, status_code):
+        t0 = self.t0
+        t1 = datetime.datetime.now()
+
+        self.timing_report["start time"] = str(t0)
+        self.timing_report["end time"] = str(t1)
+        self.timing_report["elapsed time"] = \
+                "{0} sec".format((t1 - t0).total_seconds())
+
+class Environ(Watcher):
+    def __init__(self, script_name, report):
+        report[script_name]["environ"] = OrderedDict()
+        self.env_report = report[script_name]["environ"]
+
+    def pre_run(self, environ={}):
+        self.env_report["MNT1"] = environ["MNT1"]
+        self.env_report["MNT2"] = environ["MNT2"]
+
+        for key, val in environ.items():
+            if key.startswith("INFINIT"):
+                self.env_report[key] = val
+
+class Result(Watcher):
+    def __init__(self, script_name, report):
+        self.result_report = report[script_name]
+
+    def post_run(self, status_code):
+        if status_code.status == StatusCode.SUCCESS:
+            self.result_report["result"] = "SUCCESS"
+        elif status_code.status == StatusCode.FAILURE:
+            self.result_report["result"] = "FAILURE"
+
+class Memory(Watcher):
+
+    def __init__(self, script_name, report):
+        report[script_name]["memory"] = OrderedDict()
+        self.memory_report = report[script_name]["memory"]
+
+    def _watch(self, pid, curr_stat):
+        cmd = "ps -o %cpu,%mem,rss,bsdtime,maj_flt,min_flt,vsz {0}";
+
+        out = sp.check_output(cmd.format(pid).split())
+        (header_val, data, *drop) = out.split(b'\n')
+        for (type, val) in zip(header_val.split(), data.split()):
+            if val not in curr_stat:
+                dec_type = type.decode("utf8")
+                dec_val = val.decode("utf8")
+                curr_stat[dec_type] = []
+                curr_stat[dec_type].append(dec_val)
+
+        while True:
+            try:
+                out = sp.check_output(cmd.format(pid).split())
+            except sp.CalledProcessError as e:
+                break
+
+            time.sleep(0.2)
+            (header_val, data, *dump) = out.split(b'\n')
+            for (type, val) in zip(header_val.split(), data.split()):
+                dec_type = type.decode("utf8")
+                dec_val = val.decode("utf8")
+                curr_stat[dec_type].append(dec_val)
+
+    def pre_run(self, environ={}):
+        self.l_pids = []
+        self.l_threads = []
+        for (key, value) in environ.items():
+            if key.startswith("INFINIT_PID"):
+                self.l_pids.append(value)
+                for pid in value.split(","):
+                    pid_key = "pid({0})".format(pid)
+                    self.memory_report[pid_key] = OrderedDict()
+                    T = threading.Thread(target=self._watch,
+                            args=(value,self.memory_report[pid_key]))
+                    T.start()
+                    self.l_threads.append(T)
+
+    def post_shutdown(self, drop):
+        for T in self.l_threads:
+            T.join()
+
+class Graph(Watcher):
+    def __init__(self, script_name, report):
+        self._report = report;
+        self.script_name = script_name
+
+    def render_memory_graphs(self):
+        memory_report = self._report[self.script_name]["memory"]
+        for pid, pid_stats in memory_report.items():
+            for type, stats in pid_stats.items():
+                if type == b'%CPU':
+                    l_floatvals = [float(value) for value in stats]
+                    chart = pgc.SimpleLineChart(CHART_W_SIZE,
+                            CHART_H_SIZE,
+                            y_range=(0, 100))
+                    chart.set_axis_labels(pgc.Axis.LEFT, [0, 25, 50, 75, 100])
+                    chart.set_axis_labels(pgc.Axis.BOTTOM, ["start", "end"])
+                    chart.set_title("%CPU over time for {0}".format(
+                        pid))
+                    chart.set_legend([self.script_name, "bite" ,"botte"])
+                    chart.add_data(l_floatvals)
+                    chart.add_data(l_floatvals)
+                    chart.add_data(l_floatvals)
+
+    def post_shutdown(self, drop):
+        self.render_memory_graphs()
+
+class Mail(Watcher):
+    def __init__(self, script_name, report):
+        self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
+
+    def send_mail(self, all_reports):
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        import moody
+        import pprint
+        html = mail_template
+        pprint.pprint(all_reports)
+        html = moody.render(html, **all_reports)
+
+        self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
+        msg = MIMEText(html, 'html')
+        msg['Subject'] = "Test report"
+        msg['From'] = "pichot.fabien@gmail.com"
+        msg['To'] = ", ".join(MAIL_TARGETS)
+        self.smtp.send_message(msg)
+        self.smtp.quit()
+
+    def post_shutdown(self, all_reports):
+        self.send_mail(all_reports)
+
+WATCHERS = (
+        Timing,
+        Environ,
+        Result,
+        Memory,
+        Graph,
+        Mail,
+    )
+
+def main(scriptdir, scripts_to_run=None):
+    with pool.PoolEngine(low_port=5656, high_port=5660) as engine:
+        report = OrderedDict()
+
+        report["engine"] = OrderedDict()
+        engine_report = report["engine"]
+        report["scripts"] = OrderedDict()
+
+        # Fill the engine report
+        engine_report["home"] = engine._base.home
+        engine_report["user"] = engine._base.user
+        engine_report["mode"] = engine._base.mode
+        engine_report["network"] = engine._base.network
+        engine_report["conf"] = engine._base.conf.to_dict()
+
+        l_watchers = []
+
+        for root, dirs, scripts in os.walk(scriptdir):
             for script in scripts:
                 m = pattern.match(script)
                 if m == None:
-                    print("script", script, "name don't match the specification")
+                    print("file", script, "name don't match the specification")
                     continue
 
                 script_data = m.groupdict()
+
                 nb_instance = int(script_data["nb"])
-                print("launch the test [\033[32m", script_data["name"],
+                script_name = script_data["name"]
+
+                if scripts_to_run != None and not script_name in scripts_to_run:
+                    continue
+
+                report["scripts"][script_name] = OrderedDict()
+                script_report = report["scripts"][script_name]
+
+                script_path = os.path.join(root, script)
+                script_report["Script path"] = script_path
+
+                # Skip the script if it's not executable
+                if not os.stat(script_path)[stat.ST_MODE] & stat.S_IXUSR:
+                    script_report["Error"] = "The script is not executable"
+                    script_report["result"] = "FAILURE"
+                    continue
+
+                script_report["Number of peers"] = nb_instance
+
+                print("launch the test [\033[32m", script_name,
                         "\033[0m] with",
                         nb_instance, "instances")
-                with pool.Pool(number_of_networks=nb_instance,
-                        low_port=5656, high_port=5660) as p:
+                with pool.Pool(engine, number_of_networks=nb_instance) as p:
+
+                    # Fill the report for the networks used by the script
+                    script_report["home"] = OrderedDict()
+                    home_report = script_report["home"]
+
+                    for i, H in enumerate(p.l_home):
+                        home_report["home[{0}]".format(i)] = OrderedDict()
+                        curr_rep = home_report["home[{0}]".format(i)]
+                        curr_rep["home"] = H.home
+                        curr_rep["user"] = H.user
+                        curr_rep["conf"] = H.conf.to_dict()
+                        curr_rep["network"] = H.network
+                        curr_rep["mode"] = H.mode
+
+                        # Dump the .set files
+                        with open(os.path.join(
+                                H.home,
+                                "networks",
+                                H.network,
+                                "{net}.set".format(net=H.network)), "r") \
+                        as setfile:
+                            curr_rep["set"] = setfile.read().split()
+
+
+                    # Prepare the Watchers for this test
+                    l_watchers = list(type(script_name, report["scripts"]) for type in WATCHERS)
+
+                    # Save the environ to add some stuff inside
+                    environ = copy.deepcopy(os.environ)
 
                     # Wait for the mountpoints to be ready
                     p.wait_ready()
                     print("\033[32mAll the filesystems are effectivly mounted, start the testing...\033[0m")
 
-                    environ = copy.deepcopy(os.environ)
-                    script_path = os.path.join(root, script)
-
                     # The scripts needs MNT$i variables to point to the
                     # mountpoints
                     for (i, mountpoint) in enumerate(p.mountpoints):
                         environ["MNT{0}".format(i + 1)] = mountpoint
+                        print("export MNT{0}={1}".format(i + 1, mountpoint))
+
+                    for (i, pid) in enumerate(p.pids):
+                        environ["INFINIT_PID{0}".format(i + 1)] = str(pid)
+
+                    for W in l_watchers: W.pre_run(environ)
+
+                    s = StatusCode()
                     try:
                         sp.check_call([script_path], env=environ)
-                        print("\033[32mtest", script_data["name"],"success\033[0m")
-                        report.write("{0}: success\n".format(script_data["name"]))
+                        s.status = StatusCode.SUCCESS
+                        print("\033[32mtest", script_name,"success\033[0m")
+
                     except sp.CalledProcessError:
-                        print("script", script_data["name"], "failed")
-                        report.write("{0}: failed\n".format(script_data["name"]))
-                        print("\033[31mtest", script_data["name"],"failed\033[0m")
+                        s.status = StatusCode.FAILURE
+                        print("\033[31mtest", script_name,"failed\033[0m")
+                    finally:
+                        for W in l_watchers: W.post_run(s)
+
+        with open("report", "w") as reportfile:
+            import pprint
+            pprint.pprint(report, stream=reportfile)
+        for W in l_watchers: W.post_shutdown(report)
 
 
 if __name__ == "__main__":
-    infinitools.patch_satellites_path()
     parser = argparse.ArgumentParser(description="Run the infinit test suite")
-    parser.add_argument('scriptdir', metavar="DIR", 
+    parser.add_argument('scriptdir', metavar="DIR",
             help="the dir containing the scripts to be run")
+    parser.add_argument('--scripts', '-s', default=None, help="the scripts to be run")
+    parser.add_argument('--builddir', '-b', default="", help="the build directory containing the binaries")
     args = parser.parse_args()
-    main(args.scriptdir)
+    try:
+        infinitools.patch_satellites_path(args.builddir)
+        os.environ["INFINIT_BUILD"] = args.builddir
+        if not args.scripts:
+            main(args.scriptdir)
+        else:
+            main(args.scriptdir, args.scripts.split(","))
+    except KeyError as ke:
+        if b'INFINIT_BUILD' in ke.args:
+            parser.print_help()
+
