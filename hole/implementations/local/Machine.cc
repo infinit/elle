@@ -214,7 +214,7 @@ namespace hole
         // the addres indicates.
         switch (address.family())
           {
-          case nucleus::proton::FamilyContentHashBlock:
+          case nucleus::proton::Family::content_hash_block:
             {
               // erase the immutable block.
               nucleus::proton::ImmutableBlock::erase(
@@ -222,9 +222,9 @@ namespace hole
 
               break;
             }
-          case nucleus::proton::FamilyPublicKeyBlock:
-          case nucleus::proton::FamilyOwnerKeyBlock:
-          case nucleus::proton::FamilyImprintBlock:
+          case nucleus::proton::Family::public_key_block:
+          case nucleus::proton::Family::owner_key_block:
+          case nucleus::proton::Family::imprint_block:
             {
               // retrieve the mutable block.
               nucleus::proton::MutableBlock::erase(

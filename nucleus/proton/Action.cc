@@ -8,9 +8,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Action::Action(Address const& address,
                    Block const* block):
@@ -26,9 +26,9 @@ namespace nucleus
     {
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     Block const&
     Action::block() const
@@ -38,11 +38,12 @@ namespace nucleus
       return (*this->_block);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
-    elle::Status        Action::Dump(const elle::Natural32      margin) const
+    elle::Status
+    Action::Dump(const elle::Natural32      margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -80,10 +81,6 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
-
     void
     Action::print(std::ostream& stream) const
     {
@@ -95,6 +92,10 @@ namespace nucleus
              << this->_block
              << "}";
     }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,

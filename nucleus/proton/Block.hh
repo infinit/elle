@@ -58,19 +58,23 @@ namespace nucleus
   namespace proton
   {
 
+    /// This class abstracts the notion of storable block of data.
     ///
-    /// this class abstracts the notion of storable block of data.
+    /// Note that every block is identified by an address which can be
+    /// computed through the bind() method.
     ///
-    /// note that every block is identified by an address.
+    /// The state attribute indicates whether the block has
+    /// been modified; therefore, this indicator is never serialized.
     ///
-    /// the state attribute indicates whether the block has
-    /// been modified. therefore, this indicator is never serialized.
-    ///
-    /// the reader will notice that only the Erase() method is provided
-    /// from the Fileable interface. this comes from the fact that the
-    /// other methods depend on the nature of the block: mutable or
-    /// immutable.
-    ///
+    /// A block contains some information which indicate the nature
+    /// of the block such as _network, _family and _component. In addition,
+    /// the block embeds the hash of the block creator so as to be able
+    /// to authenticate later, for deleting the block for instance. Finally,
+    /// a creation timestamp and a salt are generated at creation so as
+    /// to distinguish blocks with the same content. For more information on
+    /// the creation timestamp and salt, please refer to the specific physical
+    /// blocks, especially to the bind() method which makes use of these to
+    /// compute the block address.
     class Block:
       public elle::io::Dumpable,
       public elle::serialize::Serializable<>,
@@ -82,13 +86,13 @@ namespace nucleus
       private boost::noncopyable
     {
       /*----------.
-      | constants |
+      | Constants |
       `----------*/
     public:
       static const elle::String         Extension;
 
       /*-------------.
-      | construction |
+      | Construction |
       `-------------*/
     public:
       Block(); // XXX[to deserialize]
@@ -98,7 +102,7 @@ namespace nucleus
             elle::cryptography::PublicKey const& creator_K);
 
       /*--------.
-      | methods |
+      | Methods |
       `--------*/
     public:
       /// Computes the address of the block.
@@ -111,7 +115,7 @@ namespace nucleus
       validate(Address const& address) const = 0;
 
       /*-----------.
-      | interfaces |
+      | Interfaces |
       `-----------*/
     public:
       // XXX breaks serializable contract. Remove when Block can be an
@@ -129,7 +133,7 @@ namespace nucleus
       print(std::ostream& stream) const;
 
       /*-----------.
-      | attributes |
+      | Attributes |
       `-----------*/
     private:
       /// Identifies the network in which lies the block.
@@ -158,7 +162,7 @@ namespace nucleus
       /// created by the same user at the exact same time.
       ELLE_ATTRIBUTE_R(elle::Natural64, salt);
       /// Indicates the state of the block such as clean or dirty for
-      /// example.
+      /// example. This attribute is never serialized.
       ELLE_ATTRIBUTE_RW(State, state);
     };
 

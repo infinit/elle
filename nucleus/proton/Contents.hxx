@@ -224,7 +224,6 @@ namespace nucleus
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>

@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_NEUTRON_ENSEMBLE_HXX
 # define NUCLEUS_NEUTRON_ENSEMBLE_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>

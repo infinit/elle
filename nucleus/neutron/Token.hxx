@@ -71,7 +71,6 @@ namespace nucleus
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <cassert>
 
 # include <elle/serialize/Pointer.hh>
 

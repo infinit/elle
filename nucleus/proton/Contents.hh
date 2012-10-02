@@ -14,6 +14,8 @@ namespace nucleus
   {
 
     ///
+    /// XXX[boxes]
+    ///
     /// this class abstracts the data, catalog or reference by embedding
     /// it since the contents is always encrypted. XXX[will soon be overwritten
     /// by the porcupine code]

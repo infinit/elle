@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/cryptography/Digest.hh>
 
@@ -16,48 +17,46 @@ namespace nucleus
   namespace proton
   {
 
+    /// A base references a precise revision of a mutable block, often
+    /// a previous revision.
     ///
-    /// a base references a precise revision of a mutable block.
-    ///
-    /// this construct is useful to make sure a mutable block derives
+    /// This construct is useful to make sure a mutable block derives
     /// from another one, and another one down to the original mutable
     /// block whose ownership can usually be statically verified.
     ///
-    /// by following this chain, one can make sure a mutable block lies
+    /// By following this chain, one can make sure a mutable block lies
     /// in the legitimate block's history, in other words, branches have
-    /// not been author .
-    ///
+    /// not been created.
     class Base:
       public elle::Printable
     {
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Base();
       Base(MutableBlock const& block);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      elle::Status      Create(const Revision&,
-                               elle::cryptography::Digest const&);
+      /// Returns true if the given block matches the base.
+      elle::Boolean
+      matches(MutableBlock const& block) const;
 
-      elle::Status      Match(const MutableBlock&) const;
-
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
       elle::Boolean
       operator ==(Base const& other) const;
       ELLE_OPERATOR_NEQ(Base);
       ELLE_OPERATOR_ASSIGNMENT(Base);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Base);
@@ -69,12 +68,12 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Revision _revision;
-      elle::cryptography::Digest _digest;
+      ELLE_ATTRIBUTE_R(Revision, revision);
+      ELLE_ATTRIBUTE_R(elle::cryptography::Digest, digest);
     };
 
   }

@@ -8,20 +8,22 @@ namespace nucleus
   namespace proton
   {
 
-    ///
-    /// this enumeration defines the block's physical family.
-    ///
-    enum Family
+    /*-------------.
+    | Enumerations |
+    `-------------*/
+
+    /// Defines the block's physical family.
+    enum class Family
       {
-        FamilyUnknown = 0, // XXX
-
-        FamilyContentHashBlock,
-        FamilyPublicKeyBlock,
-        FamilyOwnerKeyBlock,
-        FamilyImprintBlock,
-
-        Families = FamilyImprintBlock + 1 // XXX
+        content_hash_block,
+        public_key_block,
+        owner_key_block,
+        imprint_block
       };
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,

@@ -44,7 +44,6 @@ namespace nucleus
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 
@@ -57,6 +56,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
 
   archive & base_class<nucleus::proton::ContentHashBlock>(value);
   archive & value._range;
+
+  // XXX enforce(value.component() == nucleus::proton::Component::access);
 }
 
 #endif

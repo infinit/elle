@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HXX
 # define NUCLEUS_PROTON_IMPRINTBLOCK_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 
@@ -15,6 +14,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ImprintBlock,
   archive & base_class<nucleus::proton::MutableBlock>(value);
 
   archive & value._owner_K;
+
+  enforce(value.family() == nucleus::proton::Family::imprint_block);
 }
 
 #endif

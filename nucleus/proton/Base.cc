@@ -12,9 +12,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Base::Base()
     {
@@ -29,57 +29,26 @@ namespace nucleus
         throw Exception("unable to hash the mutable block");
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
-    ///
-    /// this method creates a base according to a revision and digest.
-    ///
-    elle::Status        Base::Create(const Revision&             revision,
-                                     elle::cryptography::Digest const&        digest)
+    elle::Boolean
+    Base::matches(MutableBlock const& block) const
     {
-      // set the attributes.
-      this->_revision = revision;
-      this->_digest = digest;
+      Base base(block);
 
-      return elle::Status::Ok;
+      // Compare the bases.
+      return (*this == base);
     }
 
-    ///
-    /// this method returns true if the given mutable block matches the
-    /// base.
-    ///
-    elle::Status        Base::Match(const MutableBlock&         block) const
-    {
-      elle::cryptography::Digest      digest;
-
-      // check the revisions.
-      if (this->_revision != block.revision())
-        return elle::Status::False;
-
-      // compute the block's digest.
-      if (elle::cryptography::OneWay::Hash(
-            block,
-            digest) == elle::Status::Error
-          )
-        flee("unable to hash the mutable block");
-
-      // compare the digests.
-      if (this->_digest != digest)
-        return elle::Status::False;
-
-      return elle::Status::True;
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Base::operator ==(Base const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
         return true;
 
@@ -91,14 +60,12 @@ namespace nucleus
       return true;
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
-    ///
-    /// this function dumps a base.
-    ///
-    elle::Status        Base::Dump(elle::Natural32              margin) const
+    elle::Status
+    Base::Dump(elle::Natural32              margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -114,10 +81,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- printable -------------------------------------------------------
-//
 
     void
     Base::print(std::ostream& stream) const

@@ -111,7 +111,7 @@ namespace hole
         // the addres indicates.
         switch (address.family())
           {
-          case nucleus::proton::FamilyContentHashBlock:
+          case nucleus::proton::Family::content_hash_block:
             {
               nucleus::proton::ImmutableBlock const* ib =
                 static_cast<nucleus::proton::ImmutableBlock const*>(&block);
@@ -120,9 +120,9 @@ namespace hole
               _server.put(address, *ib);
               break;
             }
-          case nucleus::proton::FamilyPublicKeyBlock:
-          case nucleus::proton::FamilyOwnerKeyBlock:
-          case nucleus::proton::FamilyImprintBlock:
+          case nucleus::proton::Family::public_key_block:
+          case nucleus::proton::Family::owner_key_block:
+          case nucleus::proton::Family::imprint_block:
             {
               nucleus::proton::MutableBlock const*  mb =
                 static_cast<nucleus::proton::MutableBlock const*>(&block);
@@ -154,7 +154,7 @@ namespace hole
         // the addres indicates.
         switch (address.family())
           {
-          case nucleus::proton::FamilyContentHashBlock:
+          case nucleus::proton::Family::content_hash_block:
             {
               nucleus::proton::ImmutableBlock* ib;
               ib = static_cast<nucleus::proton::ImmutableBlock*>(block);
@@ -163,9 +163,9 @@ namespace hole
               _server.get(address, *ib);
               break;
             }
-          case nucleus::proton::FamilyPublicKeyBlock:
-          case nucleus::proton::FamilyOwnerKeyBlock:
-          case nucleus::proton::FamilyImprintBlock:
+          case nucleus::proton::Family::public_key_block:
+          case nucleus::proton::Family::owner_key_block:
+          case nucleus::proton::Family::imprint_block:
             {
               nucleus::proton::MutableBlock* mb;
               mb = static_cast<nucleus::proton::MutableBlock*>(block);
@@ -176,7 +176,8 @@ namespace hole
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "unknown block family");
             }
           }
 

@@ -24,7 +24,7 @@ namespace nucleus
         neutron::Component const component,
         elle::cryptography::PublicKey const& creator_K,
         elle::cryptography::PublicKey const& block_K):
-      MutableBlock(network, FamilyPublicKeyBlock, component, creator_K),
+      MutableBlock(network, Family::public_key_block, component, creator_K),
 
       _block_K(block_K)
     {

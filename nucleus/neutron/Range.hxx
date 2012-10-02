@@ -389,7 +389,6 @@ namespace nucleus
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 

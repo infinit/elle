@@ -13,30 +13,28 @@ namespace nucleus
   namespace proton
   {
 
-    ///
-    /// a content hash block is a block whose address is determined by
+    /// A content hash block is a block whose address is determined by
     /// applying a one-way hash function on its content.
     ///
-    /// this way, such blocks are said to be immutable since modifying
-    /// such a block implies creating a new block. indeed, since the data
+    /// This way, such blocks are said to be immutable since modifying
+    /// such a block implies creating a new block. Indeed, since the data
     /// changes, the hash of those data as well, so does the address, hence
     /// the creation of a new block.
-    ///
     class ContentHashBlock:
       public ImmutableBlock
     {
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       ContentHashBlock(); // XXX[to deserialize]
       ContentHashBlock(Network const& network,
                        neutron::Component const component,
                        elle::cryptography::PublicKey const& creator_K);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // block
       virtual

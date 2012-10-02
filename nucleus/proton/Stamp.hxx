@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_PROTON_STAMP_HXX
 # define NUCLEUS_PROTON_STAMP_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 

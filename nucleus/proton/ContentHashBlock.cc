@@ -12,9 +12,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     ContentHashBlock::ContentHashBlock():
       ImmutableBlock()
@@ -25,13 +25,13 @@ namespace nucleus
         Network const& network,
         neutron::Component const component,
         elle::cryptography::PublicKey const& creator_K):
-      ImmutableBlock(network, FamilyContentHashBlock, component, creator_K)
+      ImmutableBlock(network, Family::content_hash_block, component, creator_K)
     {
     }
 
-//
-// ---------- block -----------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
     Address
     ContentHashBlock::bind() const
@@ -51,38 +51,31 @@ namespace nucleus
         throw Exception("the address %s does not seem to represent the given "
                         "block", address);
 
-      // compute the address of this object.
+      // Compute the address of this object.
       //
-      // note that compared to the other physical blocks such as PKB, OWB,
+      // Note that compared to the other physical blocks such as PKB, OWB,
       // IB, the address of this block is computed by applying a hash on
-      // its content. however, since its content contains, at least, the
+      // its content. However, since its content contains, at least, the
       // network identifier, family and component (Block.hh), the process
       // is similar to other blocks which specifically embed these components
       // in the address.
       //
-      // indeed, the address of a CHB becomes hash(content) which happens
-      // to be hash(network, family, component, ...). on the other hand,
+      // Indeed, the address of a CHB becomes hash(content) which happens
+      // to be hash(network, family, component, ...). On the other hand,
       // the address of a PKB is computed this way: hash(network, family,
-      // component, K). therefore, all the blocks embed the network,
+      // component, K). Therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
       Address self(this->network(), this->family(), this->component(),
                    *this);
 
-      // compare the address with the given one.
+      // Compare the address with the given one.
       if (address != self)
         throw Exception("the recorded address does not correspond "
                         "to this block");
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this function dumps an block object.
-    ///
-    elle::Status        ContentHashBlock::Dump(const
-                                                 elle::Natural32 margin) const
+    elle::Status
+    ContentHashBlock::Dump(const elle::Natural32 margin) const
     {
       elle::String      alignment(margin, ' ');
 
@@ -94,10 +87,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- printable -------------------------------------------------------
-//
 
     void
     ContentHashBlock::print(std::ostream& stream) const

@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_PROTON_PUBLICKEYBLOCK_HXX
 # define NUCLEUS_PROTON_PUBLICKEYBLOCK_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 
@@ -30,7 +29,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::PublicKeyBlock,
 
   archive >> value.block_K;
 
-  enforce(value.family() == nucleus::proton::FamilyPublicKeyBlock);
+  enforce(value.family() == nucleus::proton::Family::public_key_block);
 }
 
 #endif

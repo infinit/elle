@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_NEUTRON_RECORD_HXX
 # define NUCLEUS_NEUTRON_RECORD_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 

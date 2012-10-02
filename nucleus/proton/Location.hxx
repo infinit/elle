@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_PROTON_LOCATION_HXX
 # define NUCLEUS_PROTON_LOCATION_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 

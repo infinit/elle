@@ -30,7 +30,7 @@ namespace nucleus
     ImprintBlock::ImprintBlock(Network const& network,
                                neutron::Component const component,
                                elle::cryptography::PublicKey const& creator_K):
-      MutableBlock(network, FamilyImprintBlock, component, creator_K),
+      MutableBlock(network, Family::imprint_block, component, creator_K),
 
       _owner_K(creator_K),
       _owner_subject(nullptr)

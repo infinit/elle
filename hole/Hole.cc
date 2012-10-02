@@ -167,7 +167,7 @@ namespace hole
     // the address indicates.
     switch (address.family())
       {
-      case nucleus::proton::FamilyContentHashBlock:
+      case nucleus::proton::Family::content_hash_block:
         {
           const nucleus::proton::ImmutableBlock*        ib;
           ib = static_cast<const nucleus::proton::ImmutableBlock*>(&block);
@@ -176,9 +176,9 @@ namespace hole
           this->_implementation->Put(address, *ib);
           break;
         }
-      case nucleus::proton::FamilyPublicKeyBlock:
-      case nucleus::proton::FamilyOwnerKeyBlock:
-      case nucleus::proton::FamilyImprintBlock:
+      case nucleus::proton::Family::public_key_block:
+      case nucleus::proton::Family::owner_key_block:
+      case nucleus::proton::Family::imprint_block:
         {
           const nucleus::proton::MutableBlock*          mb;
           mb = static_cast<const nucleus::proton::MutableBlock*>(&block);
@@ -206,15 +206,16 @@ namespace hole
     // the addres indicates.
     switch (address.family())
       {
-        case nucleus::proton::FamilyContentHashBlock:
-          return this->_implementation->Get(address);
-        case nucleus::proton::FamilyPublicKeyBlock:
-        case nucleus::proton::FamilyOwnerKeyBlock:
-        case nucleus::proton::FamilyImprintBlock:
-          return this->_implementation->Get(address, revision);
-        default:
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   elle::sprintf("unknown block family '%u'", address.family()));
+      case nucleus::proton::Family::content_hash_block:
+        return this->_implementation->Get(address);
+      case nucleus::proton::Family::public_key_block:
+      case nucleus::proton::Family::owner_key_block:
+      case nucleus::proton::Family::imprint_block:
+        return this->_implementation->Get(address, revision);
+      default:
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 elle::sprintf("unknown block family '%u'",
+                                               address.family()));
       }
   }
 

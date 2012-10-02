@@ -16,14 +16,14 @@ namespace nucleus
   {
 
     /// This class defines an action related to a block being either
-    /// pushed/wiped to/from the storage layer.
+    /// pushed or wiped to/from the storage layer.
     class Action:
       public elle::Printable,
       private boost::noncopyable
     {
-      //
-      // enumerations
-      //
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
       enum Type
         {
@@ -31,24 +31,26 @@ namespace nucleus
           wipe
         };
 
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Action(Address const& address,
              Block const* block);
       Action(Address const& address);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
+      /// Returns the block associated with the action. Note that this
+      /// method throws if the action is 'wipe'.
       Block const&
       block() const;
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -58,18 +60,18 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Type const, type);
       ELLE_ATTRIBUTE_R(Address const, address);
       ELLE_ATTRIBUTE(Block const*, block);
     };
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,

@@ -26,7 +26,8 @@ add_library(hole ${LINK_METHOD}
 #  implementations/cirkle/Neighbourhood.cc
 #  implementations/cirkle/RoutingTable.cc
 
-  backends/fs/MutableBlock.cc
+  storage/Directory.cc
+  storage/Storage.cc
 
   Hole.cc
   Holeable.cc

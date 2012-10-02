@@ -14,8 +14,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
 
   archive & base_class<nucleus::proton::ImmutableBlock>(value);
 
-  if (value.family() != nucleus::proton::FamilyContentHashBlock)
-    throw Exception("Invalid family");
+  enforce(value.family() == nucleus::proton::Family::content_hash_block);
 }
 
 #endif

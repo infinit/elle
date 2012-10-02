@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_PROTON_HISTORY_HXX
 # define NUCLEUS_PROTON_HISTORY_HXX
 
-# include <cassert>
 
 # include <elle/serialize/VectorSerializer.hxx>
 # include <nucleus/proton/Revision.hh>

@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_NEUTRON_TRAIT_HXX
 # define NUCLEUS_NEUTRON_TRAIT_HXX
 
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 

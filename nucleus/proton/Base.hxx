@@ -1,7 +1,5 @@
-#ifndef  NUCLEUS_PROTON_BASE_HXX
+#ifndef NUCLEUS_PROTON_BASE_HXX
 # define NUCLEUS_PROTON_BASE_HXX
-
-# include <cassert>
 
 # include <elle/serialize/Serializer.hh>
 # include <elle/cryptography/Digest.hh>

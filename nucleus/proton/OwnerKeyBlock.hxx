@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_PROTON_OWNERKEYBLOCK_HXX
 # define NUCLEUS_PROTON_OWNERKEYBLOCK_HXX
 
-# include <cassert>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,
                       archive,
@@ -15,6 +14,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,
   archive & value._block_K;
   archive & value._owner_K;
   archive & value._owner_signature;
+
+  enforce(value.family() == nucleus::proton::Family::owner_key_block);
 }
 
 #endif

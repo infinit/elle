@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_NEUTRON_GROUP_HXX
 # define NUCLEUS_NEUTRON_GROUP_HXX
 
-# include <cassert>
 # include <stdexcept>
 
 # include <elle/serialize/Serializer.hh>

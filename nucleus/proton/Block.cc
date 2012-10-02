@@ -14,17 +14,16 @@ namespace nucleus
   {
 
     /*------------.
-    | definitions |
+    | Definitions |
     `------------*/
 
     const elle::String            Block::Extension = ".blk";
 
     /*-------------.
-    | construction |
+    | Construction |
     `-------------*/
 
     Block::Block():
-      _family(FamilyUnknown),
       _component(neutron::ComponentUnknown),
       _state(StateClean)
     {
@@ -57,9 +56,9 @@ namespace nucleus
         throw Exception("unable to generate the salt");
     }
 
-    /*---------.
-    | dumpable |
-    `---------*/
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
     elle::Status
     Block::Dump(const elle::Natural32       margin) const
@@ -94,10 +93,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-    /*----------.
-    | printable |
-    `----------*/
 
     void
     Block::print(std::ostream& stream) const
