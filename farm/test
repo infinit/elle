@@ -1,441 +1,344 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
-import copy
-import distutils.dir_util
 import os
-import pipes
-import shutil
-import subprocess
+import re
 import sys
-import tempfile
+import stat
+import copy
 import time
+import email
+import runpy
+import pprint
+import argparse
+import datetime
 import threading
-import sys
+import email.mime
+import smtplib as sml
+import subprocess as sp
+import pygooglechart as pgc
+
+from higgs import pool
+from higgs import infinitools
+from collections import namedtuple
+from collections import OrderedDict
+
+pattern = re.compile(r"(?P<name>.*)\.(?P<nb>\d+)\.(?P<ext>py|sh)")
 
 
-#sys.exit(0) #XXX tests does not work
+with open("mail_template.in") as template:
+    mail_template = template.read()
 
-import platform
+MAIL_TARGETS = (
+        "pichot.fabien@gmail.com",
+        )
 
-BUILD = os.environ.get(
-    'DIR_BUILD',
-    os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '../build/',
-        platform.system().lower() + platform.architecture()[0][:2]
+MANDRILL_USERNAME = 'infinitdotio'
+MANDRILL_PASSWORD = 'ca159fe5-a0f7-47eb-b9e1-2a8f03b9da86'
+MANDRILL_SMTP_HOST = 'smtp.mandrillapp.com'
+MANDRILL_SMTP_PORT = 587
+
+CHART_W_SIZE = 400
+CHART_H_SIZE = 250
+
+class StatusCode():
+    SUCCESS = 0
+    FAILURE = 1
+    def __init__(self):
+        self.status = StatusCode.FAILURE
+        pass
+
+class Watcher:
+    def pre_run(self, environ={}): pass
+
+    def post_run(self, res): pass
+
+    def post_shutdown(self, all_reports): pass
+
+class Timing(Watcher):
+    def __init__(self, script_name, report):
+        report[script_name]["timing"] = OrderedDict()
+        self.timing_report = report[script_name]["timing"]
+        pass
+
+    def pre_run(self, environ={}):
+        self.t0 = datetime.datetime.now()
+
+    def post_run(self, status_code):
+        t0 = self.t0
+        t1 = datetime.datetime.now()
+
+        self.timing_report["start time"] = str(t0)
+        self.timing_report["end time"] = str(t1)
+        self.timing_report["elapsed time"] = \
+                "{0} sec".format((t1 - t0).total_seconds())
+
+class Environ(Watcher):
+    def __init__(self, script_name, report):
+        report[script_name]["environ"] = OrderedDict()
+        self.env_report = report[script_name]["environ"]
+
+    def pre_run(self, environ={}):
+        self.env_report["MNT1"] = environ["MNT1"]
+        self.env_report["MNT2"] = environ["MNT2"]
+
+        for key, val in environ.items():
+            if key.startswith("INFINIT"):
+                self.env_report[key] = val
+
+class Result(Watcher):
+    def __init__(self, script_name, report):
+        self.result_report = report[script_name]
+
+    def post_run(self, status_code):
+        if status_code.status == StatusCode.SUCCESS:
+            self.result_report["result"] = "SUCCESS"
+        elif status_code.status == StatusCode.FAILURE:
+            self.result_report["result"] = "FAILURE"
+
+class Memory(Watcher):
+
+    def __init__(self, script_name, report):
+        report[script_name]["memory"] = OrderedDict()
+        self.memory_report = report[script_name]["memory"]
+
+    def _watch(self, pid, curr_stat):
+        cmd = "ps -o %cpu,%mem,rss,bsdtime,maj_flt,min_flt,vsz {0}";
+
+        out = sp.check_output(cmd.format(pid).split())
+        (header_val, data, *drop) = out.split(b'\n')
+        for (type, val) in zip(header_val.split(), data.split()):
+            if val not in curr_stat:
+                dec_type = type.decode("utf8")
+                dec_val = val.decode("utf8")
+                curr_stat[dec_type] = []
+                curr_stat[dec_type].append(dec_val)
+
+        while True:
+            try:
+                out = sp.check_output(cmd.format(pid).split())
+            except sp.CalledProcessError as e:
+                break
+
+            time.sleep(0.2)
+            (header_val, data, *dump) = out.split(b'\n')
+            for (type, val) in zip(header_val.split(), data.split()):
+                dec_type = type.decode("utf8")
+                dec_val = val.decode("utf8")
+                curr_stat[dec_type].append(dec_val)
+
+    def pre_run(self, environ={}):
+        self.l_pids = []
+        self.l_threads = []
+        for (key, value) in environ.items():
+            if key.startswith("INFINIT_PID"):
+                self.l_pids.append(value)
+                for pid in value.split(","):
+                    pid_key = "pid({0})".format(pid)
+                    self.memory_report[pid_key] = OrderedDict()
+                    T = threading.Thread(target=self._watch,
+                            args=(value,self.memory_report[pid_key]))
+                    T.start()
+                    self.l_threads.append(T)
+
+    def post_shutdown(self, drop):
+        for T in self.l_threads:
+            T.join()
+
+class Graph(Watcher):
+    def __init__(self, script_name, report):
+        self._report = report;
+        self.script_name = script_name
+
+    def render_memory_graphs(self):
+        memory_report = self._report[self.script_name]["memory"]
+        for pid, pid_stats in memory_report.items():
+            for type, stats in pid_stats.items():
+                if type == b'%CPU':
+                    l_floatvals = [float(value) for value in stats]
+                    chart = pgc.SimpleLineChart(CHART_W_SIZE,
+                            CHART_H_SIZE,
+                            y_range=(0, 100))
+                    chart.set_axis_labels(pgc.Axis.LEFT, [0, 25, 50, 75, 100])
+                    chart.set_axis_labels(pgc.Axis.BOTTOM, ["start", "end"])
+                    chart.set_title("%CPU over time for {0}".format(
+                        pid))
+                    chart.set_legend([self.script_name, "bite" ,"botte"])
+                    chart.add_data(l_floatvals)
+                    chart.add_data(l_floatvals)
+                    chart.add_data(l_floatvals)
+
+    def post_shutdown(self, drop):
+        self.render_memory_graphs()
+
+class Mail(Watcher):
+    def __init__(self, script_name, report):
+        self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
+
+    def send_mail(self, all_reports):
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        from higgs import moody
+        html = mail_template
+        html = moody.render(html, **all_reports)
+
+        self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
+        msg = MIMEText(html, 'html')
+        msg['Subject'] = "[INFINIT] [build-farm] Test report"
+        msg['From'] = "pichot.fabien@gmail.com"
+        msg['To'] = ", ".join(MAIL_TARGETS)
+        self.smtp.send_message(msg)
+        self.smtp.quit()
+
+    def post_shutdown(self, all_reports):
+        self.send_mail(all_reports)
+
+WATCHERS = (
+        Timing,
+        Environ,
+        Result,
+        Memory,
+        Graph,
+        #Mail,
     )
-)
 
-os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
-os.environ['ELLE_LOG_COMPONENTS'] = '*'
-#os.environ['ELLE_LOG_LEVEL'] = 'TRACE'
-MONITOR_SLEEP=10
+def main(scriptdir, scripts_to_run=None):
+    with pool.PoolEngine(low_port=5656, high_port=5660) as engine:
+        report = OrderedDict()
 
-def monitor(p, cmd):
-  while p.poll() == None:
-    rss = subprocess.check_output("ps -p %d -o rss | tail -n 1" % p.pid,
-                                  shell = True)
-    print("[%s] RSS: %d MB" % (cmd[0], int(rss.strip()) / 1024))
-    time.sleep(MONITOR_SLEEP)
+        report["engine"] = OrderedDict()
+        engine_report = report["engine"]
+        report["scripts"] = OrderedDict()
 
-def run(cmd, stdin = b'', cwd = None, env=None):
-  print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
-  sys.stderr.flush()
-  p = subprocess.Popen(cmd,
-                       cwd = cwd,
-                       stdin = subprocess.PIPE,
-                       shell = False,
-                       env = env)
-  p.stdin.write(stdin)
-  p.stdin.close()
-  t = threading.Thread(target=monitor, args=(p, cmd))
-  t.start()
-  t.join()
-  assert p.returncode == 0
+        # Fill the engine report
+        engine_report["home"] = engine._base.home
+        engine_report["user"] = engine._base.user
+        engine_report["mode"] = engine._base.mode
+        engine_report["network"] = engine._base.network
+        engine_report["conf"] = engine._base.conf.to_dict()
 
-#############################################################################
-# unit testing
+        l_watchers = []
 
-def unit_tests():
-    run(['make', 'test'], cwd=BUILD)
+        for root, dirs, scripts in os.walk(scriptdir):
+            for script in scripts:
+                m = pattern.match(script)
+                if m == None:
+                    print("file", script, "name don't match the specification")
+                    continue
 
-#unit_tests()
+                script_data = m.groupdict()
 
-#############################################################################
+                nb_instance = int(script_data["nb"])
+                script_name = script_data["name"]
 
+                if scripts_to_run != None and not script_name in scripts_to_run:
+                    continue
 
-class Network:
-    def __init__(self, user='buildslave', network='network', model='slug'):
-        self._user_name = user
-        self._network_name = network
-        self._root_dir = None
-        self._model = model
+                report["scripts"][script_name] = OrderedDict()
+                script_report = report["scripts"][script_name]
 
-    @property
-    def model(self):
-        return self._model
+                script_path = os.path.join(root, script)
+                script_report["Script path"] = script_path
 
-    @property
-    def name(self):
-        return self._network_name
+                # Skip the script if it's not executable
+                if not os.stat(script_path)[stat.ST_MODE] & stat.S_IXUSR:
+                    script_report["Error"] = "The script is not executable"
+                    script_report["result"] = "FAILURE"
+                    continue
 
-    @property
-    def user_name(self):
-        return self._user_name
+                script_report["Number of peers"] = nb_instance
 
-    @property
-    def root_dir(self):
-        assert self._root_dir is not None
-        return self._root_dir
+                print("launch the test [\033[32m", script_name,
+                        "\033[0m] with",
+                        nb_instance, "instances")
+                with pool.Pool(engine, number_of_networks=nb_instance) as p:
 
-    @property
-    def config_dir(self):
-        return self._config_dir
+                    # Fill the report for the networks used by the script
+                    script_report["home"] = OrderedDict()
+                    home_report = script_report["home"]
 
-    def __enter__(self):
-        self._env = copy.deepcopy(os.environ)
-        self._root_dir = tempfile.mkdtemp()
-        self._config_dir = os.path.join(self._root_dir, '.config/infinit')
-        self._env['INFINIT_HOME'] = self._config_dir
-        print("Prepare reference env of", self._network_name, "for user", self._user_name, "in", self._root_dir)
-        distutils.dir_util.mkpath(self._config_dir)
-        shutil.copyfile(
-            os.path.join(BUILD, 'oracle/infinit.auth'),
-            os.path.join(self._config_dir, 'infinit.auth')
-        )
-        self.infinit_cmd(
-            ['satellites/user/8user', '-c', '-n', self._user_name],
-            stdin = b'\n\n'
-        )
-        self.infinit_cmd(
-            [
-                'satellites/network/8network',
-                '-c', '-n', self._network_name, '-m', self._model, '-a', self._user_name
-            ],
-            stdin = b'\n\n'
-        )
-        self.infinit_cmd(
-            ['satellites/passport/8passport', '-c'],
-            stdin = b'\n'
-        )
-        del self._env
-        for ext in ['dic', 'idy']:
-          shutil.copyfile(
-              '%s/users/%s/%s.%s' % (self._config_dir, self._user_name, self._user_name, ext),
-              '%s/infinit.%s' % (self._config_dir, ext)
-          )
-        return self
+                    for i, H in enumerate(p.l_home):
+                        home_report["home[{0}]".format(i)] = OrderedDict()
+                        curr_rep = home_report["home[{0}]".format(i)]
+                        curr_rep["home"] = H.home
+                        curr_rep["user"] = H.user
+                        curr_rep["conf"] = H.conf.to_dict()
+                        curr_rep["network"] = H.network
+                        curr_rep["mode"] = H.mode
 
-    def __exit__(self, type_, value, traceback):
-        if self._root_dir:
-            shutil.rmtree(self._root_dir)
-            self._root_dir = None
+                        # Dump the .set files
+                        with open(os.path.join(
+                                H.home,
+                                "networks",
+                                H.network,
+                                "{net}.set".format(net=H.network)), "r") \
+                        as setfile:
+                            curr_rep["set"] = setfile.read().split()
 
 
-    def infinit_cmd(self, args, stdin=b'', cwd=None):
-        args[0] = '%s/%s' % (BUILD, args[0])
-        return run(args, stdin=stdin, cwd=cwd, env=self._env)
+                    # Prepare the Watchers for this test
+                    l_watchers = list(type(script_name, report["scripts"]) for type in WATCHERS)
 
-    def mount(self, port=0, addresses=[]):
-        assert self._root_dir is not None
-        return MountPoint(
-            self,
-            env = copy.deepcopy(os.environ),
-            port = port,
-            addresses = addresses
-        )
+                    # Save the environ to add some stuff inside
+                    environ_save = copy.deepcopy(os.environ)
 
-    def __str__(self):
-        s = '<Network ' + self.name + ' in ' + self._root_dir
-        if self._root_dir is not None:
-            s += ' (prepared)'
+                    # Wait for the mountpoints to be ready
+                    p.wait_ready()
+                    print("\033[32mAll the filesystems are effectivly mounted, start the testing...\033[0m")
+
+                    # The scripts needs MNT$i variables to point to the
+                    # mountpoints
+                    for (i, mountpoint) in enumerate(p.mountpoints):
+                        os.environ["MNT{0}".format(i + 1)] = mountpoint
+                        print("export MNT{0}={1}".format(i + 1, mountpoint))
+
+                    for (i, pid) in enumerate(p.pids):
+                        os.environ["INFINIT_PID{0}".format(i + 1)] = str(pid)
+
+                    try:
+                        for W in l_watchers: W.pre_run(os.environ)
+
+                        s = StatusCode()
+                        try:
+                            if script_data["ext"] == "py":
+                                runpy.run_path(script_path)
+                            else:
+                                sp.check_output([script_path],
+                                        env=environ,
+                                        stderr=sp.STDOUT)
+                            s.status = StatusCode.SUCCESS
+                            print("\033[32mtest", script_name,"success\033[0m")
+
+                        except BaseException as e:
+                            s.status = StatusCode.FAILURE
+                            script_report["Reason"] = str(e)
+                            print("\033[31mtest", script_name,"failed\033[0m")
+                        finally:
+                            for W in l_watchers: W.post_run(s)
+                    except:
+                        pass
+                    os.environ.update(environ_save)
+        with open("report", "w") as reportfile:
+            import pprint
+            pprint.pprint(report, stream=reportfile)
+        for W in l_watchers: W.post_shutdown(report)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run the infinit test suite")
+    parser.add_argument('scriptdir', metavar="DIR",
+            help="the dir containing the scripts to be run")
+    parser.add_argument('--scripts', '-s', default=None, help="the scripts to be run")
+    parser.add_argument('--builddir', '-b', default="", help="the build directory containing the binaries")
+    args = parser.parse_args()
+    try:
+        infinitools.patch_satellites_path(args.builddir)
+        os.environ["INFINIT_BUILD"] = args.builddir
+        if not args.scripts:
+            main(args.scriptdir)
         else:
-            s += ' (not prepared)'
-        s += '>'
-        return s
+            main(args.scriptdir, args.scripts.split(","))
+    except KeyError as ke:
+        if b'INFINIT_BUILD' in ke.args:
+            parser.print_help()
 
-
-class MountPoint:
-    def __init__(self, network, env={}, port=0, addresses=[]):
-        self._env = env
-        self._network = network
-        self._ref_dir = network.root_dir
-        self._port = port
-        self._addresses = addresses
-        self._mount_dir = None
-
-    @property
-    def alive(self):
-        return self.__infinit_alive
-
-    @property
-    def mount_dir(self):
-        return self._mount_dir
-
-    def file_path(self, relpath):
-        return os.path.join(self.mount_dir, relpath)
-
-    def __enter__(self):
-        self._temp_dir = tempfile.mkdtemp()
-        self._root_dir = os.path.join(self._temp_dir, 'root')
-        self._conf_dir = os.path.join(self._root_dir, '.config/infinit')
-        self._network_conf_dir = os.path.join(self._conf_dir, 'networks', self._network.name)
-        self._phrase_path = os.path.join( #XXX no more phrase path
-            self._network_conf_dir,
-            self._network.name + '.phr'
-        )
-        self._mount_dir = os.path.join(self._root_dir, 'mnt')
-
-        self._env['INFINIT_HOME'] = self._conf_dir
-        shutil.copytree(self._ref_dir, self._root_dir)
-        distutils.dir_util.mkpath(self._mount_dir)
-
-        if self._port != 0:
-            with open(os.path.join(self._root_dir, '.config/infinit/infinit.conf'), 'w') as f:
-                f.write("[hole]\nslug.port = %d\ndebug = 1" % self._port)
-
-        if self._addresses:
-            print("Addresses = ", self._addresses)
-            set_path = os.path.join(self._network_conf_dir, '%s.set' % self._network.name)
-            with open(set_path, 'w') as f:
-                f.write(' '.join(self._addresses))
-
-        # manual, infinit_cmd block
-        self.__infinit_cmd = [
-            '%s/8infinit' % BUILD,
-            '-n', self._network.name,
-            '-m', self._mount_dir,
-            '-u', self._network.user_name,
-        ]
-        print("LAUNCHING INFINIT:", ' '.join(self.__infinit_cmd))
-        self.__infinit = subprocess.Popen(self.__infinit_cmd, stdin = subprocess.PIPE)
-        self.__infinit_alive = True
-        self.__infinit.stdin.write(b'\n')
-        self.__infinit.stdin.close()
-        self.__monitor_thread = threading.Thread(target=self._monitor)
-        self.__monitor_thread.start()
-        print("INFINIT LAUNCHED:", ' '.join(self.__infinit_cmd))
-        return self
-
-    def _monitor(self):
-        p = self.__infinit
-        cmd = self.__infinit_cmd
-        while p.poll() == None:
-            rss = subprocess.check_output(
-                "ps -p %d -o rss | tail -n 1" % p.pid,
-                shell = True
-            )
-            print("[%s] %d RSS: %d MB" % (self.mount_dir, p.pid, int(rss.strip()) / 1024))
-            time.sleep(MONITOR_SLEEP)
-        self.__infinit_alive = False
-        print("PROCESS", cmd[0], p.pid, "TERMINATED")
-
-    def terminate(self, sig = 15):
-        if self.__infinit_alive:
-            self.__infinit.send_signal(sig)
-
-    def __exit__(self, type_, value, traceback):
-        self.terminate()
-        self.__monitor_thread.join()
-        while os.path.exists(self._phrase_path):
-            time.sleep(1)
-        try:
-            os.system('fusermount -u %s' % os.path.abspath(self._mount_dir))
-            print(self._mount_dir, "umounted")
-        except:
-            print("cannot call fusermount")
-            pass
-        self.__infinit = None
-        shutil.rmtree(self._temp_dir)
-        self._root_dir = None
-        self._network = None
-
-    def infinit_cmd(self, args, stdin=b'', cwd=None):
-        args[0] = '%s/%s' % (BUILD, args[0])
-        return run(args, stdin=stdin, cwd=cwd, env=self._env)
-
-    def __str__(self):
-        s = '<MountPoint of ' + str(self._network)
-        if self._mount_dir is not None:
-            s += ' mounted in ' + self._mount_dir
-        else:
-            s += ' not mounted'
-        s += '>'
-        return s
-
-
-class NetworkPool:
-
-    def __init__(self, network, size, start_port=8222):
-        self._network = network
-        self._size = size
-        self.mount_points = []
-        self._start_port = start_port
-
-    @property
-    def size(self):
-        return self._size
-
-    def __enter__(self):
-        addresses = [
-            '127.0.0.1:%d' % d for d in range(self._start_port, self._start_port + self._size)
-        ]
-        print(addresses)
-        self.mount_points = [
-            self._network.mount(
-                port = (self._start_port != 0 and self._start_port + i or 0),
-                addresses = addresses
-            )
-            for i in range(self._size)
-        ]
-        for i, m in enumerate(self.mount_points):
-            print("Mount point",i, m)
-            if i > 0:
-                print("XXX Waiting 10 seconds")
-                time.sleep(10)
-            m.__enter__()
-            setattr(self, 'mount_point' + str(i), m)
-            print("Mounted",i, m)
-        return self
-
-    def __exit__(self, type_, value, traceback):
-        for i, m in enumerate(self.mount_points):
-            try:
-                delattr(self, 'mount_point' + str(i))
-                m.__exit__(type_, value, traceback) #XXX check doc
-            except Exception as err:
-                print("Cannot umount", m, ':', err)
-        self.mount_points = []
-
-
-import hashlib
-
-def simple_file(mount_points, fname, size=4096):
-    first = mount_points[0]
-    others = mount_points[1:]
-    assert all(m.alive for m in mount_points)
-    md5 = hashlib.md5()
-
-    print("Writing", size, "bytes into", first.file_path(fname))
-    with open(first.file_path(fname), 'wb') as f:
-        with open('/dev/urandom', 'rb') as src:
-            print("Read from random source")
-            i = 0
-            while i < size:
-                if size - i > 4096:
-                    buf = src.read(4096)
-                else:
-                    buf = src.read(size - i)
-                f.write(buf)
-                md5.update(buf)
-                i += 4096 # we dont care
-
-    assert all(m.alive for m in mount_points)
-    tries = 0
-    while tries < 10:
-        if all(os.path.exists(m.file_path(fname)) for m in others):
-            print("simple file of", size, "bytes: OK")
-            break
-        assert all(m.alive for m in mount_points)
-        tries += 1
-        print("Try ", tries, ": waiting for file")
-        time.sleep(1)
-    assert all(os.path.exists(m.file_path(fname)) for m in others)
-    for m in mount_points:
-        f_size = os.path.getsize(m.file_path(fname))
-        print(fname, "size =", f_size)
-        if f_size != size:
-            raise Exception(
-                "Found size (%d) differs from written size (%d)" % (
-                    f_size, size
-            ))
-        with open(m.file_path(fname), 'rb') as f:
-            other_md5 = hashlib.md5()
-            while True:
-                data = f.read(4096)
-                if not data: break
-                other_md5.update(data)
-            if md5.hexdigest() != other_md5.hexdigest():
-                raise Exception("Found md5 (%s) differs from the original (%s)" % (
-                    other_md5.hexdigest(), md5.hexdigest()
-                ))
-
-
-
-
-def test_all(mount_points, test_timeout=100):
-    for size in [4096, 4096 * 1024]:
-        fname = 'test-file-%d' % size
-        for f in [simple_file]:
-            try:
-                th = threading.Thread(target=f, args=(mount_points, fname), kwargs={'size': size})
-                th.start()
-                th.join(test_timeout)
-                if th.is_alive():
-                    for m in mount_points:
-                        m.terminate()
-                    th.join()
-                    raise Exception("Timeout: Test took more than %d seconds" % test_timeout)
-            except Exception as err:
-                mps = str(tuple(str(m) for m in mount_points))
-                raise Exception("FAILURE: %s with size = %s and mount points: %s: " % (f.__name__, size, mps), err)
-
-
-
-
-
-
-
-
-def test_openssl():
-    start = time.time()
-    with Network("user", "network") as network:
-        with network.mount() as mount_point:
-            run(['tar', '-xzf', '/home/buildslave/openssl-1.0.0g.tar.gz', '-C', mount_point.mount_dir])
-            run(['./config'], cwd = '%s/openssl-1.0.0g' % mount_point.mount_dir)
-            run(['make'], cwd = '%s/openssl-1.0.0g' % mount_point.mount_dir)
-    end = time.time()
-    print('OpenSSL compilation time: %ss' % (end - start))
-
-if __name__ == '__main__':
-    test_openssl()
-    sys.exit(0)
-    with Network('user1', 'network1') as network:
-        with NetworkPool(network, 2, start_port=8171) as pool:
-            print("Network pool ready:")
-            for m in pool.mount_points:
-                print("\t", m)
-            test_all(pool.mount_points)
-
-
-
-#for test in [
-#  'cryptography',
-#  'fiber',
-#  'package',
-#  ]:
-#  run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
-#
-#import time
-#
-#for test, args in [
-#  ('network-local', ['sucemoncul']),
-#  ('network-tcp', ['127.0.0.1:6666']),
-##  'network-udp',
-#  ]:
-#  b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
-#  cmd_server = [b, 'server'] + args
-#  cmd_client = [b, 'client'] + args
-#  print('Run: %s' % ' '.join(map(pipes.quote, cmd_server)), file = sys.stderr)
-#  print('Run: %s' % ' '.join(map(pipes.quote, cmd_client)), file = sys.stderr)
-#  sys.stderr.flush()
-#  server = subprocess.Popen(cmd_server)
-#  time.sleep(1)
-#  client = subprocess.Popen(cmd_client)
-#  server.wait()
-#  client.wait()
-#  assert server.returncode == 0
-#  assert client.returncode == 0
-
-#test_openssl()

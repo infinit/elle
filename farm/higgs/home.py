@@ -2,13 +2,14 @@
 # -*- python -*-
 
 import os
-import cli
-import conf
 import copy
 import shutil
 import tempfile
-import infinitools
 import subprocess as sp
+
+from . import cli
+from . import conf
+from . import infinitools
 
 class Home:
     def __init__(self, auth, user, mode, network, home, conf):

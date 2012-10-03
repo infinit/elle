@@ -3,9 +3,9 @@
 import os, re
 from functools import partial
 
-from moody.errors import TemplateCompileError
-from moody.base import expression_evaluator, Template, TemplateFragment
-from moody.macros import DEFAULT_MACROS
+from .errors import TemplateCompileError
+from .base import expression_evaluator, Template, TemplateFragment
+from .macros import DEFAULT_MACROS
         
         
 def string_node(value, context):

@@ -5,7 +5,7 @@ import os
 import time
 import shutil
 import subprocess
-from infinitools import run_cmd
+from ..infinitools import run_cmd
 
 class AuthorityFile:
     def __init__(self, passphrase):

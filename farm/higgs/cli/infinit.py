@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
-import subprocess
-import sys
 import os
 import re
-import shutil
+import sys
 import copy
+import shutil
+import subprocess
 
-from infinitools import run_cmd
+from ..infinitools import run_cmd
+
 ip = re.compile(b"[0-9]+(?:\.[0-9]+){3}:[0-9]{1,5}")
 
 class Infinit:

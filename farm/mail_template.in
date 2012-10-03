@@ -28,6 +28,8 @@
 		<td style="{{_curr_style}}">
 		%% if stats["result"] == "SUCCESS"
 			<font color="#00ff00"> {{stats["result"]}} </font>
+		%% elif stats["result"] == "FAILURE" and "Reason" in stats.keys()
+			<font color="#ff0000"> {{stats["Reason"]}} </font>
 		%% elif stats["result"] == "FAILURE"
 			<font color="#ff0000"> {{stats["result"]}} </font>
 		%% endif

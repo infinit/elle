@@ -2,7 +2,6 @@
 # -*- python -*-
 
 import os
-import cli
 import subprocess as sp
 
 def run_cmd(cmd, stdin=None):

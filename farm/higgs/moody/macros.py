@@ -3,7 +3,7 @@
 import re
 from functools import partial
 
-from moody.base import expression_evaluator, name_setter, Template
+from .base import expression_evaluator, name_setter, Template
 
 
 def regex_macro(regex):

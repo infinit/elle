@@ -5,7 +5,7 @@ import subprocess
 import sys
 import os
 
-from infinitools import run_cmd
+from ..infinitools import run_cmd
 
 class UserAuth:
     def __init__(self, name, passphrase):

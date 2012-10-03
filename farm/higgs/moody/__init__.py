@@ -6,10 +6,10 @@ Fast and powerful. It gets the job done.
 Developed by Dave Hall <dave@etianen.com>.
 """
 
-from moody.errors import TemplateError, TemplateCompileError, TemplateRenderError
-from moody.macros import DEFAULT_MACROS
-from moody.parser import Parser
-from moody.loader import Loader, DebugLoader, Source, DirectorySource, TemplateDoesNotExist
+from .errors import TemplateError, TemplateCompileError, TemplateRenderError
+from .macros import DEFAULT_MACROS
+from .parser import Parser
+from .loader import Loader, DebugLoader, Source, DirectorySource, TemplateDoesNotExist
 
 
 __all__ = ("default_parser", "compile", "render", "make_loader",)

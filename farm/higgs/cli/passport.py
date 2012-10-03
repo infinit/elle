@@ -2,7 +2,7 @@
 # -*- python -*-
 
 import subprocess
-from infinitools import run_cmd
+from ..infinitools import run_cmd
 
 class Passport:
     def __init__(self):

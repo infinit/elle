@@ -3,7 +3,7 @@
 
 import re
 
-from moody.errors import TemplateRenderError
+from .errors import TemplateRenderError
     
     
 class Context:
