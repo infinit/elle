@@ -1,15 +1,19 @@
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
+#include <Infinit.hh>
+
 #include <common/common.hh>
 
 #include <elle/log.hh>
 #include <elle/os/path.hh>
+#include <elle/io/Piece.hh>
 
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 #include <lune/Passport.hh>
 #include <lune/Set.hh>
+#include <lune/Lune.hh>
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Genre.hh>
@@ -18,6 +22,8 @@
 #include <nucleus/proton/Address.hh>
 
 #include <elle/idiom/Close.hh>
+
+#include <hole/storage/Directory.hh>
 
 #include <QDir>
 
@@ -215,10 +221,14 @@ void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
 
+  elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
+  shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+  hole::storage::Directory storage(shelter.string());
+
   assert(this->_description.root_block.size());
   assert(this->_description.descriptor.size());
 
-  lune::Descriptor descriptor;
+  lune::Descriptor descriptor(this->_description._id);
 
   auto e = elle::Status::Error;
   if (descriptor.Restore(this->_description.descriptor) == e)
@@ -257,7 +267,7 @@ void InfinitNetwork::_prepare_directory()
       throw std::runtime_error("Couldn't store the root block.");
     }
 
-  directory.store(descriptor.meta().root());
+  directory.store(storage.path(descriptor.meta().root()));
 
   nucleus::neutron::Access access;
   nucleus::proton::Address access_address;
@@ -265,7 +275,7 @@ void InfinitNetwork::_prepare_directory()
       access_address.Restore(this->_description.access_address) == e)
     throw std::runtime_error("Couldn't store the access block");
 
-  access.store(access_address);
+  access.store(storage.path(access_address));
 
   nucleus::neutron::Group group;
   nucleus::proton::Address group_address;
@@ -273,7 +283,7 @@ void InfinitNetwork::_prepare_directory()
       group_address.Restore(this->_description.group_address) == e)
     throw std::runtime_error("Couldn't store the group block");
 
-  group.store(group_address);
+  group.store(storage.path(group_address));
 
   LOG("Root block stored.");
 

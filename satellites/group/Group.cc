@@ -27,6 +27,7 @@
 #include <lune/Phrase.hh>
 
 #include <hole/Hole.hh>
+#include <hole/storage/Directory.hh>
 
 #include <elle/idiom/Close.hh>
 # include <boost/foreach.hpp>
@@ -425,7 +426,12 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
-    std::unique_ptr<hole::Hole> hole(new hole::Hole);
+    // Instanciate a Storage
+    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
+    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+    hole::storage::Directory storage(shelter.string());
+
+    std::unique_ptr<hole::Hole> hole(new hole::Hole(storage));
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Information") == elle::Status::True) &&

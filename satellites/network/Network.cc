@@ -6,6 +6,7 @@
 
 #include <hole/Hole.hh>
 #include <hole/Openness.hh>
+#include <hole/storage/Directory.hh>
 
 #include <elle/Elle.hh>
 #include <elle/io/Console.hh>
@@ -130,10 +131,15 @@ namespace satellite
     nucleus::neutron::Group group(network,
                                   identity.pair.K,
                                   "everybody");
+
+    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
+    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+    hole::storage::Directory storage(shelter.string());
+
     group.seal(identity.pair.k);
 
     nucleus::proton::Address group_address(group.bind());
-    group.store(group_address);
+    group.store(storage.path(group_address));
 
     nucleus::neutron::Access access(network, identity.pair.K);
     nucleus::proton::Address* access_address(nullptr);
@@ -195,7 +201,7 @@ namespace satellite
             escape("unable to add the record to the access");
 
           access_address = new nucleus::proton::Address(access.bind());
-          access.store(*access_address);
+          access.store(storage.path(*access_address));
 
           break;
         }
@@ -226,7 +232,7 @@ namespace satellite
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());
-    directory.store(directory_address);
+    directory.store(storage.path(directory_address));
 
     //
     // create the network's descriptor.
@@ -262,7 +268,7 @@ namespace satellite
     // remove the descriptor.
     //
     {
-      lune::Descriptor  descriptor;
+      lune::Descriptor  descriptor(name);
       elle::io::Path        path;
 
       // does the network exist.
@@ -355,7 +361,7 @@ namespace satellite
   ///
   elle::Status          Network::Information(const elle::String& name)
   {
-    lune::Descriptor    descriptor;
+    lune::Descriptor    descriptor(name);
 
     //
     // test the arguments.

@@ -3,3 +3,7 @@ project(group CXX)
 add_executable(8group
   Group.cc
 )
+
+target_link_libraries(8group
+        ${INFINIT_LIBRARIES}
+        )

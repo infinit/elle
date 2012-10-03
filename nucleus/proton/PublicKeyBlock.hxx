@@ -15,7 +15,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::PublicKeyBlock,
 
   archive << base_class<nucleus::proton::MutableBlock>(value);
 
-  archive << value.block_K;
+  archive << value.block_K();
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::PublicKeyBlock,
@@ -27,7 +27,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::PublicKeyBlock,
 
   archive >> base_class<nucleus::proton::MutableBlock>(value);
 
-  archive >> value.block_K;
+  archive >> value.block_K();
 
   enforce(value.family() == nucleus::proton::Family::public_key_block);
 }
