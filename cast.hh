@@ -1,6 +1,8 @@
 #ifndef ELLE_CAST_HH
 # define ELLE_CAST_HH
 
+# include <elle/printf.hh>
+
 namespace elle
 {
   template <typename T>
