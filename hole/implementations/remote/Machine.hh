@@ -17,10 +17,7 @@ namespace hole
   {
     namespace remote
     {
-
-      ///
-      /// this class represents the current host.
-      ///
+      /// The current host.
       class Machine:
         public elle::radix::Entity
       {
@@ -39,10 +36,10 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Machine(Hole& hole);
+        Machine(Implementation& hole);
         ~Machine();
       private:
-        Hole& _hole;
+        Implementation& _hole;
 
       public:
         void

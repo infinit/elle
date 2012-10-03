@@ -17,6 +17,9 @@ add_library(hole ${LINK_METHOD}
   implementations/slug/Manifest.cc
   implementations/slug/Slug.cc
 
+  storage/Directory.cc
+  storage/Storage.cc
+
 # XXX
 #  implementations/cirkle/Cirkle.cc
 #  implementations/cirkle/Cluster.cc
@@ -26,11 +29,7 @@ add_library(hole ${LINK_METHOD}
 #  implementations/cirkle/Neighbourhood.cc
 #  implementations/cirkle/RoutingTable.cc
 
-  storage/Directory.cc
-  storage/Storage.cc
-
   Hole.cc
-  Holeable.cc
   Label.cc
   Model.cc
   Openness.cc

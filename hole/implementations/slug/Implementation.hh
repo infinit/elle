@@ -1,11 +1,12 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_IMPLEMENTATION_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_IMPLEMENTATION_HH
 
+# include <elle/network/Locus.hh>
 # include <elle/types.hh>
 
 # include <nucleus/proton/fwd.hh>
 
-# include <hole/Holeable.hh>
+# include <hole/Hole.hh>
 
 namespace hole
 {
@@ -14,42 +15,61 @@ namespace hole
     namespace slug
     {
 
-      ///
-      /// the slug hole implementation.
-      ///
+      /// Slug hole implementation.
       class Implementation:
-        public Holeable
+        public Hole
       {
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
-        //
-        // constructors & destructors
-        //
-        Implementation(Hole& hole,
-                       const nucleus::proton::Network&);
+        Implementation(hole::storage::Storage& storage,
+                       std::vector<elle::network::Locus> const& members,
+                       int port);
+      private:
+        ELLE_ATTRIBUTE_R(std::vector<elle::network::Locus>, members);
+        ELLE_ATTRIBUTE_R(int, port);
 
-        //
-        // interfaces
-        //
+      /*------------.
+      | Join, leave |
+      `------------*/
+      protected:
+        virtual
+        void
+        _join();
+        virtual
+        void
+        _leave();
 
-        // holeable
-        void                    Join();
-        elle::Status            Leave();
-
-        /// Store an immutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
-        /// Store a mutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
-        /// Retrieve an immutable block.
+      /*---------------.
+      | Implementation |
+      `---------------*/
+      protected:
+        virtual
+        void
+        _push(const nucleus::proton::Address& address,
+              const nucleus::proton::ImmutableBlock& block);
+        virtual
+        void
+        _push(const nucleus::proton::Address& address,
+              const nucleus::proton::MutableBlock& block);
+        virtual
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&);
-        /// Retrieve a mutable block.
+        _pull(const nucleus::proton::Address&);
+        virtual
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&, const nucleus::proton::Revision&);
-        /// Remove a block.
-        void Kill(const nucleus::proton::Address&);
+        _pull(const nucleus::proton::Address&,
+              const nucleus::proton::Revision&);
+        virtual
+        void
+        _wipe(const nucleus::proton::Address& address);
 
-        // dumpable
-        elle::Status            Dump(const elle::Natural32 = 0) const;
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
+        elle::Status
+        Dump(const elle::Natural32) const;
       };
 
     }

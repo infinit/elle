@@ -109,7 +109,6 @@ def configure(cxx_toolkit, cxx_config):
     'nucleus/neutron/Group.hh',
     'nucleus/neutron/Group.hxx',
     'nucleus/neutron/Index.hh',
-    'nucleus/neutron/Neutron.hh',
     'nucleus/neutron/Object.cc',
     'nucleus/neutron/Object.hh',
     'nucleus/neutron/Object.hxx',
@@ -283,8 +282,6 @@ def configure(cxx_toolkit, cxx_config):
   hole_sources = drake.nodes(
     'hole/Hole.cc',
     'hole/Hole.hh',
-    'hole/Holeable.cc',
-    'hole/Holeable.hh',
     'hole/Label.cc',
     'hole/Label.hh',
     'hole/Label.hxx',

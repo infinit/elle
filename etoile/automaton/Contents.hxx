@@ -68,7 +68,7 @@ namespace etoile
           // otherwise create a new contents according to the context's type.
           context.contents =
             new nucleus::proton::Contents<typename T::C>(
-              depot::hole().network(),
+              nucleus::proton::Network(Infinit::Network), // FIXME ?
               agent::Agent::Identity.pair.K);
 
           // otherwise, create an empty contents.

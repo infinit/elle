@@ -1,5 +1,7 @@
 #include <etoile/depot/Depot.hh>
 
+#include <lune/Descriptor.hh>
+
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Revision.hh>
@@ -9,6 +11,8 @@
 #include <nucleus/neutron/Ensemble.hh>
 
 #include <hole/Hole.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -46,7 +50,9 @@ namespace etoile
     /// this method returns the address of the network's root block.
     elle::Status        Depot::Origin(nucleus::proton::Address& address)
     {
-      address = hole().origin();
+      // FIXME: do not re-parse the descriptor every time.
+      lune::Descriptor descriptor(Infinit::Network);
+      address = descriptor.meta().root();
       return elle::Status::Ok;
     }
 

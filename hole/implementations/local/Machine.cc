@@ -1,5 +1,4 @@
 #include <hole/implementations/local/Machine.hh>
-#include <hole/Holeable.hh>
 #include <hole/Hole.hh>
 
 #include <nucleus/proton/Address.hh>

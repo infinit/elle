@@ -1,3 +1,4 @@
+#include <hole/implementations/remote/Implementation.hh>
 #include <hole/implementations/remote/Machine.hh>
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Server.hh>
@@ -24,7 +25,7 @@ namespace hole
       | Construction |
       `-------------*/
 
-      Machine::Machine(Hole& hole):
+      Machine::Machine(Implementation& hole):
         _hole(hole),
         role(Machine::RoleUnknown)
       {}
@@ -69,27 +70,15 @@ namespace hole
       void
       Machine::Launch()
       {
-        elle::network::Locus     locus;
-
-        // check the number of loci in the set: it should be one for
-        // this implementation.
-        if (this->_hole.set().loci.size() != 1)
-          {
-            static boost::format fmt("there should be a single locus in the network's set (%u)");
-            throw std::runtime_error(str(fmt % this->_hole.set().loci.size()));
-          }
-
-        // retrieve the locus.
-        locus = *this->_hole.set().loci.begin();
-
         // try to connect to the server's host.
         ELLE_TRACE("try starting as a client")
           try
             {
               std::string host;
-              locus.host.Convert(host);
+              _hole.server_locus().host.Convert(host);
               auto client = std::unique_ptr<Client>(
-                new Client(this->_hole.passport(), host, locus.port));
+                new Client(this->_hole.passport(), host,
+                           _hole.server_locus().port));
               this->role = Machine::RoleClient;
               this->_hole.ready();
               this->client = client.release();
@@ -106,7 +95,7 @@ namespace hole
         // if the client did not succeed, create a server a wait for a client.
         ELLE_TRACE("start as a server")
         {
-          this->server = new Server(_hole, locus.port);
+          this->server = new Server(_hole, _hole.server_locus().port);
           this->role = Machine::RoleServer;
           return;
         }

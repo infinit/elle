@@ -69,7 +69,7 @@ namespace etoile
                      "allocate one");
 
           context.access =
-            new nucleus::neutron::Access(depot::hole().network(),
+            new nucleus::neutron::Access(nucleus::proton::Network(Infinit::Network),
                                          agent::Agent::Identity.pair.K);
         }
 

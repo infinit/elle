@@ -15,48 +15,36 @@ namespace hole
   {
     namespace remote
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-      ///
-      /// default constructor.
-      ///
-      Implementation::Implementation(Hole& hole,
-                                     const nucleus::proton::Network& network):
-        Holeable(hole, network)
+      Implementation::Implementation(hole::storage::Storage& storage,
+                                     elle::network::Locus const& server):
+        Hole(storage),
+        _server_locus(server)
       {}
 
-//
-// ---------- holeable --------------------------------------------------------
-//
+      /*-----.
+      | Hole |
+      `-----*/
 
-      ///
-      /// this method tries to connect to the server. if impossible, a server
-      /// is author .
-      ///
       void
-      Implementation::Join()
+      Implementation::_join()
       {
-        Remote::Computer = new Machine(this->hole());
+        Remote::Computer = new Machine(*this);
         Remote::Computer->Launch();
       }
 
-      ///
-      /// this method cleans the peer.
-      ///
-      elle::Status      Implementation::Leave()
+      void
+      Implementation::_leave()
       {
-        // delete the machine.
         delete Remote::Computer;
-
-        return elle::Status::Ok;
       }
 
       void
-      Implementation::Put(const nucleus::proton::Address& address,
-                          const nucleus::proton::ImmutableBlock& block)
+      Implementation::_push(const nucleus::proton::Address& address,
+                            const nucleus::proton::ImmutableBlock& block)
       {
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -65,7 +53,7 @@ namespace hole
       }
 
       void
-      Implementation::Put(const nucleus::proton::Address& address,
+      Implementation::_push(const nucleus::proton::Address& address,
                           const nucleus::proton::MutableBlock& block)
       {
         if (Remote::Computer->role != Machine::RoleClient)
@@ -75,7 +63,7 @@ namespace hole
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Implementation::Get(const nucleus::proton::Address& address)
+      Implementation::_pull(const nucleus::proton::Address& address)
       {
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -84,7 +72,7 @@ namespace hole
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Implementation::Get(const nucleus::proton::Address& address,
+      Implementation::_pull(const nucleus::proton::Address& address,
                           const nucleus::proton::Revision& revision)
       {
         if (Remote::Computer->role != Machine::RoleClient)
@@ -94,7 +82,7 @@ namespace hole
       }
 
       void
-      Implementation::Kill(const nucleus::proton::Address& address)
+      Implementation::_wipe(const nucleus::proton::Address& address)
       {
         if (Remote::Computer->role != Machine::RoleClient)
           throw reactor::Exception(elle::concurrency::scheduler(),
@@ -106,16 +94,12 @@ namespace hole
       | Dumpable |
       `---------*/
 
-      elle::Status      Implementation::Dump(const elle::Natural32 margin)
-        const
+      elle::Status
+      Implementation::Dump(const elle::Natural32 margin) const
       {
         elle::String    alignment(margin, ' ');
 
         std::cout << alignment << "[Implementation] Remote" << std::endl;
-
-        // dump the parent.
-        if (Holeable::Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the holeabl");
 
         // dump the machine.
         if (Remote::Computer->Dump(margin + 2) == elle::Status::Error)
@@ -123,7 +107,6 @@ namespace hole
 
         return elle::Status::Ok;
       }
-
     }
   }
 }

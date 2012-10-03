@@ -30,24 +30,18 @@ namespace nucleus
                      neutron::Component const component,
                      elle::cryptography::PublicKey const& creator_K);
 
-      /*--------.
-      | Methods |
-      `--------*/
-    private:
-      /// XXX
-      static
-        elle::io::Path
-        _path(Address const& address);
-
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+    /*----------.
+    | Printable |
+    `----------*/
     public:
-      // printable
       virtual
       void
       print(std::ostream& stream) const;
-      // fileable
+
+    /*---------.
+    | Fileable |
+    `---------*/
+    public:
       ELLE_CONCEPT_FILEABLE_METHODS();
     };
 

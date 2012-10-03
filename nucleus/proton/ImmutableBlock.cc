@@ -34,22 +34,9 @@ namespace nucleus
     {
     }
 
-    /*--------.
-    | Methods |
-    `--------*/
-
-    elle::io::Path
-    ImmutableBlock::_path(Address const& address)
-    {
-      return (elle::io::Path(
-                lune::Lune::Network::Shelter::ImmutableBlock,
-                elle::io::Piece("%NETWORK%", address.network().name()),
-                elle::io::Piece("%ADDRESS%", address.unique())));
-    }
-
-    /*-----------.
-    | Interfaces |
-    `-----------*/
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     ImmutableBlock::print(std::ostream& stream) const

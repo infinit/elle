@@ -24,7 +24,7 @@ namespace etoile
                           gear::File&                           context)
     {
       context.object =
-        new nucleus::neutron::Object(depot::hole().network(),
+        new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
                                      agent::Agent::Identity.pair.K,
                                      nucleus::neutron::Genre::file);
 

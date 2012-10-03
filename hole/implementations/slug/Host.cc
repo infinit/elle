@@ -1,8 +1,11 @@
 #include <memory>
 
+#include <elle/serialize/VectorSerializer.hxx>
 #include <elle/utility/Time.hh>
 
 #include <reactor/network/exception.hh>
+
+#include <lune/Passport.hh>
 
 #include <nucleus/Derivable.hh>
 #include <nucleus/neutron/Access.hh>
@@ -11,8 +14,8 @@
 #include <nucleus/proton/MutableBlock.hh>
 
 #include <hole/Hole.hh>
-#include <hole/Holeable.hh>
 #include <hole/implementations/slug/Host.hh>
+#include <hole/implementations/slug/Implementation.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 #include <hole/implementations/slug/Slug.hh>

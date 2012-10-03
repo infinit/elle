@@ -53,7 +53,7 @@ namespace etoile
           ELLE_TRACE_SCOPE("the group does not reference an ensemble");
 
           context.ensemble =
-            new nucleus::neutron::Ensemble(depot::hole().network(),
+            new nucleus::neutron::Ensemble(nucleus::proton::Network(Infinit::Network),
                                            agent::Agent::Identity.pair.K);
         }
 

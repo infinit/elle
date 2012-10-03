@@ -4,6 +4,7 @@
 #include <hole/Hole.hh>
 
 #include <nucleus/proton/fwd.hh>
+#include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -13,96 +14,78 @@ namespace hole
   {
     namespace local
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-      ///
-      /// default constructor.
-      ///
-      Implementation::Implementation(Hole& hole, const nucleus::proton::Network& network):
-        Holeable(hole, network)
+      Implementation::Implementation(storage::Storage& storage):
+        Hole(storage)
       {}
 
-//
-// ---------- holeable --------------------------------------------------------
-//
+      /*------------.
+      | Join, leave |
+      `------------*/
 
-      ///
-      /// this method tries to connect to the server. if impossible, a server
-      /// is author .
-      ///
       void
-      Implementation::Join()
+      Implementation::_join()
       {
-        // allocate the machine.
-        Local::Computer = new Machine(this->hole());
-
-        this->hole().ready();
+        Local::Computer = new Machine(*this);
+        this->ready();
       }
 
-      ///
-      /// this method cleans the peer.
-      ///
-      elle::Status      Implementation::Leave()
+      void
+      Implementation::_leave()
       {
-        // delete the machine.
         delete Local::Computer;
-
-        return elle::Status::Ok;
       }
 
+      /*---------------.
+      | Implementation |
+      `---------------*/
+
       void
-      Implementation::Put(const nucleus::proton::Address& address,
-                          const nucleus::proton::ImmutableBlock& block)
+      Implementation::_push(nucleus::proton::Address const& address,
+                            nucleus::proton::ImmutableBlock const& block)
       {
         Local::Computer->Put(address, block);
       }
 
       void
-      Implementation::Put(const nucleus::proton::Address&               address,
-                          const nucleus::proton::MutableBlock&          block)
+      Implementation::_push(nucleus::proton::Address const& address,
+                            nucleus::proton::MutableBlock const& block)
       {
         Local::Computer->Put(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Implementation::Get(const nucleus::proton::Address& address)
+      Implementation::_pull(nucleus::proton::Address const& address)
       {
         return Local::Computer->Get(address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Implementation::Get(const nucleus::proton::Address& address,
-                          const nucleus::proton::Revision& revision)
+      Implementation::_pull(nucleus::proton::Address const& address,
+                            nucleus::proton::Revision const& revision)
       {
         return Local::Computer->Get(address, revision);
       }
 
       void
-      Implementation::Kill(const nucleus::proton::Address& address)
+      Implementation::_wipe(nucleus::proton::Address const& address)
       {
         Local::Computer->Kill(address);
       }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+      /*---------.
+      | Dumpable |
+      `---------*/
 
-      ///
-      /// this method dumps the implementation.
-      ///
-      elle::Status      Implementation::Dump(const elle::Natural32 margin)
-        const
+      elle::Status
+      Implementation::Dump(const elle::Natural32 margin) const
       {
         elle::String    alignment(margin, ' ');
 
         std::cout << alignment << "[Implementation] Local" << std::endl;
-
-        // dump the parent.
-        if (Holeable::Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the holeabl");
 
         // dump the machine.
         if (Local::Computer->Dump(margin + 2) == elle::Status::Error)

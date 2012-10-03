@@ -1,5 +1,4 @@
 #include <hole/Hole.hh>
-#include <hole/Holeable.hh>
 #include <hole/implementations/remote/Manifest.hh>
 #include <hole/implementations/remote/Server.hh>
 

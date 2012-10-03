@@ -3,9 +3,9 @@
 
 # include <elle/types.hh>
 
-# include <nucleus/proton/fwd.hh>
+# include <hole/Hole.hh>
 
-# include <hole/Holeable.hh>
+# include <nucleus/proton/fwd.hh>
 
 namespace hole
 {
@@ -13,42 +13,51 @@ namespace hole
   {
     namespace local
     {
-
-      ///
-      /// the local hole implementation.
-      ///
+      /// Local hole implementation.
       class Implementation:
-        public Holeable
+        public Hole
       {
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
-        //
-        // constructors & destructors
-        //
-        Implementation(Hole& hole, const nucleus::proton::Network&);
+        Implementation(storage::Storage& storage);
 
-        //
-        // interfaces
-        //
+      /*------------.
+      | Join, leave |
+      `------------*/
+      protected:
+        virtual
+        void
+        _join();
+        virtual
+        void
+        _leave();
 
-        // holeable
-        void                    Join();
-        elle::Status            Leave();
-
-        /// Store an immutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
-        /// Store a mutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
-        /// Retrieve an immutable block.
+      /*---------------.
+      | Implementation |
+      `---------------*/
+      protected:
+        void
+        _push(nucleus::proton::Address const&,
+              nucleus::proton::ImmutableBlock const&);
+        void
+        _push(nucleus::proton::Address const&,
+              nucleus::proton::MutableBlock const&);
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&);
-        /// Retrieve a mutable block.
+        _pull(nucleus::proton::Address const&);
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&, const nucleus::proton::Revision&);
-        /// Remove a block.
-        void Kill(const nucleus::proton::Address&);
+        _pull(nucleus::proton::Address const&,
+              nucleus::proton::Revision const&);
+        void
+        _wipe(nucleus::proton::Address const&);
 
-        // dumpable
-        elle::Status            Dump(const elle::Natural32 = 0) const;
+      /*---------.
+      | Dumpable |
+      `---------*/
+      public:
+        elle::Status
+        Dump(const elle::Natural32 = 0) const;
       };
 
     }

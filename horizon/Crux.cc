@@ -1,10 +1,3 @@
-#include <horizon/Crib.hh>
-#include <horizon/Crux.hh>
-#include <horizon/Handle.hh>
-#include <horizon/Janitor.hh>
-#include <horizon/Policy.hh>
-#include <horizon/Horizon.hh>
-
 #include <agent/Agent.hh>
 
 #include <etoile/gear/Identifier.hh>
@@ -20,6 +13,15 @@
 #include <etoile/wall/Path.hh>
 #include <etoile/abstract/Object.hh>
 
+#include <horizon/Crib.hh>
+#include <horizon/Crux.hh>
+#include <horizon/Handle.hh>
+#include <horizon/Janitor.hh>
+#include <horizon/Policy.hh>
+#include <horizon/Horizon.hh>
+
+#include <lune/Descriptor.hh>
+
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Permissions.hh>
@@ -30,8 +32,6 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Range.hh>
-
-#include <hole/Hole.hh>
 
 #include <elle/log.hh>
 
@@ -487,14 +487,17 @@ namespace horizon
             -EPERM,
             subdirectory, directory);
 
-    switch (horizon::hole().descriptor().data().policy())
+    // FIXME: do not re-parse the descriptor every time.
+    lune::Descriptor descriptor(Infinit::Network);
+
+    switch (descriptor.data().policy())
       {
       case horizon::Policy::accessible:
         {
           // grant the read permission to the 'everybody' group.
           if (etoile::wall::Access::Grant(
                 subdirectory,
-                horizon::hole().descriptor().meta().everybody_subject(),
+                descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
             error("unable to update the access record",
                   -EPERM,
@@ -1185,14 +1188,17 @@ namespace horizon
             -EPERM,
             directory);
 
-    switch (horizon::hole().descriptor().data().policy())
+    // FIXME: do not re-parse the descriptor every time.
+    lune::Descriptor descriptor(Infinit::Network);
+
+    switch (descriptor.data().policy())
       {
       case horizon::Policy::accessible:
         {
           // grant the read permission to the 'everybody' group.
           if (etoile::wall::Access::Grant(
                 link,
-                horizon::hole().descriptor().meta().everybody_subject(),
+                descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
             error("unable to update the access record",
                   -EPERM,
@@ -1381,14 +1387,18 @@ namespace horizon
                 file, directory);
       }
 
-    switch (horizon::hole().descriptor().data().policy())
+
+    // FIXME: do not re-parse the descriptor every time.
+    lune::Descriptor descriptor(Infinit::Network);
+
+    switch (descriptor.data().policy())
       {
       case horizon::Policy::accessible:
         {
           // grant the read permission to the 'everybody' group.
           if (etoile::wall::Access::Grant(
                 file,
-                horizon::hole().descriptor().meta().everybody_subject(),
+                descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
             error("unable to update the access record",
                   -EPERM,

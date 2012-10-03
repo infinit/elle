@@ -139,7 +139,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
   shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
   hole::storage::Directory storage(shelter.string());
-  std::unique_ptr<hole::Hole> hole(new hole::Hole(storage));
+  std::unique_ptr<hole::Hole> hole(hole::factory(storage));
   hole->join();
 
   // initialize the Etoile library.

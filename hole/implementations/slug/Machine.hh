@@ -43,9 +43,9 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Machine(Hole& hole);
+        Machine(Implementation& hole, int port);
         ~Machine();
-        ELLE_ATTRIBUTE_RX(Hole&, hole);
+        ELLE_ATTRIBUTE_RX(Implementation&, hole);
 
       /*------.
       | State |

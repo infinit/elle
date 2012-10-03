@@ -236,6 +236,9 @@ namespace satellite
   elle::Status          Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
   {
+    // FIXME: do not re-parse the descriptor every time.
+    lune::Descriptor descriptor(Infinit::Network);
+
     Group::Operation   operation;
 
     // XXX Infinit::Parser is not deleted in case of errors
@@ -431,7 +434,7 @@ namespace satellite
     shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
     hole::storage::Directory storage(shelter.string());
 
-    std::unique_ptr<hole::Hole> hole(new hole::Hole(storage));
+    std::unique_ptr<hole::Hole> hole(hole::factory(storage));
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Information") == elle::Status::True) &&
@@ -494,7 +497,8 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+
+              group = descriptor.meta().everybody_identity();
             }
 
           Group::information(group);
@@ -536,7 +540,7 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+              group = descriptor.meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -611,7 +615,7 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+              group = descriptor.meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -684,7 +688,7 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+              group = descriptor.meta().everybody_identity();
             }
 
           Group::consult(group);
@@ -713,7 +717,7 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+              group = descriptor.meta().everybody_identity();
             }
 
           // retrieve the type.
@@ -786,7 +790,7 @@ namespace satellite
             }
           else
             {
-              group = hole->descriptor().meta().everybody_identity();
+              group = descriptor.meta().everybody_identity();
             }
 
           Group::destroy(group);

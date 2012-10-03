@@ -1,14 +1,23 @@
-#include <hole/Hole.hh>
-#include <hole/Holeable.hh>
-#include <hole/implementations/slug/Host.hh>
-#include <hole/implementations/slug/Machine.hh>
-#include <hole/implementations/slug/Manifest.hh>
-
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 
+#include <elle/cast.hh>
+#include <elle/Exception.hh>
+#include <elle/log.hh>
+#include <elle/network/Interface.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/utility/Time.hh>
+#include <elle/utility/Duration.hh>
+
 #include <agent/Agent.hh>
 
+#include <hole/Hole.hh>
+#include <hole/implementations/slug/Host.hh>
+#include <hole/implementations/slug/Implementation.hh>
+#include <hole/implementations/slug/Machine.hh>
+#include <hole/implementations/slug/Manifest.hh>
+
+#include <lune/Descriptor.hh>
 #include <lune/Passport.hh>
 
 #include <nucleus/proton/Address.hh>
@@ -20,20 +29,11 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/Derivable.hh>
 
-#include <elle/cast.hh>
-#include <elle/Exception.hh>
-#include <elle/network/Interface.hh>
-#include <elle/standalone/Report.hh>
-#include <elle/utility/Time.hh>
-#include <elle/utility/Duration.hh>
-
 #include <Infinit.hh>
 
 #include <plasma/meta/Client.hh>
 
 #include <common/common.hh>
-
-#include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
@@ -119,10 +119,11 @@ namespace hole
         delete host;
       }
 
-      Machine::Machine(Hole& hole)
+      Machine::Machine(Implementation& hole,
+                       int port)
         : _hole(hole)
         , _state(State::detached)
-        , _port(0)
+        , _port(port)
         , _server(new reactor::network::TCPServer
                   (elle::concurrency::scheduler()))
         , _acceptor()
@@ -132,13 +133,10 @@ namespace hole
 
         // Connect to hosts from the descriptor.
         {
-          std::istringstream    stream;
-          this->_port = Infinit::Configuration["hole"].Get("slug.port", 0);
-
           // FIXME: use builtin support for subcoroutines when available.
           std::vector<reactor::Thread*> connections;
           auto& sched = elle::concurrency::scheduler();
-          for (elle::network::Locus const& locus: this->_hole.set().loci)
+          for (elle::network::Locus const& locus: this->hole().members())
             {
               auto action = std::bind(&Machine::_connect_try, this, locus);
               auto thread = new reactor::Thread
