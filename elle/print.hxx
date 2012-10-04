@@ -142,7 +142,8 @@ namespace elle
   sprint(T const&...     values)
   {
     std::ostringstream ss;
-    fprint(ss, iomanip::nonewline, values...);
+    static iomanip::EndOfLine nonewline('\0');
+    fprint(ss, nonewline, values...);
     return ss.str();
   }
 }
