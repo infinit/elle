@@ -73,7 +73,6 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);
       // fileable
-    public:
       ELLE_CONCEPT_FILEABLE_METHODS();
 
       //

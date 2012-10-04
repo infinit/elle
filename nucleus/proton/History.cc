@@ -5,8 +5,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Lune.hh>
-
 #include <elle/utility/Buffer.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
@@ -53,15 +51,6 @@ namespace nucleus
       size = this->_container.size();
 
       return elle::Status::Ok;
-    }
-
-    elle::io::Path
-    History::_path(Network const& network,
-                   Address const& address)
-    {
-      return (elle::io::Path(lune::Lune::Network::Shelter::History,
-                             elle::io::Piece("%NETWORK%", network.name()),
-                             elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
     /*----------.
@@ -145,31 +134,6 @@ namespace nucleus
                   Address const& address)
     {
       this->load(History::_path(network, address));
-    }
-
-    void
-    History::store(Network const& network,
-                   Address const& address) const
-    {
-      this->store(History::_path(network, address));
-    }
-
-    void
-    History::erase(Network const& network,
-                   Address const& address)
-    {
-      elle::io::Path path(History::_path(network, address));
-
-      if (elle::concept::Fileable<>::exists(path) == true)
-        elle::concept::Fileable<>::erase(path);
-    }
-
-    elle::Boolean
-    History::exists(Network const& network,
-                    Address const& address)
-    {
-      return (elle::concept::Fileable<>::exists(
-        History::_path(network, address)));
     }
 
   }

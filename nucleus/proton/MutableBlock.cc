@@ -9,8 +9,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Lune.hh>
-
 #include <hole/Hole.hh>
 
 #include <elle/idiom/Close.hh>

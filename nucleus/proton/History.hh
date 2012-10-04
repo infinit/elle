@@ -54,12 +54,6 @@ namespace nucleus
 
       elle::Status      Size(Revision::Type&) const;
 
-    private:
-      /// XXX
-      static
-      elle::io::Path
-      _path(Network const& network,
-            Address const& address);
 
       /*----------.
       | Operators |
@@ -84,20 +78,6 @@ namespace nucleus
       ELLE_SERIALIZE_FRIEND_FOR(History);
       // fileable
       ELLE_CONCEPT_FILEABLE_METHODS();
-      void
-      load(Network const& network,
-           Address const& address);
-      void
-      store(Network const& network,
-            Address const& address) const;
-      static
-      void
-      erase(Network const& network,
-            Address const& address);
-      static
-      elle::Boolean
-      exists(Network const& network,
-             Address const& address);
 
       /*-----------.
       | Attributes |
