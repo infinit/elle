@@ -198,7 +198,7 @@ namespace etoile
         escape("unable to retrieve the context");
 
       // keep the address.
-      address = object->location.address;
+      address = object->location.address();
 
       // select the actor.
       if (gear::Actor::Select(parent, actor) == elle::Status::Error)

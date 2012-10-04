@@ -15,29 +15,28 @@ namespace nucleus
   namespace proton
   {
 
-    /// This class associates an owner to the mutable block.
+    /// This class associates a owner to the mutable block.
     ///
     /// The functionalities offered by this construct are equivalent to
     /// the ones of OwnerKeyBlock except that it does not require the
-    /// generation of a keypair which may be time consuming though experiments
+    /// generation of a keypair which may be time-consuming though experiments
     /// show it is negligible.
     ///
-    /// The idea behind this construct is very similar to PublicKeyBlocks
+    /// The idea behind this construct is very similar to public key blocks
     /// with the address being computed by applying a one-way function on
-    /// the public key except that in this case, as for OwnerKeyBlocks, the
-    /// owner's public key is used as the block's public key. Thus the
-    /// signature can be generated with the owner's private key i.e no
-    /// additional keys need to be kept by the user but its own keypair.
-    ///
-    /// Note that in addition, a stamp and salt are also included and
-    /// hashed in order to prevent conflicts i.e several ImprintBlocks
-    /// being created by the same user at the same time.
+    /// the block's public key except that in this case, as for owner key
+    /// blocks, the owner's public key is used as the block's public key. Thus
+    /// the block's signature can be generated with the owner's private key
+    /// instead of the block's private key. The result is that the user does
+    /// not need to keep the private key of every created object as it is for
+    /// public key blocks. Instead, the owner only keeps his personal key pair
+    /// which which he created and sign imprint blocks.
     class ImprintBlock:
       public MutableBlock
     {
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       ImprintBlock(); // XXX[to deserialize]
       ImprintBlock(Network const& network,
@@ -45,17 +44,17 @@ namespace nucleus
                    elle::cryptography::PublicKey const& creator_K);
       ~ImprintBlock();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
       /// The subject of the block's owner.
       neutron::Subject const&
       owner_subject();
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // block
       virtual
@@ -74,9 +73,9 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(ImprintBlock);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       /// The block's owner public key: the complementary private key
       /// must be used to sign the block's content. Note that the signature

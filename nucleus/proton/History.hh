@@ -21,32 +21,32 @@ namespace nucleus
   namespace proton
   {
 
-    ///
-    /// this class contains all the revision numbers associated with
+    /// This class contains all the revision numbers associated with
     /// a given mutable block.
-    ///
     class History:
       public elle::serialize::SerializableMixin<History>,
       public elle::concept::Fileable<>,
       public elle::Printable,
       private boost::noncopyable
     {
+      /*----------.
+      | Constants |
+      `----------*/
     public:
-      //
-      // constants
-      //
       static const elle::String         Extension;
 
-      //
-      // types
-      //
+      /*------.
+      | Types |
+      `------*/
+    public:
       typedef std::vector<Revision>                      Container;
       typedef typename Container::iterator              Iterator;
       typedef typename Container::const_iterator        Scoutor;
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
       elle::Status      Register(const Revision&);
 
       elle::Status      Select(const Revision::Type,
@@ -61,17 +61,17 @@ namespace nucleus
       _path(Network const& network,
             Address const& address);
 
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
       elle::Boolean
       operator ==(History const& other) const;
       ELLE_OPERATOR_NEQ(History);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -99,9 +99,9 @@ namespace nucleus
       exists(Network const& network,
              Address const& address);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       ELLE_ATTRIBUTE(Container, container);
     };

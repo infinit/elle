@@ -17,9 +17,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     ImmutableBlock::ImmutableBlock():
       Block()
@@ -34,9 +34,9 @@ namespace nucleus
     {
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     elle::io::Path
     ImmutableBlock::_path(Address const& address)
@@ -47,9 +47,9 @@ namespace nucleus
                 elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
     void
     ImmutableBlock::print(std::ostream& stream) const

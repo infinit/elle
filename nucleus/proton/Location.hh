@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/Printable.hh>
 
 # include <nucleus/proton/Address.hh>
@@ -13,45 +14,38 @@ namespace nucleus
   namespace proton
   {
 
+    /// This class represents a storage location both in space and time.
     ///
-    /// this class represents a storage location both in space and time.
-    ///
-    /// indeed, a location is composed of the address of the object but
-    /// also the number of the object's revision which it relates to.
-    ///
+    /// Indeed, a location is composed of the address of the block along
+    /// with the block (i.e mutable) revision. This way, given a location,
+    /// one can retrieve the exact content (i.e revision) of a block, which
+    /// is not the case with the address alone.
     class Location:
       public elle::Printable
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      //
-      // constants
-      //
-      static const Location             Null;
+      Location(); // XXX[should no longer be used: check etoile::wall etc.]
+      Location(Address const& address,
+               Revision const& revision);
 
-      //
-      // constructors & destructors
-      //
-      Location();
-
-      //
-      // methods
-      //
-      elle::Status      Create(const Address&,
-                               const Revision&);
-
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
       elle::Boolean
       operator ==(Location const& other) const;
       ELLE_OPERATOR_NEQ(Location);
       ELLE_OPERATOR_ASSIGNMENT(Location);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Location);
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
@@ -60,16 +54,17 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
-      Address           address;
-      Revision           revision;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Address, address);
+      ELLE_ATTRIBUTE_R(Revision, revision);
     };
 
   }
 }
 
-#include <nucleus/proton/Location.hxx>
+# include <nucleus/proton/Location.hxx>
 
 #endif

@@ -107,11 +107,9 @@ namespace etoile
         // return the identifier.
         gear::Identifier identifier = guard.actor()->identifier;
 
-        if (context->location.Create(
-              identity,
-              nucleus::proton::Revision::Last) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to create the location");
+        context->location =
+          nucleus::proton::Location(identity,
+                                    nucleus::proton::Revision::Last);
 
         // apply the load automaton on the context.
         if (automaton::Group::Load(*context) == elle::Status::Error)

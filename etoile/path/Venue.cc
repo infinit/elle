@@ -47,11 +47,7 @@ namespace etoile
     elle::Status        Venue::Record(const nucleus::proton::Address& address,
                                       const nucleus::proton::Revision& revision)
     {
-      nucleus::proton::Location location;
-
-      // create the location.
-      if (location.Create(address, revision) == elle::Status::Error)
-        escape("unable to create the location");
+      nucleus::proton::Location location(address, revision);
 
       // record the location.
       if (this->Record(location) == elle::Status::Error)

@@ -107,8 +107,8 @@ namespace etoile
         }
 
       // set the address/revision with the address of the last resolved element.
-      address = venue.elements[venue.elements.size() - 1].address;
-      revision = venue.elements[venue.elements.size() - 1].revision;
+      address = venue.elements[venue.elements.size() - 1].address();
+      revision = venue.elements[venue.elements.size() - 1].revision();
 
       // otherwise, resolve manually by retrieving the directory object.
       for (scoutor = route.elements.begin() + venue.elements.size();

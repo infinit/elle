@@ -46,8 +46,8 @@ namespace etoile
         {
           assert(context.object == nullptr);
           context.object = depot::Depot::pull_object(
-            context.location.address,
-            context.location.revision).release();
+            context.location.address(),
+            context.location.revision()).release();
         }
 
       // Compute the block base.
@@ -121,7 +121,7 @@ namespace etoile
         escape("unable to destroy the access");
 
       // mark the object as needing to be removed.
-      context.transcript.wipe(context.location.address);
+      context.transcript.wipe(context.location.address());
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -169,7 +169,7 @@ namespace etoile
             }
 
           // mark the block as needing to be stored.
-          context.transcript.push(context.location.address, context.object);
+          context.transcript.push(context.location.address(), context.object);
         }
 
       // set the context's state.

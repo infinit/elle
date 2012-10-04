@@ -16,22 +16,16 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*------------.
+    | Definitions |
+    `------------*/
 
-    ///
-    /// this string defines the history files extension.
-    ///
     const elle::String          History::Extension = ".hty";
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
-    ///
-    /// this method adds a revision to the history.
-    ///
     elle::Status        History::Register(const Revision&        revision)
     {
       // store the revision in the history's vector.
@@ -40,10 +34,6 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns the revision object corresponding to the given
-    /// index number.
-    ///
     elle::Status        History::Select(const Revision::Type     index,
                                         Revision&                revision) const
     {
@@ -57,9 +47,6 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns the size of the history.
-    ///
     elle::Status        History::Size(Revision::Type&            size) const
     {
       // return the size.
@@ -77,9 +64,9 @@ namespace nucleus
                              elle::io::Piece("%ADDRESS%", address.unique())));
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     History::operator ==(History const& other) const
@@ -109,13 +96,10 @@ namespace nucleus
       return true;
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
-    ///
-    /// this function dumps an history object.
-    ///
     elle::Status        History::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
@@ -148,10 +132,6 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
-
     void
     History::print(std::ostream& stream) const
     {
@@ -159,10 +139,6 @@ namespace nucleus
              << "#" << this->_container.size()
              << ")";
     }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
 
     void
     History::load(Network const& network,

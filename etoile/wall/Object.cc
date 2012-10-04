@@ -59,8 +59,8 @@ namespace etoile
           // XXX[remove try/catch later]
           try
             {
-              object = depot::Depot::pull_object(location.address,
-                                                 location.revision);
+              object = depot::Depot::pull_object(location.address(),
+                                                 location.revision());
             }
           catch (std::runtime_error& e)
             {
@@ -82,8 +82,8 @@ namespace etoile
               }
 
               ELLE_TRACE("trying to load the object again from %s", location)
-                object = depot::Depot::pull_object(location.address,
-                                                   location.revision);
+                object = depot::Depot::pull_object(location.address(),
+                                                   location.revision());
             }
 
           // Depending on the object's genre, a context is allocated

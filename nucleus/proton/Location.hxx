@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_PROTON_LOCATION_HXX
+#ifndef NUCLEUS_PROTON_LOCATION_HXX
 # define NUCLEUS_PROTON_LOCATION_HXX
 
 
@@ -11,8 +11,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Location,
 {
   enforce(version == 0);
 
-  archive & value.address;
-  archive & value.revision;
+  archive & value._address;
+  archive & value._revision;
 }
 
 #endif

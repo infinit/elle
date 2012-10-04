@@ -33,10 +33,8 @@ namespace etoile
       nucleus::proton::Address address(context.object->bind());
 
       // create the context's location with an initial revision number.
-      if (context.location.Create(address,
-                                  context.object->revision()) ==
-          elle::Status::Error)
-        escape("unable to create the location");
+      context.location =
+        nucleus::proton::Location(address, context.object->revision());
 
       // set the context's state.
       context.state = gear::Context::StateCreated;

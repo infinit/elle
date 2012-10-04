@@ -46,10 +46,8 @@ namespace etoile
       nucleus::proton::Address address(context.group->bind());
 
       // create the context's location with an initial revision number.
-      if (context.location.Create(address,
-                                  context.group->revision()) ==
-          elle::Status::Error)
-        escape("unable to create the location");
+      context.location =
+        nucleus::proton::Location(address, context.group->revision());
 
       context.state = gear::Context::StateCreated;
 
@@ -73,8 +71,8 @@ namespace etoile
         {
           context.group =
             depot::Depot::pull_group(
-              context.location.address,
-              context.location.revision).release();
+              context.location.address(),
+              context.location.revision()).release();
         }
       catch (std::exception const& e)
         {
@@ -377,7 +375,7 @@ namespace etoile
         escape("unable to destroy the ensemble");
 
       // mark the group as needing to be removed.
-      context.transcript.wipe(context.location.address);
+      context.transcript.wipe(context.location.address());
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -413,7 +411,7 @@ namespace etoile
           context.group->seal(agent::Agent::Identity.pair.k);
 
           // mark the block as needing to be stored.
-          context.transcript.push(context.location.address, context.group);
+          context.transcript.push(context.location.address(), context.group);
         }
 
       // set the context's state.

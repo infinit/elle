@@ -13,42 +13,41 @@ namespace nucleus
   namespace proton
   {
 
-    ///
-    /// this class derives the Block and abstracts the notion of
-    /// immutable block.
-    ///
+    /// This class derives the Block and abstracts the notion of
+    /// immutability i.e every modification on the content of an
+    /// immutable block inevitably results in the creation of a new
+    /// block, with a different address.
     class ImmutableBlock:
       public Block
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      //
-      // constructors & destructors
-      //
       ImmutableBlock(); // XXX[to deserialize]
       ImmutableBlock(Network const& network,
                      Family const family,
                      neutron::Component const component,
                      elle::cryptography::PublicKey const& creator_K);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     private:
       /// XXX
       static
         elle::io::Path
         _path(Address const& address);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // printable
       virtual
       void
       print(std::ostream& stream) const;
       // fileable
-    public:
       ELLE_CONCEPT_FILEABLE_METHODS();
     };
 

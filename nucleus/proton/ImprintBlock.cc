@@ -16,9 +16,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     ImprintBlock::ImprintBlock():
       MutableBlock(),
@@ -42,9 +42,9 @@ namespace nucleus
       delete this->_owner_subject;
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     neutron::Subject const&
     ImprintBlock::owner_subject()
@@ -60,9 +60,9 @@ namespace nucleus
       return (*this->_owner_subject);
     }
 
-//
-// ---------- block -----------------------------------------------------------
-//
+    /*-----------.
+    | Interfaces |
+    `-----------*/
 
     Address
     ImprintBlock::bind() const
@@ -104,10 +104,6 @@ namespace nucleus
                         "public key");
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
-
     void
     ImprintBlock::print(std::ostream& stream) const
     {
@@ -115,10 +111,6 @@ namespace nucleus
              << this->_owner_K
              << "}";
     }
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
 
     elle::Status
     ImprintBlock::Dump(const elle::Natural32 margin) const
