@@ -129,12 +129,5 @@ namespace nucleus
              << ")";
     }
 
-    void
-    History::load(Network const& network,
-                  Address const& address)
-    {
-      this->load(History::_path(network, address));
-    }
-
   }
 }
