@@ -44,10 +44,12 @@ namespace elle
     {
       std::string sep;
 
+      explicit
       Separator(std::string const& s):
         sep(s)
       {}
 
+      explicit
       Separator(char c):
         sep(c != '\0' ? std::string(&c, 1) : "")
       {}
@@ -68,8 +70,17 @@ namespace elle
     /// You can define your own end of line character with this class.
     struct EndOfLine
     {
-      char endl;
-      EndOfLine(char c) : endl(c) {}
+      std::string endl;
+
+      explicit
+      EndOfLine(char c):
+        endl(c != '\0' ? std::string(&c, 1) : "")
+      {}
+
+      explicit
+      EndOfLine(std::string const& s):
+        endl(s)
+      {}
     };
 
     /// line feed end of line character
