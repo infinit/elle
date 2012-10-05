@@ -600,6 +600,16 @@ def configure(cxx_toolkit, cxx_config):
                                    access_sources + infinit_libs,
                                    cxx_toolkit, infinit_bin_config)
 
+  # 8network
+  network_sources = drake.nodes(
+    'satellites/network/Network.cc',
+    'satellites/network/Network.hh',
+    'satellites/network/Network.hxx',
+    )
+  network_bin = drake.cxx.Executable('bin/8network',
+                                     network_sources + infinit_libs,
+                                     cxx_toolkit, infinit_bin_config)
+
 
   # Tests
 
