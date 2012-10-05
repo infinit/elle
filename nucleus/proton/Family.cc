@@ -41,7 +41,7 @@ namespace nucleus
           }
         default:
           {
-            throw Exception("unknown family: '%s'", family);
+            throw Exception("unknown family: '%s'", static_cast<int>(family));
           }
         }
 
