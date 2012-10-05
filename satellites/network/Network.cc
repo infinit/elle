@@ -133,7 +133,7 @@ namespace satellite
                                   "everybody");
 
     elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+    shelter.Complete(elle::io::Piece("%NETWORK%", name));
     hole::storage::Directory storage(shelter.string());
 
     group.seal(identity.pair.k);
