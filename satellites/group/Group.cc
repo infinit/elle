@@ -23,6 +23,7 @@
 #include <nucleus/neutron/Fellow.hh>
 #include <nucleus/neutron/Subject.hh>
 
+#include <lune/Descriptor.hh>
 #include <lune/Lune.hh>
 #include <lune/Phrase.hh>
 
