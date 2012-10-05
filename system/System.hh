@@ -29,7 +29,8 @@ namespace elle
       enum Order
         {
           OrderLittle = 0x1,
-          OrderBig
+          OrderBig,
+          OrderMiddle,
         };
 
       //
@@ -40,8 +41,6 @@ namespace elle
       struct Path
       {
         static Character                Separator;
-        static String                   Root;
-        static String                   Current;
       };
 
       //

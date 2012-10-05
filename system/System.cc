@@ -3,8 +3,7 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
-# include <QSysInfo>
-# include <QDir>
+#include <boost/detail/endian.hpp>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -22,11 +21,11 @@ namespace elle
     System::Order               System::Endianness;
 
     ///
-    /// these variables defines some path-related constants.
+
+/// this variable defines some path-related constants.
+    /// old
     ///
     Character                   System::Path::Separator;
-    String                      System::Path::Root;
-    String                      System::Path::Current;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -43,28 +42,14 @@ namespace elle
 
       System::Path::Separator = '/';
 
-      System::Path::Root = "/";
-      //::QDir::root().canonicalPath().toStdString();
-
-      System::Path::Current = "/home/mefyl/dev/infinit/infinit/build/linux64";
-      //::QDir::current().canonicalPath().toStdString();
-
       // define the endianness.
-      switch (::QSysInfo::ByteOrder)
-        {
-        case ::QSysInfo::LittleEndian:
-          {
-            System::Endianness = System::OrderLittle;
-
-            break;
-          }
-        case ::QSysInfo::BigEndian:
-          {
-            System::Endianness = System::OrderBig;
-
-            break;
-          }
-        }
+#if defined(BOOST_BIG_ENDIAN)
+        System::Endianness = System::OrderBig;
+#elif defined(BOOST_LITTLE_ENDIAN)
+        System::Endianness = System::OrderLittle;
+#elif defined(BOOST_PDP_ENDIAN)
+        System::Endianness = System::OrderMid;
+#endif
 
       return Status::Ok;
     }
