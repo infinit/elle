@@ -179,6 +179,22 @@ def functionals_tests(scriptdir, scripts_to_run=None):
 def unit_tests():
     sp.call(["make", "test"], cwd=BUILD)
 
+def clean_the_fuck_up():
+    """
+    For some reasons, infinit does not clean itself correctly.
+
+    We know that we create the dirs in /tmp/infinit.*
+    """
+    mount_p = sp.Popen(['sudo', 'mount',
+        '-t', 'fuse.infinit'], stdout=sp.PIPE)
+
+    cut_p = sp.Popen(['cut',
+        '-d', ' ',
+        '-f', '3'], stdin=mount_p.stdout, stdout=sp.PIPE)
+    mount_p.stdout.close()
+    mountpoints = cut_p.communicate()[0].split()
+    sp.call([b'sudo', b'umount'] + mountpoints)
+    sp.call('rm -rf /tmp/infinit.*', shell=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the infinit test suite")
@@ -210,4 +226,6 @@ if __name__ == "__main__":
 
     # Run the unit tests
     unit_tests()
+
+    clean_the_fuck_up()
 
