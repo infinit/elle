@@ -29,6 +29,8 @@ pattern = re.compile(r"(?P<name>.*)\.(?P<nb>\d+)\.(?P<ext>py|sh)")
 
 import platform
 
+os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
+
 BUILD = os.environ.get(
     'DIR_BUILD',
     os.path.join(
