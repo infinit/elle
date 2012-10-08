@@ -2,6 +2,7 @@
 
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
+#include <elle/log.hh>
 
 #include <elle/utility/Duration.hh>
 
@@ -9,6 +10,8 @@
 # include <pthread.h>
 # include <ctime>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("elle.utility.Time");
 
 namespace elle
 {
@@ -36,8 +39,13 @@ namespace elle
     ///
     Status              Time::Current()
     {
+      auto now = std::chrono::system_clock::now();
+
       // gets the number of nanoseconds since Epoch UTC
-      this->nanoseconds = ::QDateTime::currentMSecsSinceEpoch() * 1000000;
+       this->nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        now.time_since_epoch()).count();
+
+      ELLE_DEBUG("get current time: %s", this->nanoseconds);
 
       return Status::Ok;
     }
@@ -59,28 +67,6 @@ namespace elle
     Status              Time::Set(const ::time_t&               time)
     {
       this->nanoseconds = time * 1000000000;
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method converts a time object into a QDateTime structure.
-    ///
-    Status              Time::Get(::QDateTime&                  dt) const
-    {
-      // set the date/time.
-      dt.setMSecsSinceEpoch(this->nanoseconds / 1000000);
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method converts a QDateTime into a time object.
-    ///
-    Status              Time::Set(const ::QDateTime&            dt)
-    {
-      // set the attributes.
-      this->nanoseconds = dt.toMSecsSinceEpoch() * 1000000;
 
       return Status::Ok;
     }

@@ -10,7 +10,7 @@
 # include <elle/utility/fwd.hh>
 
 # include <elle/idiom/Close.hh>
-#  include <QDateTime>
+#  include <chrono>
 #  include <ctime>
 #  if defined(INFINIT_WINDOWS)
 #   include <windows.h>
@@ -42,9 +42,6 @@ namespace elle
 
       Status            Get(::time_t&) const;
       Status            Set(const ::time_t&);
-
-      Status            Get(::QDateTime&) const;
-      Status            Set(const ::QDateTime&);
 
 #if defined(INFINIT_WINDOWS)
       Status            Get(::FILETIME&) const;
