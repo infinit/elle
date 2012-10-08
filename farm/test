@@ -185,6 +185,10 @@ def clean_the_fuck_up():
 
     We know that we create the dirs in /tmp/infinit.*
     """
+
+    # Shut the fuck up
+    sp.call(['sudo', 'pkill', '-9', '8infinit'])
+
     mount_p = sp.Popen(['sudo', 'mount',
         '-t', 'fuse.infinit'], stdout=sp.PIPE)
 
@@ -193,7 +197,8 @@ def clean_the_fuck_up():
         '-f', '3'], stdin=mount_p.stdout, stdout=sp.PIPE)
     mount_p.stdout.close()
     mountpoints = cut_p.communicate()[0].split()
-    sp.call([b'sudo', b'umount'] + mountpoints)
+    if mountpoints:
+        sp.call([b'sudo', b'umount'] + mountpoints)
     sp.call('rm -rf /tmp/infinit.*', shell=True)
 
 if __name__ == "__main__":
