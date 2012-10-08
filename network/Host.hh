@@ -74,8 +74,10 @@ namespace elle
       //
       // attributes
       //
+    private:
       Type              type;
-      ::QHostAddress    location;
+      String            location;
+      ELLE_SERIALIZE_FRIEND_FOR(Host);
     };
 
   }
