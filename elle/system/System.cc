@@ -48,7 +48,7 @@ namespace elle
 #elif defined(BOOST_LITTLE_ENDIAN)
         System::Endianness = System::OrderLittle;
 #elif defined(BOOST_PDP_ENDIAN)
-        System::Endianness = System::OrderMid;
+        System::Endianness = System::OrderMiddle;
 #endif
 
       return Status::Ok;
