@@ -168,6 +168,8 @@ class Pool:
             os.mkdir(mountpoint_path)
             infinit = cli.Infinit(h, mountpoint_path)
             infinit.launch()
+            # Wooh ! Don't start to fast !
+            time.sleep(2)
             self.l_infinit_inst.append(infinit)
 
         # Agregate the stderrs
