@@ -4,7 +4,6 @@
 #include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Close.hh>
-# include <QHostAddress>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -54,13 +53,13 @@ namespace elle
         case TypeNull:
         case TypeAny:
           {
-            this->location = ::QHostAddress::Any;
+            this->location = "0.0.0.0";
 
             break;
           }
         case TypeBroadcast:
           {
-            this->location = ::QHostAddress::Broadcast;
+            this->location = "255.255.255.255";
 
             break;
           }
@@ -82,8 +81,7 @@ namespace elle
       this->type = Host::TypeIP;
 
       // set the address.
-      if (this->location.setAddress(string.c_str()) == false)
-        escape("unable to set the location");
+      this->location = string;
 
       return Status::Ok;
     }
@@ -93,7 +91,7 @@ namespace elle
     ///
     Status              Host::Convert(String&                   string) const
     {
-      string = this->location.toString().toStdString();
+      string = this->location;
 
       return Status::Ok;
     }
@@ -135,18 +133,9 @@ namespace elle
         return false;
       else
         {
-          ::QString     first;
-          ::QString     second;
-
-          // generate the string.
-          first = this->location.toString();
-          second = element.location.toString();
-
           // compare the string.
-          if (first < second)
+          if (this->location < element.location)
             return true;
-          else if (first > second)
-            return false;
         }
 
       return false;
@@ -182,7 +171,7 @@ namespace elle
                 << this->type << std::endl;
 
       std::cout << alignment << io::Dumpable::Shift << "[Location] "
-                << this->location.toString().toStdString() << std::endl;
+                << this->location << std::endl;
 
       return Status::Ok;
     }
