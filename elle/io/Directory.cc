@@ -14,7 +14,7 @@
 # include <sstream>
 # include <stdexcept>
 # include <boost/noncopyable.hpp>
-# include <QDir>
+# include <elle/os/path.hh>
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -123,8 +123,14 @@ namespace elle
     ///
     Status              Directory::Create(const Path&           path)
     {
-      if (!QDir().mkpath(QString::fromStdString(path.string())))
-        escape("failed to mkpath: %s", path.string().c_str());
+      try
+        {
+          os::path::make_path(path.string());
+        }
+      catch (std::exception const & e)
+        {
+          escape("couldn't make path '%s': %s", path.string().c_str(), e.what());
+        }
 
       return Status::Ok;
 
@@ -195,9 +201,14 @@ namespace elle
     {
       String            directory(::dirname(
                                     const_cast<char*>(path.string().c_str())));
-
-      if (!QDir().mkpath(QString::fromStdString(directory)))
-        escape("failed to mkpath: %s", directory.c_str());
+      try
+        {
+          os::path::make_path(directory);
+        }
+      catch (std::exception const & e)
+        {
+          escape("couldn't make path '%s': %s", directory.c_str(), e.what());
+        }
 
       return Status::Ok;
 
