@@ -86,11 +86,11 @@ class Environ(Watcher):
         self.env_report = report[script_name]["environ"]
 
     def pre_run(self, environ={}):
-        self.env_report["MNT1"] = environ["MNT1"]
-        self.env_report["MNT2"] = environ["MNT2"]
 
         for key, val in environ.items():
-            if key.startswith("INFINIT"):
+            if key.startswith("MNT"):
+                self.env_report[key] = val
+            elif key.startswith("INFINIT"):
                 self.env_report[key] = val
 
 class Result(Watcher):
