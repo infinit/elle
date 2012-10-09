@@ -26,6 +26,7 @@ target_link_libraries(_gap
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${Boost_PYTHON3_LIBRARY}
 	${PYTHON3_LIBRARIES}
+	${QT_LIBRARIES}
 )
 
 set_target_properties(_gap PROPERTIES

@@ -161,11 +161,9 @@ namespace horizon
       // applications such as the Finder for instance.
       //
       elle::String ofsname(
-        "-ofsname=" +
-        hole().descriptor().data().name());
+        "-ofsname=" + Infinit::Network);
       elle::String ovolname(
-        "-ovolname=" +
-        hole().descriptor().data().name());
+        "-ovolname=" + Infinit::Network);
       const char*       arguments[] =
         {
           "horizon",

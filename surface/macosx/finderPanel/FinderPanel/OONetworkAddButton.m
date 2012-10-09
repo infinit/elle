@@ -14,6 +14,25 @@
 @synthesize image;
 @synthesize name;
 
+///
+/// Unused methods
+///
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    return nil;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+}
+
++ (NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard {
+    return nil;
+}
+
+///
+///
+///
+
 - (id)init {
     
     self = [super init];

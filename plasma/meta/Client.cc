@@ -40,7 +40,8 @@ namespace elle
     archive & named("success", value.success);                                \
     if (!value.success)                                                       \
       {                                                                       \
-        archive & named("error", value.error);                                \
+        archive & named("error_code", value.error_code);                      \
+        archive & named("error_details", value.error_details);                \
         return;                                                               \
       }                                                                       \
     ResponseSerializer<type>::serialize(archive, value);                      \
@@ -495,7 +496,7 @@ namespace plasma
         { throw Exception(Error::invalid_content, err.what()); }
 
       if (!ret.success && _impl->check_errors)
-        throw Exception(Error::server_error, ret.error);
+        throw Exception(Error::server_error, ret.error_details);
 
       return ret;
     }
@@ -525,7 +526,7 @@ namespace plasma
         { throw Exception(Error::invalid_content, err.what()); }
 
       if (!ret.success && _impl->check_errors)
-        throw Exception(Error::server_error, ret.error);
+        throw Exception(Error::server_error, ret.error_details);
 
       return ret;
     }

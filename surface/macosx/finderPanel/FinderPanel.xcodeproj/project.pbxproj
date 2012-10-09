@@ -21,7 +21,6 @@
 		1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
 		1C136A7C15B58D7D003D41B9 /* pin.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973415A2F8DE002F0B1E /* pin.tiff */; };
 		1C136A7D15B58D81003D41B9 /* glossy.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973615A2F8E6002F0B1E /* glossy.png */; };
-		1C136A7E15B58DCF003D41B9 /* FinderPanel-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C30B5B515B56A280056A382 /* FinderPanel-Info.plist */; };
 		1C30B5B215B56A280056A382 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BBB159CAA7900162909 /* Cocoa.framework */; };
 		1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C30B5B615B56A280056A382 /* InfoPlist.strings */; };
 		1C30B5C015B56A490056A382 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
@@ -68,9 +67,6 @@
 		1C9451A615A5A5E400370E90 /* OONetworkBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */; };
 		1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */; };
 		1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
-		1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
-		1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973415A2F8DE002F0B1E /* pin.tiff */; };
-		1C96022515C84B4B001C864F /* glossy.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1C90973615A2F8E6002F0B1E /* glossy.png */; };
 		1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
 		1CB8E5CC15A5A13C00DCA443 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
 		1CBD903715A1987D00D03CBD /* OOUserBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903615A1987D00D03CBD /* OOUserBrowserView.m */; };
@@ -82,7 +78,6 @@
 		1CF6FCDA1609FE3800C49C36 /* NSString+Hashes.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CF6FCD81609FE3800C49C36 /* NSString+Hashes.h */; };
 		1CF6FCDB1609FE3800C49C36 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CF6FCD91609FE3800C49C36 /* NSString+Hashes.m */; };
 		1CF6FCE1160A0C4000C49C36 /* infinit-drive.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */; };
-		1CF6FCE2160A0C6900C49C36 /* infinit-drive.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CF6FCE0160A0C4000C49C36 /* infinit-drive.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,19 +112,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1C96022215C84B3A001C864F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				1C96022315C84B4B001C864F /* handmadepaper.png in CopyFiles */,
-				1CF6FCE2160A0C6900C49C36 /* infinit-drive.png in CopyFiles */,
-				1C96022415C84B4B001C864F /* pin.tiff in CopyFiles */,
-				1C96022515C84B4B001C864F /* glossy.png in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1CD3B88815C9928A00F28469 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -524,7 +506,6 @@
 				1C30B5AD15B56A280056A382 /* Frameworks */,
 				1C30B5AE15B56A280056A382 /* Headers */,
 				1C30B5AF15B56A280056A382 /* Resources */,
-				1C96022215C84B3A001C864F /* CopyFiles */,
 				1CD3B88815C9928A00F28469 /* CopyFiles */,
 			);
 			buildRules = (
@@ -544,7 +525,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = OO;
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 1C045BB1159CAA7900162909 /* Build configuration list for PBXProject "FinderPanel" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -615,7 +596,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C136A7E15B58DCF003D41B9 /* FinderPanel-Info.plist in Resources */,
 				1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */,
 				1C136A7915B58D5F003D41B9 /* OOBrowserWindow.xib in Resources */,
 				1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */,
@@ -809,6 +789,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = io.infinit;
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
@@ -827,6 +808,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = io.infinit;
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
@@ -845,6 +827,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FinderPanel.app/Contents/MacOS/FinderPanel";
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
@@ -861,6 +844,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FinderPanel.app/Contents/MacOS/FinderPanel";
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
@@ -877,12 +861,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
@@ -892,7 +874,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -901,12 +883,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
@@ -916,7 +896,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
