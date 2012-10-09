@@ -1,14 +1,12 @@
 #ifndef ELLE_NETWORK_HOST_HH
 # define ELLE_NETWORK_HOST_HH
 
+# include <vector>
+
 # include <elle/types.hh>
-
 # include <elle/radix/Object.hh>
+# include <elle/serialize/fwd.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <QHostAddress>
-#  include <QString>
-# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -63,6 +61,7 @@ namespace elle
       //
 
       // object
+# include <elle/idiom/Open.hh>
       declare(Host);
       Boolean           operator==(const Host&) const;
       Boolean           operator<(const Host&) const;
