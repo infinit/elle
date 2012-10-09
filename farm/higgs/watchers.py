@@ -188,6 +188,13 @@ class Mail(Watcher):
     def __init__(self, script_name="", report={}):
         self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
 
+    def final(self, rep):
+        if all(test["result"] == "SUCCESS" for test in report["scripts"].values()):
+            return "SUCCESS"
+        else:
+            return "FAILURE"
+
+
     def send_mail(self, all_reports):
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
@@ -197,7 +204,9 @@ class Mail(Watcher):
 
         self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
         msg = MIMEText(html, 'html')
-        msg['Subject'] = "[INFINIT] [build-farm] Test report"
+        s = sp.check_output("git rev-parse --short HEAD".split(), cwd=os.environ["DIR_SOURCE"])
+        sub = s.decode("utf8").strip()
+        msg['Subject'] = "[INFINIT] [build-farm] Test report (#{0}): {1}".format(sub, self.final(all_reports))
         msg['From'] = "admin@infinit.io"
         msg['To'] = ", ".join(MAIL_TARGETS)
         self.smtp.send_message(msg)
