@@ -269,7 +269,7 @@ namespace elle
             escape(
               "unable to extract the secret key from the archive: %s",
               err.what()
-                   );
+            );
           }
       }
 

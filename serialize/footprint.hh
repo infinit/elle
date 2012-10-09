@@ -9,9 +9,9 @@ namespace elle
   {
 
     /// Compute the size of an object T serialized with a Archive.
-    template<typename Archive = OutputBinaryArchive, typename T>
+    template <typename Archive = OutputBinaryArchive, typename T>
     size_t
-    footprint(T const& value);
+    footprint(T&& value);
 
   }
 }

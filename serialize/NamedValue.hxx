@@ -6,7 +6,7 @@ namespace elle
   namespace serialize
   {
 
-    template<typename T>
+    template <typename T>
     struct NamedValue
     {
       std::string name;
@@ -26,15 +26,15 @@ namespace elle
     namespace detail
     {
       // assume clean type
-      template<typename T> struct IsNamedValue
+      template <typename T> struct IsNamedValue
       { static bool const value = false; };
 
-      template<typename T> struct IsNamedValue<NamedValue<T>>
+      template <typename T> struct IsNamedValue<NamedValue<T>>
       { static bool const value = true;  };
 
     }
 
-    template<typename T> struct IsNamedValue
+    template <typename T> struct IsNamedValue
     {
       static bool const value = detail::IsNamedValue<
           typename std::remove_cv<
@@ -43,7 +43,8 @@ namespace elle
       >::value;
     };
 
-    template<typename T> inline
+    template <typename T>
+    inline
     NamedValue<T>
     named(std::string const& name,
           T& value)
@@ -51,7 +52,8 @@ namespace elle
       return NamedValue<T>(name, value);
     }
 
-    template<typename T> inline
+    template <typename T>
+    inline
     NamedValue<T const>
     named(std::string const& name,
           T const& value)
