@@ -7,7 +7,7 @@ PACKAGESDIR="${BASEDIR}/packages"
 PLATFORMDIR="${BASEDIR}/platforms/${PLATFORM}"
 BUILDDIR="${PLATFORMDIR}/build"
 WORKDIR="${PLATFORMDIR}/work"
-DEPENDENCIES="openssl qjson"
+DEPENDENCIES="openssl"
 
 #
 # ---------- imports ----------------------------------------------------------
@@ -27,15 +27,6 @@ OPENSSL_TARBALL="${OPENSSL_NAME}.tar.gz"
 OPENSSL_SNAPSHOT="http://www.openssl.org/source/${OPENSSL_TARBALL}"
 OPENSSL_FINGERPRINT="ae412727c8c15b67880aef7bd2999b2e"
 OPENSSL_LIBRARIES="${WORKDIR}/lib/libssl.${PLATFORM_LIBRARY_EXTENSION} ${WORKDIR}/lib/libcrypto.${PLATFORM_LIBRARY_EXTENSION}"
-
-# qjson
-QJSON_VERSION="0.7.1"
-QJSON_BUILDDIR="qjson-${QJSON_VERSION}"
-QJSON_NAME="qjson"
-QJSON_TARBALL="qjson-${QJSON_VERSION}.tar.bz2"
-QJSON_SNAPSHOT="http://downloads.sourceforge.net/project/qjson/qjson/${QJSON_VERSION}/${QJSON_TARBALL}"
-QJSON_FINGERPRINT="5a833ad606c164ed8aa69f0873366ace"
-QJSON_LIBRARIES="${WORKDIR}/lib/libqjson.${PLATFORM_LIBRARY_EXTENSION}"
 
 #
 # ---------- functions --------------------------------------------------------
