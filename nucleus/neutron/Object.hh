@@ -4,7 +4,6 @@
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/serialize/BufferArchive.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
@@ -50,10 +49,6 @@ namespace nucleus
     class Object:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Object>,
-      public elle::serialize::SerializableMixin<
-        Object,
-        elle::serialize::BufferArchive
-      >,
       public elle::concept::MakeUniquable<Object>
     {
       //
@@ -171,7 +166,6 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Object);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Object);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 
       //
       // attributes

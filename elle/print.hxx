@@ -14,24 +14,25 @@ namespace elle
   namespace detail
   {
 
-    template<typename _OStream, typename _T> struct IsPrintable
+    template <typename _OStream, typename _T>
+    struct IsPrintable
     {
     private:
-      template<typename K>
-        struct Clean
-        {
-          typedef typename std::remove_cv<
-            typename std::remove_reference<K>::type
-          >::type type;
-        };
+      template <typename K>
+      struct Clean
+      {
+        typedef typename std::remove_cv<
+          typename std::remove_reference<K>::type
+        >::type type;
+      };
       typedef typename Clean<_OStream>::type  OStream;
       typedef typename Clean<_T>::type        T;
       typedef char No;
       typedef struct { No _[2];} Yes;
       static No f(...);
-      template<size_t> struct Helper {};
-      template<typename U>
-        static Yes f(U*,  Helper<sizeof(*((OStream*) 0) << *((U*)0))>* sfinae = 0);
+      template <size_t> struct Helper {};
+      template <typename U>
+      static Yes f(U*,  Helper<sizeof(*((OStream*) 0) << *((U*)0))>* sfinae = 0);
     public:
       static bool const value = (sizeof f((T*)0) == sizeof(Yes));
     };
@@ -43,19 +44,19 @@ namespace elle
       std::string sep;
 
     public:
-      PrintFlags()
-        : endl("\n")
-        , sep(" ")
+      PrintFlags():
+        endl("\n"),
+        sep(" ")
       {}
     };
 
     // generic value fprint
-    template<typename T>
+    template <typename T>
     typename std::enable_if<IsPrintable<std::ostream, T>::value, bool>::type
     fprint_value(std::ostream&                      out,
                  PrintFlags&                        flags,
                  bool                               is_first,
-                 T const&                           value)
+                 T&&                                value)
     {
       if (!is_first)
           out << flags.sep;
@@ -68,7 +69,7 @@ namespace elle
     fprint_value(std::ostream&                      out,
                  PrintFlags&                        flags,
                  bool                               is_first,
-                 T const&                           value)
+                 T&&                                value)
     {
       if (!is_first)
           out << flags.sep;
@@ -110,43 +111,43 @@ namespace elle
     fprint(std::ostream&                            out,
            PrintFlags&                              flags,
            bool                                     is_first,
-           T const&                                 value,
-           U const&...                              values)
+           T&&                                      value,
+           U&&...                                   values)
     {
 
-      is_first = fprint_value(out, flags, is_first, value);
-      fprint(out, flags, is_first, values...);
+      is_first = fprint_value(out, flags, is_first, std::forward<T>(value));
+      fprint(out, flags, is_first, std::forward<U>(values)...);
     }
 
   } // !elle::detail
 
-  template<typename... T>
+  template <typename... T>
   void
-  print(T const&...         values)
+  print(T&&...         values)
   {
-    return fprint(std::cout, values...);
+    return fprint(std::cout, std::forward<T>(values)...);
   }
 
-  template<typename... T>
+  template <typename... T>
   void
   fprint(std::ostream&      out,
-         T const&...        values)
+         T&&...             values)
   {
     out << std::dec;
     elle::detail::PrintFlags flags;
-    return ::elle::detail::fprint(out, flags, true, values...);
+    return ::elle::detail::fprint(out, flags, true, std::forward<T>(values)...);
   }
 
-  template<typename... T>
+  template <typename... T>
   std::string
-  sprint(T const&...     values)
+  sprint(T&&...     values)
   {
     std::ostringstream ss;
-    static iomanip::EndOfLine nonewline('\0');
-    fprint(ss, nonewline, values...);
+    static iomanip::EndOfLine const nonewline('\0');
+    fprint(ss, nonewline, std::forward<T>(values)...);
     return ss.str();
   }
+
 }
 
 #endif
-

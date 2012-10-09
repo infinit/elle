@@ -25,5 +25,6 @@ int main()
   ELLE_DEBUG("BIET");
   ELLE_DUMP("BIET");
   f();
+  elle::print("tests done.");
   return 0;
 }

@@ -6,8 +6,6 @@
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/serialize/BufferArchive.hh>
-
 #include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Open.hh>
@@ -233,7 +231,7 @@ namespace elle
               &size,
               reinterpret_cast<const unsigned char*>(secret_buf.Contents()),
               secret_buf.Size()) <= 0)
-          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+          escape("key has size %lu, data has size %lu: %s", size, secret_buf.size(), ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
         key.region.size = size;

@@ -84,5 +84,3 @@ namespace elle
 # include <elle/serialize/BinaryArchive.hxx>
 
 #endif /* ! BINARYARCHIVE_HH */
-
-

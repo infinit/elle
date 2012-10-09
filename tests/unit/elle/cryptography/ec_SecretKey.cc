@@ -39,7 +39,7 @@ ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
 
 
 struct Virtual
-  : public elle::serialize::Serializable<elle::serialize::BufferArchive>
+  : public elle::serialize::Serializable<>
 {
   std::string base;
 };
@@ -53,7 +53,7 @@ ELLE_SERIALIZE_SIMPLE(Virtual, ar, value, version)
 
 struct Implem
   : public Virtual
-  , public elle::serialize::SerializableMixin<Implem, elle::serialize::BufferArchive>
+  , public elle::serialize::SerializableMixin<Implem>
 {
   std::string impl;
 };

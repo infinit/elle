@@ -5,38 +5,45 @@
 
 # include "Serializer.hh"
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
-
-    template<typename First, typename Second>
-      struct Serializer<std::pair<First, Second>>
-        : public SplitSerializer<std::pair<First, Second>>
+    template <typename First, typename Second>
+    struct Serializer<std::pair<First, Second>>:
+      public SplitSerializer<std::pair<First, Second>>
+    {
+      template <typename Archive>
+      static
+      void
+      Load(Archive& ar,
+           std::pair<First, Second>& pair,
+           unsigned int)
       {
-        template<typename Archive>
-          static void Load(Archive& ar,
-                           std::pair<First, Second>& pair,
-                           unsigned int)
-          {
-            ar >> pair.first;
-            ar >> pair.second;
-          }
+        ar >> pair.first;
+        ar >> pair.second;
+      }
 
-        template<typename Archive>
-          static void Save(Archive& ar,
-                           std::pair<First, Second> const& pair,
-                           unsigned int)
-          {
-            ar << pair.first;
-            ar << pair.second;
-          }
-      };
-
-    template<typename First, typename Second>
-      struct StoreFormat<std::pair<First, Second>>
+      template <typename Archive>
+      static
+      void
+      Save(Archive& ar,
+           std::pair<First, Second> const& pair,
+           unsigned int)
       {
-        static bool const value = false;
-      };
+        ar << pair.first;
+        ar << pair.second;
+      }
+    };
 
-}}
+    template <typename First, typename Second>
+    struct StoreFormat<std::pair<First, Second>>
+    {
+      static bool const value = false;
+    };
+
+  }
+}
 
 #endif

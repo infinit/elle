@@ -1,1 +1,1 @@
-simple_test(rpc "" "tests done." "")
+simple_test(rpc "" "" "")
