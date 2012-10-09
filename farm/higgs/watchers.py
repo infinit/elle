@@ -25,6 +25,12 @@ from collections import OrderedDict
 
 MAIL_TARGETS = (
     "developers@infinit.io",
+    "raphael.londeix@infinit.io",
+    "fabien.pichot@infinit.io",
+    "antony.mechin@infinit.io",
+    "quentin.hocquet@infinit.io",
+    "julien.quitard@infinit.io",
+    "charles.guillot@infinit.io",
 )
 
 MANDRILL_USERNAME = 'infinitdotio'
