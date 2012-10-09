@@ -192,7 +192,7 @@ class Mail(Watcher):
         self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
         msg = MIMEText(html, 'html')
         msg['Subject'] = "[INFINIT] [build-farm] Test report"
-        msg['From'] = "developers@infinit.io"
+        msg['From'] = "admin@infinit.io"
         msg['To'] = ", ".join(MAIL_TARGETS)
         self.smtp.send_message(msg)
         self.smtp.quit()
