@@ -24,7 +24,7 @@ from collections import namedtuple
 from collections import OrderedDict
 
 MAIL_TARGETS = (
-        "pichot.fabien@gmail.com",
+	"developers@infinit.io",
 )
 
 MANDRILL_USERNAME = 'infinitdotio'
@@ -179,7 +179,7 @@ class Graph(Watcher):
         self.render_memory_graphs()
 
 class Mail(Watcher):
-    def __init__(self, script_name, report):
+    def __init__(self, script_name="", report={}):
         self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
 
     def send_mail(self, all_reports):

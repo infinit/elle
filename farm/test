@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
+import io
 import os
 import re
 import sys
@@ -54,12 +55,10 @@ WATCHERS = (
         watchers.Result,
         watchers.Memory,
         watchers.Graph,
-        watchers.Mail,
     )
 
-def functionals_tests(scriptdir, scripts_to_run=None):
+def functionals_tests(scriptdir, report, scripts_to_run=None):
     with pool.PoolEngine(low_port=5656, high_port=5660) as engine:
-        report = OrderedDict()
 
         report["engine"] = OrderedDict()
         engine_report = report["engine"]
@@ -153,31 +152,49 @@ def functionals_tests(scriptdir, scripts_to_run=None):
                     for W in l_watchers: W.pre_run(os.environ)
 
                     s = StatusCode()
-                    try:
-                        if script_data["ext"] == "py":
-                            runpy.run_path(script_path)
-                        else:
-                            sp.check_output([script_path],
-                                    env=environ,
-                                    stderr=sp.STDOUT)
-                        s.status = StatusCode.SUCCESS
-                        print("\033[32mtest", script_name,"success\033[0m")
 
+                    out, err = "", ""
+                    try:
+                        p1 = sp.Popen([script_path], stdout=sp.PIPE, stderr=sp.PIPE)
+                        out, err = p1.communicate()
+                        if p1.returncode == 0:
+                                s.status = StatusCode.SUCCESS
+                                print("\033[32mtest", script_name,"success\033[0m")
+                        else:
+                                s.status = StatusCode.FAILURE
+                                print("\033[31mtest", script_name,"failed\033[0m")
                     except BaseException as e:
                         s.status = StatusCode.FAILURE
+                        print(e)
                         script_report["Reason"] = str(e)
                         print("\033[31mtest", script_name,"failed\033[0m")
                     finally:
+                        if "std" not in script_report:
+                            script_report["std"] = OrderedDict()
+                        script_report["std"]["out"] = out
+                        script_report["std"]["err"] = err
                         for W in l_watchers: W.post_run(s)
                     os.environ.update(environ_save)
-        with open("report", "w") as reportfile:
-            import pprint
-            pprint.pprint(report, stream=reportfile)
         for W in l_watchers: W.post_shutdown(report)
+        return all(test["result"] == "SUCCESS" for test in report["scripts"].values())
 
 
-def unit_tests():
-    sp.call(["make", "test"], cwd=BUILD)
+def unit_tests(report):
+    report["unit_tests"] = OrderedDict()
+    ret = True
+    out, err = "", ""
+    try:
+        print("BITE")
+        s1 = sp.Popen(["make", "test"], cwd=BUILD)
+        out, err = s1.communicate()
+        print(out, err)
+    except Exception as e:
+        print(e)
+        ret = False
+    finally:
+        report["unit_tests"]["stdout"] = out
+        report["unit_tests"]["stderr"] = err
+    return ret
 
 def clean_the_fuck_up():
     """
@@ -222,15 +239,24 @@ if __name__ == "__main__":
     # Update the env and paths for compatibility purpose
     os.environ["INFINIT_BUILD"] = args.builddir
     infinitools.patch_satellites_path(args.builddir)
-
+    
+    report = OrderedDict()
     # Run the functionals tests
     if not args.scripts:
-        functionals_tests(args.scriptdir)
+        res = functionals_tests(args.scriptdir, report)
     else:
-        functionals_tests(args.scriptdir, args.scripts.split(","))
+        res = functionals_tests(args.scriptdir, report, args.scripts.split(","))
 
     # Run the unit tests
-    unit_tests()
+    if unit_tests(report) == False:
+        res = False
 
-    clean_the_fuck_up()
+    with open("report", "w") as reportfile:
+        import pprint
+        pprint.pprint(report, stream=reportfile)
 
+    m = watchers.Mail()
+    m.send_mail(report)
+
+    if not res:
+        sys.exit(1)

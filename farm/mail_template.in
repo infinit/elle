@@ -65,6 +65,25 @@
 			</td>
 		 </tr>
 		 </table>
+		 %% elif cat_name == "std"
+		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
+		 <tr>
+			<td style="{{th_style}}">
+			stdout
+			</td>
+			<td style="{{td_alt_style}}">
+			{{data["out"]}}
+			</td>
+		 </tr>
+		 <tr>
+			<td style="{{th_style}}">
+			stderr
+			</td>
+			<td style="{{td_alt_style}}">
+			{{data["err"]}}
+			</td>
+		</tr>
+		 </table>
 		 %% elif cat_name == "Number of peers"
 		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
 		 <tr>
@@ -185,5 +204,22 @@
 	%% endif
 	%% endfor
 	</table> 
+	<h1> Unit Tests </h1>
+	<table border-collapse="collapse" width="100%" style="{{table_style}}">
+	<tr>
+		<td style="{{th_style}}">
+		stdout
+		</td>
+		<td style="{{td_style}}">
+		{{unit_tests["stdout"]}}
+		</td>
+		<td style="{{th_style}}">
+		stderr
+		</td>
+		<td style="{{td_style}}">
+		{{unit_tests["stderr"]}}
+		</td>
+	</tr>
+	</table>
 </body>
 </hmtl>
