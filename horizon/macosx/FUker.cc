@@ -160,10 +160,8 @@ namespace horizon
       // a blocked FUSE program could block an entire system through
       // applications such as the Finder for instance.
       //
-      elle::String ofsname(
-        "-ofsname=" + Infinit::Network);
-      elle::String ovolname(
-        "-ovolname=" + Infinit::Network);
+      elle::String ofsname("-ofsname=" + Infinit::Network); // XXX[or descriptor name]
+      elle::String ovolname("-ovolname=" + Infinit::Network); // XXX[or descriptor name]
       const char*       arguments[] =
         {
           "horizon",
