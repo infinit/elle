@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/cryptography/Signature.hh>
@@ -53,10 +52,6 @@ namespace nucleus
     class Group:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Group>,
-      public elle::serialize::SerializableMixin<
-        Group,
-        elle::serialize::BufferArchive
-      >,
       public elle::concept::MakeUniquable<Group>
     {
       //
@@ -149,7 +144,6 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serialize
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group, elle::serialize::BufferArchive);
       ELLE_SERIALIZE_FRIEND_FOR(Group);
 
       //

@@ -2,7 +2,6 @@
 # define DIARY_UNIX_UPCALL_HXX
 
 # include <elle/serialize/TupleSerializer.hxx>
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/utility/Buffer.hh>
 
 # include <elle/idiom/Open.hh>

@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_BLOCK_HH
 # define NUCLEUS_PROTON_BLOCK_HH
 
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/cryptography/fwd.hh>
@@ -78,9 +77,6 @@ namespace nucleus
     class Block:
       public elle::io::Dumpable,
       public elle::serialize::Serializable<>,
-      public elle::serialize::Serializable<
-        elle::serialize::BufferArchive
-      >,
       public elle::concept::Fileable<>,
       public elle::Printable,
       private boost::noncopyable
@@ -121,7 +117,6 @@ namespace nucleus
       // XXX breaks serializable contract. Remove when Block can be an
       // abstract class.
       __NPB_BREAK_SERIALIZABLE_CONTRACT();
-      __NPB_BREAK_SERIALIZABLE_CONTRACT(elle::serialize::BufferArchive);
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Block);
       // dumpable

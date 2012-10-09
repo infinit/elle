@@ -20,6 +20,8 @@ namespace elle
       };
     }
 
+    class InputBufferArchive;
+    class OutputBufferArchive;
     class WeakBuffer;
 
     /// Manage a memory zone. Note that this class owns the pointed
@@ -36,39 +38,46 @@ namespace elle
       typedef std::pair<ContentPtr, size_t>                       ContentPair;
     private:
       Byte*       _contents;
-      size_t            _size;
-      size_t            _buffer_size;
+      size_t      _size;
+      size_t      _buffer_size;
 
     public:
       Buffer();
-      Buffer(size_t                 size);
-      Buffer(ContentPair&&          pair);
-      Buffer(Byte const* data, size_t size);
+
+      explicit
+      Buffer(size_t size);
+
+      explicit
+      Buffer(ContentPair&& pair);
+
+      Buffer(Byte const* data,
+             size_t size);
 
       // Buffer class is moveable
       Buffer(Buffer&&               other);
-      Buffer& operator =(Buffer&&   other);
+      Buffer&
+      operator =(Buffer&&   other);
 
-      // Buffer class is Inheritable
-      virtual ~Buffer();
+      ~Buffer();
 
-    private:
       // Buffer is not copyable
-      Buffer(Buffer const&);
-      Buffer& operator =(Buffer const&);
+      Buffer(Buffer const&) = delete;
+      Buffer&
+      operator =(Buffer const&) = delete;
 
     public:
       /// Add a copy of the data to the end of the buffer.
-      void                Append(void const* data, size_t size);
+      void          Append(void const* data, size_t size);
 
       /// Properties for the size and the buffer contents
-      void                Size(size_t size);
-      size_t              Size() const { return this->_size; }
-      void                size(size_t size) { this->Size(size); }
-      size_t              size() const { return this->Size(); }
+      void          Size(size_t size);
+      size_t        Size() const { return this->_size; }
+      void          size(size_t size) { this->Size(size); }
+      size_t        size() const { return this->Size(); }
       Byte const*   Contents() const { return this->_contents; }
+      Byte const*   contents() const { return this->_contents; }
       Byte*         MutableContents() { return this->_contents; }
-      Byte*         mutable_contents() { return this->_contents; }
+      Byte*         mutable_contents() const { return this->_contents; }
 
       /// Reset the size to zero.
       void                Reset() { this->Size(0); }
@@ -79,8 +88,11 @@ namespace elle
       ContentPair         Release();
 
       /// Binary serialization shorcut.
-      serialize::OutputBufferArchive  Writer();
-      serialize::InputBufferArchive   Reader() const;
+      OutputBufferArchive
+      Writer();
+
+      InputBufferArchive
+      Reader() const;
 
       virtual Status    Dump(const Natural32 shift = 0) const;
 
@@ -94,26 +106,28 @@ namespace elle
     };
 
 
+    /// @brief
+    ///
     class WeakBuffer
     {
     private:
-      Byte const*   _contents;
-      size_t              _size;
+      Byte*     _contents;
+      size_t    _size;
 
     public:
-      WeakBuffer(void const* data, size_t size)
-        : _contents(static_cast<Byte const*>(data))
+      WeakBuffer(void* data, size_t size)
+        : _contents(static_cast<Byte*>(data))
         , _size(size)
       {}
 
       WeakBuffer(Buffer const& buffer)
-        : _contents(buffer.Contents())
-        , _size(buffer.Size())
+        : _contents(buffer.mutable_contents())
+        , _size(buffer.size())
       {}
 
       WeakBuffer(WeakBuffer const& buffer)
-        : _contents(buffer.Contents())
-        , _size(buffer.Size())
+        : _contents(buffer.mutable_contents())
+        , _size(buffer.size())
       {}
 
       WeakBuffer(WeakBuffer&& other)
@@ -121,10 +135,12 @@ namespace elle
         , _size(other._size)
       {}
 
-      size_t              Size() const        { return this->_size; }
-      Byte const*   Contents() const    { return this->_contents; }
+      size_t        size() const              { return this->_size; }
+      Byte const*   contents() const          { return this->_contents; }
+      Byte*         mutable_contents() const  { return this->_contents; }
 
-      serialize::InputBufferArchive  Reader() const;
+      InputBufferArchive
+      Reader() const;
     };
 
   }

@@ -4,7 +4,6 @@
 # include <elle/types.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/serialize/BufferArchive.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
 
@@ -23,10 +22,6 @@ namespace nucleus
     class Access:
       public proton::ContentHashBlock,
       public elle::serialize::SerializableMixin<Access>,
-      public elle::serialize::SerializableMixin<
-        Access,
-        elle::serialize::BufferArchive
-      >,
       public elle::concept::MakeUniquable<Access>
     {
       //
@@ -105,8 +100,6 @@ namespace nucleus
       ELLE_SERIALIZE_FRIEND_FOR(Access);
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access,
-                                          elle::serialize::BufferArchive);
       // iterable
       typename Range<Record>::Scoutor
       begin() const;
