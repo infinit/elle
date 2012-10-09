@@ -156,7 +156,7 @@ namespace elle
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
                                 1 +
                                 sizeof (salt) +
-                                in.Size() +
+                                in.size() +
                                 capacity) == Status::Error)
         escape("unable to reserve memory for the cipher");
 
@@ -177,8 +177,8 @@ namespace elle
       if (::EVP_EncryptUpdate(&scope.context,
                               cipher.region.contents + cipher.region.size,
                               &size,
-                              in.Contents(),
-                              in.Size()) == 0)
+                              in.contents(),
+                              in.size()) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the cipher size.

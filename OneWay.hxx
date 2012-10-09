@@ -7,9 +7,7 @@
 # include <elle/cryptography/Digest.hh>
 
 # include <elle/utility/Buffer.hh>
-# include <elle/utility/BufferStream.hh>
 
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/serialize/BaseArchive.hxx>
 
 # include <elle/standalone/Report.hh>
