@@ -4,7 +4,6 @@
 # include <elle/standalone/Report.hh>
 
 # include <elle/utility/Buffer.hh>
-# include <elle/serialize/BufferArchive.hh>
 
 # include <elle/idiom/Open.hh>
 
