@@ -29,18 +29,27 @@ namespace elle
     StreamBuffer();
     ~StreamBuffer();
 
+  /// API to override.
   protected:
     friend class IOStream;
 
+    /// The buffer where to write.
     virtual elle::Buffer write_buffer() = 0;
-    virtual elle::Buffer read_buffer()  = 0;
-    virtual void   flush(unsigned int size);
 
+    /// The buffer with the next available data.
+    virtual elle::Buffer read_buffer()  = 0;
+
+    /// Synchronize the write buffer to the underlying implementation.
+    virtual void   flush(Size size);
+
+  /// std::streambuf interface.
+  protected:
     virtual int underflow();
     virtual int overflow(int c);
     virtual int sync();
   };
 
+  /// Simple implementation of a streambuf with local buffers.
   class PlainStreamBuffer: public StreamBuffer
   {
   public:
