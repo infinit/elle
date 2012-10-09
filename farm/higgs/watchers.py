@@ -24,7 +24,7 @@ from collections import namedtuple
 from collections import OrderedDict
 
 MAIL_TARGETS = (
-	"developers@infinit.io",
+    "developers@infinit.io",
 )
 
 MANDRILL_USERNAME = 'infinitdotio'
@@ -192,7 +192,7 @@ class Mail(Watcher):
         self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
         msg = MIMEText(html, 'html')
         msg['Subject'] = "[INFINIT] [build-farm] Test report"
-        msg['From'] = "pichot.fabien@gmail.com"
+        msg['From'] = "developers@infinit.io"
         msg['To'] = ", ".join(MAIL_TARGETS)
         self.smtp.send_message(msg)
         self.smtp.quit()
