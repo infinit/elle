@@ -1,17 +1,19 @@
+#include "Buffer.hh"
+
+#include <elle/log.hh>
+#include <elle/IOStream.hh>
+#include <elle/Exception.hh>
 
 #include <iomanip>
 #include <memory>
 #include <stdexcept>
 
-#include <elle/serialize/BufferArchive.hh>
-
-#include <elle/utility/BufferStream.hh>
-#include <elle/utility/Buffer.hh>
-
 namespace elle
 {
   namespace utility
   {
+
+    ELLE_LOG_COMPONENT("elle.utility.Buffer");
 
     void detail::MallocDeleter::operator ()(void* data)
     {
@@ -71,7 +73,7 @@ namespace elle
 
       size_t old_size = this->_size;
       this->Size(this->_size + size);
-      // std::cerr << "COPY: " << (void*)data << " (" << size << ") to " << (void*)(this->_contents + old_size) << std::endl;
+      /// XXX some implementations of memmove does not check for memory overlap
       memmove(this->_contents + old_size, data, size);
       // std::uninitialized_copy(
       //   static_cast<elle::Byte const*>(data),
@@ -102,16 +104,16 @@ namespace elle
       return res;
     }
 
-    elle::serialize::OutputBufferArchive Buffer::Writer()
+    OutputBufferArchive
+    Buffer::Writer()
     {
-      elle::utility::OutputBufferStream out(*this);
-      return elle::serialize::OutputBufferArchive(out);
+      return OutputBufferArchive(*this);
     }
 
-    elle::serialize::InputBufferArchive  Buffer::Reader() const
+    InputBufferArchive
+    Buffer::Reader() const
     {
-      elle::utility::InputBufferStream in(*this);
-      return elle::serialize::InputBufferArchive(in);
+      return InputBufferArchive(*this);
     }
 
     elle::Status Buffer::Dump(const Natural32 margin) const
@@ -189,10 +191,143 @@ namespace elle
       return ::memcmp(this->_contents, other._contents, this->_size) == 0;
     }
 
-    elle::serialize::InputBufferArchive  WeakBuffer::Reader() const
+    InputBufferArchive
+    WeakBuffer::Reader() const
     {
-      elle::utility::InputBufferStream in(*this);
-      return elle::serialize::InputBufferArchive(in);
+      return InputBufferArchive(*this);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    template<typename BufferType>
+    class InputStreamBuffer:
+      public elle::StreamBuffer
+    {
+    private:
+      BufferType const& _buffer;
+      size_t            _index;
+
+    public:
+      explicit
+      InputStreamBuffer(BufferType const& buffer):
+        _buffer(buffer),
+        _index(0)
+      {
+        ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s", buffer.size());
+      }
+
+      elle::Buffer
+      write_buffer()
+      {
+        throw Exception("the buffer is in input mode");
+      }
+
+      elle::Buffer
+      read_buffer()
+      {
+        ELLE_DEBUG("read from an InputStreamBuffer at index %s (bytes left = %s)", _index, _buffer.size() - _index);
+        assert(_index <= _buffer.size());
+        return elle::Buffer((char*)_buffer.contents() + _index, _buffer.size() - _index);
+      }
+
+      void flush(Size size)
+      {
+        ELLE_DEBUG("flush %s bytes from index %s of an InputStreamBuffer", size, _index);
+        _index += size;
+        assert(_index <= _buffer.size());
+      }
+
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    InputBufferArchive::InputBufferArchive(WeakBuffer const& buffer):
+      elle::serialize::InputBinaryArchive(
+        *(_istream = new IOStream(new InputStreamBuffer<WeakBuffer>(buffer)))
+      )
+    {}
+
+    InputBufferArchive::InputBufferArchive(Buffer const& buffer):
+      elle::serialize::InputBinaryArchive(
+        *(_istream = new IOStream(new InputStreamBuffer<Buffer>(buffer)))
+      )
+    {}
+
+    InputBufferArchive::InputBufferArchive(InputBufferArchive&& other):
+      elle::serialize::InputBinaryArchive(*_istream),
+      _istream(other._istream)
+    {
+      other._istream = nullptr;
+    }
+
+    InputBufferArchive::~InputBufferArchive()
+    {
+      delete _istream;
+      _istream = nullptr;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    class OutputStreamBuffer:
+      public elle::StreamBuffer
+    {
+    private:
+      size_t  _old_size;
+      Buffer& _buffer;
+
+    public:
+      OutputStreamBuffer(Buffer& buffer):
+        _old_size(buffer.size()),
+        _buffer(buffer)
+      {}
+
+      elle::Buffer
+      write_buffer()
+      {
+        _buffer.size(_old_size + 512);
+        ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
+        return elle::Buffer(
+            (char*)_buffer.mutable_contents() + _old_size,
+            512
+        );
+      }
+
+      void
+      flush(Size size)
+      {
+        ELLE_DEBUG("Flush buffer stream size: %s", size);
+        _old_size += size;
+        _buffer.size(_old_size);
+      }
+
+      elle::Buffer
+      read_buffer()
+      {
+        throw Exception("the buffer is in output mode");
+      }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
+      elle::serialize::OutputBinaryArchive(*(_ostream = new IOStream(new OutputStreamBuffer(buffer))))
+    {
+      ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
+    }
+
+    OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other):
+      elle::serialize::OutputBinaryArchive(*_ostream),
+      _ostream(other._ostream)
+    {
+      ELLE_DEBUG("move OutputBufferArchive %s stream %s", this, _ostream);
+      other._ostream = nullptr;
+    }
+
+    OutputBufferArchive::~OutputBufferArchive()
+    {
+      ELLE_DEBUG("Delete OutputBufferArchive %s stream %s", this, _ostream);
+      delete _ostream;
+      _ostream = nullptr;
     }
 
   }

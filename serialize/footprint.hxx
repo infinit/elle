@@ -5,7 +5,7 @@
 
 # include <elle/IOStream.hh>
 
-# include <elle/serialize/BinaryArchive.hh>
+# include "BinaryArchive.hh"
 
 namespace elle
 {
@@ -14,15 +14,18 @@ namespace elle
 
     namespace detail
     {
+
       struct CounterStreamBuffer:
         public elle::StreamBuffer
       {
         size_t counter;
         char _buf[512];
 
-        CounterStreamBuffer() : counter(0) {}
+        CounterStreamBuffer(): counter(0) {}
 
-        virtual elle::Buffer write_buffer()
+        virtual
+        elle::Buffer
+        write_buffer()
         {
           return elle::Buffer{
               _buf,
@@ -30,26 +33,32 @@ namespace elle
           };
         }
 
-        virtual elle::Buffer read_buffer()
+        virtual
+        elle::Buffer
+        read_buffer()
         {
           assert("Should not be called");
           throw false;
         }
 
-        virtual void flush(unsigned int size)
+        virtual
+        void
+        flush(unsigned int size)
         {
           counter += size;
         }
       };
+
     }
 
     template <typename Archive, typename T>
-    size_t footprint(T const& value)
+    size_t
+    footprint(T&& value)
     {
       auto streambuf = new detail::CounterStreamBuffer;
       // takes owner ship XXX replace with unique_ptr<>&&
       elle::IOStream out(streambuf);
-      Archive{out, value};
+      Archive{out, std::forward<T>(value)};
       out.flush();
       return streambuf->counter;
     }

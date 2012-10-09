@@ -35,23 +35,24 @@ namespace elle
     ///
     /// @see elle::serialize::named() for an helper
     ///
-    template<typename T>
+    template <typename T>
     struct NamedValue;
 
     /// Helper to infer the right NamedValue<T> type.
-    template<typename T> inline
-    NamedValue<T>
+    template <typename T>
+    inline
+    NamedValue <T>
     named(std::string const& name,
           T& value);
 
     /// Helper to infer the right NamedValue<T> type.
-    template<typename T> inline
+    template <typename T> inline
     NamedValue<T const>
     named(std::string const& name,
           T const& value);
 
     /// Check whether or not the type T is a NamedValue.
-    template<typename T> struct IsNamedValue;
+    template <typename T> struct IsNamedValue;
 
   }
 }

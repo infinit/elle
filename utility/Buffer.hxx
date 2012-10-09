@@ -2,8 +2,54 @@
 # define ELLE_UTILITY_BUFFER_HXX
 
 # include <stdexcept>
+# include <iostream>
 
 # include <elle/serialize/Serializer.hh>
+# include <elle/serialize/BinaryArchive.hh>
+
+namespace elle
+{
+  namespace utility
+  {
+
+    class InputBufferArchive:
+      public elle::serialize::InputBinaryArchive
+    {
+    private:
+      std::istream* _istream;
+
+    public:
+      explicit
+      InputBufferArchive(WeakBuffer const& buffer);
+      explicit
+      InputBufferArchive(Buffer const& buffer);
+      InputBufferArchive(InputBufferArchive&& other);
+      ~InputBufferArchive();
+
+      InputBufferArchive(InputBufferArchive const& other) = delete;
+      InputBufferArchive&
+      operator =(InputBufferArchive const& other) = delete;
+    };
+
+    class OutputBufferArchive:
+      public elle::serialize::OutputBinaryArchive
+    {
+    private:
+      std::ostream* _ostream;
+
+    public:
+      explicit
+      OutputBufferArchive(Buffer& buffer);
+      OutputBufferArchive(OutputBufferArchive&& other);
+      ~OutputBufferArchive();
+
+      OutputBufferArchive(OutputBufferArchive const& other) = delete;
+      OutputBufferArchive&
+      operator =(OutputBufferArchive const& other) = delete;
+    };
+
+  }
+}
 
 ELLE_SERIALIZE_SPLIT(elle::utility::Buffer)
 
@@ -43,8 +89,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
                           version)
 {
   enforce(version == 0);
-  archive << static_cast<uint64_t>(value.Size());
-  archive.SaveBinary(value.Contents(), value.Size());
+  archive << static_cast<uint64_t>(value.size());
+  archive.SaveBinary(value.contents(), value.size());
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::WeakBuffer,,,)
