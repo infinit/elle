@@ -72,7 +72,9 @@
 			stdout
 			</td>
 			<td style="{{td_alt_style}}">
+                        <pre>
 			{{data["out"]}}
+                        </pre>
 			</td>
 		 </tr>
 		 <tr>
@@ -80,7 +82,9 @@
 			stderr
 			</td>
 			<td style="{{td_alt_style}}">
+                        <pre>
 			{{data["err"]}}
+                        </pre>
 			</td>
 		</tr>
 		 </table>

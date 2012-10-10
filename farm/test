@@ -171,8 +171,8 @@ def functionals_tests(scriptdir, report, scripts_to_run=None):
                     finally:
                         if "std" not in script_report:
                             script_report["std"] = OrderedDict()
-                        script_report["std"]["out"] = out
-                        script_report["std"]["err"] = err
+                        script_report["std"]["out"] = out.decode("utf8")
+                        script_report["std"]["err"] = err.decode("utf8")
                         for W in l_watchers: W.post_run(s)
                     os.environ.update(environ_save)
         for W in l_watchers: W.post_shutdown(report)
