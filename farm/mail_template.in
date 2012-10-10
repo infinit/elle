@@ -207,7 +207,8 @@
 		 %% endfor
 	%% endif
 	%% endfor
-	</table> 
+	</table>
+	%% if 0
 	<h1> Unit Tests </h1>
 	<table border-collapse="collapse" width="100%" style="{{table_style}}">
 	<tr>
@@ -221,5 +222,6 @@
 		</td>
 	</tr>
 	</table>
+	%% endif
 </body>
 </hmtl>

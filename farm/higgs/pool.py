@@ -76,32 +76,6 @@ class Pool:
         self.stderrs = []
         self._engine = engine
 
-    def __exit__(self, type, value, trace):
-        if trace != None:
-            traceback.print_tb(trace)
-            print(type)
-
-        for I in self.l_infinit_inst:
-            print("stop instance (pid={0}) {1}".format(I.pid, I))
-            I.stop()
-
-        # Is infinit still alive ..?
-        if sp.call(["pgrep", "infinit"]) != 1:
-            print("Something went really wrong: Infinit is still alive !!")
-
-        # We do it after to be sure that all the instance are stoped
-        for H in self.l_home:
-            H.destroy()
-
-        # If the mountpoint is still here, we unmount it
-        for I in self.l_infinit_inst:
-            if os.path.exists(I.mountpoint):
-                sp.check_call(["fusermount", "-u", I.mountpoint])
-
-        self.l_home = []
-        self.l_infinit_inst = []
-        return False
-
     @property
     def pids(self):
         return [I.pid for I in self.l_infinit_inst]
@@ -160,7 +134,7 @@ class Pool:
         for h in self.l_home:
             h.add_peer([
                 addr for addr in l_addrs if int(addr.split(':')[1]) != h.port
-                ])
+            ])
 
             # Lauch infinit
         for h in self.l_home:
@@ -168,13 +142,38 @@ class Pool:
             os.mkdir(mountpoint_path)
             infinit = cli.Infinit(h, mountpoint_path)
             infinit.launch()
-            # Wooh ! Don't start to fast !
+            # Wooh ! Don't start too fast !
             time.sleep(2)
             self.l_infinit_inst.append(infinit)
 
-        # Agregate the stderrs
+        # Aggregate the stderrs
         for inf in self.l_infinit_inst:
             self.stderrs.append(inf.stderr)
 
         return self
 
+    def __exit__(self, type, value, trace):
+        if trace != None:
+            traceback.print_tb(trace)
+            print(type)
+
+        for I in self.l_infinit_inst:
+            print("stop instance (pid={0}) {1}".format(I.pid, I))
+            I.stop()
+
+        # Is infinit still alive ..?
+        if sp.call(["pgrep", "infinit"]) != 1:
+            print("Something went really wrong: Infinit is still alive !!")
+
+        # We do it after to be sure that all the instance are stoped
+        for H in self.l_home:
+            H.destroy()
+
+        # If the mountpoint is still here, we unmount it
+        for I in self.l_infinit_inst:
+            if os.path.exists(I.mountpoint):
+                sp.check_call(["fusermount", "-u", I.mountpoint])
+
+        self.l_home = []
+        self.l_infinit_inst = []
+        return False

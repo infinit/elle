@@ -56,11 +56,123 @@ WATCHERS = (
         watchers.Graph,
     )
 
+
+def launch_script(engine, script_report, script_path, script_name, nb_instance):
+    script_report["Script path"] = script_path
+
+    # Skip the script if it's not executable
+    if not os.stat(script_path)[stat.ST_MODE] & stat.S_IXUSR:
+        script_report["Error"] = "The script is not executable"
+        script_report["result"] = "FAILURE"
+        return
+
+    script_report["Number of peers"] = nb_instance
+
+    print("launch the test [\033[32m", script_name,
+            "\033[0m] with",
+            nb_instance, "instances")
+    with pool.Pool(engine, number_of_networks=nb_instance) as p:
+
+        # Fill the report for the networks used by the script
+        script_report["home"] = OrderedDict()
+        home_report = script_report["home"]
+
+        for i, H in enumerate(p.l_home):
+            home_report["home[{0}]".format(i)] = OrderedDict()
+            curr_rep = home_report["home[{0}]".format(i)]
+            curr_rep["home"] = H.home
+            curr_rep["user"] = H.user
+            curr_rep["conf"] = H.conf.to_dict()
+            curr_rep["network"] = H.network
+            curr_rep["mode"] = H.mode
+
+            # Dump the .set files
+            with open(os.path.join(
+                    H.home,
+                    "networks",
+                    H.network,
+                    "{net}.set".format(net=H.network)), "r") \
+            as setfile:
+                curr_rep["set"] = setfile.read().split()
+
+
+        # Prepare the Watchers for this test
+        watchers = list(type_(script_name, report["scripts"]) for type_ in WATCHERS)
+
+        # Save the environ to add some stuff inside
+        environ_save = copy.deepcopy(os.environ)
+
+        # Wait for the mountpoints to be ready
+        p.wait_ready()
+        print("\033[32mAll the filesystems are effectivly mounted, start the testing...\033[0m")
+
+        # The scripts needs MNT$i variables to point to the
+        # mountpoints
+        for (i, mountpoint) in enumerate(p.mountpoints):
+            os.environ["MNT{0}".format(i + 1)] = mountpoint
+            print("export MNT{0}={1}".format(i + 1, mountpoint))
+
+        for (i, pid) in enumerate(p.pids):
+            os.environ["INFINIT_PID{0}".format(i + 1)] = str(pid)
+
+        for w in watchers:
+            w.pre_run(os.environ)
+
+        s = StatusCode()
+
+        out, err = "", ""
+        try:
+            p1 = sp.Popen([script_path], stdout=sp.PIPE, stderr=sp.PIPE)
+            out, err = p1.communicate()
+            if p1.returncode == 0:
+                    s.status = StatusCode.SUCCESS
+                    print("\033[32mtest", script_name,"success\033[0m")
+            else:
+                    s.status = StatusCode.FAILURE
+                    print("\033[31mtest", script_name,"failed\033[0m")
+        except BaseException as e:
+            s.status = StatusCode.FAILURE
+            print(e)
+            script_report["Reason"] = str(e)
+            print("\033[31mtest", script_name, "failed\033[0m")
+        finally:
+            if "std" not in script_report:
+                script_report["std"] = OrderedDict()
+            script_report["std"]["out"] = out.decode("utf8")
+            script_report["std"]["err"] = err.decode("utf8")
+            for w in watchers:
+                w.post_run(s)
+    for w in watchers:
+        w.post_shutdown(report)
+    os.environ = environ_save
+    return watchers
+
+def launch_scripts(engine, scriptdir, report, scripts_to_run):
+    for root, dirs, scripts in os.walk(scriptdir):
+        for script in scripts:
+            m = pattern.match(script)
+            if m == None:
+                continue
+
+            script_data = m.groupdict()
+
+            nb_instance = int(script_data["nb"])
+            script_name = script_data["name"]
+
+            if scripts_to_run != None and not script_name in scripts_to_run:
+                continue
+
+            report["scripts"][script_name] = OrderedDict()
+            script_report = report["scripts"][script_name]
+
+            script_path = os.path.join(root, script)
+
+            launch_script(engine, script_report, script_path, script_name, nb_instance)
+
 def functionals_tests(scriptdir, report, scripts_to_run=None):
     import pprint
     print("functionals_tests working on", scriptdir, ",\n".join(os.listdir(scriptdir)))
     with pool.PoolEngine(low_port=5656, high_port=5660) as engine:
-
         report["engine"] = OrderedDict()
         engine_report = report["engine"]
         report["scripts"] = OrderedDict()
@@ -72,124 +184,9 @@ def functionals_tests(scriptdir, report, scripts_to_run=None):
         engine_report["network"] = engine._base.network
         engine_report["conf"] = engine._base.conf.to_dict()
 
-        l_watchers = []
-
         os.environ["PYTHONPATH"] = scriptdir
-
-        for root, dirs, scripts in os.walk(scriptdir):
-            for script in scripts:
-                m = pattern.match(script)
-                if m == None:
-                    print("file", script, "name don't match the specification")
-                    continue
-
-                script_data = m.groupdict()
-
-                nb_instance = int(script_data["nb"])
-                script_name = script_data["name"]
-
-                if scripts_to_run != None and not script_name in scripts_to_run:
-                    continue
-
-                report["scripts"][script_name] = OrderedDict()
-                script_report = report["scripts"][script_name]
-
-                script_path = os.path.join(root, script)
-                script_report["Script path"] = script_path
-
-                # Skip the script if it's not executable
-                if not os.stat(script_path)[stat.ST_MODE] & stat.S_IXUSR:
-                    script_report["Error"] = "The script is not executable"
-                    script_report["result"] = "FAILURE"
-                    continue
-
-                script_report["Number of peers"] = nb_instance
-
-                print("launch the test [\033[32m", script_name,
-                        "\033[0m] with",
-                        nb_instance, "instances")
-                with pool.Pool(engine, number_of_networks=nb_instance) as p:
-
-                    # Fill the report for the networks used by the script
-                    script_report["home"] = OrderedDict()
-                    home_report = script_report["home"]
-
-                    for i, H in enumerate(p.l_home):
-                        home_report["home[{0}]".format(i)] = OrderedDict()
-                        curr_rep = home_report["home[{0}]".format(i)]
-                        curr_rep["home"] = H.home
-                        curr_rep["user"] = H.user
-                        curr_rep["conf"] = H.conf.to_dict()
-                        curr_rep["network"] = H.network
-                        curr_rep["mode"] = H.mode
-
-                        # Dump the .set files
-                        with open(os.path.join(
-                                H.home,
-                                "networks",
-                                H.network,
-                                "{net}.set".format(net=H.network)), "r") \
-                        as setfile:
-                            curr_rep["set"] = setfile.read().split()
-
-
-                    # Prepare the Watchers for this test
-                    l_watchers = list(type(script_name, report["scripts"]) for type in WATCHERS)
-
-                    # Save the environ to add some stuff inside
-                    environ_save = copy.deepcopy(os.environ)
-
-                    # Wait for the mountpoints to be ready
-                    p.wait_ready()
-                    print("\033[32mAll the filesystems are effectivly mounted, start the testing...\033[0m")
-
-                    # The scripts needs MNT$i variables to point to the
-                    # mountpoints
-                    for (i, mountpoint) in enumerate(p.mountpoints):
-                        os.environ["MNT{0}".format(i + 1)] = mountpoint
-                        print("export MNT{0}={1}".format(i + 1, mountpoint))
-
-                    for (i, pid) in enumerate(p.pids):
-                        os.environ["INFINIT_PID{0}".format(i + 1)] = str(pid)
-
-                    for W in l_watchers: W.pre_run(os.environ)
-
-                    s = StatusCode()
-
-                    out, err = "", ""
-                    try:
-                        p1 = sp.Popen([script_path], stdout=sp.PIPE, stderr=sp.PIPE)
-                        out, err = p1.communicate()
-                        if p1.returncode == 0:
-                                s.status = StatusCode.SUCCESS
-                                print("\033[32mtest", script_name,"success\033[0m")
-                        else:
-                                s.status = StatusCode.FAILURE
-                                print("\033[31mtest", script_name,"failed\033[0m")
-                    except BaseException as e:
-                        s.status = StatusCode.FAILURE
-                        print(e)
-                        script_report["Reason"] = str(e)
-                        print("\033[31mtest", script_name,"failed\033[0m")
-                    finally:
-
-                        if "std" not in script_report:
-                            script_report["std"] = OrderedDict()
-                        if out != None:
-                            script_report["std"]["out"] = out.decode("utf8")
-                        else:
-                            script_report["std"]["out"] = ""
-                        if err != None:
-                            script_report["std"]["err"] = err.decode("utf8")
-                        else:
-                            script_report["std"]["err"] = ""
-
-                        for W in l_watchers: W.post_run(s)
-                    os.environ.update(environ_save)
-        for W in l_watchers: W.post_shutdown(report)
-        print("functionals_tests finished on", scriptdir)
-        return all(test["result"] == "SUCCESS" for test in report["scripts"].values())
-
+        launch_scripts(engine, scriptdir, report, scripts_to_run)
+    return all(test["result"] == "SUCCESS" for test in report["scripts"].values())
 
 def unit_tests(report):
     report["unit_tests"] = OrderedDict()
@@ -260,9 +257,9 @@ if __name__ == "__main__":
     else:
         res = functionals_tests(args.scriptdir, report, args.scripts.split(","))
 
-    # Run the unit tests
-    if unit_tests(report) == False:
-        res = False
+    # Run the unit tests (if no script was specified explicitly)
+    if not args.scripts:
+        res = unit_tests(report)
 
     with open("report", "w") as reportfile:
         import pprint
