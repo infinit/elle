@@ -211,7 +211,7 @@ class Mail(Watcher):
         from email.header import Header
         from higgs import moody
         html = mail_template
-        html = moody.render(html, **all_reports)
+        html = moody.render(html, dict=all_reports, **all_reports)
 
         s = sp.check_output("git rev-parse --short HEAD".split(), cwd=os.environ["DIR_SOURCE"])
         sub = s.decode("utf8").strip()
