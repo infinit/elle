@@ -235,7 +235,7 @@ if __name__ == "__main__":
     parser.add_argument('--scripts', '-s',
             help="the scripts to be run")
 
-    parser.add_argument('--sendmail', '-M',
+    parser.add_argument('--sendmail', '-M', action="store_true",
             help="send a mail")
 
     parser.add_argument('--source ', '-r', default=SOURCE,
