@@ -73,6 +73,8 @@ def functionals_tests(scriptdir, report, scripts_to_run=None):
 
         l_watchers = []
 
+        os.environ["PYTHONPATH"] = scriptdir
+
         for root, dirs, scripts in os.walk(scriptdir):
             for script in scripts:
                 m = pattern.match(script)
