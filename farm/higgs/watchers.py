@@ -195,22 +195,30 @@ class Mail(Watcher):
             return "FAILURE"
 
 
-    def send_mail(self, all_reports):
+    def send_mail(self, all_reports, _enc="utf8"):
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
+        from email.header import Header
         from higgs import moody
         html = mail_template
         html = moody.render(html, **all_reports)
 
-        self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
-        msg = MIMEText(html, 'html')
         s = sp.check_output("git rev-parse --short HEAD".split(), cwd=os.environ["DIR_SOURCE"])
         sub = s.decode("utf8").strip()
-        msg['Subject'] = "[INFINIT] [build-farm] Test report (#{0}): {1}".format(sub, self.final(all_reports))
+        full_subject = "[INFINIT] [build-farm] Test report (#{0}): {1}".format(sub, self.final(all_reports))
+
+        msg = MIMEText(html, 'html', _charset=_enc)
+        msg['Subject'] = Header(full_subject, _enc)
         msg['From'] = "admin@infinit.io"
         msg['To'] = ", ".join(MAIL_TARGETS)
-        self.smtp.send_message(msg)
-        self.smtp.quit()
+
+        print("send mail to:", MAIL_TARGETS)
+        try:
+            self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
+            #self.smtp.sendmail(msg['From'], [msg['To']], msg.as_string())
+            self.smtp.send_message(msg)
+        finally:
+            self.smtp.quit()
 
     def post_shutdown(self, all_reports):
         self.send_mail(all_reports)

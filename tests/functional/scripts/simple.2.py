@@ -39,7 +39,9 @@ with open(p1, 'w') as f:
     f.write(DATA)
 
 with open(p1, 'r') as f:
-    assert f.read() == DATA
+    s = f.read()
+    print(s, file=sys.stderr)
+    assert s == DATA
 
 MAX_TRIES = 10
 
