@@ -147,8 +147,6 @@ class Pool:
             self.l_infinit_inst.append(infinit)
 
         # Aggregate the stderrs
-        for inf in self.l_infinit_inst:
-            self.stderrs.append(inf.stderr)
 
         return self
 
@@ -161,6 +159,9 @@ class Pool:
             print("stop instance (pid={0}) {1}".format(I.pid, I))
             I.stop()
 
+        self.stderrs = list(
+            inf.stderr for inf in self.l_infinit_inst if inf.stderr
+        )
         # Is infinit still alive ..?
         if sp.call(["pgrep", "infinit"]) != 1:
             print("Something went really wrong: Infinit is still alive !!")

@@ -25,7 +25,7 @@ from higgs.watchers import StatusCode
 from collections import namedtuple
 from collections import OrderedDict
 
-pattern = re.compile(r"(?P<name>.*)\.(?P<nb>\d+)\.(?P<ext>py|sh)")
+pattern = re.compile(r"^(?P<name>.*)\.(?P<nb>\d+)\.(?P<ext>py|sh)$")
 
 import platform
 
@@ -68,9 +68,10 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
 
     script_report["Number of peers"] = nb_instance
 
-    print("launch the test [\033[32m", script_name,
+    print("launch the test [\033[32m", script_path,
             "\033[0m] with",
             nb_instance, "instances")
+    homes = {}
     with pool.Pool(engine, number_of_networks=nb_instance) as p:
 
         # Fill the report for the networks used by the script
@@ -122,8 +123,8 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
 
         out, err = "", ""
         try:
-            p1 = sp.Popen([script_path], stdout=sp.PIPE, stderr=sp.PIPE)
-            out, err = p1.communicate()
+            p1 = sp.Popen([script_path], stdout=sp.PIPE, stderr=sp.STDOUT)
+            out, _ = p1.communicate()
             if p1.returncode == 0:
                     s.status = StatusCode.SUCCESS
                     print("\033[32mtest", script_name,"success\033[0m")
@@ -139,11 +140,12 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
             if "std" not in script_report:
                 script_report["std"] = OrderedDict()
             script_report["std"]["out"] = out.decode("utf8")
-            script_report["std"]["err"] = err.decode("utf8")
             for w in watchers:
                 w.post_run(s)
     for w in watchers:
         w.post_shutdown(report)
+    for r, stderr in zip(home_report.values(), p.stderrs):
+        r['output'] = stderr.read().decode('utf8')
     os.environ = environ_save
     return watchers
 

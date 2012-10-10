@@ -34,6 +34,7 @@ class Infinit:
                         ext=ext)
                     );
         self.environ["INFINIT_HOME"] = home.home
+        self.pid = None
 
 
     def launch(self):
@@ -43,10 +44,11 @@ class Infinit:
                 "-n", self.network,
                 "-m", self.mountpoint
             ],
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             env=self.environ
         )
+        self.pid = self._infinit.pid
 
     def __enter__(self):
         self.launch()
@@ -76,10 +78,6 @@ class Infinit:
 
     def wait(self):
         self._infinit.wait()
-
-    @property
-    def pid(self):
-        return self._infinit.pid
 
     @property
     def stderr(self):
