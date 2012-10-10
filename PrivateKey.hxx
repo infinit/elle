@@ -22,7 +22,7 @@ namespace elle
 
         try
           {
-            out_buffer.Reader() >> out;
+            out_buffer.reader() >> out;
           }
         catch (std::exception const& err)
           {
@@ -44,7 +44,7 @@ namespace elle
 
         try
           {
-            buf.Writer() << in;
+            buf.writer() << in;
           }
         catch (std::exception const& err)
           {
@@ -65,7 +65,7 @@ namespace elle
 
       elle::utility::Buffer buffer;
 
-      buffer.Writer() << plain;
+      buffer.writer() << plain;
 
       return (this->sign(elle::utility::WeakBuffer(buffer)));
     }
