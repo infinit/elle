@@ -17,7 +17,6 @@ import threading
 import email.mime
 import smtplib as sml
 import subprocess as sp
-import pygooglechart as pgc
 
 from higgs import pool
 from higgs import infinitools
@@ -239,7 +238,7 @@ if __name__ == "__main__":
     # Update the env and paths for compatibility purpose
     os.environ["INFINIT_BUILD"] = args.builddir
     infinitools.patch_satellites_path(args.builddir)
-    
+
     report = OrderedDict()
     # Run the functionals tests
     if not args.scripts:
