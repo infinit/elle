@@ -33,10 +33,10 @@ MAIL_TARGETS = (
     "charles.guillot@infinit.io",
 )
 
-MANDRILL_USERNAME = 'infinitdotio'
-MANDRILL_PASSWORD = 'ca159fe5-a0f7-47eb-b9e1-2a8f03b9da86'
-MANDRILL_SMTP_HOST = 'smtp.mandrillapp.com'
-MANDRILL_SMTP_PORT = 587
+SMTP_USERNAME = 'botte'
+SMTP_PASSWORD = 'bite'
+SMTP_HOST = 'localhost'
+SMTP_PORT = 587
 
 CHART_W_SIZE = 400
 CHART_H_SIZE = 250
@@ -186,7 +186,7 @@ class Graph(Watcher):
 
 class Mail(Watcher):
     def __init__(self, script_name="", report={}):
-        self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
+        self.smtp = sml.SMTP(SMTP_HOST, SMTP_PORT)
 
     def final(self, rep):
         if all(test["result"] == "SUCCESS" for test in rep["scripts"].values()):
@@ -214,8 +214,7 @@ class Mail(Watcher):
 
         print("send mail to:", MAIL_TARGETS)
         try:
-            self.smtp.login(MANDRILL_USERNAME, MANDRILL_PASSWORD)
-            #self.smtp.sendmail(msg['From'], [msg['To']], msg.as_string())
+            #self.smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
             self.smtp.send_message(msg)
         finally:
             self.smtp.quit()

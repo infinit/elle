@@ -235,6 +235,9 @@ if __name__ == "__main__":
     parser.add_argument('--scripts', '-s',
             help="the scripts to be run")
 
+    parser.add_argument('--sendmail', '-M',
+            help="send a mail")
+
     parser.add_argument('--source ', '-r', default=SOURCE,
             help="the source directory")
 
@@ -262,8 +265,9 @@ if __name__ == "__main__":
         import pprint
         pprint.pprint(report, stream=reportfile)
 
-    m = watchers.Mail()
-    m.send_mail(report)
+    if args.sendmail:
+        m = watchers.Mail()
+        m.send_mail(report)
 
     if not res:
         sys.exit(1)
