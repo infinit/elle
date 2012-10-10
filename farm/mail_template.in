@@ -51,29 +51,42 @@
 
 	%% if "Error" not in stats.keys()
 
-		 <h2> Details for {{name}} </h2>
-		 %% for cat_name, data in stats.items()
-		 <h3> {{cat_name}} </h3>
-		 %% if cat_name == "Script path"
-		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
+		 <h2> {{name}} ({{stats["result"]}}) ({{stats["Script path"]}} with
+                 {{stats["Number of peers"]}} peer{% if stats["Number of peers"] > 1 %}s{%endif%}) </h2>
+
+             <table border-collapse="collapse" width="100%" style="{{table_style}}">
+                 <tr> <td style={{th_style}}> Timing info </td> </tr>
+		 %% for Tn, Tv in stats["timing"].items()
 		 <tr>
 			<td style="{{th_style}}">
-			Path
+			{{Tn}}
 			</td>
 			<td style="{{td_alt_style}}">
-			{{data}}
+			{{Tv}}
 			</td>
 		 </tr>
-		 </table>
-		 %% elif cat_name == "std"
-		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
+		 %% endfor
+		 %% for pid, pid_stat in stats["os stats"].items()
+		 <tr> <td> {{pid}} </td> </tr>
+		 %% for type, type_stat in pid_stat.items()
+		 <tr>
+			<td style="{{th_style}}">
+			{{type}}
+			</td>
+			<td style="{{td_alt_style}}">
+			{{type_stat}}
+			</td>
+		 </tr>
+		 %%endfor
+                 %%endfor
+		 <tr> <td> Outputs </td> </tr>
 		 <tr>
 			<td style="{{th_style}}">
 			stdout
 			</td>
 			<td style="{{td_alt_style}}">
                         <pre>
-			{{data["out"]}}
+			{{stats["std"]["out"]}}
                         </pre>
 			</td>
 		 </tr>
@@ -83,26 +96,14 @@
 			</td>
 			<td style="{{td_alt_style}}">
                         <pre>
-			{{data["err"]}}
+			{{stats["std"]["err"]}}
                         </pre>
 			</td>
 		</tr>
-		 </table>
-		 %% elif cat_name == "Number of peers"
-		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
-		 <tr>
-			<td style="{{th_style}}">
-			Peer
-			</td>
-			<td style="{{td_alt_style}}">
-			{{data}}
-			</td>
-		 </tr>
-		 </table>
-		 %% elif cat_name == "home"
-		 %% for HName, HData in data.items()
-			<h4> {{HName}} </h4>
-			<table border-collapse="collapse" width="100%" style="{{table_style}}">
+                 %% py _bite_i =0
+		 %% for HName, HData in stats["home"].items()
+                 %% py _bite_i += 1
+                 <tr> <td> Instance No{{_bite_i}} </td> </tr>
 		 	<tr>
 		 	   <td style="{{th_style}}">
 			   home directory
@@ -159,11 +160,9 @@
 		 	   {{HData["conf"]["hole"]["slug.timeout"]}}
 		 	   </td>
 		 	</tr>
-		 	</table>
-		 %% endfor
-		 %% elif cat_name == "timing"
-		 <table border-collapse="collapse" width="100%" style="{{table_style}}">
-		 %% for Tn, Tv in data.items()
+                 %%endfor
+		 <tr> <td> Environement </td> </tr>
+		 %% for Tn, Tv in stats["environ"].items()
 		 <tr>
 			<td style="{{th_style}}">
 			{{Tn}}

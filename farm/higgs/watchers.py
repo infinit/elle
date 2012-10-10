@@ -112,20 +112,21 @@ class Result(Watcher):
 class Memory(Watcher):
 
     def __init__(self, script_name, report):
-        report[script_name]["memory"] = OrderedDict()
-        self.memory_report = report[script_name]["memory"]
+        report[script_name]["os stats"] = OrderedDict()
+        self.memory_report = report[script_name]["os stats"]
 
     def _watch(self, pid, curr_stat):
         cmd = "ps -o %cpu,%mem,rss,bsdtime,maj_flt,min_flt,vsz {0}";
 
         out = sp.check_output(cmd.format(pid).split())
         (header_val, data, *drop) = out.split(b'\n')
+        stats = {}
         for (type, val) in zip(header_val.split(), data.split()):
             if val not in curr_stat:
                 dec_type = type.decode("utf8")
                 dec_val = val.decode("utf8")
-                curr_stat[dec_type] = []
-                curr_stat[dec_type].append(dec_val)
+                stats[dec_type] = []
+                stats[dec_type].append(dec_val)
 
         while True:
             try:
@@ -138,7 +139,16 @@ class Memory(Watcher):
             for (type, val) in zip(header_val.split(), data.split()):
                 dec_type = type.decode("utf8")
                 dec_val = val.decode("utf8")
-                curr_stat[dec_type].append(dec_val)
+                stats[dec_type].append(dec_val)
+        for key, val in stats.items():
+            if key in ("%CPU", "%MEM", "RSS", "MAJFLT", "MINFLT", "VSZ"):
+                l_tmp = [float(X) for X in stats[key]]
+                curr_stat[key] = "min: {0}, max: {1}, avg: {2:.2}".format(
+                        min(l_tmp),
+                        max(l_tmp),
+                        sum(l_tmp) / len(l_tmp))
+                print(key, curr_stat[key])
+
 
     def pre_run(self, environ={}):
         self.l_pids = []
@@ -164,7 +174,7 @@ class Graph(Watcher):
         self.script_name = script_name
 
     def render_memory_graphs(self):
-        memory_report = self._report[self.script_name]["memory"]
+        memory_report = self._report[self.script_name]["os stats"]
         for pid, pid_stats in memory_report.items():
             for type, stats in pid_stats.items():
                 if type == b'%CPU':
