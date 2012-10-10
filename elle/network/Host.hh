@@ -7,8 +7,6 @@
 # include <elle/radix/Object.hh>
 # include <elle/serialize/fwd.hh>
 
-# include <elle/serialize/fwd.hh>
-
 namespace elle
 {
   namespace network

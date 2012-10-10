@@ -88,6 +88,8 @@ namespace hole
                                    str(fmt % descriptor.meta().model().type));
         }
       }
+
+    elle::unreachable();
   }
 
   /*-------------.
