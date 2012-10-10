@@ -16,7 +16,7 @@ import threading
 import email.mime
 import smtplib as sml
 import subprocess as sp
-import pygooglechart as pgc
+# import pygooglechart as pgc # XXX used in Graph class
 
 from higgs import pool
 from higgs import infinitools
