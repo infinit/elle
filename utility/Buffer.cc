@@ -1,8 +1,9 @@
 #include "Buffer.hh"
 
-#include <elle/log.hh>
-#include <elle/IOStream.hh>
 #include <elle/Exception.hh>
+#include <elle/io/Dumpable.hh>
+#include <elle/IOStream.hh>
+#include <elle/log.hh>
 
 #include <iomanip>
 #include <memory>
@@ -29,7 +30,7 @@ namespace elle
     Buffer::Buffer(size_t size)
       : _contents(nullptr)
       , _size(size)
-      , _buffer_size(Buffer::_NextSize(size))
+      , _buffer_size(Buffer::_next_size(size))
     {
       this->_contents = static_cast<elle::Byte*>(::malloc(_buffer_size));
       if (this->_contents == nullptr)
@@ -47,7 +48,7 @@ namespace elle
       , _size(0)
       , _buffer_size(0)
     {
-      this->Append(data, size);
+      this->append(data, size);
     }
 
     Buffer::Buffer(Buffer&& other)
@@ -67,12 +68,12 @@ namespace elle
       ::free(this->_contents);
     }
 
-    void Buffer::Append(void const* data, size_t size)
+    void Buffer::append(void const* data, size_t size)
     {
       assert(data != nullptr || size == 0);
 
       size_t old_size = this->_size;
-      this->Size(this->_size + size);
+      this->size(this->_size + size);
       /// XXX some implementations of memmove does not check for memory overlap
       memmove(this->_contents + old_size, data, size);
       // std::uninitialized_copy(
@@ -81,21 +82,23 @@ namespace elle
       //   this->_contents + old_size
     }
 
-    void Buffer::Size(size_t size)
+    void
+    Buffer::size(size_t size)
     {
       if (this->_buffer_size < size)
         {
-          size_t next_size = Buffer::_NextSize(size);
+          size_t next_size = Buffer::_next_size(size);
           void* tmp = ::realloc(_contents, next_size);
           if (tmp == nullptr)
             throw std::bad_alloc();
-          this->_contents = static_cast<unsigned char*>(tmp);
+          this->_contents = static_cast<Byte*>(tmp);
           this->_buffer_size = next_size;
         }
       this->_size = size;
     }
 
-    Buffer::ContentPair Buffer::Release()
+    Buffer::ContentPair
+    Buffer::release()
     {
       ContentPair res(ContentPtr(this->_contents), this->_size);
       this->_contents = nullptr;
@@ -105,20 +108,21 @@ namespace elle
     }
 
     OutputBufferArchive
-    Buffer::Writer()
+    Buffer::writer()
     {
       return OutputBufferArchive(*this);
     }
 
     InputBufferArchive
-    Buffer::Reader() const
+    Buffer::reader() const
     {
       return InputBufferArchive(*this);
     }
 
-    elle::Status Buffer::Dump(const Natural32 margin) const
+    void
+    Buffer::dump(const Natural32 margin) const
     {
-      Natural32         space = 78 - margin - Dumpable::Shift.length();
+      Natural32         space = 78 - margin - io::Dumpable::Shift.length();
       String            alignment(margin, ' ');
       Natural32         i;
       Natural32         j;
@@ -139,7 +143,7 @@ namespace elle
       // display the region.
       for (i = 0; i < (this->_size / space); i++)
         {
-          std::cout << alignment << Dumpable::Shift;
+          std::cout << alignment << io::Dumpable::Shift;
 
           for (j = 0; j < space; j++)
             std::cout << std::nouppercase
@@ -152,7 +156,7 @@ namespace elle
 
       if ((this->_size % space) != 0)
         {
-          std::cout << alignment << Dumpable::Shift;
+          std::cout << alignment << io::Dumpable::Shift;
 
           for (size_t j = 0; j < (this->_size % space); j++)
             std::cout << std::nouppercase
@@ -162,11 +166,10 @@ namespace elle
 
           std::cout << std::endl;
         }
-
-      return Status::Ok;
     }
 
-    size_t Buffer::_NextSize(size_t size)
+    size_t
+    Buffer::_next_size(size_t size)
     {
       if (size < 32)
         return 32;
@@ -192,7 +195,7 @@ namespace elle
     }
 
     InputBufferArchive
-    WeakBuffer::Reader() const
+    WeakBuffer::reader() const
     {
       return InputBufferArchive(*this);
     }
@@ -225,9 +228,14 @@ namespace elle
       elle::Buffer
       read_buffer()
       {
-        ELLE_DEBUG("read from an InputStreamBuffer at index %s (bytes left = %s)", _index, _buffer.size() - _index);
+        ELLE_DEBUG(
+          "read from an InputStreamBuffer at index %s (bytes left = %s)",
+          _index, _buffer.size() - _index
+        );
         assert(_index <= _buffer.size());
-        return elle::Buffer((char*)_buffer.contents() + _index, _buffer.size() - _index);
+        return elle::Buffer(
+          (char*)_buffer.contents() + _index, _buffer.size() - _index
+        );
       }
 
       void flush(Size size)
@@ -310,7 +318,9 @@ namespace elle
     ///////////////////////////////////////////////////////////////////////////
 
     OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
-      elle::serialize::OutputBinaryArchive(*(_ostream = new IOStream(new OutputStreamBuffer(buffer))))
+      elle::serialize::OutputBinaryArchive(
+        *(_ostream = new IOStream(new OutputStreamBuffer(buffer)))
+      )
     {
       ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
     }

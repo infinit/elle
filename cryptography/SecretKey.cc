@@ -251,14 +251,14 @@ namespace elle
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the out buffer
-      out.Size(
+      out.size(
           cipher.region.size -
           (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
           capacity
       );
 
       if (::EVP_DecryptUpdate(&scope.context,
-                              out.MutableContents(),
+                              out.mutable_contents(),
                               &size,
                               cipher.region.contents +
                               sizeof (SecretKey::Magic) - 1 +
@@ -269,16 +269,16 @@ namespace elle
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
-      out.Size(out.Size() + size);
+      out.size(out.size() + size);
 
       // finalise the ciphering process.
       if (::EVP_DecryptFinal_ex(&scope.context,
-                                out.MutableContents() + size,
+                                out.mutable_contents() + size,
                                 &size) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
-      out.Size(out.Size() + size);
+      out.size(out.size() + size);
 
       return Status::Ok;
     }

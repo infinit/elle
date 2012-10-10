@@ -1,11 +1,12 @@
 #ifndef  ELLE_UTILITY_BUFFER_HXX
 # define ELLE_UTILITY_BUFFER_HXX
 
-# include <stdexcept>
-# include <iostream>
-
+# include <elle/assert.hh>
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/BinaryArchive.hh>
+
+# include <stdexcept>
+# include <iostream>
 
 namespace elle
 {
@@ -66,7 +67,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,
       if (size >= static_cast<size_t>(-1))
         throw std::runtime_error("Cannot receive a buffer that large");
     }
-  value.Size(size);
+  value.size(size);
   archive.LoadBinary(value._contents, size);
 }
 
@@ -76,8 +77,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::Buffer,
                           version)
 {
   enforce(version == 0);
-  archive << static_cast<uint64_t>(value.Size());
-  archive.SaveBinary(value.Contents(), value.Size());
+  archive << static_cast<uint64_t>(value.size());
+  archive.SaveBinary(value.contents(), value.size());
 }
 
 
@@ -95,7 +96,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::WeakBuffer,,,)
 {
-  throw false;
+  elle::unreachable();
 }
 
 #endif

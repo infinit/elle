@@ -225,7 +225,7 @@ namespace elle
           elle::utility::WeakBuffer(
             in.region.contents,
             in.region.size
-                                    ).Reader() >> key >> data;
+          ).reader() >> key >> data;
         }
       catch (std::runtime_error const& err)
         {
@@ -233,7 +233,7 @@ namespace elle
             "unable to extract the asymetrically-encrypted secret key "
             "and the symetrically-encrypted data: %s",
             err.what()
-                 );
+          );
         }
 
       // (ii)
@@ -254,7 +254,7 @@ namespace elle
         // perform the decrypt operation.
         if (::EVP_PKEY_decrypt(
               this->_contexts.decrypt,
-              buf.MutableContents(),
+              buf.mutable_contents(),
               &size,
               key.region.contents,
               key.region.size) <= 0)
@@ -262,7 +262,7 @@ namespace elle
 
         try
           {
-            buf.Reader() >> secret;
+            buf.reader() >> secret;
           }
         catch (std::exception const& err)
           {
@@ -350,7 +350,7 @@ namespace elle
 
         try
           {
-            buf.Writer() << secret;
+            buf.writer() << secret;
           }
         catch (std::exception const& err)
           {
@@ -362,8 +362,8 @@ namespace elle
               this->_contexts.encrypt,
               nullptr,
               &size,
-              buf.Contents(),
-              buf.Size()) <= 0)
+              buf.contents(),
+              buf.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // allocate memory so the key can receive the upcoming
@@ -380,8 +380,8 @@ namespace elle
               this->_contexts.encrypt,
               key.region.contents,
               &size,
-              buf.Contents(),
-              buf.Size()) <= 0)
+              buf.contents(),
+              buf.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
@@ -394,7 +394,7 @@ namespace elle
 
         try
           {
-            buf.Writer() << key << data;
+            buf.writer() << key << data;
           }
         catch (std::exception const& err)
           {
@@ -408,8 +408,8 @@ namespace elle
 
         // duplicate the archive's content.
         // XXX this copy is not necessary
-        if (out.region.Duplicate(buf.Contents(),
-                                 buf.Size()) == Status::Error)
+        if (out.region.Duplicate(buf.contents(),
+                                 buf.size()) == Status::Error)
           escape("unable to duplicate the archive's content");
       }
 

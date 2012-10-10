@@ -23,7 +23,7 @@ namespace elle
         elle::utility::Buffer buf;
         try
           {
-            buf.Writer() << in;
+            buf.writer() << in;
           }
         catch (std::exception const& err)
           {
@@ -46,7 +46,7 @@ namespace elle
 
         try
           {
-            buffer.Reader() >> out;
+            buffer.reader() >> out;
           }
         catch (std::exception const& err)
           {

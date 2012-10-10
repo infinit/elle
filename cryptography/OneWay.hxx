@@ -30,8 +30,8 @@ namespace elle
       try
         {
           elle::utility::Buffer buffer;
-          buffer.Writer() << value;
-          Plain plain_text(buffer.Contents(), buffer.Size());
+          buffer.writer() << value;
+          Plain plain_text(buffer.contents(), buffer.size());
           return OneWay::Hash(plain_text, digest);
         }
       catch (std::exception const& err)
