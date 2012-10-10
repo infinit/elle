@@ -57,6 +57,8 @@ WATCHERS = (
     )
 
 def functionals_tests(scriptdir, report, scripts_to_run=None):
+    import pprint
+    print("functionals_tests working on", scriptdir, ",\n".join(os.listdir(scriptdir)))
     with pool.PoolEngine(low_port=5656, high_port=5660) as engine:
 
         report["engine"] = OrderedDict()
@@ -185,6 +187,7 @@ def functionals_tests(scriptdir, report, scripts_to_run=None):
                         for W in l_watchers: W.post_run(s)
                     os.environ.update(environ_save)
         for W in l_watchers: W.post_shutdown(report)
+        print("functionals_tests finished on", scriptdir)
         return all(test["result"] == "SUCCESS" for test in report["scripts"].values())
 
 
