@@ -28,7 +28,7 @@ def write_serial(path1, path2):
 
 try:
     write_serial(path1, path2)
-    utils.check_convergence(path1, path2)
+    check_convergence(path1, path2)
     print(write_serial.__name__, "passes")
 except Exception as err:
     sys.exit("test '{0}' failed: {1}".format(write_serial.__name__, str(err)))
