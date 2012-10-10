@@ -14,11 +14,11 @@ int main()
 
   elle::utility::Buffer buf;
 
-  buf.Writer() << nucleus::neutron::Record::Null;
+  buf.writer() << nucleus::neutron::Record::Null;
 
   nucleus::neutron::Record record;
 
-  buf.Reader() >> record;
+  buf.reader() >> record;
 
   assert(record == nucleus::neutron::Record::Null);
 

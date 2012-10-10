@@ -32,11 +32,11 @@ int main()
   elle::print("unique string:", unique);
 
   elle::utility::Buffer buf;
-  buf.Writer() << blk;
+  buf.writer() << blk;
 
     {
       nucleus::neutron::Object blk_copy;
-      buf.Reader() >> blk_copy;
+      buf.reader() >> blk_copy;
 
       blk_copy.validate(addr, nucleus::neutron::Access::Null);
 

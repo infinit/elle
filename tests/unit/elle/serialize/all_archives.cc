@@ -50,7 +50,7 @@ void testLinear()
       ar >> char_;
       assert(char_ == '1');
       ar >> buffer_;
-      assert(std::string((char const*)buffer_.Contents(), buffer_.Size()) == "pif");
+      assert(std::string((char const*)buffer_.contents(), buffer_.size()) == "pif");
     }
 }
 

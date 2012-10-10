@@ -8,12 +8,12 @@ int main()
     {
       int i = 32;
       std::string s = "Bite";
-      b.Writer() << i << s;
+      b.writer() << i << s;
     }
     {
       int i;
       std::string s;
-      auto r = b.Reader();
+      auto r = b.reader();
       r >> i;
       r >> s;
       assert(i == 32);

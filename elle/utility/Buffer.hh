@@ -3,9 +3,8 @@
 
 # include <memory>
 
-# include <elle/io/Dumpable.hh>
-
 # include <elle/serialize/fwd.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
@@ -24,40 +23,45 @@ namespace elle
     class OutputBufferArchive;
     class WeakBuffer;
 
-    /// Manage a memory zone. Note that this class owns the pointed
-    /// memory at every moment.
+    /// @brief Manage a memory zone.
+    ///
+    /// Note that this class owns the pointed memory at every moment.
     ///
     /// @see WeakBuffer for a buffer that doesn't own the data
     class Buffer
-      : public io::Dumpable
     {
       friend class serialize::Serializer<Buffer>;
     public:
-      typedef Byte                                          ContentType;
-      typedef std::unique_ptr<ContentType, detail::MallocDeleter> ContentPtr;
-      typedef std::pair<ContentPtr, size_t>                       ContentPair;
+      typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
+      typedef std::pair<ContentPtr, size_t>                ContentPair;
+
     private:
       Byte*       _contents;
       size_t      _size;
       size_t      _buffer_size;
 
     public:
+      /// Empty buffer
       Buffer();
 
+      /// A buffer of a specify size.
       explicit
       Buffer(size_t size);
 
+      /// Steal a pointer as internal buffer
       explicit
       Buffer(ContentPair&& pair);
 
+      /// Copy a buffer
       Buffer(Byte const* data,
              size_t size);
 
-      // Buffer class is moveable
-      Buffer(Buffer&&               other);
+      /// Buffer class is moveable
+      Buffer(Buffer&& other);
       Buffer&
-      operator =(Buffer&&   other);
+      operator =(Buffer&& other);
 
+      /// Buffer class is not virtual
       ~Buffer();
 
       // Buffer is not copyable
@@ -66,35 +70,34 @@ namespace elle
       operator =(Buffer const&) = delete;
 
     public:
-      /// Add a copy of the data to the end of the buffer.
-      void          Append(void const* data, size_t size);
+      /// Append a copy of the data to the end of the buffer.
+      void
+      append(void const* data,
+             size_t size);
 
       /// Properties for the size and the buffer contents
-      void          Size(size_t size);
-      size_t        Size() const { return this->_size; }
-      void          size(size_t size) { this->Size(size); }
-      size_t        size() const { return this->Size(); }
-      Byte const*   Contents() const { return this->_contents; }
+      void          size(size_t size);
+      size_t        size() const { return this->_size; }
       Byte const*   contents() const { return this->_contents; }
-      Byte*         MutableContents() { return this->_contents; }
       Byte*         mutable_contents() const { return this->_contents; }
 
       /// Reset the size to zero.
-      void                Reset() { this->Size(0); }
-
-      /// XXX add methods to fill with zeros
+      void
+      reset() { this->size(0); }
 
       /// Release internal memory.
-      ContentPair         Release();
+      ContentPair
+      release();
 
       /// Binary serialization shorcut.
       OutputBufferArchive
-      Writer();
+      writer();
 
       InputBufferArchive
-      Reader() const;
+      reader() const;
 
-      virtual Status    Dump(const Natural32 shift = 0) const;
+      void
+      dump(const Natural32 shift = 0) const;
 
       bool
       operator <(Buffer const& other) const;
@@ -102,11 +105,16 @@ namespace elle
       operator ==(Buffer const& other) const;
 
     private:
-      static size_t _NextSize(size_t);
+      static size_t _next_size(size_t);
     };
 
 
-    /// @brief
+    /// @brief A C array pointer and its size.
+    ///
+    /// This class is NOTHING but a glorified std::pair<char*, int> used to
+    /// represent C-style buffers as one entity, with some useful shortcuts and
+    /// facilities.  It has no intelligence or memory managment whatsoever, and
+    /// shouldn't have any.
     ///
     class WeakBuffer
     {
@@ -140,7 +148,7 @@ namespace elle
       Byte*         mutable_contents() const  { return this->_contents; }
 
       InputBufferArchive
-      Reader() const;
+      reader() const;
     };
 
   }

@@ -15,7 +15,7 @@ namespace nucleus
 //
 // ---------- constants -------------------------------------------------------
 //
- 
+
     const Component Access::component = ComponentAccess;
 
 //
@@ -245,7 +245,7 @@ namespace nucleus
           auto it = this->_range.container.begin(),
                end = this->_range.container.end();
           for (; it != end; ++it)
-              buffer.Writer() << (*it)->subject
+              buffer.writer() << (*it)->subject
                               << (*it)->permissions;
         }
       catch (std::exception const& err)

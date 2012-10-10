@@ -31,13 +31,13 @@ void test()
       elle::utility::Buffer buf;
 
         {
-          auto writer = buf.Writer();
+          auto writer = buf.writer();
 
           writer << elle::serialize::concrete(blk);
         }
 
         {
-          auto reader = buf.Reader();
+          auto reader = buf.reader();
 
           nucleus::proton::ImprintBlock blk_copy;
 
