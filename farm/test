@@ -184,16 +184,16 @@ def unit_tests(report):
     ret = True
     out, err = "", ""
     try:
-        print("BITE")
-        s1 = sp.Popen(["make", "test"], cwd=BUILD)
+        s1 = sp.Popen(["make", "test"], cwd=BUILD, stdout=sp.PIPE, stderr=sp.PIPE)
         out, err = s1.communicate()
-        print(out, err)
+        print(out.decode("utf8"))
+        print(err.decode("utf8"))
     except Exception as e:
         print(e)
         ret = False
     finally:
-        report["unit_tests"]["stdout"] = out
-        report["unit_tests"]["stderr"] = err
+        report["unit_tests"]["stdout"] = out.decode("utf8")
+        report["unit_tests"]["stderr"] = err.decode("utf8")
     return ret
 
 def clean_the_fuck_up():

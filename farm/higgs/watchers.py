@@ -189,7 +189,7 @@ class Mail(Watcher):
         self.smtp = sml.SMTP(MANDRILL_SMTP_HOST, MANDRILL_SMTP_PORT)
 
     def final(self, rep):
-        if all(test["result"] == "SUCCESS" for test in report["scripts"].values()):
+        if all(test["result"] == "SUCCESS" for test in rep["scripts"].values()):
             return "SUCCESS"
         else:
             return "FAILURE"

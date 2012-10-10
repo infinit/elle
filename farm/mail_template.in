@@ -211,13 +211,19 @@
 		stdout
 		</td>
 		<td style="{{td_style}}">
+                <pre>
 		{{unit_tests["stdout"]}}
+                </pre>
 		</td>
+	</tr>
+	<tr>
 		<td style="{{th_style}}">
 		stderr
 		</td>
 		<td style="{{td_style}}">
+                <pre>
 		{{unit_tests["stderr"]}}
+                </pre>
 		</td>
 	</tr>
 	</table>
