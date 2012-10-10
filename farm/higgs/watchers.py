@@ -29,7 +29,7 @@ MAIL_TARGETS = (
     "fabien.pichot@infinit.io",
     "antony.mechin@infinit.io",
     "quentin.hocquet@infinit.io",
-    "julien.quitard@infinit.io",
+    "julien.quintard@infinit.io",
     "charles.guillot@infinit.io",
 )
 
