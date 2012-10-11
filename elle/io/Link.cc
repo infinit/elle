@@ -4,6 +4,7 @@
 #include <elle/idiom/Close.hh>
 #include <elle/io/Path.hh>
 #include <elle/idiom/Open.hh>
+#include <elle/os/path.hh>
 
 #include <elle/standalone/Report.hh>
 
@@ -20,7 +21,6 @@
 # include <string.h>
 # if defined(INFINIT_WINDOWS)
 #  include <windows.h>
-#  include <QFile>
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -54,9 +54,9 @@ namespace elle
         escape("symlink failed: %s -> %s: %s", link.string().c_str(),
                target.string().c_str(), ::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
-      if (!QFile::link(QString::fromStdString(link.string()),
-                       QString::fromStdString(target.string())))
-        escape("symlink failed: %s -> %s", link.string().c_str(),
+      elle::os::path::make_symlink(link.string(), target.string());
+      if (elle::os::path::check_symlink(target.string()))
+        escape("Symlink failed: '%s' -> '%s'.", link.string().c_str(),
                target.string().c_str());
 #else
 # error "unsupported platform"

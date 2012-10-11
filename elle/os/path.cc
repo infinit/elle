@@ -67,7 +67,11 @@ namespace elle
         fs::create_symlink(oldname, newname);
       }
 
+      bool
+      check_symlink(std::string const& path)
+      {
+        return (fs::symlink_status(path).type() != fs::status_error);
+      }
     }
   }
 }
-
