@@ -5,7 +5,6 @@
 #include <reactor/network/tcp-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
-#include <elle/idiom/Close.hh>
 
 namespace reactor
 {

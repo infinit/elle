@@ -34,19 +34,33 @@ namespace elle
     friend class IOStream;
 
     /// The buffer where to write.
-    virtual elle::Buffer write_buffer() = 0;
+    virtual
+    WeakBuffer
+    write_buffer() = 0;
 
     /// The buffer with the next available data.
-    virtual elle::Buffer read_buffer()  = 0;
+    virtual
+    WeakBuffer
+    read_buffer()  = 0;
 
     /// Synchronize the write buffer to the underlying implementation.
-    virtual void   flush(Size size);
+    virtual
+    void
+    flush(Size size);
 
   /// std::streambuf interface.
   protected:
-    virtual int underflow();
-    virtual int overflow(int c);
-    virtual int sync();
+    virtual
+    int
+    underflow();
+
+    virtual
+    int
+    overflow(int c);
+
+    virtual
+    int
+    sync();
   };
 
   /// Simple implementation of a streambuf with local buffers.
@@ -62,9 +76,17 @@ namespace elle
     virtual Size read (char* buffer, Size size) = 0;
     virtual void write(char* buffer, Size size) = 0;
 
-    virtual Buffer write_buffer();
-    virtual Buffer read_buffer();
-    virtual void   flush(unsigned int size);
+    virtual
+    WeakBuffer
+    write_buffer();
+
+    virtual
+    WeakBuffer
+    read_buffer();
+
+    virtual
+    void
+    flush(unsigned int size);
 
   private:
     static const int _bufsize = 512;

@@ -40,23 +40,26 @@ namespace elle
   int
   StreamBuffer::underflow()
   {
-    Buffer b = read_buffer();
-    if (b.size == 0)
+    WeakBuffer b = read_buffer();
+    if (b.size() == 0)
       {
         setg(0, 0, 0);
         return EOF;
       }
-    setg(b.data, b.data, &b.data[b.size]);
-    return static_cast<unsigned char>(b.data[0]);
+    setg(reinterpret_cast<char*>(b.mutable_contents()),
+         reinterpret_cast<char*>(b.mutable_contents()),
+         reinterpret_cast<char*>(b.mutable_contents() + b.size()));
+    return static_cast<unsigned char>(b.contents()[0]);
   }
 
   int
   StreamBuffer::overflow(int c)
   {
     sync();
-    Buffer b = write_buffer();
-    setp(b.data, &b.data[b.size]);
-    b.data[0] = static_cast<char>(c);
+    WeakBuffer b = write_buffer();
+    setp(reinterpret_cast<char*>(b.mutable_contents()),
+         reinterpret_cast<char*>(b.mutable_contents() + b.size()));
+    b.mutable_contents()[0] = static_cast<Byte>(c);
     pbump(1);
     // Success is indicated by "A value different from EOF".
     return EOF + 1;
@@ -89,7 +92,7 @@ namespace elle
   PlainStreamBuffer::~PlainStreamBuffer()
   {}
 
-  Buffer
+  WeakBuffer
   PlainStreamBuffer::read_buffer()
   {
     static const int max_size = _bufsize;
@@ -97,14 +100,14 @@ namespace elle
       {
         ssize_t size = read(_ibuf, max_size);
         ELLE_TRACE("got %s bytes", size);
-        return Buffer(_ibuf, size);
+        return WeakBuffer(_ibuf, size);
       }
   }
 
-  Buffer
+  WeakBuffer
   PlainStreamBuffer::write_buffer()
   {
-    return Buffer(_obuf, _bufsize);
+    return WeakBuffer(_obuf, _bufsize);
   }
 
   void

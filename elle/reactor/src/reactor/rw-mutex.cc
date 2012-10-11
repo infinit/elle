@@ -1,4 +1,5 @@
 #include <elle/log.hh>
+#include <elle/idiom/Close.hh>
 
 #include <reactor/rw-mutex.hh>
 #include <reactor/thread.hh>

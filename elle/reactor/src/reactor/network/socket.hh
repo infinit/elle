@@ -2,6 +2,7 @@
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
 # include <elle/IOStream.hh>
+#include <elle/idiom/Close.hh>
 
 # include <reactor/duration.hh>
 # include <reactor/network/fwd.hh>

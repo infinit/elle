@@ -219,13 +219,13 @@ namespace elle
         ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s", buffer.size());
       }
 
-      elle::Buffer
+      WeakBuffer
       write_buffer()
       {
         throw Exception("the buffer is in input mode");
       }
 
-      elle::Buffer
+      WeakBuffer
       read_buffer()
       {
         ELLE_DEBUG(
@@ -233,7 +233,7 @@ namespace elle
           _index, _buffer.size() - _index
         );
         assert(_index <= _buffer.size());
-        return elle::Buffer(
+        return WeakBuffer(
           (char*)_buffer.contents() + _index, _buffer.size() - _index
         );
       }
@@ -289,12 +289,12 @@ namespace elle
         _buffer(buffer)
       {}
 
-      elle::Buffer
+      WeakBuffer
       write_buffer()
       {
         _buffer.size(_old_size + 512);
         ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
-        return elle::Buffer(
+        return WeakBuffer(
             (char*)_buffer.mutable_contents() + _old_size,
             512
         );
@@ -308,7 +308,7 @@ namespace elle
         _buffer.size(_old_size);
       }
 
-      elle::Buffer
+      WeakBuffer
       read_buffer()
       {
         throw Exception("the buffer is in output mode");
