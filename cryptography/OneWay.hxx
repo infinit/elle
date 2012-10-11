@@ -6,7 +6,7 @@
 # include <elle/cryptography/Plain.hh>
 # include <elle/cryptography/Digest.hh>
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 # include <elle/serialize/BaseArchive.hxx>
 
@@ -29,7 +29,7 @@ namespace elle
 
       try
         {
-          elle::utility::Buffer buffer;
+          elle::Buffer buffer;
           buffer.writer() << value;
           Plain plain_text(buffer.contents(), buffer.size());
           return OneWay::Hash(plain_text, digest);

@@ -108,7 +108,7 @@ namespace elle
     ///
     /// this method encrypts the given plain text.
     ///
-    Status SecretKey::Encrypt(elle::utility::WeakBuffer const&  in,
+    Status SecretKey::Encrypt(elle::WeakBuffer const&  in,
                               Cipher&                           cipher) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
@@ -200,7 +200,7 @@ namespace elle
     /// this method decrypts the given cipher.
     ///
     Status SecretKey::Decrypt(const Cipher&             cipher,
-                              elle::utility::Buffer&    out) const
+                              elle::Buffer&    out) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];

@@ -13,7 +13,7 @@
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
 
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -70,7 +70,7 @@ namespace elle
       /// encrypted.
       ///
       Status
-      Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
+      Encrypt(elle::WeakBuffer const& buffer, Code& out) const;
       template <typename T>
       Status
       Encrypt(T const& in, Code& out) const;
@@ -92,7 +92,7 @@ namespace elle
       /// and (iii) decipher the data with the symmetric key.
       ///
       Status
-      Decrypt(Code const& in, elle::utility::Buffer& out) const;
+      Decrypt(Code const& in, elle::Buffer& out) const;
       template <typename T>
       Status
       Decrypt(Code const& in, T& out) const;
@@ -108,7 +108,7 @@ namespace elle
       // XXX[should take Signature, Code]
       Status
       Verify(Signature const& signature,
-             elle::utility::WeakBuffer const& plain) const;
+             elle::WeakBuffer const& plain) const;
       // XXX[should take Signature, Plain]
       template <typename T>
       Status

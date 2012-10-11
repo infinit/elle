@@ -213,7 +213,7 @@ namespace elle
     }
 
     Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
-                               elle::utility::Buffer&             out) const
+                               elle::Buffer&                      out) const
     {
       SecretKey         secret;
       Code              key;
@@ -222,7 +222,7 @@ namespace elle
       // (i)
       try
         {
-          elle::utility::WeakBuffer(
+          elle::WeakBuffer(
             in.region.contents,
             in.region.size
           ).reader() >> key >> data;
@@ -249,7 +249,7 @@ namespace elle
               key.region.size) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        elle::utility::Buffer buf(size);
+        elle::Buffer buf(size);
 
         // perform the decrypt operation.
         if (::EVP_PKEY_decrypt(
@@ -284,7 +284,7 @@ namespace elle
     }
 
     Signature
-    PrivateKey::sign(elle::utility::WeakBuffer const&  plain) const
+    PrivateKey::sign(elle::WeakBuffer const&  plain) const
     {
       Signature signature;
       Digest digest;
@@ -322,7 +322,7 @@ namespace elle
       return (signature);
     }
 
-    Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
+    Status PrivateKey::Encrypt(elle::WeakBuffer const& in,
                                Code&                            out) const
     {
       SecretKey         secret;
@@ -346,7 +346,7 @@ namespace elle
       // (iii)
       {
         size_t                  size;
-        elle::utility::Buffer   buf;
+        elle::Buffer   buf;
 
         try
           {
@@ -390,7 +390,7 @@ namespace elle
 
       // (iv)
       {
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
