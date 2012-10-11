@@ -46,6 +46,10 @@ namespace elle
       void
       make_symlink(std::string const& oldname,
                    std::string const& newname);
+
+      /// Check symbolic link.
+      bool
+      check_symlink(std::string const& path);
     }
   }
 }
@@ -53,4 +57,3 @@ namespace elle
 # include <elle/os/path.hxx>
 
 #endif
-
