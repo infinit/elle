@@ -3,7 +3,7 @@
 
 # include <elle/standalone/Report.hh>
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 namespace elle
 {
@@ -14,11 +14,11 @@ namespace elle
       Status PublicKey::Encrypt(T const& in, Code& out) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "explicit cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
@@ -30,7 +30,7 @@ namespace elle
           }
 
         return this->Encrypt(
-            elle::utility::WeakBuffer(buf),
+            elle::WeakBuffer(buf),
             out
         );
       }
@@ -38,7 +38,7 @@ namespace elle
     template <typename T>
       Status PublicKey::Decrypt(Code const& in, T& out) const
       {
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         if (this->Decrypt(in, buf) == elle::Status::Error)
           escape("Cannot decrypt data");
@@ -59,11 +59,11 @@ namespace elle
       Status PublicKey::Verify(Signature const& signature, T const& any) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "explicit cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
@@ -76,7 +76,7 @@ namespace elle
 
         return this->Verify(
             signature,
-            elle::utility::WeakBuffer(buf)
+            elle::WeakBuffer(buf)
         );
       }
   }

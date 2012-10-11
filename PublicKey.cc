@@ -170,7 +170,7 @@ namespace elle
       return Status::Ok;
     }
 
-    Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
+    Status  PublicKey::Encrypt(elle::WeakBuffer const& buffer,
                                Code&                            code) const
     {
       SecretKey         secret;
@@ -194,7 +194,7 @@ namespace elle
       // (iii)
       {
         // XXX secret_buf should be filled with zeros at the end
-        elle::utility::Buffer secret_buf;
+        elle::Buffer secret_buf;
         size_t                size;
 
         try
@@ -239,7 +239,7 @@ namespace elle
 
       // (iv)
       {
-        elle::utility::Buffer result_buf;
+        elle::Buffer result_buf;
 
         try
           {
@@ -265,7 +265,7 @@ namespace elle
     }
 
     Status PublicKey::Verify(const Signature&                 signature,
-                             elle::utility::WeakBuffer const& buffer) const
+                             elle::WeakBuffer const& buffer) const
     {
       Digest            digest;
 
@@ -285,7 +285,7 @@ namespace elle
       return Status::Ok;
     }
 
-    Status PublicKey::Decrypt(Code const& in, elle::utility::Buffer& out) const
+    Status PublicKey::Decrypt(Code const& in, elle::Buffer& out) const
     {
       SecretKey         secret;
 
@@ -295,7 +295,7 @@ namespace elle
       // (i)
       try
         {
-          elle::utility::WeakBuffer input_buffer(in.region.contents, in.region.size);
+          elle::WeakBuffer input_buffer(in.region.contents, in.region.size);
           input_buffer.reader() >> key >> data;
         }
       catch (std::exception const& err)
@@ -320,7 +320,7 @@ namespace elle
               key.region.size) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
@@ -351,7 +351,7 @@ namespace elle
 
         try
           {
-            elle::utility::Buffer(std::move(buf_pair)).reader() >> secret;
+            elle::Buffer(std::move(buf_pair)).reader() >> secret;
           }
         catch (std::exception const& err)
           {
