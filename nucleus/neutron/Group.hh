@@ -96,6 +96,8 @@ namespace nucleus
       //
     public:
       Group();
+      ELLE_SERIALIZE_CONSTRUCT(Group, ImprintBlock)
+      {}
       Group(proton::Network const& network,
             elle::cryptography::PublicKey const& manager_K,
             elle::String const& description);

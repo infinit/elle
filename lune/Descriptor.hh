@@ -7,6 +7,7 @@
 # include <elle/idiom/Open.hh>
 # include <elle/serialize/Format.hh>
 # include <elle/serialize/DynamicFormat.hh>
+# include <elle/serialize/construct.hh>
 
 # include <lune/fwd.hh>
 
@@ -138,6 +139,7 @@ namespace lune
     // construction
     //
   public:
+    explicit
     Descriptor(elle::String const& network);
     Descriptor(elle::String const& id,
                elle::cryptography::PublicKey const& administrator_K,
@@ -151,6 +153,8 @@ namespace lune
                elle::Natural32 extent,
                elle::Version const& version,
                Authority const& authority);
+
+    ELLE_SERIALIZE_CONSTRUCT(Descriptor) {}
 
     //
     // methods

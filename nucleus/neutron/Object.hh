@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/Serializable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
@@ -75,10 +76,15 @@ namespace nucleus
       // constructors & destructors
       //
     public:
-      Object(); // XXX[to deserialize]
       Object(proton::Network const& network,
              elle::cryptography::PublicKey const& owner_K,
              Genre const genre);
+
+      Object(); // XXX[use deserialize constructor]
+
+      ELLE_SERIALIZE_CONSTRUCT(Object, ImprintBlock)
+      { this->_author = nullptr; }
+
       ~Object();
 
       //

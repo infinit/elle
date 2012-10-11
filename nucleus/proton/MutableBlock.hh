@@ -9,6 +9,7 @@
 # include <nucleus/neutron/Component.hh>
 
 # include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
 
 namespace nucleus
 {
@@ -44,6 +45,10 @@ namespace nucleus
       //
     public:
       MutableBlock(); /// XXX[to deserialization]
+
+      ELLE_SERIALIZE_CONSTRUCT(MutableBlock, Block)
+      {}
+
       MutableBlock(Network const network,
                    Family const family,
                    neutron::Component const component,

@@ -1,13 +1,14 @@
 #ifndef NUCLEUS_PROTON_BLOCK_HH
 # define NUCLEUS_PROTON_BLOCK_HH
 
-# include <elle/serialize/Serializable.hh>
+# include <elle/attribute.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Digest.hh>
-# include <elle/utility/Time.hh>
-# include <elle/attribute.hh>
 # include <elle/Printable.hh>
+# include <elle/utility/Time.hh>
+# include <elle/serialize/construct.hh>
+# include <elle/serialize/Serializable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
@@ -92,6 +93,8 @@ namespace nucleus
       `-------------*/
     public:
       Block(); // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT(Block)
+      {}
       Block(Network const network,
             Family const family,
             neutron::Component const component,

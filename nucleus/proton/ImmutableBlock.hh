@@ -25,6 +25,8 @@ namespace nucleus
       `-------------*/
     public:
       ImmutableBlock(); // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT(ImmutableBlock, Block)
+      {}
       ImmutableBlock(Network const& network,
                      Family const family,
                      neutron::Component const component,

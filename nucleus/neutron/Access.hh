@@ -41,6 +41,8 @@ namespace nucleus
       //
     public:
       Access(); // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT(Access, ContentHashBlock)
+      {}
       Access(proton::Network const& network,
              elle::cryptography::PublicKey const& creator_K);
 
