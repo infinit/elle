@@ -97,6 +97,7 @@ add_library(elle ${LINK_METHOD}
 
   serialize/ArchiveMode.cc
   serialize/Base64Archive.cc
+  serialize/extract.cc
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
 
