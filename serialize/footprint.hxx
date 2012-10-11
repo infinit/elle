@@ -24,17 +24,17 @@ namespace elle
         CounterStreamBuffer(): counter(0) {}
 
         virtual
-        elle::Buffer
+        elle::WeakBuffer
         write_buffer()
         {
-          return elle::Buffer{
+          return elle::WeakBuffer{
               _buf,
               sizeof(_buf) / sizeof(_buf[0])
           };
         }
 
         virtual
-        elle::Buffer
+        elle::WeakBuffer
         read_buffer()
         {
           assert("Should not be called");
