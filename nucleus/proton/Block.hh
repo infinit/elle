@@ -18,41 +18,6 @@
 
 # include <boost/noncopyable.hpp>
 
-// XXX remove this when design allows Serializable contract to be enforced
-# define __NPB_OARCHIVE(...)                                                  \
-  elle::serialize::Serializable<__VA_ARGS__>::OutputArchive                   \
-  /**/
-# define __NPB_IARCHIVE(...)                                                  \
-  elle::serialize::Serializable<__VA_ARGS__>::InputArchive                    \
-  /**/
-# define __NPB_ISTREAM(...)                                                   \
-  __NPB_IARCHIVE(__VA_ARGS__)::StreamType                                     \
-  /**/
-# define __NPB_OSTREAM(...)                                                   \
-  __NPB_OARCHIVE(__VA_ARGS__)::StreamType                                     \
-  /**/
-
-# define __NPB_DUMP_METHODS(oa, ia, os, is)                             \
-  virtual void serialize(oa&) const                                     \
-  { elle::unreachable(); }                                              \
-  virtual void deserialize(ia&)                                         \
-  { elle::unreachable(); }                                              \
-  virtual void serialize(os&, oa* = nullptr) const                      \
-  { elle::unreachable(); }                                              \
-  virtual void deserialize(is&, ia* = nullptr)                          \
-  { elle::unreachable(); }                                              \
-  /**/
-
-
-# define __NPB_BREAK_SERIALIZABLE_CONTRACT(...)                               \
-  __NPB_DUMP_METHODS(                                                         \
-      __NPB_OARCHIVE(__VA_ARGS__),                                            \
-      __NPB_IARCHIVE(__VA_ARGS__),                                            \
-      __NPB_OSTREAM(__VA_ARGS__),                                             \
-      __NPB_ISTREAM(__VA_ARGS__)                                              \
-  )                                                                           \
-  /**/
-
 namespace nucleus
 {
   namespace proton
@@ -117,9 +82,6 @@ namespace nucleus
       | Interfaces |
       `-----------*/
     public:
-      // XXX breaks serializable contract. Remove when Block can be an
-      // abstract class.
-      __NPB_BREAK_SERIALIZABLE_CONTRACT();
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Block);
       // dumpable
