@@ -3,7 +3,7 @@
 
 # include <string>
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 namespace elle
 {
@@ -27,7 +27,7 @@ namespace elle
       /// Convert any hexadecimal to a decoded binary data.
       void
       decode(std::string const& hexadecimal_string,
-             elle::utility::Buffer& binary_data);
+             elle::Buffer& binary_data);
 
     }
   }

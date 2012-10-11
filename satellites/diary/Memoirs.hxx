@@ -1,7 +1,7 @@
 #ifndef SATELLITES_DIARY_MEMOIRS_HXX
 # define SATELLITES_DIARY_MEMOIRS_HXX
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 ELLE_SERIALIZE_SIMPLE(satellite::Memoirs,
                       archive,

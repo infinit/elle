@@ -70,7 +70,7 @@ namespace elle
       /// symmetric key.
       ///
       Status
-      Decrypt(Code const& in, elle::utility::Buffer& out) const;
+      Decrypt(Code const& in, elle::Buffer& out) const;
       template<typename T> Status
       Decrypt(Code const& in, T& out) const;
 
@@ -91,7 +91,7 @@ namespace elle
       /// secret key with the symmetrically-encrypted data.
       ///
       Status
-      Encrypt(elle::utility::WeakBuffer const& in,
+      Encrypt(elle::WeakBuffer const& in,
               Code& out) const;
       template<typename T> Status
       Encrypt(T const& in,
@@ -100,7 +100,7 @@ namespace elle
     public:
       /// Returns a signature of the given buffer.
       Signature
-      sign(elle::utility::WeakBuffer const& plain) const;
+      sign(elle::WeakBuffer const& plain) const;
       /// Returns a signature of any given type. Note that the given compound
       /// must be serializable.
       template <typename T>

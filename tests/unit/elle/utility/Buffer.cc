@@ -1,10 +1,10 @@
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <iostream>
 
 int main()
 {
-  elle::utility::Buffer b;
+  elle::Buffer b;
     {
       int i = 32;
       std::string s = "Bite";

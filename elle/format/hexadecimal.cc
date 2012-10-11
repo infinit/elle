@@ -43,7 +43,7 @@ namespace elle
   /**/
       void
       decode(std::string const& hexadecimal_string,
-             elle::utility::Buffer& binary_data)
+             elle::Buffer& binary_data)
       {
         char const* src = hexadecimal_string.c_str();
         size_t src_size = hexadecimal_string.size();

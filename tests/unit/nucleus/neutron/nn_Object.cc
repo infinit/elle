@@ -3,7 +3,7 @@
 #include <elle/Elle.hh>
 #include <elle/print.hh>
 #include <elle/cryptography/KeyPair.hh>
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
@@ -31,7 +31,7 @@ int main()
   static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
   elle::print("unique string:", unique);
 
-  elle::utility::Buffer buf;
+  elle::Buffer buf;
   buf.writer() << blk;
 
     {

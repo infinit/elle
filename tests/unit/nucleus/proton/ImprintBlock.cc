@@ -2,7 +2,7 @@
 
 #include <elle/Elle.hh>
 #include <elle/cryptography/KeyPair.hh>
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
@@ -28,7 +28,7 @@ void test()
 
       blk.validate(addr);
 
-      elle::utility::Buffer buf;
+      elle::Buffer buf;
 
         {
           auto writer = buf.writer();

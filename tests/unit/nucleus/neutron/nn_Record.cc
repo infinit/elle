@@ -2,7 +2,7 @@
 
 #include <elle/Elle.hh>
 #include <elle/print.hh>
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <nucleus/neutron/Record.hh>
 
@@ -12,7 +12,7 @@ int main()
 {
   CHECK(elle::Elle::Initialize());
 
-  elle::utility::Buffer buf;
+  elle::Buffer buf;
 
   buf.writer() << nucleus::neutron::Record::Null;
 

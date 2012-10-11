@@ -40,7 +40,7 @@ namespace elle
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::standalone::Region)
 

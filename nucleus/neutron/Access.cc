@@ -3,7 +3,7 @@
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Subject.hh>
 
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/idiom/Open.hh>
 
@@ -238,7 +238,7 @@ namespace nucleus
     ///
     elle::Status Access::Fingerprint(elle::cryptography::Digest& digest) const
     {
-      elle::utility::Buffer buffer;
+      elle::Buffer buffer;
 
       try
         {

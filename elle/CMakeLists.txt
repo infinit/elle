@@ -72,7 +72,6 @@ add_library(elle ${LINK_METHOD}
   os/getenv.cc
   os/path.cc
 
-  utility/Buffer.cc
   utility/Duration.cc
   utility/Factory.cc
   #utility/HTTP.cc

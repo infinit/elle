@@ -282,10 +282,10 @@ namespace hole
 
     // We check if contents are the same.
     {
-      elle::utility::Buffer b1;
+      elle::Buffer b1;
       b1.writer() << block;
 
-      elle::utility::Buffer b2;
+      elle::Buffer b2;
       b2.writer() << *current;
 
       /// We need to choose arbitrarly one block as the latest. For that we

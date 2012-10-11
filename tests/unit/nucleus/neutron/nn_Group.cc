@@ -80,7 +80,7 @@ void test()
   ELLE_TRACE("Bind the group block");
   nucleus::proton::Address group_address(group.bind());
 
-  elle::utility::Buffer buffer;
+  elle::Buffer buffer;
 
   ELLE_TRACE("Serialize the group and ensemble blocks")
     {
