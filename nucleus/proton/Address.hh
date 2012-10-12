@@ -3,6 +3,7 @@
 
 # include <elle/cryptography/Digest.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialize/construct.hh>
 # include <elle/Printable.hh>
 
 # include <nucleus/proton/Family.hh>
