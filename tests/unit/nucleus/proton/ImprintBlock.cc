@@ -3,11 +3,28 @@
 #include <elle/Elle.hh>
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/Buffer.hh>
+#include <elle/serialize/Serializer.hh>
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 
-#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
+#define CHECK(call)                                                     \
+  if (call != elle::Status::Ok) { show(); assert(false); } else
+
+#define TEST_SERIALIZE_FINALIZE(_type_)                                 \
+  class _type_ ## Final:                                                \
+    public _type_,                                                      \
+    public elle::serialize::SerializableMixin<_type_ ## Final>          \
+  {                                                                     \
+  };                                                                    \
+                                                                        \
+  ELLE_SERIALIZE_SIMPLE(_type_ ## Final,                                \
+                        archive,                                        \
+                        value,                                          \
+                        version)                                        \
+  {                                                                     \
+    enforce(version == 0);                                              \
+  }
 
 void test()
 {
