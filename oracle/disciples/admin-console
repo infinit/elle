@@ -156,8 +156,16 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
             print("Cannot connect to %s:%d" % (host, port))
         self._update_prompt()
 
-    def _users_printer(self, record):
-        print(record)
+    def _users_printer(self, user):
+        print('%s <%s> (_id=%s)' % (user['fullname'], user['email'], user['_id']))
+        print('\t- has identity:', user['identity'] is not None)
+        print('\t- accounts:')
+        for account in user['accounts']:
+            print('\t\t* %s (type=%s)' % (account['id'], account['type']))
+        print('\t- networks:')
+        for network in user['networks']:
+            print('\t\t* %s' % network)
+
     def _networks_printer(self, network):
         print('%s (%s)' % (network['name'], network['_id']))
         print('\t- owner: %s' % network['owner'])
@@ -165,12 +173,13 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
         print('\t- has root block:', network['root_block'] is not None)
         print('\t- has root address:', network['root_address'] is not None)
         print('\t- has descriptor:', network['descriptor'] is not None)
-        print('\t- devices:')
-        for id_ in network['devices']:
+        print('\t- nodes:')
+        for id_ in network['nodes']:
             print('\t\t* %s' % id_)
         print('\t- users:')
         for id_ in network['users']:
             print('\t\t* %s' % id_)
+
 
     def _devices_printer(self, device):
         print('%s (%s)' % (device['name'], device['_id']))

@@ -8,7 +8,9 @@
 #include <elle/io/Piece.hh>
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/os/path.hh>
 #include <elle/standalone/Log.hh>
+#include <elle/log.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Subject.hh>
@@ -20,9 +22,7 @@
 namespace lune
 {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+  ELLE_LOG_COMPONENT("infinit.lune.Descriptor");
 
   ///
   /// this string defines the descriptor files extension.
@@ -47,9 +47,10 @@ namespace lune
 
   Descriptor::Descriptor(elle::String const& network)
   {
-    if (lune::Descriptor::exists(network) == false)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "this network does not seem to exist");
+    ELLE_TRACE("Creating descriptor of network %s in %s",
+               network, this->_path(network));
+    if (Descriptor::exists(network) == false)
+      throw elle::Exception("this network does not seem to exist");
     this->load(this->_path(network));
     this->validate(Infinit::Authority);
   }
@@ -169,7 +170,9 @@ namespace lune
   elle::Boolean
   Descriptor::exists(elle::String const& network)
   {
-    return (elle::concept::Fileable<>::exists(Descriptor::_path(network)));
+    return elle::os::path::exists(
+        Descriptor::_path(network).string()
+    );
   }
 
 //

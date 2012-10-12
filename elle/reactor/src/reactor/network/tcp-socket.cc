@@ -1,6 +1,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <elle/log.hh>
+#include <elle/idiom/Close.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>

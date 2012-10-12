@@ -6,9 +6,7 @@
 #include <elle/serialize/BinaryArchive.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
 #include <elle/serialize/JSONArchive.hxx>
-#include <elle/utility/Buffer.hh>
-
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 using namespace elle::serialize;
 
@@ -24,7 +22,7 @@ void testLinear()
       ar << 42.01;
       ar << named("wqw, ", 'c');
       ar << '1';
-      ar << elle::utility::Buffer((elle::Byte const*)"pif", 3);
+      ar << elle::Buffer((elle::Byte const*)"pif", 3);
     }
 
   //std::cout << ss.str() << std::endl;
@@ -35,7 +33,7 @@ void testLinear()
       float float_;
       double double_;
       char char_;
-      elle::utility::Buffer buffer_;
+      elle::Buffer buffer_;
 
       ar >> named("pif", int_);
       assert(int_ == 12);
@@ -50,7 +48,7 @@ void testLinear()
       ar >> char_;
       assert(char_ == '1');
       ar >> buffer_;
-      assert(std::string((char const*)buffer_.Contents(), buffer_.Size()) == "pif");
+      assert(std::string((char const*)buffer_.contents(), buffer_.size()) == "pif");
     }
 }
 

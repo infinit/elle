@@ -88,6 +88,8 @@ namespace hole
                                    str(fmt % descriptor.meta().model().type));
         }
       }
+
+    elle::unreachable();
   }
 
   /*-------------.
@@ -280,11 +282,11 @@ namespace hole
 
     // We check if contents are the same.
     {
-      elle::utility::Buffer b1;
-      b1.Writer() << block;
+      elle::Buffer b1;
+      b1.writer() << block;
 
-      elle::utility::Buffer b2;
-      b2.Writer() << *current;
+      elle::Buffer b2;
+      b2.writer() << *current;
 
       /// We need to choose arbitrarly one block as the latest. For that we
       /// decide to compare their content, so we got the same result on

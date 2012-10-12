@@ -19,7 +19,8 @@ namespace plasma
     struct Response
     {
       bool success;
-      std::string error;
+      int error_code;
+      std::string error_details;
     };
 
     struct LoginResponse : Response
@@ -242,4 +243,3 @@ namespace plasma
 
 
 #endif
-

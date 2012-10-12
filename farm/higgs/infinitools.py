@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-# -*- python -*-
+# -*- encoding: utf-8 -*-
 
 import os
 import subprocess as sp
+
+from collections import OrderedDict
 
 def run_cmd(cmd, stdin=None):
     p = None
@@ -32,7 +34,7 @@ def render_mail_template(stats, templatefile):
     import moody
     with open(templatefile, "r") as f:
         template = f.read()
-        result = moody.render(template, it=1, **stats)
+        result = moody.render(template, it=1, dict=stats, **stats)
         return result
 
 if __name__ ==  "__main__":

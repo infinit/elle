@@ -32,11 +32,6 @@ namespace elle
     typedef JSONArchive<ArchiveMode::input>         InputJSONArchive;
     typedef JSONArchive<ArchiveMode::output>        OutputJSONArchive;
 
-    template<ArchiveMode mode>
-    class BufferArchive;
-    typedef BufferArchive<ArchiveMode::Input>       InputBufferArchive;
-    typedef BufferArchive<ArchiveMode::Output>      OutputBufferArchive;
-
     template<typename T>
     struct Serializer;
 

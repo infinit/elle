@@ -5,5 +5,5 @@ file(GLOB gap_srcs
 
 add_library(gap SHARED ${gap_srcs})
 
-target_link_libraries(gap LINK_PRIVATE ${INFINIT_LIBRARIES})
+target_link_libraries(gap LINK_PRIVATE ${INFINIT_LIBRARIES} ${QT_LIBRARIES})
 add_subdirectory(python)

@@ -59,12 +59,12 @@ static CGImageRef pinImage() {
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         
 		//set a background color
-		color = CGColorCreate(colorSpace, fillComponents);
+		color = CGColorCreate(colorSpace, (const CGFloat*)fillComponents);
 		[placeHolderLayer setBackgroundColor:color];
 		CFRelease(color);
 		
 		//set a stroke color
-		color = CGColorCreate(colorSpace, strokeComponents);
+		color = CGColorCreate(colorSpace, (const CGFloat*)strokeComponents);
 		[placeHolderLayer setBorderColor:color];
 		CFRelease(color);
         
@@ -151,11 +151,11 @@ static CGImageRef pinImage() {
         
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 		
-		color = CGColorCreate(colorSpace, fillComponents);
+		color = CGColorCreate(colorSpace, (const CGFloat*)fillComponents);
 		[photoBackgroundLayer setBackgroundColor:color];
 		CFRelease(color);
 		
-		color = CGColorCreate(colorSpace, strokeComponents);
+		color = CGColorCreate(colorSpace, (const CGFloat*)strokeComponents);
 		[photoBackgroundLayer setBorderColor:color];
 		CFRelease(color);
         
@@ -199,8 +199,7 @@ static CGImageRef pinImage() {
 		imageFrame.origin.y = container.origin.y;
 		imageFrame.size.width = imageFrame.size.height * aspectRatio;
 		imageFrame.origin.x = container.origin.x + (container.size.width - imageFrame.size.width)*0.5;
-	}
-	else {
+	} else {
 		imageFrame.size.width = container.size.width;
 		imageFrame.origin.x = container.origin.x;
 		imageFrame.size.height = imageFrame.size.width / aspectRatio;

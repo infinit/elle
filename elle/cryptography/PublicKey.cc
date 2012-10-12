@@ -6,8 +6,6 @@
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/serialize/BufferArchive.hh>
-
 #include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Open.hh>
@@ -172,7 +170,7 @@ namespace elle
       return Status::Ok;
     }
 
-    Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
+    Status  PublicKey::Encrypt(elle::WeakBuffer const& buffer,
                                Code&                            code) const
     {
       SecretKey         secret;
@@ -196,13 +194,13 @@ namespace elle
       // (iii)
       {
         // XXX secret_buf should be filled with zeros at the end
-        elle::utility::Buffer secret_buf;
+        elle::Buffer secret_buf;
         size_t                size;
 
         try
           {
-            secret_buf.Writer() << secret;
-            assert(secret_buf.Size() > 0);
+            secret_buf.writer() << secret;
+            assert(secret_buf.size() > 0);
           }
         catch (std::runtime_error const& err)
           {
@@ -216,8 +214,8 @@ namespace elle
               this->_contexts.encrypt,
               nullptr,
               &size,
-              secret_buf.Contents(),
-              secret_buf.Size()) <= 0)
+              secret_buf.contents(),
+              secret_buf.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // allocate memory so the key can receive the upcoming
@@ -231,9 +229,9 @@ namespace elle
               this->_contexts.encrypt,
               reinterpret_cast<unsigned char*>(key.region.contents),
               &size,
-              reinterpret_cast<const unsigned char*>(secret_buf.Contents()),
-              secret_buf.Size()) <= 0)
-          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+              reinterpret_cast<const unsigned char*>(secret_buf.contents()),
+              secret_buf.size()) <= 0)
+          escape("key has size %lu, data has size %lu: %s", size, secret_buf.size(), ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
         key.region.size = size;
@@ -241,11 +239,11 @@ namespace elle
 
       // (iv)
       {
-        elle::utility::Buffer result_buf;
+        elle::Buffer result_buf;
 
         try
           {
-            result_buf.Writer() << key << data;
+            result_buf.writer() << key << data;
           }
         catch (std::exception const& err)
           {
@@ -258,8 +256,8 @@ namespace elle
 
         // XXX this copy is not needed
         // duplicate the archive's content.
-        if (code.region.Duplicate(result_buf.Contents(),
-                                  result_buf.Size()) == Status::Error)
+        if (code.region.Duplicate(result_buf.contents(),
+                                  result_buf.size()) == Status::Error)
           escape("unable to duplicate the archive's content");
       }
 
@@ -267,7 +265,7 @@ namespace elle
     }
 
     Status PublicKey::Verify(const Signature&                 signature,
-                             elle::utility::WeakBuffer const& buffer) const
+                             elle::WeakBuffer const& buffer) const
     {
       Digest            digest;
 
@@ -287,7 +285,7 @@ namespace elle
       return Status::Ok;
     }
 
-    Status PublicKey::Decrypt(Code const& in, elle::utility::Buffer& out) const
+    Status PublicKey::Decrypt(Code const& in, elle::Buffer& out) const
     {
       SecretKey         secret;
 
@@ -297,8 +295,8 @@ namespace elle
       // (i)
       try
         {
-          elle::utility::WeakBuffer input_buffer(in.region.contents, in.region.size);
-          input_buffer.Reader() >> key >> data;
+          elle::WeakBuffer input_buffer(in.region.contents, in.region.size);
+          input_buffer.reader() >> key >> data;
         }
       catch (std::exception const& err)
         {
@@ -306,7 +304,7 @@ namespace elle
             "unable to extract the asymetrically-encrypted secret key "
             "and the symetrically-encrypted data: %s",
             err.what()
-                 );
+          );
         }
 
       // (ii)
@@ -322,18 +320,18 @@ namespace elle
               key.region.size) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
-            buf.Size(size);
+            buf.size(size);
           }
         catch (std::exception const& err)
           {
             escape("unable to allocate the required memory: %s", err.what());
           }
 
-        auto buf_pair = buf.Release();
+        auto buf_pair = buf.release();
 
         // perform the decrypt operation.
         //
@@ -353,7 +351,7 @@ namespace elle
 
         try
           {
-            elle::utility::Buffer(std::move(buf_pair)).Reader() >> secret;
+            elle::Buffer(std::move(buf_pair)).reader() >> secret;
           }
         catch (std::exception const& err)
           {

@@ -1,5 +1,5 @@
 
-link_libraries(${INFINIT_LIBRARIES})
+#link_libraries(${INFINIT_LIBRARIES})
 
 add_subdirectory(access)
 add_subdirectory(authority)

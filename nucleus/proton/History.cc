@@ -5,7 +5,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 

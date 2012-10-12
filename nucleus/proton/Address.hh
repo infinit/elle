@@ -65,6 +65,7 @@ namespace nucleus
       //
     public:
       Address(); // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT(Address) {}
       Address(Type const type);
       template <typename... T>
       Address(Network const& network,

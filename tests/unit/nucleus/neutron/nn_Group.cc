@@ -80,11 +80,11 @@ void test()
   ELLE_TRACE("Bind the group block");
   nucleus::proton::Address group_address(group.bind());
 
-  elle::utility::Buffer buffer;
+  elle::Buffer buffer;
 
   ELLE_TRACE("Serialize the group and ensemble blocks")
     {
-      buffer.Writer() << group << ensemble;
+      buffer.writer() << group << ensemble;
     }
   {
   nucleus::neutron::Group g;
@@ -92,7 +92,7 @@ void test()
 
   ELLE_TRACE("Deserialize the group and ensemble blocks")
     {
-      buffer.Reader() >> g >> e;
+      buffer.reader() >> g >> e;
     }
 
   ELLE_TRACE("Validate the group")

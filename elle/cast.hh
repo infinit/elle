@@ -8,6 +8,8 @@ namespace elle
   template <typename T>
   struct cast
   {
+
+    // XXX move should be explicit, this specialization should not be used.
     template <typename U>
     static std::unique_ptr<T>
     runtime(std::unique_ptr<U>& p)

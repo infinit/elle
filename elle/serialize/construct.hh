@@ -83,7 +83,12 @@
 # define ELLE_SERIALIZE_CONSTRUCT_DECL(__T)                                   \
   template <typename Archive>                                                 \
   explicit                                                                    \
-  __T(Archive& archive):                                                      \
+  __T(Archive&& archive,                                                      \
+      typename std::enable_if<                                                \
+          std::remove_reference<Archive>::type::mode ==                       \
+          elle::serialize::ArchiveMode::input                                 \
+        , bool                                                                \
+      >::type = false):                                                       \
     __T{elle::serialize::no_init}                                             \
   {                                                                           \
     archive & *this;                                                          \

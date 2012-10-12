@@ -11,7 +11,7 @@
 #import <syslog.h>
 #import <launch.h>
 
-void SIGTERM_handler(const int sigid)
+/*void SIGTERM_handler(const int sigid)
 {
 	CFRunLoopRef rl = [[NSRunLoop currentRunLoop] getCFRunLoop];
 	if (rl == NULL) {
@@ -20,7 +20,7 @@ void SIGTERM_handler(const int sigid)
 		CFRunLoopStop(rl);
 		exit(0);
 	}
-}
+}*/
 
 
 int main (int argc, const char * argv[])
@@ -29,7 +29,7 @@ int main (int argc, const char * argv[])
         
        syslog(LOG_NOTICE, "Nurse helper launched (uid: %d, euid: %d, pid: %d)", getuid(), geteuid(), getpid());
        
-       signal(SIGTERM, (sig_t)SIGTERM_handler);
+       //signal(SIGTERM, (sig_t)SIGTERM_handler);
        
        launch_data_t req = launch_data_new_string(LAUNCH_KEY_CHECKIN);
        launch_data_t resp = launch_msg(req);

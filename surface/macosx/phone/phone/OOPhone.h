@@ -43,8 +43,6 @@ extern NSString *OOUpdateProgessChangedNotification;
               performSelector:(SEL)arg2
                     forObject:(id)arg3;
 
-- (void)update;
-
 - (void)getUserNetworksAndPerformSelector:(SEL)arg1
                                 forObject:(id)arg2;
 

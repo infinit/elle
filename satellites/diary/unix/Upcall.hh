@@ -3,7 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/idiom/Open.hh>
 
@@ -79,8 +79,8 @@ namespace satellite
       Operation         operation;
       elle::Integer32   result;
     private:
-      elle::utility::Buffer _inputs;
-      elle::utility::Buffer _outputs;
+      elle::Buffer _inputs;
+      elle::Buffer _outputs;
       ELLE_SERIALIZE_FRIEND_FOR(Upcall);
     };
 

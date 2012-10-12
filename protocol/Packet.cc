@@ -52,7 +52,9 @@ namespace infinit
           }
       }
 
-      virtual elle::Buffer write_buffer()
+      virtual
+      elle::WeakBuffer
+      write_buffer()
       {
         if (_mode == Mode::fresh)
           {
@@ -63,8 +65,8 @@ namespace infinit
         // FIXME: Make buffer grow size parametrizable.
         static const elle::Size growth = 1024;
         _size += growth;
-        _packet._data = reinterpret_cast<Packet::Byte*>(realloc(_packet._data, _size));
-        return elle::Buffer(_packet._data + _size - growth, growth);
+        _packet._data = reinterpret_cast<Packet::Byte*>(realloc(_packet._data, _size)); // XXX check realloc !
+        return elle::WeakBuffer(_packet._data + _size - growth, growth);
       }
 
       void flush(unsigned int size)
@@ -72,20 +74,22 @@ namespace infinit
         _packet._data_size += size;
       }
 
-      virtual elle::Buffer read_buffer()
+      virtual
+      elle::WeakBuffer
+      read_buffer()
       {
         switch (_mode)
           {
             case Mode::eof:
-              return elle::Buffer(0, 0);
+              return elle::WeakBuffer(nullptr, 0);
             case Mode::fresh:
               _mode = Mode::eof;
               if (_data)
-                return elle::Buffer(_data, _packet._data_size - (_data - _packet._data));
+                return elle::WeakBuffer(_data, _packet._data_size - (_data - _packet._data));
               else
                 {
                   assert(_packet._data);
-                  return elle::Buffer(_packet._data, _packet._data_size);
+                  return elle::WeakBuffer(_packet._data, _packet._data_size);
                 }
             default:
               std::abort();

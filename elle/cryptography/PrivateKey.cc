@@ -213,7 +213,7 @@ namespace elle
     }
 
     Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
-                               elle::utility::Buffer&             out) const
+                               elle::Buffer&                      out) const
     {
       SecretKey         secret;
       Code              key;
@@ -222,10 +222,10 @@ namespace elle
       // (i)
       try
         {
-          elle::utility::WeakBuffer(
+          elle::WeakBuffer(
             in.region.contents,
             in.region.size
-                                    ).Reader() >> key >> data;
+          ).reader() >> key >> data;
         }
       catch (std::runtime_error const& err)
         {
@@ -233,7 +233,7 @@ namespace elle
             "unable to extract the asymetrically-encrypted secret key "
             "and the symetrically-encrypted data: %s",
             err.what()
-                 );
+          );
         }
 
       // (ii)
@@ -249,12 +249,12 @@ namespace elle
               key.region.size) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        elle::utility::Buffer buf(size);
+        elle::Buffer buf(size);
 
         // perform the decrypt operation.
         if (::EVP_PKEY_decrypt(
               this->_contexts.decrypt,
-              buf.MutableContents(),
+              buf.mutable_contents(),
               &size,
               key.region.contents,
               key.region.size) <= 0)
@@ -262,14 +262,14 @@ namespace elle
 
         try
           {
-            buf.Reader() >> secret;
+            buf.reader() >> secret;
           }
         catch (std::exception const& err)
           {
             escape(
               "unable to extract the secret key from the archive: %s",
               err.what()
-                   );
+            );
           }
       }
 
@@ -284,7 +284,7 @@ namespace elle
     }
 
     Signature
-    PrivateKey::sign(elle::utility::WeakBuffer const&  plain) const
+    PrivateKey::sign(elle::WeakBuffer const&  plain) const
     {
       Signature signature;
       Digest digest;
@@ -322,7 +322,7 @@ namespace elle
       return (signature);
     }
 
-    Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
+    Status PrivateKey::Encrypt(elle::WeakBuffer const& in,
                                Code&                            out) const
     {
       SecretKey         secret;
@@ -346,11 +346,11 @@ namespace elle
       // (iii)
       {
         size_t                  size;
-        elle::utility::Buffer   buf;
+        elle::Buffer   buf;
 
         try
           {
-            buf.Writer() << secret;
+            buf.writer() << secret;
           }
         catch (std::exception const& err)
           {
@@ -362,8 +362,8 @@ namespace elle
               this->_contexts.encrypt,
               nullptr,
               &size,
-              buf.Contents(),
-              buf.Size()) <= 0)
+              buf.contents(),
+              buf.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // allocate memory so the key can receive the upcoming
@@ -380,8 +380,8 @@ namespace elle
               this->_contexts.encrypt,
               key.region.contents,
               &size,
-              buf.Contents(),
-              buf.Size()) <= 0)
+              buf.contents(),
+              buf.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
@@ -390,11 +390,11 @@ namespace elle
 
       // (iv)
       {
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
-            buf.Writer() << key << data;
+            buf.writer() << key << data;
           }
         catch (std::exception const& err)
           {
@@ -408,8 +408,8 @@ namespace elle
 
         // duplicate the archive's content.
         // XXX this copy is not necessary
-        if (out.region.Duplicate(buf.Contents(),
-                                 buf.Size()) == Status::Error)
+        if (out.region.Duplicate(buf.contents(),
+                                 buf.size()) == Status::Error)
           escape("unable to duplicate the archive's content");
       }
 

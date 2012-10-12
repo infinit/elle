@@ -2,7 +2,7 @@
 
 #include <elle/Elle.hh>
 #include <elle/cryptography/KeyPair.hh>
-#include <elle/utility/Buffer.hh>
+#include <elle/Buffer.hh>
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
@@ -28,16 +28,16 @@ void test()
 
       blk.validate(addr);
 
-      elle::utility::Buffer buf;
+      elle::Buffer buf;
 
         {
-          auto writer = buf.Writer();
+          auto writer = buf.writer();
 
           writer << elle::serialize::concrete(blk);
         }
 
         {
-          auto reader = buf.Reader();
+          auto reader = buf.reader();
 
           nucleus::proton::ImprintBlock blk_copy;
 

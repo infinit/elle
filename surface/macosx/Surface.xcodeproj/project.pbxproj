@@ -19,7 +19,6 @@
 		1C5EACBC15F60A1A0027FCD3 /* update_dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 1C5EACBB15F60A1A0027FCD3 /* update_dsa_pub.pem */; };
 		1C695E1E15CA837300533738 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB3FF8215946D2400CFDBA7 /* Phone.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		1C74C3261598713B009210AC /* OOSetupWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C74C3251598713B009210AC /* OOSetupWindowController.m */; };
-		1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C7862C51566919800F7D2F5 /* infinite-app-icon.icns */; };
 		1C7863401566919800F7D2F5 /* 19px-active.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863011566919800F7D2F5 /* 19px-active.png */; };
 		1C7863411566919800F7D2F5 /* 19px-inactive.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863021566919800F7D2F5 /* 19px-inactive.png */; };
 		1C7863421566919800F7D2F5 /* 19px-notification-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863031566919800F7D2F5 /* 19px-notification-blue.png */; };
@@ -68,7 +67,6 @@
 		1CD5C46C1552EC9200556CC9 /* pref_tab_stores.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CD5C4621552EC9200556CC9 /* pref_tab_stores.png */; };
 		1CDA370A15D00A190078C963 /* fuse4x.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDA370915D00A170078C963 /* fuse4x.bundle */; };
 		1CDA370B15D00CEA0078C963 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
-		1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CDABDA115502B3200F8097E /* infinite-app-icon.icns */; };
 		1CDFFABE15F4B0DD00904115 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
 		1CDFFABF15F4B0F100904115 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CDFFABA15F4A9EC00904115 /* Sparkle.framework */; };
 		1CF9868215EB8E700095C264 /* ResourceRules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CF9868115EB8E700095C264 /* ResourceRules.plist */; };
@@ -237,7 +235,7 @@
 		1CD2BB2615CFD3920081FE59 /* OOEnvironmentVar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOEnvironmentVar.h; sourceTree = "<group>"; };
 		1CD2BB2715CFD3920081FE59 /* OOEnvironmentVar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOEnvironmentVar.m; sourceTree = "<group>"; };
 		1CD2BBCD15D0034F0081FE59 /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
-		1CD332EA1553E13F00930842 /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "infinite-app-icon.icns"; sourceTree = "<group>"; };
+		1CD332EA1553E13F00930842 /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "infinite-app-icon.icns"; path = "../../infinite-app-icon.icns"; sourceTree = "<group>"; };
 		1CD5C44B1552A80C00556CC9 /* OOPreferencesWindows.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OOPreferencesWindows.xib; sourceTree = "<group>"; };
 		1CD5C44E1552AFCB00556CC9 /* OOPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOPreferencesWindowController.m; sourceTree = "<group>"; };
 		1CD5C4591552EC9200556CC9 /* pref_tab_conversions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pref_tab_conversions.png; sourceTree = "<group>"; };
@@ -251,7 +249,6 @@
 		1CD5C4611552EC9200556CC9 /* pref_tab_sharing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pref_tab_sharing.png; sourceTree = "<group>"; };
 		1CD5C4621552EC9200556CC9 /* pref_tab_stores.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pref_tab_stores.png; sourceTree = "<group>"; };
 		1CDA370915D00A170078C963 /* fuse4x.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = fuse4x.bundle; sourceTree = "<group>"; };
-		1CDABDA115502B3200F8097E /* infinite-app-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "infinite-app-icon.icns"; path = "icons/infinite-app-icon.icns"; sourceTree = "<group>"; };
 		1CDFFABA15F4A9EC00904115 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		1CF9868115EB8E700095C264 /* ResourceRules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ResourceRules.plist; sourceTree = "<group>"; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -311,12 +308,12 @@
 		1C45EE4F152AECAB00EFB356 /* ressources */ = {
 			isa = PBXGroup;
 			children = (
+				1CD332EA1553E13F00930842 /* infinite-app-icon.icns */,
 				1C5EACBB15F60A1A0027FCD3 /* update_dsa_pub.pem */,
 				1CDA370915D00A170078C963 /* fuse4x.bundle */,
 				1C50F8F61574EE030082F57C /* setup */,
 				1C7862C41566919800F7D2F5 /* icons */,
 				1CD5C4581552EC9200556CC9 /* prefpane */,
-				1CDABDA115502B3200F8097E /* infinite-app-icon.icns */,
 			);
 			path = ressources;
 			sourceTree = "<group>";
@@ -484,7 +481,6 @@
 		36E9F8AB14FF7DE7000B9C12 = {
 			isa = PBXGroup;
 			children = (
-				1CD332EA1553E13F00930842 /* infinite-app-icon.icns */,
 				1CF9868115EB8E700095C264 /* ResourceRules.plist */,
 				1CD2BBCD15D0034F0081FE59 /* medecine.xcodeproj */,
 				1C4858F315B55C75003ED64A /* FinderPanel.xcodeproj */,
@@ -536,7 +532,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = OO;
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -638,7 +634,6 @@
 				1CC381F715669DB200EA4FAB /* 8.png in Resources */,
 				1CC381F815669DB200EA4FAB /* 9.png in Resources */,
 				1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */,
-				1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */,
 				1CD5C44C1552A80C00556CC9 /* OOPreferencesWindows.xib in Resources */,
 				1CD5C4631552EC9200556CC9 /* pref_tab_conversions.png in Resources */,
 				1CD5C4641552EC9200556CC9 /* pref_tab_disk_space.png in Resources */,
@@ -651,7 +646,6 @@
 				1CD5C46B1552EC9200556CC9 /* pref_tab_sharing.png in Resources */,
 				1CD5C46C1552EC9200556CC9 /* pref_tab_stores.png in Resources */,
 				1CD332EB1553E13F00930842 /* infinite-app-icon.icns in Resources */,
-				1C7863081566919800F7D2F5 /* infinite-app-icon.icns in Resources */,
 				1C7863401566919800F7D2F5 /* 19px-active.png in Resources */,
 				1C7863411566919800F7D2F5 /* 19px-inactive.png in Resources */,
 				1C7863421566919800F7D2F5 /* 19px-notification-blue.png in Resources */,
@@ -724,6 +718,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)/**",
@@ -743,7 +738,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;
@@ -757,6 +752,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_IDENTITY = "Developer ID Application: infinit.io";
 				CODE_SIGN_RESOURCE_RULES_PATH = ResourceRules.plist;
+				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -777,7 +773,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				SYMROOT = DerivedData;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;

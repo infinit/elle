@@ -6,7 +6,7 @@
 # include <elle/types.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/io/Dumpable.hh>
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 
 namespace satellite
@@ -27,7 +27,7 @@ namespace satellite
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // XXX
-    elle::utility::Buffer         archive;
+    elle::Buffer         archive;
     size_t                        offset;
   };
 

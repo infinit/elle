@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import copy
+import time
 import shutil
 import subprocess
 
@@ -33,17 +34,21 @@ class Infinit:
                         ext=ext)
                     );
         self.environ["INFINIT_HOME"] = home.home
+        self.pid = None
 
 
     def launch(self):
         self._infinit = subprocess.Popen([
-            "8infinit",
-            "-u", self.user,
-            "-n", self.network,
-            "-m", self.mountpoint
+                "8infinit",
+                "-u", self.user,
+                "-n", self.network,
+                "-m", self.mountpoint
             ],
-            #stderr=subprocess.PIPE,
-            env=self.environ)
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            env=self.environ
+        )
+        self.pid = self._infinit.pid
 
     def __enter__(self):
         self.launch()
@@ -53,18 +58,26 @@ class Infinit:
         self.stop()
 
     def stop(self):
+        print("Send SIGTERM to {0}".format(self.pid))
         self._infinit.terminate()
-        self.wait()
+        #self._infinit.send_signal(2)
+        i = 0
+        while self._infinit.poll() is None:
+            print("Still waiting (pid = {0})(i = {1})".format(self.pid, i))
+            time.sleep(1)
+            i += 1
+            if i == 10:
+                break
+
+        print("Finished polling")
         if self._infinit.returncode == None:
+            print("Sending SIGKILL to", self.pid)
             self._infinit.kill()
+            print("Waiting... (", self.pid, ")")
             self.wait()
 
     def wait(self):
         self._infinit.wait()
-
-    @property
-    def pid(self):
-        return self._infinit.pid
 
     @property
     def stderr(self):

@@ -5,31 +5,6 @@
 
 # include <elle/serialize/Serializer.hh>
 
-ELLE_SERIALIZE_SPLIT(::QHostAddress);
-
-ELLE_SERIALIZE_SPLIT_LOAD(::QHostAddress,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-  std::string host;
-  archive >> host;
-  value.setAddress(host.c_str());
-}
-
-ELLE_SERIALIZE_SPLIT_SAVE(::QHostAddress,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-
-  std::string host(value.toString().toStdString());
-
-  archive << host;
-}
-
 ELLE_SERIALIZE_SIMPLE(elle::network::Host,
                       archive,
                       value,

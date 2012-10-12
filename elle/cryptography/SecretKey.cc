@@ -108,7 +108,7 @@ namespace elle
     ///
     /// this method encrypts the given plain text.
     ///
-    Status SecretKey::Encrypt(elle::utility::WeakBuffer const&  in,
+    Status SecretKey::Encrypt(elle::WeakBuffer const&  in,
                               Cipher&                           cipher) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
@@ -156,7 +156,7 @@ namespace elle
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
                                 1 +
                                 sizeof (salt) +
-                                in.Size() +
+                                in.size() +
                                 capacity) == Status::Error)
         escape("unable to reserve memory for the cipher");
 
@@ -177,8 +177,8 @@ namespace elle
       if (::EVP_EncryptUpdate(&scope.context,
                               cipher.region.contents + cipher.region.size,
                               &size,
-                              in.Contents(),
-                              in.Size()) == 0)
+                              in.contents(),
+                              in.size()) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the cipher size.
@@ -200,7 +200,7 @@ namespace elle
     /// this method decrypts the given cipher.
     ///
     Status SecretKey::Decrypt(const Cipher&             cipher,
-                              elle::utility::Buffer&    out) const
+                              elle::Buffer&    out) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];
@@ -251,14 +251,14 @@ namespace elle
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the out buffer
-      out.Size(
+      out.size(
           cipher.region.size -
           (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
           capacity
       );
 
       if (::EVP_DecryptUpdate(&scope.context,
-                              out.MutableContents(),
+                              out.mutable_contents(),
                               &size,
                               cipher.region.contents +
                               sizeof (SecretKey::Magic) - 1 +
@@ -269,16 +269,16 @@ namespace elle
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
-      out.Size(out.Size() + size);
+      out.size(out.size() + size);
 
       // finalise the ciphering process.
       if (::EVP_DecryptFinal_ex(&scope.context,
-                                out.MutableContents() + size,
+                                out.mutable_contents() + size,
                                 &size) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
-      out.Size(out.Size() + size);
+      out.size(out.size() + size);
 
       return Status::Ok;
     }

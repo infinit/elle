@@ -2,6 +2,7 @@
 
 import os
 import sys
+import infinutils
 
 mnt1 = os.environ['MNT1']
 mnt2 = os.environ['MNT2']
@@ -30,7 +31,7 @@ def write_interlaced_slow(path1, path2):
 
 try:
     write_interlaced_slow(path1, path2)
-    check_convergence(path1, path2)
+    infinutils.check_convergence(path1, path2)
     print(write_interlaced_slow.__name__, "passes")
 except Exception as err:
     sys.exit("test '{0}' failed: {1}".format(write_interlaced_slow.__name__, str(err)))

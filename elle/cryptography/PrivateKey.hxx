@@ -3,8 +3,7 @@
 
 # include <elle/standalone/Report.hh>
 
-# include <elle/utility/Buffer.hh>
-# include <elle/serialize/BufferArchive.hh>
+# include <elle/Buffer.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -16,14 +15,14 @@ namespace elle
     template<typename T> Status
       PrivateKey::Decrypt(Code const& in, T& out) const
       {
-        elle::utility::Buffer out_buffer;
+        elle::Buffer out_buffer;
 
         if (this->Decrypt(in, out_buffer) == elle::Status::Error)
           escape("Cannot decrypt code");
 
         try
           {
-            out_buffer.Reader() >> out;
+            out_buffer.reader() >> out;
           }
         catch (std::exception const& err)
           {
@@ -37,15 +36,15 @@ namespace elle
       PrivateKey::Encrypt(T const& in, Code& out) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "explicit cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
-            buf.Writer() << in;
+            buf.writer() << in;
           }
         catch (std::exception const& err)
           {
@@ -53,7 +52,7 @@ namespace elle
           }
 
         return this->Encrypt(
-            elle::utility::WeakBuffer(buf),
+            elle::WeakBuffer(buf),
             out
         );
       }
@@ -62,13 +61,13 @@ namespace elle
     Signature
     PrivateKey::sign(T const& plain) const
     {
-      assert((!std::is_same<T, elle::utility::Buffer>::value));
+      assert((!std::is_same<T, elle::Buffer>::value));
 
-      elle::utility::Buffer buffer;
+      elle::Buffer buffer;
 
-      buffer.Writer() << plain;
+      buffer.writer() << plain;
 
-      return (this->sign(elle::utility::WeakBuffer(buffer)));
+      return (this->sign(elle::WeakBuffer(buffer)));
     }
 
   }

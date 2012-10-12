@@ -3,8 +3,7 @@
 
 # include <elle/standalone/Report.hh>
 
-# include <elle/utility/Buffer.hh>
-# include <elle/serialize/BufferArchive.hh>
+# include <elle/Buffer.hh>
 
 namespace elle
 {
@@ -15,15 +14,15 @@ namespace elle
       Status PublicKey::Encrypt(T const& in, Code& out) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "explicit cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
-            buf.Writer() << in;
+            buf.writer() << in;
           }
         catch (std::exception const& err)
           {
@@ -31,7 +30,7 @@ namespace elle
           }
 
         return this->Encrypt(
-            elle::utility::WeakBuffer(buf),
+            elle::WeakBuffer(buf),
             out
         );
       }
@@ -39,14 +38,14 @@ namespace elle
     template <typename T>
       Status PublicKey::Decrypt(Code const& in, T& out) const
       {
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         if (this->Decrypt(in, buf) == elle::Status::Error)
           escape("Cannot decrypt data");
 
         try
           {
-            buf.Reader() >> out;
+            buf.reader() >> out;
           }
         catch (std::exception const& err)
           {
@@ -60,15 +59,15 @@ namespace elle
       Status PublicKey::Verify(Signature const& signature, T const& any) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "explicit cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
 
         try
           {
-            buf.Writer() << any;
+            buf.writer() << any;
           }
         catch (std::exception const& err)
           {
@@ -77,7 +76,7 @@ namespace elle
 
         return this->Verify(
             signature,
-            elle::utility::WeakBuffer(buf)
+            elle::WeakBuffer(buf)
         );
       }
   }

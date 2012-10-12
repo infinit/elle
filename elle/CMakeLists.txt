@@ -72,8 +72,6 @@ add_library(elle ${LINK_METHOD}
   os/getenv.cc
   os/path.cc
 
-  utility/Buffer.cc
-  utility/BufferStream.cc
   utility/Duration.cc
   utility/Factory.cc
   #utility/HTTP.cc
@@ -99,9 +97,9 @@ add_library(elle ${LINK_METHOD}
 
   serialize/ArchiveMode.cc
   serialize/Base64Archive.cc
+  serialize/extract.cc
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
-  serialize/BufferArchive.cc
 
   Elle.cc
   print.cc

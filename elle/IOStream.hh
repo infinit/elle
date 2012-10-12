@@ -29,18 +29,41 @@ namespace elle
     StreamBuffer();
     ~StreamBuffer();
 
+  /// API to override.
   protected:
     friend class IOStream;
 
-    virtual elle::Buffer write_buffer() = 0;
-    virtual elle::Buffer read_buffer()  = 0;
-    virtual void   flush(unsigned int size);
+    /// The buffer where to write.
+    virtual
+    WeakBuffer
+    write_buffer() = 0;
 
-    virtual int underflow();
-    virtual int overflow(int c);
-    virtual int sync();
+    /// The buffer with the next available data.
+    virtual
+    WeakBuffer
+    read_buffer()  = 0;
+
+    /// Synchronize the write buffer to the underlying implementation.
+    virtual
+    void
+    flush(Size size);
+
+  /// std::streambuf interface.
+  protected:
+    virtual
+    int
+    underflow();
+
+    virtual
+    int
+    overflow(int c);
+
+    virtual
+    int
+    sync();
   };
 
+  /// Simple implementation of a streambuf with local buffers.
   class PlainStreamBuffer: public StreamBuffer
   {
   public:
@@ -53,9 +76,17 @@ namespace elle
     virtual Size read (char* buffer, Size size) = 0;
     virtual void write(char* buffer, Size size) = 0;
 
-    virtual Buffer write_buffer();
-    virtual Buffer read_buffer();
-    virtual void   flush(unsigned int size);
+    virtual
+    WeakBuffer
+    write_buffer();
+
+    virtual
+    WeakBuffer
+    read_buffer();
+
+    virtual
+    void
+    flush(unsigned int size);
 
   private:
     static const int _bufsize = 512;

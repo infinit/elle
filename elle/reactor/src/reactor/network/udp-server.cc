@@ -5,6 +5,7 @@
 #include <reactor/thread.hh>
 
 #include <elle/log.hh>
+#include <elle/idiom/Close.hh>
 
 ELLE_LOG_COMPONENT("Reactor.Network.UDPServer");
 

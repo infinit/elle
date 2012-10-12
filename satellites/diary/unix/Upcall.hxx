@@ -2,8 +2,7 @@
 # define DIARY_UNIX_UPCALL_HXX
 
 # include <elle/serialize/TupleSerializer.hxx>
-# include <elle/serialize/BufferArchive.hh>
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -94,7 +93,7 @@ namespace satellite
 
 # include <cassert>
 
-# include <elle/utility/Buffer.hh>
+# include <elle/Buffer.hh>
 
 ELLE_SERIALIZE_SIMPLE(satellite::unix::Upcall,
                       archive,

@@ -142,7 +142,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = OO;
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 367BCFC314FE6D4200B41298 /* Build configuration list for PBXProject "medecine" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -214,7 +214,7 @@
 				);
 				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SYMROOT = ../DerivedData;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
@@ -249,7 +249,7 @@
 				);
 				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SYMROOT = ../DerivedData;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";

@@ -241,18 +241,17 @@ add_dependencies(infinit dependencies)
 
 set(INFINIT_LIBRARIES
   etoile
-
-  hole
   nucleus
   lune
   nucleus # circular dependency with lune
-  hole # circular dependency with lune
 
+  hole
+  nucleus
   horizon
   ${INFINIT_PLATFORM_NO_ARCH}
   horizon  # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
-
-  etoile # circular dependency with horizon
+  etoile
+  nucleus # circular dependency with etoile
 
   metal
   agent

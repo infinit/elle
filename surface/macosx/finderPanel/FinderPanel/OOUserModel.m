@@ -14,6 +14,25 @@
 @synthesize image;
 @synthesize fullName;
 
+///
+/// Unused methods
+///
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    return nil;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+}
+
++ (NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard {
+    return nil;
+}
+
+///
+///
+///
+
 - (NSString*)imageRepresentationType {
 	return IKImageBrowserNSImageRepresentationType;
 }

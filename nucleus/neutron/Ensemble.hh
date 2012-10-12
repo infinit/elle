@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/cryptography/fwd.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
@@ -20,11 +19,7 @@ namespace nucleus
     /// group, known as the fellows.
     class Ensemble:
       public proton::ContentHashBlock,
-      public elle::serialize::SerializableMixin<Ensemble>,
-      public elle::serialize::SerializableMixin<
-        Ensemble,
-        elle::serialize::BufferArchive
-        >
+      public elle::serialize::SerializableMixin<Ensemble>
     {
       //
       // constants
@@ -108,7 +103,6 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Ensemble);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Ensemble, elle::serialize::BufferArchive);
 
       //
       // attributes

@@ -33,10 +33,7 @@ namespace nucleus
     template <typename T>
     class Contents:
       public proton::ContentHashBlock,
-      public elle::serialize::SerializableMixin<Contents<T>>,
-      public elle::serialize::SerializableMixin<
-        Contents<T>, elle::serialize::BufferArchive
-      >
+      public elle::serialize::SerializableMixin<Contents<T>>
     {
       //
       // constants
@@ -72,8 +69,6 @@ namespace nucleus
     public:
       // fileable
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>,
-                                          elle::serialize::BufferArchive);
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;

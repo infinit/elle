@@ -6,10 +6,8 @@
 # include <elle/cryptography/Plain.hh>
 # include <elle/cryptography/Digest.hh>
 
-# include <elle/utility/Buffer.hh>
-# include <elle/utility/BufferStream.hh>
+# include <elle/Buffer.hh>
 
-# include <elle/serialize/BufferArchive.hh>
 # include <elle/serialize/BaseArchive.hxx>
 
 # include <elle/standalone/Report.hh>
@@ -31,9 +29,9 @@ namespace elle
 
       try
         {
-          elle::utility::Buffer buffer;
-          buffer.Writer() << value;
-          Plain plain_text(buffer.Contents(), buffer.Size());
+          elle::Buffer buffer;
+          buffer.writer() << value;
+          Plain plain_text(buffer.contents(), buffer.size());
           return OneWay::Hash(plain_text, digest);
         }
       catch (std::exception const& err)

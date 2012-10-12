@@ -183,7 +183,7 @@ namespace satellite
 
       try
         {
-          elle::utility::WeakBuffer(
+          elle::WeakBuffer(
               this->archive.Contents() + this->offset,
               this->archive.Size() - this->offset
           ).Reader() >> upcall;

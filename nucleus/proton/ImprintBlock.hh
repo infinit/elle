@@ -1,9 +1,8 @@
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
 # define NUCLEUS_PROTON_IMPRINTBLOCK_HH
 
-# include <elle/types.hh>
-
 # include <elle/cryptography/PublicKey.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
@@ -39,6 +38,11 @@ namespace nucleus
       `-------------*/
     public:
       ImprintBlock(); // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT(ImprintBlock, MutableBlock)
+      {
+        this->_owner_subject = nullptr;
+      }
+
       ImprintBlock(Network const& network,
                    neutron::Component const component,
                    elle::cryptography::PublicKey const& creator_K);

@@ -3,8 +3,7 @@
 
 # include <elle/standalone/Report.hh>
 
-# include <elle/utility/Buffer.hh>
-# include <elle/serialize/BufferArchive.hh>
+# include <elle/Buffer.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -17,14 +16,14 @@ namespace elle
       SecretKey::Encrypt(T const& in, Cipher& out) const
       {
         static_assert(
-            !std::is_same<T, elle::utility::Buffer>::value,
+            !std::is_same<T, elle::Buffer>::value,
             "Explicitly cast to WeakBuffer needed"
         );
 
-        elle::utility::Buffer buf;
+        elle::Buffer buf;
         try
           {
-            buf.Writer() << in;
+            buf.writer() << in;
           }
         catch (std::exception const& err)
           {
@@ -32,7 +31,7 @@ namespace elle
           }
 
         return this->Encrypt(
-            elle::utility::WeakBuffer(buf),
+            elle::WeakBuffer(buf),
             out
         );
       }
@@ -40,14 +39,14 @@ namespace elle
     template<typename T> Status
       SecretKey::Decrypt(Cipher const& in, T& out) const
       {
-        elle::utility::Buffer buffer;
+        elle::Buffer buffer;
 
         if (this->Decrypt(in, buffer) == elle::Status::Error)
           escape("Cannot decrypt cipher");
 
         try
           {
-            buffer.Reader() >> out;
+            buffer.reader() >> out;
           }
         catch (std::exception const& err)
           {

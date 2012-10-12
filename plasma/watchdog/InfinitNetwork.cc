@@ -8,6 +8,7 @@
 #include <elle/log.hh>
 #include <elle/os/path.hh>
 #include <elle/io/Piece.hh>
+#include <elle/serialize/extract.hh>
 
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
@@ -222,22 +223,19 @@ void InfinitNetwork::_prepare_directory()
   LOG("Prepare network directory.");
 
   elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-  shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+  shelter.Complete(elle::io::Piece("%NETWORK%", this->_description._id));
+  ELLE_DEBUG("Shelter path == %s", shelter.string());
   hole::storage::Directory storage(shelter.string());
+  LOG("Built directory storage of %s", this->_description._id);
 
   assert(this->_description.root_block.size());
   assert(this->_description.descriptor.size());
 
-  lune::Descriptor descriptor(this->_description._id);
+  LOG("Create lune descriptor of %s", this->_description._id);
 
-  auto e = elle::Status::Error;
-  if (descriptor.Restore(this->_description.descriptor) == e)
-    {
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      throw std::runtime_error("Couldn't save the descriptor.");
-    }
+  using elle::serialize::from_string;
+
+  lune::Descriptor descriptor{from_string(_description.descriptor)};
 
   // XXX[pas forcement necessaire si le format n'a pas change entre
   //     la version du descriptor et celle d'Infinit. il faudrait
@@ -255,37 +253,23 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
+  LOG("Storing the descriptor of %s", this->_description._id);
   descriptor.store(this->_description._id);
 
-  nucleus::neutron::Object directory;
-
-  if (directory.Restore(this->_description.root_block) == e)
-    {
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      throw std::runtime_error("Couldn't store the root block.");
-    }
+  nucleus::neutron::Object directory{from_string(_description.root_block)};
 
   directory.store(storage.path(descriptor.meta().root()));
-
-  nucleus::neutron::Access access;
-  nucleus::proton::Address access_address;
-  if (access.Restore(this->_description.access_block) == e ||
-      access_address.Restore(this->_description.access_address) == e)
-    throw std::runtime_error("Couldn't store the access block");
-
-  access.store(storage.path(access_address));
-
-  nucleus::neutron::Group group;
-  nucleus::proton::Address group_address;
-  if (group.Restore(this->_description.group_block) == e ||
-      group_address.Restore(this->_description.group_address) == e)
-    throw std::runtime_error("Couldn't store the group block");
-
-  group.store(storage.path(group_address));
-
   LOG("Root block stored.");
+
+  nucleus::neutron::Access access{from_string(_description.access_block)};
+  nucleus::proton::Address access_address{from_string(_description.access_address)};
+  access.store(storage.path(access_address));
+  LOG("Access block stored.");
+
+  nucleus::neutron::Group group{from_string(_description.group_block)};
+  nucleus::proton::Address group_address{from_string(_description.group_address)};
+  group.store(storage.path(group_address));
+  LOG("Group block stored.");
 
   this->_register_device();
 }

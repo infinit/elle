@@ -152,6 +152,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
+# include <elle/idiom/Open.hh>
     embed(Host, _());
 
 //
