@@ -1,8 +1,6 @@
 #ifndef  ELLE_SERIALIZE_SERIALIZER_HXX
 # define ELLE_SERIALIZE_SERIALIZER_HXX
 
-# include <type_traits>
-
 ///
 /// This module provides tools to specialize the class Serializer with
 /// your types, or in other words, to define your own serializers.
@@ -48,17 +46,26 @@
 /// -----------------------------------
 ///
 
-# include <stdexcept>
-# include <type_traits>
-
-# include <elle/types.hh>
-# include <elle/print.hh>
-
 # include "ArchiveMode.hh"
 # include "Concrete.hh"
+# include "Exception.hh"
 # include "Format.hh"
 # include "StaticFormat.hh"
 # include "StoreFormat.hh"
+
+# include <elle/types.hh>
+# include <elle/log.hh>
+
+# include <boost/preprocessor/arithmetic/inc.hpp>
+# include <boost/preprocessor/cat.hpp>
+# include <boost/preprocessor/control/if.hpp>
+# include <boost/preprocessor/facilities/empty.hpp>
+# include <boost/preprocessor/punctuation/comma_if.hpp>
+# include <boost/preprocessor/repetition/repeat.hpp>
+# include <boost/preprocessor/stringize.hpp>
+
+# include <stdexcept>
+# include <type_traits>
 
 namespace elle
 {
@@ -88,8 +95,6 @@ namespace elle
       {
         return Concrete<Super const>(static_cast<Super const&>(obj));
       }
-
-      typedef std::runtime_error Exception;
 
       static inline
       void
@@ -197,7 +202,7 @@ namespace elle
 
 # define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                 \
   ELLE_LOG_COMPONENT("elle.serialize.Serializer");                            \
-  ELLE_TRACE("%s " #T " (%s): %p",                                            \
+  ELLE_TRACE("%s " BOOST_PP_STRINGIZE(T) " (%s): %p",                         \
                  mode == ArchiveMode::Input ? "Loading" : "Saving",           \
                  (elle::serialize::StoreFormat<T>::value                      \
                     ? elle::sprint("version", version)                        \
@@ -350,8 +355,6 @@ elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize(        \
 
 //- internal macros -----------------------------------------------------------
 
-# include <boost/preprocessor.hpp> // XXX
-
 #define __ESA_TYPENAME_REPEAT(z, n, prefix)                                   \
   BOOST_PP_COMMA_IF(n) BOOST_PP_CAT(prefix T, BOOST_PP_INC(n))                \
 /**/
@@ -384,9 +387,5 @@ elle::serialize::Serializer<__ESA_TEMPLATE_TYPE(__T, __n)>::Serialize(        \
 # define __ESA_TEMPLATE_TYPE(T, n)                                            \
   BOOST_PP_IF(n, __ESA_TEMPLATE_TYPE_TN(T, n), T)                             \
 /**/
-
-# include <elle/idiom/Close.hh>
-# include <elle/log.hh>
-# include <elle/idiom/Close.hh>
 
 #endif

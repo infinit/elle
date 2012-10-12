@@ -23,6 +23,10 @@ namespace elle
       Extractor(Extractor&& other):
         Extractor(std::move(other._stream))
       {}
+
+      Extractor(Extractor const&) = delete;
+      Extractor& operator =(Extractor const&) = delete;
+      Extractor& operator =(Extractor&&) = delete;
     };
 
     namespace detail

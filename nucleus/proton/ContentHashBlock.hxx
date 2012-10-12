@@ -1,7 +1,8 @@
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HXX
 # define NUCLEUS_PROTON_CONTENTHASHBLOCK_HXX
 
-#include <elle/cryptography/Random.hh>
+# include <elle/cryptography/Random.hh>
+# include <elle/print.hh>
 
 # include <nucleus/proton/ImmutableBlock.hh>
 
@@ -14,7 +15,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::ContentHashBlock,
 
   archive & base_class<nucleus::proton::ImmutableBlock>(value);
 
-  enforce(value.family() == nucleus::proton::Family::content_hash_block);
+  enforce(value.family() == nucleus::proton::Family::content_hash_block,
+          elle::sprint("Wrong family:", (int) value.family()).c_str());
 }
 
 #endif
