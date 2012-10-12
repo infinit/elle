@@ -9,6 +9,8 @@
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
 
+#include <elle/os/getenv.hh>
+
 namespace elle
 {
   namespace radix
@@ -19,12 +21,13 @@ namespace elle
 //
 
     ///
-    /// this value defines if the meta debugging must be activated.
+    /// This value defines if the meta debugging must be activated.
     ///
-    /// note that this configuration parameter cannot be put elsewhere
-    /// as everything relies on Meta.
+    /// Note that this configuration parameter cannot be put elsewhere as
+    /// everything relies on Meta.
     ///
-    /// this value can obviously be changed to true to activate debugging.
+    /// This value can obviously be changed to true to activate debugging, or
+    /// set the environment variable ELLE_LEAK_CHECK to 1.
     ///
     const Boolean               Meta::Debug::Status = false;
 
@@ -44,6 +47,9 @@ namespace elle
     ///
     Status              Meta::Initialize()
     {
+      if (elle::os::getenv("ELLE_LEAK_CHECK", "0") != "0")
+        Meta::Debug::Status = true;
+
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
         {
