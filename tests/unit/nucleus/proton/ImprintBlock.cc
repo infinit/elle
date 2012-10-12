@@ -8,35 +8,26 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 
+#include <tests/unit/unit.hh>
+
 #define CHECK(call)                                                     \
   if (call != elle::Status::Ok) { show(); assert(false); } else
 
-#define TEST_SERIALIZE_FINALIZE(_type_)                                 \
-  class _type_ ## Final:                                                \
-    public _type_,                                                      \
-    public elle::serialize::SerializableMixin<_type_ ## Final>          \
-  {                                                                     \
-  };                                                                    \
-                                                                        \
-  ELLE_SERIALIZE_SIMPLE(_type_ ## Final,                                \
-                        archive,                                        \
-                        value,                                          \
-                        version)                                        \
-  {                                                                     \
-    enforce(version == 0);                                              \
-  }
+TEST_SERIALIZE_FINALIZE(nucleus::proton, ImprintBlock)
 
-void test()
+namespace test
 {
+  void test()
+  {
     {
       nucleus::proton::Network network("test");
 
       elle::cryptography::KeyPair kp;
       CHECK(kp.Generate());
 
-      nucleus::proton::ImprintBlock blk(network,
-                                        nucleus::neutron::ComponentObject,
-                                        kp.K);
+      test::ImprintBlock blk(network,
+                             nucleus::neutron::ComponentObject,
+                             kp.K);
 
       nucleus::proton::Address addr(blk.bind());
 
@@ -47,22 +38,23 @@ void test()
 
       elle::Buffer buf;
 
-        {
-          auto writer = buf.writer();
+      {
+        auto writer = buf.writer();
 
-          writer << elle::serialize::concrete(blk);
-        }
+        writer << elle::serialize::concrete(blk);
+      }
 
-        {
-          auto reader = buf.reader();
+      {
+        auto reader = buf.reader();
 
-          nucleus::proton::ImprintBlock blk_copy;
+        test::ImprintBlock blk_copy;
 
-          reader >> elle::serialize::concrete(blk_copy);
+        reader >> elle::serialize::concrete(blk_copy);
 
-          blk_copy.validate(addr);
-        }
+        blk_copy.validate(addr);
+      }
     }
+  }
 }
 
 int main(int, char** argv)
@@ -71,7 +63,7 @@ int main(int, char** argv)
     {
       CHECK(elle::Elle::Initialize());
 
-      test();
+      test::test();
 
       CHECK(elle::Elle::Clean());
 
