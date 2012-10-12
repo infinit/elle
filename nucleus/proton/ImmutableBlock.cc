@@ -6,8 +6,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Lune.hh>
-
 #include <Infinit.hh>
 
 ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImmutableBlock");
@@ -26,10 +24,11 @@ namespace nucleus
     {
     }
 
-    ImmutableBlock::ImmutableBlock(Network const& network,
-                                   Family const family,
-                                   neutron::Component const component,
-                                   elle::cryptography::PublicKey const& creator_K):
+    ImmutableBlock::ImmutableBlock(
+        Network const& network,
+        Family const family,
+        neutron::Component const component,
+        elle::cryptography::PublicKey const& creator_K):
       Block(network, family, component, creator_K)
     {
     }

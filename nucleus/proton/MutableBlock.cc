@@ -9,8 +9,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <hole/Hole.hh>
-
 #include <elle/idiom/Close.hh>
 # include <boost/lexical_cast.hpp>
 #include <elle/idiom/Open.hh>
