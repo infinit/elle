@@ -61,15 +61,15 @@ namespace elle
     ///
     /// Simple binary archive.
     ///
-    template<ArchiveMode mode>
+    template <ArchiveMode mode>
     class BinaryArchive
       : public BaseBinaryArchive<mode, BinaryArchive<mode>>
     {
-      private:
+    private:
       typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
-      public:
+    public:
       typedef typename BaseClass::StreamType                StreamType;
-      public:
+    public:
       BinaryArchive(StreamType& stream)
         : BaseClass(stream)
       {}
@@ -78,6 +78,12 @@ namespace elle
         : BaseClass(stream, value)
       {}
     };
+
+    typedef BinaryArchive<ArchiveMode::input>   InputBinaryArchive;
+    typedef BinaryArchive<ArchiveMode::output>  OutputBinaryArchive;
+
+    static_assert(InputBinaryArchive::mode == ArchiveMode::input, "typo?");
+    static_assert(OutputBinaryArchive::mode == ArchiveMode::output, "typo?");
   }
 } // !elle::serialize
 

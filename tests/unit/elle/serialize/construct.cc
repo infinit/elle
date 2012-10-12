@@ -6,6 +6,11 @@
 #include <iostream>
 #include <sstream>
 
+static_assert(elle::serialize::InputBinaryArchive::mode ==
+              elle::serialize::ArchiveMode::input, "");
+
+static_assert(elle::serialize::OutputBinaryArchive::mode ==
+              elle::serialize::ArchiveMode::output, "");
 struct A
 {
   int i;
