@@ -85,7 +85,8 @@
   explicit                                                                    \
   __T(Archive&& archive,                                                      \
       typename std::enable_if<                                                \
-          Archive::mode == elle::serialize::ArchiveMode::input                \
+          std::remove_reference<Archive>::type::mode ==                       \
+          elle::serialize::ArchiveMode::input                                 \
         , bool                                                                \
       >::type = false):                                                       \
     __T{elle::serialize::no_init}                                             \
