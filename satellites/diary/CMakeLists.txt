@@ -12,4 +12,8 @@ if(INFINIT_LINUX OR INFINIT_MACOSX)
     unix/Replay.cc
     unix/Upcall.cc
   )
+target_link_libraries(
+	8diary
+	${INFINIT_LIBRARIES}
+)
 endif(INFINIT_LINUX OR INFINIT_MACOSX)
