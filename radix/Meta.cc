@@ -29,7 +29,7 @@ namespace elle
     /// This value can obviously be changed to true to activate debugging, or
     /// set the environment variable ELLE_LEAK_CHECK to 1.
     ///
-    const Boolean               Meta::Debug::Status = false;
+    Boolean                     Meta::Debug::Status = false;
 
     ///
     /// this value states if the debugging has been started or not.
