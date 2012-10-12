@@ -18,7 +18,6 @@ struct A
   ELLE_SERIALIZE_CONSTRUCT(A) {}
 
 };
-JE FAIS FOIRER LE BUILD ICI
 ELLE_SERIALIZE_SIMPLE(A, ar, value, version)
 {
   enforce(version == 0);
