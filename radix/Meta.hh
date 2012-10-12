@@ -24,7 +24,7 @@ namespace elle
       //
       struct                            Debug
       {
-        static const Boolean            Status;
+        static Boolean                  Status;
         static Boolean                  State;
       };
 
