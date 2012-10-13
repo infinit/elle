@@ -37,7 +37,7 @@ namespace elle
     {
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K._key) == Status::Error)
-        fail("unable to duplicate the public key");
+        throw Exception("unable to duplicate the public key");
     }
 
     ///
