@@ -29,12 +29,6 @@ namespace nucleus
       public elle::Printable,
       private boost::noncopyable
     {
-      /*----------.
-      | Constants |
-      `----------*/
-    public:
-      static const elle::String         Extension;
-
       /*------.
       | Types |
       `------*/

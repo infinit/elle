@@ -14,12 +14,6 @@ namespace nucleus
   namespace proton
   {
 
-    /*------------.
-    | Definitions |
-    `------------*/
-
-    const elle::String          History::Extension = ".hty";
-
     /*--------.
     | Methods |
     `--------*/

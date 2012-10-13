@@ -13,12 +13,6 @@ namespace nucleus
   namespace proton
   {
 
-    /*------------.
-    | Definitions |
-    `------------*/
-
-    const elle::String            Block::Extension = ".blk";
-
     /*-------------.
     | Construction |
     `-------------*/
