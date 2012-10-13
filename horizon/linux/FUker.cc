@@ -1,6 +1,5 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
-#include <elle/concurrency/Callback.hh>
 
 #include <elle/idiom/Close.hh>
 # include <reactor/scheduler.hh>
