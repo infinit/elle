@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_RANGE_HXX
 
 # include <nucleus/neutron/Size.hh>
+# include <nucleus/Exception.hh>
 
 # include <elle/standalone/Report.hh>
 
@@ -59,7 +60,7 @@ namespace nucleus
 
           // add the item to the container.
           if (this->Add(item) == elle::Status::Error)
-            fail("unable to add the item to the container");
+            throw Exception("unable to add the item to the container");
         }
     }
 

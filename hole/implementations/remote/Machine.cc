@@ -89,9 +89,6 @@ namespace hole
               ELLE_TRACE("network error while starting as a client: %s", e.what());
             }
 
-        // purge the error messages.
-        purge();
-
         // if the client did not succeed, create a server a wait for a client.
         ELLE_TRACE("start as a server")
         {

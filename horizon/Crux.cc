@@ -747,9 +747,6 @@ namespace horizon
     // Discard the identifier.
     etoile::wall::Object::Discard(identifier);
 
-    // Purge the errors.
-    purge();
-
     return (-EACCES);
   }
 

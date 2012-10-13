@@ -11,7 +11,7 @@
 #include <tests/unit/unit.hh>
 
 #define CHECK(call)                                                     \
-  if (call != elle::Status::Ok) { show(); assert(false); } else
+  if (call != elle::Status::Ok) { assert(false); } else
 
 TEST_SERIALIZE_FINALIZE(nucleus::proton, ImprintBlock)
 
@@ -72,9 +72,6 @@ int main(int, char** argv)
     }
   catch (std::exception const& e)
     {
-      // XXX
-      show();
-
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       if (reactor::Exception const* re =
           dynamic_cast<reactor::Exception const*>(&e))

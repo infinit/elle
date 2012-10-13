@@ -96,9 +96,6 @@ extern "C"
           if (elle::Elle::Initialize() == elle::Status::Error ||
               lune::Lune::Initialize() == elle::Status::Error)
             {
-#include <elle/idiom/Open.hh>
-              show();
-#include <elle/idiom/Close.hh>
               ELLE_ERR("Cannot initialize root components");
               return nullptr;
             }

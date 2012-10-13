@@ -97,12 +97,7 @@ extern "C" PyObject* metalib_generate_passport(PyObject*, PyObject* args)
         }
     }
   catch(std::exception const& err)
-    {
-#include <elle/idiom/Open.hh>
-      show();
-#include <elle/idiom/Close.hh>
-      PyErr_SetString(metalib_MetaError, err.what());
-    }
+    PyErr_SetString(metalib_MetaError, err.what());
 
   Py_END_ALLOW_THREADS;
 

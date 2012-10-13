@@ -350,7 +350,9 @@ namespace horizon
 
           // finally, wait for the FUSE-specific thread to exit.
           if (::pthread_join(FUker::Thread, nullptr) != 0)
-            ELLE_WARN("%s", ::strerror(errno));
+            {
+              ELLE_WARN("%s", ::strerror(errno));
+            }
         }
 
       return elle::Status::Ok;

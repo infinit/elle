@@ -641,11 +641,7 @@ int                     main(int                                argc,
   try
     {
       if (satellite::Main(argc, argv) == elle::Status::Error)
-        {
-          show();
-
-          return (1);
-        }
+        return (1);
     }
   catch (std::exception& e)
     {

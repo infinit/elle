@@ -846,9 +846,6 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (reactor::Exception const& e)
     {
-      // XXX
-      show();
-
       ELLE_ERR("fatal error: %s", e);
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       elle::concurrency::scheduler().terminate();
@@ -856,9 +853,6 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (std::runtime_error const& e)
     {
-      // XXX
-      show();
-
       ELLE_ERR("fatal error: %s", e.what());
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       elle::concurrency::scheduler().terminate();
@@ -866,9 +860,6 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (...)
     {
-      // XXX
-      show();
-
       ELLE_ERR("unkown fatal error");
       std::cerr << argv[0] << ": unknown fatal error" << std::endl;
       elle::concurrency::scheduler().terminate();

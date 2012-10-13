@@ -1,4 +1,3 @@
-
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/OneWay.hh>
@@ -53,7 +52,7 @@ namespace elle
 
       // create the private key by duplicating the internal numbers.
       if (this->Create(k._key) == Status::Error)
-        fail("unable to duplicate the private key");
+        throw Exception("unable to duplicate the private key");
 
       assert(this->_key != nullptr);
     }

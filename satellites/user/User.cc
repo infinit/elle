@@ -426,7 +426,6 @@ main(int argc, char** argv)
   catch (std::runtime_error const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      show();
       elle::concurrency::scheduler().terminate();
       return 1;
     }

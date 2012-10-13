@@ -682,9 +682,6 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (std::exception const& e)
     {
-      // XXX
-      show();
-
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       if (reactor::Exception const* re =
           dynamic_cast<reactor::Exception const*>(&e))

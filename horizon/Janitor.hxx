@@ -24,9 +24,6 @@ namespace horizon
   {
     // discard the identifier.
     etoile::wall::Object::Discard(identifier);
-
-    // should an error occur, purge the error messages.
-    purge();
   }
 
   ///

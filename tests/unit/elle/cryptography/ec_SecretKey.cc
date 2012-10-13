@@ -8,7 +8,6 @@
 #define ASSERT(test) \
   if (!(test)) \
   { \
-    show(); \
     assert(false); \
   } \
  /**/

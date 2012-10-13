@@ -17,19 +17,11 @@
 #include <elle/types.hh>
 
 //
-// ---------- elle ------------------------------------------------------------
-//
-
-///
-/// this macro function is sometimes use to group several parameter which
-/// can be pretty useful when a parameter contains a comma for instance.
-///
-#define _(...)                                                          \
-  __VA_ARGS__
-
-//
 // ---------- object ----------------------------------------------------------
 //
+
+#define _(...)                                                          \
+  __VA_ARGS__
 
 ///
 /// this macro generates the prototypes for the fundamental object
@@ -44,12 +36,7 @@
                                                                         \
   elle::Boolean   operator<=(const _type_&) const;                \
                                                                         \
-  elle::Boolean   operator>=(const _type_&) const;                \
-                                                                        \
-  elle::Status   Imprint(elle::Natural32&) const;          \
-                                                                        \
-  elle::Status   Clone(elle::radix::Object*&)                    \
-    const;
+  elle::Boolean   operator>=(const _type_&) const;
 
 ///
 /// this macro function makes it easy for classes to derive from Object
@@ -88,27 +75,6 @@
   elle::Boolean   _type_::operator>=(const _type_& object) const  \
   {                                                                     \
     return ((this->operator>(object) || this->operator==(object)));     \
-  }                                                                     \
-                                                                        \
-  _template_                                                            \
-  elle::Status   _type_::Imprint(elle::Natural32& size)    \
-    const                                                               \
-  {                                                                     \
-                                                                        \
-    size = sizeof (_type_);                                             \
-                                                                        \
-    return elle::Status::Ok;                                       \
-  }                                                                     \
-                                                                        \
-  _template_                                                            \
-  elle::Status   _type_::Clone(                                  \
-                          elle::radix::Object*&                         \
-                            object)                                     \
-    const                                                               \
-  {                                                                     \
-    object = new _type_(*this);                                         \
-                                                                        \
-    return elle::Status::Ok;                                       \
   }
 
 //
@@ -116,179 +82,8 @@
 //
 
 ///
-/// this macro-function registers a report entry.
-///
-/// note that this macro function should seldomly be called directly. instead
-/// the macro functions below should be used: leave, escape, true
-/// etc.
-///
-#define report(_format_, ...)                                           \
-  do                                                                    \
-  {                                                                     \
-    std::ostringstream        _tmp_;                                    \
-    elle::Character     _message_[1024];                                \
-                                                                        \
-    _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;      \
-                                                                        \
-      elle::String        _location_(_tmp_.str());                      \
-      elle::String        _time_(__DATE__ " " __TIME__);                \
-                                                                        \
-    ::sprintf(_message_, _format_, ##__VA_ARGS__);                      \
-                                                                        \
-    elle::standalone::Report::report.Get().Record(_location_,           \
-                                      _time_,                           \
-                                      elle::String(_message_));         \
-  } while (false)                                                       \
-
-///
-/// this macro-function transposes an existing report.
-///
-#define transpose(_r_)                          \
-  elle::standalone::Report::report.Get().Record(_r_)
-
-///
 /// this macro-function indicates that an error occured
 /// and returns Status::Error.
 ///
 #define escape(_format_, ...)                                           \
-  do                                                                    \
-    {                                                                   \
-      report(_format_, ##__VA_ARGS__);                                  \
-                                                                        \
-      return (elle::Status::Error);                                     \
-    } while (false)                                                     \
-
-///
-/// this macro-function adds an failure, displays the stack and
-/// stops the program.
-///
-/// this macro-function is especially useful in constructors.
-///
-#define fail(_format_, ...)                                             \
-  do                                                                    \
-  {                                                                     \
-    report(_format_, ##__VA_ARGS__);                                    \
-                                                                        \
-    show();                                                             \
-                                                                        \
-    ::exit(EXIT_FAILURE);                                               \
-  } while (false)
-
-///
-/// this macro-function displays the error stack on the error output.
-///
-#define show()                                                          \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Report& _report_ =                              \
-        elle::standalone::Report::report.Get();                         \
-                                                                        \
-      _report_.Dump();                                                  \
-      _report_.Flush();                                                 \
-    } while (false)                                                     \
-
-///
-/// this macro-function, in the case of reported errors, displays them
-/// and exits. otherwise, the function does not do anything.
-///
-#define expose()                                                        \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Report& _report_ =                              \
-        elle::standalone::Report::report.Get();                         \
-      if (_report_.container.empty() == false)                          \
-      {                                                                 \
-        _report_.Dump();                                                \
-        _report_.Flush();                                               \
-        ::exit(EXIT_FAILURE);                                           \
-      }                                                                 \
-    } while (false)
-
-///
-/// this macro-function flushes all the recorded messages.
-///
-#define purge()                                                         \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Report::report.Get().Flush();                   \
-    } while (false)
-
-//
-//
-// ---------- message ---------------------------------------------------------
-//
-
-///
-/// this macro-function defines an inward message part of the
-/// interface.
-///
-#define inward(_tag_, _parameters_)                                     \
-  message(_tag_, parameters(_parameters_))
-
-///
-/// this macro-function defines an outward message i.e response
-/// to a previously received inward message.
-///
-#define outward(_tag_, _parameters_)                                    \
-  message(_tag_, parameters(_parameters_))
-
-///
-/// this macro defines a message.
-///
-#define message(_tag_, _parameters_)                                    \
-  namespace elle                                                        \
-  {                                                                     \
-    namespace network                                                   \
-    {                                                                   \
-      template <>                                                       \
-      struct Message< _tag_ >:                                          \
-        public radix::Entity                                            \
-      {                                                                 \
-      public:                                                           \
-        static const Tag                        G = _tag_;              \
-                                                                        \
-        typedef radix::Parameters<_parameters_ > P;                     \
-                                                                        \
-        struct                                  B                       \
-        {                                                               \
-          typedef Bundle::Inputs<G,                                     \
-                                 typename                               \
-                                   radix::Trait::Constant<              \
-                                     P                                  \
-                                   >::Type                              \
-                                 >              Inputs;                 \
-          typedef Bundle::Outputs<G, P>         Outputs;                \
-        };                                                              \
-      };                                                                \
-    }                                                                   \
-  }
-
-///
-/// syntaxic sugar.
-///
-#define parameters(...)                                                 \
-  __VA_ARGS__
-
-//
-// ---------- network ---------------------------------------------------------
-//
-
-///
-/// this macro-function reserves a range of _capacity_ tags for the
-/// _component_ which depends upon the _dependencies_ components.
-///
-#define range(_component_, _capacity_, ...)                             \
-  namespace elle                                                        \
-  {                                                                     \
-    namespace network                                                   \
-    {                                                                   \
-      template <>                                                       \
-      struct Range<_component_>:                                        \
-        public Capacity<_capacity_>                                     \
-      {                                                                 \
-        static const int                First =                         \
-          Dependency<__VA_ARGS__>::Last + 1;                            \
-        static const int                Last = First + Size;            \
-      };                                                                \
-    }                                                                   \
-  }
+  throw elle::Exception(_format_, ##__VA_ARGS__)

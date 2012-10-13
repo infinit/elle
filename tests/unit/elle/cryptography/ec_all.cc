@@ -15,7 +15,7 @@
 
 #include <elle/idiom/Open.hh>
 
-#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
+#define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 void test_encryption()
 {

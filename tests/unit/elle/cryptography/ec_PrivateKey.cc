@@ -9,7 +9,7 @@
 
 #define show_assert(expr)                                                     \
   do {                                                                        \
-      if (expr != elle::Status::Ok) {show(); assert(false && #expr);}         \
+    if (expr != elle::Status::Ok) { assert(false && #expr);}                  \
   } while (false)                                                             \
 
 void test_encrypt()
