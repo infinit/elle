@@ -7,7 +7,6 @@
 #include <lune/Descriptor.hh>
 #include <lune/Set.hh>
 #include <lune/Phrase.hh>
-#include <lune/Log.hh>
 
 #include <nucleus/proton/History.hh>
 #include <nucleus/proton/Block.hh>
@@ -103,12 +102,6 @@ namespace lune
   /// phrase file.
   ///
   elle::io::Pattern                 Lune::Network::Phrase;
-
-  ///
-  /// this variable contains the pattern-based path to the network-specific
-  /// log file.
-  ///
-  elle::io::Pattern                 Lune::Network::Log;
 
   ///
   /// this variable holds the pattern of the path leading to a given
@@ -300,18 +293,6 @@ namespace lune
             Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
-      // create the log path pattern.
-      if (Lune::Network::Log.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            Log::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
       // create the reserve path pattern.
       if (Lune::Network::Reserve::Root.Create(
             home +
@@ -421,26 +402,6 @@ namespace lune
             "%ADDRESS%" +
             nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
-    }
-
-    //
-    // setup the log mechanism.
-    //
-    {
-      elle::io::Path          path;
-
-      // create the path.
-      if (path.Create(Lune::Network::Log) == elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path.
-      if (path.Complete(elle::io::Piece("%NETWORK%",
-                                    Infinit::Network)) == elle::Status::Error)
-        escape("unable to complete the path");
-
-      // setup the log.
-      if (elle::standalone::Log::Setup(path.string()) == elle::Status::Error)
-        escape("unable to set up the log system");
     }
 
     return elle::Status::Ok;

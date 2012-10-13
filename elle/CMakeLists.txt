@@ -28,7 +28,6 @@ add_library(elle ${LINK_METHOD}
   standalone/Log.cc
   standalone/Region.cc
   standalone/Report.cc
-  standalone/Standalone.cc
 
   radix/Meta.cc
   radix/Object.cc

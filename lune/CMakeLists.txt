@@ -6,7 +6,6 @@ add_library(lune ${LINK_METHOD}
   Descriptor.cc
   Dictionary.cc
   Identity.cc
-  Log.cc
   Lune.cc
   Passport.cc
   Phrase.cc

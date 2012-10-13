@@ -1,8 +1,6 @@
 #include <elle/system/platform.hh>
 
-#include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Standalone.hh>
 
 #include <elle/cryptography/Cryptography.hh>
 
@@ -29,10 +27,6 @@ namespace elle
     if (radix::Radix::Initialize() == Status::Error)
       escape("unable to initialize the radix module");
 
-    // initialize the standalone module.
-    if (standalone::Standalone::Initialize() == Status::Error)
-      escape("unable to initialize the standalone module");
-
     // initialize the crypto module.
     if (cryptography::Cryptography::Initialize() == Status::Error)
       escape("unable to initialize the cryptographic module");
@@ -48,10 +42,6 @@ namespace elle
     // clean the crypto module.
     if (cryptography::Cryptography::Clean() == Status::Error)
       escape("unable to clean the cryptographic module");
-
-    // clean the standalone module.
-    if (standalone::Standalone::Clean() == Status::Error)
-      escape("unable to clean the standalone module");
 
     // clean the radix module.
     if (radix::Radix::Clean() == Status::Error)

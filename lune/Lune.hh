@@ -56,7 +56,6 @@ namespace lune
       static elle::io::Pattern      Descriptor;
       static elle::io::Pattern      Set;
       static elle::io::Pattern      Phrase;
-      static elle::io::Pattern      Log;
 
       struct                    Reserve
       {
