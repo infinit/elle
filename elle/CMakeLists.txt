@@ -44,8 +44,6 @@ add_library(elle ${LINK_METHOD}
   io/Piece.cc
   io/Path.cc
 
-  system/System.cc
-
   types.cc
 
   concurrency/Program.cc

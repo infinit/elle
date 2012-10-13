@@ -101,7 +101,7 @@ namespace etoile
       name.clear();
 
       // find the position.
-      last_slash = way.path.rfind(elle::system::System::Path::Separator);
+      last_slash = way.path.rfind(elle::system::path::separator);
 
       // check if way.path contains at least a slash
       if (last_slash == elle::String::npos)

@@ -180,7 +180,7 @@ namespace lune
       // create the authority path pattern.
       if (Lune::Authority.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "infinit" +
             Authority::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -188,7 +188,7 @@ namespace lune
       // create the passport path pattern.
       if (Lune::Passport.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "infinit" +
             Passport::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -196,14 +196,14 @@ namespace lune
       // create the configuration path pattern.
       if (Lune::Configuration.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "infinit" +
             Configuration::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Phrase.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NAME%" +
             Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -211,27 +211,27 @@ namespace lune
       // create the users path pattern.
       if (Lune::Users.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "users") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the user path pattern.
       if (Lune::User::Root.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "users" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%USER%") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the identity path pattern.
       if (Lune::User::Identity.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "users" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%USER%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%USER%" +
             Identity::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -239,11 +239,11 @@ namespace lune
       // create the dictionary path pattern.
       if (Lune::User::Dictionary.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "users" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%USER%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%USER%" +
             Dictionary::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -251,27 +251,27 @@ namespace lune
       // create the networks path pattern.
       if (Lune::Networks.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the network path pattern.
       if (Lune::Network::Root.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the descriptor path pattern.
       if (Lune::Network::Descriptor.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
             Descriptor::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -279,11 +279,11 @@ namespace lune
       // create the set path pattern.
       if (Lune::Network::Set.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
             Set::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -291,11 +291,11 @@ namespace lune
       // create the phrase path pattern.
       if (Lune::Network::Phrase.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NAME%" +
             Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -303,11 +303,11 @@ namespace lune
       // create the log path pattern.
       if (Lune::Network::Log.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
             Log::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -315,24 +315,24 @@ namespace lune
       // create the reserve path pattern.
       if (Lune::Network::Reserve::Root.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "reserve") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the immutable block pattern within the reserve.
       if (Lune::Network::Reserve::ImmutableBlock.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "reserve" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -340,13 +340,13 @@ namespace lune
       // create the mutable block pattern within the reserve.
       if (Lune::Network::Reserve::MutableBlock.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "reserve" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             "#" +
             "%REVISION%" +
@@ -356,13 +356,13 @@ namespace lune
       // create the mutable block's history pattern within the reserve.
       if (Lune::Network::Reserve::History.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "reserve" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -370,24 +370,24 @@ namespace lune
       // create the shelter path pattern.
       if (Lune::Network::Shelter::Root.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "shelter") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the immutable block pattern within the shelter.
       if (Lune::Network::Shelter::ImmutableBlock.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "shelter" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
@@ -395,13 +395,13 @@ namespace lune
       // create the mutable block pattern within the shelter.
       if (Lune::Network::Shelter::MutableBlock.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "shelter" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             "#" +
             "%REVISION%" +
@@ -411,13 +411,13 @@ namespace lune
       // create the mutable block's history pattern within the shelter.
       if (Lune::Network::Shelter::History.Create(
             home +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "networks" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%NETWORK%" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "shelter" +
-            elle::system::System::Path::Separator +
+            elle::system::path::separator +
             "%ADDRESS%" +
             nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");

@@ -1,5 +1,4 @@
 #include <elle/system/Platform.hh>
-#include <elle/system/System.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
@@ -26,10 +25,6 @@ namespace elle
   ///
   Status                Elle::Initialize()
   {
-    // initialize the system module.
-    if (system::System::Initialize() == Status::Error)
-      escape("unable to initialize the system module");
-
     // initialize the radix module.
     if (radix::Radix::Initialize() == Status::Error)
       escape("unable to initialize the radix module");
@@ -61,10 +56,6 @@ namespace elle
     // clean the radix module.
     if (radix::Radix::Clean() == Status::Error)
       escape("unable to clean the radix module");
-
-    // clean the system module.
-    if (system::System::Clean() == Status::Error)
-      escape("unable to clean the system module");
 
     return Status::Ok;
   }

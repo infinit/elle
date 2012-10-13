@@ -35,7 +35,7 @@ namespace etoile
     ///
     elle::Status        Route::Initialize()
     {
-      Way               root(elle::system::System::Path::Separator);
+      Way               root(elle::system::path::separator);
 
       // create the reference root route.
       if (Route::Root.Create(root) == elle::Status::Error)
@@ -97,18 +97,18 @@ namespace etoile
       Slab                      slab;
 
       // check that the way starts with a leading '/'
-      if (way.path[0] != elle::system::System::Path::Separator)
+      if (way.path[0] != elle::system::path::separator)
         escape("the path must contain the leading path separator '%c'",
-               elle::system::System::Path::Separator);
+               elle::system::path::separator);
 
       // clear the elements.
       this->elements.clear();
 
       // compute the next offsets.
       start =
-        way.path.find_first_not_of(elle::system::System::Path::Separator);
+        way.path.find_first_not_of(elle::system::path::separator);
       end =
-        way.path.find_first_of(elle::system::System::Path::Separator, start);
+        way.path.find_first_of(elle::system::path::separator, start);
 
       // check if at least one slab is present.
       if (start < way.path.length())
@@ -133,9 +133,9 @@ namespace etoile
 
           //     // compute the next offsets.
           //     start =
-          //       way.path.find_first_not_of(elle::system::System::Path::Separator, end);
+          //       way.path.find_first_not_of(elle::system::path::separator, end);
           //     end =
-          //       way.path.find_first_of(elle::system::System::Path::Separator, start);
+          //       way.path.find_first_of(elle::system::path::separator, start);
           //   }
         }
 
@@ -159,9 +159,9 @@ namespace etoile
 
           // compute the next offsets.
           start =
-            way.path.find_first_not_of(elle::system::System::Path::Separator, end);
+            way.path.find_first_not_of(elle::system::path::separator, end);
           end =
-            way.path.find_first_of(elle::system::System::Path::Separator, start);
+            way.path.find_first_of(elle::system::path::separator, start);
         }
 
       return elle::Status::Ok;

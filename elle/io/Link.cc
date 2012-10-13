@@ -7,8 +7,8 @@
 
 #include <elle/standalone/Report.hh>
 
-#include <elle/system/System.hh>
-#include <elle/system/Platform.hh>
+#include <elle/system/system.hh>
+#include <elle/system/platform.hh>
 
 #include <elle/idiom/Close.hh>
 # include <vector>
@@ -123,15 +123,15 @@ namespace elle
       free(tmp_str);
 
       // go through the components of the path.
-      while (std::getline(stream, item, system::System::Path::Separator))
+      while (std::getline(stream, item, system::path::separator))
         {
           // update the intermediate chemin.
           if (chemin.string().empty() && item.empty())
-            chemin.string() = system::System::Path::Separator;
+            chemin.string() = system::path::separator;
           else
             {
               chemin.string().append(item);
-              chemin.string().append(1, system::System::Path::Separator);
+              chemin.string().append(1, system::path::separator);
             }
 
           // retrieve information on the path. should this operation fail
