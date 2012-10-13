@@ -1,4 +1,3 @@
-#include <elle/standalone/Log.hh>
 
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>

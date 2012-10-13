@@ -4,7 +4,6 @@
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/standalone/Log.hh>
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 

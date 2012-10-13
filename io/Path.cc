@@ -1,7 +1,6 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Pattern.hh>
 
-#include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Open.hh>

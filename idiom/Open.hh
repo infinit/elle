@@ -28,20 +28,6 @@
   __VA_ARGS__
 
 //
-// ---------- meta ------------------------------------------------------------
-//
-
-///
-/// this macro function enables the programmer to define compile-time
-/// assertions.
-///
-#define allege(_condition_)                                             \
-  do                                                                    \
-    {                                                                   \
-      elle::radix::Allege<(_condition_)>();                             \
-    } while (0)
-
-//
 // ---------- object ----------------------------------------------------------
 //
 
@@ -81,11 +67,7 @@
     if (this == &object)                                                \
       return (*this);                                                   \
     if (this->Recycle(&object) == elle::Status::Error)                  \
-      {                                                                 \
-        log("unable to recycle the object");                            \
-                                                                        \
-        return (*this);                                                 \
-      }                                                                 \
+      return (*this);                                                   \
                                                                         \
     return (*this);                                                     \
   }                                                                     \
@@ -128,42 +110,6 @@
                                                                         \
     return elle::Status::Ok;                                       \
   }
-
-//
-// ---------- log -------------------------------------------------------------
-//
-
-///
-/// this macro-function registers a log entry.
-///
-#define log(_format_, ...)                                              \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Log*    _log_;                                  \
-      std::ostringstream        _tmp_;                                  \
-      elle::Character     _message_[1024];                        \
-                                                                        \
-      _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;    \
-                                                                        \
-      elle::String        _location_(_tmp_.str());                \
-      elle::String        _time_(__DATE__ " " __TIME__);          \
-                                                                        \
-      ::sprintf(_message_, _format_, ##__VA_ARGS__);                    \
-                                                                        \
-      if (elle::standalone::Log::Instance(_log_) ==                     \
-          elle::Status::True)                                      \
-        _log_->Record(_location_,                                       \
-                      _time_,                                           \
-                      elle::String(_message_));                   \
-      else                                                              \
-        {                                                               \
-          std::cerr << _message_                                        \
-                    << " (" << _location_ << ") @ "                     \
-                    << _time_ << std::endl;                             \
-                                                                        \
-          show();                                                       \
-        }                                                               \
-    } while (false)
 
 //
 // ---------- report ----------------------------------------------------------
@@ -210,18 +156,6 @@
       report(_format_, ##__VA_ARGS__);                                  \
                                                                         \
       return (elle::Status::Error);                                     \
-    } while (false)                                                     \
-
-///
-/// this macro-function logs the fact that an error occured
-/// and returns Status::False.
-///
-#define flee(_format_, ...)                                             \
-  do                                                                    \
-    {                                                                   \
-      log(_format_, ##__VA_ARGS__);                                     \
-                                                                        \
-      return (elle::Status::False);                                \
     } while (false)                                                     \
 
 ///
@@ -277,32 +211,6 @@
   do                                                                    \
     {                                                                   \
       elle::standalone::Report::report.Get().Flush();                   \
-    } while (false)
-
-//
-// ---------- morgue ----------------------------------------------------------
-//
-
-///
-/// this macro function can be used to delay the deletion of an instance.
-///
-/// this is useful for instance for deleting a timer if we are in
-/// a callback which has been triggered by it. deleting the timer right
-/// away could lead to crashes since, following the deletion, the code
-/// executed would still belong to the timer.
-///
-#define bury(_instance_)                                                \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Morgue* _morgue_;                               \
-                                                                        \
-      if (elle::standalone::Morgue::Instance(_morgue_) ==               \
-          elle::Status::True)                                      \
-        {                                                               \
-          if (_morgue_->Register(_instance_) ==                         \
-              elle::Status::Error)                                 \
-            log("unable to register the instance for burial");          \
-        }                                                               \
     } while (false)
 
 //

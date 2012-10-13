@@ -6,7 +6,6 @@
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Open.hh>
 
