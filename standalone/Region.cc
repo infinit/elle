@@ -1,6 +1,6 @@
 # include <elle/standalone/Region.hh>
-
 # include <elle/standalone/Report.hh>
+# include <elle/Exception.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -81,7 +81,7 @@ namespace elle
             this->options = Region::OptionNone;
 
             if (this->Duplicate(region.contents, region.size) == Status::Error)
-              fail("unable to assign the element's data");
+              throw Exception("unable to assign the element's data");
           }
         }
     }
@@ -167,8 +167,6 @@ namespace elle
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, capacity))) == nullptr)
         escape("%s", ::strerror(errno));
-
-      // std::cerr << "REGION ALLOCATED: " << (void*)contents << " (" << capacity << ")" << std::endl;
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
