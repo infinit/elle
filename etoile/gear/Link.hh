@@ -37,15 +37,8 @@ namespace etoile
       //
       // types
       //
-      typedef wall::Link                        W;
-      typedef automaton::Link                   A;
-      typedef elle::concurrency::Callback<
-                elle::Status,
-                elle::radix::Parameters<
-                  Link&
-                  >
-                >                               S;
-
+      typedef wall::Link W;
+      typedef automaton::Link A;
       typedef nucleus::neutron::Reference C;
 
       //

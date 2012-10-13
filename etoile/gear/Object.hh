@@ -2,7 +2,6 @@
 # define ETOILE_GEAR_OBJECT_HH
 
 # include <elle/types.hh>
-# include <elle/concurrency/Callback.hh>
 # include <elle/cryptography/SecretKey.hh>
 
 # include <nucleus/proton/Location.hh>
@@ -64,14 +63,8 @@ namespace etoile
       //
       // types
       //
-      typedef wall::Object                      W;
-      typedef automaton::Object                 A;
-      typedef elle::concurrency::Callback<
-                elle::Status,
-                elle::radix::Parameters<
-                  Object&
-                  >
-                >                               S;
+      typedef wall::Object W;
+      typedef automaton::Object A;
 
       typedef nucleus::neutron::Object::Role Role;
 

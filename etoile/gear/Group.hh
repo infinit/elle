@@ -2,7 +2,6 @@
 # define ETOILE_GEAR_GROUP_HH
 
 # include <elle/types.hh>
-# include <elle/concurrency/Callback.hh>
 
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -35,12 +34,6 @@ namespace etoile
       //
       typedef wall::Group                      W;
       typedef automaton::Group                 A;
-      typedef elle::concurrency::Callback<
-                elle::Status,
-                elle::radix::Parameters<
-                  Group&
-                  >
-                >                               S;
 
       typedef nucleus::neutron::Group::Role Role;
 

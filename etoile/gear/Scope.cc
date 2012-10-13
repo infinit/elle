@@ -827,7 +827,8 @@ namespace etoile
         break;
       case OperationUnknown:
       default:
-        throw elle::Exception("unknown operation '%u'\n", this->context->operation);
+        throw elle::Exception("unknown operation '%u'\n",
+                              this->context->operation);
       }
       return elle::Status::Ok;
     }
@@ -924,13 +925,6 @@ namespace etoile
       // fiber.
       reactor::Lock lock(elle::concurrency::scheduler(), mutex.write());
       {
-        elle::concurrency::Callback<
-          elle::Status,
-          elle::radix::Parameters<
-            T&
-            >
-          >             callback;
-
         // allocate a context.
         auto context = std::unique_ptr<T>(new T);
 

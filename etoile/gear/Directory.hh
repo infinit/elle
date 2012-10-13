@@ -2,7 +2,6 @@
 # define ETOILE_GEAR_DIRECTORY_HH
 
 # include <elle/types.hh>
-# include <elle/concurrency/Callback.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Catalog.hh>
@@ -38,15 +37,8 @@ namespace etoile
       //
       // types
       //
-      typedef wall::Directory                   W;
-      typedef automaton::Directory              A;
-      typedef elle::concurrency::Callback<
-                elle::Status,
-                elle::radix::Parameters<
-                  Directory&
-                  >
-                >                               S;
-
+      typedef wall::Directory W;
+      typedef automaton::Directory A;
       typedef nucleus::neutron::Catalog C;
 
       //

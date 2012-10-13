@@ -2,7 +2,6 @@
 # define ETOILE_GEAR_FILE_HH
 
 # include <elle/types.hh>
-# include <elle/concurrency/Callback.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Data.hh>
@@ -38,15 +37,8 @@ namespace etoile
       //
       // types
       //
-      typedef wall::File                        W;
-      typedef automaton::File                   A;
-      typedef elle::concurrency::Callback<
-                elle::Status,
-                elle::radix::Parameters<
-                  File&
-                  >
-                >                               S;
-
+      typedef wall::File W;
+      typedef automaton::File A;
       typedef nucleus::neutron::Data C;
 
       //
