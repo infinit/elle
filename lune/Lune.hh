@@ -57,24 +57,9 @@ namespace lune
       static elle::io::Pattern      Set;
       static elle::io::Pattern      Phrase;
 
-      struct                    Reserve
-      {
-        static elle::io::Pattern    Root;
-
-        static elle::io::Pattern    ImmutableBlock;
-        static elle::io::Pattern    MutableBlock;
-
-        static elle::io::Pattern    History;
-      };
-
       struct                    Shelter
       {
         static elle::io::Pattern    Root;
-
-        static elle::io::Pattern    ImmutableBlock;
-        static elle::io::Pattern    MutableBlock;
-
-        static elle::io::Pattern    History;
       };
     };
   };

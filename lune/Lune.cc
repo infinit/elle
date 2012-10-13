@@ -105,51 +105,9 @@ namespace lune
 
   ///
   /// this variable holds the pattern of the path leading to a given
-  /// network's reserve.
-  ///
-  elle::io::Pattern                 Lune::Network::Reserve::Root;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// immutable block within the network's reserve.
-  ///
-  elle::io::Pattern                 Lune::Network::Reserve::ImmutableBlock;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// mutable block within the network's reserve.
-  ///
-  elle::io::Pattern                 Lune::Network::Reserve::MutableBlock;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// mutable block's history within the network's reserve.
-  ///
-  elle::io::Pattern                 Lune::Network::Reserve::History;
-
-  ///
-  /// this variable holds the pattern of the path leading to a given
   /// network's shelter.
   ///
   elle::io::Pattern                 Lune::Network::Shelter::Root;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// immutable block within the network's shelter.
-  ///
-  elle::io::Pattern                 Lune::Network::Shelter::ImmutableBlock;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// mutable block within the network's shelter.
-  ///
-  elle::io::Pattern                 Lune::Network::Shelter::MutableBlock;
-
-  ///
-  /// this variable holds the pattern of the path leading to a specific
-  /// mutable block's history within the network's shelter.
-  ///
-  elle::io::Pattern                 Lune::Network::Shelter::History;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -293,61 +251,6 @@ namespace lune
             Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
-      // create the reserve path pattern.
-      if (Lune::Network::Reserve::Root.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "reserve") == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the immutable block pattern within the reserve.
-      if (Lune::Network::Reserve::ImmutableBlock.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "reserve" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            nucleus::proton::Block::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the mutable block pattern within the reserve.
-      if (Lune::Network::Reserve::MutableBlock.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "reserve" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            "#" +
-            "%REVISION%" +
-            nucleus::proton::Block::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the mutable block's history pattern within the reserve.
-      if (Lune::Network::Reserve::History.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "reserve" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            nucleus::proton::History::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
       // create the shelter path pattern.
       if (Lune::Network::Shelter::Root.Create(
             home +
@@ -357,50 +260,6 @@ namespace lune
             "%NETWORK%" +
             elle::system::path::separator +
             "shelter") == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the immutable block pattern within the shelter.
-      if (Lune::Network::Shelter::ImmutableBlock.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "shelter" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            nucleus::proton::Block::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the mutable block pattern within the shelter.
-      if (Lune::Network::Shelter::MutableBlock.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "shelter" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            "#" +
-            "%REVISION%" +
-            nucleus::proton::Block::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      // create the mutable block's history pattern within the shelter.
-      if (Lune::Network::Shelter::History.Create(
-            home +
-            elle::system::path::separator +
-            "networks" +
-            elle::system::path::separator +
-            "%NETWORK%" +
-            elle::system::path::separator +
-            "shelter" +
-            elle::system::path::separator +
-            "%ADDRESS%" +
-            nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
     }
 

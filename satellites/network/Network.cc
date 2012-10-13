@@ -277,33 +277,6 @@ namespace satellite
     }
 
     //
-    // destroy the reserve, if necessary
-    //
-    {
-      elle::io::Path        path;
-
-      // create the reserve path.
-      if (path.Create(lune::Lune::Network::Reserve::Root) == elle::Status::Error)
-        escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
-        escape("unable to complete the path");
-
-      // if the reserve exists, clear it and remove it.
-      if (elle::io::Directory::Exist(path) == elle::Status::True)
-        {
-          // clear the reserve content.
-          if (elle::io::Directory::Clear(path) == elle::Status::Error)
-            escape("unable to clear the directory");
-
-          // remove the directory.
-          if (elle::io::Directory::Remove(path) == elle::Status::Error)
-            escape("unable to remove the directory");
-        }
-    }
-
-    //
     // destroy the shelter.
     //
     {
@@ -320,7 +293,7 @@ namespace satellite
       // if the shelter exists, clear it and remove it.
       if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
-          // clear the reserve content.
+          // clear the shelter content.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 

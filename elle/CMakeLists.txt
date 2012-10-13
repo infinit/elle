@@ -31,7 +31,6 @@ add_library(elle ${LINK_METHOD}
 
   radix/Meta.cc
   radix/Object.cc
-  radix/Radix.cc
   radix/Trace.cc
 
   io/Console.cc
