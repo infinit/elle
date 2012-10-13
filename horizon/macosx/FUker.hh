@@ -6,7 +6,7 @@
 # endif
 
 # include <elle/types.hh>
-# include <elle/system/Platform.hh>
+# include <elle/system/platform.hh>
 
 # include <elle/idiom/Close.hh>
 #  define _GNU_SOURCE

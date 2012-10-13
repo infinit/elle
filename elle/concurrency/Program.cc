@@ -1,4 +1,4 @@
-#include <elle/system/Platform.hh>
+#include <elle/system/platform.hh>
 
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>

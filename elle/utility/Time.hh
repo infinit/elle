@@ -1,8 +1,6 @@
 #ifndef ELLE_UTILITY_TIME_HH
 # define ELLE_UTILITY_TIME_HH
 
-# include <elle/system/Platform.hh>
-
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>

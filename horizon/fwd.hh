@@ -1,7 +1,7 @@
 #ifndef HORIZON_FWD_HH
 # define HORIZON_FWD_HH
 
-# include <elle/system/Platform.hh>
+# include <elle/system/platform.hh>
 
 # if defined(INFINIT_LINUX)
 #  include <horizon/linux/fwd.hh>

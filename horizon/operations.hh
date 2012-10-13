@@ -1,7 +1,7 @@
 #ifndef OPERATIONS_HH
 # define OPERATIONS_HH
 
-# include <elle/system/Platform.hh>
+# include <elle/system/platform.hh>
 
 #if defined(HAVE_SETXATTR)
 # if defined(INFINIT_MACOSX)

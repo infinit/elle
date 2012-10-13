@@ -7,7 +7,7 @@
 #include <elle/os.hh>
 #include <elle/os/path.hh>
 #include <elle/print.hh>
-#include <elle/system/Platform.hh>
+#include <elle/system/platform.hh>
 
 #include <elle/idiom/Close.hh>
 

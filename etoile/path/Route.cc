@@ -1,4 +1,4 @@
-#include <elle/system/System.hh>
+#include <elle/system/system.hh>
 
 #include <etoile/path/Path.hh>
 #include <etoile/path/Route.hh>

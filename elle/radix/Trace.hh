@@ -1,7 +1,7 @@
 #ifndef ELLE_RADIX_TRACE_HH
 # define ELLE_RADIX_TRACE_HH
 
-# include <elle/system/Platform.hh>
+# include <elle/system/platform.hh>
 
 # if defined(INFINIT_LINUX)
 

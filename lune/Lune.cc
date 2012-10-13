@@ -14,7 +14,7 @@
 
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
-#include <elle/system/System.hh>
+#include <elle/system/system.hh>
 
 #include <common/common.hh>
 
