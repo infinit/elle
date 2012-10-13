@@ -1,4 +1,4 @@
-#include <elle/system/Platform.hh>
+#include <elle/system/platform.hh>
 
 # if defined(INFINIT_LINUX)
 
