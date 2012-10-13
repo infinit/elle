@@ -9,7 +9,6 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/os/path.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/log.hh>
 
 #include <nucleus/proton/Address.hh>

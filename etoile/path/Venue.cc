@@ -1,5 +1,4 @@
 #include <etoile/path/Venue.hh>
-#include <elle/standalone/Log.hh>
 
 namespace etoile
 {

@@ -1,5 +1,4 @@
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 
 #include <elle/concurrency/Scheduler.hh>
 
@@ -221,11 +220,7 @@ namespace elle
 
       // recycle the report.
       if (this->Recycle(&element) == Status::Error)
-        {
-          log("unable to recycle the object");
-
-          return (*this);
-        }
+        return (*this);
 
       return (*this);
     }

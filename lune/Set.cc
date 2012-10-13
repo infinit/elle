@@ -1,6 +1,5 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/File.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/standalone/Region.hh>
 
 #include <lune/Set.hh>

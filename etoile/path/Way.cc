@@ -1,5 +1,4 @@
 #include <elle/system/system.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/utility/Unicode.hh>

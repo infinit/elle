@@ -261,29 +261,23 @@ namespace horizon
              &mountpoint,
              &multithreaded,
              nullptr)) == nullptr)
-        goto _error;
+        goto _leave;
 
       if (multithreaded)
         {
           if (::fuse_loop_mt(FUker::FUSE) == -1)
-            goto _error;
+            goto _leave;
         }
       else
         {
           if (::fuse_loop(FUker::FUSE) == -1)
-            goto _error;
+            goto _leave;
         }
 
       ::fuse_teardown(FUker::FUSE, mountpoint);
 
       // reset the FUSE structure pointer.
       FUker::FUSE = nullptr;
-
-      goto _leave;
-
-    _error:
-      // log the error.
-      log("%s", ::strerror(errno));
 
     _leave:
       // now that FUSE has stopped, make sure the program is exiting.
@@ -356,7 +350,7 @@ namespace horizon
 
           // finally, wait for the FUSE-specific thread to exit.
           if (::pthread_join(FUker::Thread, nullptr) != 0)
-            log("%s", ::strerror(errno));
+            ELLE_WARN("%s", ::strerror(errno));
         }
 
       return elle::Status::Ok;

@@ -25,7 +25,6 @@ add_library(elle ${LINK_METHOD}
   IOStream.cc
   Printable.cc
 
-  standalone/Log.cc
   standalone/Region.cc
   standalone/Report.cc
 
@@ -45,7 +44,6 @@ add_library(elle ${LINK_METHOD}
   types.cc
 
   concurrency/Program.cc
-  concurrency/Routine.cc
   concurrency/Scheduler.cc
 
   cryptography/Cipher.cc
@@ -70,7 +68,7 @@ add_library(elle ${LINK_METHOD}
 
   utility/Duration.cc
   utility/Factory.cc
-  #utility/HTTP.cc
+  # XXX utility/HTTP.cc
   utility/Parser.cc
   utility/Settings.cc
   utility/Time.cc

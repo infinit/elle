@@ -1,7 +1,6 @@
 #include <elle/utility/Time.hh>
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/log.hh>
 
 #include <elle/utility/Duration.hh>
@@ -210,11 +209,7 @@ namespace elle
             break;
           }
         case Duration::UnitUnknown:
-          {
-            log("unknown duration unit");
-
-            goto _return;
-          }
+          goto _return;
         }
 
     _return:
@@ -267,11 +262,7 @@ namespace elle
             break;
           }
         case Duration::UnitUnknown:
-          {
-            log("unknown duration unit");
-
-            goto _return;
-          }
+          goto _return;
         }
 
     _return:

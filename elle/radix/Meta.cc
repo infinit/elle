@@ -3,7 +3,6 @@
 #include <elle/radix/Meta.hh>
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 
 #include <elle/io/Path.hh>
 #include <elle/io/File.hh>
@@ -172,12 +171,7 @@ namespace elle
 #if defined(INFINIT_LINUX)
           // store the trace.
           if (Trace::Store(address) == Status::Error)
-            {
-              log("unable to store the trace for %p",
-                  address);
-
-              goto _corps;
-            }
+            goto _corps;
 #endif
         }
 
@@ -216,12 +210,7 @@ namespace elle
 #if defined(INFINIT_LINUX)
           // store the trace.
           if (Trace::Store(address) == Status::Error)
-            {
-              log("unable to store the trace for %p",
-                  address);
-
-              goto _corps;
-            }
+            goto _corps;
 #endif
         }
 
@@ -252,12 +241,7 @@ namespace elle
 #if defined(INFINIT_LINUX)
           // erase the trace.
           if (Trace::Erase(address) == Status::Error)
-            {
-              log("unable to erase the trace for %p",
-                  address);
-
-              goto _corps;
-            }
+            goto _corps;
 #endif
         }
 

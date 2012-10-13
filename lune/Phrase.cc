@@ -4,7 +4,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Pattern.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/standalone/Region.hh>
 
 #include <elle/idiom/Open.hh>

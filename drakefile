@@ -46,8 +46,6 @@ def configure(cxx_toolkit, cxx_config):
     'lune/Identity.cc',
     'lune/Identity.hh',
     'lune/Identity.hxx',
-    'lune/Log.cc',
-    'lune/Log.hh',
     'lune/Lune.cc',
     'lune/Lune.hh',
     'lune/Map.hh',

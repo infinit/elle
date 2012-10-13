@@ -6,7 +6,6 @@
 
 # include <elle/attribute.hh>
 # include <elle/types.hh>
-# include <elle/concurrency/Signal.hh>
 
 # include <nucleus/proton/fwd.hh>
 

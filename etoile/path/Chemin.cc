@@ -1,5 +1,4 @@
 #include <etoile/path/Chemin.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/concurrency/Scheduler.hh>
 
 #include <reactor/exception.hh>

@@ -3,7 +3,6 @@
 
 # include <boost/noncopyable.hpp>
 
-# include <elle/concurrency/Signal.hh>
 # include <elle/network/fwd.hh>
 # include <elle/radix/Entity.hh>
 # include <elle/types.hh>

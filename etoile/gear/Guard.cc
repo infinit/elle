@@ -3,8 +3,10 @@
 #include <etoile/gear/Scope.hh>
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 #include <elle/idiom/Open.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.gear.Guard");
 
 namespace etoile
 {
@@ -49,7 +51,9 @@ namespace etoile
           if (this->_scope != nullptr)
             {
               if (Scope::Annihilate(this->_scope) == elle::Status::Error)
-                log("unable to annihilate the scope");
+                {
+                  ELLE_WARN("unable to annihilate the scope");
+                }
             }
         }
     }

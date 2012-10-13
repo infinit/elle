@@ -1,5 +1,4 @@
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 
 #include <hole/Model.hh>
 

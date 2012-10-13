@@ -2,7 +2,6 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/standalone/Log.hh>
 #include <elle/cryptography/OneWay.hh>
 
 #include <elle/idiom/Open.hh>

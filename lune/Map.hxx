@@ -1,8 +1,6 @@
 #ifndef LUNE_MAP_HXX
 # define LUNE_MAP_HXX
 
-# include <elle/standalone/Log.hh>
-
 namespace lune
 {
 

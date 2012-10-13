@@ -3,7 +3,6 @@
 #include <elle/types.hh>
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
 
 namespace elle
 {

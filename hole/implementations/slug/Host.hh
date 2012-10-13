@@ -8,7 +8,6 @@
 # include <elle/types.hh>
 # include <elle/network/fwd.hh>
 # include <elle/network/Locus.hh>
-# include <elle/concurrency/Signal.hh>
 
 # include <protocol/ChanneledStream.hh>
 # include <protocol/Serializer.hh>
