@@ -97,7 +97,9 @@ extern "C" PyObject* metalib_generate_passport(PyObject*, PyObject* args)
         }
     }
   catch(std::exception const& err)
-    PyErr_SetString(metalib_MetaError, err.what());
+    {
+      PyErr_SetString(metalib_MetaError, err.what());
+    }
 
   Py_END_ALLOW_THREADS;
 
