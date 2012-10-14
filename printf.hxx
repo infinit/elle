@@ -19,7 +19,8 @@ namespace elle
 
     // Select the right feeder.
     // Feeder for "printable" objects.
-    template<bool __b> struct FeedItSwissMotherFuckingCheese
+    template<bool __b>
+    struct FeedItSwissMotherFuckingCheese
     {
       template<size_t> struct Helper{};
 
@@ -29,28 +30,37 @@ namespace elle
       //   when boost::format just don't work (nucleus::proton::Version
       //   with boost 1.49 in c++0x).
       template<typename T>
-      static void feed_it(boost::format& fmt, T const& value, int,
-          Helper<sizeof( static_cast<boost::format&>(*((boost::format* const)0)) % static_cast<T const&>(*((T const* const)0)) )>* = 0)
+      static
+      void
+      feed_it(boost::format& fmt, T&& value, int,
+              Helper<sizeof(
+                static_cast<boost::format&>(*((boost::format* const)0)) %
+                static_cast<T const&>(*((T const* const)0)) )>* = 0)
       {
-        fmt % value;
+        fmt % std::forward<T>(value);
       }
 
       // This is the fallback method using a classic stringstream, and
       // format a plain string instead of the value.
       template<typename T>
-      static void feed_it(boost::format& fmt, T const& value, unsigned int)
+      static
+      void
+      feed_it(boost::format& fmt, T&& value, unsigned int)
       {
         std::stringstream ss;
-        ss << value;
+        ss << std::forward<T>(value);
         fmt % ss.str();
       }
     };
 
     // Feeder for "non printable" objects.
-    template<> struct FeedItSwissMotherFuckingCheese<false>
+    template <>
+    struct FeedItSwissMotherFuckingCheese<false>
     {
-      template<typename T>
-      static void feed_it(boost::format& fmt, T const& value, int)
+      template <typename T>
+      static
+      void
+      feed_it(boost::format& fmt, T&& value, int)
       {
         std::stringstream ss;
         ss << '<'<< typeid(T).name() << "instance at 0x"
@@ -59,60 +69,55 @@ namespace elle
       }
     };
 
-    inline void
+    inline
+    void
     format_feed(boost::format&)
     {}
 
     // feed printable values
     template<typename T, typename... K>
     void
-    format_feed(boost::format& fmt, T const& front, K const&... tail)
+    format_feed(boost::format& fmt, T&& front, K&&... tail)
     {
       FeedItSwissMotherFuckingCheese<
-          IsPrintable<std::ostream, T>::value
-      >::feed_it(fmt, front, 42);
-      format_feed(fmt, tail...);
+        IsPrintable<std::ostream, T>::value
+        >::feed_it(fmt, std::forward<T>(front), 42);
+      format_feed(fmt, std::forward<K>(tail)...);
     }
 
 
     // XXX virer les const& et utiliser les bon traits
     template<typename... T>
     std::string
-    format(char const* fmt, T const&... values)
+    format(char const* fmt, T&&... values)
     {
-      try
-        {
-          boost::format boost_fmt{fmt};
-          format_feed(boost_fmt, values...);
-          return boost_fmt.str();
-        }
-      catch (std::exception const& e)
-        {
-          elle::abort(elle::sprintf("%s: %s", e.what(), fmt));
-        }
+      boost::format boost_fmt{fmt};
+      format_feed(boost_fmt, std::forward<T>(values)...);
+      return boost_fmt.str();
     }
   }
 
 
   template<typename... T>
-    size_t fprintf(std::ostream& out, char const* fmt, T const&... values)
-    {
-      std::string res = elle::detail::format(fmt, values...);
-      out << res;
-      return res.size();
-    }
+  size_t
+  fprintf(std::ostream& out, char const* fmt, T&&... values)
+  {
+    std::string res = elle::detail::format(fmt, std::forward<T>(values)...);
+    out << res;
+    return res.size();
+  }
 
   template<typename... T>
-    size_t printf(char const* fmt, T const&... values)
-    {
-      return fprintf(std::cout, fmt, values...);
-    }
+  size_t printf(char const* fmt, T&&... values)
+  {
+    return fprintf(std::cout, fmt, std::forward<T>(values)...);
+  }
 
   template<typename... T>
-    std::string sprintf(char const* fmt, T const&... values)
-    {
-      return elle::detail::format(fmt, values...);
-    }
+  std::string sprintf(char const* fmt, T&&... values)
+  {
+    return elle::detail::format(fmt, std::forward<T>(values)...);
+  }
 
 }
 
