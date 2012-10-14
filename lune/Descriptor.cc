@@ -155,6 +155,12 @@ namespace lune
   }
 
   void
+  Descriptor::load(elle::String const& network)
+  {
+    this->load(Descriptor::_path(network));
+  }
+
+  void
   Descriptor::store(elle::String const& network) const
   {
     this->store(Descriptor::_path(network));

@@ -49,7 +49,7 @@ namespace hole
         //     new implementations::local::Implementation(*this, network);
         //   break;
         // }
-        case Model::TypeRemote:
+      case Model::TypeRemote:
         {
           // Retrieve the locus.
           if (set.loci.size() != 1)
@@ -62,7 +62,7 @@ namespace hole
           return std::unique_ptr<Hole>(
             new implementations::remote::Implementation(storage, locus));
         }
-        case Model::TypeSlug:
+      case Model::TypeSlug:
         {
           std::vector<elle::network::Locus> members;
           for (elle::network::Locus const& locus: set.loci)
@@ -71,7 +71,7 @@ namespace hole
           return std::unique_ptr<Hole>(
             new implementations::slug::Implementation(storage, members, port));
         }
-        case Model::TypeCirkle:
+      case Model::TypeCirkle:
         {
           /* XXX
           // allocate the instance.
@@ -81,7 +81,7 @@ namespace hole
           elle::abort("Cirkle implementation is disabled for now");
           break;
         }
-        default:
+      default:
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
           throw reactor::Exception(elle::concurrency::scheduler(),

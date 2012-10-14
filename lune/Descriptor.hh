@@ -193,6 +193,8 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
+    load(elle::String const& network);
+    void
     store(elle::String const& network) const;
     static
     void

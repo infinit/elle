@@ -7,6 +7,8 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/shrub/Shrub.hh>
 
+#include <etoile/wall/Path.hh> // XXX
+
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Entry.hh>
@@ -168,8 +170,7 @@ namespace etoile
           // accessed as it has potentially been released with the context
           // through the call to Discard().
           if (entry == nullptr)
-            escape("unable to locate the directory entry '%s'",
-                   slice.c_str());
+            throw wall::NoSuchFileOrDirectory(elle::concurrency::scheduler(), slice);
 
           // first, record the address/revision in the venue.
           if (venue.Record(address, revision) == elle::Status::Error)

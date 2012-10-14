@@ -28,7 +28,8 @@ namespace etoile
 
       // Resolve the route.
       if (path::Path::Resolve(route, venue) == elle::Status::Error)
-        throw NoSuchFileOrDirectory(elle::concurrency::scheduler(), way);
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to resolve the route");
 
       // Create the chemin.
       path::Chemin chemin;
