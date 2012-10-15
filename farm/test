@@ -257,13 +257,13 @@ if __name__ == "__main__":
     report = OrderedDict()
     # Run the functionals tests
     if not args.scripts:
-        res = functionals_tests(args.scriptdir, report)
+        functional_success = functionals_tests(args.scriptdir, report)
     else:
-        res = functionals_tests(args.scriptdir, report, args.scripts.split(","))
+        functional_success = functionals_tests(args.scriptdir, report, args.scripts.split(","))
 
     # Run the unit tests (if no script was specified explicitly)
     if not args.scripts:
-        res = unit_tests(report)
+        unit_success = unit_tests(report)
 
     with open("report", "w") as reportfile:
         import pprint
@@ -273,5 +273,6 @@ if __name__ == "__main__":
         m = watchers.Mail()
         m.send_mail(report)
 
-    if not res:
+    if functional_success == False \
+        or unit_success == False:
         sys.exit(1)
