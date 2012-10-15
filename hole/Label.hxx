@@ -1,7 +1,6 @@
 #ifndef HOLE_LABEL_HXX
 # define HOLE_LABEL_HXX
 
-# include <elle/standalone/Report.hh>
 # include <elle/cryptography/Digest.hh>
 # include <elle/cryptography/OneWay.hh>
 

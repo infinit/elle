@@ -1,9 +1,5 @@
 #include <elle/network/Host.hh>
-
-#include <elle/standalone/Report.hh>
-
-#include <elle/idiom/Close.hh>
-#include <elle/idiom/Open.hh>
+#include <elle/io/Dumpable.hh>
 
 namespace elle
 {

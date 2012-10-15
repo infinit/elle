@@ -1,7 +1,7 @@
 #ifndef ELLE_UTILITY_PARSER_HXX
 # define ELLE_UTILITY_PARSER_HXX
 
-# include <elle/standalone/Report.hh>
+# include <elle/Exception.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <boost/lexical_cast.hpp>

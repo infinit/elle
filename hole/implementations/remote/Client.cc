@@ -2,7 +2,6 @@
 #include <hole/implementations/remote/Manifest.hh>
 
 #include <elle/log.hh>
-#include <elle/standalone/Report.hh>
 #include <elle/network/Locus.hh>
 
 #include <elle/Passport.hh>

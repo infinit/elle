@@ -3,7 +3,6 @@
 #include <elle/io/Piece.hh>
 #include <elle/log.hh>
 #include <elle/serialize/PairSerializer.hxx>
-#include <elle/standalone/Report.hh>
 
 #include <reactor/network/tcp-server.hh>
 #include <reactor/thread.hh>

@@ -1,10 +1,9 @@
 #include <elle/system/platform.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/cryptography/Cryptography.hh>
 
 #include <elle/Elle.hh>
+#include <elle/Exception.hh>
 
 #include <elle/idiom/Open.hh>
 

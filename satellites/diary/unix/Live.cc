@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <satellites/diary/unix/Live.hh>
-#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Open.hh>
 

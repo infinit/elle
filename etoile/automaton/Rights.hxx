@@ -3,8 +3,7 @@
 
 # include <etoile/gear/Operation.hh>
 
-# include <elle/standalone/Report.hh>
-
+# include <elle/Exception.hh>
 # include <elle/idiom/Open.hh>
 
 namespace etoile

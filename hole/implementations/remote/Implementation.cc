@@ -5,7 +5,6 @@
 #include <hole/implementations/remote/Remote.hh>
 
 #include <elle/concurrency/Scheduler.hh>
-#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Open.hh>
 

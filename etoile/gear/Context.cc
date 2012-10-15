@@ -1,6 +1,5 @@
 #include <etoile/gear/Context.hh>
 
-#include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 
 namespace etoile

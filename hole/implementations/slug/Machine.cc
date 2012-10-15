@@ -4,7 +4,7 @@
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
-#include <elle/standalone/Report.hh>
+#include <elle/network/Interface.hh>
 #include <elle/utility/Time.hh>
 #include <elle/utility/Duration.hh>
 

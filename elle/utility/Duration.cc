@@ -1,7 +1,5 @@
 #include <elle/utility/Duration.hh>
-
-#include <elle/standalone/Report.hh>
-
+#include <elle/io/Dumpable.hh>
 #include <elle/idiom/Open.hh>
 
 #include <iostream>

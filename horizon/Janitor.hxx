@@ -2,7 +2,6 @@
 # define HORIZON_JANITOR_HXX
 
 #include <elle/types.hh>
-#include <elle/standalone/Report.hh>
 
 #include <etoile/wall/Object.hh>
 

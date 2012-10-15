@@ -1,5 +1,4 @@
 #include <elle/cryptography/OneWay.hh>
-#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/evp.h>

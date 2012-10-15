@@ -2,7 +2,6 @@
 
 #include <elle/types.hh>
 
-#include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 
 #include <elle/utility/URI.hh>

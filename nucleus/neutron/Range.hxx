@@ -1,10 +1,10 @@
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
 # define NUCLEUS_NEUTRON_RANGE_HXX
 
+# include <elle/io/Dumpable.hh>
+
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/Exception.hh>
-
-# include <elle/standalone/Report.hh>
 
 # include <elle/idiom/Open.hh>
 

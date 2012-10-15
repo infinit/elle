@@ -2,7 +2,6 @@
 #include <etoile/gear/Actor.hh>
 #include <etoile/gear/Scope.hh>
 
-#include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 #include <elle/log.hh>
 

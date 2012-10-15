@@ -22,13 +22,11 @@ add_library(elle ${LINK_METHOD}
 
   Authority.cc
   Buffer.cc
-  Exception.cc
   IOStream.cc
   Passport.cc
   Printable.cc
 
   standalone/Region.cc
-  standalone/Report.cc
 
   radix/Meta.cc
   radix/Object.cc

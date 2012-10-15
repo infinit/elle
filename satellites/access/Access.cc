@@ -2,7 +2,6 @@
 
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
-#include <elle/standalone/Report.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>

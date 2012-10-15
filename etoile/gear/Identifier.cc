@@ -1,9 +1,9 @@
 #include <etoile/gear/Identifier.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <iostream>
 #include <sstream>
+
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {

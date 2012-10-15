@@ -3,8 +3,6 @@
 
 # include <elle/types.hh>
 
-# include <elle/standalone/Report.hh>
-
 # include <cassert>
 # include <memory>
 

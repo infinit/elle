@@ -8,7 +8,6 @@
 #include <elle/idiom/Open.hh>
 
 #include <elle/standalone/Region.hh>
-#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
 # include <vector>

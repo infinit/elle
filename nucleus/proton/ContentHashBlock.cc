@@ -4,7 +4,6 @@
 #include <nucleus/Exception.hh>
 
 #include <elle/cryptography/Random.hh>
-#include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus

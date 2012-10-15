@@ -5,7 +5,8 @@
 
 # include <elle/concept/Fileable.hh>
 
-# include <elle/io/fwd.hh>
+#include <elle/io/fwd.hh>
+#include <elle/io/Dumpable.hh>
 
 # include <elle/serialize/IniArchive.hh>
 

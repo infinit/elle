@@ -6,8 +6,6 @@
 #include <elle/idiom/Open.hh>
 #include <elle/os/path.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/system/system.hh>
 #include <elle/system/platform.hh>
 

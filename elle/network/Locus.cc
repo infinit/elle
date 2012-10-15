@@ -1,8 +1,6 @@
 #include <elle/network/Locus.hh>
-
+#include <elle/io/Dumpable.hh>
 #include <elle/types.hh>
-
-#include <elle/standalone/Report.hh>
 
 namespace elle
 {

@@ -2,8 +2,6 @@
 
 #include <horizon/Crib.hh>
 
-#include <elle/standalone/Report.hh>
-
 ELLE_LOG_COMPONENT("infinit.horizon.Crib");
 
 namespace horizon

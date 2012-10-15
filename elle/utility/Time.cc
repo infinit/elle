@@ -1,6 +1,5 @@
 #include <elle/utility/Time.hh>
 
-#include <elle/standalone/Report.hh>
 #include <elle/log.hh>
 
 #include <elle/utility/Duration.hh>

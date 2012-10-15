@@ -1,5 +1,3 @@
-#include <elle/standalone/Report.hh>
-
 #include <hole/Model.hh>
 
 #include <elle/idiom/Close.hh>

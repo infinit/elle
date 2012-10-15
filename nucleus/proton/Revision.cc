@@ -1,7 +1,5 @@
 #include <nucleus/proton/Revision.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/idiom/Close.hh>
 # include <limits>
 #include <elle/idiom/Open.hh>

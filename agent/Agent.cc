@@ -1,7 +1,6 @@
 #include <agent/Agent.hh>
 
 #include <elle/io/Console.hh>
-#include <elle/standalone/Report.hh>
 
 #include <lune/Lune.hh>
 

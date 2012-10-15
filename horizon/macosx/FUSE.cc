@@ -1,7 +1,7 @@
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/macosx/FUker.hh>
 
-#include <elle/standalone/Report.hh>
+#include <elle/Exception.hh>
 #include <elle/idiom/Open.hh>
 
 namespace horizon

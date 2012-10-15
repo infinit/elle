@@ -3,7 +3,6 @@
 
 #include <elle/log.hh>
 #include <elle/Elle.hh>
-#include <elle/standalone/Report.hh>
 
 #include <lune/Lune.hh>
 
