@@ -65,7 +65,7 @@
             Unit test
             </td>
             <td style="{{_curr_style}}">
-                {{unit_tests["result"]}}
+		<font color="#00ff00"> {{unit_tests["result"]}} </font>
             </td>
             <td colspan=4> </td>
         </tr>
