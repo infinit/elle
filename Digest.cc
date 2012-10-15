@@ -1,7 +1,5 @@
 #include <elle/cryptography/Digest.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/idiom/Open.hh>
 
 namespace elle

@@ -2,7 +2,6 @@
 
 #include <elle/cryptography/Random.hh>
 
-#include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 
 #include <elle/idiom/Close.hh>

@@ -2,8 +2,6 @@
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/KeyPair.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
 # include <openssl/err.h>
