@@ -1,5 +1,6 @@
 #include <elle/types.hh>
-#include <elle/standalone/Report.hh>
+
+#include <elle/Exception.hh>
 
 #include <elle/idiom/Close.hh>
 # include <iconv.h>

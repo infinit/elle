@@ -1,4 +1,5 @@
 #include <elle/utility/Factory.hh>
+#include <elle/io/Dumpable.hh>
 
 #include <elle/idiom/Close.hh>
 # include <iostream>

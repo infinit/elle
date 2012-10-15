@@ -7,8 +7,6 @@
 #include <elle/types.hh>
 #include <elle/Exception.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/io/File.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Pattern.hh>

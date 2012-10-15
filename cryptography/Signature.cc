@@ -1,7 +1,5 @@
 #include <elle/cryptography/Signature.hh>
 
-#include <elle/standalone/Report.hh>
-
 namespace elle
 {
   namespace cryptography

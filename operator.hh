@@ -7,6 +7,9 @@
 /// take into account that this implementation relies on the presence
 /// of a copy constructor which may therefore need to be implemented
 /// should the class contain pointers for example.
+///
+/// !WARNING! This macro-function should never be used unless for
+///           migration purposes.
 # define ELLE_OPERATOR_ASSIGNMENT(Type)                                 \
   public:                                                               \
   Type&                                                                 \

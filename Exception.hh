@@ -14,16 +14,12 @@ namespace elle
     public reactor::Exception
   {
   public:
-    template<typename... Args>
+    template <typename... Args>
     Exception(elle::String const& fmt, Args&&... args):
       reactor::Exception(elle::concurrency::scheduler(),
                          elle::sprintf(fmt.c_str(),
-                                       std::forward<Args>(args)...) + _add_report())
+                                       std::forward<Args>(args)...))
     {}
-
-    static
-    elle::String
-    _add_report();
 
   };
 

@@ -3,8 +3,6 @@
 
 # include <elle/types.hh>
 
-# include <elle/standalone/Report.hh>
-
 namespace elle
 {
   namespace container

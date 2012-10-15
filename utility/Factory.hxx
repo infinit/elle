@@ -1,8 +1,7 @@
 #ifndef ELLE_UTILITY_FACTORY_HXX
 # define ELLE_UTILITY_FACTORY_HXX
 
-# include <elle/standalone/Report.hh>
-
+# include <elle/Exception.hh>
 # include <elle/idiom/Open.hh>
 
 namespace elle

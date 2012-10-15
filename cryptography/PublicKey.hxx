@@ -1,7 +1,5 @@
-#ifndef  ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 # define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
-
-# include <elle/standalone/Report.hh>
 
 # include <elle/Buffer.hh>
 

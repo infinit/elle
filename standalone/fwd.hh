@@ -7,7 +7,6 @@ namespace elle
   {
 
     class Region;
-    class Report;
 
   }
 }

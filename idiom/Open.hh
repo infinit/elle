@@ -77,13 +77,6 @@
     return ((this->operator>(object) || this->operator==(object)));     \
   }
 
-//
-// ---------- report ----------------------------------------------------------
-//
-
-///
-/// this macro-function indicates that an error occured
-/// and returns Status::Error.
-///
+// XXX
 #define escape(_format_, ...)                                           \
   throw elle::Exception(_format_, ##__VA_ARGS__)

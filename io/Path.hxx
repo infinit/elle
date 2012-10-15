@@ -1,9 +1,10 @@
 #ifndef ELLE_IO_PATH_HXX
 # define ELLE_IO_PATH_HXX
 
-# include <elle/standalone/Report.hh>
-
+# include <elle/Exception.hh>
 # include <elle/idiom/Open.hh>
+
+# include <stdexcept>
 
 namespace elle
 {

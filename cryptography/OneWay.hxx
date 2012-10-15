@@ -10,8 +10,6 @@
 
 # include <elle/serialize/BaseArchive.hxx>
 
-# include <elle/standalone/Report.hh>
-
 # include <elle/idiom/Open.hh>
 
 namespace elle

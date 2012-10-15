@@ -1,8 +1,6 @@
 #ifndef  ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 # define ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 
-# include <elle/standalone/Report.hh>
-
 # include <elle/Buffer.hh>
 
 # include <elle/idiom/Open.hh>

@@ -1,6 +1,5 @@
 #include <elle/utility/Parser.hh>
-
-#include <elle/standalone/Report.hh>
+#include <elle/io/Dumpable.hh>
 
 namespace elle
 {

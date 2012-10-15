@@ -1,7 +1,5 @@
 #include <elle/io/Console.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/idiom/Close.hh>
 # include <stdio.h>
 # include <unistd.h>

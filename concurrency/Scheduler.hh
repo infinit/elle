@@ -3,7 +3,6 @@
 
 # include <elle/idiom/Close.hh>
 #  include <reactor/scheduler.hh>
-# include <elle/idiom/Open.hh>
 
 // XXX[revoir ce fichier?]
 

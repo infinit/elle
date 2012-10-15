@@ -4,8 +4,6 @@
 // XXX[two logs included?]
 # include <elle/log.hh>
 
-# include <elle/standalone/Report.hh>
-
 # include <elle/serialize/Base64Archive.hh>
 
 # include <elle/idiom/Close.hh>

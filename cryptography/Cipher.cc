@@ -1,7 +1,5 @@
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/standalone/Report.hh>
-
 namespace elle
 {
   namespace cryptography

@@ -6,8 +6,6 @@
 
 #  include <elle/types.hh>
 
-#  include <elle/standalone/Report.hh>
-
 #  include <elle/io/Path.hh>
 #  include <elle/io/Directory.hh>
 

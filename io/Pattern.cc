@@ -1,8 +1,8 @@
 #include <elle/io/Pattern.hh>
 
-#include <elle/standalone/Report.hh>
-
 #include <elle/idiom/Open.hh>
+
+#include <iostream>
 
 namespace elle
 {
