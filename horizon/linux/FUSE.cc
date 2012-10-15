@@ -1,6 +1,7 @@
 #include <horizon/linux/FUSE.hh>
 #include <horizon/linux/FUker.hh>
 
+#include <elle/Exception.hh>
 #include <elle/idiom/Open.hh>
 
 namespace horizon
