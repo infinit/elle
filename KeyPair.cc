@@ -254,11 +254,6 @@ namespace elle
       return true;
     }
 
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(KeyPair, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
