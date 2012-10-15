@@ -33,10 +33,16 @@ MAIL_TARGETS = (
     "charles.guillot@infinit.io",
 )
 
-SMTP_USERNAME = 'botte'
-SMTP_PASSWORD = 'bite'
-SMTP_HOST = 'localhost'
-SMTP_PORT =  25
+if "_INFINIT_USE_MANDRILL" in os.environ:
+	SMTP_USERNAME = 'infinitdotio'
+	SMTP_PASSWORD = 'ca159fe5-a0f7-47eb-b9e1-2a8f03b9da86'
+	SMTP_HOST = 'smtp.mandrillapp.com'
+	SMTP_PORT = 587
+else:
+	SMTP_HOST = 'localhost'
+	SMTP_PORT =  25
+	# SMTP_USERNAME = '' # define this one to use an user name
+	# SMTP_PASSWORD = '' # define this one to set the password of the user
 
 CHART_W_SIZE = 400
 CHART_H_SIZE = 250
@@ -195,40 +201,42 @@ class Graph(Watcher):
         self.render_memory_graphs()
 
 class Mail(Watcher):
-    def __init__(self, script_name="", report={}):
-        self.smtp = sml.SMTP(SMTP_HOST, SMTP_PORT)
+	def __init__(self, script_name="", report={}):
+		self.smtp = sml.SMTP(SMTP_HOST, SMTP_PORT)
 
-    def final(self, rep):
-        if all(test["result"] == "SUCCESS" for test in rep["scripts"].values()):
-            return "SUCCESS"
-        else:
-            return "FAILURE"
+	def final(self, rep):
+		if all(test["result"] == "SUCCESS" for test in rep["scripts"].values()):
+			return "SUCCESS"
+		else:
+			return "FAILURE"
 
 
-    def send_mail(self, all_reports, _enc="utf8"):
-        from email.mime.multipart import MIMEMultipart
-        from email.mime.text import MIMEText
-        from email.header import Header
-        from higgs import moody
-        html = mail_template
-        html = moody.render(html, dict=all_reports, **all_reports)
+	def send_mail(self, all_reports, _enc="utf8"):
+		from email.mime.multipart import MIMEMultipart
+		from email.mime.text import MIMEText
+		from email.header import Header
+		from higgs import moody
+		import html as htmlmod
+		html = mail_template
+		html = moody.render(html, dict=all_reports, **all_reports)
 
-        s = sp.check_output("git rev-parse --short HEAD".split(), cwd=os.environ["DIR_SOURCE"])
-        sub = s.decode("utf8").strip()
-        full_subject = "[INFINIT] [build-farm] Test report (#{0}): {1}".format(sub, self.final(all_reports))
+		s = sp.check_output("git rev-parse --short HEAD".split(), cwd=os.environ["DIR_SOURCE"])
+		sub = s.decode("utf8").strip()
+		full_subject = "[INFINIT] [build-farm] Test report (#{0}): {1}".format(sub, self.final(all_reports))
 
-        msg = MIMEText(html, 'html', _charset=_enc)
-        msg['Subject'] = Header(full_subject, _enc)
-        msg['From'] = "admin@infinit.io"
-        msg['To'] = ", ".join(MAIL_TARGETS)
+		msg = MIMEText(html, 'html', _charset=_enc)
+		msg['Subject'] = Header(full_subject, _enc)
+		msg['From'] = "admin@infinit.io"
+		msg['To'] = ", ".join(MAIL_TARGETS)
 
-        print("send mail to:", MAIL_TARGETS)
-        try:
-            #self.smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
-            self.smtp.send_message(msg)
-        finally:
-            self.smtp.quit()
+		print("send mail to:", MAIL_TARGETS)
+		try:
+			if all(v in globals() for v in ("SMTP_USERNAME", "SMTP_PASSWORD")):
+				self.smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+			self.smtp.send_message(msg)
+		finally:
+			self.smtp.quit()
 
-    def post_shutdown(self, all_reports):
-        self.send_mail(all_reports)
+	def post_shutdown(self, all_reports):
+		self.send_mail(all_reports)
 
