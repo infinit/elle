@@ -24,8 +24,7 @@ namespace elle
     /// noted with a lower-case 'k'.
     ///
     class KeyPair
-      : public radix::Object
-      , public elle::serialize::SerializableMixin<KeyPair>
+      : public elle::serialize::SerializableMixin<KeyPair>
     {
     public:
       //
@@ -85,7 +84,6 @@ namespace elle
       //
 
       // object
-      declare(KeyPair);
       Boolean           operator ==(const KeyPair&) const;
 
       // dumpable
