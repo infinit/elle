@@ -147,33 +147,25 @@ namespace hole
       {
         ELLE_TRACE_SCOPE("%s: pull block at %s, %s", *this, address, revision);
         _state_check_authenticated();
-        nucleus::proton::Block* block = 0;
-        // Build the block according to the component.
-        if (nucleus::factory().Build(address.component(),
-                                            block) == elle::Status::Error)
-          throw reactor::Exception(elle::concurrency::scheduler(), "unable to build the block");
+
+        std::unique_ptr<nucleus::proton::Block> block;
+
         // Forward the request depending on the nature of the block which
         // the addres indicates.
         switch (address.family())
           {
           case nucleus::proton::Family::content_hash_block:
             {
-              nucleus::proton::ImmutableBlock* ib;
-              ib = static_cast<nucleus::proton::ImmutableBlock*>(block);
-              assert(dynamic_cast<nucleus::proton::ImmutableBlock*>(
-                       block) != nullptr);
-              _server.get(address, *ib);
+              block = _server.get(address);
+
               break;
             }
           case nucleus::proton::Family::public_key_block:
           case nucleus::proton::Family::owner_key_block:
           case nucleus::proton::Family::imprint_block:
             {
-              nucleus::proton::MutableBlock* mb;
-              mb = static_cast<nucleus::proton::MutableBlock*>(block);
-              assert(dynamic_cast<nucleus::proton::MutableBlock*>(
-                       block) != nullptr);
-              _server.get(address, revision, *mb);
+              block = _server.get(address, revision);
+
               break;
             }
           default:

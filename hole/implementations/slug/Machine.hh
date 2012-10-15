@@ -94,17 +94,23 @@ namespace hole
       `----*/
       public:
         /// Store an immutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::ImmutableBlock&);
         /// Store a mutable block.
-        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
+        void
+        put(const nucleus::proton::Address&,
+            const nucleus::proton::MutableBlock&);
         /// Retrieves an immutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&);
+        get(const nucleus::proton::Address&);
         /// Retrieves a mutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(const nucleus::proton::Address&, const nucleus::proton::Revision&);
+        get(const nucleus::proton::Address&,
+            const nucleus::proton::Revision&);
         /// Remove a block.
-        void Kill(const nucleus::proton::Address&);
+        void
+        wipe(const nucleus::proton::Address&);
       private:
         std::unique_ptr<nucleus::proton::Block>
         _get_latest(nucleus::proton::Address const&);

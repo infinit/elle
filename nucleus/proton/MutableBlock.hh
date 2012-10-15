@@ -77,8 +77,6 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(MutableBlock);
-      // fileable
-      ELLE_CONCEPT_FILEABLE_METHODS();
 
       //
       // attributes

@@ -6,6 +6,9 @@
 
 # include <hole/storage/Storage.hh>
 
+# include <nucleus/proton/ImmutableBlock.hh>
+# include <nucleus/proton/MutableBlock.hh>
+
 namespace hole
 {
   namespace storage
@@ -45,10 +48,40 @@ namespace hole
       virtual
       bool
       _exist(std::string const& identifier) const;
-      /// The overridden path implementation.
+      /// The overriden store implementation.
       virtual
+      void
+      _store(const nucleus::proton::Address& address,
+             const nucleus::proton::ImmutableBlock& block) const;
+      /// The overriden store implementation.
+      virtual
+      void
+      _store(const nucleus::proton::Address& address,
+             const nucleus::proton::MutableBlock& block) const;
+      /// The overriden load implementation.
+      virtual
+      std::unique_ptr<nucleus::proton::Block>
+      _load(nucleus::proton::Address const& address) const;
+      /// The overriden load implementation.
+      virtual
+      std::unique_ptr<nucleus::proton::Block>
+      _load(nucleus::proton::Address const& address,
+          nucleus::proton::Revision const& revision) const;
+      /// The overriden erase implementation.
+      virtual
+      void
+      _erase(nucleus::proton::Address const& address) const;
+
+    private:
+      /*----------.
+      | Utilities |
+      `----------*/
       std::string
-      _path(std::string const& identifier) const;
+      path(nucleus::proton::Address const& address,
+           nucleus::proton::Revision const& revision = nucleus::proton::Revision::Last) const;
+
+      std::string
+      path(std::string const& identifier) const;
     };
   }
 }

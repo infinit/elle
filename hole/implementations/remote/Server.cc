@@ -77,16 +77,17 @@ namespace hole
       Server::put(const nucleus::proton::Address& address,
                   const nucleus::proton::ImmutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("%s: put immutable block at %s", *this, address);
+        // ELLE_TRACE_SCOPE("%s: put immutable block at %s", *this, address);
 
-        // does the block already exist.
-        if (this->_hole.storage().exist(address))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "this immutable block seems to already "
-                                   "exist");
+        // // does the block already exist.
+        // if (this->_hole.storage().exist(address))
+        //   throw reactor::Exception(elle::concurrency::scheduler(),
+        //                            "this immutable block seems to already "
+        //                            "exist");
 
-        // store the block.
-        block.store(this->_hole.storage().path(address));
+        // // store the block.
+        // block.store(this->_hole.storage().path(address));
+        this->_hole.storage().store(address, block);
       }
 
       void
@@ -112,10 +113,13 @@ namespace hole
               // referenced access block.
               if (object->access() != nucleus::proton::Address::null)
                 {
-                  nucleus::neutron::Access access;
-                  this->get(object->access(), access);
+                  std::unique_ptr<nucleus::proton::Block> block =
+                    this->get(object->access());
+
+                  nucleus::neutron::Access * access =
+                    dynamic_cast<nucleus::neutron::Access *>(block.get());
                   // Validate the object, providing the access block
-                  object->validate(address, access);
+                  object->validate(address, *access);
                 }
               else
                 {
@@ -140,56 +144,31 @@ namespace hole
             }
           }
 
-        // XXX[this kind of check should be provided by a method such as
-        //     hole/backend/fs/MutableBlock::derives()]
-        ELLE_TRACE("Check if the block derives the current block")
-          {
-            // does the block already exist.
-            if (!this->_hole.conflict(address, block))
-              {
-                ELLE_TRACE("Store the block %p", &block)
-                  block.store(this->_hole.storage().path(address));
-              }
-            else
-              throw reactor::Exception(
-                elle::concurrency::scheduler(),
-                "the block does not derive the local one");
-          }
+        this->_hole.storage().store(address, block);
       }
 
-      void
-      Server::get(const nucleus::proton::Address& address,
-                  nucleus::proton::ImmutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Server::get(const nucleus::proton::Address& address)
       {
-        ELLE_TRACE_SCOPE("%s: get immutable block at %s", *this, address);
+        std::unique_ptr<nucleus::proton::Block> block =
+          this->_hole.storage().load(address);
 
-        // does the block exist.
-        if (!this->_hole.storage().exist(address))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the block does not seem to exist");
+        block->validate(address);
 
-        // load the block.
-        block.load(this->_hole.storage().path(address));
-
-        // validate the block.
-        block.validate(address);
+        return block;
       }
 
-      void
+      std::unique_ptr<nucleus::proton::Block>
       Server::get(const nucleus::proton::Address& address,
-                  const nucleus::proton::Revision& revision,
-                  nucleus::proton::MutableBlock& block)
+                  const nucleus::proton::Revision& revision)
       {
         ELLE_TRACE_SCOPE("%s: get mutable block at %s, %s",
                          *this, address, revision);
 
-        // does the block exist.
-        if (!this->_hole.storage().exist(address, revision))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the block does not seem to exist");
-
         // load the block.
-        block.load(this->_hole.storage().path(address, revision));
+        std::unique_ptr<nucleus::proton::Block> block =
+          this->_hole.storage().load(address, revision);
+
 
         // validate the block, depending on its component.
         //
@@ -200,18 +179,21 @@ namespace hole
           case nucleus::neutron::ComponentObject:
             {
               const nucleus::neutron::Object* object =
-                static_cast<const nucleus::neutron::Object*>(&block);
-              assert(dynamic_cast<const nucleus::neutron::Object*>(
-                       &block) != nullptr);
+                static_cast<const nucleus::neutron::Object*>(block.get());
+              assert(dynamic_cast<const nucleus::neutron::Object*>(block.get()) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.
               if (object->access() != nucleus::proton::Address::null)
                 {
-                  nucleus::neutron::Access access;
-                  this->get(object->access(), access);
-                  // validate the object, providing the
-                  object->validate(address, access);
+                  std::unique_ptr<nucleus::proton::Block> accesBlock =
+                    this->get(object->access());
+
+                  nucleus::neutron::Access * access =
+                    dynamic_cast<nucleus::neutron::Access *>((accesBlock.get()));
+
+                  // Validate the object, providing the access block
+                  object->validate(address, *access);
                 }
               else
                 {
@@ -224,7 +206,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              block.validate(address);
+              block->validate(address);
 
               break;
             }
@@ -235,6 +217,7 @@ namespace hole
                                                      address.component()));
             }
           }
+        return block;
       }
 
       void
@@ -242,15 +225,14 @@ namespace hole
       {
         ELLE_TRACE_SCOPE("Kill");
 
-        // treat the request depending on the nature of the block which
-        // the addres indicates.
+         // FIXME: why a switch if we call the same method in both case.
+
         switch (address.family())
           {
           case nucleus::proton::Family::content_hash_block:
             {
               // erase the immutable block.
-              nucleus::proton::ImmutableBlock::erase(
-                this->_hole.storage().path(address));
+              this->_hole.storage().erase(address);
 
               break;
             }
@@ -258,9 +240,8 @@ namespace hole
           case nucleus::proton::Family::owner_key_block:
           case nucleus::proton::Family::imprint_block:
             {
-              // retrieve the mutable block.
-              nucleus::proton::MutableBlock::erase(
-                this->_hole.storage().path(address));
+              // erase the immutable block.
+              this->_hole.storage().erase(address);
 
               break;
             }

@@ -39,12 +39,6 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
-
-    /*---------.
-    | Fileable |
-    `---------*/
-    public:
-      ELLE_CONCEPT_FILEABLE_METHODS();
     };
 
   }

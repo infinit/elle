@@ -80,14 +80,12 @@ namespace hole
         put(const nucleus::proton::Address&,
             const nucleus::proton::MutableBlock&);
         /// Retrieve an immutable block.
-        void
-        get(const nucleus::proton::Address&,
-            nucleus::proton::ImmutableBlock&);
+        std::unique_ptr<nucleus::proton::Block>
+        get(const nucleus::proton::Address&);
         /// Retrieve a mutable block.
-        void
+        std::unique_ptr<nucleus::proton::Block>
         get(const nucleus::proton::Address&,
-            const nucleus::proton::Revision&,
-            nucleus::proton::MutableBlock&);
+            const nucleus::proton::Revision&);
         /// This method removes a block.
         void
         kill(const nucleus::proton::Address&);

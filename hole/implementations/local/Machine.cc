@@ -28,21 +28,14 @@ namespace hole
 // ---------- holeable --------------------------------------------------------
 //
       void
-      Machine::Put(const nucleus::proton::Address& address,
-                   const nucleus::proton::ImmutableBlock& block)
+      Machine::put(nucleus::proton::Address const& address,
+                   nucleus::proton::ImmutableBlock const& block)
       {
-        // Check if the block already exist.
-        if (this->_hole.storage().exist(address))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "this immutable block seems to already "
-                                   "exist");
-
-        // Store the block.
-        block.store(this->_hole.storage().path(address));
+        this->_hole.storage().store(address, block);
       }
 
       void
-      Machine::Put(const nucleus::proton::Address&    address,
+      Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::MutableBlock& block)
       {
         // validate the block, depending on its component.
@@ -68,12 +61,11 @@ namespace hole
                     ) {
                     // Load the access block.
                     std::unique_ptr<nucleus::proton::Block> block
-                      (this->_hole.pull(object->access(), nucleus::proton::Revision::Last));
-                    std::unique_ptr<nucleus::neutron::Access> access
+                      (this->_hole.storage().load(object->access(), nucleus::proton::Revision::Last));
+                      std::unique_ptr<nucleus::neutron::Access> access
                       (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                     if (access == nullptr)
-                      throw reactor::Exception(elle::concurrency::scheduler(),
-                                               "expected an access block");
+                      throw elle::Exception("Expected an access block.");
 
                     object->validate(address, *access);
                   }
@@ -104,54 +96,33 @@ namespace hole
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("unknown component '%u'", address.component()));
+              throw elle::Exception(
+                elle::sprintf("Unknown component '%u'.", address.component())
+                );
             }
           }
 
-        ELLE_TRACE("Check if the block derives the current block")
-          if (this->_hole.conflict(address, block))
-            throw reactor::Exception(
-              elle::concurrency::scheduler(),
-              "the block does not derive the local one");
-
-        block.store(this->_hole.storage().path(address));
+        this->_hole.storage().store(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Machine::Get(const nucleus::proton::Address& address)
+      Machine::get(const nucleus::proton::Address& address)
       {
-        nucleus::proton::ImmutableBlock* block;
-        nucleus::factory().Build(address.component(), block);
+        std::unique_ptr<nucleus::proton::Block> block =
+          this->_hole.storage().load(address);
 
-        // Does the block exist.
-        if (!this->_hole.storage().exist(address))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the block does not seem to exist");
-
-        // Load the block.
-        block->Block::load(this->_hole.storage().path(address));
-
-        // Validate the block.
         block->validate(address);
 
-        return std::unique_ptr<nucleus::proton::Block>(block);
+        return block;
       }
 
       std::unique_ptr<nucleus::proton::Block>
-      Machine::Get(const nucleus::proton::Address&    address,
-                   const nucleus::proton::Revision&    revision)
+      Machine::get(const nucleus::proton::Address& address,
+                   const nucleus::proton::Revision& revision)
       {
-        nucleus::proton::MutableBlock* block;
-        nucleus::factory().Build(address.component(), block);
-
-        // does the block exist.
-        if (!this->_hole.storage().exist(address, revision))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the block does not seem to exist");
-
         // load the block.
-        block->load(this->_hole.storage().path(address, revision));
+         std::unique_ptr<nucleus::proton::Block> block =
+          (this->_hole.storage().load(address, revision));
 
         // validate the block, depending on its component.
         //
@@ -162,21 +133,21 @@ namespace hole
           case nucleus::neutron::ComponentObject:
             {
               const nucleus::neutron::Object* object =
-                static_cast<const nucleus::neutron::Object*>(block);
-              assert(dynamic_cast<const nucleus::neutron::Object*>(block) != nullptr);
+                static_cast<const nucleus::neutron::Object*>(block.get());
+              assert(dynamic_cast<const nucleus::neutron::Object*>(block.get()) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.
               if (object->access() != nucleus::proton::Address::null)
                 {
                   // Load the access block.
-                  std::unique_ptr<nucleus::proton::Block> block
-                    (this->_hole.pull(object->access(), nucleus::proton::Revision::Last));
+                  std::unique_ptr<nucleus::proton::Block> accesBlock
+                    = this->_hole.storage().load(object->access(),
+                                                 nucleus::proton::Revision::Last);
                   std::unique_ptr<nucleus::neutron::Access> access
-                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                    (dynamic_cast<nucleus::neutron::Access*>(accesBlock.release()));
                   if (access == nullptr)
-                    throw reactor::Exception(elle::concurrency::scheduler(),
-                                             "expected an access block");
+                    throw elle::Exception("Expected an access block.");
 
                   // Validate the object.
                   object->validate(address, *access);
@@ -191,8 +162,7 @@ namespace hole
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("unknown component '%u'",
+              throw elle::Exception(elle::sprintf("Unknown component '%u'.",
                                                      address.component()));
             }
           default:
@@ -203,21 +173,21 @@ namespace hole
               break;
             }
           }
-        return std::unique_ptr<nucleus::proton::Block>(block);
+        return block;
       }
 
       void
-      Machine::Kill(const nucleus::proton::Address& address)
+      Machine::wipe(const nucleus::proton::Address& address)
       {
         // treat the request depending on the nature of the block which
         // the addres indicates.
+        // FIXME: why a switch if we call the same method in both case.
         switch (address.family())
           {
           case nucleus::proton::Family::content_hash_block:
             {
               // erase the immutable block.
-              nucleus::proton::ImmutableBlock::erase(
-                this->_hole.storage().path(address));
+              this->_hole.storage().erase(address);
 
               break;
             }
@@ -225,15 +195,14 @@ namespace hole
           case nucleus::proton::Family::owner_key_block:
           case nucleus::proton::Family::imprint_block:
             {
-              // retrieve the mutable block.
-              nucleus::proton::MutableBlock::erase(
-                this->_hole.storage().path(address));
+              // erase the mutable block.
+              this->_hole.storage().erase(address);
 
               break;
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
+              throw elle::Exception("Unknown block family.");
             }
           }
       }

@@ -258,17 +258,17 @@ void InfinitNetwork::_prepare_directory()
 
   nucleus::neutron::Object directory{from_string(_description.root_block)};
 
-  directory.store(storage.path(descriptor.meta().root()));
+  storage.store(descriptor.meta().root(), directory);
   LOG("Root block stored.");
 
   nucleus::neutron::Access access{from_string(_description.access_block)};
   nucleus::proton::Address access_address{from_string(_description.access_address)};
-  access.store(storage.path(access_address));
+  storage.store(access_address, access);
   LOG("Access block stored.");
 
   nucleus::neutron::Group group{from_string(_description.group_block)};
   nucleus::proton::Address group_address{from_string(_description.group_address)};
-  group.store(storage.path(group_address));
+  storage.store(group_address, group);
   LOG("Group block stored.");
 
   this->_register_device();

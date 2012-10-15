@@ -27,19 +27,22 @@ namespace hole
       public:
         Machine(hole::Hole& hole);
         /// Store an immutable block.
-        void Put(const nucleus::proton::Address&,
+        void
+        put(const nucleus::proton::Address&,
                  const nucleus::proton::ImmutableBlock&);
         /// Store a mutable block.
-        void Put(const nucleus::proton::Address&,
+        void
+        put(const nucleus::proton::Address&,
                  const nucleus::proton::MutableBlock&);
         /// Retrieve an immutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(nucleus::proton::Address const&);
+        get(nucleus::proton::Address const&);
         /// Retrieve a mutable block.
         std::unique_ptr<nucleus::proton::Block>
-        Get(nucleus::proton::Address const&, nucleus::proton::Revision const&);
+        get(nucleus::proton::Address const&, nucleus::proton::Revision const&);
         /// Remove a block.
-        void Kill(const nucleus::proton::Address&);
+        void
+        wipe(const nucleus::proton::Address&);
 
         //
         // interfaces

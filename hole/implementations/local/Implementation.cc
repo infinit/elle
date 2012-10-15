@@ -49,33 +49,33 @@ namespace hole
       Implementation::_push(nucleus::proton::Address const& address,
                             nucleus::proton::ImmutableBlock const& block)
       {
-        Local::Computer->Put(address, block);
+        Local::Computer->put(address, block);
       }
 
       void
       Implementation::_push(nucleus::proton::Address const& address,
                             nucleus::proton::MutableBlock const& block)
       {
-        Local::Computer->Put(address, block);
+        Local::Computer->put(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::_pull(nucleus::proton::Address const& address)
       {
-        return Local::Computer->Get(address);
+        return Local::Computer->get(address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::_pull(nucleus::proton::Address const& address,
                             nucleus::proton::Revision const& revision)
       {
-        return Local::Computer->Get(address, revision);
+        return Local::Computer->get(address, revision);
       }
 
       void
       Implementation::_wipe(nucleus::proton::Address const& address)
       {
-        Local::Computer->Kill(address);
+        Local::Computer->wipe(address);
       }
 
       /*---------.

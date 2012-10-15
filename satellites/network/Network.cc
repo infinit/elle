@@ -140,7 +140,8 @@ namespace satellite
     group.seal(identity.pair.k);
 
     nucleus::proton::Address group_address(group.bind());
-    group.store(storage.path(group_address));
+
+    storage.store(group_address, group);
 
     nucleus::neutron::Access access(network, identity.pair.K);
     nucleus::proton::Address* access_address(nullptr);
@@ -202,7 +203,8 @@ namespace satellite
             escape("unable to add the record to the access");
 
           access_address = new nucleus::proton::Address(access.bind());
-          access.store(storage.path(*access_address));
+
+          storage.store(*access_address, access);
 
           break;
         }
@@ -233,7 +235,8 @@ namespace satellite
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());
-    directory.store(storage.path(directory_address));
+
+    storage.store(directory_address, directory);
 
     //
     // create the network's descriptor.

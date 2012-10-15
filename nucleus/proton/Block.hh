@@ -43,7 +43,6 @@ namespace nucleus
     class Block:
       public elle::io::Dumpable,
       public elle::serialize::Serializable<>,
-      public elle::concept::Fileable<>,
       public elle::Printable,
       private boost::noncopyable
     {
