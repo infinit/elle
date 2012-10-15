@@ -7,6 +7,7 @@ import re
 import sys
 import stat
 import copy
+import html
 import time
 import email
 import runpy
@@ -137,15 +138,16 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
             script_report["Reason"] = str(e)
             print("\033[31mtest", script_name, "failed\033[0m")
         finally:
+            import html
             if "std" not in script_report:
                 script_report["std"] = OrderedDict()
-            script_report["std"]["out"] = out.decode("utf8")
+            script_report["std"]["out"] = html.escape(out.decode("utf8"))
             for w in watchers:
                 w.post_run(s)
     for w in watchers:
         w.post_shutdown(report)
     for r, stderr in zip(home_report.values(), p.stderrs):
-        r['output'] = stderr.read().decode('utf8')
+        r['output'] = html.escape(stderr.read().decode('utf8'))
     os.environ = environ_save
     return watchers
 
@@ -204,7 +206,8 @@ def unit_tests(report):
         report["unit_tests"]["result"] = "FAILURE"
         ret = False
     finally:
-        report["unit_tests"]["stdout"] = out.decode("utf8")
+        import html
+        report["unit_tests"]["stdout"] = html.escape(out.decode("utf8"))
     return ret
 
 def clean_the_fuck_up():

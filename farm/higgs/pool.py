@@ -151,6 +151,7 @@ class Pool:
         return self
 
     def __exit__(self, type, value, trace):
+        import html
         if trace != None:
             traceback.print_tb(trace)
             print(type)
