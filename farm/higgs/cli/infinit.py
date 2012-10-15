@@ -59,8 +59,8 @@ class Infinit:
 
     def stop(self):
         print("Send SIGTERM to {0}".format(self.pid))
-        self._infinit.terminate()
-        #self._infinit.send_signal(2)
+        #self._infinit.terminate()
+        self._infinit.send_signal(2)
         i = 0
         while self._infinit.poll() is None:
             print("Still waiting (pid = {0})(i = {1})".format(self.pid, i))
