@@ -53,7 +53,7 @@ namespace hole
       `----*/
       public:
         bool
-        challenge(lune::Passport const& passport);
+        challenge(elle::Passport const& passport);
         void
         push(const nucleus::proton::Address& address,
              nucleus::Derivable const& derivable);

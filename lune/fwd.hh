@@ -3,15 +3,12 @@
 
 namespace lune
 {
-
-  class Authority;
   class Configuration;
   class Descriptor;
   class Identity;
   class Log;
   template <typename T>
   class Map;
-  class Passport;
   class Phrase;
   class Set;
 

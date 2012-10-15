@@ -9,7 +9,7 @@
 # include <hole/fwd.hh>
 # include <hole/implementations/remote/fwd.hh>
 
-# include <lune/Passport.hh>
+# include <elle/Passport.hh>
 
 namespace hole
 {

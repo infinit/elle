@@ -42,10 +42,11 @@ namespace nucleus
     /// this method verifies that the signature has been issued by the
     /// oracle.
     ///
-    elle::Status        Stamp::Validate()
+    elle::Status
+    Stamp::Validate(elle::Authority const& authority)
     {
       // sign the attributes.
-      if (Infinit::Authority.K.Verify(
+      if (authority.K.Verify(
             this->signature,
             elle::serialize::make_tuple(this->master, this->slave)) == elle::Status::Error)
         escape("this stamp seems not to have been issued by the oracle");

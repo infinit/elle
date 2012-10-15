@@ -20,13 +20,14 @@
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
 #include <elle/os/path.hh>
+#include <elle/Passport.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
 
 #include <common/common.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
-#include <lune/Passport.hh>
+#include <lune/Lune.hh>
 
 #include <nucleus/neutron/Permissions.hh>
 
@@ -312,20 +313,20 @@ namespace surface
         }
       else
         {
-          lune::Passport passport;
+          elle::Passport passport;
 
-          passport.load();
+          passport.load(elle::io::Path(lune::Lune::Passport));
 
           ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_api->update_device(passport.id, name);
           passport_string = res.passport;
         }
 
-      lune::Passport passport;
+      elle::Passport passport;
       if (passport.Restore(passport_string) == elle::Status::Error)
         throw Exception(gap_internal_error, "Cannot load the passport");
 
-      passport.store();
+      passport.store(elle::io::Path(lune::Lune::Passport));
     }
 
     //- Network management ----------------------------------------------------
@@ -699,4 +700,3 @@ namespace surface
 
   }
 }
-

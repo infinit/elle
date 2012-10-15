@@ -1,6 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_IMPLEMENTATION_HH
 # define HOLE_IMPLEMENTATIONS_LOCAL_IMPLEMENTATION_HH
 
+# include <elle/fwd.hh>
 # include <elle/types.hh>
 
 # include <hole/Hole.hh>
@@ -21,7 +22,9 @@ namespace hole
       | Construction |
       `-------------*/
       public:
-        Implementation(storage::Storage& storage);
+        Implementation(storage::Storage& storage,
+                       elle::Passport const& passport,
+                       elle::Authority const& authority);
 
       /*------------.
       | Join, leave |

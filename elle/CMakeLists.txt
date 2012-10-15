@@ -20,9 +20,11 @@ add_library(elle ${LINK_METHOD}
 
   assert.cc
 
+  Authority.cc
   Buffer.cc
   Exception.cc
   IOStream.cc
+  Passport.cc
   Printable.cc
 
   standalone/Region.cc

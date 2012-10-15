@@ -35,6 +35,8 @@
 # include <limits>
 #include <elle/idiom/Open.hh>
 
+#include <HoleFactory.hh>
+
 ELLE_LOG_COMPONENT("infinit.8group");
 
 namespace satellite
@@ -435,7 +437,11 @@ namespace satellite
     shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
     hole::storage::Directory storage(shelter.string());
 
-    std::unique_ptr<hole::Hole> hole(hole::factory(storage));
+    elle::Passport passport;
+    passport.load(elle::io::Path(lune::Lune::Passport));
+
+    std::unique_ptr<hole::Hole> hole(infinit::hole_factory(storage, passport,
+                                                           Infinit::Authority));
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Information") == elle::Status::True) &&

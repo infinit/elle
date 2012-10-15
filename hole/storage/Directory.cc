@@ -33,7 +33,6 @@ namespace hole
       stream << "Directory " << this->_root;
     }
 
-
     /*--------.
     | Storage |
     `--------*/

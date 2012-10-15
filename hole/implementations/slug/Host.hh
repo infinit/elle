@@ -72,7 +72,7 @@ namespace hole
       `----*/
       public:
         std::vector<elle::network::Locus>
-        authenticate(lune::Passport const& passport);
+        authenticate(elle::Passport const& passport);
         std::unique_ptr<nucleus::proton::Block>
         pull(nucleus::proton::Address const& address,
              nucleus::proton::Revision const& revision);
@@ -83,7 +83,7 @@ namespace hole
         wipe(nucleus::proton::Address const& address);
       private:
         std::vector<elle::network::Locus>
-        _authenticate(lune::Passport const& passport);
+        _authenticate(elle::Passport const& passport);
         void
         _push(nucleus::proton::Address const& address,
               nucleus::Derivable& derivable);

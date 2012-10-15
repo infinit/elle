@@ -1,16 +1,7 @@
+#include <elle/cryptography/Cipher.hh>
 #include <elle/log.hh>
 
-#include <etoile/depot/Depot.hh>
-
 #include <hole/Hole.hh>
-//#include <hole/implementations/local/Implementation.hh>
-#include <hole/implementations/remote/Implementation.hh>
-#include <hole/implementations/slug/Implementation.hh>
-
-#include <horizon/Horizon.hh>
-
-#include <lune/Descriptor.hh>
-#include <lune/Set.hh>
 
 #include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Address.hh>
@@ -28,107 +19,34 @@ ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
 namespace hole
 {
-  /*--------.
-  | Factory |
-  `--------*/
-
-  std::unique_ptr<Hole>
-  factory(hole::storage::Storage& storage)
-  {
-    lune::Descriptor descriptor(Infinit::Network);
-
-    lune::Set set;
-    if (lune::Set::exists(Infinit::Network) == true)
-      set.load(Infinit::Network);
-
-    switch (descriptor.meta().model().type)
-      {
-        // case Model::TypeLocal:
-        // {
-        //   this->_implementation =
-        //     new implementations::local::Implementation(*this, network);
-        //   break;
-        // }
-      case Model::TypeRemote:
-        {
-          // Retrieve the locus.
-          if (set.loci.size() != 1)
-            {
-              static boost::format fmt("there should be a single locus "
-                                       "in the network's set (%u)");
-              throw std::runtime_error(str(fmt % set.loci.size()));
-            }
-          elle::network::Locus locus = *set.loci.begin();
-          return std::unique_ptr<Hole>(
-            new implementations::remote::Implementation(storage, locus));
-        }
-      case Model::TypeSlug:
-        {
-          std::vector<elle::network::Locus> members;
-          for (elle::network::Locus const& locus: set.loci)
-            members.push_back(locus);
-          int port = Infinit::Configuration["hole"].Get("slug.port", 0);
-          return std::unique_ptr<Hole>(
-            new implementations::slug::Implementation(storage, members, port));
-        }
-      case Model::TypeCirkle:
-        {
-          /* XXX
-          // allocate the instance.
-          this->_implementation =
-          new implementations::cirkle::Implementation(network);
-          */
-          elle::abort("Cirkle implementation is disabled for now");
-          break;
-        }
-      default:
-        {
-          static boost::format fmt("unknown or not-yet-supported model '%u'");
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   str(fmt % descriptor.meta().model().type));
-        }
-      }
-
-    elle::unreachable();
-  }
-
   /*-------------.
   | Construction |
   `-------------*/
 
-  Hole::Hole(storage::Storage& storage)
+  Hole::Hole(storage::Storage& storage,
+             elle::Passport const& passport,
+             elle::Authority const& authority)
     : _storage(storage)
+    , _passport(passport)
+    , _authority(authority)
   {
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
 
-    // Retrieve the passport.
-    {
-      if (lune::Passport::exists() == false)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "the device passport does not seem to exist");
-      _passport.load();
-      if (_passport.Validate(Infinit::Authority) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "unable to validate the passport");
-    }
+    if (_passport.Validate(this->authority()) == elle::Status::Error)
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to validate the passport");
 
     // Enable the meta logging.
     if (elle::radix::Meta::Enable() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to enable the meta logging");
-
-    etoile::depot::hole(this);
-    horizon::hole(this);
   }
 
   Hole::~Hole()
-  {
-    etoile::depot::hole(nullptr);
-    horizon::hole(nullptr);
-  }
+  {}
 
   /*-------------.
   | Join, leave |

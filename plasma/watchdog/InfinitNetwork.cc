@@ -12,7 +12,7 @@
 
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
 
@@ -279,9 +279,9 @@ void InfinitNetwork::_prepare_directory()
 void InfinitNetwork::_register_device()
 {
   LOG("Check if the device is registered for this network.");
-  lune::Passport passport;
+  elle::Passport passport;
 
-  passport.load();
+  passport.load(elle::io::Path(lune::Lune::Passport));
 
   this->_manager.meta().network_add_device(
     this->_description._id,

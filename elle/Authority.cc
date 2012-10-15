@@ -6,21 +6,11 @@
 #include <elle/serialize/TupleSerializer.hxx>
 #include <elle/io/File.hh>
 
-#include <lune/Authority.hh>
-#include <lune/Lune.hh>
+#include <elle/Authority.hh>
+#include <elle/Elle.hh>
 
-namespace lune
+namespace elle
 {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the authority files extension.
-  ///
-  const elle::String            Authority::Extension = ".auth";
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -184,12 +174,6 @@ namespace lune
     return elle::Status::Ok;
   }
 
-  elle::io::Path
-  Authority::_path()
-  {
-    return (elle::io::Path(Lune::Authority));
-  }
-
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -238,33 +222,4 @@ namespace lune
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-  void
-  Authority::load()
-  {
-    this->load(Authority::_path());
-  }
-
-  void
-  Authority::store() const
-  {
-    this->store(Authority::_path());
-  }
-
-  void
-  Authority::erase()
-  {
-    elle::concept::Fileable<>::erase(Authority::_path());
-  }
-
-  elle::Boolean
-  Authority::exists()
-  {
-    return (elle::concept::Fileable<>::exists(Authority::_path()));
-  }
-
 }

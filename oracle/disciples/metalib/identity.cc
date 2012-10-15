@@ -5,7 +5,7 @@
 #include <elle/types.hh>
 
 #include <lune/Identity.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -30,7 +30,7 @@ static lune::Identity create_identity(elle::String const& id,
                                       elle::String const& password)
 {
   elle::cryptography::KeyPair       pair;
-  lune::Authority                   authority;
+  elle::Authority                   authority;
   elle::io::Path                    authority_path;
   lune::Identity                    identity;
 

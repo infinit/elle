@@ -5,7 +5,7 @@
 
 #include <reactor/network/exception.hh>
 
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 
 #include <nucleus/Derivable.hh>
 #include <nucleus/neutron/Access.hh>
@@ -116,7 +116,7 @@ namespace hole
       }
 
       std::vector<elle::network::Locus>
-      Host::authenticate(lune::Passport const& passport)
+      Host::authenticate(elle::Passport const& passport)
       {
         ELLE_TRACE_SCOPE("%s: authenticate with %s", *this, passport);
         _state = State::authenticating;
@@ -124,14 +124,16 @@ namespace hole
       }
 
       std::vector<elle::network::Locus>
-      Host::_authenticate(lune::Passport const& passport)
+      Host::_authenticate(elle::Passport const& passport)
       {
         ELLE_TRACE_SCOPE("%s: peer authenticates with %s", *this, passport);
 
-        assert(this->_state == State::connected || this->_state == State::authenticating);
+        assert(this->_state == State::connected
+               || this->_state == State::authenticating);
 
         // Validate the passport.
-        if (passport.Validate(Infinit::Authority) == elle::Status::Error)
+        if (passport.Validate(this->_machine.hole().authority())
+            == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to validate the passport");
         else

@@ -1,16 +1,33 @@
 #include <Infinit.hh>
 
+#include <common/common.hh>
+
 #include <elle/Elle.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
+#include <elle/log.hh>
+#include <elle/network/Interface.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/cast.hh>
 
-#include <lune/Lune.hh>
 #include <agent/Agent.hh>
+
 #include <etoile/Etoile.hh>
+#include <etoile/depot/Depot.hh>
+
 #include <hole/Hole.hh>
+#include <hole/implementations/slug/Implementation.hh>
 #include <hole/storage/Directory.hh>
 #include <horizon/Horizon.hh>
+
+#include <lune/Descriptor.hh>
+#include <lune/Lune.hh>
+
+#include <plasma/meta/Client.hh>
+
+#include <HoleFactory.hh>
+
+ELLE_LOG_COMPONENT("infinit.8infinit");
 
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
@@ -139,8 +156,58 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
   shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
   hole::storage::Directory storage(shelter.string());
-  std::unique_ptr<hole::Hole> hole(hole::factory(storage));
+
+  elle::Passport passport;
+  passport.load(elle::io::Path(lune::Lune::Passport));
+
+  std::unique_ptr<hole::Hole> hole(
+    infinit::hole_factory(storage, passport, Infinit::Authority));
+  etoile::depot::hole(hole.get());
+  horizon::hole(hole.get());
   hole->join();
+
+  // FIXME
+  if (std::unique_ptr<hole::implementations::slug::Implementation> slug =
+      elle::cast<hole::implementations::slug::Implementation>::runtime(hole))
+    {
+      lune::Descriptor descriptor(Infinit::Network);
+      plasma::meta::Client client(common::meta::host(), common::meta::port());
+      try
+        {
+          std::string address;
+          auto interfaces = elle::network::Interface::get_map(
+            elle::network::Interface::Filter::only_up
+            | elle::network::Interface::Filter::no_loopback
+            );
+          for (auto const& pair: interfaces)
+            if (pair.second.ipv4_address.size() > 0 &&
+                pair.second.mac_address.size() > 0)
+              {
+                address = pair.second.ipv4_address;
+                break;
+              }
+          if (address.size() == 0)
+            {
+              ELLE_ERR("Cannot find any valid ip address");
+            }
+          else
+            {
+              ELLE_LOG("Register instance address: %s:%d", address,
+                       slug->port());
+              client.token(agent::Agent::meta_token);
+              client.network_connect_device(descriptor.meta().id(),
+                                            passport.id,
+                                            &address,
+                                            slug->port());
+            }
+        }
+      catch (std::exception const& err)
+        {
+          ELLE_ERR("Cannot update device port: %s",
+                   err.what()); // XXX[to improve]
+        }
+      hole.reset(slug.release());
+    }
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)

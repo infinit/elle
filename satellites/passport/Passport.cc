@@ -13,8 +13,8 @@
 #include <hole/Hole.hh>
 
 #include <lune/Lune.hh>
-#include <lune/Authority.hh>
-#include <lune/Passport.hh>
+#include <elle/Authority.hh>
+#include <elle/Passport.hh>
 
 namespace satellite
 {
@@ -27,15 +27,16 @@ namespace satellite
   ///
   elle::Status          Passport::Create()
   {
-    lune::Authority     authority;
-    lune::Passport      passport;
+    elle::Authority     authority;
+    elle::Passport      passport;
 
     //
     // test the arguments.
     //
     {
       // check if the authority exists.
-      if (lune::Authority::exists() == false)
+      if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority))
+          == false)
         escape("unable to locate the authority file");
     }
 
@@ -56,7 +57,7 @@ namespace satellite
         escape("unable to read the input");
 
       // load the authority.
-      authority.load();
+      authority.load(elle::io::Path(lune::Lune::Authority));
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::Status::Error)
@@ -92,7 +93,7 @@ namespace satellite
         escape("unable to seal the passport");
 
       // store the passport.
-      passport.store();
+      passport.store(elle::io::Path(lune::Lune::Passport));
     }
 
     return elle::Status::Ok;
@@ -103,11 +104,11 @@ namespace satellite
   ///
   elle::Status          Passport::Destroy()
   {
-    lune::Passport      passport;
+    elle::Passport      passport;
 
     // does the passport exist.
-    if (lune::Passport::exists() == true)
-      lune::Passport::erase();
+    if (elle::Passport::exists(elle::io::Path(lune::Lune::Passport)) == true)
+      elle::Passport::erase(elle::io::Path(lune::Lune::Passport));
 
     return elle::Status::Ok;
   }
@@ -117,14 +118,14 @@ namespace satellite
   ///
   elle::Status          Passport::Information()
   {
-    lune::Passport      passport;
+    elle::Passport      passport;
 
     //
     // test the arguments.
     //
     {
       // does the passport exist.
-      if (lune::Passport::exists() == false)
+      if (elle::Passport::exists(elle::io::Path(lune::Lune::Passport)) == false)
         escape("this passport does not seem to exist");
     }
 
@@ -133,7 +134,7 @@ namespace satellite
     //
     {
       // load the passport.
-      passport.load();
+      passport.load(elle::io::Path(lune::Lune::Passport));
 
       // validate the passport.
       if (passport.Validate(Infinit::Authority) == elle::Status::Error)

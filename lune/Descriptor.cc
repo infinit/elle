@@ -1,7 +1,7 @@
 #include <Infinit.hh>
 
 #include <lune/Descriptor.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Lune.hh>
 
 #include <elle/io/File.hh>
@@ -65,7 +65,7 @@ namespace lune
                          elle::Boolean history,
                          elle::Natural32 extent,
                          elle::Version const& version,
-                         Authority const& authority):
+                         elle::Authority const& authority):
     _meta(id, administrator_K, model, root, everybody, history, extent,
           authority),
     _data(name, openness, policy, version)
@@ -79,7 +79,7 @@ namespace lune
   }
 
   void
-  Descriptor::validate(Authority const& authority) const
+  Descriptor::validate(elle::Authority const& authority) const
   {
     switch (this->version())
       {
@@ -196,7 +196,7 @@ namespace lune
                          nucleus::neutron::Group::Identity const& everybody,
                          elle::Boolean history,
                          elle::Natural32 extent,
-                         Authority const& authority):
+                         elle::Authority const& authority):
     _id(id),
     _administrator_K(administrator_K),
     _model(model),
@@ -205,7 +205,7 @@ namespace lune
     _history(history),
     _extent(extent)
   {
-    if (authority.type != Authority::TypePair)
+    if (authority.type != elle::Authority::TypePair)
       throw std::runtime_error("unable to sign with a public authority");
 
     this->_signature =
@@ -221,7 +221,7 @@ namespace lune
   }
 
   void
-  Descriptor::Meta::validate(Authority const& authority) const
+  Descriptor::Meta::validate(elle::Authority const& authority) const
   {
     if (authority.K.Verify(
           this->_signature,

@@ -18,8 +18,10 @@ namespace hole
       | Construction |
       `-------------*/
 
-      Implementation::Implementation(storage::Storage& storage):
-        Hole(storage)
+      Implementation::Implementation(storage::Storage& storage,
+                                     elle::Passport const& passport,
+                                     elle::Authority const& authority):
+        Hole(storage, passport, authority)
       {}
 
       /*------------.

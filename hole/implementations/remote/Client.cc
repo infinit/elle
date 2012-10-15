@@ -5,7 +5,7 @@
 #include <elle/standalone/Report.hh>
 #include <elle/network/Locus.hh>
 
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 
 #include <nucleus/Derivable.hh>
 #include <nucleus/proton/Address.hh>
@@ -29,7 +29,7 @@ namespace hole
       | Construction |
       `-------------*/
 
-      Client::Client(lune::Passport const& passport,
+      Client::Client(elle::Passport const& passport,
                      std::string const& host,
                      int port)
         : _state(State::connected)

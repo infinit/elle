@@ -152,7 +152,7 @@ namespace lune
                elle::Boolean history,
                elle::Natural32 extent,
                elle::Version const& version,
-               Authority const& authority);
+               elle::Authority const& authority);
 
     ELLE_SERIALIZE_CONSTRUCT(Descriptor) {}
 
@@ -165,7 +165,7 @@ namespace lune
     seal(elle::cryptography::PrivateKey const& administrator_k);
     /// XXX
     void
-    validate(Authority const& authority) const;
+    validate(elle::Authority const& authority) const;
     /// XXX
     Meta const&
     meta() const;
@@ -224,7 +224,7 @@ namespace lune
            nucleus::neutron::Group::Identity const& everybody,
            elle::Boolean history,
            elle::Natural32 extent,
-           Authority const& authority);
+           elle::Authority const& authority);
       ~Meta();
 
       //
@@ -233,7 +233,7 @@ namespace lune
     public:
       /// XXX
       void
-      validate(Authority const& authority) const;
+      validate(elle::Authority const& authority) const;
       /// XXX
       elle::String const&
       id() const;

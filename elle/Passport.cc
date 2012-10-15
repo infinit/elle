@@ -4,21 +4,12 @@
 #include <elle/serialize/TupleSerializer.hxx>
 #include <elle/cryptography/PrivateKey.hh>
 
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 #include <lune/Lune.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 
-namespace lune
+namespace elle
 {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the passport files extension.
-  ///
-  const elle::String            Passport::Extension = ".ppt";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -40,7 +31,8 @@ namespace lune
   ///
   /// this method seals the passport with the authority.
   ///
-  elle::Status          Passport::Seal(const Authority&         authority)
+  elle::Status
+  Passport::Seal(elle::Authority const& authority)
   {
     // sign the pair with the authority.
     this->signature =
@@ -52,7 +44,8 @@ namespace lune
   ///
   /// this method verifies the validity of the passport.
   ///
-  elle::Status          Passport::Validate(const Authority&     authority)
+  elle::Status
+  Passport::Validate(elle::Authority const& authority)
     const
   {
     // verify the signature.
@@ -62,12 +55,6 @@ namespace lune
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
-  }
-
-  elle::io::Path
-  Passport::_path()
-  {
-    return (elle::io::Path(Lune::Passport));
   }
 
 //
@@ -106,33 +93,4 @@ namespace lune
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-  void
-  Passport::load()
-  {
-    this->load(Passport::_path());
-  }
-
-  void
-  Passport::store() const
-  {
-    this->store(Passport::_path());
-  }
-
-  void
-  Passport::erase()
-  {
-    elle::concept::Fileable<>::erase(Passport::_path());
-  }
-
-  elle::Boolean
-  Passport::exists()
-  {
-    return (elle::concept::Fileable<>::exists(Passport::_path()));
-  }
-
 }

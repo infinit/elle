@@ -440,7 +440,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Machine::Passport(const lune::Passport& passport)
+      elle::Status      Machine::Passport(const elle::Passport& passport)
       {
         Neighbour*      neighbour;
         elle::network::Session*  session;

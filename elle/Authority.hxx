@@ -6,7 +6,7 @@
 
 # include <elle/serialize/Pointer.hh>
 
-ELLE_SERIALIZE_SIMPLE(lune::Authority,
+ELLE_SERIALIZE_SIMPLE(elle::Authority,
                       archive,
                       value,
                       version)

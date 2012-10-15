@@ -1,11 +1,12 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Revision.hh>
 
+#include <hole/Hole.hh>
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Server.hh>
 
@@ -82,10 +83,11 @@ namespace hole
       `----*/
 
       bool
-      Customer::challenge(lune::Passport const& passport)
+      Customer::challenge(elle::Passport const& passport)
       {
         ELLE_TRACE_SCOPE("%s: challenge", *this);
-        if (passport.Validate(Infinit::Authority) == elle::Status::Error)
+        if (passport.Validate(this->_server.hole().authority())
+            == elle::Status::Error)
           {
             _server._remove(this);
             return false;

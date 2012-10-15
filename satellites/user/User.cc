@@ -15,7 +15,7 @@
 #include <elle/concurrency/Program.hh>
 
 #include <lune/Identity.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Dictionary.hh>
 
 namespace satellite
@@ -30,7 +30,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     elle::cryptography::KeyPair       pair;
-    lune::Authority     authority;
+    elle::Authority     authority;
     lune::Identity      identity;
     lune::Dictionary    dictionary;
 
@@ -43,7 +43,7 @@ namespace satellite
       escape("this user seems to already exist");
 
     // check if the authority exists.
-    if (lune::Authority::exists() == false)
+    if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority)) == false)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
@@ -56,7 +56,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the authority.
-    authority.load();
+    authority.load(elle::io::Path(lune::Lune::Authority));
 
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)

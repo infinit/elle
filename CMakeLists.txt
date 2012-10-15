@@ -148,8 +148,8 @@ set(BUILD_SHARED_LIBS OFF)
 # fix scheduled for 2.8.1
 # http://www.itk.org/Bug/view.php?id=9985
 # http://www.itk.org/Bug/view.php?id=5833
-#set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
-#set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 # - Infinit internal dependencies ---------------------------------------------
 
@@ -232,9 +232,10 @@ add_subdirectory(hole)
 
 add_library(infinit ${LINK_METHOD}
   Infinit.cc
+  HoleFactory.cc
   ${HEADERS}
 )
-add_dependencies(infinit dependencies)
+add_dependencies(infinit hole dependencies)
 
 
 # The whole project is linked against these libraries
@@ -258,6 +259,7 @@ set(INFINIT_LIBRARIES
   common
   protocol
   infinit
+  hole
   elle
   comet
 
@@ -267,6 +269,9 @@ set(INFINIT_LIBRARIES
   ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
   readline
   pthread
+
+  nucleus
+  elle
 )
 
 add_subdirectory(satellites)

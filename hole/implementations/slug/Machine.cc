@@ -4,7 +4,6 @@
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
-#include <elle/network/Interface.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/utility/Time.hh>
 #include <elle/utility/Duration.hh>
@@ -17,8 +16,7 @@
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 
-#include <lune/Descriptor.hh>
-#include <lune/Passport.hh>
+#include <elle/Passport.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -30,10 +28,6 @@
 #include <nucleus/Derivable.hh>
 
 #include <Infinit.hh>
-
-#include <plasma/meta/Client.hh>
-
-#include <common/common.hh>
 
 ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
@@ -63,16 +57,12 @@ namespace hole
       void
       Machine::_connect(elle::network::Locus const& locus)
       {
-        // FIXME: default timeout should be in the configuration, not
-        // the code.
-        static int timeout_int = Infinit::Configuration["hole"].Get("slug.timeout", 5000);
-        reactor::Duration timeout = boost::posix_time::milliseconds(timeout_int);
-
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
-          new reactor::network::TCPSocket(elle::concurrency::scheduler(),
-                                          hostname, locus.port, timeout));
+          new reactor::network::TCPSocket(
+            elle::concurrency::scheduler(),
+            hostname, locus.port, _connection_timeout));
         _connect(std::move(socket), locus, true);
       }
 
@@ -120,8 +110,10 @@ namespace hole
       }
 
       Machine::Machine(Implementation& hole,
-                       int port)
+                       int port,
+                       reactor::Duration connection_timeout)
         : _hole(hole)
+        , _connection_timeout(connection_timeout)
         , _state(State::detached)
         , _port(port)
         , _server(new reactor::network::TCPServer
@@ -173,47 +165,6 @@ namespace hole
               // In case we asked for a random port to be picked up
               // (by using 0), retrieve the actual listening port.
               this->_port = _server->local_endpoint().port();
-              {
-                // XXX should be done with a signal
-                plasma::meta::Client client(common::meta::host(), common::meta::port());
-                lune::Passport passport;
-                lune::Descriptor descriptor(Infinit::Network);
-                passport.load();
-                try
-                  {
-                    std::string address;
-                    auto interfaces = elle::network::Interface::get_map(
-                        elle::network::Interface::Filter::only_up
-                      | elle::network::Interface::Filter::no_loopback
-                    );
-                    for (auto const& pair: interfaces)
-                      if (pair.second.ipv4_address.size() > 0 &&
-                          pair.second.mac_address.size() > 0)
-                      {
-                        address = pair.second.ipv4_address;
-                        break;
-                      }
-                    if (address.size() == 0)
-                      {
-                        ELLE_ERR("Cannot find any valid ip address");
-                      }
-                    else
-                      {
-                        ELLE_LOG("Register instance address: %s:%d", address,
-                                 this->_port);
-                        client.token(agent::Agent::meta_token);
-                        client.network_connect_device(descriptor.meta().id(),
-                                                      passport.id,
-                                                      &address,
-                                                      this->_port);
-                      }
-                  }
-                catch (std::exception const& err)
-                  {
-                    ELLE_ERR("Cannot update device port: %s",
-                                   err.what()); // XXX[to improve]
-                  }
-              }
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
                                                   boost::bind(&Machine::_accept, this)));

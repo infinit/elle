@@ -184,6 +184,12 @@ def configure(cxx_toolkit, cxx_config):
     )
 
   sources += drake.nodes(
+    'Authority.cc',
+    'Authority.hh',
+    'Authority.hxx',
+    'Passport.cc',
+    'Passport.hh',
+    'Passport.hxx',
     'Version.cc',
     'serialize/ArchiveMode.cc',
     'serialize/ArchiveMode.hh',
@@ -194,8 +200,6 @@ def configure(cxx_toolkit, cxx_config):
     'serialize/BaseArchive.hxx',
     'serialize/BinaryArchive.hh',
     'serialize/BinaryArchive.hxx',
-    'serialize/BufferArchive.cc',
-    'serialize/BufferArchive.hh',
     'serialize/Format.hh',
     'serialize/HexadecimalArchive.hh',
     'serialize/IniArchive.cc',
@@ -232,11 +236,6 @@ def configure(cxx_toolkit, cxx_config):
     'system/system.hh',
     'types.cc',
     'types.hh',
-    'utility/Buffer.cc',
-    'utility/Buffer.hh',
-    'utility/Buffer.hxx',
-    'utility/BufferStream.cc',
-    'utility/BufferStream.hh',
     'utility/Duration.cc',
     'utility/Duration.hh',
     'utility/Duration.hxx',

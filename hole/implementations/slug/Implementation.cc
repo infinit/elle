@@ -23,11 +23,15 @@ namespace hole
       ///
       Implementation::Implementation(
         hole::storage::Storage& storage,
+        elle::Passport const& passport,
+        elle::Authority const& authority,
         std::vector<elle::network::Locus> const& members,
-        int port):
-        Hole(storage),
+        int port,
+        reactor::Duration connection_timeout):
+        Hole(storage, passport, authority),
         _members(members),
-        _port(port)
+        _port(port),
+        _connection_timeout(connection_timeout)
       {}
 
       /*------------.
@@ -37,7 +41,8 @@ namespace hole
       void
       Implementation::_join()
       {
-        Slug::Computer = new Machine(*this, this->_port);
+        Slug::Computer = new Machine(*this, this->_port,
+                                     this->_connection_timeout);
       }
 
       void

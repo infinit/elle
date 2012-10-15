@@ -1,6 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_IMPLEMENTATION_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_IMPLEMENTATION_HH
 
+# include <elle/fwd.hh>
 # include <elle/network/Locus.hh>
 # include <elle/types.hh>
 
@@ -23,6 +24,8 @@ namespace hole
       `-------------*/
       public:
         Implementation(hole::storage::Storage& storage,
+                       elle::Passport const& passport,
+                       elle::Authority const& authority,
                        elle::network::Locus const& server);
         ELLE_ATTRIBUTE_R(elle::network::Locus, server_locus);
 

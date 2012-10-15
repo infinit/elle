@@ -1,5 +1,5 @@
 #include <lune/Identity.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Lune.hh>
 
 #include <elle/cryptography/KeyPair.hh>
@@ -134,7 +134,8 @@ namespace lune
   ///
   /// this method seals the identity with the authority.
   ///
-  elle::Status          Identity::Seal(const Authority&         authority)
+  elle::Status
+  Identity::Seal(elle::Authority const& authority)
   {
     // check the cipher.
     if (this->cipher == nullptr)
@@ -151,7 +152,8 @@ namespace lune
   ///
   /// this method verifies the validity of the identity.
   ///
-  elle::Status          Identity::Validate(const Authority&     authority)
+  elle::Status
+  Identity::Validate(elle::Authority const& authority)
     const
   {
     // check the cipher.

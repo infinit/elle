@@ -4,8 +4,8 @@
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 
-#include <lune/Passport.hh>
-#include <lune/Authority.hh>
+#include <elle/Passport.hh>
+#include <elle/Authority.hh>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -21,13 +21,13 @@
 // ---------- functions  ------------------------------------------------------
 //
 
-static lune::Passport create_passport(elle::String const& id,
+static elle::Passport create_passport(elle::String const& id,
                                       elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
-  lune::Authority     authority;
+  elle::Authority     authority;
   elle::io::Path      authority_path;
-  lune::Passport      passport;
+  elle::Passport      passport;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");

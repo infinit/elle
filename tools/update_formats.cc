@@ -1,4 +1,4 @@
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 
@@ -64,7 +64,7 @@ add_class(std::string const& name, T const& val)
   }
 }
 
-struct Authority: lune::Authority
+struct Authority: elle::Authority
 {
   Authority()
   {
@@ -81,7 +81,7 @@ struct Authority: lune::Authority
 struct Identity:
   lune::Identity
 {
-  Identity(lune::Authority& auth,
+  Identity(elle::Authority& auth,
            std::string const& id,
            std::string const& login,
            std::string const& password)
@@ -205,7 +205,7 @@ int main(int ac, char** av)
 
 
   Authority auth;
-  ADD_CLASS(lune::Authority, auth);
+  ADD_CLASS(elle::Authority, auth);
 
   Identity identity(auth, "identity id", "login@example.com", "football");
   ADD_CLASS(lune::Identity, identity);

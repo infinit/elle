@@ -1,7 +1,8 @@
-#ifndef LUNE_PASSPORT_HH
-# define LUNE_PASSPORT_HH
+#ifndef ELLE_PASSPORT_HH
+# define ELLE_PASSPORT_HH
 
 # include <lune/fwd.hh>
+# include <elle/Authority.hh>
 # include <elle/radix/Object.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
@@ -10,9 +11,10 @@
 
 # include <elle/idiom/Open.hh>
 
-namespace lune
-{
+# include <elle/Authority.hh>
 
+namespace elle
+{
   ///
   /// this class uniquely identify a device through a label which is
   /// used by the storage layer to locate the nodes responsible for a
@@ -25,30 +27,18 @@ namespace lune
   {
   public:
     //
-    // constants
-    //
-    static const elle::String           Extension;
-
-    //
     // methods
     //
     elle::Status        Create(const hole::Label& label,
                                const elle::String& id);
 
-    elle::Status        Seal(const Authority&);
-    elle::Status        Validate(const Authority&) const;
-
-  private:
-    /// XXX
-    static
-    elle::io::Path
-    _path();
+    elle::Status        Seal(elle::Authority const&);
+    elle::Status        Validate(elle::Authority const&) const;
 
     //
     // interfaces
     //
   public:
-    // object
     declare(Passport);
 
     // dumpable
@@ -56,17 +46,6 @@ namespace lune
 
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-
-    void
-    load();
-    void
-    store() const;
-    static
-    void
-    erase();
-    static
-    elle::Boolean
-    exists();
 
     //
     // attributes
@@ -81,6 +60,6 @@ namespace lune
 
 }
 
-# include <lune/Passport.hxx>
+# include <elle/Passport.hxx>
 
 #endif

@@ -89,7 +89,7 @@ namespace hole
 message(hole::implementations::cirkle::TagChallenge,
         parameters())
 message(hole::implementations::cirkle::TagPassport,
-        parameters(lune::Passport))
+        parameters(elle::Passport))
 message(hole::implementations::cirkle::TagPort,
         parameters(elle::network::Port))
 message(hole::implementations::cirkle::TagAuthenticated,

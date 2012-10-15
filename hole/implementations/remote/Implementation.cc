@@ -20,8 +20,10 @@ namespace hole
       `-------------*/
 
       Implementation::Implementation(hole::storage::Storage& storage,
+                                     elle::Passport const& passport,
+                                     elle::Authority const& authority,
                                      elle::network::Locus const& server):
-        Hole(storage),
+        Hole(storage, passport, authority),
         _server_locus(server)
       {}
 

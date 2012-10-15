@@ -71,7 +71,7 @@ namespace hole
         elle::Status            Connection(elle::Gate*);
 
         elle::Status            Challenge();
-        elle::Status            Passport(const lune::Passport&);
+        elle::Status            Passport(const elle::Passport&);
         elle::Status            Port(const elle::network::Port&);
         elle::Status            Authenticated();
         elle::Status            Update(const Cluster&);

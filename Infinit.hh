@@ -5,7 +5,7 @@
 #include <elle/types.hh>
 #include <elle/utility/fwd.hh>
 
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Configuration.hh>
 
 class Infinit
@@ -21,7 +21,7 @@ public:
   //
   // globals
   //
-  static lune::Authority                Authority;
+  static elle::Authority                Authority;
   static lune::Configuration            Configuration;
 
   static elle::utility::Parser*         Parser;

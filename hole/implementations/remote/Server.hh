@@ -47,7 +47,7 @@ namespace hole
         Server(Hole& hole, int port);
         ~Server();
       private:
-        Hole& _hole;
+        ELLE_ATTRIBUTE_R(Hole&, hole);
         int _port;
 
       /*----------.

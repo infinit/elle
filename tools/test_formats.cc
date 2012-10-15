@@ -1,4 +1,4 @@
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 
@@ -15,11 +15,11 @@
 #include <iostream>
 #include <fstream>
 
-lune::Authority authorities[elle::serialize::StaticFormat<lune::Authority>::version];
+elle::Authority authorities[elle::serialize::StaticFormat<elle::Authority>::version];
 
 static
 void
-check_instance(lune::Authority const& value)
+check_instance(elle::Authority const& value)
 {
   //authorities[value.version()];
 
@@ -109,7 +109,7 @@ check_class(std::string const& name)
 
 int main()
 {
-  CHECK_CLASS(lune::Authority);
+  CHECK_CLASS(elle::Authority);
   CHECK_CLASS(lune::Identity);
   CHECK_CLASS(nucleus::neutron::Group);
   CHECK_CLASS(nucleus::neutron::Subject);

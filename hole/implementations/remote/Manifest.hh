@@ -1,11 +1,11 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
 
+# include <elle/fwd.hh>
 # include <elle/types.hh>
 
 # include <nucleus/fwd.hh>
 
-# include <lune/fwd.hh>
 # include <nucleus/Nucleus.hh>
 # include <nucleus/Derivable.hh>
 
@@ -20,7 +20,7 @@ namespace hole
       struct RPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
                                                 elle::serialize::OutputBinaryArchive>
       {
-        RemoteProcedure<bool, lune::Passport const&> challenge;
+        RemoteProcedure<bool, elle::Passport const&> challenge;
         RemoteProcedure<void,
                         nucleus::proton::Address const&,
                         nucleus::Derivable&> push;

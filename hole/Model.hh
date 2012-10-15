@@ -12,6 +12,7 @@ namespace hole
   ///
   /// this class defines the model of a network i.e its implementation.
   ///
+  // FIXME: should not be in hole.
   class Model:
     public elle::radix::Object
   {

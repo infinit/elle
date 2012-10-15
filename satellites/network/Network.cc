@@ -16,7 +16,7 @@
 #include <elle/concurrency/Program.hh>
 
 #include <lune/Lune.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 
@@ -51,7 +51,7 @@ namespace satellite
                                         horizon::Policy const& policy,
                                         const elle::String&     administrator)
   {
-    lune::Authority     authority;
+    elle::Authority     authority;
     lune::Identity      identity;
 
     //
@@ -71,7 +71,8 @@ namespace satellite
         escape("the administrator user does not seem to exist");
 
       // check if the authority exists.
-      if (lune::Authority::exists() == false)
+      if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority))
+          == false)
         escape("unable to locate the authority file");
     }
 
@@ -92,7 +93,7 @@ namespace satellite
         escape("unable to read the input");
 
       // load the authority.
-      authority.load();
+      authority.load(elle::io::Path(lune::Lune::Authority));
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::Status::Error)

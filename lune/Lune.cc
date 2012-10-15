@@ -1,6 +1,6 @@
 #include <lune/Lune.hh>
-#include <lune/Authority.hh>
-#include <lune/Passport.hh>
+#include <elle/Authority.hh>
+#include <elle/Passport.hh>
 #include <lune/Configuration.hh>
 #include <lune/Identity.hh>
 #include <lune/Dictionary.hh>
@@ -132,16 +132,14 @@ namespace lune
       if (Lune::Authority.Create(
             home +
             elle::system::path::separator +
-            "infinit" +
-            Authority::Extension) == elle::Status::Error)
+            "infinit.auth") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the passport path pattern.
       if (Lune::Passport.Create(
             home +
             elle::system::path::separator +
-            "infinit" +
-            Passport::Extension) == elle::Status::Error)
+            "infinit.ppt") == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the configuration path pattern.

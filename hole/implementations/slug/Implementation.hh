@@ -24,11 +24,15 @@ namespace hole
       `-------------*/
       public:
         Implementation(hole::storage::Storage& storage,
+                       elle::Passport const& passport,
+                       elle::Authority const& authority,
                        std::vector<elle::network::Locus> const& members,
-                       int port);
+                       int port,
+                       reactor::Duration connection_timeout);
       private:
         ELLE_ATTRIBUTE_R(std::vector<elle::network::Locus>, members);
         ELLE_ATTRIBUTE_R(int, port);
+        ELLE_ATTRIBUTE_R(reactor::Duration, connection_timeout);
 
       /*------------.
       | Join, leave |

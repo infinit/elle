@@ -1,5 +1,5 @@
-#ifndef  LUNE_AUTHORITY_HH
-# define LUNE_AUTHORITY_HH
+#ifndef  ELLE_AUTHORITY_HH
+# define ELLE_AUTHORITY_HH
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
@@ -8,7 +8,7 @@
 
 # include <elle/idiom/Open.hh>
 
-namespace lune
+namespace elle
 {
 
   ///
@@ -24,11 +24,6 @@ namespace lune
     , public elle::concept::MakeFileable<Authority>
   {
   public:
-    //
-    // constants
-    //
-    static const elle::String           Extension;
-
     //
     // enumerations
     //
@@ -58,10 +53,6 @@ namespace lune
     // static methods
     //
   private:
-    /// XXX
-    static
-    elle::io::Path
-    _path();
 
     //
     // interfaces
@@ -76,17 +67,6 @@ namespace lune
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
 
-    void
-    load();
-    void
-    store() const;
-    static
-    void
-    erase();
-    static
-    elle::Boolean
-    exists();
-
     //
     // attributes
     //
@@ -100,6 +80,6 @@ namespace lune
 
 }
 
-#include <lune/Authority.hxx>
+#include <elle/Authority.hxx>
 
 #endif

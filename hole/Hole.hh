@@ -9,16 +9,13 @@
 
 # include <nucleus/proton/fwd.hh>
 
-# include <lune/Passport.hh>
+# include <elle/Passport.hh>
 
 # include <hole/fwd.hh>
 # include <hole/storage/Storage.hh>
 
 namespace hole
 {
-  std::unique_ptr<Hole>
-  factory(hole::storage::Storage& storage);
-
   /// The storage layer of an Infinit filesystem.
   class Hole
   {
@@ -26,7 +23,9 @@ namespace hole
   | Construction |
   `-------------*/
   public:
-    Hole(storage::Storage& storage);
+    Hole(storage::Storage& storage,
+         elle::Passport const& passport,
+         elle::Authority const& authority);
     virtual ~Hole();
 
   /*------.
@@ -110,7 +109,8 @@ namespace hole
   | Attributes |
   `-----------*/
   private:
-    ELLE_ATTRIBUTE_R(lune::Passport, passport);
+    ELLE_ATTRIBUTE_R(elle::Passport, passport);
+    ELLE_ATTRIBUTE_R(elle::Authority, authority);
 
   /*------.
   | State |

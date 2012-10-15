@@ -36,7 +36,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     elle::cryptography::KeyPair       pair;
-    lune::Authority     authority;
+    elle::Authority     authority;
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
@@ -60,7 +60,7 @@ namespace satellite
       escape("unable to encrypt the authority");
 
     // store the authority.
-    authority.store();
+    authority.store(elle::io::Path(lune::Lune::Authority));
 
     return elle::Status::Ok;
   }
@@ -72,10 +72,10 @@ namespace satellite
   {
     elle::String        prompt;
     elle::cryptography::KeyPair       pair;
-    lune::Authority     authority;
+    elle::Authority     authority;
 
     // erase the authority file.
-    lune::Authority::erase();
+    elle::Authority::erase(elle::io::Path(lune::Lune::Authority));
 
     return elle::Status::Ok;
   }
@@ -87,11 +87,11 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    lune::Authority     authority;
+    elle::Authority     authority;
     elle::io::Unique        unique;
 
     // check if the authority exists.
-    if (lune::Authority::exists() == false)
+    if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority)) == false)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
@@ -104,7 +104,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the authority.
-    authority.load();
+    authority.load(elle::io::Path(lune::Lune::Authority));
 
     authority.Dump();
 

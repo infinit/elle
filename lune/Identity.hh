@@ -1,12 +1,13 @@
 #ifndef LUNE_IDENTITY_HH
 # define LUNE_IDENTITY_HH
 
+# include <elle/concept/Fileable.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/KeyPair.hh>
 # include <elle/cryptography/Signature.hh>
-# include <elle/concept/Fileable.hh>
+# include <elle/fwd.hh>
 # include <elle/radix/Object.hh>
-# include <elle/concept/Uniquable.hh>
 
 # include <lune/fwd.hh>
 
@@ -57,8 +58,8 @@ namespace lune
 
     elle::Status        Clear();
 
-    elle::Status        Seal(const Authority&);
-    elle::Status        Validate(const Authority&) const;
+    elle::Status        Seal(elle::Authority const&);
+    elle::Status        Validate(elle::Authority const&) const;
 
   private:
     /// XXX

@@ -42,7 +42,7 @@ const elle::String              Infinit::Copyright(
 ///
 /// this variable contains the authority.
 ///
-lune::Authority                 Infinit::Authority;
+elle::Authority                 Infinit::Authority;
 
 ///
 /// this variable contains the system configuration

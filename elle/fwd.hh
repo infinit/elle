@@ -13,4 +13,10 @@
 # include <elle/standalone/fwd.hh>
 # include <elle/utility/fwd.hh>
 
+namespace elle
+{
+  class Authority;
+  class Passport;
+}
+
 #endif

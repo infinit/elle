@@ -8,7 +8,7 @@
 #include "hole/Model.hh"
 
 #include <lune/Identity.hh>
-#include <lune/Authority.hh>
+#include <elle/Authority.hh>
 #include <lune/Descriptor.hh>
 
 #include <nucleus/proton/Address.hh>
@@ -50,7 +50,7 @@ generate_network_descriptor(elle::String const& id,
   static hole::Openness openness = hole::Openness::closed;
 
   hole::Model model;
-  lune::Authority authority;
+  elle::Authority authority;
   elle::io::Path authority_path;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
