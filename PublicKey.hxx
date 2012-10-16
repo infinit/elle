@@ -86,6 +86,7 @@ namespace elle
 
 # include <elle/serialize/Serializer.hh>
 
+# include <elle/cryptography/cryptography.hh>
 # include <elle/cryptography/LargeSerializer.hxx>
 
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PublicKey)
@@ -109,7 +110,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
         }
     };
   typedef std::unique_ptr<Large, LargeDeleter> LargePtr;
-
 
   LargePtr n(::BN_new());
   LargePtr e(::BN_new());

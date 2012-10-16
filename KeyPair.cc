@@ -3,6 +3,7 @@
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Seed.hh>
+#include <elle/cryptography/cryptography.hh>
 
 #include <elle/types.hh>
 #include <elle/Exception.hh>
@@ -14,12 +15,16 @@
 
 #include <comet/Comet.hh>
 
+#include <elle/log.hh>
+
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
 # include <openssl/err.h>
 # include <openssl/evp.h>
 # include <fcntl.h>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("elle.cryptography.KeyPair");
 
 namespace elle
 {
@@ -50,36 +55,32 @@ namespace elle
     ///
     const String                KeyPair::Extension = ".pair";
 
-//
-// ---------- static methods --------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    ///
-    /// this method initializes the key generation context.
-    ///
-    Status              KeyPair::Initialize()
+    void
+    KeyPair::initialize()
     {
-      // create the context for the RSA algorithm.
-      if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
-                                                               nullptr)) == nullptr)
-        escape("unable to create the context");
+      ELLE_TRACE("initializing the keypair contexts");
 
-      // initialise the context for key generation.
+      // Create the context for the RSA algorithm.
+      if ((KeyPair::Contexts::Generate =
+           ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
+        throw Exception("unable to create the context");
+
+      // Initialise the context for key generation.
       if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
-        escape("unable to initialise the generation context");
-
-      return Status::Ok;
+        throw Exception("unable to initialise the generation context");
     }
 
-    ///
-    /// this method cleans the key generation context.
-    ///
-    Status              KeyPair::Clean()
+    void
+    KeyPair::clean()
     {
-      // release the generation context.
-      ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
+      ELLE_TRACE("cleaning the keypair contexts");
 
-      return Status::Ok;
+      // Release the generation context.
+      ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
     }
 
     KeyPair
@@ -94,10 +95,15 @@ namespace elle
 
     KeyPair::KeyPair()
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
     }
 
     KeyPair::KeyPair(elle::Natural32 const length)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // XXX[to do better with constructors]
       if (this->Generate(length) == Status::Error)
         throw Exception("unable to generate the key pair");

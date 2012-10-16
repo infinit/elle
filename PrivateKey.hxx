@@ -78,6 +78,8 @@ namespace elle
 # include <cassert>
 # include <stdexcept>
 
+# include <elle/cryptography/cryptography.hh>
+
 # include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PrivateKey)
