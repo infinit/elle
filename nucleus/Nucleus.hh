@@ -9,6 +9,10 @@
 namespace nucleus
 {
 
+  /*----------.
+  | Functions |
+  `----------*/
+
   /// Returns the factory capable of building nucleus class instances.
   elle::utility::Factory const&
   factory();

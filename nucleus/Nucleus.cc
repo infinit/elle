@@ -1,4 +1,4 @@
-#include <nucleus/Nucleus.hh>
+#include <nucleus/nucleus.hh>
 #include <nucleus/Exception.hh>
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/neutron/Object.hh>
@@ -9,14 +9,24 @@
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus");
+
 namespace nucleus
 {
 
+  /*----------.
+  | Functions |
+  `----------*/
+
   static
   elle::utility::Factory const*
-  setup()
+  _setup()
   {
     elle::utility::Factory* factory = new elle::utility::Factory;
+
+    ELLE_TRACE("setting up the nucleus factory");
 
     if (factory->Register< neutron::Object >
         (neutron::ComponentObject) == elle::Status::Error)
@@ -52,7 +62,7 @@ namespace nucleus
   elle::utility::Factory const&
   factory()
   {
-    static elle::utility::Factory const* factory = setup();
+    static elle::utility::Factory const* factory = _setup();
 
     assert(factory != nullptr);
 
