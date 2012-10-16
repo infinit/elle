@@ -10,7 +10,6 @@
 # include <elle/idiom/Open.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/Nucleus.hh>
 # include <hole/implementations/remote/Manifest.hh>
 
 # include <protocol/ChanneledStream.hh>

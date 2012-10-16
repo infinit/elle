@@ -3,7 +3,6 @@
 
 #include <hole/Hole.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>

@@ -7,7 +7,6 @@
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Access.hh>
-#include <nucleus/Nucleus.hh>
 
 #include <elle/log.hh>
 

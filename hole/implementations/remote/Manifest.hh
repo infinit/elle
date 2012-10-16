@@ -6,7 +6,6 @@
 
 # include <nucleus/fwd.hh>
 
-# include <nucleus/Nucleus.hh>
 # include <nucleus/Derivable.hh>
 
 # include <protocol/RPC.hh>

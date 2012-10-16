@@ -1,6 +1,5 @@
 #include <Infinit.hh>
 
-#include <elle/Elle.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/types.hh>
@@ -15,8 +14,6 @@
 
 #include <horizon/Horizon.hh>
 
-#include <nucleus/Nucleus.hh>
-
 #include <HoleFactory.hh>
 
 namespace hole
@@ -25,11 +22,6 @@ namespace hole
   hole(elle::Natural32 argc, elle::Character* argv[])
   {
     // XXX Infinit::Parser is not deleted in case of error
-
-    // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to initialize Elle");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
@@ -133,11 +125,6 @@ namespace hole
     if (lune::Lune::Clean() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to clean Lune");
-
-    // clean Elle.
-    if (elle::Elle::Clean() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to clean Elle");
   }
 }
 

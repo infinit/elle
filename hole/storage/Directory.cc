@@ -6,7 +6,7 @@
 
 #include <hole/storage/Directory.hh>
 
-#include <nucleus/Nucleus.hh>
+#include <nucleus/nucleus.hh>
 #include <nucleus/fwd.hh>
 
 
