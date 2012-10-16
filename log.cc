@@ -109,10 +109,7 @@ namespace elle
         {
           static Components* ptr = nullptr;
           if (ptr == nullptr)
-            {
-              printf("ALLOCATE COMPONENTS\n"); // XXX
             ptr = new Components();
-            }
           return *ptr;
         }
 
