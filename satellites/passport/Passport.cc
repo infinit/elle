@@ -2,7 +2,6 @@
 
 #include <Infinit.hh>
 
-#include <elle/Elle.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/io/Console.hh>
 #include <elle/utility/Parser.hh>
@@ -167,10 +166,6 @@ namespace satellite
 
     // XXX Infinit::Parser is not deleted in case of errors
 
-    // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::Status::Error)
-      escape("unable to initialize Elle");
-
     // set up the program.
     if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
@@ -331,12 +326,6 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
-
-    // clean Elle.
-    if (elle::Elle::Clean() == elle::Status::Error)
-      escape("unable to clean Elle");
-
-    return elle::Status::Ok;
   }
 
 }

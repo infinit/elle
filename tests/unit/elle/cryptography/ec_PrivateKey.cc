@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <elle/Elle.hh>
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/KeyPair.hh>
@@ -39,7 +38,6 @@ void test_encrypt()
 
 int main()
 {
-  show_assert(elle::Elle::Initialize());
   test_encrypt();
 
   std::cout << "tests done.\n";

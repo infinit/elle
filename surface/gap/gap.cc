@@ -2,7 +2,6 @@
 #include <cstdlib>
 
 #include <elle/log.hh>
-#include <elle/Elle.hh>
 
 #include <lune/Lune.hh>
 
@@ -92,8 +91,7 @@ extern "C"
       if (!initialized)
         {
           initialized = true;
-          if (elle::Elle::Initialize() == elle::Status::Error ||
-              lune::Lune::Initialize() == elle::Status::Error)
+          if (lune::Lune::Initialize() == elle::Status::Error)
             {
               ELLE_ERR("Cannot initialize root components");
               return nullptr;

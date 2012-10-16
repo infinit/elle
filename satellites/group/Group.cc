@@ -1,6 +1,5 @@
 #include <satellites/group/Group.hh>
 
-#include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
@@ -244,10 +243,6 @@ namespace satellite
     Group::Operation   operation;
 
     // XXX Infinit::Parser is not deleted in case of errors
-
-    // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::Status::Error)
-      escape("unable to initialize Elle");
 
     // set up the program.
     if (elle::concurrency::Program::Setup() == elle::Status::Error)
@@ -826,10 +821,6 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
-
-    // clean Elle.
-    if (elle::Elle::Clean() == elle::Status::Error)
-      escape("unable to clean Elle");
 
     return elle::Status::Ok;
   }

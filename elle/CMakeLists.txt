@@ -48,7 +48,7 @@ add_library(elle ${LINK_METHOD}
 
   cryptography/Cipher.cc
   cryptography/Code.cc
-  cryptography/Cryptography.cc
+  cryptography/cryptography.cc
   cryptography/Digest.cc
   cryptography/KeyPair.cc
   cryptography/OneWay.cc
@@ -95,7 +95,6 @@ add_library(elle ${LINK_METHOD}
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
 
-  Elle.cc
   print.cc
 
   log.cc

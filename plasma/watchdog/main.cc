@@ -4,7 +4,6 @@
 
 #include <boost/filesystem.hpp>
 
-#include <elle/Elle.hh>
 #include <elle/log.hh>
 
 #include "Application.hh"
@@ -160,8 +159,7 @@ static void _init_daemon(std::string const& infinit_home)
 
 static void _initAll()
 {
-  if (elle::Elle::Initialize() == elle::Status::Error ||
-      lune::Lune::Initialize() == elle::Status::Error)
+  if (lune::Lune::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
 
   // XXX use elle here

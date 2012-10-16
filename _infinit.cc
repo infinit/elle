@@ -2,7 +2,6 @@
 
 #include <common/common.hh>
 
-#include <elle/Elle.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/log.hh>
@@ -32,11 +31,6 @@ ELLE_LOG_COMPONENT("infinit.8infinit");
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
-  // initialize the Elle library.
-  if (elle::Elle::Initialize() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to initialize Elle");
-
   // set up the program.
   if (elle::concurrency::Program::Setup() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
@@ -253,11 +247,6 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   if (lune::Lune::Clean() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Lune");
-
-  // clean Elle.
-  if (elle::Elle::Clean() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to clean Elle");
 }
 
 elle::Status

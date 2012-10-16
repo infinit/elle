@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <lune/Lune.hh>
-#include <elle/Elle.hh>
 #include <elle/idiom/Close.hh>
 
 #include "identity.hh"
@@ -91,11 +90,6 @@ PyMODINIT_FUNC init_metalib(void)
 {
   fprintf(stderr, "init module\n");
 
-  if (elle::Elle::Initialize() == elle::Status::Error)
-    {
-      std::cerr << "Cannot initialize elle\n";
-      return;
-    }
   fprintf(stderr, "elle initialized\n");
   if (lune::Lune::Initialize() == elle::Status::Error)
     {

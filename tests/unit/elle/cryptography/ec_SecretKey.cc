@@ -1,7 +1,5 @@
-
 #include <iostream>
 
-#include <elle/Elle.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Cipher.hh>
 
@@ -67,8 +65,6 @@ ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
 
 int main()
 {
-  ASSERT(elle::Elle::Initialize() == elle::Status::Ok);
-
   elle::cryptography::SecretKey secret_key;
 
   ASSERT(secret_key.Generate() == elle::Status::Ok);

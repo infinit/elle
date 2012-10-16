@@ -2,7 +2,7 @@
 #define ETOILE_NEST_POD_HH
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh> // XXX fwd.hh
+#include <nucleus/nucleus.hh> // XXX fwd.hh
 #include <XXX/Placement.hh> // XXX fwd.hh
 #include <XXX/Handle.hh> // XXX fwd.hh
 

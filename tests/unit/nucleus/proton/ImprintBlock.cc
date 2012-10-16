@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <elle/Elle.hh>
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/Buffer.hh>
 #include <elle/serialize/Serializer.hh>
@@ -61,11 +60,7 @@ int main(int, char** argv)
 {
   try
     {
-      CHECK(elle::Elle::Initialize());
-
       test::test();
-
-      CHECK(elle::Elle::Clean());
 
       std::cout << "tests done.\n";
       return 0;

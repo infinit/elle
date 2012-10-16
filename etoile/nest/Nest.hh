@@ -1,7 +1,7 @@
 #ifndef ETOILE_NEST_NEST_HH
 # define ETOILE_NEST_NEST_HH
 
-#include <nucleus/Nucleus.hh> // XXX fwd.hh
+#include <nucleus/nucleus.hh> // XXX fwd.hh
 #include <XXX/Handle.hh> // XXX fwd.hh
 
 #include <etoile/nest/Pod.hh>

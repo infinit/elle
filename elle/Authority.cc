@@ -7,7 +7,6 @@
 #include <elle/io/File.hh>
 
 #include <elle/Authority.hh>
-#include <elle/Elle.hh>
 
 namespace elle
 {

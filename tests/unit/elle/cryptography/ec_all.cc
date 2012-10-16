@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <elle/Elle.hh>
 #include <elle/types.hh>
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
@@ -181,14 +180,10 @@ void test_rotation()
 
 int main()
 {
-  CHECK(elle::Elle::Initialize());
-
   test_encryption();
   test_noitpyrcne();
   test_signature();
   test_rotation();
-
-  CHECK(elle::Elle::Clean());
 
   std::cout << "tests done.\n";
   return 0;

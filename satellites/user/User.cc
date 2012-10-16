@@ -6,7 +6,6 @@
 
 #include <etoile/Etoile.hh>
 
-#include <elle/Elle.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
@@ -214,10 +213,6 @@ namespace satellite
   {
     User::Operation     operation;
 
-    // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::Status::Error)
-      throw std::runtime_error("unable to initialize Elle");
-
     // set up the program.
     if (elle::concurrency::Program::Setup() == elle::Status::Error)
       throw std::runtime_error("unable to set up the program");
@@ -409,10 +404,6 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       throw std::runtime_error("unable to clean Lune");
-
-    // clean Elle.
-    if (elle::Elle::Clean() == elle::Status::Error)
-      throw std::runtime_error("unable to clean Elle");
   }
 }
 

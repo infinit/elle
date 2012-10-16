@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <elle/Elle.hh>
 #include <elle/print.hh>
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/Buffer.hh>
@@ -12,8 +11,6 @@
 
 int main()
 {
-  CHECK(elle::Elle::Initialize());
-
   elle::cryptography::KeyPair kp;
 
   CHECK(kp.Generate());

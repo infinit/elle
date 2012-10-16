@@ -1,4 +1,3 @@
-
 simple_test(print "" "tests done." "")
 simple_test(log "" "tests done." "")
 
