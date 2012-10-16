@@ -1,7 +1,7 @@
 project(Nucleus CXX)
 
 add_library(nucleus ${LINK_METHOD}
-  Nucleus.cc
+  nucleus.cc
   Derivable.cc
 
   proton/Action.cc
@@ -42,4 +42,3 @@ add_library(nucleus ${LINK_METHOD}
   neutron/Token.cc
   neutron/Trait.cc
 )
-
