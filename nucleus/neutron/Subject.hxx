@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_NEUTRON_SUBJECT_HXX
 # define NUCLEUS_NEUTRON_SUBJECT_HXX
 
-
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
 

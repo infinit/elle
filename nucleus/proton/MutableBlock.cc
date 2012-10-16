@@ -3,7 +3,6 @@
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
-#include <nucleus/Nucleus.hh>
 
 #include <elle/log.hh>
 #include <elle/io/File.hh>

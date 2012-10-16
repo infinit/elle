@@ -5,7 +5,7 @@
 
 # include <elle/serialize/Serializer.hh>
 
-# include <nucleus/Nucleus.hh>
+# include <nucleus/nucleus.hh>
 
 ELLE_SERIALIZE_NO_FORMAT(nucleus::Derivable);
 
