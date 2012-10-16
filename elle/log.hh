@@ -10,24 +10,40 @@ namespace elle
 {
   namespace log
   {
-# define ELLE_LOG_COMPONENT(component)                                        \
-    static ::elle::log::detail::TraceComponent                                \
-    __trace_component__(component)                                            \
-/**/
+
+    /// Note that a class is generated embedding a static method. This
+    /// is required given the fact that one may want to log in the
+    /// constructor of an object being globally instanciated. With
+    /// a log component being also declared globally, no guarantee could
+    /// be provided that the component is declared before the object
+    /// being logged. Therefore, the log component is statically
+    /// created through a static method, hence making sure it is
+    /// instanciated when required.
+# define ELLE_LOG_COMPONENT(_component_)                                \
+    class __TRACE_CLASS__                                               \
+    {                                                                   \
+    public:                                                             \
+      static                                                            \
+      elle::log::detail::TraceComponent&                                \
+      instance()                                                        \
+      {                                                                 \
+        static elle::log::detail::TraceComponent tc(_component_);       \
+                                                                        \
+        return (tc);                                                    \
+      }                                                                 \
+    };
 
 // XXX Move to elle/compiler.hh
 # define ELLE_PRETTY_FUNCTION __PRETTY_FUNCTION__
 
-
-# define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                                    \
-    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                               \
-      ::elle::log::detail::TraceContext                                       \
-      (elle::log::Logger::Level::Lvl,                                         \
-       elle::log::Logger::Type::T,                                            \
-       __trace_component__,                                                   \
-       __FILE__, __LINE__, ELLE_PRETTY_FUNCTION,                              \
-       elle::sprintf(__VA_ARGS__))                                            \
-/**/
+# define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                              \
+    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
+      ::elle::log::detail::TraceContext                                 \
+      (elle::log::Logger::Level::Lvl,                                   \
+       elle::log::Logger::Type::T,                                      \
+       __TRACE_CLASS__::instance(),                                     \
+       __FILE__, __LINE__, ELLE_PRETTY_FUNCTION,                        \
+       elle::sprintf(__VA_ARGS__))
 
 # define ELLE_LOG_LEVEL(Lvl, Type, ...)                                       \
     if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                         \
