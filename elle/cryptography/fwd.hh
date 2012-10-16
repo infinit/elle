@@ -1,4 +1,4 @@
-#ifndef  ELLE_CRYPTOGRAPHY_FWD_HH
+#ifndef ELLE_CRYPTOGRAPHY_FWD_HH
 # define ELLE_CRYPTOGRAPHY_FWD_HH
 
 # include <elle/cryptography/Plain.hh>

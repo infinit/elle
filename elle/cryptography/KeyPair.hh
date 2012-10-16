@@ -32,8 +32,14 @@ namespace elle
       // static methods
       //
     public:
-      static Status     Initialize();
-      static Status     Clean();
+      /// Initializes the keypair contexts.
+      static
+      void
+      initialize();
+      /// Cleans the keypair contexts.
+      static
+      void
+      clean();
 
       /// Returns a brand new, freshly generated key pair of the
       /// given length, or default one if not provided.

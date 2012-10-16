@@ -4,7 +4,7 @@
 # include <stdexcept>
 
 # include <elle/types.hh>
-
+# include <elle/cryptography/cryptography.hh>
 # include <elle/serialize/Serializer.hh>
 
 // XXX The type elle::Large may not have a reasonable maximum size, in which
@@ -33,6 +33,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
                           n,
                           version)
 {
+  // Make sure the cryptographic system is set up.
+  elle::cryptography::setup();
+
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
   enforce(version == 0);
 
@@ -50,6 +53,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,
                           n,
                           version)
 {
+  // Make sure the cryptographic system is set up.
+  elle::cryptography::setup();
+
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
   enforce(version == 0);
 

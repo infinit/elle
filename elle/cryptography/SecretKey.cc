@@ -3,6 +3,7 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/cryptography.hh>
 
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
@@ -53,6 +54,8 @@ namespace elle
     ///
     SecretKey::SecretKey()
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
     }
 
 //

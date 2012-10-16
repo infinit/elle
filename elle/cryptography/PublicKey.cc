@@ -5,7 +5,7 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Cipher.hh>
-
+#include <elle/cryptography/cryptography.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -25,6 +25,8 @@ namespace elle
       _key(nullptr),
       _contexts{nullptr, nullptr, nullptr}
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
     }
 
     ///
@@ -35,6 +37,9 @@ namespace elle
       _key(nullptr),
       _contexts{nullptr, nullptr, nullptr}
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K._key) == Status::Error)
         throw Exception("unable to duplicate the public key");

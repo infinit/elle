@@ -28,8 +28,14 @@ namespace elle
       //
       // static method
       //
-      static Status     Initialize();
-      static Status     Clean();
+      /// Initializes the random generator.
+      static
+      void
+      initialize();
+      /// Cleans the random generator.
+      static
+      void
+      clean();
 
       static Status     Generate(Boolean&);
       static Status     Generate(Character&);

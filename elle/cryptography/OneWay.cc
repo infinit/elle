@@ -1,4 +1,5 @@
 #include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/cryptography.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/evp.h>
@@ -16,7 +17,10 @@ namespace elle
     Status              OneWay::Hash(const Plain&               plain,
                                      Digest&                    digest)
     {
-      static ::EVP_MD const*   Algorithm = ::EVP_sha256();
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
+      static ::EVP_MD const* Algorithm = ::EVP_sha256();
 
       ::EVP_MD_CTX      context;
       unsigned int      size;

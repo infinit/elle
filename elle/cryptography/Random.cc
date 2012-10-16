@@ -1,8 +1,11 @@
 #include <elle/system/platform.hh>
 
 #include <elle/cryptography/Random.hh>
+#include <elle/cryptography/cryptography.hh>
 
 #include <elle/standalone/Region.hh>
+
+#include <elle/log.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
@@ -18,28 +21,28 @@
 # endif
 #include <elle/idiom/Open.hh>
 
+ELLE_LOG_COMPONENT("elle.cryptography.Random");
+
 namespace elle
 {
   namespace cryptography
   {
 
-//
-// ---------- static methods --------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    ///
-    /// this method initializes the random system.
-    ///
-    Status              Random::Initialize()
+    void
+    Random::initialize()
     {
-      uint8_t           temporary[256];
+      uint8_t temporary[256];
+
+      ELLE_TRACE("initializing the random generator");
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       {
-        int             fd = -1;
-
-        // get some random data.
         static const char* source;
+        int fd = -1;
 
         /// The path to read random data from.
         ///
@@ -52,7 +55,7 @@ namespace elle
         if ((fd = ::open(source, O_RDONLY)) == -1)
           escape("%s", ::strerror(errno));
 
-        // read random data.
+        // Read random data.
         if (::read(fd, temporary, sizeof (temporary)) == -1)
           {
             ::close(fd);
@@ -60,7 +63,7 @@ namespace elle
             escape("%s", ::strerror(errno));
           }
 
-        // close the file descriptor.
+        // Close the file descriptor.
         ::close(fd);
       }
 #elif defined(INFINIT_WINDOWS)
@@ -85,20 +88,14 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      // seed the random generator.
+      // Seed the random generator.
       ::RAND_seed(temporary, sizeof (temporary));
-
-      return Status::Ok;
     }
 
-    ///
-    /// this method cleans the system.
-    ///
-    Status              Random::Clean()
+    void
+    Random::clean()
     {
-      // nothing to do.
-
-      return Status::Ok;
+      ELLE_TRACE("cleaning the random generator");
     }
 
     ///
@@ -126,6 +123,9 @@ namespace elle
     ///
     Status              Random::Generate(Character&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -139,6 +139,9 @@ namespace elle
     ///
     Status              Random::Generate(Real&                  value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -152,6 +155,9 @@ namespace elle
     ///
     Status              Random::Generate(Integer8&              value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -165,6 +171,9 @@ namespace elle
     ///
     Status              Random::Generate(Integer16&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -178,6 +187,9 @@ namespace elle
     ///
     Status              Random::Generate(Integer32&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -191,6 +203,9 @@ namespace elle
     ///
     Status              Random::Generate(Integer64&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -204,6 +219,9 @@ namespace elle
     ///
     Status              Random::Generate(Natural8&              value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -217,6 +235,9 @@ namespace elle
     ///
     Status              Random::Generate(Natural16&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -230,6 +251,9 @@ namespace elle
     ///
     Status              Random::Generate(Natural32&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -243,6 +267,9 @@ namespace elle
     ///
     Status              Random::Generate(Natural64&             value)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
@@ -257,6 +284,9 @@ namespace elle
     Status              Random::Generate(Large&                 value,
                                          const Natural32        length)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
@@ -270,6 +300,9 @@ namespace elle
     Status              Random::Generate(String&                value,
                                          const Natural32        length)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       static String     alphabet =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "0123456789@#$%^&*)_+=-\';:|.,<>?`~";
@@ -297,6 +330,9 @@ namespace elle
     Status              Random::Generate(standalone::Region& value,
                                          const Natural32        size)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       // prepare the region.
       if (value.Prepare(size) == Status::Error)
         escape("unable to prepare the region");
