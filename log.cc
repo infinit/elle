@@ -54,7 +54,13 @@ namespace elle
 
     namespace detail
     {
-      static boost::mutex _indentation_lock;
+      static
+      boost::mutex&
+      _indentation_mutex()
+      {
+        static boost::mutex mutex;
+        return mutex;
+      }
 
       static unsigned int&
       _indentation()
@@ -103,7 +109,10 @@ namespace elle
         {
           static Components* ptr = nullptr;
           if (ptr == nullptr)
+            {
+              printf("ALLOCATE COMPONENTS\n"); // XXX
             ptr = new Components();
+            }
           return *ptr;
         }
 
@@ -205,7 +214,7 @@ namespace elle
           }
         int indent;
         {
-          boost::lock_guard<boost::mutex> lock(_indentation_lock);
+          boost::lock_guard<boost::mutex> lock(_indentation_mutex());
           indent = _indentation();
         }
         assert(indent >= 1);
@@ -247,14 +256,14 @@ namespace elle
       void
       TraceContext::_indent()
       {
-        boost::lock_guard<boost::mutex> lock(_indentation_lock);
+        boost::lock_guard<boost::mutex> lock(_indentation_mutex());
         _indentation() += 1;
       }
 
       void
       TraceContext::_unindent()
       {
-        boost::lock_guard<boost::mutex> lock(_indentation_lock);
+        boost::lock_guard<boost::mutex> lock(_indentation_mutex());
         auto& indentation = _indentation();
         assert(indentation >= 1);
         indentation -= 1;
@@ -262,4 +271,3 @@ namespace elle
     }
   }
 }
-
