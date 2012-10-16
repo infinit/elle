@@ -3,6 +3,7 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Seed.hh>
+#include <elle/cryptography/cryptography.hh>
 #include <elle/Exception.hh>
 
 #include <elle/cryptography/SecretKey.hh>
@@ -38,16 +39,22 @@ namespace elle
     PrivateKey::PrivateKey():
       _key(nullptr),
       _contexts{nullptr, nullptr, nullptr}
-    {}
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+    }
 
     ///
     /// this is the copy constructor.
     ///
-    PrivateKey::PrivateKey(PrivateKey const&k) :
+    PrivateKey::PrivateKey(PrivateKey const& k) :
       Object(k),
       _key(nullptr),
       _contexts{nullptr, nullptr, nullptr}
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::setup();
+
       assert(k._key != nullptr);
 
       // create the private key by duplicating the internal numbers.

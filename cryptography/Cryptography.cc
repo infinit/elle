@@ -1,73 +1,79 @@
-#include <elle/cryptography/Cryptography.hh>
+#include <elle/cryptography/cryptography.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/KeyPair.hh>
 
-#include <elle/idiom/Close.hh>
-# include <openssl/engine.h>
-# include <openssl/err.h>
-#include <elle/idiom/Open.hh>
+#include <elle/log.hh>
+
+#include <openssl/engine.h>
+#include <openssl/err.h>
+
+ELLE_LOG_COMPONENT("elle.cryptography");
 
 namespace elle
 {
   namespace cryptography
   {
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*----------.
+    | Functions |
+    `----------*/
 
-    ///
-    /// this method initialises everything related to the cryptographic
-    /// classes.
-    ///
-    Status              Cryptography::Initialize()
+    static elle::Boolean _initialized = false;
+
+    void
+    initialize()
     {
-      // load the crypto error strings.
+      ELLE_TRACE_SCOPE("initializing the cryptography");
+
+      // Load the crypto error strings.
       ::ERR_load_crypto_strings();
 
-      // enable the SSL algorithms, especially for RSA.
+      // Enable the SSL algorithms, especially for RSA.
       ::SSLeay_add_all_algorithms();
 
-      // initialize the random generator.
-      if (Random::Initialize() == Status::Error)
-        escape("unable to initialize the random generator");
+      // Initialize the random and keypair classes.
+      Random::initialize();
+      KeyPair::initialize();
 
-      // initialize the key pair generation context.
-      if (KeyPair::Initialize() == Status::Error)
-        escape("unable to initialize the key pair generation context");
-
-      return Status::Ok;
+      // Set the module has initialized.
+      _initialized = true;
     }
 
-    ///
-    /// this method cleans static cryptographic resources.
-    ///
-    Status              Cryptography::Clean()
+    void
+    clean()
     {
-      // clean the key pair generation context.
-      if (KeyPair::Clean() == Status::Error)
-        escape("unable to initialize the key pair generation context");
+      ELLE_TRACE_SCOPE("cleaning the cryptography");
 
-      // clean the random generator.
-      if (Random::Clean() == Status::Error)
-        escape("unable to clean the random generator");
+      // Clean the keypair and random classes.
+      KeyPair::clean();
+      Random::clean();
 
-      // free the current threads error queue.
+      // Free the current threads error queue.
       ::ERR_remove_state(0);
 
-      // clean the engine.
+      // Clean the engine.
       ::ENGINE_cleanup();
 
-      // free the error strings.
+      // Free the error strings.
       ::ERR_free_strings();
 
-      // clean the evp environment.
+      // Clean the evp environment.
       ::EVP_cleanup();
 
-      // release the extra data.
+      // Release the extra data.
       ::CRYPTO_cleanup_all_ex_data();
 
-      return Status::Ok;
+      // Set the module has non-initialized.
+      _initialized = false;
+    }
+
+    void
+    setup()
+    {
+      ELLE_DEBUG_SCOPE("setting up the cryptography");
+
+      if (_initialized == false)
+        initialize();
     }
 
   }
