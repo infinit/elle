@@ -6,59 +6,29 @@ namespace nucleus
 {
   namespace neutron
   {
+    const Author Author::Null(Object::RoleUnknown);
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this constants defines a null author.
-    ///
-    const Author                        Author::Null;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Author::Author():
-      role(Object::RoleUnknown)
+      role(Object::RoleOwner)
+    {}
+
+    Author::Author(Index const& index):
+      role(Object::RoleLord)
     {
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method creates a owner-specific author object.
-    ///
-    elle::Status        Author::Create()
-    {
-      // set the role.
-      this->role = Object::RoleOwner;
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method creates a lord-specific author object, used whenver
-    /// a user has been directly granted access to an object i.e is
-    /// explicitely listed in the Access block.
-    ///
-    elle::Status        Author::Create(const Index&             index)
-    {
-      // set the role.
-      this->role = Object::RoleLord;
-
-      // set the index.
       this->lord.index = index;
-
-      return elle::Status::Ok;
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    Author::Author(Object::Role role):
+      role(Object::RoleUnknown)
+    {}
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Author::operator ==(Author const& other) const

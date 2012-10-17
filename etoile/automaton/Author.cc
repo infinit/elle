@@ -38,10 +38,8 @@ namespace etoile
         {
         case nucleus::neutron::Object::RoleOwner:
           {
-            // create an owner author.
-            if (context.author.Create() == elle::Status::Error)
-              escape("unable to create the author");
-
+            // Create an owner author.
+            context.author = nucleus::neutron::Author();
             break;
           }
         case nucleus::neutron::Object::RoleLord:
@@ -58,9 +56,8 @@ namespace etoile
               escape("unable to lookup the user's identity in the "
                      "access block");
 
-            // create a lord author.
-            if (context.author.Create(index) == elle::Status::Error)
-              escape("unable to create the author");
+            // Create a lord author.
+            context.author = nucleus::neutron::Author(index);
 
             break;
           }

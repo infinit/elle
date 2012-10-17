@@ -89,14 +89,8 @@ namespace nucleus
 
       // (ii)
       {
-        Author          author;
-
-        // set an owner author.
-        if (author.Create() == elle::Status::Error)
-          throw Exception("unable to create an author");
-
-        // set the initial data with no contents and the owner as the author.
-        if (this->Update(author,
+        // Set the initial data with no contents and the owner as the author.
+        if (this->Update(Author(),
                          proton::Address::null,
                          0,
                          proton::Address::null,

@@ -1051,18 +1051,12 @@ namespace etoile
     ///
     elle::Status        Access::Regulate(gear::Object&          context)
     {
-      nucleus::neutron::Author author;
-
       ELLE_TRACE_FUNCTION(context);
-
-      // build a new author, representing the object's owner.
-      if (author.Create() == elle::Status::Error)
-        escape("unable to create the author");
 
       // update the object with a new author. since the object gets updated,
       // it will be re-signed during the object's sealing process.
       if (context.object->Update(
-            author,
+            nucleus::neutron::Author(),
             context.object->contents(),
             context.object->size(),
             context.object->access(),

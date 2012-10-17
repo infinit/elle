@@ -14,34 +14,30 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    ///
-    /// this class represents the last user to have modified an object i.e
-    /// the author.
-    ///
+    /// An object modifier.
     class Author:
       public elle::Printable
     {
     public:
-      //
-      // constants
-      //
+      /// A null author.
       static const Author               Null;
 
-      //
-      // constructors & destructors
-      //
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      /// Create a owner-specific Author.
       Author();
+      /// Create a lord-specific Author, used whenever a user has been directly
+      /// granted access to an object (i.e is explicitely listed in the Access
+      /// block).
+      Author(Index const& idx);
+    private:
+      Author(Object::Role role);
 
-      //
-      // methods
-      //
-      elle::Status      Create();
-      elle::Status      Create(const Index&);
-
-      //
-      // operators
-      //
+    /*----------.
+    | Operators |
+    `----------*/
     public:
       elle::Boolean
       operator ==(Author const& other) const;
