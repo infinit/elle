@@ -204,7 +204,7 @@ namespace elle
       {
         if (!Components::instance().enabled(this->_component.name))
           {
-            if (level != Logger::Level::log)
+            if (type < Logger::Type::warning)
               return;
             else
               Components::instance().update_max_size(this->_component.name);
