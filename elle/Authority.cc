@@ -23,6 +23,17 @@ namespace elle
   {
   }
 
+  Authority::Authority(Authority const& from):
+    K(from.K),
+    k(nullptr),
+    cipher(nullptr)
+  {
+    if (from.k)
+      this->k = new cryptography::PrivateKey(*from.k);
+    if (from.cipher)
+      this->cipher = new cryptography::Cipher(*from.cipher);
+  }
+
   ///
   /// destructor.
   ///
@@ -172,15 +183,6 @@ namespace elle
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Authority, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
