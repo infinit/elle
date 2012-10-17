@@ -23,9 +23,6 @@ namespace elle
     public elle::concept::MakeFileable<Authority>
   {
   public:
-    //
-    // enumerations
-    //
     enum Type
       {
         TypeUnknown,
@@ -33,18 +30,22 @@ namespace elle
         TypePublic
       };
 
-    //
-    // constructors & destructors
-    //
-    Authority();
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    /// Create an authority based on the given key pair.
+    Authority(elle::cryptography::KeyPair const&);
+    /// Create an authority based on the given public key only.
+    Authority(elle::cryptography::PublicKey const&);
+    /// Create a copy of an Authority.
     Authority(Authority const& from);
+    /// Dispose of an Authority.
     ~Authority();
 
     //
     // methods
     //
-    elle::Status        Create(elle::cryptography::KeyPair const&);
-    elle::Status        Create(elle::cryptography::PublicKey const&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
