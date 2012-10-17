@@ -159,7 +159,7 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
 
-          elle::cryptography::KeyPair pass;
+          elle::cryptography::KeyPair pass(elle::cryptography::KeyPair::Null);
 
           // XXX: restore history handling
           // does the network support the history?

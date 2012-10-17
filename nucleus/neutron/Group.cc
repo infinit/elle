@@ -42,10 +42,8 @@ namespace nucleus
       /* XXX[this is a hack which consists in generating a unique pass
              which will not evolve over time. */
       {
-        elle::cryptography::KeyPair pass;
-
-        if (pass.Generate() == elle::Status::Error)
-          throw Exception("unable to generate the pass"); // XXX[to remove in the future]
+        elle::cryptography::KeyPair pass(
+          elle::cryptography::KeyPair::generate());
 
         Token token(this->manager_subject().user(), pass.k);
         this->upgrade(proton::Address::null, pass.K, token);

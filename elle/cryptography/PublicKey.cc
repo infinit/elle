@@ -41,8 +41,9 @@ namespace elle
       cryptography::setup();
 
       // re-create the public key by duplicate the internal numbers.
-      if (this->Create(K._key) == Status::Error)
-        throw Exception("unable to duplicate the public key");
+      if (K._key)
+        if (this->Create(K._key) == Status::Error)
+          throw Exception("unable to duplicate the public key");
     }
 
     ///

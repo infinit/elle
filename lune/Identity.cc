@@ -29,6 +29,7 @@ namespace lune
   /// default constructor.
   ///
   Identity::Identity():
+    pair(elle::cryptography::KeyPair::Null),
     cipher(nullptr)
   {
   }

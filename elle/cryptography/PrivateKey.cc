@@ -55,13 +55,13 @@ namespace elle
       // Make sure the cryptographic system is set up.
       cryptography::setup();
 
-      assert(k._key != nullptr);
-
       // create the private key by duplicating the internal numbers.
-      if (this->Create(k._key) == Status::Error)
-        throw Exception("unable to duplicate the private key");
-
-      assert(this->_key != nullptr);
+      if (k._key)
+        {
+          if (this->Create(k._key) == Status::Error)
+            throw Exception("unable to duplicate the private key");
+          assert(this->_key != nullptr);
+        }
     }
 
     ///
