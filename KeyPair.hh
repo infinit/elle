@@ -15,14 +15,11 @@ namespace elle
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents a cryptographic key pair _i.e_ a pair of public
+    /// This class represents a cryptographic key pair _i.e_ a pair of public
     /// and private keys.
     ///
-    /// a public key is noted with a capital 'K' while a private key is
-    /// noted with a lower-case 'k'.
-    ///
+    /// A public key is noted with a capital 'K' while a private key is noted
+    /// with a lower-case 'k'.
     class KeyPair
       : public elle::serialize::SerializableMixin<KeyPair>
     {
@@ -62,9 +59,9 @@ namespace elle
       // constructors & destructors
       //
     public:
-      KeyPair();
-    private:
       KeyPair(elle::Natural32 length);
+    private:
+      KeyPair();
 
       //
       // methods
