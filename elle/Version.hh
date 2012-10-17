@@ -2,6 +2,8 @@
 # define ELLE_VERSION_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
 
@@ -11,28 +13,17 @@ namespace elle
   class Version:
     public elle::Printable
   {
-    //
-    // construction
-    //
+    /*-------------.
+    | Construction |
+    `-------------*/
   public:
     Version(); // XXX[to remove later]
     Version(elle::Natural8 major,
             elle::Natural8 minor);
 
-    //
-    // methods
-    //
-  public:
-    /// Returns the major part of the version number.
-    elle::Natural8
-    major() const;
-    /// Returns the minor part of the version number.
-    elle::Natural8
-    minor() const;
-
-    //
-    // interfaces
-    //
+    /*-----------.
+    | Interfaces |
+    `-----------*/
   public:
     // printable
     void
@@ -41,28 +32,25 @@ namespace elle
     // serializable
     ELLE_SERIALIZE_FRIEND_FOR(Version);
 
-    //
-    // operators
-    //
+    /*----------.
+    | Operators |
+    `----------*/
     elle::Boolean
     operator ==(Version const&) const;
-    elle::Boolean
-    operator !=(Version const&) const;
     elle::Boolean
     operator <(Version const&) const;
     elle::Boolean
     operator >(Version const&) const;
-    elle::Boolean
-    operator <=(Version const&) const;
-    elle::Boolean
-    operator >=(Version const&) const;
+    ELLE_OPERATOR_NEQ(Version);
+    ELLE_OPERATOR_LTE(Version);
+    ELLE_OPERATOR_GTE(Version);
 
-    //
-    // attributes
-    //
+    /*-----------.
+    | Attributes |
+    `-----------*/
   private:
-    elle::Natural8 _major;
-    elle::Natural8 _minor;
+    ELLE_ATTRIBUTE(elle::Natural8, major);
+    ELLE_ATTRIBUTE(elle::Natural8, minor);
   };
 }
 

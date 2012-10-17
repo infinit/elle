@@ -83,16 +83,11 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method loads the directory referenced through the given
-    /// chemin.
-    ///
-    elle::Status        Directory::Load(
-                          const path::Chemin&                   chemin,
-                          gear::Identifier&                     identifier)
+    gear::Identifier
+    Directory::load(path::Chemin const& chemin)
     {
-      gear::Scope*      scope;
-      gear::Directory*  context;
+      gear::Scope* scope;
+      gear::Directory* context;
 
       ELLE_TRACE_FUNCTION(chemin);
 
@@ -100,11 +95,13 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
         escape("unable to acquire the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
+      gear::Identifier identifier;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -138,7 +135,7 @@ namespace etoile
           escape("unable to release the guard");
       }
 
-      return elle::Status::Ok;
+      return (identifier);
     }
 
     ///
@@ -170,18 +167,15 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method adds an entry to the given directory.
-    ///
-    elle::Status        Directory::Add(
-                          const gear::Identifier&               parent,
-                          const path::Slab&                     name,
-                          const gear::Identifier&               child)
+    void
+    Directory::add(gear::Identifier const& parent,
+                   path::Slab const& name,
+                   gear::Identifier const& child)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Directory*  directory;
-      gear::Object*     object;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Directory* directory;
+      gear::Object* object;
       nucleus::proton::Address address;
 
       ELLE_TRACE_FUNCTION(parent, name, child);
@@ -209,7 +203,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(directory) == elle::Status::Error)
@@ -224,8 +219,6 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-
-      return elle::Status::Ok;
     }
 
     ///
@@ -580,16 +573,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method closes the scope and places it in the journal for
-    /// the modifications to be published in the storage layer.
-    ///
-    elle::Status        Directory::Store(
-                          const gear::Identifier&               identifier)
+    void
+    Directory::store(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Directory*  context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Directory* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -597,14 +586,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -668,8 +658,6 @@ namespace etoile
             break;
           }
         }
-
-      return elle::Status::Ok;
     }
 
     ///

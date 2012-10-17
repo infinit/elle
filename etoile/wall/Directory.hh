@@ -18,19 +18,27 @@ namespace etoile
     ///
     class Directory
     {
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      //
-      // static methods
-      //
       static elle::Status       Create(gear::Identifier&);
-      static elle::Status       Load(const path::Chemin&,
-                                     gear::Identifier&);
+
+      /// Loads the directory referenced through the given chemin.
+      static
+      gear::Identifier
+      load(path::Chemin const& chemin);
 
       static elle::Status       Lock(const gear::Identifier&);
       static elle::Status       Release(const gear::Identifier&);
-      static elle::Status       Add(const gear::Identifier&,
-                                    const path::Slab&,
-                                    const gear::Identifier&);
+
+      /// Adds an entry to the given directory.
+      static
+      void
+      add(gear::Identifier const& parent,
+          path::Slab const& name,
+          gear::Identifier const& child);
+
       static elle::Status       Lookup(const gear::Identifier&,
                                        const path::Slab&,
                                        nucleus::neutron::Entry const*&);
@@ -46,7 +54,12 @@ namespace etoile
                                        const path::Slab&);
 
       static elle::Status       Discard(const gear::Identifier&);
-      static elle::Status       Store(const gear::Identifier&);
+
+      /// Commit the pending modifications by placing the scope in the journal.
+      static
+      void
+      store(gear::Identifier const& identifier);
+
       static elle::Status       Destroy(const gear::Identifier&);
       static elle::Status       Purge(const gear::Identifier&);
     };

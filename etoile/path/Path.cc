@@ -119,7 +119,6 @@ namespace etoile
         {
           Chemin                chemin;
           Slice                 slice;
-          gear::Identifier      identifier;
           nucleus::neutron::Entry const* entry;
 
           // extract the slice/revision from the current slab.
@@ -139,8 +138,7 @@ namespace etoile
             escape("unable to create the chemin");
 
           // load the directory.
-          if (wall::Directory::Load(chemin, identifier) == elle::Status::Error)
-            escape("unable to load the directory");
+          gear::Identifier identifier(wall::Directory::load(chemin));
 
           // lookup the slice.
           if (wall::Directory::Lookup(identifier,

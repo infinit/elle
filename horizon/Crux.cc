@@ -16,7 +16,7 @@
 #include <horizon/Crib.hh>
 #include <horizon/Crux.hh>
 #include <horizon/Handle.hh>
-#include <horizon/Janitor.hh>
+#include <horizon/Ward.hh>
 #include <horizon/Policy.hh>
 #include <horizon/Horizon.hh>
 
@@ -39,16 +39,6 @@ ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
 namespace horizon
 {
-  /// This macro-function makes it easier to return an error from an
-  /// upcall, taking care to log the error but also to release the
-  /// remaining identifiers.
-#define error(_text_, _errno_, _identifiers_...)        \
-  do                                                    \
-    {                                                   \
-      Janitor::Clear(_identifiers_);                    \
-                                                        \
-      return ((_errno_));                               \
-    } while (false)
 
   /// The number of directory entries to fetch from etoile when
   /// performing a Readdir().
@@ -77,13 +67,14 @@ namespace horizon
         return (-ENOENT);
       }
 
-    etoile::gear::Identifier  identifier;
+    etoile::gear::Identifier identifier;
     ELLE_DEBUG("load the object")
       identifier = etoile::wall::Object::Load(chemin);
 
+    Ward ward(identifier);
+
     // Create a local handle.
     Handle handle(Handle::OperationGetattr, identifier);
-
 
     // Set the handle in the fuse_file_info structure.  Be careful,
     // the address is local but it is alright since it is used in
@@ -92,12 +83,12 @@ namespace horizon
 
     // Call fgetattr().
     if ((result = Crux::fgetattr(path, stat, &info)) < 0)
-      error("unable to get information on the given file descriptor",
-            result,
-            identifier);
+      return (result);
 
     // Discard the object.
     etoile::wall::Object::Discard(identifier);
+
+    ward.release();
 
     return (0);
   }
@@ -177,13 +168,11 @@ namespace horizon
 
     if (abstract.timestamps.creation.Get(stat->st_ctime) ==
         elle::Status::Error)
-      error("unable to convert the time timestamps",
-            -EPERM);
+      return (-EPERM);
 
     if (abstract.timestamps.modification.Get(stat->st_mtime) ==
         elle::Status::Error)
-      error("unable to convert the time timestamps",
-            -EPERM);
+      return (-EPERM);
 
     // Set the mode and permissions.
     switch (abstract.genre)
@@ -212,8 +201,7 @@ namespace horizon
           if (etoile::wall::Attributes::Get(handle->identifier,
                                             "perm::exec",
                                             trait) == elle::Status::Error)
-            error("unable to retrieve an attribute",
-                  -EPERM);
+            return (-EPERM);
 
           // Check the trait.
           if ((trait != nullptr) &&
@@ -268,8 +256,7 @@ namespace horizon
         }
       default:
         {
-          error("unknown genre",
-                -EIO);
+          return (-EIO);
         }
       }
 
@@ -296,17 +283,13 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path, info);
 
-    etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin,
-                                      identifier) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT);
+    etoile::gear::Identifier identifier(etoile::wall::Directory::load(chemin));
 
     // Duplicate the identifier and save it in the info structure's
     // file handle.
@@ -325,7 +308,8 @@ namespace horizon
                 off_t offset,
                 struct ::fuse_file_info* info)
   {
-    ELLE_TRACE_FUNCTION(path, buffer, filler, static_cast<elle::Natural64>(offset), info);
+    ELLE_TRACE_FUNCTION(path, buffer, filler,
+                        static_cast<elle::Natural64>(offset), info);
 
     Handle*           handle;
     off_t             next;
@@ -343,9 +327,7 @@ namespace horizon
       if ((record == nucleus::neutron::Record::Null) ||
           ((record.permissions & nucleus::neutron::permissions::read) !=
            nucleus::neutron::permissions::read))
-        error("the subject does not have the right to read the "
-              "directory entries",
-              -EACCES);
+        return (-EACCES);
     }
 
     // Fill the . and .. entries.
@@ -376,8 +358,7 @@ namespace horizon
               static_cast<nucleus::neutron::Index>(offset),
               Crux::Range,
               range) == elle::Status::Error)
-          error("unable to retrieve some directory entries",
-                -EPERM);
+          return (-EPERM);
 
         // Add the entries by using the filler() function.
         for (scoutor = range.container.begin();
@@ -418,8 +399,7 @@ namespace horizon
     // Discard the object.
     if (etoile::wall::Directory::Discard(
           handle->identifier) == elle::Status::Error)
-      error("unable to discard the directory",
-            -EPERM);
+      return (-EPERM);
 
     // Reset the file handle, just to make sure it is not used
     // anymore.
@@ -439,17 +419,15 @@ namespace horizon
       nucleus::neutron::permissions::none;
     etoile::path::Slab        name;
     etoile::path::Way         way(etoile::path::Way(path), name);
-    etoile::gear::Identifier  directory;
     etoile::gear::Identifier  subdirectory;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin,
-                                      directory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT);
+    etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
+
+    Ward ward_directory(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -459,16 +437,13 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to create a "
-            "subdirectory in this directory",
-            -EACCES,
-            directory);
+      return (-EACCES);
 
     // Create the subdirectory.
     if (etoile::wall::Directory::Create(subdirectory) == elle::Status::Error)
-      error("unable to create the directory",
-            -EPERM,
-            directory);
+      return (-EPERM);
+
+    Ward ward_subdirectory(subdirectory);
 
     // Compute the permissions.
     if (mode & S_IRUSR)
@@ -481,9 +456,7 @@ namespace horizon
     if (etoile::wall::Access::Grant(subdirectory,
                                     agent::Agent::Subject,
                                     permissions) == elle::Status::Error)
-      error("unable to update the access record",
-            -EPERM,
-            subdirectory, directory);
+      return (-EPERM);
 
     // FIXME: do not re-parse the descriptor every time.
     lune::Descriptor descriptor(Infinit::Network);
@@ -497,9 +470,7 @@ namespace horizon
                 subdirectory,
                 descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
-            error("unable to update the access record",
-                  -EPERM,
-                  subdirectory, directory);
+            return (-EPERM);
 
           break;
         }
@@ -519,30 +490,22 @@ namespace horizon
         }
       default:
         {
-          error("invalid policy",
-                -EIO,
-                subdirectory, directory);
+          return (-EIO);
         }
       }
 
     // Add the subdirectory.
-    if (etoile::wall::Directory::Add(directory,
-                                     name,
-                                     subdirectory) == elle::Status::Error)
-      error("unable to add an entry to the parent directory",
-            -EPERM,
-            subdirectory, directory);
+    etoile::wall::Directory::add(directory, name, subdirectory);
 
     // Store the subdirectory.
-    if (etoile::wall::Directory::Store(subdirectory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM,
-            directory);
+    etoile::wall::Directory::store(subdirectory);
+
+    ward_subdirectory.release();
 
     // Store the directory.
-    if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM);
+    etoile::wall::Directory::store(directory);
+
+    ward_directory.release();
 
     return (0);
   }
@@ -556,18 +519,16 @@ namespace horizon
     etoile::path::Slab                name;
     etoile::path::Way                 child(path);
     etoile::path::Way                 parent(child, name);
-    etoile::gear::Identifier          directory;
-    etoile::gear::Identifier          subdirectory;
     nucleus::neutron::Subject subject;
 
     // Resolve the path.
     etoile::path::Chemin chemin_parent(etoile::wall::Path::resolve(parent));
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin_parent,
-                                      directory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT);
+    etoile::gear::Identifier directory(
+      etoile::wall::Directory::load(chemin_parent));
+
+    Ward ward_directory(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -577,20 +538,16 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to remove "
-            "a subdirectory from this directory",
-            -EACCES,
-            directory);
+      return (-EACCES);
 
     // Resolve the path.
     etoile::path::Chemin chemin_child(etoile::wall::Path::resolve(child));
 
     // Load the subdirectory.
-    if (etoile::wall::Directory::Load(chemin_child,
-                                      subdirectory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT,
-            directory);
+    etoile::gear::Identifier subdirectory(
+      etoile::wall::Directory::load(chemin_child));
+
+    Ward ward_subdirectory(subdirectory);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -598,34 +555,27 @@ namespace horizon
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
-      error("unable to create a temporary subject",
-            -EPERM,
-            subdirectory, directory);
+      return (-EPERM);
 
     // Check that the subject is the owner of the object.
     if (agent::Agent::Subject != subject)
-      error("the subject does not have the right to destroy "
-            "this directory",
-            -EACCES,
-            subdirectory, directory);
+      return (-EACCES);
 
     // Remove the entry.
     if (etoile::wall::Directory::Remove(directory,
                                         name) == elle::Status::Error)
-      error("unable to remove a directory entry",
-            -EPERM,
-            subdirectory, directory);
+      return (-EPERM);
 
     // Store the directory.
-    if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM,
-            subdirectory);
+    etoile::wall::Directory::store(directory);
+
+    ward_directory.release();
 
     // Destroy the subdirectory.
     if (etoile::wall::Directory::Destroy(subdirectory) == elle::Status::Error)
-      error("unable to destroy the directory",
-            -EPERM);
+      return (-EPERM);
+
+    ward_subdirectory.release();
 
     return (0);
   }
@@ -652,6 +602,8 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Retrieve the user's permissions on the object.
     nucleus::neutron::Record record(
       etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
@@ -676,9 +628,7 @@ namespace horizon
               if (etoile::wall::Attributes::Get(identifier,
                                                 "perm::exec",
                                                 trait) == elle::Status::Error)
-                error("unable to retrieve the attribute",
-                      -EPERM,
-                      identifier);
+                return (-EPERM);
 
               // Check the trait.
               if (!((trait != nullptr) &&
@@ -705,9 +655,7 @@ namespace horizon
               if (etoile::wall::Attributes::Get(identifier,
                                                 "perm::exec",
                                                 trait) == elle::Status::Error)
-                error("unable ti retrive the attribute",
-                      -EPERM,
-                      identifier);
+                return (-EPERM);
 
               // Check the trait.
               if (!((trait != nullptr) &&
@@ -737,6 +685,8 @@ namespace horizon
 
     // Discard the object.
     etoile::wall::Object::Discard(identifier);
+
+    ward.release();
 
     return (0);
 
@@ -792,21 +742,19 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
+    etoile::abstract::Object abstract(
+      etoile::wall::Object::Information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
-      error("unable to create a temporary subject",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Check that the subject is the owner of the object.
     if (agent::Agent::Subject != subject)
-      error("the subject does not have the right to modify the "
-            "access permissions on this object",
-            -EACCES,
-            identifier);
+      return (-EACCES);
 
     // The permission modification must be performed according to
     // the object state.
@@ -831,9 +779,7 @@ namespace horizon
         // permissions get applied.
 
         if (Crib::Retrieve(elle::String(path), handle) == elle::Status::Error)
-          error("unable to retrieve the handle from the crib",
-                -EBADF,
-                identifier);
+          return (-EBADF);
 
         handle->permissions = permissions;
       }
@@ -845,9 +791,7 @@ namespace horizon
         if (etoile::wall::Access::Grant(identifier,
                                         agent::Agent::Subject,
                                         permissions) == elle::Status::Error)
-          error("unable to update the access records",
-                -EPERM,
-                identifier);
+          return (-EPERM);
       }
 
     // If the execution bit is to be set...
@@ -863,9 +807,7 @@ namespace horizon
               if (etoile::wall::Attributes::Set(identifier,
                                                 "perm::exec",
                                                 "true") == elle::Status::Error)
-                error("unable to set the attribute",
-                      -EPERM,
-                      identifier);
+                return (-EPERM);
 
               break;
             }
@@ -880,7 +822,9 @@ namespace horizon
       }
 
     // Store the object.
-    etoile::wall::Object::Store(identifier);
+    etoile::wall::Object::store(identifier);
+
+    ward.release();
 
     return (0);
   }
@@ -920,33 +864,31 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
+    etoile::abstract::Object abstract(
+      etoile::wall::Object::Information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
-      error("unable to create a temporary subject",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Check that the subject is the owner of the object.
     if (agent::Agent::Subject != subject)
-      error("the subject does not have the right to modify the attributes "
-            "associated with this object",
-            -EACCES,
-            identifier);
+      return (-EACCES);
 
     // Set the attribute.
     if (etoile::wall::Attributes::Set(identifier,
                                       elle::String(name),
                                       elle::String(value, size)) ==
         elle::Status::Error)
-      error("unable to set the attribute",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Store the object.
-    etoile::wall::Object::Store(identifier);
+    etoile::wall::Object::store(identifier);
+
+    ward.release();
 
     return (0);
   }
@@ -970,13 +912,13 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Get the attribute.
     if (etoile::wall::Attributes::Get(identifier,
                                       elle::String(name),
                                       trait) == elle::Status::Error)
-      error("unable to retrieve an attribute",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // A unique_ptr is used for creating a copy of the trait (if necessary)
     // so as to release it right when leaving the scope. This way, one can
@@ -990,6 +932,8 @@ namespace horizon
 
     // Discard the object.
     etoile::wall::Object::Discard(identifier);
+
+    ward.release();
 
     // Test if a trait has been found.
     if (trait == nullptr)
@@ -1031,12 +975,12 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Fetch the attributes.
     if (etoile::wall::Attributes::Fetch(identifier,
                                         range) == elle::Status::Error)
-      error("unable to fetch the attributes",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // If the size is zero, this call must return the size required
     // to store the list.
@@ -1055,6 +999,8 @@ namespace horizon
         // Discard the object, now that it will no longer be
         // accessed.
         etoile::wall::Object::Discard(identifier);
+
+        ward.release();
 
         return (size);
       }
@@ -1080,6 +1026,8 @@ namespace horizon
         // accessed.
         etoile::wall::Object::Discard(identifier);
 
+        ward.release();
+
         return (offset);
       }
   }
@@ -1100,32 +1048,30 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
 
+    Ward ward(identifier);
+
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
+    etoile::abstract::Object abstract(
+      etoile::wall::Object::Information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
-      error("unable to create a temporary subject",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Check that the subject is the owner of the object.
     if (agent::Agent::Subject != subject)
-      error("the subject does not have the right to modify the attributes "
-            "associated with this object",
-            -EACCES,
-            identifier);
+      return (-EACCES);
 
     // Omit the attribute.
     if (etoile::wall::Attributes::Omit(identifier,
                                        elle::String(name)) ==
         elle::Status::Error)
-      error("unable to omit the attributes",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Store the object.
-    etoile::wall::Object::Store(identifier);
+    etoile::wall::Object::store(identifier);
+
+    ward.release();
 
     return 0;
   }
@@ -1149,7 +1095,6 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(target, source);
 
-    etoile::gear::Identifier directory;
     etoile::gear::Identifier link;
     etoile::path::Slab name;
     etoile::path::Way from(etoile::path::Way(source), name);
@@ -1159,10 +1104,9 @@ namespace horizon
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(from));
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin,
-                                      directory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT);
+    etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
+
+    Ward ward_directory(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1172,16 +1116,13 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to create a link in "
-            "this directory",
-            -EACCES,
-            directory);
+      return (-EACCES);
 
     // Create a link
     if (etoile::wall::Link::Create(link) == elle::Status::Error)
-      error("unable to create a link",
-            -EPERM,
-            directory);
+      return (-EPERM);
+
+    Ward ward_link(link);
 
     // FIXME: do not re-parse the descriptor every time.
     lune::Descriptor descriptor(Infinit::Network);
@@ -1195,18 +1136,14 @@ namespace horizon
                 link,
                 descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
-            error("unable to update the access record",
-                  -EPERM,
-                  link, directory);
+            return (-EPERM);
 
           // grant the exec permission to the 'everybody' group by
           // creating the attribute 'perm::exec'.
           if (etoile::wall::Attributes::Set(link,
                                             "perm::exec",
                                             "true") == elle::Status::Error)
-            error("unable to set the attribute",
-                  -EPERM,
-                  link, directory);
+            return (-EPERM);
 
           break;
         }
@@ -1226,36 +1163,26 @@ namespace horizon
         }
       default:
         {
-          error("invalid policy",
-                -EIO,
-                link, directory);
+          return (-EIO);
         }
       }
 
     // Bind the link.
     if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
-      error("unable to bind the link",
-            -EPERM,
-            link, directory);
+      return (-EPERM);
 
     // Add an entry for the link.
-    if (etoile::wall::Directory::Add(directory,
-                                     name,
-                                     link) == elle::Status::Error)
-      error("unable to add an entry to the directory",
-            -EPERM,
-            link, directory);
+    etoile::wall::Directory::add(directory, name, link);
 
     // Store the link.
-    if (etoile::wall::Link::Store(link) == elle::Status::Error)
-      error("unable to store the link",
-            -EPERM,
-            directory);
+    etoile::wall::Link::store(link);
+
+    ward_link.release();
 
     // Store the modified directory.
-    if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM);
+    etoile::wall::Directory::store(directory);
+
+    ward_directory.release();
 
     return (0);
   }
@@ -1278,8 +1205,9 @@ namespace horizon
 
     // Load the link.
     if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
-      error("unable to load the link",
-            -ENOENT);
+      return (-ENOENT);
+
+    Ward ward(identifier);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1289,20 +1217,17 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::read) !=
          nucleus::neutron::permissions::read))
-      error("the subject does not have the right to read this link",
-            -EACCES,
-            identifier);
+      return (-EACCES);
 
     // Resolve the link.
     if (etoile::wall::Link::Resolve(identifier, target) == elle::Status::Error)
-      error("unable to resolve the link",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Discard the link.
     if (etoile::wall::Link::Discard(identifier) == elle::Status::Error)
-      error("unable to discard the link",
-            -EPERM);
+      return (-EPERM);
+
+    ward.release();
 
     // Copy as much as possible of the target into the output
     // buffer.
@@ -1327,17 +1252,14 @@ namespace horizon
       nucleus::neutron::permissions::none;
     etoile::path::Slab        name;
     etoile::path::Way         way(etoile::path::Way(path), name);
-    etoile::gear::Identifier  directory;
-    etoile::gear::Identifier  file;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin,
-                                      directory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT);
+    etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
+
+    Ward ward_directory(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1347,28 +1269,23 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to create a file in "
-            "this directory",
-            -EACCES,
-            directory);
+      return (-EACCES);
 
     // Create the file.
-    if (etoile::wall::File::Create(file) == elle::Status::Error)
-      error("unable to create a file",
-            -EPERM,
-            directory);
+    etoile::gear::Identifier file(etoile::wall::File::create());
+
+    Ward ward_file(file);
 
     // Set default permissions: read and write.
     permissions =
-      nucleus::neutron::permissions::read | nucleus::neutron::permissions::write;
+      nucleus::neutron::permissions::read |
+      nucleus::neutron::permissions::write;
 
     // Set the owner permissions.
     if (etoile::wall::Access::Grant(file,
                                     agent::Agent::Subject,
                                     permissions) == elle::Status::Error)
-      error("unable to update the access records",
-            -EPERM,
-            file, directory);
+      return (-EPERM);
 
     // If the file has the exec bit, add the perm::exec attribute.
     if (mode & S_IXUSR)
@@ -1377,9 +1294,7 @@ namespace horizon
         if (etoile::wall::Attributes::Set(file,
                                           "perm::exec",
                                           "true") == elle::Status::Error)
-          error("unable to set the attributes",
-                -EPERM,
-                file, directory);
+          return (-EPERM);
       }
 
 
@@ -1395,9 +1310,7 @@ namespace horizon
                 file,
                 descriptor.meta().everybody_subject(),
                 nucleus::neutron::permissions::read) == elle::Status::Error)
-            error("unable to update the access record",
-                  -EPERM,
-                  file, directory);
+            return (-EPERM);
 
           break;
         }
@@ -1417,19 +1330,12 @@ namespace horizon
         }
       default:
         {
-          error("invalid policy",
-                -EIO,
-                file, directory);
+          return (-EIO);
         }
       }
 
     // Add the file to the directory.
-    if (etoile::wall::Directory::Add(directory,
-                                     name,
-                                     file) == elle::Status::Error)
-      error("unable to add an entry to the directory",
-            -EPERM,
-            file, directory);
+    etoile::wall::Directory::add(directory, name, file);
 
     // Store the file, ensuring the file system consistency.
     //
@@ -1439,23 +1345,21 @@ namespace horizon
     // harm, especially considering the Infinit consistency
     // guaranties, we still prefer to do things right, at least for
     // now.
-    if (etoile::wall::File::Store(file) == elle::Status::Error)
-      error("unable to store the file",
-            -EPERM,
-            directory);
+    etoile::wall::File::store(file);
+
+    ward_file.release();
 
     // Store the directory.
-    if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM);
+    etoile::wall::Directory::store(directory);
+
+    ward_directory.release();
 
     // Resolve the path.
     chemin = etoile::wall::Path::resolve(etoile::path::Way(path));
 
     // Finally, the file is reopened.
     if (etoile::wall::File::Load(chemin, file) == elle::Status::Error)
-      error("unable to load the file",
-            -ENOENT);
+      return (-ENOENT);
 
     // Compute the future permissions as the current ones are
     // temporary.
@@ -1476,8 +1380,9 @@ namespace horizon
     // Add the created and opened file in the crib.
     if (Crib::Add(elle::String(path),
                   reinterpret_cast<Handle*>(info->fh)) == elle::Status::Error)
-      error("unable to add the created file to the crib",
-            -EBADF);
+      return (-EBADF);
+    // XXX[if this fail, one could end up with an orphan Handle and therefore
+    //     an non-closed file. TO TEST]
 
     return (0);
   }
@@ -1498,8 +1403,7 @@ namespace horizon
 
     // Load the file.
     if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
-      error("unable to load the file",
-            -ENOENT);
+      return (-ENOENT);
 
     // Store the identifier in the file handle.
     info->fh =
@@ -1537,22 +1441,17 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to update this file",
-            -EACCES);
+      return (-EACCES);
 
     // Wrap the buffer.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
                     size) == elle::Status::Error)
-      error("unable to wrap the buffer",
-            -EPERM);
+      return (-EPERM);
 
     // Write the file.
-    if (etoile::wall::File::Write(
-          handle->identifier,
-          static_cast<nucleus::neutron::Offset>(offset),
-          region) == elle::Status::Error)
-      error("unable to write the file",
-            -EPERM);
+    etoile::wall::File::write(handle->identifier,
+                              static_cast<nucleus::neutron::Offset>(offset),
+                              region);
 
     return (size);
   }
@@ -1584,8 +1483,7 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::read) !=
          nucleus::neutron::permissions::read))
-      error("the subject does not have the right to read this file",
-            -EACCES);
+      return (-EACCES);
 
     // Read the file.
     if (etoile::wall::File::Read(
@@ -1593,8 +1491,7 @@ namespace horizon
           static_cast<nucleus::neutron::Offset>(offset),
           static_cast<nucleus::neutron::Size>(size),
           region) == elle::Status::Error)
-      error("unable to read the file",
-            -EPERM);
+      return (-EPERM);
 
     // Copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
@@ -1619,8 +1516,9 @@ namespace horizon
 
     // Load the file.
     if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
-      error("unable to load the file",
-            -ENOENT);
+      return (-ENOENT);
+
+    Ward ward(identifier);
 
     // Create a local handle.
     Handle                    handle(Handle::OperationTruncate,
@@ -1631,14 +1529,12 @@ namespace horizon
 
     // Call the Ftruncate() method.
     if ((result = Crux::ftruncate(path, size, &info)) < 0)
-      error("unable to truncate the given file descriptpr",
-            result,
-            identifier);
+      return (result);
 
     // Store the file.
-    if (etoile::wall::File::Store(identifier) == elle::Status::Error)
-      error("unable to store the file",
-            -EPERM);
+    etoile::wall::File::store(identifier);
+
+    ward.release();
 
     return (result);
   }
@@ -1664,15 +1560,12 @@ namespace horizon
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to modify the size of "
-            "this file",
-            -EACCES);
+      return (-EACCES);
 
     // Adjust the file's size.
     if (etoile::wall::File::Adjust(handle->identifier,
                                    size) == elle::Status::Error)
-      error("unable to adjust the size of the file",
-            -EPERM);
+      return (-EPERM);
 
     return (0);
   }
@@ -1697,9 +1590,7 @@ namespace horizon
         {
           // Remove the created and opened file in the crib.
           if (Crib::Remove(elle::String(path)) == elle::Status::Error)
-            error("unable to remove the created file from the crib",
-                  -EBADF,
-                  handle->identifier);
+            return (-EBADF);
 
           // The permissions settings have been delayed in order to
           // support a read-only file being copied in which case a
@@ -1716,9 +1607,7 @@ namespace horizon
                 handle->identifier,
                 agent::Agent::Subject,
                 handle->permissions) == elle::Status::Error)
-            error("unable to update the access records",
-                  -EPERM,
-                  handle->identifier);
+            return (-EPERM);
 
           break;
         }
@@ -1731,9 +1620,7 @@ namespace horizon
       }
 
     // Store the file.
-    if (etoile::wall::File::Store(handle->identifier) == elle::Status::Error)
-      error("unable to store the file",
-            -EPERM);
+    etoile::wall::File::store(handle->identifier);
 
     // Delete the handle.
     delete handle;
@@ -1755,7 +1642,6 @@ namespace horizon
     etoile::path::Way from(etoile::path::Way(source), f);
     etoile::path::Slab t;
     etoile::path::Way to(etoile::path::Way(target), t);
-    etoile::gear::Identifier object;
 
     // If the source and target directories are identical.
     if (from == to)
@@ -1763,18 +1649,18 @@ namespace horizon
         // In this case, the object to move can simply be renamed
         // since the source and target directory are identical.
 
-        etoile::gear::Identifier directory;
         nucleus::neutron::Entry const* entry;
         etoile::path::Chemin chemin;
 
         ELLE_TRACE("resolve the source directory path")
           chemin = etoile::wall::Path::resolve(from);
 
-        ELLE_TRACE("load source directory")
-          if (etoile::wall::Directory::Load(chemin,
-                                            directory) == elle::Status::Error)
-            error("unable to load the directory",
-                  -ENOENT);
+        ELLE_TRACE("load source directory");
+
+        etoile::gear::Identifier directory(
+          etoile::wall::Directory::load(chemin));
+
+        Ward ward_directory(directory);
 
         nucleus::neutron::Record record;
         ELLE_TRACE("retrieve the subject's permissions on the object")
@@ -1785,18 +1671,13 @@ namespace horizon
           if ((record == nucleus::neutron::Record::Null) ||
               ((record.permissions & nucleus::neutron::permissions::write) !=
                nucleus::neutron::permissions::write))
-            error("the subject does not have the right to rename this "
-                  "directory entry",
-                  -EACCES,
-                  directory);
+            return (-EACCES);
 
         ELLE_TRACE("lookup for the target name")
           if (etoile::wall::Directory::Lookup(directory,
                                               t,
                                               entry) == elle::Status::Error)
-            error("unable to lookup the target name",
-                  -EPERM,
-                  directory);
+            return (-EPERM);
 
         // Check if an entry actually exist for the target name
         // meaning that an object is about to get overwritten.
@@ -1810,23 +1691,18 @@ namespace horizon
             // not to have to deal with the target's genre.
             ELLE_TRACE("unlink the existing target %s", target)
               if ((result = Crux::unlink(target)) < 0)
-                error("unable to unlink the target object which is "
-                      "about to get overwritte",
-                      result,
-                      directory);
+                return (result);
           }
 
         ELLE_TRACE("rename the entry from %s to %s", f, t)
           if (etoile::wall::Directory::Rename(directory, f, t) ==
               elle::Status::Error)
-            error("unable to rename a directory entry",
-                  -EPERM,
-                  directory);
+            return (-EPERM);
 
         ELLE_TRACE("store the directory")
-          if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-            error("unable to store the directory",
-                  -EPERM);
+          etoile::wall::Directory::store(directory);
+
+        ward_directory.release();
       }
     else
       {
@@ -1836,12 +1712,7 @@ namespace horizon
         // entry in the _to_ directory is added while the entry in
         // the _from_ directory is removed.
         etoile::path::Way way(source);
-        struct
-        {
-          etoile::gear::Identifier object;
-          etoile::gear::Identifier from;
-          etoile::gear::Identifier to;
-        } identifier;
+        etoile::gear::Identifier identifier_object;
         nucleus::neutron::Entry const* entry;
 
         // Resolve the path.
@@ -1849,63 +1720,53 @@ namespace horizon
 
         // Load the object even though we don't know its genre as we
         // do not need to know to perform this operation.
-        identifier.object = etoile::wall::Object::Load(chemin);
+        identifier_object = etoile::wall::Object::Load(chemin);
+
+        Ward ward_object(identifier_object);
 
         // Resolve the path.
         chemin = etoile::wall::Path::resolve(to);
 
         // Load the _to_ directory.
-        if (etoile::wall::Directory::Load(
-              chemin,
-              identifier.to) == elle::Status::Error)
-          error("unable to load the directory",
-                -ENOENT,
-                identifier.object);
+        etoile::gear::Identifier identifier_to(
+          etoile::wall::Directory::load(chemin));
+
+        Ward ward_to(identifier_to);
 
         // Retrieve the subject's permissions on the object.
         nucleus::neutron::Record record(
-          etoile::wall::Access::lookup(identifier.to, agent::Agent::Subject));
+          etoile::wall::Access::lookup(identifier_to, agent::Agent::Subject));
 
         // Check the record.
         if ((record == nucleus::neutron::Record::Null) ||
             ((record.permissions & nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
-          error("the subject does not have the right to rename this "
-                "directory entry",
-                -EACCES,
-                identifier.object, identifier.to);
+          return (-EACCES);
 
         // Resolve the path.
         chemin = etoile::wall::Path::resolve(from);
 
         // Load the _from_ directory.
-        if (etoile::wall::Directory::Load(
-              chemin,
-              identifier.from) == elle::Status::Error)
-          error("unable to load the directory",
-                -ENOENT,
-                identifier.object, identifier.to);
+        etoile::gear::Identifier identifier_from(
+          etoile::wall::Directory::load(chemin));
+
+        Ward ward_from(identifier_from);
 
         // Retrieve the subject's permissions on the object.
         record = etoile::wall::Access::lookup(
-          identifier.from, agent::Agent::Subject);
+          identifier_from, agent::Agent::Subject);
 
         // Check the record.
         if ((record == nucleus::neutron::Record::Null) ||
             ((record.permissions & nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
-          error("the subject does not have the right to rename this "
-                "directory entry",
-                -EACCES,
-                identifier.object, identifier.to, identifier.from);
+          return (-EACCES);
 
         // Lookup for the target name.
-        if (etoile::wall::Directory::Lookup(identifier.to,
+        if (etoile::wall::Directory::Lookup(identifier_to,
                                             t,
                                             entry) == elle::Status::Error)
-          error("unable to lookup the target name",
-                -EPERM,
-                identifier.object, identifier.to, identifier.from);
+          return (-EPERM);
 
         // Check if an entry actually exist for the target name
         // meaning that an object is about to get overwritten.
@@ -1918,45 +1779,32 @@ namespace horizon
             // link.  Note that the Crux's method is called in order
             // not to have to deal with the target's genre.
             if ((result = Crux::unlink(target)) < 0)
-              error("unable to unlink the target object which is "
-                    "about to get overwritte",
-                    result,
-                    identifier.object, identifier.to, identifier.from);
+              return (result);
           }
 
         // Add an entry.
-        if (etoile::wall::Directory::Add(
-              identifier.to,
-              t,
-              identifier.object) == elle::Status::Error)
-          error("unable to add an entry to the directory",
-                -EPERM,
-                identifier.object, identifier.to, identifier.from);
+        etoile::wall::Directory::add(identifier_to, t, identifier_object);
 
         // Remove the entry.
         if (etoile::wall::Directory::Remove(
-              identifier.from,
+              identifier_from,
               f) == elle::Status::Error)
-          error("unable to remove a directory entry",
-                -EPERM,
-                identifier.object, identifier.to, identifier.from);
+          return (-EPERM);
 
         // Store the _to_ directory.
-        if (etoile::wall::Directory::Store(
-              identifier.to) == elle::Status::Error)
-          error("unable to store the directory",
-                -EPERM,
-                identifier.object, identifier.from);
+        etoile::wall::Directory::store(identifier_to);
+
+        ward_to.release();
 
         // Store the _from_ directory.
-        if (etoile::wall::Directory::Store(
-              identifier.from) == elle::Status::Error)
-          error("unable to store the directory",
-                -EPERM,
-                identifier.object);
+        etoile::wall::Directory::store(identifier_from);
+
+        ward_from.release();
 
         // Store the object.
-        etoile::wall::Object::Store(identifier.object);
+        etoile::wall::Object::store(identifier_object);
+
+        ward_object.release();
       }
 
     // Rename the path associated with the handle in the
@@ -1977,58 +1825,49 @@ namespace horizon
     etoile::path::Slab                name;
     etoile::path::Way                 child(path);
     etoile::path::Way                 parent(child, name);
-    struct
-    {
-      etoile::path::Chemin            child;
-      etoile::path::Chemin            parent;
-    }                                 chemin;
-    etoile::gear::Identifier          directory;
+    etoile::path::Chemin chemin_child;
+    etoile::path::Chemin chemin_parent;
     nucleus::neutron::Subject subject;
 
     // Resolve the path.
-    chemin.child = etoile::wall::Path::resolve(child);
+    chemin_child = etoile::wall::Path::resolve(child);
 
     // Load the object.
-    etoile::gear::Identifier identifier(
-      etoile::wall::Object::Load(chemin.child));
+    etoile::gear::Identifier identifier_child(
+      etoile::wall::Object::Load(chemin_child));
+
+    Ward ward_child(identifier_child);
 
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(etoile::wall::Object::Information(identifier));
+    etoile::abstract::Object abstract(
+      etoile::wall::Object::Information(identifier_child));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
-      error("unable to create a temporary subject",
-            -EPERM,
-            identifier);
+      return (-EPERM);
 
     // Check that the subject is the owner of the object.
     if (agent::Agent::Subject != subject)
-      error("the subject does not have the right to destroy this object",
-            -EACCES,
-            identifier);
+      return (-EACCES);
 
     // Resolve the path.
-    chemin.parent = etoile::wall::Path::resolve(parent);
+    chemin_parent = etoile::wall::Path::resolve(parent);
 
     // Load the directory.
-    if (etoile::wall::Directory::Load(chemin.parent,
-                                      directory) == elle::Status::Error)
-      error("unable to load the directory",
-            -ENOENT,
-            identifier);
+    etoile::gear::Identifier identifier_parent(
+      etoile::wall::Directory::load(chemin_parent));
+
+    Ward ward_parent(identifier_parent);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
-      etoile::wall::Access::lookup(directory, agent::Agent::Subject));
+      etoile::wall::Access::lookup(identifier_parent, agent::Agent::Subject));
 
     // Check the record.
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      error("the subject does not have the right to remove an entry from "
-            "this directory",
-            -EACCES,
-            identifier, directory);
+      return (-EACCES);
 
     // Remove the object according to its type: file or link.
     switch (abstract.genre)
@@ -2036,41 +1875,40 @@ namespace horizon
       case nucleus::neutron::Genre::file:
         {
           // Destroy the file.
-          if (etoile::wall::File::Destroy(identifier) == elle::Status::Error)
-            error("unable to destroy the file",
-                  -EPERM,
-                  directory);
+          if (etoile::wall::File::Destroy(identifier_child) == elle::Status::Error)
+            return (-EPERM);
+
+          ward_child.release();
 
           break;
         }
       case nucleus::neutron::Genre::directory:
         {
-          error("meaningless operation: unlink on a directory object",
-                -EPERM);
+          ward_child.release();
+
+          return (-EPERM);
         }
       case nucleus::neutron::Genre::link:
         {
+          ward_child.release();
+
           // Destroy the link.
-          if (etoile::wall::Link::Destroy(identifier) == elle::Status::Error)
-            error("unable to destroy the link",
-                  -EPERM,
-                  directory);
+          if (etoile::wall::Link::Destroy(identifier_child) == elle::Status::Error)
+            return (-EPERM);
 
           break;
         }
       };
 
     // Remove the entry.
-    if (etoile::wall::Directory::Remove(directory,
+    if (etoile::wall::Directory::Remove(identifier_parent,
                                         name) == elle::Status::Error)
-      error("unable to remove a directory entry",
-            -EPERM,
-            directory);
+      return (-EPERM);
 
     // Store the directory.
-    if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
-      error("unable to store the directory",
-            -EPERM);
+    etoile::wall::Directory::store(identifier_parent);
+
+    ward_parent.release();
 
     return (0);
   }

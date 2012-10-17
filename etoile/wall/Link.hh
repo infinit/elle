@@ -32,7 +32,12 @@ namespace etoile
                                         path::Way&);
 
       static elle::Status       Discard(const gear::Identifier&);
-      static elle::Status       Store(const gear::Identifier&);
+
+      /// Commit the pending modifications by placing the scope in the journal.
+      static
+      void
+      store(gear::Identifier const& identifier);
+
       static elle::Status       Destroy(const gear::Identifier&);
       static elle::Status       Purge(const gear::Identifier&);
     };

@@ -62,13 +62,16 @@ namespace etoile
       /*-----.
       | File |
       `-----*/
-      RemoteProcedure<void> filecreate;
+      RemoteProcedure<etoile::gear::Identifier> filecreate;
       RemoteProcedure<void,
                       etoile::path::Chemin&> fileload;
-      RemoteProcedure<void> filewrite;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
-                      nucleus::neutron::Offset&,
+                      nucleus::neutron::Offset const&,
+                      elle::standalone::Region const&> filewrite;
+      RemoteProcedure<void,
+                      etoile::gear::Identifier const&,
+                      nucleus::neutron::Offset const&,
                       nucleus::neutron::Size&> fileread;
       RemoteProcedure<void,
                       elle::standalone::Region&> fileregion;
@@ -86,11 +89,11 @@ namespace etoile
       | Directory |
       `----------*/
       RemoteProcedure<void> directorycreate;
-      RemoteProcedure<void,
+      RemoteProcedure<etoile::gear::Identifier,
                       etoile::path::Chemin&> directoryload;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
-                      etoile::path::Slab&,
+                      etoile::path::Slab const&,
                       etoile::gear::Identifier const&> directoryadd;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,

@@ -12,6 +12,8 @@
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Group.hh>
 #include <etoile/wall/Object.hh>
+#include <etoile/wall/File.hh>
+#include <etoile/wall/Directory.hh>
 #include <etoile/wall/Path.hh>
 
 ELLE_LOG_COMPONENT("infinit.etoile.portal.Application");
@@ -75,11 +77,12 @@ namespace etoile
       // Setup RPCs.
       this->rpcs = new etoile::portal::RPC(*this->channels);
 
-      this->rpcs->accessconsult = wall::Access::consult;
+      this->rpcs->accessconsult = &wall::Access::consult;
       this->rpcs->accessgrant = &wall::Access::Grant;
       this->rpcs->accesslookup = &wall::Access::lookup;
       this->rpcs->accessrevoke = &wall::Access::Revoke;
-      this->rpcs->authenticate = boost::bind(&Application::_authenticate, this, _1);
+      this->rpcs->authenticate = boost::bind(&Application::_authenticate,
+                                             this, _1);
       this->rpcs->groupadd = &wall::Group::Add;
       this->rpcs->groupconsult = &wall::Group::Consult;
       this->rpcs->groupcreate = &wall::Group::Create;
@@ -92,7 +95,13 @@ namespace etoile
       this->rpcs->groupstore = &wall::Group::Store;
       this->rpcs->objectdiscard = &wall::Object::Discard;
       this->rpcs->objectload = &wall::Object::Load;
-      this->rpcs->objectstore = &wall::Object::Store;
+      this->rpcs->objectstore = &wall::Object::store;
+      this->rpcs->filecreate = &wall::File::create;
+      this->rpcs->filewrite = &wall::File::write;
+      this->rpcs->filestore = &wall::File::store;
+      this->rpcs->directoryload = &wall::Directory::load;
+      this->rpcs->directoryadd = &wall::Directory::add;
+      this->rpcs->directorystore = &wall::Directory::store;
       this->rpcs->pathresolve = &wall::Path::resolve;
 
       new reactor::Thread(elle::concurrency::scheduler(),
@@ -108,8 +117,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-
 
 //
 // ---------- callbacks -------------------------------------------------------

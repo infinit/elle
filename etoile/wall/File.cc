@@ -27,17 +27,11 @@ namespace etoile
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates a new file object.
-    ///
-    /// note however that the object is not attached to the hierarchy
-    /// and is therefore considered as orphan.
-    ///
-    elle::Status        File::Create(
-                          gear::Identifier&                     identifier)
+    gear::Identifier
+    File::create()
     {
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Scope* scope;
+      gear::File* context;
 
       ELLE_TRACE_FUNCTION("");
 
@@ -45,11 +39,13 @@ namespace etoile
       if (gear::Scope::Supply(scope) == elle::Status::Error)
         escape("unable to supply the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
+      gear::Identifier identifier;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -75,7 +71,7 @@ namespace etoile
           escape("unable to release the guard");
       }
 
-      return elle::Status::Ok;
+      return (identifier);
     }
 
     ///
@@ -166,19 +162,16 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method writes the file with the given region of data.
-    ///
-    elle::Status        File::Write(
-                          const gear::Identifier&               identifier,
-                          const nucleus::neutron::Offset& offset,
-                          const elle::standalone::Region&                   region)
+    void
+    File::write(gear::Identifier const& identifier,
+                nucleus::neutron::Offset const& offset,
+                elle::standalone::Region const& data)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::File* context;
 
-      ELLE_TRACE_FUNCTION(identifier, offset, region);
+      ELLE_TRACE_FUNCTION(identifier, offset, data);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -189,7 +182,8 @@ namespace etoile
 
       // declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -198,14 +192,12 @@ namespace etoile
         // apply the write automaton on the context.
         if (automaton::File::Write(*context,
                                    offset,
-                                   region) == elle::Status::Error)
+                                   data) == elle::Status::Error)
           escape("unable to write the file");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-
-      return elle::Status::Ok;
     }
 
     ///
@@ -380,16 +372,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method closes the scope and places it in the journal for
-    /// the modifications to be published in the storage layer.
-    ///
-    elle::Status        File::Store(
-                          const gear::Identifier&               identifier)
+    void
+    File::store(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::File* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -397,14 +385,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -468,8 +457,6 @@ namespace etoile
             break;
           }
         }
-
-      return elle::Status::Ok;
     }
 
     ///

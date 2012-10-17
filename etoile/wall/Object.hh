@@ -48,7 +48,7 @@ namespace etoile
       /// Commit the pending modifications by placing the scope in the journal.
       static
       void
-      Store(const gear::Identifier&);
+      store(gear::Identifier const& identifier);
       /// Destroy an object.
       ///
       /// Use with great care since, not knowing the object's genre, the data

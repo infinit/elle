@@ -310,11 +310,11 @@ namespace etoile
     }
 
     void
-    Object::Store(gear::Identifier const& identifier)
+    Object::store(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -322,14 +322,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw elle::Exception("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -364,9 +365,9 @@ namespace etoile
       // depending on the context's state.
       switch (context->state)
         {
-          case gear::Context::StateDiscarded:
-          case gear::Context::StateStored:
-          case gear::Context::StateDestroyed:
+        case gear::Context::StateDiscarded:
+        case gear::Context::StateStored:
+        case gear::Context::StateDestroyed:
           {
             //
             // if the object has been sealed, i.e there is no more actor
@@ -384,7 +385,7 @@ namespace etoile
 
             break;
           }
-          default:
+        default:
           {
             //
             // otherwise, some actors are probably still working on it.

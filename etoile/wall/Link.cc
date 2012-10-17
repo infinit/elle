@@ -334,16 +334,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method closes the scope and places it in the journal for
-    /// the modifications to be published in the storage layer.
-    ///
-    elle::Status        Link::Store(
-                          const gear::Identifier&               identifier)
+    void
+    Link::store(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Link*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Link* context;
 
       ELLE_TRACE_SCOPE("Store()");
 
@@ -351,14 +347,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -422,8 +419,6 @@ namespace etoile
             break;
           }
         }
-
-      return elle::Status::Ok;
     }
 
     ///
