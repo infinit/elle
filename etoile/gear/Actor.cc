@@ -225,13 +225,24 @@ namespace etoile
               {
                 //
                 // the normal case: check that no modification has been
-                // performed.
+                // performed unless it is alone.
                 //
 
-                // check the state.
-                if (this->state != Actor::StateClean)
-                  escape("unable to discard previously performed "
-                         "modifications");
+                // check the state, especially if there are multiple actors.
+                if (this->scope->actors.size() == 1)
+                  {
+                    // Nothing to do: we assume the actor can exceptionally
+                    // modify an object and discard his modifications if
+                    // he is alone because this is equivalent to the user
+                    // re-modifying the object the other way around, ending
+                    // up with the exact same original state.
+                  }
+                else
+                  {
+                    if (this->state != Actor::StateClean)
+                      escape("unable to discard previously performed "
+                             "modifications");
+                  }
               }
             else
               {
