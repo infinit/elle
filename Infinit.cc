@@ -40,10 +40,25 @@ const elle::String              Infinit::Copyright(
                                   "Copyright (c) 2012 "
                                   "infinit.io All rights reserved.");
 
-///
-/// this variable contains the authority.
-///
-elle::Authority                 Infinit::Authority;
+static
+elle::Authority
+_authority()
+{
+  elle::cryptography::PublicKey K;
+
+  assert(!Infinit::Key.empty());
+  if (K.Restore(Infinit::Key) == elle::Status::Error)
+    throw reactor::Exception(elle::concurrency::scheduler(),
+                             "unable to restore the authority's public key");
+  return elle::Authority(K);
+}
+
+elle::Authority
+Infinit::authority()
+{
+  static elle::Authority authority(_authority());
+  return authority;
+}
 
 ///
 /// this variable contains the system configuration
@@ -82,28 +97,6 @@ elle::Status            Infinit::Initialize()
   // disable the meta logging.
   if (elle::radix::Meta::Disable() == elle::Status::Error)
     escape("unable to disable the meta logging");
-
-  //
-  // create the autority.
-  //
-  {
-    elle::cryptography::PublicKey     K;
-
-    // ignore this step if the key is empty.
-    //
-    // this is especially useful whenever the authority must be author
-    // the very first time.
-    if (Infinit::Key.empty() == false)
-      {
-        // restore the authority's public key.
-        if (K.Restore(Infinit::Key) == elle::Status::Error)
-          escape("unable to restore the authority's public key");
-
-        // create the authority based on the hard-coded public key.
-        if (Infinit::Authority.Create(K) == elle::Status::Error)
-          escape("unable to create the authority");
-      }
-  }
 
   //
   // load the configuration.

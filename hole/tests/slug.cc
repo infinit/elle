@@ -45,8 +45,7 @@ boost::filesystem::path TemporaryDirectory::_tmpdir(
 void test()
 {
   elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
-  elle::Authority authority;
-  authority.Create(keys);
+  elle::Authority authority(keys);
   elle::Passport passport;
   passport.Seal(authority);
 
@@ -56,14 +55,14 @@ void test()
   TemporaryDirectory tmp1;
   hole::storage::Directory storage1(tmp1.path().native());
   hole::implementations::slug::Implementation s1(
-    storage1, passport, std::move(authority), members, 12345,
+    storage1, passport, authority, members, 12345,
     boost::posix_time::seconds(1));
   s1.join();
 
   TemporaryDirectory tmp2;
   hole::storage::Directory storage2(tmp2.path().native());
   hole::implementations::slug::Implementation s2(
-    storage1, passport, std::move(authority), members, 12345,
+    storage1, passport, authority, members, 12345,
     boost::posix_time::seconds(1));
   s2.join();
 

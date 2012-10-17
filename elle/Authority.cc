@@ -10,20 +10,12 @@
 
 namespace elle
 {
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-  ///
-  /// default constructor.
-  ///
-  Authority::Authority():
-    k(nullptr),
-    cipher(nullptr)
-  {
-  }
+  /*-------------.
+  | Construction |
+  `-------------*/
 
   Authority::Authority(Authority const& from):
+    type(from.type),
     K(from.K),
     k(nullptr),
     cipher(nullptr)
@@ -34,56 +26,30 @@ namespace elle
       this->cipher = new cryptography::Cipher(*from.cipher);
   }
 
-  ///
-  /// destructor.
-  ///
+  Authority::Authority(elle::cryptography::KeyPair const& pair):
+    type(Authority::TypePair),
+    K(pair.K),
+    k(new elle::cryptography::PrivateKey(pair.k)),
+    cipher(nullptr)
+  {}
+
+  Authority::Authority(elle::cryptography::PublicKey const& K):
+    type(Authority::TypePublic),
+    K(K),
+    k(0),
+    cipher(nullptr)
+  {}
+
   Authority::~Authority()
   {
-    // release the private key, if present.
-    if (this->k != nullptr)
-      delete this->k;
-
-    // release the cipher.
-    if (this->cipher != nullptr)
-      delete this->cipher;
+    delete this->k;
+    delete this->cipher;
   }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-  ///
-  /// this method creates an authority based on the given key pair.
-  ///
-  elle::Status          Authority::Create(elle::cryptography::KeyPair const&  pair)
-  {
-    // set the type.
-    this->type = Authority::TypePair;
-
-    // set the public key.
-    this->K = pair.K;
-
-    // allocate the private key.
-    this->k = new elle::cryptography::PrivateKey(pair.k);
-
-    return elle::Status::Ok;
-  }
-
-  ///
-  /// this method creates an authority based on the given public key only.
-  ///
-  elle::Status          Authority::Create(elle::cryptography::PublicKey const& K)
-  {
-    // set the type.
-    this->type = Authority::TypePublic;
-
-    // set the public key.
-    this->K = K;
-
-    return elle::Status::Ok;
-  }
-
-  ///
   /// this method encrypts the keys.
   ///
   elle::Status          Authority::Encrypt(const elle::String&          pass)

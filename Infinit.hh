@@ -21,7 +21,7 @@ public:
   //
   // globals
   //
-  static elle::Authority                Authority;
+  static elle::Authority authority();
   static lune::Configuration            Configuration;
 
   static elle::utility::Parser*         Parser;

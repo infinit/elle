@@ -88,7 +88,8 @@ namespace agent
           Agent::Identity.load(Infinit::User);
 
           // verify the identity.
-          if (Agent::Identity.Validate(Infinit::Authority) == elle::Status::Error)
+          if (Agent::Identity.Validate(Infinit::authority())
+              == elle::Status::Error)
             escape("the identity seems to be invalid");
 
           // decrypt the identity.

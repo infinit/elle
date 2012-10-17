@@ -51,7 +51,7 @@ namespace lune
     if (Descriptor::exists(network) == false)
       throw elle::Exception("this network does not seem to exist");
     this->load(this->_path(network));
-    this->validate(Infinit::Authority);
+    this->validate(Infinit::authority());
   }
 
   Descriptor::Descriptor(elle::String const& id,
