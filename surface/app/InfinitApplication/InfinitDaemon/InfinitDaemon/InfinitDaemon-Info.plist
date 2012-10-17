@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SMAuthorizedClients</key>
+	<array>
+		<string>identifier io.infinit.InfinitApplication and certificate leaf[subject.CN] = &quot;io.infinit&quot;</string>
+	</array>
+	<key>CFBundleIdentifier</key>
+	<string>io.infinit.InfinitDaemon</string>
+	<key>CFBundleName</key>
+	<string>InfinitDaemon</string>
+</dict>
+</plist>

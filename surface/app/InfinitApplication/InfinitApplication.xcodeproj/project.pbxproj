@@ -1,0 +1,412 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BD28A9FF162ED79A004F1697 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28A9FE162ED79A004F1697 /* Cocoa.framework */; };
+		BD28AA09162ED79A004F1697 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA07162ED79A004F1697 /* InfoPlist.strings */; };
+		BD28AA0B162ED79A004F1697 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BD28AA0A162ED79A004F1697 /* main.m */; };
+		BD28AA0F162ED79A004F1697 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA0D162ED79A004F1697 /* Credits.rtf */; };
+		BD28AA12162ED79A004F1697 /* IAAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BD28AA11162ED79A004F1697 /* IAAppDelegate.m */; };
+		BD28AA15162ED79A004F1697 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA13162ED79A004F1697 /* MainMenu.xib */; };
+		BD28AA1C162ED83C004F1697 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA1B162ED83C004F1697 /* icon.icns */; };
+		BD28AA1F162EDAE1004F1697 /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA1E162EDAE1004F1697 /* active_status_icon.png */; };
+		BD28AA21162EDD4A004F1697 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA20162EDD4A004F1697 /* Security.framework */; };
+		BD28AA23162EDD57004F1697 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA22162EDD57004F1697 /* ServiceManagement.framework */; };
+		BD28AA76162EF049004F1697 /* InfinitDaemon in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD28AA6F162EEF39004F1697 /* InfinitDaemon */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BD28AA37162EDE8A004F1697;
+			remoteInfo = InfinitDaemon;
+		};
+		BD28AA71162EEF68004F1697 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD28AA36162EDE8A004F1697;
+			remoteInfo = InfinitDaemon;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BD28AA75162EF033004F1697 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				BD28AA76162EF049004F1697 /* InfinitDaemon in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BD28A9FA162ED79A004F1697 /* InfinitApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfinitApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD28A9FE162ED79A004F1697 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		BD28AA01162ED79A004F1697 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		BD28AA02162ED79A004F1697 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		BD28AA03162ED79A004F1697 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BD28AA06162ED79A004F1697 /* InfinitApplication-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "InfinitApplication-Info.plist"; sourceTree = "<group>"; };
+		BD28AA08162ED79A004F1697 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		BD28AA0A162ED79A004F1697 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BD28AA0C162ED79A004F1697 /* InfinitApplication-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "InfinitApplication-Prefix.pch"; sourceTree = "<group>"; };
+		BD28AA0E162ED79A004F1697 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		BD28AA10162ED79A004F1697 /* IAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAppDelegate.h; sourceTree = "<group>"; };
+		BD28AA11162ED79A004F1697 /* IAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAAppDelegate.m; sourceTree = "<group>"; };
+		BD28AA14162ED79A004F1697 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		BD28AA1B162ED83C004F1697 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		BD28AA1E162EDAE1004F1697 /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
+		BD28AA20162EDD4A004F1697 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		BD28AA22162EDD57004F1697 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		BD28AA5D162EEE10004F1697 /* InfinitDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = InfinitDaemon; path = "/Users/infinit/Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug/InfinitDaemon"; sourceTree = "<absolute>"; };
+		BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InfinitDaemon.xcodeproj; path = InfinitDaemon/InfinitDaemon.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BD28A9F7162ED79A004F1697 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD28AA23162EDD57004F1697 /* ServiceManagement.framework in Frameworks */,
+				BD28AA21162EDD4A004F1697 /* Security.framework in Frameworks */,
+				BD28A9FF162ED79A004F1697 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BD28A9EF162ED79A004F1697 = {
+			isa = PBXGroup;
+			children = (
+				BD28AA5E162EEE10004F1697 /* Products */,
+				BD28AA1D162EDAAC004F1697 /* resources */,
+				BD28AA04162ED79A004F1697 /* InfinitApplication */,
+				BD28A9FD162ED79A004F1697 /* Frameworks */,
+				BD28A9FB162ED79A004F1697 /* Products */,
+				BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		BD28A9FB162ED79A004F1697 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD28A9FA162ED79A004F1697 /* InfinitApplication.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD28A9FD162ED79A004F1697 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA22162EDD57004F1697 /* ServiceManagement.framework */,
+				BD28AA20162EDD4A004F1697 /* Security.framework */,
+				BD28A9FE162ED79A004F1697 /* Cocoa.framework */,
+				BD28AA00162ED79A004F1697 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BD28AA00162ED79A004F1697 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA01162ED79A004F1697 /* AppKit.framework */,
+				BD28AA02162ED79A004F1697 /* CoreData.framework */,
+				BD28AA03162ED79A004F1697 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		BD28AA04162ED79A004F1697 /* InfinitApplication */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA10162ED79A004F1697 /* IAAppDelegate.h */,
+				BD28AA11162ED79A004F1697 /* IAAppDelegate.m */,
+				BD28AA13162ED79A004F1697 /* MainMenu.xib */,
+				BD28AA05162ED79A004F1697 /* Supporting Files */,
+			);
+			path = InfinitApplication;
+			sourceTree = "<group>";
+		};
+		BD28AA05162ED79A004F1697 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA06162ED79A004F1697 /* InfinitApplication-Info.plist */,
+				BD28AA07162ED79A004F1697 /* InfoPlist.strings */,
+				BD28AA0A162ED79A004F1697 /* main.m */,
+				BD28AA0C162ED79A004F1697 /* InfinitApplication-Prefix.pch */,
+				BD28AA0D162ED79A004F1697 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BD28AA1D162EDAAC004F1697 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA1B162ED83C004F1697 /* icon.icns */,
+				BD28AA1E162EDAE1004F1697 /* active_status_icon.png */,
+			);
+			name = resources;
+			sourceTree = "<group>";
+		};
+		BD28AA5E162EEE10004F1697 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA5D162EEE10004F1697 /* InfinitDaemon */,
+			);
+			name = Products;
+			path = ../InfinitDaemon;
+			sourceTree = "<group>";
+		};
+		BD28AA67162EEF38004F1697 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD28AA6F162EEF39004F1697 /* InfinitDaemon */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BD28A9F9162ED79A004F1697 /* InfinitApplication */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD28AA18162ED79A004F1697 /* Build configuration list for PBXNativeTarget "InfinitApplication" */;
+			buildPhases = (
+				BD28A9F6162ED79A004F1697 /* Sources */,
+				BD28A9F7162ED79A004F1697 /* Frameworks */,
+				BD28A9F8162ED79A004F1697 /* Resources */,
+				BD28AA75162EF033004F1697 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BD28AA72162EEF68004F1697 /* PBXTargetDependency */,
+			);
+			name = InfinitApplication;
+			productName = InfinitApplication;
+			productReference = BD28A9FA162ED79A004F1697 /* InfinitApplication.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BD28A9F1162ED79A004F1697 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = IA;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = infinit;
+			};
+			buildConfigurationList = BD28A9F4162ED79A004F1697 /* Build configuration list for PBXProject "InfinitApplication" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = BD28A9EF162ED79A004F1697;
+			productRefGroup = BD28A9FB162ED79A004F1697 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = BD28AA67162EEF38004F1697 /* Products */;
+					ProjectRef = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				BD28A9F9162ED79A004F1697 /* InfinitApplication */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		BD28AA6F162EEF39004F1697 /* InfinitDaemon */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = InfinitDaemon;
+			remoteRef = BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BD28A9F8162ED79A004F1697 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD28AA09162ED79A004F1697 /* InfoPlist.strings in Resources */,
+				BD28AA0F162ED79A004F1697 /* Credits.rtf in Resources */,
+				BD28AA15162ED79A004F1697 /* MainMenu.xib in Resources */,
+				BD28AA1C162ED83C004F1697 /* icon.icns in Resources */,
+				BD28AA1F162EDAE1004F1697 /* active_status_icon.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BD28A9F6162ED79A004F1697 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD28AA0B162ED79A004F1697 /* main.m in Sources */,
+				BD28AA12162ED79A004F1697 /* IAAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BD28AA72162EEF68004F1697 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InfinitDaemon;
+			targetProxy = BD28AA71162EEF68004F1697 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BD28AA07162ED79A004F1697 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD28AA08162ED79A004F1697 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		BD28AA0D162ED79A004F1697 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD28AA0E162ED79A004F1697 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		BD28AA13162ED79A004F1697 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD28AA14162ED79A004F1697 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BD28AA16162ED79A004F1697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		BD28AA17162ED79A004F1697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		BD28AA19162ED79A004F1697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = io.infinit;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "InfinitApplication/InfinitApplication-Prefix.pch";
+				INFOPLIST_FILE = "InfinitApplication/InfinitApplication-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		BD28AA1A162ED79A004F1697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = io.infinit;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "InfinitApplication/InfinitApplication-Prefix.pch";
+				INFOPLIST_FILE = "InfinitApplication/InfinitApplication-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BD28A9F4162ED79A004F1697 /* Build configuration list for PBXProject "InfinitApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD28AA16162ED79A004F1697 /* Debug */,
+				BD28AA17162ED79A004F1697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BD28AA18162ED79A004F1697 /* Build configuration list for PBXNativeTarget "InfinitApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD28AA19162ED79A004F1697 /* Debug */,
+				BD28AA1A162ED79A004F1697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BD28A9F1162ED79A004F1697 /* Project object */;
+}
