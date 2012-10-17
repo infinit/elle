@@ -330,7 +330,7 @@ def configure(cxx_toolkit, cxx_config):
                               cxx_toolkit, cxx_config)
 
   hole_tests_root = drake.Path('hole/tests')
-  for test in []:#'slug']:
+  for test in ['slug']:
     drake.cxx.Executable(hole_tests_root / test,
                          drake.nodes(hole_tests_root / ('%s.cc' % test)) +
                          [reactor.lib_dynamic, elle.lib_dynamic,
