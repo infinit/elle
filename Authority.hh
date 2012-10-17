@@ -19,9 +19,8 @@ namespace elle
   /// public key, the most common case, through which it is only used to
   /// verify signatures.
   ///
-  class Authority
-    : public elle::radix::Object
-    , public elle::concept::MakeFileable<Authority>
+  class Authority:
+    public elle::concept::MakeFileable<Authority>
   {
   public:
     //
@@ -38,6 +37,7 @@ namespace elle
     // constructors & destructors
     //
     Authority();
+    Authority(Authority const& from);
     ~Authority();
 
     //
@@ -58,9 +58,6 @@ namespace elle
     // interfaces
     //
   public:
-    // object
-    declare(Authority);
-
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
