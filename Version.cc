@@ -3,9 +3,9 @@
 namespace elle
 {
 
-  //
-  // ---------- construction ----------------------------------------------------
-  //
+  /*-------------.
+  | Construction |
+  `-------------*/
 
   Version::Version():
     _major(0),
@@ -20,48 +20,26 @@ namespace elle
   {
   }
 
-  //
-  // ---------- methods ---------------------------------------------------------
-  //
-
-  elle::Natural8
-  Version::major() const
-  {
-    return (this->_major);
-  }
-
-  elle::Natural8
-  Version::minor() const
-  {
-    return (this->_minor);
-  }
-
-  //
-  // ---------- printable -------------------------------------------------------
-  //
+  /*----------.
+  | Printable |
+  `----------*/
 
   void
   Version::print(std::ostream& stream) const
   {
     stream << static_cast<elle::Natural32>(this->_major)
-           << ":"
+           << "."
            << static_cast<elle::Natural32>(this->_minor);
   }
 
-  //
-  // ---------- operators -------------------------------------------------------
-  //
+  /*----------.
+  | Operators |
+  `----------*/
 
   elle::Boolean
   Version::operator ==(Version const& other) const
   {
     return ((this->_major == other._major) && (this->_minor == other._minor));
-  }
-
-  elle::Boolean
-  Version::operator !=(Version const& other) const
-  {
-    return (!this->operator ==(other));
   }
 
   elle::Boolean
@@ -76,18 +54,6 @@ namespace elle
   {
     return ((this->_major > other._major) ||
             ((this->_major == other._major) && (this->_minor > other._minor)));
-  }
-
-  elle::Boolean
-  Version::operator <=(Version const& other) const
-  {
-    return (!this->operator >(other));
-  }
-
-  elle::Boolean
-  Version::operator >=(Version const& other) const
-  {
-    return (!this->operator <(other));
   }
 
 }
