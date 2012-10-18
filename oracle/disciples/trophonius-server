@@ -1,0 +1,14 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+
+"""\
+trophonius-server provide a message queue to infinit clients.
+"""
+
+import sys
+
+from trophonius.application import Application
+
+if __name__ == '__main__':
+	application = Application("0.0.0.0", 23456)
+	application.run()
