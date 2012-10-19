@@ -40,6 +40,18 @@ namespace elle
     cipher(nullptr)
   {}
 
+  Authority::Authority(elle::io::Path const& path):
+    k(0),
+    cipher(0)
+  {
+    if (!elle::Authority::exists(path))
+      throw reactor::Exception(
+        elle::concurrency::scheduler(),
+        elle::sprintf("unable to locate the authority file %s",
+                      path));
+    this->load(path);
+  }
+
   Authority::~Authority()
   {
     delete this->k;
