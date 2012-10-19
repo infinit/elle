@@ -181,7 +181,11 @@ namespace hole
 
       Machine::~Machine()
       {
-        _acceptor->terminate_now();
+        // Stop serving; we may not be listening, since bind errors are
+        // considered warnings (see constructor), in which case we have no
+        // acceptor.
+        if (_acceptor)
+          _acceptor->terminate_now();
       }
 
       /*------.
