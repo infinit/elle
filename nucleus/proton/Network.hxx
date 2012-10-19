@@ -13,13 +13,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Network,
   ELLE_LOG_COMPONENT("infinit.nucleus.proton.Network");
 
   enforce(version == 0);
-
-  // XXX[to remove when Addess::Any no longer exists]
-  // enforce(value._name.length() != 0);
-  if (value._name.length() == 0)
-    { // XXX[braces useless]
-      ELLE_WARN("the network name is empty");
-    }
+  enforce(value._name.length());
 
   archive << value._name;
 }
