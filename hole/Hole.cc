@@ -28,6 +28,7 @@ namespace hole
     : _storage(storage)
     , _passport(passport)
     , _authority(authority)
+    , _state(State::offline)
   {
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
