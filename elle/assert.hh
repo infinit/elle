@@ -8,12 +8,12 @@
 namespace elle
 {
   /// Print the message and abort program execution.
-  ELLE_COMPILER_ATTR_NORETURN
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   abort(const std::string& msg);
 
   /// Abort the program. Flags unreachable code.
-  ELLE_COMPILER_ATTR_NORETURN
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   unreachable();
 }
