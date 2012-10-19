@@ -1,9 +1,9 @@
-
 set(QT_USE_QTNETWORK true)
 set(QT_DONT_USE_QTGUI true)
 set(QT_USE_QTXML true)
 
 include(${QT_USE_FILE})
+include_directories(${QT_INCLUDES})
 add_definitions(${QT_DEFINITIONS})
 
 file(GLOB watchdog_srcs *.cc)

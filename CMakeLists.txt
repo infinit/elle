@@ -197,7 +197,7 @@ add_custom_command(
 # - Dependencies --------------------------------------------------------------
 
 ## Loading boost
-set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_LIBS ON) # XXX[required for boost_filesystem to work :(]
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost
@@ -212,8 +212,6 @@ message("-- Boost libraries: ${Boost_LIBRARIES}")
 ## Loading Qt
 find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 set(QT_DONT_USE_QTGUI true)
-include(${QT_USE_FILE})
-include_directories(${QT_INCLUDES})
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 

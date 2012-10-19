@@ -1,5 +1,3 @@
-#link_libraries(${INFINIT_LIBRARIES})
-
 add_subdirectory(access)
 add_subdirectory(authority)
 add_subdirectory(dictionary)
@@ -10,5 +8,5 @@ add_subdirectory(setup)
 # XXX add_subdirectory(shell)
 add_subdirectory(user)
 # XXX ADD_SUBDIRECTORY(diary)
-add_subdirectory(copy)
+add_subdirectory(transfer)
 # XXX add_subdirectory(progress)

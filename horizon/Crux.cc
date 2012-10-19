@@ -419,7 +419,6 @@ namespace horizon
       nucleus::neutron::permissions::none;
     etoile::path::Slab        name;
     etoile::path::Way         way(etoile::path::Way(path), name);
-    etoile::gear::Identifier  subdirectory;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
@@ -440,8 +439,7 @@ namespace horizon
       return (-EACCES);
 
     // Create the subdirectory.
-    if (etoile::wall::Directory::Create(subdirectory) == elle::Status::Error)
-      return (-EPERM);
+    etoile::gear::Identifier subdirectory(etoile::wall::Directory::create());
 
     Ward ward_subdirectory(subdirectory);
 
@@ -1095,7 +1093,6 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(target, source);
 
-    etoile::gear::Identifier link;
     etoile::path::Slab name;
     etoile::path::Way from(etoile::path::Way(source), name);
     etoile::path::Way to(target);
@@ -1118,9 +1115,8 @@ namespace horizon
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
-    // Create a link
-    if (etoile::wall::Link::Create(link) == elle::Status::Error)
-      return (-EPERM);
+    // Create a link.
+    etoile::gear::Identifier link(etoile::wall::Link::create());
 
     Ward ward_link(link);
 
@@ -1168,8 +1164,7 @@ namespace horizon
       }
 
     // Bind the link.
-    if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
-      return (-EPERM);
+    etoile::wall::Link::bind(link, to);
 
     // Add an entry for the link.
     etoile::wall::Directory::add(directory, name, link);

@@ -23,8 +23,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Network,
                           value,
                           version)
 {
-  ELLE_LOG_COMPONENT("infinit.nucleus.proton.Network");
-
   enforce(version == 0);
 
   archive >> value._name;

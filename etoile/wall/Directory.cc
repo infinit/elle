@@ -32,29 +32,25 @@ namespace etoile
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates a new directory object.
-    ///
-    /// note however that the object is not attached to the hierarchy
-    /// and is therefore considered as orphan.
-    ///
-    elle::Status        Directory::Create(
-                          gear::Identifier&                     identifier)
+    gear::Identifier
+    Directory::create()
     {
-      gear::Scope*      scope;
-      gear::Directory*  context;
+      gear::Scope* scope;
+      gear::Directory* context;
 
-      ELLE_TRACE_FUNCTION(identifier);
+      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
         escape("unable to supply the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
+      gear::Identifier identifier;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -80,7 +76,7 @@ namespace etoile
           escape("unable to release the guard");
       }
 
-      return elle::Status::Ok;
+      return (identifier);
     }
 
     gear::Identifier

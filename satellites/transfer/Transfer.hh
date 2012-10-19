@@ -1,0 +1,88 @@
+#ifndef TRANSFER_TRANSFER_HH
+# define TRANSFER_TRANSFER_HH
+
+# include <elle/types.hh>
+
+# include <reactor/network/fwd.hh>
+
+# include <etoile/path/fwd.hh>
+# include <etoile/portal/Manifest.hh>
+
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Permissions.hh>
+
+# include <protocol/fwd.hh>
+
+# include <lune/fwd.hh>
+
+# include <Infinit.hh>
+
+namespace satellite
+{
+
+  ///
+  /// this class implements the transfer satellite.
+  ///
+  class Transfer
+  {
+  public:
+    //
+    // enumerations
+    //
+    enum Operation
+      {
+        OperationUnknown = 0,
+
+        OperationFrom,
+        OperationTo
+      };
+
+    /// Connect and authenticate to Etoile.
+    static
+    void
+    connect();
+    /// Update the root directory of the Infinit file system
+    /// with the total size of the files/directories/links
+    /// having been transfered.
+    static
+    void
+    update(elle::Natural64 const size);
+    /// Attach the given object's identifier to the Infinit
+    /// hierarchy, more precisely at the given path.
+    static
+    void
+    attach(etoile::gear::Identifier& object,
+           elle::String const& path);
+    /// Creates a file to Infinit.
+    static
+    elle::Natural64
+    create(elle::String const& source,
+           elle::String const& target);
+    /// Creates a symlink to Infinit.
+    static
+    elle::Natural64
+    symlink(elle::String const& source,
+            elle::String const& target);
+    /// Creates a hierarchical tree to Infinit.
+    static
+    elle::Natural64
+    dig(elle::String const& path);
+    /// Transfer everything from Infinit to the local file system.
+    static
+    void
+    from(elle::String const& target);
+    /// Transfer local files/directories to Infinit.
+    static
+    void
+    to(elle::String const& source);
+
+    static reactor::network::TCPSocket* socket;
+    static infinit::protocol::Serializer* serializer;
+    static infinit::protocol::ChanneledStream* channels;
+    static etoile::portal::RPC* rpcs;
+    static lune::Descriptor* descriptor;
+  };
+
+}
+
+#endif

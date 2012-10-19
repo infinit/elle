@@ -4,15 +4,12 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 
-#include <elle/log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
 #include <elle/idiom/Close.hh>
 # include <boost/lexical_cast.hpp>
 #include <elle/idiom/Open.hh>
-
-ELLE_LOG_COMPONENT("infinit.nucleus.proton.MutableBlock");
 
 namespace nucleus
 {

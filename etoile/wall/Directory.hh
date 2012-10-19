@@ -22,8 +22,10 @@ namespace etoile
       | Static Methods |
       `---------------*/
     public:
-      static elle::Status       Create(gear::Identifier&);
-
+      /// Creates a directory though orphan since not attached to the hierarchy.
+      static
+      gear::Identifier
+      create();
       /// Loads the directory referenced through the given chemin.
       static
       gear::Identifier

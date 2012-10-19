@@ -1183,8 +1183,6 @@ namespace hole
               elle::String unique = address.unique();
               auto iterator = cache.find(unique);
               {
-                ELLE_LOG_COMPONENT("infinit.hole.slug.cache");
-
                 // If the address is present in the cache, remove it.
                 if (iterator != cache.end())
                   cache.erase(iterator);

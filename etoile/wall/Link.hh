@@ -16,18 +16,28 @@ namespace etoile
     ///
     class Link
     {
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      //
-      // static methods
-      //
-      static elle::Status       Create(gear::Identifier&);
+      /// Create a new link object though not yet attached to the
+      /// hiearchy i.e orphan.
+      static
+      gear::Identifier
+      create();
+
       static elle::Status       Load(const path::Chemin&,
                                      gear::Identifier&);
 
       static elle::Status       Lock(const gear::Identifier&);
       static elle::Status       Release(const gear::Identifier&);
-      static elle::Status       Bind(const gear::Identifier&,
-                                     const path::Way&);
+
+      /// Bind a target way to the link.
+      static
+      void
+      bind(gear::Identifier const& identifier,
+           path::Way const& target);
+
       static elle::Status       Resolve(const gear::Identifier&,
                                         path::Way&);
 

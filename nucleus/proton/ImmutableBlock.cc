@@ -2,13 +2,10 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 
-#include <elle/log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
 #include <Infinit.hh>
-
-ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImmutableBlock");
 
 namespace nucleus
 {

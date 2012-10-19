@@ -1,4 +1,4 @@
-#include <satellites/copy/Copy.hh>
+#include <satellites/transfer/Transfer.hh>
 
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
@@ -24,20 +24,26 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
 #include <elle/idiom/Close.hh>
-# include <boost/foreach.hpp>
+# include <boost/filesystem.hpp>
+# include <boost/algorithm/string.hpp>
 # include <limits>
 #include <elle/idiom/Open.hh>
 
 #include <iostream>
 #include <fstream>
 
+ELLE_LOG_COMPONENT("infinit.satellites.transfer.Transfer");
+
 namespace satellite
 {
-  reactor::network::TCPSocket* Copy::socket = nullptr;
-  infinit::protocol::Serializer* Copy::serializer = nullptr;
-  infinit::protocol::ChanneledStream* Copy::channels = nullptr;
-  etoile::portal::RPC* Copy::rpcs = nullptr;
+  reactor::network::TCPSocket* Transfer::socket = nullptr;
+  infinit::protocol::Serializer* Transfer::serializer = nullptr;
+  infinit::protocol::ChanneledStream* Transfer::channels = nullptr;
+  etoile::portal::RPC* Transfer::rpcs = nullptr;
+  lune::Descriptor* Transfer::descriptor = nullptr;
 
   /// Ward helper to make sure objects are discarded on errors.
   class Ward
@@ -50,8 +56,8 @@ namespace satellite
 
     ~Ward()
     {
-      if (_clean && Copy::socket != nullptr)
-        Copy::rpcs->objectdiscard(this->_id);
+      if (_clean && Transfer::socket != nullptr)
+        Transfer::rpcs->objectdiscard(this->_id);
     }
 
     void release()
@@ -65,80 +71,60 @@ namespace satellite
   };
 
   void
-  Copy::connect()
+  Transfer::connect()
   {
     // Load the phrase.
     lune::Phrase phrase;
     phrase.load(Infinit::Network, "portal");
 
     // Connect to the server.
-    Copy::socket =
+    Transfer::socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
                                       elle::String("127.0.0.1"),
                                       phrase.port);
-    Copy::serializer =
+    Transfer::serializer =
       new infinit::protocol::Serializer(elle::concurrency::scheduler(),
                                         *socket);
-    Copy::channels =
+    Transfer::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
                                              *serializer, true);
-    Copy::rpcs = new etoile::portal::RPC(*channels);
+    Transfer::rpcs = new etoile::portal::RPC(*channels);
 
-    if (!Copy::rpcs->authenticate(phrase.pass))
+    if (!Transfer::rpcs->authenticate(phrase.pass))
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to authenticate to Etoile");
   }
 
   void
-  Copy::from(elle::String const& source,
-             elle::String const& target)
+  Transfer::update(elle::Natural64 const size)
   {
-    Copy::connect();
-    /* XXX
-    // Resolve the path.
-    etoile::path::Chemin chemin(Copy::rpcs->pathresolve(way));
-    // Load the object.
-    etoile::gear::Identifier identifier(Copy::rpcs->objectload(chemin));
-    Ward ward(identifier);
-    // Lookup the copy record.
-    nucleus::neutron::Record record(
-      Copy::rpcs->copylookup(identifier, subject));
-    display(record);
-    */
+    // XXX
   }
 
   void
-  Copy::to(elle::String const& source,
-           elle::String const& target)
+  Transfer::attach(etoile::gear::Identifier& object,
+                   elle::String const& path)
   {
     etoile::path::Slab name;
-    etoile::path::Way way(etoile::path::Way(target), name);
-
-    // Connect to Etoile.
-    Copy::connect();
+    etoile::path::Way way(etoile::path::Way(path), name);
 
     // Resolve parent directory.
-    etoile::path::Chemin chemin(Copy::rpcs->pathresolve(way));
+    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(way));
 
     // Load parent directory.
-    etoile::gear::Identifier directory(Copy::rpcs->directoryload(chemin));
+    etoile::gear::Identifier directory(Transfer::rpcs->directoryload(chemin));
 
     Ward ward_directory(directory);
 
-    // Check permissions.
+    // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
-      Copy::rpcs->accesslookup(directory, agent::Agent::Subject));
+      Transfer::rpcs->accesslookup(directory, agent::Agent::Subject));
 
+    // Check the record.
     if ((record == nucleus::neutron::Record::Null) ||
         ((record.permissions & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
-      throw std::runtime_error("the subject does not have the right to create "
-                               "a file in this directory");
-
-    // Create file.
-    etoile::gear::Identifier file(Copy::rpcs->filecreate());
-
-    Ward ward_file(file);
+      throw std::runtime_error("the subject does not have the permission");
 
     // Grant permissions for the user itself.
     // Set default permissions: read and write.
@@ -147,20 +133,18 @@ namespace satellite
       nucleus::neutron::permissions::write;
 
     // Set the owner permissions.
-    Copy::rpcs->accessgrant(file, agent::Agent::Subject, permissions);
-
-    // FIXME: do not re-parse the descriptor every time.
-    lune::Descriptor descriptor(Infinit::Network);
+    Transfer::rpcs->accessgrant(object, agent::Agent::Subject, permissions);
 
     // Grant read permission for 'everybody' group.
-    switch (descriptor.data().policy())
+    switch (Transfer::descriptor->data().policy())
       {
       case horizon::Policy::accessible:
         {
           // grant the read permission to the 'everybody' group.
-          Copy::rpcs->accessgrant(file,
-                                  descriptor.meta().everybody_subject(),
-                                  nucleus::neutron::permissions::read);
+          Transfer::rpcs->accessgrant(
+            object,
+            Transfer::descriptor->meta().everybody_subject(),
+            nucleus::neutron::permissions::read);
 
           break;
         }
@@ -184,44 +168,210 @@ namespace satellite
         }
       }
 
+    // Add object to parent directory.
+    Transfer::rpcs->directoryadd(directory, name, object);
+
+    // Store parent directory.
+    Transfer::rpcs->directorystore(directory);
+
+    // Release the identifier tracking.
+    ward_directory.release();
+  }
+
+  elle::Natural64
+  Transfer::create(elle::String const& source,
+                   elle::String const& target)
+  {
+    // Create file.
+    etoile::gear::Identifier file(Transfer::rpcs->filecreate());
+
+    Ward ward_file(file);
+
+    // Attach the file to the hierarchy.
+    Transfer::attach(file, target);
+
     // Write the source file's content into the Infinit file freshly created.
-    std::streamsize N = 4096;
+    std::streamsize N = 5242880;
     std::ifstream stream(source, std::ios::binary);
     nucleus::neutron::Offset offset(0);
+    unsigned char* buffer = new unsigned char[N];
 
     while (stream.good())
       {
-        unsigned char buffer[N];
-
         stream.read((char*)buffer, N);
 
         elle::standalone::Region data(buffer, N);
 
         data.size = stream.gcount();
 
-        Copy::rpcs->filewrite(file, offset, data);
+        Transfer::rpcs->filewrite(file, offset, data);
 
         offset += data.size;
       }
 
-    // Add file to parent directory.
-    Copy::rpcs->directoryadd(directory, name, file);
+    delete[] buffer;
 
     // Store file.
-    Copy::rpcs->filestore(file);
-
-    // Store parent directory.
-    Copy::rpcs->directorystore(directory);
+    Transfer::rpcs->filestore(file);
 
     // Release the identifier tracking.
     ward_file.release();
-    ward_directory.release();
+
+    // Return the number of bytes composing the file having been copied.
+    return (static_cast<elle::Natural64>(offset));
   }
 
-  elle::Status          Main(elle::Natural32                    argc,
-                             elle::Character*                   argv[])
+  elle::Natural64
+  Transfer::dig(elle::String const& path)
   {
-    Copy::Operation   operation;
+    // Create directory.
+    etoile::gear::Identifier subdirectory(Transfer::rpcs->directorycreate());
+
+    Ward ward_subdirectory(subdirectory);
+
+    // Attach the directory to the hierarchy.
+    Transfer::attach(subdirectory, path);
+
+    // Store subdirectory.
+    Transfer::rpcs->directorystore(subdirectory);
+
+    // Release the identifier tracking.
+    ward_subdirectory.release();
+
+    // We consider that the directories do not account for the actual data but
+    // for a single byte.
+    return (1);
+  }
+
+  elle::Natural64
+  Transfer::symlink(elle::String const& source,
+                    elle::String const& target)
+  {
+    // Create symlink.
+    etoile::gear::Identifier link(Transfer::rpcs->linkcreate());
+
+    Ward ward_link(link);
+
+    // Attach the link to the hierarchy.
+    Transfer::attach(link, target);
+
+    etoile::path::Way way(boost::filesystem::read_symlink(source).string());
+
+    // bind the link.
+    Transfer::rpcs->linkbind(link, way);
+
+    // Store link.
+    Transfer::rpcs->linkstore(link);
+
+    // Release the identifier tracking.
+    ward_link.release();
+
+    return (way.path.length());
+  }
+
+  void
+  Transfer::from(elle::String const& target)
+  {
+    // Connect to Etoile.
+    Transfer::connect();
+
+    // XXX
+  }
+
+  void
+  Transfer::to(elle::String const& source)
+  {
+    elle::Natural64 size(0);
+
+    // Connect to Etoile.
+    Transfer::connect();
+
+    boost::filesystem::path path(source);
+
+    if (boost::filesystem::is_symlink(path) == true)
+      {
+        // Transfor a single link.
+        elle::String root(path.parent_path().string());
+        elle::String base(path.string().substr(root.length()));
+
+        ELLE_TRACE("root %s", root.c_str());
+        ELLE_TRACE("link %s", base.c_str());
+        return;
+
+        size += Transfer::symlink(source, base);
+      }
+    else if (boost::filesystem::is_directory(path) == true)
+      {
+        // Transfer a whole directory and its content.
+        elle::String root(path.parent_path().string());
+        elle::String base(path.string().substr(root.length()));
+
+        ELLE_TRACE("root %s", root.c_str());
+        ELLE_TRACE("base %s", base.c_str());
+
+        boost::filesystem::recursive_directory_iterator iterator(source);
+        boost::filesystem::recursive_directory_iterator end;
+
+        size += Transfer::dig(base);
+
+        for (; iterator != end; ++iterator)
+          {
+            ELLE_TRACE("path %s", iterator->path().string().c_str());
+
+            if (boost::filesystem::is_symlink(iterator->path()) == true)
+              {
+                elle::String link(
+                  iterator->path().string().substr(root.length()));
+
+                ELLE_TRACE("link %s", link.c_str());
+
+                size += Transfer::symlink(iterator->path().string(), link);
+              }
+            else if (boost::filesystem::is_regular_file(
+                       iterator->path()) == true)
+              {
+                elle::String file(
+                  iterator->path().string().substr(root.length()));
+
+                ELLE_TRACE("file %s", file.c_str());
+
+                size += Transfer::create(iterator->path().string(), file);
+              }
+            else if (boost::filesystem::is_directory(iterator->path()) == true)
+              {
+                elle::String directory(
+                  iterator->path().string().substr(root.length()));
+
+                ELLE_TRACE("directory %s", directory.c_str());
+
+                size += Transfer::dig(directory);
+              }
+            else
+              throw std::runtime_error("unknown object type");
+          }
+      }
+    else if (boost::filesystem::is_regular_file(path) == true)
+      {
+        // Transfor a single file.
+        elle::String root(path.parent_path().string());
+        elle::String base(path.string().substr(root.length()));
+
+        ELLE_TRACE("root %s", root.c_str());
+        ELLE_TRACE("file %s", base.c_str());
+
+        size += Transfer::create(source, base);
+      }
+    else
+      throw std::runtime_error("unknown object type");
+
+    Transfer::update(size);
+  }
+
+  void
+  main(elle::Natural32 argc,
+       elle::Character* argv[])
+  {
+    Transfer::Operation operation;
 
     // XXX Infinit::Parser is not deleted in case of errors
 
@@ -238,7 +388,7 @@ namespace satellite
       escape("unable to initialize Infinit");
 
     // initialize the operation.
-    operation = Copy::OperationUnknown;
+    operation = Transfer::OperationUnknown;
 
     // allocate a new parser.
     Infinit::Parser = new elle::utility::Parser(argc, argv);
@@ -296,30 +446,21 @@ namespace satellite
 
     // register the options.
     if (Infinit::Parser->Register(
-          "Source",
-          's',
-          "source",
-          "the path to the source file i.e the file to be copied",
-          elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
-
-    // register the options.
-    if (Infinit::Parser->Register(
-          "Target",
-          'g',
-          "target",
-          "the path to the target file to be created",
+          "Path",
+          'p',
+          "path",
+          "the directory path where the data must be copied from/to",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     if (Infinit::Parser->Example(
-          "-u fistouille -n slug --to --source ~/Downloads/foo.txt "
-          "--target /foo.txt") == elle::Status::Error)
+          "-u fistouille -n slug --to --path ~/Downloads/") ==
+        elle::Status::Error)
       escape("unable to register the example");
 
     if (Infinit::Parser->Example(
-          "-u fistouille -n slug --from --source /partouze.avi "
-          "--target ~/Videos/partouze.avi") == elle::Status::Error)
+          "-u fistouille -n slug --from --path /tmp/XXX/") ==
+        elle::Status::Error)
       escape("unable to register the example");
 
     // parse.
@@ -333,7 +474,7 @@ namespace satellite
         Infinit::Parser->Usage();
 
         // quit.
-        return elle::Status::Ok;
+        return;
       }
 
     // retrieve the user name.
@@ -372,41 +513,45 @@ namespace satellite
 
     // test the option.
     if (Infinit::Parser->Test("From") == elle::Status::True)
-      operation = Copy::OperationFrom;
+      operation = Transfer::OperationFrom;
 
     // test the option.
     if (Infinit::Parser->Test("To") == elle::Status::True)
-      operation = Copy::OperationTo;
+      operation = Transfer::OperationTo;
 
-    elle::String source;
-    elle::String target;
+    // FIXME: do not re-parse the descriptor every time.
+    Transfer::descriptor = new lune::Descriptor(Infinit::Network);
 
-    // retrieve the path.
-    if (Infinit::Parser->Value("Source",
-                               source) == elle::Status::Error)
-      escape("unable to retrieve the source value");
+    elle::String path;
 
     // retrieve the path.
-    if (Infinit::Parser->Value("Target",
-                               target) == elle::Status::Error)
-      escape("unable to retrieve the target value");
+    if (Infinit::Parser->Value("Path",
+                               path) == elle::Status::Error)
+      escape("unable to retrieve the path value");
+
+    path =
+      boost::algorithm::trim_right_copy_if(
+        boost::filesystem::absolute(path).string(),
+        boost::is_any_of("/"));
+
+    std::cout << path << std::endl;
 
     // trigger the operation.
     switch (operation)
       {
-      case Copy::OperationFrom:
+      case Transfer::OperationFrom:
         {
-          Copy::from(source, target);
+          Transfer::from(path);
 
           break;
         }
-      case Copy::OperationTo:
+      case Transfer::OperationTo:
         {
-          Copy::to(source, target);
+          Transfer::to(path);
 
           break;
         }
-      case Copy::OperationUnknown:
+      case Transfer::OperationUnknown:
       default:
         {
           // display the usage.
@@ -431,8 +576,6 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
-
-    return elle::Status::Ok;
   }
 
 }
@@ -446,9 +589,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "XXX");
+      satellite::main(argc, argv);
     }
   catch (std::exception const& e)
     {

@@ -13,6 +13,7 @@
 #include <etoile/wall/Group.hh>
 #include <etoile/wall/Object.hh>
 #include <etoile/wall/File.hh>
+#include <etoile/wall/Link.hh>
 #include <etoile/wall/Directory.hh>
 #include <etoile/wall/Path.hh>
 
@@ -99,6 +100,10 @@ namespace etoile
       this->rpcs->filecreate = &wall::File::create;
       this->rpcs->filewrite = &wall::File::write;
       this->rpcs->filestore = &wall::File::store;
+      this->rpcs->linkcreate = &wall::Link::create;
+      this->rpcs->linkbind = &wall::Link::bind;
+      this->rpcs->linkstore = &wall::Link::store;
+      this->rpcs->directorycreate = &wall::Directory::create;
       this->rpcs->directoryload = &wall::Directory::load;
       this->rpcs->directoryadd = &wall::Directory::add;
       this->rpcs->directorystore = &wall::Directory::store;

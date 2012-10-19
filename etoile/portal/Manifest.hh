@@ -88,7 +88,7 @@ namespace etoile
       /*----------.
       | Directory |
       `----------*/
-      RemoteProcedure<void> directorycreate;
+      RemoteProcedure<etoile::gear::Identifier> directorycreate;
       RemoteProcedure<etoile::gear::Identifier,
                       etoile::path::Chemin&> directoryload;
       RemoteProcedure<void,
@@ -123,7 +123,7 @@ namespace etoile
       /*-----.
       | Link |
       `-----*/
-      RemoteProcedure<void> linkcreate;
+      RemoteProcedure<etoile::gear::Identifier> linkcreate;
       RemoteProcedure<void,
                       etoile::path::Chemin&> linkload;
       RemoteProcedure<void,

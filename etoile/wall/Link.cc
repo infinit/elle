@@ -25,17 +25,11 @@ namespace etoile
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method creates a new link object.
-    ///
-    /// note however that the object is not attached to the hierarchy
-    /// and is therefore considered as orphan.
-    ///
-    elle::Status        Link::Create(
-                          gear::Identifier&                     identifier)
+    gear::Identifier
+    Link::create()
     {
-      gear::Scope*      scope;
-      gear::Link*       context;
+      gear::Scope* scope;
+      gear::Link* context;
 
       ELLE_TRACE_FUNCTION("");
 
@@ -43,11 +37,13 @@ namespace etoile
       if (gear::Scope::Supply(scope) == elle::Status::Error)
         escape("unable to supply the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
+      gear::Identifier identifier;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -74,7 +70,8 @@ namespace etoile
       }
 
       ELLE_DEBUG("returning identifier %s", identifier);
-      return elle::Status::Ok;
+
+      return (identifier);
     }
 
     ///
@@ -165,18 +162,15 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method binds a new target way to the given object.
-    ///
-    elle::Status        Link::Bind(
-                          const gear::Identifier&               identifier,
-                          const path::Way&                      way)
+    void
+    Link::bind(gear::Identifier const& identifier,
+               path::Way const& target)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Link*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Link* context;
 
-      ELLE_TRACE_SCOPE("Bind(%s, %s)", identifier, way);
+      ELLE_TRACE_SCOPE("Bind(%s, %s)", identifier, target);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -187,22 +181,20 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the bind automaton on the context.
-        if (automaton::Link::Bind(*context,
-                                  way) == elle::Status::Error)
+        if (automaton::Link::Bind(*context, target) == elle::Status::Error)
           escape("unable to bind the link");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-
-      return elle::Status::Ok;
     }
 
     ///

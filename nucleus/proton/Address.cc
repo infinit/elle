@@ -4,8 +4,6 @@
 
 #include <elle/format/hexadecimal.hh>
 
-ELLE_LOG_COMPONENT("infinit.nucleus.proton.Address");
-
 namespace nucleus
 {
   namespace proton
