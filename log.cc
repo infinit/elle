@@ -22,6 +22,7 @@ namespace elle
 {
   namespace log
   {
+
     Logger::Level
     logLevel()
     {
@@ -153,22 +154,29 @@ namespace elle
         }
       };
 
-      TraceComponent::TraceComponent(std::string const& name_)
-        : name(boost::algorithm::trim_copy(name_))
-      {
-        assert(name.size() && "component name should not be empty");
-        Components::instance().enable(this->name);
-      }
-
       TraceContext::TraceContext(elle::log::Logger::Level level,
                                  elle::log::Logger::Type type,
-                                 TraceComponent const& component,
+                                 elle::String const& component,
                                  char const* file,
                                  unsigned int line,
                                  char const* function,
                                  std::string const& message)
         : _component(component)
       {
+        try
+          {
+            // If this method does not throw, it means the component
+            // has already been registered leading it to be enabled
+            // or disabled.
+            Components::instance().enabled(this->_component);
+          }
+        catch (std::runtime_error const& e)
+          {
+            // If however an exception is thrown, the component has
+            // not been register, hence do it now.
+            Components::instance().enable(this->_component);
+          }
+
         this->_indent();
         this->_send(level, type, file, line, function, message);
       }
@@ -202,12 +210,12 @@ namespace elle
                           elle::log::Logger::Type type,
                           std::string const& msg)
       {
-        if (!Components::instance().enabled(this->_component.name))
+        if (!Components::instance().enabled(this->_component))
           {
             if (type < Logger::Type::warning)
               return;
             else
-              Components::instance().update_max_size(this->_component.name);
+              Components::instance().update_max_size(this->_component);
           }
         int indent;
         {
@@ -216,12 +224,12 @@ namespace elle
         }
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
-        unsigned int size = this->_component.name.size();
+        unsigned int size = this->_component.size();
         assert(size <= Components::instance().max_string_size());
         unsigned int pad = Components::instance().max_string_size() - size;
         std::string s = (
           std::string(pad / 2, ' ') +
-          this->_component.name +
+          this->_component +
           std::string(pad / 2 + pad % 2, ' ')
         );
 

@@ -5,44 +5,27 @@
 # include <elle/assert.hh>
 # include <elle/printf.hh>
 # include <elle/print.hh>
+# include <elle/compiler.hh>
 
 namespace elle
 {
   namespace log
   {
 
-    /// Note that a class is generated embedding a static method. This
-    /// is required given the fact that one may want to log in the
-    /// constructor of an object being globally instanciated. With
-    /// a log component being also declared globally, no guarantee could
-    /// be provided that the component is declared before the object
-    /// being logged. Therefore, the log component is statically
-    /// created through a static method, hence making sure it is
-    /// instanciated when required.
+    /// Here the simplest type possible is used (.rodata-located) so
+    /// as to make sure that its initialization will always take place
+    /// before the other global variables which construction may require
+    /// logging.
 # define ELLE_LOG_COMPONENT(_component_)                                \
-    class __TRACE_CLASS__                                               \
-    {                                                                   \
-    public:                                                             \
-      static                                                            \
-      elle::log::detail::TraceComponent&                                \
-      instance()                                                        \
-      {                                                                 \
-        static elle::log::detail::TraceComponent tc(_component_);       \
-                                                                        \
-        return (tc);                                                    \
-      }                                                                 \
-    };
-
-// XXX Move to elle/compiler.hh
-# define ELLE_PRETTY_FUNCTION __PRETTY_FUNCTION__
+    static char const* _trace_component_ = _component_;
 
 # define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                              \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
       ::elle::log::detail::TraceContext                                 \
       (elle::log::Logger::Level::Lvl,                                   \
        elle::log::Logger::Type::T,                                      \
-       __TRACE_CLASS__::instance(),                                     \
-       __FILE__, __LINE__, ELLE_PRETTY_FUNCTION,                        \
+       _trace_component_,                                               \
+       __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
        elle::sprintf(__VA_ARGS__))
 
 # define ELLE_LOG_LEVEL(Lvl, Type, ...)                                       \
@@ -98,18 +81,12 @@ namespace elle
         return elle::sprint(elle::iomanip::Separator(", "), args...);
       }
 
-      struct TraceComponent
-      {
-        std::string const name;
-        TraceComponent(std::string const& name);
-      };
-
       struct TraceContext
       {
       public:
         TraceContext(elle::log::Logger::Level level,
                      elle::log::Logger::Type type,
-                     TraceComponent const& component,
+                     elle::String const& component,
                      char const* file,
                      unsigned int line,
                      char const* function,
@@ -117,7 +94,7 @@ namespace elle
         ~TraceContext();
         operator bool() const;
       private:
-        TraceComponent const& _component;
+        elle::String const& _component;
         void _send(elle::log::Logger::Level level,
                    elle::log::Logger::Type type,
                    char const* file,
