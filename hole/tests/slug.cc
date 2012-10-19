@@ -42,6 +42,30 @@ private:
 boost::filesystem::path TemporaryDirectory::_tmpdir(
   boost::filesystem::temp_directory_path());
 
+static std::vector<elle::network::Locus> members()
+{
+  std::vector<elle::network::Locus> res;
+  res.push_back(elle::network::Locus("127.0.0.1", 12345));
+  return res;
+}
+
+class Slug: public hole::implementations::slug::Implementation
+{
+public:
+  Slug(elle::Passport const& passport, elle::Authority const& authority,
+       std::vector<elle::network::Locus> const& members = ::members())
+    : hole::implementations::slug::Implementation(
+      _storage, passport, authority, ::members(), 12345,
+      boost::posix_time::seconds(1))
+    , _tmp()
+    , _storage(_tmp.path().native())
+  {}
+
+private:
+  TemporaryDirectory _tmp;
+  hole::storage::Directory _storage;
+};
+
 void test()
 {
   elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
@@ -49,21 +73,52 @@ void test()
   elle::Passport passport;
   passport.Seal(authority);
 
-  std::vector<elle::network::Locus> members;
-  members.push_back(elle::network::Locus("127.0.0.1", 12345));
+  {
+    Slug s1(passport, authority);
+    s1.join();
 
-  TemporaryDirectory tmp1;
-  hole::storage::Directory storage1(tmp1.path().native());
-  hole::implementations::slug::Implementation s1(
-    storage1, passport, authority, members, 12345,
-    boost::posix_time::seconds(1));
+    Slug s2(passport, authority);
+    s2.join();
+
+    nucleus::proton::Network network("namespace");
+
+    elle::cryptography::KeyPair user_keys(
+      elle::cryptography::KeyPair::generate());
+
+    nucleus::neutron::Object block(network, user_keys.K,
+                                   nucleus::neutron::Genre::file);
+    block.Update(nucleus::neutron::Author(),
+                 nucleus::proton::Address::null,
+                 42,
+                 nucleus::proton::Address::null,
+                 nucleus::neutron::Token::Null);
+    block.Seal(user_keys.k, nucleus::neutron::Access::Null);
+
+    auto address = block.bind();
+    s1.push(address, block);
+
+    auto retreived = elle::cast<nucleus::neutron::Object>::runtime(
+      s2.pull(address, nucleus::proton::Revision::Last));
+    BOOST_CHECK(retreived);
+    BOOST_CHECK_EQUAL(retreived->size(), 42);
+  }
+
+  elle::concurrency::scheduler().terminate();
+}
+
+// At some point all slug instances used to share the same Machine instance (the
+// last allocated). Check that by instantiating two slug and NOT connecting
+// them, they don't see each other's blocks.
+void test_separate_missing()
+{
+  elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
+  elle::Authority authority(keys);
+  elle::Passport passport;
+  passport.Seal(authority);
+
+  Slug s1(passport, authority, std::vector<elle::network::Locus>());
   s1.join();
-
-  TemporaryDirectory tmp2;
-  hole::storage::Directory storage2(tmp2.path().native());
-  hole::implementations::slug::Implementation s2(
-    storage1, passport, authority, members, 12345,
-    boost::posix_time::seconds(1));
+  Slug s2(passport, authority, std::vector<elle::network::Locus>());
   s2.join();
 
   nucleus::proton::Network network("namespace");
@@ -83,11 +138,9 @@ void test()
   auto address = block.bind();
   s1.push(address, block);
 
-  auto retreived = elle::cast<nucleus::neutron::Object>::runtime(
-    s2.pull(address, nucleus::proton::Revision::Last));
-  BOOST_CHECK(retreived);
-  BOOST_CHECK_EQUAL(retreived->size(), 42);
-
+  BOOST_CHECK_THROW(elle::cast<nucleus::neutron::Object>::runtime(
+                      s2.pull(address, nucleus::proton::Revision::Last)),
+                    reactor::Exception);
   elle::concurrency::scheduler().terminate();
 }
 
@@ -107,6 +160,7 @@ bool test_suite()
   boost::unit_test::test_suite* slug = BOOST_TEST_SUITE(
     "infinit::hole::implementations::slug");
   slug->add(TEST_CASE(test));
+//  slug->add(TEST_CASE(test_separate_missing));
 
   boost::unit_test::framework::master_test_suite().add(slug);
 
@@ -116,7 +170,5 @@ bool test_suite()
 int
 main(int argc, char** argv)
 {
-  auto res = ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-
-  return res;
+  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
