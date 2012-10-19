@@ -40,6 +40,8 @@ namespace elle
     Authority(elle::cryptography::PublicKey const&);
     /// Create a copy of an Authority.
     Authority(Authority const& from);
+    /// Deserialize an Authority.
+    Authority(elle::io::Path const& path);
     /// Dispose of an Authority.
     ~Authority();
 
