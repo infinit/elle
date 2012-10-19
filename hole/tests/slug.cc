@@ -56,11 +56,11 @@ elle::Passport passport;
 class Slug: public hole::implementations::slug::Implementation
 {
 public:
-  Slug(elle::Passport const& passport = passport,
-       elle::Authority const& authority = authority,
+  Slug(elle::Passport const& passport = ::passport,
+       elle::Authority const& authority = ::authority,
        std::vector<elle::network::Locus> const& members = ::members())
     : hole::implementations::slug::Implementation(
-      _storage, passport, authority, ::members(), 12345,
+      _storage, passport, authority, members, 12345,
       boost::posix_time::seconds(1))
     , _tmp()
     , _storage(_tmp.path().native())
@@ -74,34 +74,32 @@ private:
 void
 test()
 {
-  {
-    Slug s1;
-    s1.join();
-    Slug s2;
-    s2.join();
+  Slug s1;
+  s1.join();
+  Slug s2;
+  s2.join();
 
-    nucleus::proton::Network network("namespace");
+  nucleus::proton::Network network("namespace");
 
-    elle::cryptography::KeyPair user_keys(
-      elle::cryptography::KeyPair::generate());
+  elle::cryptography::KeyPair user_keys(
+    elle::cryptography::KeyPair::generate());
 
-    nucleus::neutron::Object block(network, user_keys.K,
-                                   nucleus::neutron::Genre::file);
-    block.Update(nucleus::neutron::Author(),
-                 nucleus::proton::Address::null,
-                 42,
-                 nucleus::proton::Address::null,
-                 nucleus::neutron::Token::Null);
-    block.Seal(user_keys.k, nucleus::neutron::Access::Null);
+  nucleus::neutron::Object block(network, user_keys.K,
+                                 nucleus::neutron::Genre::file);
+  block.Update(nucleus::neutron::Author(),
+               nucleus::proton::Address::null,
+               42,
+               nucleus::proton::Address::null,
+               nucleus::neutron::Token::Null);
+  block.Seal(user_keys.k, nucleus::neutron::Access::Null);
 
-    auto address = block.bind();
-    s1.push(address, block);
+  auto address = block.bind();
+  s1.push(address, block);
 
-    auto retreived = elle::cast<nucleus::neutron::Object>::runtime(
-      s2.pull(address, nucleus::proton::Revision::Last));
-    BOOST_CHECK(retreived);
-    BOOST_CHECK_EQUAL(retreived->size(), 42);
-  }
+  auto retreived = elle::cast<nucleus::neutron::Object>::runtime(
+    s2.pull(address, nucleus::proton::Revision::Last));
+  BOOST_CHECK(retreived);
+  BOOST_CHECK_EQUAL(retreived->size(), 42);
 
   elle::concurrency::scheduler().terminate();
 }
@@ -129,8 +127,7 @@ test_separate_missing()
   auto address = block.bind();
   s1.push(address, block);
 
-  BOOST_CHECK_THROW(elle::cast<nucleus::neutron::Object>::runtime(
-                      s2.pull(address, nucleus::proton::Revision::Last)),
+  BOOST_CHECK_THROW(s2.pull(address, nucleus::proton::Revision::Last),
                     reactor::Exception);
   elle::concurrency::scheduler().terminate();
 }
@@ -150,8 +147,8 @@ bool test_suite()
 {
   boost::unit_test::test_suite* slug = BOOST_TEST_SUITE(
     "infinit::hole::implementations::slug");
-  slug->add(TEST_CASE(test));
-//  slug->add(TEST_CASE(test_separate_missing));
+  //slug->add(TEST_CASE(test));
+  slug->add(TEST_CASE(test_separate_missing));
 
   boost::unit_test::framework::master_test_suite().add(slug);
 
