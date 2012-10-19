@@ -49,10 +49,15 @@ static std::vector<elle::network::Locus> members()
   return res;
 }
 
+elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
+elle::Authority authority(keys);
+elle::Passport passport;
+
 class Slug: public hole::implementations::slug::Implementation
 {
 public:
-  Slug(elle::Passport const& passport, elle::Authority const& authority,
+  Slug(elle::Passport const& passport = passport,
+       elle::Authority const& authority = authority,
        std::vector<elle::network::Locus> const& members = ::members())
     : hole::implementations::slug::Implementation(
       _storage, passport, authority, ::members(), 12345,
@@ -66,18 +71,13 @@ private:
   hole::storage::Directory _storage;
 };
 
-void test()
+void
+test()
 {
-  elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
-  elle::Authority authority(keys);
-  elle::Passport passport;
-  passport.Seal(authority);
-
   {
-    Slug s1(passport, authority);
+    Slug s1;
     s1.join();
-
-    Slug s2(passport, authority);
+    Slug s2;
     s2.join();
 
     nucleus::proton::Network network("namespace");
@@ -109,13 +109,9 @@ void test()
 // At some point all slug instances used to share the same Machine instance (the
 // last allocated). Check that by instantiating two slug and NOT connecting
 // them, they don't see each other's blocks.
-void test_separate_missing()
+void
+test_separate_missing()
 {
-  elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
-  elle::Authority authority(keys);
-  elle::Passport passport;
-  passport.Seal(authority);
-
   Slug s1(passport, authority, std::vector<elle::network::Locus>());
   s1.join();
   Slug s2(passport, authority, std::vector<elle::network::Locus>());
@@ -128,11 +124,6 @@ void test_separate_missing()
 
   nucleus::neutron::Object block(network, user_keys.K,
                                  nucleus::neutron::Genre::file);
-  block.Update(nucleus::neutron::Author(),
-               nucleus::proton::Address::null,
-               42,
-               nucleus::proton::Address::null,
-               nucleus::neutron::Token::Null);
   block.Seal(user_keys.k, nucleus::neutron::Access::Null);
 
   auto address = block.bind();
@@ -144,8 +135,8 @@ void test_separate_missing()
   elle::concurrency::scheduler().terminate();
 }
 
-
-void sched_wrapper(std::function<void()> const& f)
+void
+sched_wrapper(std::function<void()> const& f)
 {
   auto& sched = elle::concurrency::scheduler();
   reactor::Thread test(sched, "test", f);
@@ -170,5 +161,7 @@ bool test_suite()
 int
 main(int argc, char** argv)
 {
+  passport.Seal(authority);
+
   return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
