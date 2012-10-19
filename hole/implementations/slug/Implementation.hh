@@ -7,6 +7,7 @@
 # include <nucleus/proton/fwd.hh>
 
 # include <hole/Hole.hh>
+# include <hole/implementations/slug/Machine.hh>
 
 namespace hole
 {
@@ -33,6 +34,7 @@ namespace hole
         ELLE_ATTRIBUTE_R(std::vector<elle::network::Locus>, members);
         ELLE_ATTRIBUTE_R(int, port);
         ELLE_ATTRIBUTE_R(reactor::Duration, connection_timeout);
+        ELLE_ATTRIBUTE  (std::unique_ptr<Machine>, machine);
 
       /*------------.
       | Join, leave |

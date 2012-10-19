@@ -1,5 +1,4 @@
 #include <hole/implementations/slug/Implementation.hh>
-#include <hole/implementations/slug/Slug.hh>
 #include <hole/implementations/slug/Machine.hh>
 
 #include <nucleus/proton/Block.hh>
@@ -41,47 +40,47 @@ namespace hole
       void
       Implementation::_join()
       {
-        Slug::Computer = new Machine(*this, this->_port,
-                                     this->_connection_timeout);
+        this->_machine.reset(new Machine(*this, this->_port,
+                                         this->_connection_timeout));
       }
 
       void
       Implementation::_leave()
       {
-        delete Slug::Computer;
+        this->_machine.reset(nullptr);
       }
 
       void
       Implementation::_push(const nucleus::proton::Address& address,
                             const nucleus::proton::ImmutableBlock& block)
       {
-        Slug::Computer->put(address, block);
+        this->_machine->put(address, block);
       }
 
       void
       Implementation::_push(const nucleus::proton::Address& address,
                             const nucleus::proton::MutableBlock& block)
       {
-        Slug::Computer->put(address, block);
+        this->_machine->put(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::_pull(const nucleus::proton::Address& address)
       {
-        return Slug::Computer->get(address);
+        return this->_machine->get(address);
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::_pull(const nucleus::proton::Address& address,
                             const nucleus::proton::Revision& revision)
       {
-        return Slug::Computer->get(address, revision);
+        return this->_machine->get(address, revision);
       }
 
       void
       Implementation::_wipe(const nucleus::proton::Address& address)
       {
-        Slug::Computer->wipe(address);
+        this->_machine->wipe(address);
       }
 
       /*---------.
@@ -96,7 +95,7 @@ namespace hole
         std::cout << alignment << "[Implementation] Slug" << std::endl;
 
         // dump the machine.
-        if (Slug::Computer->Dump(margin + 2) == elle::Status::Error)
+        if (this->_machine->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the machine");
 
         return elle::Status::Ok;

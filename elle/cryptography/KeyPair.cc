@@ -45,10 +45,12 @@ namespace elle
     ///
     ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = nullptr;
 
-    ///
     /// this defines a null key pair.
-    ///
-    const KeyPair               KeyPair::Null;
+    KeyPair const& KeyPair::null()
+    {
+      static KeyPair res;
+      return res;
+    }
 
     ///
     /// this string defines the key pair files extension.

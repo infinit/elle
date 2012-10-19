@@ -51,7 +51,7 @@ namespace elle
         static const Natural32          Length;
       };
 
-      static const KeyPair              Null;
+      static KeyPair const& null();
 
       static const String               Extension;
 

@@ -318,8 +318,6 @@ def configure(cxx_toolkit, cxx_config):
     'hole/implementations/slug/Machine.hh',
     'hole/implementations/slug/Manifest.cc',
     'hole/implementations/slug/Manifest.hh',
-    'hole/implementations/slug/Slug.cc',
-    'hole/implementations/slug/Slug.hh',
     'hole/implementations/slug/fwd.hh',
     'hole/storage/Storage.cc',
     'hole/storage/Storage.hh',
