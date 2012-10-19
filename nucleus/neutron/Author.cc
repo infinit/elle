@@ -23,7 +23,7 @@ namespace nucleus
     }
 
     Author::Author(Object::Role role):
-      role(Object::RoleUnknown)
+      role(role)
     {}
 
     /*----------.
