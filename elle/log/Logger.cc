@@ -1,6 +1,11 @@
 #include <cassert>
+#include <unistd.h>
 
+#include <elle/concurrency/Scheduler.hh>
 #include <elle/log/Logger.hh>
+#include <elle/printf.hh>
+
+#include <reactor/exception.hh>
 
 namespace elle
 {
@@ -37,34 +42,54 @@ namespace elle
     Logger::~Logger()
     {}
 
+    static
+    bool
+    color()
+    {
+      static const char* color_env_name = "ELLE_LOG_COLOR";
+      char* color_env = ::getenv(color_env_name);
+      if (color_env)
+        {
+          std::string c(color_env);
+          if (c == "0")
+            return false;
+          else if (c == "1")
+            return true;
+          else
+            throw reactor::Exception(elle::concurrency::scheduler(),
+                                     elle::sprintf("invalid value for %s: %s",
+                                                   color_env_name, c));
+        }
+      else
+        return isatty(2);
+    }
+
     void
     Logger::_message(Level level,
                      elle::log::Logger::Type type,
                      std::string const& message)
     {
-      switch (type)
-        {
-          case Type::info:
-            break;
-          case Type::warning:
-            // Yellow
-            std::cerr << "[33;01;33m";
-            break;
-          case Type::error:
-            // Red
-            std::cerr << "[33;01;31m";
-        }
+      static bool c = color();
+      std::string color_code;
+      if (c)
+        switch (type)
+          {
+            case Type::info:
+              break;
+            case Type::warning:
+              // Yellow
+              color_code =  "[33;01;33m";
+              break;
+            case Type::error:
+              // Red
+              color_code = "[33;01;31m";
+              break;
+          }
+      std::cerr << color_code;
       if (level <= _level)
         std::cerr << message << std::endl;
-      switch (type)
-        {
-          case Type::info:
-            break;
-          case Type::warning:
-          case Type::error:
-            std::cerr << "[0m";
-            break;
-        }
+      if (!color_code.empty())
+        std::cerr << "[0m";
     }
 
     std::string const&
