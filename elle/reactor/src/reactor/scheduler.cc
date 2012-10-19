@@ -167,13 +167,15 @@ namespace reactor
   Scheduler::terminate()
   {
     BOOST_FOREACH(Thread* t, _starting)
-      if (t->_dispose)
-        {
-          // Threads expect to be done when deleted. For this very
-          // particuliar case, hack the state before deletion.
-          t->_state = Thread::state::done;
-          delete t;
-        }
+      {
+        t->_state = Thread::state::done;
+        if (t->_dispose)
+          {
+            // Threads expect to be done when deleted. For this very
+            // particuliar case, hack the state before deletion.
+            delete t;
+          }
+      }
     _starting.clear();
     BOOST_FOREACH(Thread* t, Threads(_running))
       if (t != _current)
