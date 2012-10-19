@@ -1,0 +1,19 @@
+infinit-cli - Command line tool for Infinit.
+
+Launching Infinit successfully can be done in a few steps:
+ * Register a new account and start the Infinit shell.
+    local-user$ ./infinit-cli register shell
+
+ * Start Infinit instances (in the Infinit shell)
+    infinit-user$ start
+
+Next, you can:
+ * Create a new network:
+    infinit-user$ create_network MyNetwork
+
+ * Invite a friend to a network:
+    infinit-user$ invite my@friend.com MyNetwork
+
+ * You might need to refresh networks with
+    infinit-user$ refresh_networks
+

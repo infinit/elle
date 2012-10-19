@@ -7,16 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD28AA3C162EDE8A004F1697 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA3B162EDE8A004F1697 /* CoreFoundation.framework */; };
+		BD16A092162FED1D00587152 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD16A091162FED1D00587152 /* Cocoa.framework */; };
+		BD16A095162FEFB500587152 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD16A093162FEFA900587152 /* AppKit.framework */; };
+		BD16A098162FF60900587152 /* IPCInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = BD16A097162FF60900587152 /* IPCInterface.m */; };
 		BD28AA8C162F19E2004F1697 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BD28AA8B162F19E2004F1697 /* main.m */; };
+		BD7212D516317FF400B2AB22 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = BD7212CF16317FF400B2AB22 /* mach_inject_bundle.c */; };
+		BD7212D616317FF400B2AB22 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = BD7212D116317FF400B2AB22 /* mach_inject.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BD28AA37162EDE8A004F1697 /* InfinitDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = InfinitDaemon; sourceTree = BUILT_PRODUCTS_DIR; };
-		BD28AA3B162EDE8A004F1697 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		BD16A091162FED1D00587152 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		BD16A093162FEFA900587152 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		BD16A096162FF60900587152 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPCInterface.h; sourceTree = "<group>"; };
+		BD16A097162FF60900587152 /* IPCInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPCInterface.m; sourceTree = "<group>"; };
+		BD16A09B1630118100587152 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		BD28AA37162EDE8A004F1697 /* io.infinit.InfinitDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.InfinitDaemon; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD28AA49162EE06E004F1697 /* InfinitDaemon-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "InfinitDaemon-Info.plist"; sourceTree = "<group>"; };
 		BD28AA4A162EE08C004F1697 /* InfinitDaemon-Launchd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "InfinitDaemon-Launchd.plist"; sourceTree = "<group>"; };
 		BD28AA8B162F19E2004F1697 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BD7212CB16317FF400B2AB22 /* load_bundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = load_bundle.c; path = libmach/load_bundle.c; sourceTree = "<group>"; };
+		BD7212CC16317FF400B2AB22 /* load_bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = load_bundle.h; path = libmach/load_bundle.h; sourceTree = "<group>"; };
+		BD7212CD16317FF400B2AB22 /* mach_inject_bundle_stub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mach_inject_bundle_stub.c; path = libmach/mach_inject_bundle_stub.c; sourceTree = "<group>"; };
+		BD7212CE16317FF400B2AB22 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = libmach/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
+		BD7212CF16317FF400B2AB22 /* mach_inject_bundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mach_inject_bundle.c; path = libmach/mach_inject_bundle.c; sourceTree = "<group>"; };
+		BD7212D016317FF400B2AB22 /* mach_inject_bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle.h; path = libmach/mach_inject_bundle.h; sourceTree = "<group>"; };
+		BD7212D116317FF400B2AB22 /* mach_inject.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mach_inject.c; path = libmach/mach_inject.c; sourceTree = "<group>"; };
+		BD7212D216317FF400B2AB22 /* mach_inject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject.h; path = libmach/mach_inject.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,7 +40,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD28AA3C162EDE8A004F1697 /* CoreFoundation.framework in Frameworks */,
+				BD16A092162FED1D00587152 /* Cocoa.framework in Frameworks */,
+				BD16A095162FEFB500587152 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,7 +60,7 @@
 		BD28AA38162EDE8A004F1697 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BD28AA37162EDE8A004F1697 /* InfinitDaemon */,
+				BD28AA37162EDE8A004F1697 /* io.infinit.InfinitDaemon */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -51,7 +68,8 @@
 		BD28AA3A162EDE8A004F1697 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BD28AA3B162EDE8A004F1697 /* CoreFoundation.framework */,
+				BD16A093162FEFA900587152 /* AppKit.framework */,
+				BD16A091162FED1D00587152 /* Cocoa.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -59,8 +77,12 @@
 		BD28AA3D162EDE8A004F1697 /* InfinitDaemon */ = {
 			isa = PBXGroup;
 			children = (
+				BD740F7416304F2D0093157A /* libmach */,
 				BD28AA8B162F19E2004F1697 /* main.m */,
+				BD16A096162FF60900587152 /* IPCInterface.h */,
+				BD16A097162FF60900587152 /* IPCInterface.m */,
 				BD28AA48162EE04D004F1697 /* Supporting Files */,
+				BD16A09B1630118100587152 /* config.h */,
 			);
 			path = InfinitDaemon;
 			sourceTree = "<group>";
@@ -72,6 +94,21 @@
 				BD28AA4A162EE08C004F1697 /* InfinitDaemon-Launchd.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BD740F7416304F2D0093157A /* libmach */ = {
+			isa = PBXGroup;
+			children = (
+				BD7212CB16317FF400B2AB22 /* load_bundle.c */,
+				BD7212CC16317FF400B2AB22 /* load_bundle.h */,
+				BD7212CD16317FF400B2AB22 /* mach_inject_bundle_stub.c */,
+				BD7212CE16317FF400B2AB22 /* mach_inject_bundle_stub.h */,
+				BD7212CF16317FF400B2AB22 /* mach_inject_bundle.c */,
+				BD7212D016317FF400B2AB22 /* mach_inject_bundle.h */,
+				BD7212D116317FF400B2AB22 /* mach_inject.c */,
+				BD7212D216317FF400B2AB22 /* mach_inject.h */,
+			);
+			name = libmach;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,7 +127,7 @@
 			);
 			name = io.infinit.InfinitDaemon;
 			productName = InfinitDaemon;
-			productReference = BD28AA37162EDE8A004F1697 /* InfinitDaemon */;
+			productReference = BD28AA37162EDE8A004F1697 /* io.infinit.InfinitDaemon */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -125,6 +162,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD28AA8C162F19E2004F1697 /* main.m in Sources */,
+				BD16A098162FF60900587152 /* IPCInterface.m in Sources */,
+				BD7212D516317FF400B2AB22 /* mach_inject_bundle.c in Sources */,
+				BD7212D616317FF400B2AB22 /* mach_inject.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,6 +227,7 @@
 		BD28AA45162EDE8A004F1697 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CODE_SIGN_IDENTITY = io.infinit;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
@@ -207,6 +248,7 @@
 		BD28AA46162EDE8A004F1697 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CODE_SIGN_IDENTITY = io.infinit;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (

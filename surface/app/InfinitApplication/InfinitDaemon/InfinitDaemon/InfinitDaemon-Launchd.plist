@@ -5,10 +5,15 @@
 	<key>Label</key>
 	<string>io.infinit.InfinitDaemon</string>
 	<key>RunAtLoad</key>
-	<true/>
+	<false/>
 	<key>OnDemand</key>
 	<true/>
 	<key>KeepAlive</key>
 	<false/>
+	<key>MachServices</key>
+	<dict>
+		<key>io.infinit.InfinitDaemon</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

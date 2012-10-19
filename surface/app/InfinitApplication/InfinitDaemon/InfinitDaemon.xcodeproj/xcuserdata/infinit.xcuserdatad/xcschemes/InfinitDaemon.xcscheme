@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BD28AA36162EDE8A004F1697"
-               BuildableName = "InfinitDaemon"
+               BuildableName = "io.infinit.InfinitDaemon"
                BlueprintName = "io.infinit.InfinitDaemon"
                ReferencedContainer = "container:InfinitDaemon.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BD28AA36162EDE8A004F1697"
-            BuildableName = "InfinitDaemon"
+            BuildableName = "io.infinit.InfinitDaemon"
             BlueprintName = "io.infinit.InfinitDaemon"
             ReferencedContainer = "container:InfinitDaemon.xcodeproj">
          </BuildableReference>
@@ -53,7 +53,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BD28AA36162EDE8A004F1697"
-            BuildableName = "InfinitDaemon"
+            BuildableName = "io.infinit.InfinitDaemon"
             BlueprintName = "io.infinit.InfinitDaemon"
             ReferencedContainer = "container:InfinitDaemon.xcodeproj">
          </BuildableReference>
@@ -71,7 +71,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BD28AA36162EDE8A004F1697"
-            BuildableName = "InfinitDaemon"
+            BuildableName = "io.infinit.InfinitDaemon"
             BlueprintName = "io.infinit.InfinitDaemon"
             ReferencedContainer = "container:InfinitDaemon.xcodeproj">
          </BuildableReference>

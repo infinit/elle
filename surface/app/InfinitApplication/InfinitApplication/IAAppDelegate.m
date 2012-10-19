@@ -14,20 +14,75 @@
 
 @implementation IAAppDelegate
 
+- (IBAction)greet:(id)sender
+{
+    
+    [self doGreeting];
+}
+
+- (void)doGreeting
+{
+    [[NSAlert alertWithMessageText:@"CA MARCHE PAS" defaultButton:@"DEFAULT CONNARD" alternateButton:@""
+                       otherButton:@"" informativeTextWithFormat:@"NON OPTIONEL KONAR"] runModal];
+}
 
 - (void)awakeFromNib {
     NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
     self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
     [self.status_item setMenu:self.status_menu];
     [self setDefaultStatus];
-    [IAAppDelegate _launchDaemonTest];
     
+    self.ipc_proxy = nil;
+    
+    if (!([self _launchDaemon:INFINIT_DAEMON_LABEL] && [self.ipc_proxy getVersion] == INFINIT_DAEMON_VERSION))
+    {
+        if (self.ipc_proxy != nil)
+            [self.ipc_proxy quit];
+    
+        self.ipc_proxy = nil;
+    
+        if (!([self _blessDaemon:INFINIT_DAEMON_LABEL] && [self _launchDaemon:INFINIT_DAEMON_LABEL]))
+        {
+            NSLog(@"Couldn't start infinit daemon");
+            exit(EXIT_FAILURE);
+        }
+    }
+    
+    
+}
+
+- (IBAction)doInject:(id)sender
+{
+    NSString* injected_bundle_path = [[NSBundle mainBundle] pathForResource:INFINIT_FINDER_PLUGIN_NAME ofType:@"bundle"];
+    NSString* injected_bundle_stub_path = [[NSBundle mainBundle] pathForResource:INFINIT_MACH_BUNBLE_STUB_NAME ofType:@"bundle"];
+    NSLog(@"FinderPlugin bundle path: %@", injected_bundle_path);
+    NSLog(@"mach inject stub bundle path: %@", injected_bundle_path);
+    
+    if (injected_bundle_path == nil)
+    {
+        NSLog(@"Cannot find bundle of %@", INFINIT_FINDER_PLUGIN_NAME);
+    }
+    else if (injected_bundle_stub_path == nil)
+    {
+        NSLog(@"Cannot find bundle of %@", INFINIT_MACH_BUNBLE_STUB_NAME);
+    }
+    else
+    {
+        NSLog(@"Calling IPC injector");
+        [self.ipc_proxy injectBundle:injected_bundle_path stubBundlePath:injected_bundle_stub_path];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 //    self.controller = [DropWindowController getInstance];
 //    [self.controller showWindow:self];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+    NSLog(@"Shutting down the application");
+    [self.ipc_proxy quit];
 }
 
 - (void)setDefaultStatus
@@ -42,7 +97,15 @@
     [self.status_item setHighlightMode:YES];
 }
 
-+ (void)_launchDaemonTest
+- (BOOL)_launchDaemon:(NSString*)label
+{
+    // XXX handle timeout here ! (application freeze when there are some stalled unix sockets)
+    self.ipc_proxy = (IPCInterface*)[NSConnection rootProxyForConnectionWithRegisteredName:label host:nil];
+    
+    return [self.ipc_proxy respondsToSelector:@selector(getVersion)];
+}
+
+- (BOOL)_blessDaemon:(NSString*)label
 {
     NSLog(@"Launching daemon");
     AuthorizationItem auth = {
@@ -65,7 +128,7 @@
     ;
     
     AuthorizationRef auth_ref = NULL;
-    NSString *label = @"io.infinit.InfinitDaemon";
+
 
     /* Obtain the right to install privileged helper tools (kSMRightBlessPrivilegedHelper). */
     OSStatus status = AuthorizationCreate(&rights, kAuthorizationEmptyEnvironment, flags, &auth_ref);
@@ -88,44 +151,10 @@
         else
         {
             NSLog(@"COULD bless the infinit");
-            id resul = [NSConnection rootProxyForConnectionWithRegisteredName:label host:nil];
-            (void)resul;
-//            xpc_connection_t connection = xpc_connection_create_mach_service([label UTF8String],
-//                                                                             NULL,
-//                                                                             XPC_CONNECTION_MACH_SERVICE_PRIVILEGED);
-//            if (!connection)
-//            {
-//                NSLog(@"Cannot connect to %s", [label UTF8String]);
-//            }
-//            else
-//                NSLog(@"Connected to %s", [label UTF8String]);
-//            
-//            xpc_connection_set_event_handler(connection, ^(xpc_object_t event) {
-//                xpc_type_t type = xpc_get_type(event);
-//                
-//                if (type == XPC_TYPE_ERROR) {
-//                    
-//                    if (event == XPC_ERROR_CONNECTION_INTERRUPTED) {
-//                        NSLog(@"XPC connection interupted.");
-//                        
-//                    } else if (event == XPC_ERROR_CONNECTION_INVALID) {
-//                        NSLog(@"XPC connection invalid, releasing.");
-//                        xpc_release(connection);
-//                        
-//                    } else {
-//                        NSLog(@"Unexpected XPC connection error.");
-//                    }
-//                    
-//                } else {
-//                    NSLog(@"Unexpected XPC connection event.");
-//                }
-//            });
-//            
-//            xpc_connection_resume(connection);
-//            
+            return true;
         }
     }
+    return false;
 }
-
 
 @end

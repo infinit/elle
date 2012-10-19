@@ -17,7 +17,9 @@
 		BD28AA1F162EDAE1004F1697 /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD28AA1E162EDAE1004F1697 /* active_status_icon.png */; };
 		BD28AA21162EDD4A004F1697 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA20162EDD4A004F1697 /* Security.framework */; };
 		BD28AA23162EDD57004F1697 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA22162EDD57004F1697 /* ServiceManagement.framework */; };
-		BD28AA76162EF049004F1697 /* InfinitDaemon in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD28AA6F162EEF39004F1697 /* InfinitDaemon */; };
+		BD28AA76162EF049004F1697 /* io.infinit.InfinitDaemon in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */; };
+		BD7212C516317C2300B2AB22 /* FinderPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD7212A816316A2200B2AB22 /* FinderPlugin.bundle */; };
+		BD7212F71631875C00B2AB22 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD7212F41631874600B2AB22 /* mach_inject_bundle_stub.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,22 +37,63 @@
 			remoteGlobalIDString = BD28AA36162EDE8A004F1697;
 			remoteInfo = InfinitDaemon;
 		};
+		BD7212A716316A2200B2AB22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BDD9D6591631685B007B941A;
+			remoteInfo = FinderPlugin;
+		};
+		BD7212C616317C2A00B2AB22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD7212B516317BEC00B2AB22;
+			remoteInfo = FinderPlugin;
+		};
+		BD7212F31631874600B2AB22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
+		BD7212F51631875300B2AB22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D01CCC60486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		BD1F97D016314F0600C1BD49 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				BD7212F71631875C00B2AB22 /* mach_inject_bundle_stub.bundle in CopyFiles */,
+				BD7212C516317C2300B2AB22 /* FinderPlugin.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BD28AA75162EF033004F1697 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = Contents/Library/LaunchServices;
 			dstSubfolderSpec = 1;
 			files = (
-				BD28AA76162EF049004F1697 /* InfinitDaemon in CopyFiles */,
+				BD28AA76162EF049004F1697 /* io.infinit.InfinitDaemon in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BD16A099162FF69300587152 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPCInterface.h; path = ../InfinitDaemon/InfinitDaemon/IPCInterface.h; sourceTree = "<group>"; };
+		BD16A09C1630125300587152 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../InfinitDaemon/InfinitDaemon/config.h; sourceTree = "<group>"; };
 		BD28A9FA162ED79A004F1697 /* InfinitApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfinitApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD28A9FE162ED79A004F1697 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD28AA01162ED79A004F1697 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -68,8 +111,9 @@
 		BD28AA1E162EDAE1004F1697 /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
 		BD28AA20162EDD4A004F1697 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		BD28AA22162EDD57004F1697 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
-		BD28AA5D162EEE10004F1697 /* InfinitDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = InfinitDaemon; path = "/Users/infinit/Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug/InfinitDaemon"; sourceTree = "<absolute>"; };
 		BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InfinitDaemon.xcodeproj; path = InfinitDaemon/InfinitDaemon.xcodeproj; sourceTree = "<group>"; };
+		BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mach_inject_bundle_stub.xcodeproj; path = mach_inject_bundle_stub/mach_inject_bundle_stub.xcodeproj; sourceTree = "<group>"; };
+		BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderPlugin.xcodeproj; path = io.infinit.FinderPlugin/FinderPlugin.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +133,8 @@
 		BD28A9EF162ED79A004F1697 = {
 			isa = PBXGroup;
 			children = (
-				BD28AA5E162EEE10004F1697 /* Products */,
+				BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */,
+				BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */,
 				BD28AA1D162EDAAC004F1697 /* resources */,
 				BD28AA04162ED79A004F1697 /* InfinitApplication */,
 				BD28A9FD162ED79A004F1697 /* Frameworks */,
@@ -133,6 +178,7 @@
 				BD28AA10162ED79A004F1697 /* IAAppDelegate.h */,
 				BD28AA11162ED79A004F1697 /* IAAppDelegate.m */,
 				BD28AA13162ED79A004F1697 /* MainMenu.xib */,
+				BD16A099162FF69300587152 /* IPCInterface.h */,
 				BD28AA05162ED79A004F1697 /* Supporting Files */,
 			);
 			path = InfinitApplication;
@@ -141,6 +187,7 @@
 		BD28AA05162ED79A004F1697 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BD16A09C1630125300587152 /* config.h */,
 				BD28AA06162ED79A004F1697 /* InfinitApplication-Info.plist */,
 				BD28AA07162ED79A004F1697 /* InfoPlist.strings */,
 				BD28AA0A162ED79A004F1697 /* main.m */,
@@ -159,19 +206,26 @@
 			name = resources;
 			sourceTree = "<group>";
 		};
-		BD28AA5E162EEE10004F1697 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BD28AA5D162EEE10004F1697 /* InfinitDaemon */,
-			);
-			name = Products;
-			path = ../InfinitDaemon;
-			sourceTree = "<group>";
-		};
 		BD28AA67162EEF38004F1697 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BD28AA6F162EEF39004F1697 /* InfinitDaemon */,
+				BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD7212A416316A2200B2AB22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD7212A816316A2200B2AB22 /* FinderPlugin.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD7212ED1631874500B2AB22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD7212F41631874600B2AB22 /* mach_inject_bundle_stub.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -187,10 +241,13 @@
 				BD28A9F7162ED79A004F1697 /* Frameworks */,
 				BD28A9F8162ED79A004F1697 /* Resources */,
 				BD28AA75162EF033004F1697 /* CopyFiles */,
+				BD1F97D016314F0600C1BD49 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BD7212F61631875300B2AB22 /* PBXTargetDependency */,
+				BD7212C716317C2A00B2AB22 /* PBXTargetDependency */,
 				BD28AA72162EEF68004F1697 /* PBXTargetDependency */,
 			);
 			name = InfinitApplication;
@@ -220,8 +277,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = BD7212A416316A2200B2AB22 /* Products */;
+					ProjectRef = BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */;
+				},
+				{
 					ProductGroup = BD28AA67162EEF38004F1697 /* Products */;
 					ProjectRef = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
+				},
+				{
+					ProductGroup = BD7212ED1631874500B2AB22 /* Products */;
+					ProjectRef = BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -232,11 +297,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		BD28AA6F162EEF39004F1697 /* InfinitDaemon */ = {
+		BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = InfinitDaemon;
+			path = io.infinit.InfinitDaemon;
 			remoteRef = BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD7212A816316A2200B2AB22 /* FinderPlugin.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = FinderPlugin.bundle;
+			remoteRef = BD7212A716316A2200B2AB22 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD7212F41631874600B2AB22 /* mach_inject_bundle_stub.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = mach_inject_bundle_stub.bundle;
+			remoteRef = BD7212F31631874600B2AB22 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -273,6 +352,16 @@
 			isa = PBXTargetDependency;
 			name = InfinitDaemon;
 			targetProxy = BD28AA71162EEF68004F1697 /* PBXContainerItemProxy */;
+		};
+		BD7212C716317C2A00B2AB22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FinderPlugin;
+			targetProxy = BD7212C616317C2A00B2AB22 /* PBXContainerItemProxy */;
+		};
+		BD7212F61631875300B2AB22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = mach_inject_bundle_stub;
+			targetProxy = BD7212F51631875300B2AB22 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

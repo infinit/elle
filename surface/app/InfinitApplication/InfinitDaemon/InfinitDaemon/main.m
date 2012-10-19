@@ -7,11 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-//#import "OONurseManager.h"
+#import "IPCInterface.h"
 #import <syslog.h>
 #import <launch.h>
 
-void SIGTERM_handler(const int sigid)
+void sigterm(const int sigid)
 {
 	CFRunLoopRef rl = [[NSRunLoop currentRunLoop] getCFRunLoop];
 	if (rl == NULL) {
@@ -22,55 +22,35 @@ void SIGTERM_handler(const int sigid)
 	}
 }
 
-#import <Foundation/Foundation.h>
-
-@interface IPCInterface : NSObject
-
-- (void)manage:(NSString *)arg1;
-- (void)quit;
-
-@end
-
-@implementation IPCInterface
-
-- (void)manage:(NSString *)arg1
-{
-    syslog(LOG_NOTICE, "RECEIVED %s", [arg1 UTF8String]);
-}
-
-- (void)quit
-{
-    syslog(LOG_NOTICE, "QUITTING");
-}
-
-@end
-
-
 int main (int argc, const char * argv[])
 {
    @autoreleasepool {
         
-       syslog(LOG_NOTICE, "Nurse helper launched (uid: %d, euid: %d, pid: %d)", getuid(), geteuid(), getpid());
+       syslog(LOG_NOTICE, "Starting daemon (uid: %d, euid: %d, pid: %d)", getuid(), geteuid(), getpid());
        
-       signal(SIGTERM, (sig_t)SIGTERM_handler);
-       
+       signal(SIGTERM, (sig_t)sigterm);
        launch_data_t req = launch_data_new_string(LAUNCH_KEY_CHECKIN);
        launch_data_t resp = launch_msg(req);
        launch_data_t machData = launch_data_dict_lookup(resp, LAUNCH_JOBKEY_MACHSERVICES);
-       launch_data_t machPortData = launch_data_dict_lookup(machData, "io.infinit.Nurse.helper");
-        
+       launch_data_t machPortData = launch_data_dict_lookup(machData, "io.infinit.InfinitDaemon");
        mach_port_t mp = launch_data_get_machport(machPortData);
+       
        launch_data_free(req);
        launch_data_free(resp);
-        
+       
        NSMachPort* rp = [[NSMachPort alloc] initWithMachPort:mp];
        NSConnection* conn = [NSConnection connectionWithReceivePort:rp sendPort:nil];
+
        
        IPCInterface* interface = [[IPCInterface alloc] init];
+     /*  [interface injectBundle:@"/Users/infinit/Library/Developer/Xcode/DerivedData/InfinitApplication-bfgrqdidykomoebfxsixhhcxarqj/Build/Products/Debug/InfinitApplication.app/Contents/Resources/FinderPlugin.bundle"
+                stubBundlePath:@"/Users/infinit/Library/Developer/Xcode/DerivedData/InfinitApplication-bfgrqdidykomoebfxsixhhcxarqj/Build/Products/Debug/InfinitApplication.app/Contents/Resources/mach_inject_bundle_stub.bundle"];*/
        [conn setRootObject:interface];
        
-       [[NSRunLoop currentRunLoop] run];
-        
+        NSRunLoop* loop = [NSRunLoop currentRunLoop];
+       
+        while (interface.should_keep_running && [loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]])
+            ;
     }
     return 0;
 }
