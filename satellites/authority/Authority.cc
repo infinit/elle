@@ -23,57 +23,40 @@ namespace satellite
   ///
   const elle::Natural32         Authority::Length = 4096;
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-  ///
-  /// this method creates a new authority.
-  ///
-  elle::Status          Authority::Create()
+  /// Create a new authority.
+  elle::Status
+  Authority::Create()
   {
-    elle::String        prompt;
-    elle::String        pass;
-    elle::cryptography::KeyPair       pair;
-    elle::Authority     authority;
-
-    // prompt the user for the passphrase.
-    prompt = "Enter passphrase for the authority keypair: ";
-
+    // Prompt the user for the passphrase.
+    elle::String prompt = "Enter passphrase for the authority keypair: ";
+    elle::String pass;
     if (elle::io::Console::Input(
           pass,
           prompt,
           elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
-    // generate the authority key pair.
-    if (pair.Generate(Authority::Length) == elle::Status::Error)
-      escape("unable to generate the key pair");
+    // Generate the authority key pair.
+    elle::cryptography::KeyPair pair(Authority::Length);
 
-    // create the authority with the generated key pair.
-    if (authority.Create(pair) == elle::Status::Error)
-      escape("unable to create the authority");
+    // Create the authority with the generated key pair.
+    elle::Authority authority(pair);
 
-    // encrypt the authority.
+    // Encrypt the authority.
     if (authority.Encrypt(pass) == elle::Status::Error)
       escape("unable to encrypt the authority");
 
-    // store the authority.
+    // Store the authority.
     authority.store(elle::io::Path(lune::Lune::Authority));
 
     return elle::Status::Ok;
   }
 
-  ///
-  /// this method destroys the existing authority.
-  ///
-  elle::Status          Authority::Destroy()
+  /// Destroy the existing authority.
+  elle::Status
+  Authority::Destroy()
   {
-    elle::String        prompt;
-    elle::cryptography::KeyPair       pair;
-    elle::Authority     authority;
-
-    // erase the authority file.
+    // Erase the authority file.
     elle::Authority::erase(elle::io::Path(lune::Lune::Authority));
 
     return elle::Status::Ok;
@@ -86,7 +69,6 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    elle::Authority     authority;
     elle::io::Unique        unique;
 
     // check if the authority exists.
@@ -102,8 +84,8 @@ namespace satellite
           elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
-    // load the authority.
-    authority.load(elle::io::Path(lune::Lune::Authority));
+    // Load the authority.
+    elle::Authority authority(elle::io::Path(lune::Lune::Authority));
 
     authority.Dump();
 

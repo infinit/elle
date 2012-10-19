@@ -19,7 +19,7 @@ void test_encrypt()
 
   elle::cryptography::Code code;
 
-  elle::cryptography::KeyPair pair;
+  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
 
   show_assert(pair.Generate());
 

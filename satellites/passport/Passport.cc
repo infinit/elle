@@ -26,7 +26,6 @@ namespace satellite
   ///
   elle::Status          Passport::Create()
   {
-    elle::Authority     authority;
     elle::Passport      passport;
 
     //
@@ -39,29 +38,25 @@ namespace satellite
         escape("unable to locate the authority file");
     }
 
-    //
-    // retrieve the authority.
-    //
-    {
-      elle::String              prompt;
-      elle::String              pass;
+    // Retrieve the authority.
+    elle::String              prompt;
+    elle::String              pass;
 
-      // prompt the user for the passphrase.
-      prompt = "Enter passphrase for the authority: ";
+    // prompt the user for the passphrase.
+    prompt = "Enter passphrase for the authority: ";
 
-      if (elle::io::Console::Input(
-            pass,
-            prompt,
-            elle::io::Console::OptionPassword) == elle::Status::Error)
-        escape("unable to read the input");
+    if (elle::io::Console::Input(
+          pass,
+          prompt,
+          elle::io::Console::OptionPassword) == elle::Status::Error)
+      escape("unable to read the input");
 
-      // load the authority.
-      authority.load(elle::io::Path(lune::Lune::Authority));
+    // load the authority.
+    elle::Authority authority(elle::io::Path(lune::Lune::Authority));
 
-      // decrypt the authority.
-      if (authority.Decrypt(pass) == elle::Status::Error)
-        escape("unable to decrypt the authority");
-    }
+    // decrypt the authority.
+    if (authority.Decrypt(pass) == elle::Status::Error)
+      escape("unable to decrypt the authority");
 
     //
     // create the passport.
@@ -136,7 +131,7 @@ namespace satellite
       passport.load(elle::io::Path(lune::Lune::Passport));
 
       // validate the passport.
-      if (passport.Validate(Infinit::Authority) == elle::Status::Error)
+      if (passport.Validate(Infinit::authority()) == elle::Status::Error)
         escape("unable to validate the passport");
     }
 
@@ -326,6 +321,8 @@ namespace satellite
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
+
+    return elle::Status::Ok;
   }
 
 }

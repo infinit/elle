@@ -16,32 +16,20 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
 void test()
 {
-  elle::cryptography::KeyPair owner;
-
-  ELLE_TRACE("Generate owner key pair")
-    {
-      CHECK(owner.Generate());
-    }
+  elle::cryptography::KeyPair owner(elle::cryptography::KeyPair::generate());
 
   nucleus::proton::Network network("test");
 
   nucleus::neutron::Group group(network, owner.K, "everybody");
 
-  elle::cryptography::KeyPair pass;
-
-  ELLE_TRACE("Generate the group's pass")
-    {
-      CHECK(pass.Generate());
-    }
+  elle::cryptography::KeyPair pass(elle::cryptography::KeyPair::generate());
 
   nucleus::neutron::Ensemble ensemble(network, owner.K);
 
   ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
       {
-        elle::cryptography::KeyPair kp;
-
-        CHECK(kp.Generate());
+        elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
 
         nucleus::neutron::Subject subject(kp.K);
 

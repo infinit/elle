@@ -434,8 +434,8 @@ namespace satellite
     elle::Passport passport;
     passport.load(elle::io::Path(lune::Lune::Passport));
 
-    std::unique_ptr<hole::Hole> hole(infinit::hole_factory(storage, passport,
-                                                           Infinit::Authority));
+    std::unique_ptr<hole::Hole> hole(
+      infinit::hole_factory(storage, passport, Infinit::authority()));
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Information") == elle::Status::True) &&

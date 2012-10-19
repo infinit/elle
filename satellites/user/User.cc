@@ -28,8 +28,6 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    elle::cryptography::KeyPair       pair;
-    elle::Authority     authority;
     lune::Identity      identity;
     lune::Dictionary    dictionary;
 
@@ -41,10 +39,6 @@ namespace satellite
     if (lune::Identity::exists(name) == true)
       escape("this user seems to already exist");
 
-    // check if the authority exists.
-    if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority)) == false)
-      escape("unable to locate the authority file");
-
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority: ";
 
@@ -55,7 +49,7 @@ namespace satellite
       escape("unable to read the input");
 
     // load the authority.
-    authority.load(elle::io::Path(lune::Lune::Authority));
+    elle::Authority authority(elle::io::Path(lune::Lune::Authority));
 
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
@@ -71,8 +65,7 @@ namespace satellite
       escape("unable to read the input");
 
     // generate a key pair.
-    if (pair.Generate() == elle::Status::Error)
-      escape("unable to generate the key pair");
+    elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
 
     // create the identity.
     if (identity.Create(id, name, pair) == elle::Status::Error)
@@ -187,7 +180,7 @@ namespace satellite
     identity.load(name);
 
     // verify the identity.
-    if (identity.Validate(Infinit::Authority) == elle::Status::Error)
+    if (identity.Validate(Infinit::authority()) == elle::Status::Error)
       escape("the identity seems to be invalid");
 
     // decrypt the identity.

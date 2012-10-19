@@ -29,8 +29,7 @@ static lune::Identity create_identity(elle::String const& id,
                                       elle::String const& login,
                                       elle::String const& password)
 {
-  elle::cryptography::KeyPair       pair;
-  elle::Authority                   authority;
+  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
   elle::io::Path                    authority_path;
   lune::Identity                    identity;
 
@@ -41,16 +40,12 @@ static lune::Identity create_identity(elle::String const& id,
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
-  // load the authority file
-  authority.load(authority_path);
+  // Load the authority file.
+  elle::Authority authority(authority_path);
 
   // decrypt the authority.
   if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
-
-  // generate a key pair.
-  if (pair.Generate() == elle::Status::Error)
-    throw std::runtime_error("unable to generate the key pair");
 
   // create the identity.
   if (identity.Create(id, login, pair) == elle::Status::Error)
@@ -124,4 +119,3 @@ metalib_generate_identity(PyObject*,
 
   return ret;
 }
-

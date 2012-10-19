@@ -25,15 +25,14 @@ static elle::Passport create_passport(elle::String const& id,
                                       elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
-  elle::Authority     authority;
   elle::io::Path      authority_path;
   elle::Passport      passport;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
-  // load the authority file
-  authority.load(authority_path);
+  // Load the authority file.
+  elle::Authority authority(authority_path);
 
   // decrypt the authority.
   if (authority.Decrypt(authority_password) == elle::Status::Error)

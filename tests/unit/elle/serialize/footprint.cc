@@ -7,10 +7,7 @@
 
 int main()
 {
-  elle::cryptography::KeyPair pair;
-
-  if (pair.Generate(1024) == elle::Status::Error)
-    assert(false);
+  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
 
   elle::Natural32 size = elle::serialize::footprint(pair);
 

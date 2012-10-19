@@ -11,9 +11,7 @@
 
 int main()
 {
-  elle::cryptography::KeyPair kp;
-
-  CHECK(kp.Generate());
+  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
 
   nucleus::proton::Network network("name");
   nucleus::neutron::Object blk(network,

@@ -50,8 +50,7 @@ namespace satellite
                                         horizon::Policy const& policy,
                                         const elle::String&     administrator)
   {
-    elle::Authority     authority;
-    lune::Identity      identity;
+    lune::Identity identity;
 
     //
     // test the arguments.
@@ -68,16 +67,10 @@ namespace satellite
       // does the administrator user exist.
       if (lune::Identity::exists(administrator) == false)
         escape("the administrator user does not seem to exist");
-
-      // check if the authority exists.
-      if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority))
-          == false)
-        escape("unable to locate the authority file");
     }
 
-    //
-    // retrieve the authority.
-    //
+    // Retrieve the authority.
+    elle::Authority authority(elle::io::Path(lune::Lune::Authority));
     {
       elle::String              prompt;
       elle::String              pass;
@@ -90,9 +83,6 @@ namespace satellite
             prompt,
             elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
-
-      // load the authority.
-      authority.load(elle::io::Path(lune::Lune::Authority));
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::Status::Error)
@@ -356,7 +346,7 @@ namespace satellite
       descriptor.load(name);
 
       // validate the descriptor.
-      descriptor.validate(Infinit::Authority);
+      descriptor.validate(Infinit::authority());
     }
 
     //

@@ -50,13 +50,12 @@ generate_network_descriptor(elle::String const& id,
   static hole::Openness openness = hole::Openness::closed;
 
   hole::Model model;
-  elle::Authority authority;
   elle::io::Path authority_path;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
-  authority.load(authority_path);
+  elle::Authority authority(authority_path);
 
   if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
