@@ -8,6 +8,7 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/test/unit_test.hpp>
 #include <network/uri/uri.hpp>
+#include <network/uri/accessors.hpp>
 #include <network/uri/uri_io.hpp>
 
 

@@ -56,7 +56,7 @@ Map &query_map(const uri &uri_, Map &map) {
 
 inline
 uri::string_type username(const uri &uri_) {
-    const uri::string_type user_info = uri_.user_info();
+    const auto user_info = uri_.user_info();
     uri::const_iterator it(boost::begin(user_info)), end(boost::end(user_info));
     for (; it != end; ++it) {
         if (*it == ':') {
@@ -68,7 +68,7 @@ uri::string_type username(const uri &uri_) {
 
 inline
 uri::string_type password(const uri &uri_) {
-    const uri::string_type user_info = uri_.user_info();
+    const auto user_info = uri_.user_info();
     uri::const_iterator it(boost::begin(user_info)), end(boost::end(user_info));
     for (; it != end; ++it) {
         if (*it == ':') {
@@ -81,7 +81,7 @@ uri::string_type password(const uri &uri_) {
 
 inline
 uri::string_type decoded_path(const uri &uri_) {
-    const uri::string_type path = uri_.path();
+    const auto path = uri_.path();
     uri::string_type decoded_path;
     decode(path, std::back_inserter(decoded_path));
     return decoded_path;
@@ -89,7 +89,7 @@ uri::string_type decoded_path(const uri &uri_) {
 
 inline
 uri::string_type decoded_query(const uri &uri_) {
-    const uri::string_type query = uri_.query();
+    const auto query = uri_.query();
     uri::string_type decoded_query;
     decode(query, std::back_inserter(decoded_query));
     return decoded_query;
@@ -97,7 +97,7 @@ uri::string_type decoded_query(const uri &uri_) {
 
 inline
 uri::string_type decoded_fragment(const uri &uri_) {
-    const uri::string_type fragment = uri_.fragment();
+    const auto fragment = uri_.fragment();
     uri::string_type decoded_fragment;
     decode(fragment, std::back_inserter(decoded_fragment));
     return decoded_fragment;
