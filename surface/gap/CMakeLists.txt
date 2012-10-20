@@ -1,3 +1,6 @@
+include(${QT_USE_FILE})
+include_directories(${QT_INCLUDES})
+
 file(GLOB gap_srcs
   gap.cc
   State.cc
