@@ -4,8 +4,6 @@
 
 #include <protocol/Stream.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Protocol");
-
 namespace infinit
 {
   namespace protocol

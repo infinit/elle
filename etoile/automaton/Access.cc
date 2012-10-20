@@ -27,7 +27,6 @@ namespace etoile
 {
   namespace automaton
   {
-    ELLE_LOG_COMPONENT("infinit.etoile.automaton.Access");
 
     ///
     /// this method opens the access block by loading it if necessary i.e
