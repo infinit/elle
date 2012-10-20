@@ -12,10 +12,6 @@ set(
   scheme_tests
   )
 foreach (test ${TESTS})
-  if (${CMAKE_CXX_COMPILER_ID} MATCHES GNU)
-    set_source_files_properties(${test}.cpp
-      PROPERTIES COMPILE_FLAGS ${CPP-NETLIB_CXXFLAGS})
-  endif()
   add_executable(${test} ${test}.cpp)
   add_dependencies(${test} cppnetlib-uri)
   target_link_libraries(${test}
@@ -24,7 +20,7 @@ foreach (test ${TESTS})
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()
   set_target_properties(${test}
-    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CPP-NETLIB_BINARY_DIR}/tests)
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Uri_BINARY_DIR}/tests)
   add_test(${test}
-    ${CPP-NETLIB_BINARY_DIR}/tests/${test})
+    ${Uri_BINARY_DIR}/tests/${test})
 endforeach (test)
