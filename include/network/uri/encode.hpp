@@ -10,161 +10,161 @@
 
 #include <boost/iterator/iterator_traits.hpp>
 #include <boost/iterator/transform_iterator.hpp>
-#include <boost/range/begin.hpp>
-#include <boost/range/end.hpp>
 #include <cassert>
 
 namespace network {
-namespace detail {
-template <
-    typename CharT
-    >
-inline
-CharT hex_to_letter(CharT in) {
-    switch (in)
-    {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
+  namespace detail {
+    template <
+      typename CharT
+      >
+    inline
+    CharT hex_to_letter(CharT in) {
+      switch (in) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
         return in + '0';
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    default:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+      case 14:
+      default:
         return in - 10 + 'A';
+      }
+      return CharT();
     }
-    return CharT();
-}
 
 
-template <
-    typename CharT,
-    class OutputIterator
-    >
-void encode_char(CharT in, OutputIterator &out) {
-    switch (in)
-    {
-    case 'a':
-    case 'A':
-    case 'b':
-    case 'B':
-    case 'c':
-    case 'C':
-    case 'd':
-    case 'D':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
-    case 'h':
-    case 'H':
-    case 'i':
-    case 'I':
-    case 'j':
-    case 'J':
-    case 'k':
-    case 'K':
-    case 'l':
-    case 'L':
-    case 'm':
-    case 'M':
-    case 'n':
-    case 'N':
-    case 'o':
-    case 'O':
-    case 'p':
-    case 'P':
-    case 'q':
-    case 'Q':
-    case 'r':
-    case 'R':
-    case 's':
-    case 'S':
-    case 't':
-    case 'T':
-    case 'u':
-    case 'U':
-    case 'v':
-    case 'V':
-    case 'w':
-    case 'W':
-    case 'x':
-    case 'X':
-    case 'y':
-    case 'Y':
-    case 'z':
-    case 'Z':
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-    case '-':
-    case '.':
-    case '_':
-    case '~':
-    case '/':
-        out++ = in;
-    break;
-    default:
-        out++ = '%';
-        out++ = hex_to_letter(in >> 4);
-        out++ = hex_to_letter(in & 0x0f);
-        ;
+    template <
+      typename CharT,
+      class OutputIterator
+      >
+    void encode_char(CharT in, OutputIterator &out) {
+      switch (in)
+	{
+	case 'a':
+	case 'A':
+	case 'b':
+	case 'B':
+	case 'c':
+	case 'C':
+	case 'd':
+	case 'D':
+	case 'e':
+	case 'E':
+	case 'f':
+	case 'F':
+	case 'g':
+	case 'G':
+	case 'h':
+	case 'H':
+	case 'i':
+	case 'I':
+	case 'j':
+	case 'J':
+	case 'k':
+	case 'K':
+	case 'l':
+	case 'L':
+	case 'm':
+	case 'M':
+	case 'n':
+	case 'N':
+	case 'o':
+	case 'O':
+	case 'p':
+	case 'P':
+	case 'q':
+	case 'Q':
+	case 'r':
+	case 'R':
+	case 's':
+	case 'S':
+	case 't':
+	case 'T':
+	case 'u':
+	case 'U':
+	case 'v':
+	case 'V':
+	case 'w':
+	case 'W':
+	case 'x':
+	case 'X':
+	case 'y':
+	case 'Y':
+	case 'z':
+	case 'Z':
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '/':
+	  out++ = in;
+	  break;
+	default:
+	  out++ = '%';
+	  out++ = hex_to_letter(in >> 4);
+	  out++ = hex_to_letter(in & 0x0f);
+	  ;
+	}
     }
-}
-} // namespace detail
+  } // namespace detail
 
-template <
+  template <
     class InputIterator,
     class OutputIterator
     >
-OutputIterator encode(const InputIterator &in_begin,
-                      const InputIterator &in_end,
-                      const OutputIterator &out_begin) {
+  OutputIterator encode(const InputIterator &in_begin,
+			const InputIterator &in_end,
+			const OutputIterator &out_begin) {
     typedef typename boost::iterator_value<InputIterator>::type value_type;
 
     InputIterator it = in_begin;
     OutputIterator out = out_begin;
     while (it != in_end) {
-        detail::encode_char(*it, out);
-        ++it;
+      detail::encode_char(*it, out);
+      ++it;
     }
     return out;
-}
+  }
 
-template <
+  template <
     class SinglePassRange,
     class OutputIterator
     >
-inline
-OutputIterator encode(const SinglePassRange &range,
-                      const OutputIterator &out) {
-    return encode(boost::begin(range), boost::end(range), out);
-}
+  inline
+  OutputIterator encode(const SinglePassRange &range,
+			const OutputIterator &out) {
+    return encode(std::begin(range), std::end(range), out);
+  }
 
-inline
-std::string encoded(const std::string &input) {
-    std::string encoded;
+  template <
+    class String
+    >
+  inline
+  String encoded(const String &input) {
+    String encoded;
     encode(input, std::back_inserter(encoded));
     return std::move(encoded);
-}
+  }
 } // namespace network
 
 #endif // NETWORK_URI_ENCODE_INC

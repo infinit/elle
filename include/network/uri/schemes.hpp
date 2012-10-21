@@ -12,23 +12,23 @@
 #include <boost/optional.hpp>
 
 namespace network {
-class hierarchical_schemes {
+  class hierarchical_schemes {
 
-public:
-
-    static bool exists(const std::string &scheme);
-
-};
-
-class opaque_schemes {
-
-public:
+  public:
 
     static bool exists(const std::string &scheme);
 
-};
+  };
 
-boost::optional<std::string> default_port(const std::string &scheme);
+  class opaque_schemes {
+
+  public:
+
+    static bool exists(const std::string &scheme);
+
+  };
+
+  boost::optional<std::string> default_port(const std::string &scheme);
 } // namespace network
 
 #endif // NETWORK_URI_SCHEMES_INC

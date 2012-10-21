@@ -9,17 +9,17 @@
 #include <network/uri.hpp>
 
 BOOST_AUTO_TEST_CASE(http_has_default_port) {
-	BOOST_CHECK(network::default_port("http"));
+  BOOST_CHECK(network::default_port("http"));
 }
 
 BOOST_AUTO_TEST_CASE(http_default_port) {
-	BOOST_CHECK_EQUAL(std::string("80"), network::default_port("http"));
+  BOOST_CHECK_EQUAL(std::string("80"), network::default_port("http"));
 }
 
 BOOST_AUTO_TEST_CASE(https_has_default_port) {
-	BOOST_CHECK(network::default_port("https"));
+  BOOST_CHECK(network::default_port("https"));
 }
 
 BOOST_AUTO_TEST_CASE(https_default_port) {
-	BOOST_CHECK_EQUAL(std::string("443"), network::default_port("https"));
+  BOOST_CHECK_EQUAL(std::string("443"), network::default_port("https"));
 }

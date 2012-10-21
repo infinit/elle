@@ -7,15 +7,15 @@
 set(
   TESTS
   uri_test
-  uri_builder_test
   uri_encoding_test
-  scheme_tests
+  #uri_builder_test
+  #scheme_tests
   )
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
-  add_dependencies(${test} cppnetlib-uri)
+  add_dependencies(${test} uri)
   target_link_libraries(${test}
-    ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} cppnetlib-uri)
+    ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} uri)
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()

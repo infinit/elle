@@ -5,4 +5,4 @@
 
 
 set(Uri_SRCS uri.cpp schemes.cpp normalize.cpp)
-add_library(cppnetlib-uri ${Uri_SRCS})
+add_library(uri ${Uri_SRCS})

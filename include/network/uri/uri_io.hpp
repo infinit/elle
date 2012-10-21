@@ -11,10 +11,10 @@
 #include <network/uri/uri.hpp>
 
 namespace network {
-inline
-std::ostream &operator << (std::ostream &os, const uri &uri_) {
+  inline
+  std::ostream &operator << (std::ostream &os, const uri &uri_) {
     return os << uri_.string();
-}
+  }
 } // namespace network
 
 #endif // NETWORK_URI_URI_IO_INC

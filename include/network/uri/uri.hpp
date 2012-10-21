@@ -12,7 +12,6 @@
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/schemes.hpp>
-#include <boost/utility/swap.hpp>
 #include <boost/range/algorithm/equal.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/as_literal.hpp>
@@ -170,9 +169,9 @@ namespace network {
     }
 
     void swap(uri &other) {
-      boost::swap(uri_, other.uri_);
-      boost::swap(uri_parts_, other.uri_parts_);
-      boost::swap(is_valid_, other.is_valid_);
+      std::swap(uri_, other.uri_);
+      std::swap(uri_parts_, other.uri_parts_);
+      std::swap(is_valid_, other.is_valid_);
     }
 
     const_iterator begin() const {

@@ -9,94 +9,93 @@
 #define NETWORK_URI_DECODE_INC
 
 #include <boost/iterator/iterator_traits.hpp>
-#include <boost/range/begin.hpp>
-#include <boost/range/end.hpp>
 #include <cassert>
 
 namespace network {
-namespace detail {
-template <
-    typename CharT
-    >
-CharT letter_to_hex(CharT in)
-{
-    switch (in)
-    {
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
+  namespace detail {
+    template <
+      typename CharT
+      >
+    CharT letter_to_hex(CharT in) {
+      switch (in) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
         return in - '0';
-    case 'a':
-    case 'b':
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
+      case 'a':
+      case 'b':
+      case 'c':
+      case 'd':
+      case 'e':
+      case 'f':
         return in + 10 - 'a';
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'E':
-    case 'F':
+      case 'A':
+      case 'B':
+      case 'C':
+      case 'D':
+      case 'E':
+      case 'F':
         return in + 10 - 'A';
+      }
+      return CharT();
     }
-    return CharT();
-}
-} // namespace detail
+  } // namespace detail
 
-template <
+  template <
     class InputIterator,
     class OutputIterator
     >
-OutputIterator decode(const InputIterator &in_begin,
-                      const InputIterator &in_end,
-                      const OutputIterator &out_begin) {
+  OutputIterator decode(const InputIterator &in_begin,
+			const InputIterator &in_end,
+			const OutputIterator &out_begin) {
     typedef typename boost::iterator_value<InputIterator>::type value_type;
 
     InputIterator it = in_begin;
     OutputIterator out = out_begin;
     while (it != in_end) {
-        if (*it == '%')
+      if (*it == '%')
         {
-            ++it;
-            value_type v0 = detail::letter_to_hex(*it);
-            ++it;
-            value_type v1 = detail::letter_to_hex(*it);
-            ++it;
-            *out++ = 0x10 * v0 + v1;
+	  ++it;
+	  value_type v0 = detail::letter_to_hex(*it);
+	  ++it;
+	  value_type v1 = detail::letter_to_hex(*it);
+	  ++it;
+	  *out++ = 0x10 * v0 + v1;
         }
-        else
+      else
         {
-            *out++ = *it++;
+	  *out++ = *it++;
         }
     }
     return out;
-}
+  }
 
-template <
+  template <
     class SinglePassRange,
     class OutputIterator
     >
-inline
-OutputIterator decode(const SinglePassRange &range,
-                      const OutputIterator &out) {
-    return decode(boost::begin(range), boost::end(range), out);
-}
+  inline
+  OutputIterator decode(const SinglePassRange &range,
+			const OutputIterator &out) {
+    return decode(std::begin(range), std::end(range), out);
+  }
 
-inline
-std::string decoded(const std::string &input) {
-    std::string decoded;
+  template <
+    class String
+    >
+  inline
+  String decoded(const String &input) {
+    String decoded;
     decode(input, std::back_inserter(decoded));
     return std::move(decoded);
-}
+  }
 } // namespace network
 
 #endif // NETWORK_URI_DECODE_INC
