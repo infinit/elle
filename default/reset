@@ -22,7 +22,7 @@ case "$1" in
         CONFIRM=y
         ;;
     (*)
-        echo -n "Cleanup networks in $ROOT/.config/infinit (y/n) ? "
+        echo -n "Reset networks in $ROOT/configuration/ (y/n) ? "
         read CONFIRM
         ;;
 esac
@@ -36,7 +36,7 @@ case "$CONFIRM" in
 esac
 
 cd "$ROOT"
-run git checkout HEAD "$ROOT/.config"
-for network in "$ROOT"/.config/infinit/networks/*; do
+run git checkout HEAD "$ROOT/configuration/"
+for network in "$ROOT"/configuration/networks/*; do
     run git clean -fd $network/shelter
 done

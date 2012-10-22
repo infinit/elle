@@ -67,15 +67,20 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Address,
       case nucleus::proton::Address::Type::null:
         break;
       case nucleus::proton::Address::Type::some:
-        // XXX[to handle for porcupine]
-        elle::abort("invalid address type: some");
-        break;
+        {
+          // XXX[to handle for porcupine]
+          elle::abort("invalid address type: some");
+          break;
+        }
       case nucleus::proton::Address::Type::valid:
-        archive & value._network;
-        archive & value._family;
-        archive & value._component;
-        archive & value._digest;
-        break;
+        {
+          archive & value._network;
+          archive & value._family;
+          archive & value._component;
+          archive & value._digest;
+
+          break;
+        }
     }
 }
 
@@ -92,15 +97,19 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
       case nucleus::proton::Address::Type::null:
         break;
       case nucleus::proton::Address::Type::some:
-        // XXX[to handle for porcupine]
-        elle::abort("invalid address type: some");
-        break;
+        {
+          // XXX[to handle for porcupine]
+          elle::abort("invalid address type: some");
+          break;
+        }
       case nucleus::proton::Address::Type::valid:
-        archive & value._network;
-        archive & value._family;
-        archive & value._component;
-        archive & value._digest;
-        break;
+        {
+          archive & value._network;
+          archive & value._family;
+          archive & value._component;
+          archive & value._digest;
+          break;
+        }
     }
 }
 
