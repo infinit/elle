@@ -107,7 +107,6 @@ class Trophonius(basic.LineReceiver):
 		This function handle the first message of the client
 		It waits for a json object with:
 		{
-			"_id" : <id>,
 			"token" : <token>
 		}
 		"""
@@ -115,21 +114,19 @@ class Trophonius(basic.LineReceiver):
 			js_req = json.loads(line)
 			cl = pythia.Client(session={"token": js_req["token"]})
 			res = cl.get('/self')
-			if js_req["_id"] == res["_id"]:
-				# The authentication succeeded
+			# The authentication succeeded
 
-				self.id = js_req["_id"]
-				self.token = js_req["token"]
-				# Add the current client to the client list
-				self.factory.clients.add(self)
+			self.id = res["_id"]
+			self.token = js_req["token"]
+			# Add the current client to the client list
+			self.factory.clients.add(self)
 
-				# Enable the notifications for the current client
-				self.state = "CHAT"
+			# Enable the notifications for the current client
+			self.state = "CHAT"
+			print("Switching state to", self.state)
 
-				# Send the success to the client
-				self._send_res(res=200)
-			else:
-				self._send_res(res=403, msg="id mismatch")
+			# Send the success to the client
+			self._send_res(res=200)
 		except (ValueError, KeyError) as ve:
 			log.err("Handled exception {} in state {}: {}".format(
 				ve.__class__.__name__,
