@@ -25,6 +25,66 @@ class Search(Page):
             'users': result,
         })
 
+class GetSwaggers(Page):
+    __pattern__ =  "/user/get_swaggers"
+
+    def GET(self):
+        if "swaggers" in self.user:
+            return self.success({"swaggers" : self.user["swaggers"]})
+        else:
+            return self.error("no swaggers yet")
+
+class GetPendingSwaggers(Page):
+    __pattern__ =  "/user/get_pending_swaggers"
+
+    def GET(self):
+        if "pending_swaggers" in self.user:
+            return self.success({"pending_swaggers" : self.user["pending_swaggers"]})
+        else:
+            return self.error("no swagger is pending")
+
+class AddSwagger(Page):
+    __pattern__ = "/user/add_swagger"
+
+    def POST(self):
+        import pymongo
+
+        try:
+            if "email" in self.data:
+                user = database.users().find_and_modify(
+                    {"_id": pymongo.objectid.ObjectId(self.user["_id"])},
+                    {"$push": {"pending_swaggers": self.data["email"]}},
+                    True #upsert
+                )
+                return self.success({"what" : "pending"})
+            elif "_id" in self.data and \
+                    self.user["_id"] != self.data["_id"]:
+                swagger = database.byId(database.users(), self.data["_id"])
+                if swagger:
+                    user = database.users().find_and_modify(
+                        {"_id" : pymongo.objectid.ObjectId(self.user["_id"])},
+                        {"$push" : {"swaggers" : self.data["_id"]}},
+                        True # upsert
+                    )
+                else:
+                    return self.error("don't try to fake the swag")
+        except Exception as e:
+            return self.error("your swag is too low !")
+        return self.success({"swag":"up"})
+
+class RemoveSwagger(Page):
+    __pattern__ = "/user/remove_swagger"
+
+    def POST(self):
+        import pymongo
+
+        swagez = database.users().find_and_modify(
+            {"_id": pymongo.objectid.ObjectId(self.user["_id"])},
+            {"$pull": {"swaggers": self.data["_id"]}},
+            True #upsert
+        )
+        return self.success({"swaggers" : swagez["swaggers"]})
+
 class FromPublicKey(Page):
     __pattern__ = "/user/from_public_key"
 
@@ -294,6 +354,7 @@ class Login(Page):
         password = self.data.get('password')
         if self.authenticate(email, password):
             return self.success({
+                "_id" : self.user["_id"],
                 'token': self.session.session_id,
                 'fullname': self.user['fullname'],
                 'email': self.user['email'],
