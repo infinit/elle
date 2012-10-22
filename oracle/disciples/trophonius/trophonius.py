@@ -47,9 +47,10 @@ class Trophonius(basic.LineReceiver):
 		return "<{}()>".format(self.__class__.__name__)
 
 	def connectionMade(self):
-		log.msg("New connection from", self.transport.getHost())
+		log.msg("New connection from", self.transport.getPeer())
 
 	def connectionLost(self, reason):
+		log.msg("Connection lost with", self.transport.getPeer())
 		if self in self.factory.clients:
 			self.factory.clients.remove(self)
 
@@ -71,7 +72,8 @@ class Trophonius(basic.LineReceiver):
 		Just a dummy function
 		"""
 		for c in (_c for _c in self.factory.clients if _c is not self):
-			c.sendLine("<{}> {}".format(self.transport.getHost(), line))
+			log.msg("sending {} to <{}>".format(line, c.transport.getPeer()))
+			c.sendLine("{}".format(line))
 		self._send_res(200)
 
 	def enqueue(self, message, recipients_ids):
@@ -137,6 +139,7 @@ class Trophonius(basic.LineReceiver):
 			self.transport.loseConnection()
 
 	def lineReceived(self, line):
+		print(line)
 		hdl = getattr(self, "handle_{}".format(self.state), None)
 		if hdl is not None:
 			hdl(line)
