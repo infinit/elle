@@ -225,6 +225,18 @@ class Self(Page):
             'accounts': self.user['accounts'],
         })
 
+class Debug(Page):
+	"""
+	This class is for debug purpose only
+	"""
+
+	__pattern__ = "/debug"
+
+	def POST(self):
+		msg = data
+		self.notifier.send_notify(msg)
+
+
 class One(Page):
     """
     Get public informations of an user by id or email

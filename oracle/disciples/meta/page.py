@@ -42,8 +42,11 @@ class Page(object):
     @property
     def notifier(self):
         if self.__notifier is None:
-            self.__notifier = notification.TrophoniusNotify()
-            self.open()
+            try:
+                self.__notifier = notification.TrophoniusNotify()
+                self.open()
+            except:
+                pass
         return self._notifier
 
     @property
