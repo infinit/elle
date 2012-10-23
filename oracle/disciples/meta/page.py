@@ -8,6 +8,7 @@ import urllib
 
 from meta import conf
 from meta import database
+from meta import notfification
 
 class Page(object):
     """
@@ -15,6 +16,8 @@ class Page(object):
     It also wrap access (and cache) to session and users in a lazy load manner
     """
     __session__ = None #set by the application
+
+    __notifier = None
 
     def __init__(self):
         self._input = None
@@ -35,6 +38,13 @@ class Page(object):
             except AttributeError:
                 return None
         return self._user
+
+    @property
+    def notifier(self):
+        if self.__notifier is None:
+            self.__notifier = notification.TrophoniusNotify()
+            self.open()
+        return self._notifier
 
     @property
     def input(self):
