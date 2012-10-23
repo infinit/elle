@@ -195,18 +195,9 @@ namespace horizon
               nucleus::neutron::permissions::write)
             stat->st_mode |= S_IWUSR;
 
-          // XXX
-          printf("HERE\n");
-
           // Retrieve the attribute.
           nucleus::neutron::Trait trait(
             etoile::wall::Attributes::get(handle->identifier, "perm::exec"));
-
-          // XXX
-          trait.Dump();
-
-          // XXX
-          printf("HERE\n");
 
           // Check the trait.
           if ((trait != nucleus::neutron::Trait::Null) &&
@@ -215,9 +206,6 @@ namespace horizon
               // Active the exec bit.
               stat->st_mode |= S_IXUSR;
             }
-
-          // XXX
-          printf("HERE\n");
 
           break;
         }

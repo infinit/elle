@@ -96,7 +96,10 @@ namespace satellite
                                "unable to authenticate to Etoile");
   }
 
-  etoile::gear::Identifier
+  static elle::Natural64 _progress(0);
+  static elle::Natural64 _size(0);
+
+  etoile::path::Chemin
   Transfer::from_setup()
   {
     // Resolve the directory.
@@ -107,34 +110,81 @@ namespace satellite
     etoile::gear::Identifier identifier(
       Transfer::rpcs->directoryload(chemin));
 
-    // Set the initial attribute.
-    Transfer::rpcs->attributesset(identifier,
-                                  "infinit:transfer:progress", "0");
-
-    return (identifier);
-  }
-
-  etoile::gear::Identifier
-  Transfer::from_progress(elle::Natural64 size)
-  {
-    static etoile::gear::Identifier directory(Transfer::from_setup());
-
-    Ward ward(directory);
-
-    nucleus::neutron::Trait trait(
-      Transfer::rpcs->attributesget(directory,
+    // Get the initial attribute, if present.
+    nucleus::neutron::Trait progress(
+      Transfer::rpcs->attributesget(identifier,
                                     "infinit:transfer:progress"));
 
-    if (trait == nucleus::neutron::Trait::Null)
-      throw std::runtime_error("unable to retrieve the progress trait");
+    if (progress == nucleus::neutron::Trait::Null)
+      {
+        // Set the initial attribute.
+        Transfer::rpcs->attributesset(identifier,
+                                      "infinit:transfer:progress", "0");
+        _progress = 0;
+      }
+    else
+      {
+        _progress = boost::lexical_cast<elle::Natural64>(progress.value);
+      }
 
-    // XXX -> to int
-    // XXX -> +size
-    // XXX -> set attribute
+    // Then, retrieve the size of the transfer.
+    nucleus::neutron::Trait size(
+      Transfer::rpcs->attributesget(identifier,
+                                    "infinit:transfer:size"));
 
-    ward.release();
+    if (size == nucleus::neutron::Trait::Null)
+      throw std::runtime_error("no transfer size attribute present");
 
-    return (directory);
+    // Set the size variable.
+    _size = boost::lexical_cast<elle::Natural64>(size.value);
+
+    // Store the directory since some modifications may have been
+    // performed.
+    Transfer::rpcs->directorystore(identifier);
+
+    return (chemin);
+  }
+
+  void
+  Transfer::from_progress(elle::Natural64 increment)
+  {
+    // Setup the progress update and keep the chemin which is
+    // not going to change.
+    static etoile::path::Chemin chemin(Transfer::from_setup());
+    static elle::Natural64 stale(_progress);
+
+    // Increment the progress counter.
+    _progress += increment;
+
+    // Compute the increment in terms of pourcentage of progress.
+    elle::Real difference = (_progress - stale) * 100 / _size;
+
+    // If the difference is large enough, update the progress in the root
+    // directory's attribtues.
+    if ((difference > 1.0) || (_progress == _size))
+      {
+        // Load the root directory.
+        etoile::gear::Identifier identifier(
+          Transfer::rpcs->directoryload(chemin));
+
+        Ward ward(identifier);
+
+        elle::String string =
+          boost::lexical_cast<elle::String>(_progress);
+
+        // Update the progress attribute.
+        Transfer::rpcs->attributesset(identifier,
+                                      "infinit:transfer:progress",
+                                      string);
+
+        // Store the modifications.
+        Transfer::rpcs->directorystore(identifier);
+
+        ward.release();
+
+        // Update the stale progress which now is up-to-date.
+        stale = _progress;
+      }
   }
 
   void
@@ -197,7 +247,13 @@ namespace satellite
                                static_cast<std::streamsize>(data.size));
 
                   offset += data.size;
+
+                  // Set the progress.
+                  Transfer::from_progress(data.size);
                 }
+
+              // Make sure the right amount has been copied.
+              assert(offset == abstract.size);
 
               stream.close();
 
@@ -205,9 +261,6 @@ namespace satellite
               Transfer::rpcs->objectdiscard(child);
 
               ward_child.release();
-
-              // Set the progress.
-              // XXX Transfer::from_progress(offset);
 
               break;
             }
@@ -219,6 +272,9 @@ namespace satellite
               if (boost::filesystem::create_directory(path) == false)
                 throw std::runtime_error("unable to create the directory");
 
+              // Set the progress.
+              Transfer::from_progress(1);
+
               // Recursively explore the Infinit network.
               Transfer::from_traverse(_source.path +
                                       elle::system::path::separator,
@@ -228,9 +284,6 @@ namespace satellite
               Transfer::rpcs->objectdiscard(child);
 
               ward_child.release();
-
-              // Set the progress.
-              // XXX Transfer::from_progress(1);
 
               break;
             }
@@ -244,13 +297,13 @@ namespace satellite
               // Create the link.
               boost::filesystem::create_symlink(way.path, path);
 
+              // Set the progress.
+              Transfer::from_progress(way.path.length());
+
               // Discard the child.
               Transfer::rpcs->objectdiscard(child);
 
               ward_child.release();
-
-              // Set the progress.
-              // XXX Transfer::from_progress(way.path.length());
 
               break;
             }
@@ -269,17 +322,9 @@ namespace satellite
     // Connect to Etoile.
     Transfer::connect();
 
-    // Initialize the progress to zero and track the identifier.
-    // XXX etoile::gear::Identifier root(Transfer::from_progress(0));
-
-    // XXX Ward ward(root);
-
     // Traverse the Infinit network from the root.
     Transfer::from_traverse(etoile::path::Way(elle::system::path::separator),
                             target);
-
-    // Store the root directory.
-    // XXX ward.release();
   }
 
   void

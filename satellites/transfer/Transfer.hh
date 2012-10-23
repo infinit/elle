@@ -43,12 +43,12 @@ namespace satellite
     connect();
     /// Set up the progress updating process.
     static
-    etoile::gear::Identifier
+    etoile::path::Chemin
     from_setup();
     /// Set the progress in the root directory's attributes.
     static
-    etoile::gear::Identifier
-    from_progress(elle::Natural64 size);
+    void
+    from_progress(elle::Natural64 increment);
     /// Traverse a directory so as to transfer back everything from
     /// Infinit to the local file system.
     static
