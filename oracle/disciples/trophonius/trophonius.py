@@ -29,10 +29,18 @@ response_matrix = {
 	666 : "unknown_error" 
 }
 
+class InvalidID(Exception):
+
+	def __init__(self, id):
+		self.id = id
+		pass
+
+	def __str__(self):
+		return "{} invalid id".format(self.id)
+
 class Trophonius(basic.LineReceiver):
 
 	states = ('HELLO',
-			  'NOTIF',
 			  'CHAT')
 
 	delimiter = "\n"
@@ -50,7 +58,7 @@ class Trophonius(basic.LineReceiver):
 		log.msg("New connection from", self.transport.getPeer())
 
 	def connectionLost(self, reason):
-		log.msg("Connection lost with", self.transport.getPeer())
+		log.msg("Connection lost with", self.transport.getPeer(), reason)
 		if self in self.factory.clients:
 			self.factory.clients.remove(self)
 
@@ -75,32 +83,6 @@ class Trophonius(basic.LineReceiver):
 			log.msg("sending {} to <{}>".format(line, c.transport.getPeer()))
 			c.sendLine("{}".format(line))
 		self._send_res(200)
-
-	def enqueue(self, message, recipients_ids):
-		pass
-
-	def handle_NOTIF(self, line):
-		"""
-		This function handle the second part of the protocol, after the client
-		has authenticate.
-		"""
-		try:
-			js_req = json.loads(line)
-			_recipient = js_req["recipient_id"]
-			if isinstance(_recipient, list):
-				recipients_ids = _recipient
-			elif isinstance(_recipient, str):
-				recipients_ids = [_recipient]
-		except ValueError as ve:
-			log.err("Handled exception {} in state {}: {}".format(
-				ve.__class__.__name__,
-				self.state,
-				ve))
-			self._send_res(res=400, msg=ve.message)
-			self.transport.loseConnection()
-		else:
-			self._send_res(res=202, msg="message enqueued")
-		self.enqueue(line, recipients_ids)
 
 	def handle_HELLO(self, line):
 		"""
@@ -136,23 +118,90 @@ class Trophonius(basic.LineReceiver):
 			self.transport.loseConnection()
 
 	def lineReceived(self, line):
-		print(line)
 		hdl = getattr(self, "handle_{}".format(self.state), None)
 		if hdl is not None:
 			hdl(line)
 
+class MetaTropho(basic.LineReceiver):
+
+	delimiter = "\n"
+
+	def __init__(self, factory):
+		self.factory = factory
+
+	def connectionMade(self):
+		log.msg("New connection from", self.transport.getPeer())
+
+	def connectionLost(self, reason):
+		log.msg("Connection lost with", self.transport.getPeer(), reason)
+
+	def _send_res(self, res, msg=""):
+		if isinstance(res, dict):
+			self.sendLine(json.dumps(res))
+		elif isinstance(res, int):
+			s = {}
+			s["response_code"] = res
+			if msg:
+				s["response_details"] = "{}: {}".format(response_matrix[res], msg)
+			else:
+				s["response_details"] = "{}".format(response_matrix[res])
+			message = json.dumps(s)
+			self.sendLine(message)
+
+	def enqueue(self, line, recipients):
+		try:
+			for rec_id in recipients:
+				for c in self.factory.clients[rec_id]:
+					c.sendLine(line)
+		except KeyError as ke:
+			log.err("Handled exception {}: {} unknow id".format(
+				ke.__class__.__name__,
+				ke))
+			raise InvalidID(rec_id)
+
+	def make_switch(self, line):
+		try:
+			recipients_ids = ""
+			js_req = json.loads(line)
+			_recipient = js_req["recipient_id"]
+			if isinstance(_recipient, list):
+				recipients_ids = _recipient
+			elif isinstance(_recipient, str):
+				recipients_ids = [_recipient]
+			self.enqueue(line, recipients_ids)
+		except ValueError as ve:
+			log.err("Handled exception {}: {}".format(
+				ve.__class__.__name__,
+				ve))
+			self._send_res(res=400, msg=ve.message)
+		except KeyError as ke:
+			log.err("Handled exception {}: missing key {} in request".format(
+				ke.__class__.__name__,
+				ke))
+			self._send_res(res=400, msg="missing key {} in req".format(ke.message))
+		except InvalidID as ide:
+			self._send_res(res=400, msg="{}".format(str(ide)))
+		else:
+			self._send_res(res=202, msg="message enqueued")
+
+	def lineReceived(self, line):
+		self.make_switch(line)
+
 class TrophoFactory(protocol.Factory):
 	def __init__(self, application):
-		self.clients = clients.ClientList()
-		self.queue = {}
-
-	def dequeue(self):
-		pass
+		self.clients = application.clients
 
 	def startFactory(self):
-		reactor.callFromThread(self.dequeue)
 		pass
 
 	def buildProtocol(self, addr):
 		return Trophonius(self)
+
+class MetaTrophoFactory(protocol.Factory):
+	def __init__(self, app):
+		self.clients = app.clients
+		pass
+
+	def buildProtocol(self, addr):
+		return MetaTropho(self)
 

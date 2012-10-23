@@ -30,7 +30,6 @@ class ClientList(object):
 				s.add(c.id)
 		return s.__iter__()
 
-
 	def __iter__(self):
 		def __iter___(me):
 			for cs in self.clients.viewvalues():
