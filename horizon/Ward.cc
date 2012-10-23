@@ -18,7 +18,7 @@ namespace horizon
   Ward::~Ward()
   {
     if (this->_clean)
-      etoile::wall::Object::Discard(this->_id);
+      etoile::wall::Object::discard(this->_id);
   }
 
   /*--------.

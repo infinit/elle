@@ -95,7 +95,8 @@ namespace etoile
 
       // declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -129,35 +130,6 @@ namespace etoile
         if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
       }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this application locks the given file.
-    ///
-    /// the method returns true if the lock has been acquired or false
-    /// otherwise.
-    ///
-    elle::Status        File::Lock(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_FUNCTION("");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method releases a previously locked file.
-    ///
-    elle::Status        File::Release(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Release()");
-
-      // XXX to implement.
 
       return elle::Status::Ok;
     }
@@ -200,18 +172,14 @@ namespace etoile
       }
     }
 
-    ///
-    /// this method reads a region of the file.
-    ///
-    elle::Status        File::Read(
-                          const gear::Identifier&               identifier,
-                          const nucleus::neutron::Offset& offset,
-                          const nucleus::neutron::Size& size,
-                          elle::standalone::Region&                         region)
+    elle::standalone::Region
+    File::read(gear::Identifier const& identifier,
+               nucleus::neutron::Offset const& offset,
+               nucleus::neutron::Size const& size)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::File* context;
 
       ELLE_TRACE_FUNCTION(identifier, offset, size);
 
@@ -222,9 +190,12 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
+      elle::standalone::Region data;
+
       // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
@@ -233,11 +204,11 @@ namespace etoile
         if (automaton::File::Read(*context,
                                   offset,
                                   size,
-                                  region) == elle::Status::Error)
+                                  data) == elle::Status::Error)
           escape("unable to read the file");
       }
 
-      return elle::Status::Ok;
+      return (data);
     }
 
     ///
@@ -262,7 +233,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -304,7 +276,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -482,7 +455,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)

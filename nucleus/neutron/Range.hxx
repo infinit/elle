@@ -382,6 +382,24 @@ namespace nucleus
              << ")";
     }
 
+//
+// ---------- iterable --------------------------------------------------------
+//
+
+    template <typename T>
+    typename Range<T>::Scoutor
+    Range<T>::begin() const
+    {
+      return (this->container.begin());
+    }
+
+    template <typename T>
+    typename Range<T>::Scoutor
+    Range<T>::end() const
+    {
+      return (this->container.end());
+    }
+
   }
 }
 

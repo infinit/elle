@@ -29,11 +29,12 @@ namespace etoile
 {
   namespace wall
   {
+
     gear::Identifier
-    Object::Load(const path::Chemin& chemin_)
+    Object::load(const path::Chemin& chemin_)
     {
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_FUNCTION(chemin_);
 
@@ -41,7 +42,7 @@ namespace etoile
       if (gear::Scope::Acquire(chemin_, scope) == elle::Status::Error)
         throw elle::Exception("unable to acquire the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
 
       // If the scope is new i.e there is no attached context, the system
       // needs to know what is the genre of the object, e.g directory, in
@@ -65,10 +66,12 @@ namespace etoile
           catch (std::runtime_error& e)
             {
               assert(scope != nullptr);
-              ELLE_TRACE("clearing the cache in order to evict %s", scope->chemin.route)
+              ELLE_TRACE("clearing the cache in order to evict %s",
+                         scope->chemin.route)
                 shrub::Shrub::clear();
 
-              ELLE_TRACE("try to resolve the route now that the cache was cleaned")
+              ELLE_TRACE("try to resolve the route now that the "
+                         "cache was cleaned")
               {
                 path::Venue venue;
                 if (path::Path::Resolve(scope->chemin.route,
@@ -135,8 +138,10 @@ namespace etoile
         }
 
       // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
       {
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw elle::Exception("unable to retrieve the context");
@@ -172,31 +177,12 @@ namespace etoile
       }
     }
 
-    bool
-    Object::Lock(gear::Identifier const&)
-    {
-      ELLE_TRACE_SCOPE("Lock()");
-
-      // XXX to implement.
-
-      return true;
-    }
-
-    /// Release a previously locked object.
-    void
-    Object::Release(const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Release()");
-
-      // XXX to implement.
-    }
-
     abstract::Object
-    Object::Information(const gear::Identifier& identifier)
+    Object::information(const gear::Identifier& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -208,8 +194,9 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
       {
+        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex);
+
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
           throw elle::Exception("unable to retrieve the context");
@@ -218,17 +205,19 @@ namespace etoile
         abstract::Object abstract;
         if (automaton::Object::Information(*context,
                                            abstract) == elle::Status::Error)
-          throw elle::Exception("unable to retrieve general information on the object");
+          throw elle::Exception("unable to retrieve general information "
+                                "on the object");
+
         return abstract;
       }
     }
 
     void
-    Object::Discard(gear::Identifier const& identifier)
+    Object::discard(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -236,14 +225,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw elle::Exception("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -255,12 +245,13 @@ namespace etoile
         if (automaton::Rights::Operate(
               *context,
               gear::OperationDiscard) == elle::Status::Error)
-          throw elle::Exception("the user does not seem to have the necessary permission for "
-                                   "discarding this object");
+          throw elle::Exception("the user does not seem to have the necessary "
+                                "permission for discarding this object");
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationDiscard) == elle::Status::Error)
-          throw elle::Exception("this operation cannot be performed by this actor");
+          throw elle::Exception("this operation cannot be performed by "
+                                "this actor");
 
         // delete the actor.
         guard.actor(nullptr);
@@ -268,7 +259,7 @@ namespace etoile
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDiscard) == elle::Status::Error)
           throw elle::Exception("unable to specify the operation being performed "
-                                   "on the scope");
+                                "on the scope");
 
         // trigger the shutdown.
         if (scope->Shutdown() == elle::Status::Error)
@@ -303,7 +294,9 @@ namespace etoile
             //
             // otherwise, some actors are probably still working on it.
             //
-            assert(!scope->actors.empty() && "The scope should have some actors");
+
+            // XXX[why isn't there such an assert in store and destroy also? there should be!]
+            assert(!scope->actors.empty());
             break;
           }
         }
@@ -397,11 +390,11 @@ namespace etoile
     }
 
     void
-    Object::Destroy(gear::Identifier const& identifier)
+    Object::destroy(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -409,14 +402,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw elle::Exception("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -483,7 +477,7 @@ namespace etoile
     }
 
     void
-    Object::Purge(gear::Identifier const&)
+    Object::purge(gear::Identifier const&)
     {
       ELLE_TRACE_SCOPE("Purge()");
 

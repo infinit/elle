@@ -4,11 +4,14 @@
 # include <etoile/fwd.hh>
 # include <etoile/path/Chemin.hh>
 # include <etoile/path/Way.hh>
+# include <etoile/abstract/Object.hh>
 
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Group.hh>
 # include <nucleus/neutron/Range.hh>
 # include <nucleus/neutron/Record.hh>
+# include <nucleus/neutron/Trait.hh>
+# include <nucleus/neutron/Entry.hh>
 
 # include <protocol/RPC.hh>
 
@@ -48,10 +51,8 @@ namespace etoile
       `-------*/
       RemoteProcedure<etoile::gear::Identifier,
                       etoile::path::Chemin const&> objectload;
-      RemoteProcedure<void,
+      RemoteProcedure<etoile::abstract::Object,
                       etoile::gear::Identifier const&> objectinformation;
-      RemoteProcedure<void,
-                      etoile::abstract::Object&> objectabstract;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&> objectdiscard;
       RemoteProcedure<void,
@@ -69,12 +70,10 @@ namespace etoile
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Offset const&,
                       elle::standalone::Region const&> filewrite;
-      RemoteProcedure<void,
+      RemoteProcedure<elle::standalone::Region,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Offset const&,
-                      nucleus::neutron::Size&> fileread;
-      RemoteProcedure<void,
-                      elle::standalone::Region&> fileregion;
+                      nucleus::neutron::Size const&> fileread;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Size&> fileadjust;
@@ -100,12 +99,10 @@ namespace etoile
                       etoile::path::Slab&> directorylookup;
       RemoteProcedure<void,
                       nucleus::neutron::Entry&> directoryentry;
-      RemoteProcedure<void,
+      RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Entry>,
                       etoile::gear::Identifier const&,
-                      nucleus::neutron::Index&,
-                      nucleus::neutron::Size&> directoryconsult;
-      RemoteProcedure<void,
-                      nucleus::neutron::Range<nucleus::neutron::Entry>&> directoryrange;
+                      nucleus::neutron::Index const&,
+                      nucleus::neutron::Size const&> directoryconsult;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       etoile::path::Slab&,
@@ -129,10 +126,8 @@ namespace etoile
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       etoile::path::Way const&> linkbind;
-      RemoteProcedure<void,
+      RemoteProcedure<etoile::path::Way,
                       etoile::gear::Identifier const&> linkresolve;
-      RemoteProcedure<void,
-                      etoile::path::Way const&> linkway;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&> linkdiscard;
       RemoteProcedure<void,
@@ -165,15 +160,11 @@ namespace etoile
                       etoile::gear::Identifier const&,
                       elle::String const&,
                       elle::String const&> attributesset;
-      RemoteProcedure<void,
+      RemoteProcedure<nucleus::neutron::Trait,
                       etoile::gear::Identifier const&,
                       elle::String const&> attributesget;
-      RemoteProcedure<void,
-                      nucleus::neutron::Trait&> attributestrait;
-      RemoteProcedure<void,
+      RemoteProcedure<nucleus::neutron::Range<nucleus::neutron::Trait>,
                       etoile::gear::Identifier const&> attributesfetch;
-      RemoteProcedure<void,
-                      nucleus::neutron::Range<nucleus::neutron::Trait>&> attributesrange;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       elle::String const&> attributesomit;

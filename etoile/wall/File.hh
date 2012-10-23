@@ -34,20 +34,20 @@ namespace etoile
       static elle::Status       Load(const path::Chemin&,
                                      gear::Identifier&);
 
-      static elle::Status       Lock(const gear::Identifier&);
-      static elle::Status       Release(const gear::Identifier&);
-
       /// Writes the file with the given region of data.
       static
       void
       write(gear::Identifier const& identifier,
             nucleus::neutron::Offset const& offset,
             elle::standalone::Region const& data);
+      /// Reads _size_ bytes of data from the file, at the given offset
+      /// _offset_.
+      static
+      elle::standalone::Region
+      read(gear::Identifier const& idenifier,
+           nucleus::neutron::Offset const& offset,
+           nucleus::neutron::Size const& size);
 
-      static elle::Status       Read(const gear::Identifier&,
-                                     const nucleus::neutron::Offset&,
-                                     const nucleus::neutron::Size&,
-                                     elle::standalone::Region&);
       static elle::Status       Adjust(const gear::Identifier&,
                                        const nucleus::neutron::Size&);
 

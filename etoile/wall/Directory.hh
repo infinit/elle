@@ -30,10 +30,6 @@ namespace etoile
       static
       gear::Identifier
       load(path::Chemin const& chemin);
-
-      static elle::Status       Lock(const gear::Identifier&);
-      static elle::Status       Release(const gear::Identifier&);
-
       /// Adds an entry to the given directory.
       static
       void
@@ -44,19 +40,23 @@ namespace etoile
       static elle::Status       Lookup(const gear::Identifier&,
                                        const path::Slab&,
                                        nucleus::neutron::Entry const*&);
-      static elle::Status       Consult(const gear::Identifier&,
-                                        const nucleus::neutron::Index&,
-                                        const nucleus::neutron::Size&,
-                                        nucleus::neutron::Range<
-                                          nucleus::neutron::Entry>&);
+      /// Returns a set of entries located in [index, index + size[.
+      static
+      nucleus::neutron::Range<nucleus::neutron::Entry>
+      consult(gear::Identifier const& identifer,
+              nucleus::neutron::Index const& index,
+              nucleus::neutron::Size const& size);
+
       static elle::Status       Rename(const gear::Identifier&,
                                        const path::Slab&,
                                        const path::Slab&);
       static elle::Status       Remove(const gear::Identifier&,
                                        const path::Slab&);
 
-      static elle::Status       Discard(const gear::Identifier&);
-
+      /// Discard the scope, potentially ignoring some modifications.
+      static
+      void
+      discard(gear::Identifier const& identifier);
       /// Commit the pending modifications by placing the scope in the journal.
       static
       void

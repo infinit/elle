@@ -134,35 +134,6 @@ namespace etoile
       return (identifier);
     }
 
-    ///
-    /// this method locks the given directory.
-    ///
-    /// the method returns true if the lock has been acquired, false
-    /// otherwise.
-    ///
-    elle::Status        Directory::Lock(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Lock()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method releases a previously locked directory.
-    ///
-    elle::Status        Directory::Release(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Release()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
     void
     Directory::add(gear::Identifier const& parent,
                    path::Slab const& name,
@@ -261,26 +232,16 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns a set [offset, offset + size[ of entries
-    /// (name, address) from the directory identified by _identifier_.
-    ///
-    /// note that this method should be used careful as a set of pointers to
-    /// the target entries is returned. should one of the entries be destroyed
-    /// by another actor's operation, accessing it could make the system crash.
-    ///
-    elle::Status        Directory::Consult(
-                          const gear::Identifier&               identifier,
-                          const nucleus::neutron::Offset& offset,
-                          const nucleus::neutron::Offset& size,
-                          nucleus::neutron::Range<
-                            nucleus::neutron::Entry>& range)
+    nucleus::neutron::Range<nucleus::neutron::Entry>
+    Directory::consult(gear::Identifier const& identifier,
+                       nucleus::neutron::Index const& index,
+                       nucleus::neutron::Index const& size)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Directory*  context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Directory* context;
 
-      ELLE_TRACE_FUNCTION(identifier, offset, size);
+      ELLE_TRACE_FUNCTION(identifier, index, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -288,6 +249,8 @@ namespace etoile
 
       // retrieve the scope.
       scope = actor->scope;
+
+      nucleus::neutron::Range<nucleus::neutron::Entry> range;
 
       // Declare a critical section.
       {
@@ -299,13 +262,13 @@ namespace etoile
 
         // apply the consult automaton on the context.
         if (automaton::Directory::Consult(*context,
-                                          offset,
+                                          index,
                                           size,
                                           range) == elle::Status::Error)
           escape("unable to consult the directory entries");
       }
 
-      return elle::Status::Ok;
+      return (range);
     }
 
     ///
@@ -327,9 +290,11 @@ namespace etoile
           escape("unable to select the actor");
 
       ELLE_TRACE("lock the actor's scope for writing.");
+
       scope = actor->scope;
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         path::Venue venue(scope->chemin.venue);
         ELLE_TRACE("old venue: %s", venue);
@@ -446,7 +411,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -477,16 +443,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method discards the scope along with the possible
-    /// modifications having been performed.
-    ///
-    elle::Status        Directory::Discard(
-                          const gear::Identifier&               identifier)
+    void
+    Directory::discard(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Directory*  context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Directory* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -494,14 +456,15 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -565,8 +528,6 @@ namespace etoile
             break;
           }
         }
-
-      return elle::Status::Ok;
     }
 
     void
@@ -679,7 +640,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)

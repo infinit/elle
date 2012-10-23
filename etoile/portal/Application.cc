@@ -16,6 +16,7 @@
 #include <etoile/wall/Link.hh>
 #include <etoile/wall/Directory.hh>
 #include <etoile/wall/Path.hh>
+#include <etoile/wall/Attributes.hh>
 
 ELLE_LOG_COMPONENT("infinit.etoile.portal.Application");
 
@@ -94,20 +95,28 @@ namespace etoile
       this->rpcs->grouplookup = &wall::Group::Lookup;
       this->rpcs->groupremove = &wall::Group::Remove;
       this->rpcs->groupstore = &wall::Group::Store;
-      this->rpcs->objectdiscard = &wall::Object::Discard;
-      this->rpcs->objectload = &wall::Object::Load;
+      this->rpcs->objectload = &wall::Object::load;
+      this->rpcs->objectinformation = &wall::Object::information;
+      this->rpcs->objectdiscard = &wall::Object::discard;
       this->rpcs->objectstore = &wall::Object::store;
       this->rpcs->filecreate = &wall::File::create;
+      this->rpcs->fileread = &wall::File::read;
       this->rpcs->filewrite = &wall::File::write;
       this->rpcs->filestore = &wall::File::store;
       this->rpcs->linkcreate = &wall::Link::create;
       this->rpcs->linkbind = &wall::Link::bind;
+      this->rpcs->linkresolve = &wall::Link::resolve;
       this->rpcs->linkstore = &wall::Link::store;
       this->rpcs->directorycreate = &wall::Directory::create;
       this->rpcs->directoryload = &wall::Directory::load;
       this->rpcs->directoryadd = &wall::Directory::add;
+      this->rpcs->directoryconsult = &wall::Directory::consult;
+      this->rpcs->directorydiscard = &wall::Directory::discard;
       this->rpcs->directorystore = &wall::Directory::store;
       this->rpcs->pathresolve = &wall::Path::resolve;
+      this->rpcs->attributesset = &wall::Attributes::set;
+      this->rpcs->attributesget = &wall::Attributes::get;
+      this->rpcs->attributesfetch = &wall::Attributes::fetch;
 
       new reactor::Thread(elle::concurrency::scheduler(),
                           elle::sprintf("RPC %s", *this),

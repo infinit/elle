@@ -4,6 +4,7 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
+#include <elle/system/system.hh>
 
 #include <reactor/network/tcp-socket.hh>
 
@@ -95,15 +96,218 @@ namespace satellite
                                "unable to authenticate to Etoile");
   }
 
-  void
-  Transfer::update(elle::Natural64 const size)
+  etoile::gear::Identifier
+  Transfer::from_setup()
   {
-    // XXX
+    // Resolve the directory.
+    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(
+      etoile::path::Way(elle::system::path::separator)));
+
+    // Load the directory.
+    etoile::gear::Identifier identifier(
+      Transfer::rpcs->directoryload(chemin));
+
+    // Set the initial attribute.
+    Transfer::rpcs->attributesset(identifier,
+                                  "infinit:transfer:progress", "0");
+
+    return (identifier);
+  }
+
+  etoile::gear::Identifier
+  Transfer::from_progress(elle::Natural64 size)
+  {
+    static etoile::gear::Identifier directory(Transfer::from_setup());
+
+    Ward ward(directory);
+
+    nucleus::neutron::Trait trait(
+      Transfer::rpcs->attributesget(directory,
+                                    "infinit:transfer:progress"));
+
+    if (trait == nucleus::neutron::Trait::Null)
+      throw std::runtime_error("unable to retrieve the progress trait");
+
+    // XXX -> to int
+    // XXX -> +size
+    // XXX -> set attribute
+
+    ward.release();
+
+    return (directory);
   }
 
   void
-  Transfer::attach(etoile::gear::Identifier& object,
-                   elle::String const& path)
+  Transfer::from_traverse(etoile::path::Way const& source,
+                          elle::String const& target)
+  {
+    // Resolve the directory.
+    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(source));
+
+    // Load the directory.
+    etoile::gear::Identifier directory(Transfer::rpcs->directoryload(chemin));
+
+    Ward ward_directory(directory);
+
+    // Consult the directory.
+    nucleus::neutron::Range<nucleus::neutron::Entry> entries(
+      Transfer::rpcs->directoryconsult(
+        directory,
+        0, std::numeric_limits<nucleus::neutron::Index>::max()));
+
+    // Go through the entries.
+    for (auto trait: entries)
+      {
+        etoile::path::Way _source(source.path +
+                                  trait->name);
+
+        ELLE_TRACE("source %s", _source.path.c_str());
+
+        // Resolve the child.
+        etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(_source));
+
+        // Load the child.
+        etoile::gear::Identifier child(Transfer::rpcs->objectload(chemin));
+
+        Ward ward_child(child);
+
+        // Retrieve information on the child.
+        etoile::abstract::Object abstract(
+          Transfer::rpcs->objectinformation(child));
+
+        elle::String path(target + _source.path);
+
+        switch (abstract.genre)
+          {
+          case nucleus::neutron::Genre::file:
+            {
+              std::streamsize N = 5242880;
+              std::ofstream stream(path, std::ios::binary);
+              nucleus::neutron::Offset offset(0);
+
+              ELLE_TRACE("file %s", path.c_str());
+
+              // Copy the file.
+              while (offset < abstract.size)
+                {
+                  elle::standalone::Region data(
+                    Transfer::rpcs->fileread(child, offset, N));
+
+                  stream.write((const char*)data.contents,
+                               static_cast<std::streamsize>(data.size));
+
+                  offset += data.size;
+                }
+
+              stream.close();
+
+              // Discard the child.
+              Transfer::rpcs->objectdiscard(child);
+
+              ward_child.release();
+
+              // Set the progress.
+              // XXX Transfer::from_progress(offset);
+
+              break;
+            }
+          case nucleus::neutron::Genre::directory:
+            {
+              ELLE_TRACE("directory %s", path.c_str());
+
+              // Create the directory.
+              if (boost::filesystem::create_directory(path) == false)
+                throw std::runtime_error("unable to create the directory");
+
+              // Recursively explore the Infinit network.
+              Transfer::from_traverse(_source.path +
+                                      elle::system::path::separator,
+                                      target);
+
+              // Discard the child.
+              Transfer::rpcs->objectdiscard(child);
+
+              ward_child.release();
+
+              // Set the progress.
+              // XXX Transfer::from_progress(1);
+
+              break;
+            }
+          case nucleus::neutron::Genre::link:
+            {
+              ELLE_TRACE("link %s", path.c_str());
+
+              // Resolve the link.
+              etoile::path::Way way(Transfer::rpcs->linkresolve(child));
+
+              // Create the link.
+              boost::filesystem::create_symlink(way.path, path);
+
+              // Discard the child.
+              Transfer::rpcs->objectdiscard(child);
+
+              ward_child.release();
+
+              // Set the progress.
+              // XXX Transfer::from_progress(way.path.length());
+
+              break;
+            }
+          }
+      }
+
+    // Discard the directory since no longer necessary.
+    Transfer::rpcs->directorydiscard(directory);
+
+    ward_directory.release();
+  }
+
+  void
+  Transfer::from(elle::String const& target)
+  {
+    // Connect to Etoile.
+    Transfer::connect();
+
+    // Initialize the progress to zero and track the identifier.
+    // XXX etoile::gear::Identifier root(Transfer::from_progress(0));
+
+    // XXX Ward ward(root);
+
+    // Traverse the Infinit network from the root.
+    Transfer::from_traverse(etoile::path::Way(elle::system::path::separator),
+                            target);
+
+    // Store the root directory.
+    // XXX ward.release();
+  }
+
+  void
+  Transfer::to_update(elle::Natural64 const size)
+  {
+    etoile::path::Way root("/");
+
+    // Resolve the root directory.
+    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(root));
+
+    // Load the directory.
+    etoile::gear::Identifier directory(Transfer::rpcs->directoryload(chemin));
+
+    Ward ward_directory(directory);
+
+    // Set the attribute.
+    Transfer::rpcs->attributesset(directory,
+                                  "infinit:transfer:size", elle::sprint(size));
+
+    // Store the directory.
+    Transfer::rpcs->directorystore(directory);
+
+    ward_directory.release();
+  }
+
+  void
+  Transfer::to_attach(etoile::gear::Identifier& object,
+                      elle::String const& path)
   {
     etoile::path::Slab name;
     etoile::path::Way way(etoile::path::Way(path), name);
@@ -179,8 +383,8 @@ namespace satellite
   }
 
   elle::Natural64
-  Transfer::create(elle::String const& source,
-                   elle::String const& target)
+  Transfer::to_create(elle::String const& source,
+                      elle::String const& target)
   {
     // Create file.
     etoile::gear::Identifier file(Transfer::rpcs->filecreate());
@@ -188,7 +392,7 @@ namespace satellite
     Ward ward_file(file);
 
     // Attach the file to the hierarchy.
-    Transfer::attach(file, target);
+    Transfer::to_attach(file, target);
 
     // Write the source file's content into the Infinit file freshly created.
     std::streamsize N = 5242880;
@@ -209,6 +413,8 @@ namespace satellite
         offset += data.size;
       }
 
+    stream.close();
+
     delete[] buffer;
 
     // Store file.
@@ -222,7 +428,7 @@ namespace satellite
   }
 
   elle::Natural64
-  Transfer::dig(elle::String const& path)
+  Transfer::to_dig(elle::String const& path)
   {
     // Create directory.
     etoile::gear::Identifier subdirectory(Transfer::rpcs->directorycreate());
@@ -230,7 +436,7 @@ namespace satellite
     Ward ward_subdirectory(subdirectory);
 
     // Attach the directory to the hierarchy.
-    Transfer::attach(subdirectory, path);
+    Transfer::to_attach(subdirectory, path);
 
     // Store subdirectory.
     Transfer::rpcs->directorystore(subdirectory);
@@ -244,8 +450,8 @@ namespace satellite
   }
 
   elle::Natural64
-  Transfer::symlink(elle::String const& source,
-                    elle::String const& target)
+  Transfer::to_symlink(elle::String const& source,
+                       elle::String const& target)
   {
     // Create symlink.
     etoile::gear::Identifier link(Transfer::rpcs->linkcreate());
@@ -253,7 +459,7 @@ namespace satellite
     Ward ward_link(link);
 
     // Attach the link to the hierarchy.
-    Transfer::attach(link, target);
+    Transfer::to_attach(link, target);
 
     etoile::path::Way way(boost::filesystem::read_symlink(source).string());
 
@@ -267,15 +473,6 @@ namespace satellite
     ward_link.release();
 
     return (way.path.length());
-  }
-
-  void
-  Transfer::from(elle::String const& target)
-  {
-    // Connect to Etoile.
-    Transfer::connect();
-
-    // XXX
   }
 
   void
@@ -296,9 +493,8 @@ namespace satellite
 
         ELLE_TRACE("root %s", root.c_str());
         ELLE_TRACE("link %s", base.c_str());
-        return;
 
-        size += Transfer::symlink(source, base);
+        size += Transfer::to_symlink(source, base);
       }
     else if (boost::filesystem::is_directory(path) == true)
       {
@@ -312,7 +508,7 @@ namespace satellite
         boost::filesystem::recursive_directory_iterator iterator(source);
         boost::filesystem::recursive_directory_iterator end;
 
-        size += Transfer::dig(base);
+        size += Transfer::to_dig(base);
 
         for (; iterator != end; ++iterator)
           {
@@ -325,7 +521,7 @@ namespace satellite
 
                 ELLE_TRACE("link %s", link.c_str());
 
-                size += Transfer::symlink(iterator->path().string(), link);
+                size += Transfer::to_symlink(iterator->path().string(), link);
               }
             else if (boost::filesystem::is_regular_file(
                        iterator->path()) == true)
@@ -335,7 +531,7 @@ namespace satellite
 
                 ELLE_TRACE("file %s", file.c_str());
 
-                size += Transfer::create(iterator->path().string(), file);
+                size += Transfer::to_create(iterator->path().string(), file);
               }
             else if (boost::filesystem::is_directory(iterator->path()) == true)
               {
@@ -344,7 +540,7 @@ namespace satellite
 
                 ELLE_TRACE("directory %s", directory.c_str());
 
-                size += Transfer::dig(directory);
+                size += Transfer::to_dig(directory);
               }
             else
               throw std::runtime_error("unknown object type");
@@ -359,12 +555,12 @@ namespace satellite
         ELLE_TRACE("root %s", root.c_str());
         ELLE_TRACE("file %s", base.c_str());
 
-        size += Transfer::create(source, base);
+        size += Transfer::to_create(source, base);
       }
     else
       throw std::runtime_error("unknown object type");
 
-    Transfer::update(size);
+    Transfer::to_update(size);
   }
 
   void
@@ -533,8 +729,6 @@ namespace satellite
       boost::algorithm::trim_right_copy_if(
         boost::filesystem::absolute(path).string(),
         boost::is_any_of("/"));
-
-    std::cout << path << std::endl;
 
     // trigger the operation.
     switch (operation)

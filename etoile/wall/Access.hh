@@ -19,10 +19,6 @@ namespace etoile
     {
     public:
       /// The access record associated with the given subject.
-      ///
-      /// Use carefully as a pointer to the target record is
-      /// returned. should this record be destroyed by another actor's
-      /// operation, accessing it could make the system crash.
       static
       nucleus::neutron::Record
       lookup(gear::Identifier const&,
@@ -32,6 +28,7 @@ namespace etoile
       /// Use carefully as a set of pointers to the target records is
       /// returned. should one of the records be destroyed by another
       /// actor's operation, accessing it could make the system crash.
+      /// XXX[should not be the case in the future though]
       static
       nucleus::neutron::Range<nucleus::neutron::Record>
       consult(gear::Identifier const&,

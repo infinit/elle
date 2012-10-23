@@ -95,7 +95,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -129,35 +130,6 @@ namespace etoile
         if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
       }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this application locks the given link.
-    ///
-    /// the method returns true if the lock has been acquired or false
-    /// otherwise.
-    ///
-    elle::Status        Link::Lock(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Lock()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method releases a previously locked link.
-    ///
-    elle::Status        Link::Release(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Release()");
-
-      // XXX to implement.
 
       return elle::Status::Ok;
     }
@@ -197,16 +169,12 @@ namespace etoile
       }
     }
 
-    ///
-    /// this method returns the way pointed by this link.
-    ///
-    elle::Status        Link::Resolve(
-                          const gear::Identifier&               identifier,
-                          path::Way&                            way)
+    path::Way
+    Link::resolve(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Link*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Link* context;
 
       ELLE_TRACE_SCOPE("Resolve()");
 
@@ -216,6 +184,8 @@ namespace etoile
 
       // retrieve the scope.
       scope = actor->scope;
+
+      path::Way target;
 
       // Declare a critical section.
       {
@@ -227,11 +197,11 @@ namespace etoile
 
         // apply the resolve automaton on the context.
         if (automaton::Link::Resolve(*context,
-                                     way) == elle::Status::Error)
+                                     target) == elle::Status::Error)
           escape("unable to resolve the link");
       }
 
-      return elle::Status::Ok;
+      return (target);
     }
 
     ///
@@ -258,7 +228,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -436,7 +407,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)

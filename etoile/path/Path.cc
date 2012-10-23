@@ -146,8 +146,7 @@ namespace etoile
                                       entry) == elle::Status::Error)
             {
               // discard the directory.
-              if (wall::Directory::Discard(identifier) == elle::Status::Error)
-                escape("unable to discard the directory");
+              wall::Directory::discard(identifier);
 
               escape("unable to lookup the slice");
             }
@@ -158,8 +157,7 @@ namespace etoile
             address = entry->address;
 
           // discard the directory.
-          if (wall::Directory::Discard(identifier) == elle::Status::Error)
-            escape("unable to discard the directory");
+          wall::Directory::discard(identifier);
 
           // if there is no such entry, abort.
           //

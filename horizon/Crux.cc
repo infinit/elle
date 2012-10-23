@@ -69,7 +69,7 @@ namespace horizon
 
     etoile::gear::Identifier identifier;
     ELLE_DEBUG("load the object")
-      identifier = etoile::wall::Object::Load(chemin);
+      identifier = etoile::wall::Object::load(chemin);
 
     Ward ward(identifier);
 
@@ -86,7 +86,7 @@ namespace horizon
       return (result);
 
     // Discard the object.
-    etoile::wall::Object::Discard(identifier);
+    etoile::wall::Object::discard(identifier);
 
     ward.release();
 
@@ -113,7 +113,7 @@ namespace horizon
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(handle->identifier));
+      etoile::wall::Object::information(handle->identifier));
 
     // Set the uid by first looking into the users map. if no local
     // user is found, the 'somebody' user is used instead,
@@ -179,8 +179,6 @@ namespace horizon
       {
       case nucleus::neutron::Genre::file:
         {
-          nucleus::neutron::Trait const* trait;
-
           stat->st_mode = S_IFREG;
 
           // If the user has the read permission, allow her to read
@@ -197,19 +195,29 @@ namespace horizon
               nucleus::neutron::permissions::write)
             stat->st_mode |= S_IWUSR;
 
+          // XXX
+          printf("HERE\n");
+
           // Retrieve the attribute.
-          if (etoile::wall::Attributes::Get(handle->identifier,
-                                            "perm::exec",
-                                            trait) == elle::Status::Error)
-            return (-EPERM);
+          nucleus::neutron::Trait trait(
+            etoile::wall::Attributes::get(handle->identifier, "perm::exec"));
+
+          // XXX
+          trait.Dump();
+
+          // XXX
+          printf("HERE\n");
 
           // Check the trait.
-          if ((trait != nullptr) &&
-              (trait->value == "true"))
+          if ((trait != nucleus::neutron::Trait::Null) &&
+              (trait.value == "true"))
             {
               // Active the exec bit.
               stat->st_mode |= S_IXUSR;
             }
+
+          // XXX
+          printf("HERE\n");
 
           break;
         }
@@ -349,24 +357,16 @@ namespace horizon
 
     while (true)
       {
-        nucleus::neutron::Range<nucleus::neutron::Entry> range;
-        nucleus::neutron::Range<nucleus::neutron::Entry>::Scoutor scoutor;
-
         // Read the directory entries.
-        if (etoile::wall::Directory::Consult(
-              handle->identifier,
-              static_cast<nucleus::neutron::Index>(offset),
-              Crux::Range,
-              range) == elle::Status::Error)
-          return (-EPERM);
+        nucleus::neutron::Range<nucleus::neutron::Entry> range(
+          etoile::wall::Directory::consult(
+            handle->identifier,
+            static_cast<nucleus::neutron::Index>(offset),
+            Crux::Range));
 
         // Add the entries by using the filler() function.
-        for (scoutor = range.container.begin();
-             scoutor != range.container.end();
-             scoutor++)
+        for (auto entry: range)
           {
-            nucleus::neutron::Entry* entry = *scoutor;
-
             // Fill the buffer with filler().
             if (filler(buffer, entry->name.c_str(), nullptr, next) == 1)
               return (0);
@@ -397,9 +397,7 @@ namespace horizon
     std::unique_ptr<Handle> handle(reinterpret_cast<Handle*>(info->fh));
 
     // Discard the object.
-    if (etoile::wall::Directory::Discard(
-          handle->identifier) == elle::Status::Error)
-      return (-EPERM);
+    etoile::wall::Directory::discard(handle->identifier);
 
     // Reset the file handle, just to make sure it is not used
     // anymore.
@@ -549,7 +547,7 @@ namespace horizon
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(subdirectory));
+      etoile::wall::Object::information(subdirectory));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -598,7 +596,7 @@ namespace horizon
       return (0);
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
@@ -611,7 +609,7 @@ namespace horizon
       goto _access;
 
     // Retrieve information on the object.
-    abstract = etoile::wall::Object::Information(identifier);
+    abstract = etoile::wall::Object::information(identifier);
 
     // Check if the permissions match the mask for execution.
     if (mask & X_OK)
@@ -620,17 +618,12 @@ namespace horizon
           {
           case nucleus::neutron::Genre::file:
             {
-              nucleus::neutron::Trait const* trait;
-
-              // Get the perm::exec attribute
-              if (etoile::wall::Attributes::Get(identifier,
-                                                "perm::exec",
-                                                trait) == elle::Status::Error)
-                return (-EPERM);
+              nucleus::neutron::Trait trait(
+                etoile::wall::Attributes::get(identifier, "perm::exec"));
 
               // Check the trait.
-              if (!((trait != nullptr) &&
-                    (trait->value == "true")))
+              if (!((trait != nucleus::neutron::Trait::Null) &&
+                    (trait.value == "true")))
                 goto _access;
 
               break;
@@ -647,17 +640,12 @@ namespace horizon
             }
           case nucleus::neutron::Genre::link:
             {
-              nucleus::neutron::Trait const* trait;
-
-              // Get the perm::exec attribute
-              if (etoile::wall::Attributes::Get(identifier,
-                                                "perm::exec",
-                                                trait) == elle::Status::Error)
-                return (-EPERM);
+              nucleus::neutron::Trait trait(
+                etoile::wall::Attributes::get(identifier, "perm::exec"));
 
               // Check the trait.
-              if (!((trait != nullptr) &&
-                    (trait->value == "true")))
+              if (!((trait != nucleus::neutron::Trait::Null) &&
+                    (trait.value == "true")))
                 goto _access;
 
               break;
@@ -682,7 +670,7 @@ namespace horizon
       }
 
     // Discard the object.
-    etoile::wall::Object::Discard(identifier);
+    etoile::wall::Object::discard(identifier);
 
     ward.release();
 
@@ -693,7 +681,7 @@ namespace horizon
     // identifier must be discarded while EACCES must be returned.
 
     // Discard the identifier.
-    etoile::wall::Object::Discard(identifier);
+    etoile::wall::Object::discard(identifier);
 
     return (-EACCES);
   }
@@ -738,13 +726,13 @@ namespace horizon
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(identifier));
+      etoile::wall::Object::information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -802,10 +790,8 @@ namespace horizon
           case nucleus::neutron::Genre::file:
             {
               // Set the perm::exec attribute
-              if (etoile::wall::Attributes::Set(identifier,
-                                                "perm::exec",
-                                                "true") == elle::Status::Error)
-                return (-EPERM);
+              etoile::wall::Attributes::set(identifier,
+                                            "perm::exec", "true");
 
               break;
             }
@@ -860,13 +846,13 @@ namespace horizon
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(identifier));
+      etoile::wall::Object::information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -877,11 +863,9 @@ namespace horizon
       return (-EACCES);
 
     // Set the attribute.
-    if (etoile::wall::Attributes::Set(identifier,
-                                      elle::String(name),
-                                      elle::String(value, size)) ==
-        elle::Status::Error)
-      return (-EPERM);
+    etoile::wall::Attributes::set(identifier,
+                                  elle::String(name),
+                                  elle::String(value, size));
 
     // Store the object.
     etoile::wall::Object::store(identifier);
@@ -902,39 +886,26 @@ namespace horizon
     ELLE_TRACE_FUNCTION(path, name, value, size);
 
     etoile::path::Way way(path);
-    nucleus::neutron::Trait const* trait;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
     // Get the attribute.
-    if (etoile::wall::Attributes::Get(identifier,
-                                      elle::String(name),
-                                      trait) == elle::Status::Error)
-      return (-EPERM);
-
-    // A unique_ptr is used for creating a copy of the trait (if necessary)
-    // so as to release it right when leaving the scope. This way, one can
-    // discard the object but later return some of the trait's property such
-    // as its length.
-    //
-    // Without such a copy, the trait (i.e pointer) could be invalid since
-    // the object's memory could have been released on discarding.
-    std::unique_ptr<nucleus::neutron::Trait> t(
-      trait != nullptr ? new nucleus::neutron::Trait(*trait) : nullptr);
+    nucleus::neutron::Trait trait(
+      etoile::wall::Attributes::get(identifier, elle::String(name)));
 
     // Discard the object.
-    etoile::wall::Object::Discard(identifier);
+    etoile::wall::Object::discard(identifier);
 
     ward.release();
 
     // Test if a trait has been found.
-    if (trait == nullptr)
+    if (trait == nucleus::neutron::Trait::Null)
       return (-ENOATTR);
 
     // If the size is null, it means that this call must be
@@ -942,15 +913,15 @@ namespace horizon
     // value.
     if (size == 0)
       {
-        return (t->value.length());
+        return (trait.value.length());
       }
     else
       {
         // Otherwise, copy the trait value in the value buffer.
-        ::memcpy(value, t->value.data(), t->value.length());
+        ::memcpy(value, trait.value.data(), trait.value.length());
 
         // Return the length of the value.
-        return (t->value.length());
+        return (trait.value.length());
       }
   }
 
@@ -963,40 +934,31 @@ namespace horizon
     ELLE_TRACE_FUNCTION(path, list, size);
 
     etoile::path::Way way(path);
-    nucleus::neutron::Range<nucleus::neutron::Trait> range;
-    nucleus::neutron::Range<nucleus::neutron::Trait>::Scoutor scoutor;
     size_t  offset;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
     // Fetch the attributes.
-    if (etoile::wall::Attributes::Fetch(identifier,
-                                        range) == elle::Status::Error)
-      return (-EPERM);
+    nucleus::neutron::Range<nucleus::neutron::Trait> range(
+      etoile::wall::Attributes::fetch(identifier));
 
     // If the size is zero, this call must return the size required
     // to store the list.
     if (size == 0)
       {
-        for (scoutor = range.container.begin();
-             scoutor != range.container.end();
-             scoutor++)
-          {
-            nucleus::neutron::Trait* trait = *scoutor;
-
-            // Compute the size.
-            size = size + trait->name.length() + 1;
-          }
+        // Compute the size.
+        for (auto trait: range)
+          size = size + trait->name.length() + 1;
 
         // Discard the object, now that it will no longer be
         // accessed.
-        etoile::wall::Object::Discard(identifier);
+        etoile::wall::Object::discard(identifier);
 
         ward.release();
 
@@ -1006,12 +968,10 @@ namespace horizon
       {
         // Otherwise, go through the attributes and concatenate
         // their names.
-        for (scoutor = range.container.begin(), offset = 0;
-             scoutor != range.container.end();
-             scoutor++)
-          {
-            nucleus::neutron::Trait* trait = *scoutor;
+        offset = 0;
 
+        for (auto trait: range)
+          {
             // Concatenate the name.
             ::strcpy(list + offset,
                      trait->name.c_str());
@@ -1022,7 +982,7 @@ namespace horizon
 
         // Discard the object now that it will no longer be
         // accessed.
-        etoile::wall::Object::Discard(identifier);
+        etoile::wall::Object::discard(identifier);
 
         ward.release();
 
@@ -1044,13 +1004,13 @@ namespace horizon
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the object.
-    etoile::gear::Identifier identifier(etoile::wall::Object::Load(chemin));
+    etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
     Ward ward(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(identifier));
+      etoile::wall::Object::information(identifier));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)
@@ -1136,10 +1096,8 @@ namespace horizon
 
           // grant the exec permission to the 'everybody' group by
           // creating the attribute 'perm::exec'.
-          if (etoile::wall::Attributes::Set(link,
-                                            "perm::exec",
-                                            "true") == elle::Status::Error)
-            return (-EPERM);
+          etoile::wall::Attributes::set(link,
+                                        "perm::exec", "true");
 
           break;
         }
@@ -1193,7 +1151,6 @@ namespace horizon
 
     etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
-    etoile::path::Way         target;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
@@ -1215,8 +1172,7 @@ namespace horizon
       return (-EACCES);
 
     // Resolve the link.
-    if (etoile::wall::Link::Resolve(identifier, target) == elle::Status::Error)
-      return (-EPERM);
+    etoile::path::Way target(etoile::wall::Link::resolve(identifier));
 
     // Discard the link.
     if (etoile::wall::Link::Discard(identifier) == elle::Status::Error)
@@ -1284,13 +1240,8 @@ namespace horizon
 
     // If the file has the exec bit, add the perm::exec attribute.
     if (mode & S_IXUSR)
-      {
-        // Set the perm::exec attribute
-        if (etoile::wall::Attributes::Set(file,
-                                          "perm::exec",
-                                          "true") == elle::Status::Error)
-          return (-EPERM);
-      }
+      etoile::wall::Attributes::set(file,
+                                    "perm::exec", "true");
 
 
     // FIXME: do not re-parse the descriptor every time.
@@ -1465,7 +1416,6 @@ namespace horizon
                         static_cast<elle::Natural64>(offset), info);
 
     Handle*           handle;
-    elle::standalone::Region      region;
 
     // Retrieve the handle.
     handle = reinterpret_cast<Handle*>(info->fh);
@@ -1481,17 +1431,16 @@ namespace horizon
       return (-EACCES);
 
     // Read the file.
-    if (etoile::wall::File::Read(
-          handle->identifier,
-          static_cast<nucleus::neutron::Offset>(offset),
-          static_cast<nucleus::neutron::Size>(size),
-          region) == elle::Status::Error)
-      return (-EPERM);
+    elle::standalone::Region data(
+      etoile::wall::File::read(
+        handle->identifier,
+        static_cast<nucleus::neutron::Offset>(offset),
+        static_cast<nucleus::neutron::Size>(size)));
 
     // Copy the data to the output buffer.
-    ::memcpy(buffer, region.contents, region.size);
+    ::memcpy(buffer, data.contents, data.size);
 
-    return (region.size);
+    return (data.size);
   }
 
   /// This method modifies the size of a file.
@@ -1715,7 +1664,7 @@ namespace horizon
 
         // Load the object even though we don't know its genre as we
         // do not need to know to perform this operation.
-        identifier_object = etoile::wall::Object::Load(chemin);
+        identifier_object = etoile::wall::Object::load(chemin);
 
         Ward ward_object(identifier_object);
 
@@ -1829,13 +1778,13 @@ namespace horizon
 
     // Load the object.
     etoile::gear::Identifier identifier_child(
-      etoile::wall::Object::Load(chemin_child));
+      etoile::wall::Object::load(chemin_child));
 
     Ward ward_child(identifier_child);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
-      etoile::wall::Object::Information(identifier_child));
+      etoile::wall::Object::information(identifier_child));
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(abstract.keys.owner) == elle::Status::Error)

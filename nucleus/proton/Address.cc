@@ -24,6 +24,15 @@ namespace nucleus
     {
     }
 
+    Address::Address(Address const& other):
+      _type(other._type),
+      _network(other._network),
+      _family(other._family),
+      _component(other._component),
+      _digest(other._digest)
+    {
+    }
+
     Address::Address(Type const type):
       _type(type)
     {
@@ -41,15 +50,6 @@ namespace nucleus
             // addresses
           }
         }
-    }
-
-    Address::Address(Address const& other):
-      _type(other._type),
-      _network(other._network),
-      _family(other._family),
-      _component(other._component),
-      _digest(other._digest)
-    {
     }
 
 //

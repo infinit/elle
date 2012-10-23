@@ -24,17 +24,14 @@ namespace etoile
 // ---------- static methods --------------------------------------------------
 //
 
-    ///
-    /// this method sets an attribute for the given object.
-    ///
-    elle::Status        Attributes::Set(
-                          const gear::Identifier&               identifier,
-                          const elle::String&                   name,
-                          const elle::String&                   value)
+    void
+    Attributes::set(gear::Identifier const& identifier,
+                    elle::String const& name,
+                    elle::String const& value)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_SCOPE("Set()");
 
@@ -47,7 +44,8 @@ namespace etoile
 
       // Declare a critical section.
       {
-        reactor::Lock lock(elle::concurrency::scheduler(), scope->mutex.write());
+        reactor::Lock lock(elle::concurrency::scheduler(),
+                           scope->mutex.write());
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
@@ -62,26 +60,15 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-
-      return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns the caller the trait associated with
-    /// the given name.
-    ///
-    /// note that this method should be used careful as a pointer to the
-    /// target trait is returned. should this trait be destroyed by another
-    /// actor's operation, accessing it could make the system crash.
-    ///
-    elle::Status        Attributes::Get(
-                          const gear::Identifier&               identifier,
-                          const elle::String&                   name,
-                          nucleus::neutron::Trait const*& trait)
+    nucleus::neutron::Trait
+    Attributes::get(gear::Identifier const& identifier,
+                    elle::String const& name)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_SCOPE("Get()");
 
@@ -91,6 +78,8 @@ namespace etoile
 
       // retrieve the scope.
       scope = actor->scope;
+
+      nucleus::neutron::Trait const* trait = nullptr;
 
       // Declare a critical section.
       {
@@ -107,24 +96,19 @@ namespace etoile
           escape("unable to get the attribute");
       }
 
-      return elle::Status::Ok;
+      // Return the trait according to the automaton's result.
+      if (trait != nullptr)
+        return (*trait);
+      else
+        return (nucleus::neutron::Trait::Null);
     }
 
-    ///
-    /// this method returns all the attributes.
-    ///
-    /// note that this method should be used careful as a set of pointers to
-    /// the target traits is returned. should one of the traits be destroyed
-    /// by another actor's operation, accessing it could make the system crash.
-    ///
-    elle::Status        Attributes::Fetch(
-                          const gear::Identifier&               identifier,
-                          nucleus::neutron::Range<
-                            nucleus::neutron::Trait>& range)
+    nucleus::neutron::Range<nucleus::neutron::Trait>
+    Attributes::fetch(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::Object*     context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::Object* context;
 
       ELLE_TRACE_SCOPE("Fetch()");
 
@@ -134,6 +118,8 @@ namespace etoile
 
       // retrieve the scope.
       scope = actor->scope;
+
+      nucleus::neutron::Range<nucleus::neutron::Trait> range;
 
       // Declare a critical section.
       {
@@ -149,7 +135,7 @@ namespace etoile
           escape("unable to fetch the attribute");
       }
 
-      return elle::Status::Ok;
+      return (range);
     }
 
     ///

@@ -47,11 +47,11 @@ namespace nucleus
       //
       // types
       //
-      typedef typename T::Symbol                        Symbol;
+      typedef typename T::Symbol Symbol;
 
-      typedef std::list<T*>                             Container;
-      typedef typename Container::iterator              Iterator;
-      typedef typename Container::const_iterator        Scoutor;
+      typedef std::list<T*> Container;
+      typedef typename Container::iterator Iterator;
+      typedef typename Container::const_iterator Scoutor;
 
       //
       // constructors & destructors
@@ -100,6 +100,11 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // iterable
+      Scoutor
+      begin() const;
+      Scoutor
+      end() const;
 
       //
       // attributes

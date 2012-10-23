@@ -29,17 +29,15 @@ namespace etoile
       static elle::Status       Load(const path::Chemin&,
                                      gear::Identifier&);
 
-      static elle::Status       Lock(const gear::Identifier&);
-      static elle::Status       Release(const gear::Identifier&);
-
       /// Bind a target way to the link.
       static
       void
       bind(gear::Identifier const& identifier,
            path::Way const& target);
-
-      static elle::Status       Resolve(const gear::Identifier&,
-                                        path::Way&);
+      /// Return the path to which the link is bound.
+      static
+      path::Way
+      resolve(gear::Identifier const& identifier);
 
       static elle::Status       Discard(const gear::Identifier&);
 

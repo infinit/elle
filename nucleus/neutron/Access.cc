@@ -312,13 +312,13 @@ namespace nucleus
     typename Range<Record>::Scoutor
     Access::begin() const
     {
-      return (this->_range.container.begin());
+      return (this->_range.begin());
     }
 
     typename Range<Record>::Scoutor
     Access::end() const
     {
-      return (this->_range.container.end());
+      return (this->_range.end());
     }
 
   }

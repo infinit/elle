@@ -67,13 +67,14 @@ namespace nucleus
     public:
       Address(); // XXX[to deserialize]
       ELLE_SERIALIZE_CONSTRUCT(Address) {}
-      Address(Type const type);
       template <typename... T>
       Address(Network const& network,
               const Family&,
               const neutron::Component&,
               const T&...);
       Address(Address const& other);
+    private:
+      Address(Type const type);
 
       //
       // methods
