@@ -10,6 +10,13 @@ import meta.mail
 import metalib
 import pythia
 
+class Share(Page):
+	__pattern__ = "/user/share"
+
+	def POST(self):
+		if self.notifier is not None:
+			self.notifier.send_notify({**self.data})
+
 class Search(Page):
     __pattern__ = "/user/search"
 
@@ -53,9 +60,9 @@ class AddSwagger(Page):
             if "email" in self.data:
                 user = database.users().find_and_modify(
                     {"_id": pymongo.objectid.ObjectId(self.user["_id"])},
-                    {"$push": {"pending_swaggers": self.data["email"]}},
-                    True #upsert
+                    {"$addToSet": {"pending_swaggers": self.data["email"]}},
                 )
+                # XXX check for already exists.
                 return self.success({"what" : "pending"})
             elif "_id" in self.data and \
                     self.user["_id"] != self.data["_id"]:
@@ -63,8 +70,7 @@ class AddSwagger(Page):
                 if swagger:
                     user = database.users().find_and_modify(
                         {"_id" : pymongo.objectid.ObjectId(self.user["_id"])},
-                        {"$push" : {"swaggers" : self.data["_id"]}},
-                        True # upsert
+                        {"$addToSet" : {"swaggers" : self.data["_id"]}},
                     )
                 else:
                     return self.error("don't try to fake the swag")
@@ -224,23 +230,6 @@ class Self(Page):
             'public_key': self.user['public_key'],
             'accounts': self.user['accounts'],
         })
-
-class Debug(Page):
-    """
-    This class is for debug purpose only
-    """
-
-    __pattern__ = "/debug"
-
-    def POST(self):
-        import pprint
-        msg = self.data
-        pprint.pprint(self.data)
-        if self.notifier is not None:
-            self.notifier.send_notify(msg)
-        else:
-            return self.error("notifier is not ready")
-        return self.success({})
 
 class One(Page):
     """
