@@ -218,16 +218,16 @@ extern "C"
       return ret;
     }
 
-    gap_Status
-    gap_BindOnBite(gap_State* state,
-                   OnBite callback)
-    {
-      __TO_CPP(state)->attach_callback<gap_Bite>(
-        std::bind(callback, state, std::placeholders::_1)
-        );
+    // gap_Status
+    // gap_BindOnBite(gap_State* state,
+    //                OnBite callback)
+    // {
+    //   __TO_CPP(state)->attach_callback<gap_Bite>(
+    //     std::bind(callback, state, std::placeholders::_1)
+    //     );
 
-      return gap_ok;
-    }
+    //   return gap_ok;
+    // }
 
     // gap_Status
     // gap_trophonius_register_friend_request_notification_callback(gap_State *state,

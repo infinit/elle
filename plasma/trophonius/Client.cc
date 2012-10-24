@@ -58,47 +58,53 @@ namespace plasma
 
       // Use callback function.
       (callback)(notif);
+
+      delete dic;
     }
 
-    // ////////////////////////////////
-    // // FileTransferHandler.
-    // void
-    // Client::FileTransferHandler::call(json::Dictionary const& dic)
-    // {
-    //   // Desierialize item 'à la mano' from json dictionnary.
-    //   FileTransferNotification * notif = new FileTransferNotification();
+    ////////////////////////////////
+    // FileTransferHandler.
+    void
+    Client::FileTransferHandler::call(json::Dictionary const* dic)
+    {
+      // Desierialize item 'à la mano' from json dictionnary.
+      FileTransferNotification * notif = new FileTransferNotification();
 
-    //   // The unique id of the file transfer.
-    //   notif->id = dic["transaction_id"].as_integer();
+      // The unique id of the file transfer.
+      notif->transaction_id = (*dic)["transaction_id"].as_integer();
 
-    //   std::string temp = dic["sender_id"].as_string();
-    //   notif->sender_id = temp.c_str();
+      std::string temp = (*dic)["sender_id"].as_string();
+      notif->sender_id = temp.c_str();
 
-    //   temp = dic["file_name"].as_string();
-    //   notif->file_name = temp.c_str();
+      temp = (*dic)["file_name"].as_string();
+      notif->file_name = temp.c_str();
 
-    //   notif.file_size = dic["file_size"].as_integer();
+      notif->file_size = (*dic)["file_size"].as_integer();
 
-    //   // Use callback function.
-    //   (callback)(notif);
-    // }
+      // Use callback function.
+      (callback)(notif);
 
-    // ////////////////////////////////
-    // // FileTransferStatusHandler.
-    // void
-    // Client::FileTransferStatusHandler::call(json::Dictionary const& dic)
-    // {
-    //   FileTransferStatusNotification * notif = new FileTransferStatusNotification();
+      delete dic;
+    }
 
-    //   // The unique id of the file transfer.
-    //   notif->id = dic["transaction_id"].as_integer();
+    ////////////////////////////////
+    // FileTransferStatusHandler.
+    void
+    Client::FileTransferStatusHandler::call(json::Dictionary const* dic)
+    {
+      FileTransferStatusNotification * notif = new FileTransferStatusNotification();
 
-    //   // The unique id of the file transfer.
-    //   notif->id = dic["status"].as_integer();
+      // The unique id of the file transfer.
+      notif->transaction_id = (*dic)["transaction_id"].as_integer();
 
-    //   // Use callback function.
-    //   (callback)(notif);
-    // }
+      // The unique id of the file transfer.
+      notif->status = (*dic)["status"].as_integer();
+
+      // Use callback function.
+      (callback)(notif);
+
+      delete dic;
+    }
 
     // ////////////////////////////////
     // // RefreshFriendsHandler.
@@ -195,6 +201,7 @@ namespace plasma
       // May raise an exception.
       elle::serialize::OutputJSONArchive(request_stream, connection_request);
 
+      // Add '\n' to request.
       request_stream << std::endl;
 
       boost::system::error_code err;

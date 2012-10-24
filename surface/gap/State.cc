@@ -303,19 +303,30 @@ namespace surface
     void
     State::ask_notif(int i)
     {
-      // créer un flux de sortie
-      std::ostringstream oss;
-      // écrire un nombre dans le flux
-      oss << i;
-      // récupérer une chaîne de caractères
-      std::string notification_id = oss.str();
+      json::Dictionary request;
+      request["recipient_id"] = this->_me._id;
+      request["notification_id"] = i;
 
-      json::Dictionary request{std::map<std::string, std::string>
+      switch(i)
         {
-          {"notification_id", notification_id}
-        }};
+          case 0:
+            request["debug"] = "U mad ?";
+            break;
+          case 1:
+            request["sender_id"] = this->_me._id;
+            request["transaction_id"] = 875456789;
+            request["file_name"] = "[Childporn] Fabien 28/10/1992.png";
+            request["file_size"] = 8294624;
+            break;
+          case 2:
+            request["transaction_id"] = 875456789;
+            request["status"] = 1;
+            break;
+          default:
+            break;
+        }
 
-        this->_meta->debug_ask_notif(request);
+      this->_meta->debug_ask_notif(request);
     }
 
     void
@@ -345,25 +356,31 @@ namespace surface
             new plasma::trophonius::Client::BiteHandler(callback)));
       }
 
-    // template<>
-    // void
-    // State::attach_callback<register_friend_struct>(std::function<void(register_friend_struct const*)> callback)
-    // {
-    //   if(_notification_handler.find(1) != _notification_handler.end())
-    //     return;
+    template<>
+    void
+    State::attach_callback<gap_FileTransfer>(std::function<void(gap_FileTransfer const*)> callback)
+    {
+      if(_notification_handler.find(1) != _notification_handler.end())
+        return;
 
-    //   _notification_handler[1] = new plasma::trophonius::Client::FriendRequestHandler(callback);
-    // }
+      _notification_handler.insert(
+        std::make_pair(
+          1,
+          new plasma::trophonius::Client::FileTransferHandler(callback)));
+     }
 
-    // template<>
-    // void
-    // State::attach_callback<register_friend_status_struct>(std::function<void(register_friend_status_struct const*)> callback)
-    // {
-    //   if(_notification_handler.find(2) != _notification_handler.end())
-    //     return;
+    template<>
+    void
+    State::attach_callback<gap_FileTransferStatus>(std::function<void(gap_FileTransferStatus const*)> callback)
+    {
+      if(_notification_handler.find(2) != _notification_handler.end())
+        return;
 
-    //   _notification_handler[2] = new plasma::trophonius::Client::FriendRequestStatusHandler(callback);
-    // }
+      _notification_handler.insert(
+        std::make_pair(
+          2,
+          new plasma::trophonius::Client::FileTransferStatusHandler(callback)));
+    }
 
     template<typename T>
     void

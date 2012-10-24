@@ -40,6 +40,9 @@ class State:
             'logout',
             'connect',
             'poll',
+            'OnBite',
+            'OnFileTransfer',
+            'OnFileTransferStatus',
         ]
 
         def make_method(m):
@@ -92,12 +95,8 @@ class State:
     def send_message(self, recipient_id, message):
         self._call('send_message', '1234567890123456789012345678901234567890', 'biet')
 
-    def adk_notif(self, id):
-        self._call('akd_notif', id)
-
-    def bind_bite_notification(self, notif):
-        self.notif = notif
-        self._call('bind_bite_notification', notif)
+    def ask_notif(self, id):
+        self._call('ask_notif', id)
 
 
 if __name__ == "__main__":

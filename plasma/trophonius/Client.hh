@@ -62,10 +62,11 @@ namespace plasma
       // // Generate handler: FriendRequestStatus.
       // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FriendRequestStatus, register_friend_status_struct)
 
-      // // Generate handler: FileTransferHandler.
-      // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransfer)
+      // Generate handler: FileTransferHandler.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransfer, gap_FileTransfer)
 
-      // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus)
+      // Generate handler: FileTransferStatusHandler
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus, gap_FileTransferStatus)
 
       // // Generate handler: RefreshFriendsHandler.
       // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(RefreshFriends)
