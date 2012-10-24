@@ -166,7 +166,7 @@ class MetaTropho(basic.LineReceiver):
 			_recipient = js_req["recipient_id"]
 			if isinstance(_recipient, list):
 				recipients_ids = _recipient
-			elif isinstance(_recipient, str):
+			elif isinstance(_recipient, str) or isinstance(_recipient, unicode):
 				recipients_ids = [_recipient]
 			self.enqueue(line, recipients_ids)
 		except ValueError as ve:
