@@ -10,34 +10,33 @@
 # include <elle/format/json/fwd.hh>
 # include <elle/log.hh>
 
+# include <plasma/plasma.hh>
+
+# include <elle/HttpClient.hxx>
+
 namespace plasma
 {
   namespace meta
   {
-
-    /// Base class for every response
-    struct Response
-    {
-      bool success;
-      int error_code;
-      std::string error_details;
-    };
-
-    struct LoginResponse : Response
+    struct LoginResponse : plasma::Response
     {
       std::string  token;
       std::string  fullname;
       std::string  email;
       std::string  identity;
+      std::string  _id;
     };
 
-    struct LogoutResponse : Response
+    struct LogoutResponse : plasma::Response
     {};
 
-    struct RegisterResponse : Response
+    struct RegisterResponse : plasma::Response
     {};
 
-    struct UserResponse : Response
+    struct AskNotificationResponse : plasma::Response
+    {};
+
+    struct UserResponse : plasma::Response
     {
       std::string _id;
       std::string fullname;
@@ -45,17 +44,20 @@ namespace plasma
       std::string public_key;
     };
 
-    struct UsersResponse : Response
+    struct UsersResponse : plasma::Response
     {
       std::list<std::string> users;
     };
 
-    struct NetworksResponse : Response
+    struct SendMessageResponse : plasma::Response
+    {};
+
+    struct NetworksResponse : plasma::Response
     {
       std::list<std::string> networks;
     };
 
-    struct NetworkResponse : Response
+    struct NetworkResponse : plasma::Response
     {
       std::string              _id;
       std::string              owner;
@@ -71,17 +73,17 @@ namespace plasma
       std::list<std::string>   users;
     };
 
-    struct CreateNetworkResponse : Response
+    struct CreateNetworkResponse : plasma::Response
     {
       std::string             created_network_id;
     };
 
-    struct UpdateNetworkResponse : Response
+    struct UpdateNetworkResponse : plasma::Response
     {
       std::string             updated_network_id;
     };
 
-    struct NetworkNodesResponse : Response
+    struct NetworkNodesResponse : plasma::Response
     {
       std::string             network_id;
       std::list<std::string>  nodes;
@@ -103,27 +105,6 @@ namespace plasma
       std::string             passport;
     };
 
-    /// Error values.
-    enum class Error
-    {
-      no_error = 0,
-      network_error,
-      invalid_content,
-      server_error,
-      callback_error,
-      errback_error,
-    };
-
-    /// Exception thrown by Client methods
-    class Exception
-      : public std::runtime_error
-    {
-    public:
-      Error const code;
-
-    public:
-      Exception(Error code, std::string const& message);
-    };
 
     /// Callbacks for API calls.
     typedef std::function<void(LoginResponse const&)> LoginCallback;
@@ -139,10 +120,6 @@ namespace plasma
 
     class Client
     {
-    private:
-      struct Impl;
-      Impl* _impl;
-
     public:
       Client(std::string const& server,
              uint16_t port,
@@ -179,6 +156,15 @@ namespace plasma
       update_device(std::string const& _id,
                     std::string const& name);
 
+      SendMessageResponse
+      send_message(std::string const& sender_id,
+                   std::string const& recipient_id,
+                   std::string const& message);
+
+      // DEBUG
+      AskNotificationResponse
+      debug_ask_notif(json::Dictionary const& dic);
+
       NetworkResponse
       network(std::string const& _id);
 
@@ -201,7 +187,6 @@ namespace plasma
                      std::string const* group_block,
                      std::string const* group_address);
 
-
       NetworkAddUserResponse
       network_add_user(std::string const& network_id,
                        std::string const& user_id);
@@ -218,6 +203,8 @@ namespace plasma
                              std::string const* external_ip = nullptr,
                              uint16_t external_port = 0);
 
+
+
     public:
       void token(std::string const& tok);
       std::string const& token() const;
@@ -227,19 +214,12 @@ namespace plasma
       void email(std::string const& str);
 
     private:
-      template<typename T>
-      T _get(std::string const& url);
-      template<typename T>
-      T _post(std::string const& url, json::Object const& req);
-
-      void _request(std::string const& url,
-                    std::string const& method,
-                    std::string const& body,
-                    std::stringstream& response);
+      elle::HttpClient _client;
+      std::string _token;
+      std::string _identity;
+      std::string _email;
     };
-
   }
 }
-
 
 #endif

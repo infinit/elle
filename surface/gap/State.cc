@@ -35,6 +35,12 @@
 
 #include "State.hh"
 
+
+
+#include <signal.h>
+
+
+
 ELLE_LOG_COMPONENT("infinit.surface.gap");
 
 namespace surface
@@ -50,18 +56,24 @@ namespace surface
     Exception::Exception(gap_Status code, std::string const& msg)
       : std::runtime_error(msg)
       , code(code)
-    {}
+    {
+    }
 
     // - State ----------------------------------------------------------------
 
     State::State()
-      : _api{
-          new plasma::meta::Client{
-              common::meta::host(),
-              common::meta::port(),
-              true,
-          }
-      }
+      : _meta{
+      new plasma::meta::Client{
+        common::meta::host(),
+          common::meta::port(),
+          true,
+        }}
+      , _trophonius{
+        new plasma::trophonius::Client{
+          common::trophonius::host(),
+          common::trophonius::port(),
+          true,
+        }}
       , _users{}
       , _files_infos{}
       , _networks{}
@@ -75,11 +87,11 @@ namespace surface
         {
           std::string str;
           std::getline(identity_file, str);
-          this->_api->token(str);
+          this->_meta->token(str);
           std::getline(identity_file, str);
-          this->_api->identity(str);
+          this->_meta->identity(str);
           std::getline(identity_file, str);
-          this->_api->email(str);
+          this->_meta->email(str);
         }
     }
 
@@ -88,8 +100,12 @@ namespace surface
       for (auto& it: this->_networks)
         delete (it).second;
       this->_networks.clear();
-      delete this->_api;
-      this->_api = nullptr;
+
+      delete this->_meta;
+      this->_meta = nullptr;
+
+      delete this->_trophonius;
+      this->_trophonius = nullptr;
     }
 
     void State::refresh_networks()
@@ -171,7 +187,7 @@ namespace surface
       if (it != this->_users.end())
         return *(it->second);
 
-      auto response = this->_api->user(id);
+      auto response = this->_meta->user(id);
       std::unique_ptr<User> user{new User{
           response._id,
           response.fullname,
@@ -191,7 +207,7 @@ namespace surface
           if (pair.second->public_key == public_key)
             return *(pair.second);
         }
-      auto response = this->_api->user_from_public_key(public_key);
+      auto response = this->_meta->user_from_public_key(public_key);
       std::unique_ptr<User> user{new User{
           response._id,
           response.fullname,
@@ -207,7 +223,7 @@ namespace surface
     State::search_users(std::string const& text)
     {
       std::map<std::string, User const*> result;
-      auto res = this->_api->search_users(text);
+      auto res = this->_meta->search_users(text);
       for (auto const& user_id : res.users)
         {
           result[user_id] = &this->user(user_id);
@@ -237,10 +253,16 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
-      this->_api->token("");
-      auto res = this->_api->login(email, password);
+      this->_meta->token("");
+      auto res = this->_meta->login(email, password);
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
+
+      printf("\n%s\n\n", this->_meta->token().c_str());
+      this->_me._id = res._id;
+      this->_me.fullname = res.fullname;
+      this->_me.email = res.email;
+      this->_me.public_key = "";
 
       std::string identity_clear;
 
@@ -275,7 +297,25 @@ namespace surface
     void
     State::logout()
     {
-      this->_api->logout();
+      this->_meta->logout();
+    }
+
+    void
+    State::ask_notif(int i)
+    {
+      // créer un flux de sortie
+      std::ostringstream oss;
+      // écrire un nombre dans le flux
+      oss << i;
+      // récupérer une chaîne de caractères
+      std::string notification_id = oss.str();
+
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"notification_id", notification_id}
+        }};
+
+        this->_meta->debug_ask_notif(request);
     }
 
     void
@@ -285,11 +325,78 @@ namespace surface
                      std::string const& activation_code)
     {
       // Logout first, and ignore errors.
-      try { this->logout(); } catch (plasma::meta::Exception const&) {}
+      try { this->logout(); } catch (elle::HTTPException const&) {}
 
-      this->_api->register_(email, fullname, password, activation_code);
+      this->_meta->register_(email, fullname, password, activation_code);
       ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
       this->login(email, password);
+    }
+
+      template<>
+      void
+      State::attach_callback<gap_Bite>(std::function<void (gap_Bite const*)> callback)
+      {
+        if(_notification_handler.find(0) != _notification_handler.end())
+          return;
+
+        _notification_handler.insert(
+          std::make_pair(
+            0,
+            new plasma::trophonius::Client::BiteHandler(callback)));
+      }
+
+    // template<>
+    // void
+    // State::attach_callback<register_friend_struct>(std::function<void(register_friend_struct const*)> callback)
+    // {
+    //   if(_notification_handler.find(1) != _notification_handler.end())
+    //     return;
+
+    //   _notification_handler[1] = new plasma::trophonius::Client::FriendRequestHandler(callback);
+    // }
+
+    // template<>
+    // void
+    // State::attach_callback<register_friend_status_struct>(std::function<void(register_friend_status_struct const*)> callback)
+    // {
+    //   if(_notification_handler.find(2) != _notification_handler.end())
+    //     return;
+
+    //   _notification_handler[2] = new plasma::trophonius::Client::FriendRequestStatusHandler(callback);
+    // }
+
+    template<typename T>
+    void
+    State::attach_callback(std::function<void(T const*)> callback)
+    {
+      static_assert(sizeof(T) == 0, "Call of attach_callback should be specialized.");
+      return;
+    }
+
+    bool
+    State::poll()
+    {
+      std::unique_ptr<json::Dictionary> dic = this->_trophonius->poll();
+
+      if(!dic)
+        return false;
+
+      if(!dic->contains("notification_id"))
+        return false;
+
+      int notification_id = (*dic)["notification_id"].as_integer();
+
+      handlerMap::const_iterator handler =
+        _notification_handler.find(notification_id);
+
+      if (handler == _notification_handler.end())
+        return false;
+
+      (*handler).second->call(dic.get());
+
+      dic.release();
+
+      return true;
     }
 
     bool
@@ -307,7 +414,7 @@ namespace surface
 
       if (force_create || !this->has_device())
         {
-          auto res = this->_api->create_device(name);
+          auto res = this->_meta->create_device(name);
           passport_string = res.passport;
           ELLE_DEBUG("Created device id: %s", res.created_device_id);
         }
@@ -318,7 +425,7 @@ namespace surface
           passport.load(elle::io::Path(lune::Lune::Passport));
 
           ELLE_DEBUG("Passport id: %s", passport.id);
-          auto res = this->_api->update_device(passport.id, name);
+          auto res = this->_meta->update_device(passport.id, name);
           passport_string = res.passport;
         }
 
@@ -334,7 +441,7 @@ namespace surface
     void
     State::create_network(std::string const& name)
     {
-      auto response = this->_api->create_network(name);
+      auto response = this->_meta->create_network(name);
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
     }
@@ -344,12 +451,12 @@ namespace surface
     {
       if (this->_networks_dirty)
         {
-          auto response = this->_api->networks();
+          auto response = this->_meta->networks();
           for (auto const& network_id: response.networks)
             {
               if (this->_networks.find(network_id) == this->_networks.end())
                 {
-                  auto response = this->_api->network(network_id);
+                  auto response = this->_meta->network(network_id);
                   this->_networks[network_id] = new Network{response};
                 }
             }
@@ -384,7 +491,7 @@ namespace surface
       std::string const& group_binary = common::infinit::binary_path("8group");
 
       QStringList arguments;
-      arguments << "--user" << _api->email().c_str()
+      arguments << "--user" << _meta->email().c_str()
                 << "--type" << "user"
                 << "--add"
                 << "--network" << network->_id.c_str()
@@ -399,7 +506,7 @@ namespace surface
         throw Exception(gap_internal_error, "8group binary failed");
       if (p.exitCode())
         throw Exception(gap_internal_error, "8group binary exited with errors");
-      auto res = this->_api->network_add_user(network_id, user_id);
+      auto res = this->_meta->network_add_user(network_id, user_id);
       if (std::find(network->users.begin(),
                     network->users.end(),
                     user_id) == network->users.end())
@@ -491,9 +598,9 @@ namespace surface
         throw Exception(gap_no_device_error,
                         "Cannot start infinit without any local device");
 
-      if (this->_api->token().size() == 0 ||
-          this->_api->identity().size() == 0 ||
-          this->_api->email().size() == 0)
+      if (this->_meta->token().size() == 0 ||
+          this->_meta->identity().size() == 0 ||
+          this->_meta->email().size() == 0)
         throw Exception(gap_not_logged_in,
                         "Cannot start infinit anonymously");
 
@@ -556,9 +663,9 @@ namespace surface
       // calling watchdog run command (which gives the meta token)
         {
           json::Dictionary args;
-          args["token"] = this->_api->token();
-          args["identity"] = this->_api->identity();
-          args["user"] = this->_api->email();
+          args["token"] = this->_meta->token();
+          args["identity"] = this->_meta->identity();
+          args["user"] = this->_meta->email();
           this->_send_watchdog_cmd("run", &args);
         }
     }
@@ -606,7 +713,7 @@ namespace surface
       std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
-      arguments << "--user" << this->_api->email().c_str()
+      arguments << "--user" << this->_meta->email().c_str()
                 << "--type" << "user"
                 << "--network" << this->network(infos->network_id)._id.c_str()
                 << "--path" << ("/" + infos->relative_path).c_str()
@@ -660,7 +767,7 @@ namespace surface
       std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
-      arguments << "--user" << _api->email().c_str()
+      arguments << "--user" << _meta->email().c_str()
                 << "--type" << "user"
                 << "--grant"
                 << "--network" << network->_id.c_str()
@@ -698,5 +805,26 @@ namespace surface
         }
     }
 
+    // - TROPHONIUS ----------------------------------------------------
+    /// Connect to trophonius
+    void
+    State::connect()
+    {
+      this->_trophonius->connect(this->_me._id,
+                                 this->_meta->token());
+
+      ELLE_DEBUG("Connect to trophonius with 'id': %s and 'token':  %s",
+                 this->_meta->identity(), this->_meta->token());
+    }
+
+    /// Send message to user @id via trophonius
+    void
+    State::send_message(std::string const& recipient_id,
+                       std::string const& message)
+    {
+      this->_meta->send_message(this->_meta->identity(),
+                                recipient_id,
+                                message);
+    }
   }
 }

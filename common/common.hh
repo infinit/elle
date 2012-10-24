@@ -7,6 +7,9 @@
 # define COMMON_DEFAULT_META_PROTOCOL "http"
 # define COMMON_DEFAULT_META_HOST "meta.api.infinit.io"
 # define COMMON_DEFAULT_META_PORT 12345
+# define COMMON_DEFAULT_TROPHONIUS_PROTOCOL "http"
+# define COMMON_DEFAULT_TROPHONIUS_HOST "infinit.im"
+# define COMMON_DEFAULT_TROPHONIUS_PORT 23456
 # define COMMON_DEFAULT_RESOURCES_ROOT_URL "http://download.infinit.io"
 
 namespace common
@@ -76,7 +79,29 @@ namespace common
     /// value will be returned.
     std::string const&
     url();
+  }
 
+  namespace trophonius
+  {
+    /// Returns the protocol used by trophonius (http or https)
+    /// Can be overriden by COMMON_INFINIT_TROPHONIUS_PROTOCOL
+    std::string const&
+    protocol();
+
+    /// Returns the host of the trophonius server.
+    /// Can be overriden by COMMON_INFINIT_TROPHONIUS_HOST.
+    std::string const&
+    host();
+
+    /// Returns the port of the trophonius server
+    /// Can be overriden by COMMON_INFINIT_TROPHONIUS_PORT.
+    uint16_t
+    port();
+
+    /// Returns the url to the trophonius server. If INFINIT_META_URL is defined, its
+    /// value will be returned.
+    std::string const&
+    url();
   }
 
   /// All resources URIs

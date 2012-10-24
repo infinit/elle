@@ -22,8 +22,9 @@ add_library(_gap SHARED ${gap_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(_gap
+        trophol
 	${INFINIT_LIBRARIES}
-    ${INFINIT_OPENSSL_SHARED_LIBRARIES}
+        ${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${Boost_PYTHON3_LIBRARY}
 	${PYTHON3_LIBRARIES}
 	${QT_LIBRARIES}

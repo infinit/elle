@@ -95,6 +95,8 @@ add_library(elle ${LINK_METHOD}
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
 
+  HttpClient.cc
+
   print.cc
 
   log.cc

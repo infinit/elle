@@ -7,6 +7,7 @@
 # include <elle/format/json/fwd.hh>
 
 # include <plasma/meta/Client.hh>
+# include <plasma/trophonius/Client.hh>
 
 # include "gap.h"
 
@@ -32,6 +33,8 @@ namespace surface
       std::string public_key;
     };
 
+
+
     typedef ::plasma::meta::NetworkResponse Network;
 
     struct NetworkStatus
@@ -50,10 +53,11 @@ namespace surface
       Exception(gap_Status code, std::string const& msg);
     };
 
-    class State
+   class State
     {
     private:
-      plasma::meta::Client*             _api;
+      plasma::meta::Client* _meta;
+      plasma::trophonius::Client* _trophonius;
 
     public:
       State();
@@ -98,6 +102,21 @@ namespace surface
       // Search users
       std::map<std::string, User const*>
       search_users(std::string const& text);
+
+      /// Connect to trophonius
+      void
+      connect();
+
+      /// Send message to user @id via trophonius
+      void
+      send_message(std::string const& recipient_id,
+                   std::string const& message);
+
+      void
+      ask_notif(int i);
+
+    private:
+      User _me;
 
     ///
     /// Launch and stop infinit instances.
@@ -177,7 +196,55 @@ namespace surface
       network_add_user(std::string const& network_id,
                        std::string const& user);
 
+      /// Add user to featured users.
+      void
+      add_friend(std::string const& mail_or_id) { (void) mail_or_id; };
+
+      /// Remove user from featured users.
+      void
+      remove_friend(std::string const& id) { (void) id; }
+
+      /// Accept friendship.
+      void
+      accept_friendship(std::string const& id) { (void) id; }
+
+      /// Deny friendship.
+      void
+      deny_friendship(std::string const& id) { (void) id; }
+
+      /// Send a file to user.
+      void
+      send_file(std::string const& mail_or_id,
+                std::string const& file_path,
+                std::string const& transaction_id)
+      {
+        (void) mail_or_id;
+        (void) file_path;
+        (void) transaction_id;
+      }
+
+      /// Accept file transfer.
+      void
+      accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+
+      /// Deny file transfer.
+      void
+      deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+
+      /// Trophonius binding.
     private:
+      typedef std::map<int, plasma::trophonius::BasicHandler*> handlerMap;
+      handlerMap _notification_handler;
+
+    public:
+      template<typename T>
+      void
+      attach_callback(std::function<void(T const*)> callback);
+
+      bool
+      poll();
+
+     private:
       // Retrieve the current watchdog id.
       std::string
       _watchdog_id() const;
@@ -199,4 +266,3 @@ namespace surface
 
 
 #endif
-

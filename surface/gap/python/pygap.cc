@@ -3,6 +3,8 @@
 
 #include <surface/gap/gap.h>
 
+#include <surface/gap/State.hh>
+
 static boost::python::object
 _get_networks(gap_State* state)
 {
@@ -22,6 +24,8 @@ _get_networks(gap_State* state)
 static std::string
 _hash_password(gap_State* state, std::string email, std::string password)
 {
+  assert(state != nullptr);
+
   char* hash = gap_hash_password(state, email.c_str(), password.c_str());
 
   if (hash == nullptr)
@@ -30,6 +34,29 @@ _hash_password(gap_State* state, std::string email, std::string password)
   std::string res(hash);
   gap_hash_free(hash);
   return res;
+}
+
+namespace
+{
+  template<typename T>
+  struct wrap
+  {
+    boost::python::object o;
+    void operator ()(T const* b)
+    {
+      this->o(boost::python::ptr(b));
+    }
+  };
+
+  template<typename T>
+  void
+  _gap_set_callback(gap_State* state,
+                    boost::python::object obj)
+  {
+    assert(state != nullptr);
+
+    reinterpret_cast<surface::gap::State*>(state)->attach_callback<T>(wrap<T>{obj});
+  }
 }
 
 BOOST_PYTHON_MODULE(_gap)
@@ -64,6 +91,28 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("logout", &gap_logout);
   py::def("register", &gap_register);
 
+  //- Trophonius interactions.
+  py::def("connect", &gap_trophonius_connect);
+  py::def("ask_notif", &gap_meta_ask_notif);
+
+  py::def("poll", &gap_poll);
+  py::class_<gap_Bite, boost::noncopyable>("Bite", py::no_init)
+    .def_readonly("debug", &gap_Bite::debug);
+  py::def(
+    "bind_bite_notification",
+//    &gap_trophonius_bite_notification_callback
+    &_gap_set_callback<gap_Bite>
+  );
+  // py::class_<gap_RegisterFriend, boost::noncopyable>("RegisterFriend", py::no_init);
+  // py::def(
+  //   "bind_register_friend_notification",
+  //   &gap_trophonius_register_friend_request_notification_callback
+  // );
+  // py::class_<gap_RegisterFriendStatus, boost::noncopyable>("RegisterFriendStatus", py::no_init);
+  // py::def(
+  //   "bind_register_friend_status_notification",
+  //   &gap_trophonius_register_friend_request_status_notification_callback
+  // );
   //- Infinit services status -------------------------------------------------
 
   py::def("meta_status", &gap_meta_status);
@@ -104,4 +153,3 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("set_permissions", &gap_set_permissions);
 
 }
-

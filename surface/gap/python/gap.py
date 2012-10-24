@@ -21,6 +21,8 @@ class State:
 
     def __init__(self):
         self._state = _gap.new()
+        if self._state == None:
+            raise Exception("Couldn't create state.")
         self.email = ''
 
         directly_exported_methods = [
@@ -36,6 +38,8 @@ class State:
             'network_name',
             'network_mount_point',
             'logout',
+            'connect',
+            'poll',
         ]
 
         def make_method(m):
@@ -68,6 +72,8 @@ class State:
     def _call(self, method, *args):
         res = getattr(_gap, method)(self._state, *args)
         if isinstance(res, _gap.Status) and res != _gap.gap_ok:
+            print("isinstance: ", isinstance(res, _gap.Status))
+            print("gap ok: ", res != _gap.gap_ok)
             raise Exception(
                 "Error while calling %s: %s " % (method, str(res))
             )
@@ -82,6 +88,17 @@ class State:
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         self._call('register', fullname, email, pw_hash, dev_name, activation_code)
+
+    def send_message(self, recipient_id, message):
+        self._call('send_message', '1234567890123456789012345678901234567890', 'biet')
+
+    def adk_notif(self, id):
+        self._call('akd_notif', id)
+
+    def bind_bite_notification(self, notif):
+        self.notif = notif
+        self._call('bind_bite_notification', notif)
+
 
 if __name__ == "__main__":
     import doctest

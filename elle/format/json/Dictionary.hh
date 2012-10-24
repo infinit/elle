@@ -44,6 +44,8 @@ namespace elle
         /// dtor.
         ~Dictionary();
 
+        Dictionary(Dictionary const&) = delete;
+        Dictionary& operator =(Dictionary const&) = delete;
         /// Set or update key/value pairs from another dictionary.
         void update(Dictionary const& other);
 

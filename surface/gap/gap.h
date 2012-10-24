@@ -38,6 +38,10 @@ extern "C" {
     /// Check if meta is alive.
     gap_Status gap_meta_status(gap_State* state);
 
+    /// Debug func: Tell meta to send us a notification from trophonius.
+    gap_Status
+    gap_meta_ask_notif(gap_State*,
+                       int i);
 
     /// - Authentication & registration ---------------------------------------
 
@@ -68,6 +72,69 @@ extern "C" {
                             char const* hash_password,
                             char const* device_name,
                             char const* activation_code);
+
+    /// Login to trophonius
+    gap_Status
+    gap_trophonius_connect(gap_State* state);
+
+    /// - Trophonius ----------------------------------------------------------
+    ////////////////////////////////
+    // Register friend request callback.
+    typedef struct
+    {
+      const char* debug;
+    } gap_Bite;
+    typedef void (*OnBite) (gap_State*,
+                            gap_Bite const*);
+    gap_Status
+    gap_BindOnBite(gap_State*,
+                   OnBite);
+
+    ////////////////////////////////
+    // File transfer recieved callback.
+    typedef struct
+    {
+      const char* sender_id;
+      int transaction_id;
+      const char* file_name;
+      int file_size;
+    } gap_FileTransfer;
+    typedef void (*OnFileTransfer)(gap_State*,
+                                   gap_FileTransfer const*);
+
+    gap_Status
+    gap_BindOnFileTransfer(gap_State*,
+                           OnFileTransfer);
+
+    ////////////////////////////////
+    // File transfer status callback.
+    typedef struct
+    {
+      int transaction_id;
+      int status;
+    } gap_FileTransferStatus;
+    typedef void (*OnFileTransferStatus)(gap_State*,
+                                         gap_FileTransferStatus const*);
+
+    gap_Status
+    gap_BindOnFileTransferStatus(gap_State*,
+                                 OnFileTransferStatus);
+
+    ////////////////////////////////
+    // Refresh user list.
+    typedef struct
+    {
+    } gap_RefreshUserList;
+    typedef void (*OnRefreshUserList)(gap_State*,
+                                      gap_RefreshUserList const*);
+
+    gap_Status
+    gap_BindOnRefreshUserList(gap_State*,
+                              OnRefreshUserList);
+
+    // Poll
+    gap_Status
+    gap_poll (gap_State* state);
 
     /// - Device --------------------------------------------------------------
 
@@ -175,4 +242,3 @@ extern "C" {
 # endif
 
 #endif
-

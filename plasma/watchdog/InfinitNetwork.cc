@@ -333,7 +333,7 @@ void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& respo
   this->_prepare_directory();
 }
 
-void InfinitNetwork::_on_any_error(plasma::meta::Error error, std::string const& err)
+void InfinitNetwork::_on_any_error(elle::ResponseCode error, std::string const& err)
 {
   LOG("Got error while creating the network '%s': %s (%s)",
       this->_description.name, err, (int)error);

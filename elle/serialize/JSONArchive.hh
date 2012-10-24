@@ -116,5 +116,3 @@ namespace elle
 # include "JSONArchive.hxx"
 
 #endif /* ! JSONARCHIVE_HH */
-
-

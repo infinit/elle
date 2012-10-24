@@ -74,10 +74,9 @@ void LocalServer::_on_new_connection()
 
 void LocalServer::_handle_new_connection(ConnectionPtr& conn)
 {
-  using namespace std::placeholders;
   conn->connect(
-      std::bind(&LocalServer::_on_client_command, this, conn, _1),
-      std::bind(&LocalServer::_on_client_error, this, conn, _1)
+    std::bind(&LocalServer::_on_client_command, this, conn, std::placeholders::_1),
+    std::bind(&LocalServer::_on_client_error, this, conn, std::placeholders::_1)
   );
   // at last, saving it
   this->_manager->register_connection(conn);

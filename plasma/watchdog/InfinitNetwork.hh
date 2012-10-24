@@ -1,6 +1,8 @@
 #ifndef  PLASMA_WATCHDOG_INFINITNETWORK_HH
 # define PLASMA_WATCHDOG_INFINITNETWORK_HH
 
+# include <elle/idiom/Close.hh>
+
 # include <string>
 
 # include <QDir>
@@ -43,7 +45,7 @@ namespace plasma
       void _update();
       void _create_network_root_block(std::string const& id);
       void _on_got_descriptor(meta::UpdateNetworkResponse const& response);
-      void _on_any_error(meta::Error error,
+      void _on_any_error(elle::ResponseCode error,
                          std::string const& reason);
       void _register_device();
       void _on_network_nodes(meta::NetworkNodesResponse const& response);

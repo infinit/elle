@@ -6,10 +6,12 @@
 
 #include <common/common.hh>
 
+#include <functional>
 #include "Client.hh"
 #include "ClientActions.hh"
 #include "Connection.hh"
 #include "InfinitNetwork.hh"
+
 #include "Manager.hh"
 #include "NetworkManager.hh"
 
@@ -22,8 +24,10 @@ using namespace plasma::watchdog;
   do {                                                                        \
     using namespace std::placeholders;                                        \
     this->_manager.register_command(                                          \
-        #name,                                                                \
-        std::bind(&ClientActions::_on_##name, this, _1, _2, _3)               \
+      #name,                                                                  \
+      [this](Connection& conn, Client& cl, QVariantMap const& qm){            \
+        this->_on_##name(conn, cl, qm);                                       \
+      }                                                                       \
     );                                                                        \
   } while(false)                                                              \
   /**/

@@ -66,6 +66,23 @@ namespace
       };
     return port;
   }
+
+  uint16_t
+  _trophonius_port()
+  {
+    std::string port_string = elle::os::getenv(
+        "INFINIT_TROPHONIUS_PORT",
+        elle::sprint(COMMON_DEFAULT_TROPHONIUS_PORT)
+    );
+    std::stringstream ss(port_string);
+    uint16_t port;
+    ss >> port;
+    if (ss.fail())
+      throw std::runtime_error{
+          "Couldn't retreive the port from '" + port_string + "'"
+      };
+    return port;
+  }
 }
 
 namespace common
@@ -189,6 +206,48 @@ namespace common
 
   } // !meta
 
+  namespace trophonius
+  {
+
+    std::string const&
+    protocol()
+    {
+      static std::string const protocol = elle::os::getenv(
+          "INFINIT_TROPHONIUS_PROTOCOL"
+          COMMON_DEFAULT_TROPHONIUS_PROTOCOL
+      );
+      return protocol;
+    }
+
+    uint16_t
+    port()
+    {
+      static uint16_t const port = _trophonius_port();
+      return port;
+    }
+
+    std::string const&
+    host()
+    {
+      static std::string const host = elle::os::getenv(
+          "INFINIT_TROPHONIUS_HOST",
+          COMMON_DEFAULT_TROPHONIUS_HOST
+      );
+      return host;
+    }
+
+    std::string const&
+    url()
+    {
+      static std::string const url = elle::os::getenv(
+          "INFINIT_TROPHONIUS_URL",
+          protocol() + "://" + host()
+            + ":" + elle::sprint(port())
+      );
+      return url;
+    }
+  } // !trophonius
+
   namespace resources
   {
 
@@ -256,4 +315,3 @@ namespace common
   }
 
 }
-

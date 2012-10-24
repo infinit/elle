@@ -2,6 +2,8 @@
 #include <cstdlib>
 
 #include <elle/log.hh>
+#include <elle/Elle.hh>
+#include <elle/HttpClient.hh>
 
 #include <lune/Lune.hh>
 
@@ -23,12 +25,12 @@ extern "C"
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 
 # define CATCH_ALL(_func_)                                                    \
-    catch (plasma::meta::Exception const& err)                                \
+  catch (elle::HTTPException const& err)                                  \
     {                                                                         \
         ELLE_ERR(#_func_ " error: %s", err.what());                           \
-        if (err.code == plasma::meta::Error::network_error)                   \
+        if (err.code == elle::ResponseCode::error)                            \
           ret = gap_network_error;                                            \
-        else if (err.code == plasma::meta::Error::server_error)               \
+        else if (err.code == elle::ResponseCode::internal_server_error)       \
           ret = gap_api_error;                                                \
         else                                                                  \
           ret = gap_internal_error;                                           \
@@ -126,6 +128,15 @@ extern "C"
       return gap_ok;
     }
 
+    gap_Status
+    gap_meta_ask_notif(gap_State* state,
+                       int i)
+    {
+      __TO_CPP(state)->ask_notif(i);
+
+      return gap_ok;
+    }
+
     /// - Authentication ------------------------------------------------------
 
     char* gap_hash_password(gap_State* state,
@@ -171,8 +182,8 @@ extern "C"
                             char const* fullname,
                             char const* email,
                             char const* password,
-                            char const* device_name,
-                            char const* activation_code)
+                                 char const* device_name,
+                                 char const* activation_code)
     {
       assert(fullname != nullptr);
       assert(email != nullptr);
@@ -181,6 +192,7 @@ extern "C"
 
       __WRAP_CPP_RET(state, register_, fullname, email,
                      password, activation_code);
+
       if (ret == gap_ok && device_name != nullptr)
         {
           __WRAP_CPP(state, update_device, device_name, true);
@@ -188,8 +200,61 @@ extern "C"
       return ret;
     }
 
-    /// - Device --------------------------------------------------------------
+    gap_Status
+    gap_trophonius_connect(gap_State* state)
+    {
+      __WRAP_CPP_RET(state, connect);
 
+      return ret;
+    }
+
+    gap_Status
+    gap_trophonius_send_message(gap_State* state,
+                                char const* recipient_id,
+                                char const* message)
+    {
+      __WRAP_CPP_RET(state, send_message, recipient_id, message);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_BindOnBite(gap_State* state,
+                   OnBite callback)
+    {
+      __TO_CPP(state)->attach_callback<gap_Bite>(
+        std::bind(callback, state, std::placeholders::_1)
+        );
+
+      return gap_ok;
+    }
+
+    // gap_Status
+    // gap_trophonius_register_friend_request_notification_callback(gap_State *state,
+    //                                                              register_friend_callback callback)
+    // {
+    //   __TO_CPP(state)->attach_callback<register_friend_struct>(callback);
+
+    //   return gap_ok;
+    // }
+
+    // gap_Status
+    // gap_trophonius_register_friend_request_status_notification_callback(gap_State *state,
+    //                                                                     register_friend_status_callback callback)
+    // {
+    //   __TO_CPP(state)->attach_callback<register_friend_status_struct>(callback);
+
+    //   return gap_ok;
+    // }
+
+    gap_Status
+    gap_poll(gap_State* state)
+    {
+      __WRAP_CPP_RET(state, poll);
+
+      return ret;
+    }
+    /// - Device --------------------------------------------------------------
     gap_Status gap_device_status(gap_State* state)
     {
       try

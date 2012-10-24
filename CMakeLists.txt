@@ -277,11 +277,15 @@ set(INFINIT_LIBRARIES
   elle
 )
 
+OPTION(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)
+
 add_subdirectory(satellites)
-add_subdirectory(tests)
+add_subdirectory(plasma)
+if (ENABLE_TEST_COMPILATION)
+   add_subdirectory(tests)
+endif()
 add_subdirectory(surface)
 add_subdirectory(oracle)
-add_subdirectory(plasma)
 
 add_executable(8infinit
   _infinit.cc
