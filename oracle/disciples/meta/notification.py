@@ -13,14 +13,15 @@ class Notifier(object):
 
 
 class TrophoniusNotify(Notifier):
+	def __init__(self):
+		self.conn = socket.socket()
 
 	def open(self):
-		self.conn = socket.socket()
 		self.conn.connect(("localhost", 23457))
 
 	def send_notify(self, message):
 		if isinstance(message, dict):
-			msg = json.dumps(dict)
-		else isinstance(message, str):
+			msg = json.dumps(message)
+		elif isinstance(message, str):
 			msg = message
-		self.conn.send(msg)
+		self.conn.send("{}\n".format(msg))

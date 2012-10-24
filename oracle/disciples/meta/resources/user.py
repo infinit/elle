@@ -226,16 +226,21 @@ class Self(Page):
         })
 
 class Debug(Page):
-	"""
-	This class is for debug purpose only
-	"""
+    """
+    This class is for debug purpose only
+    """
 
-	__pattern__ = "/debug"
+    __pattern__ = "/debug"
 
-	def POST(self):
-		msg = data
-		self.notifier.send_notify(msg)
-
+    def POST(self):
+        import pprint
+        msg = self.data
+        pprint.pprint(self.data)
+        if self.notifier is not None:
+            self.notifier.send_notify(msg)
+        else:
+            return self.error("notifier is not ready")
+        return self.success({})
 
 class One(Page):
     """

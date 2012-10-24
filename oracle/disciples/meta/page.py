@@ -8,7 +8,7 @@ import urllib
 
 from meta import conf
 from meta import database
-from meta import notfification
+from meta import notification
 
 class Page(object):
     """
@@ -44,10 +44,11 @@ class Page(object):
         if self.__notifier is None:
             try:
                 self.__notifier = notification.TrophoniusNotify()
-                self.open()
-            except:
-                pass
-        return self._notifier
+                self.__notifier.open()
+            except Exception as e:
+                print(e)
+                return self.__notifier
+        return self.__notifier
 
     @property
     def input(self):
