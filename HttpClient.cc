@@ -52,7 +52,6 @@ namespace elle
                      << "Connection: close" CRLF;
       if (_token.size())
         {
-          elle::print("token:", _token);
           request_stream << "Authorization: " << _token << CRLF;
         }
       if (body.size())
