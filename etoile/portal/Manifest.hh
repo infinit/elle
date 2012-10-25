@@ -64,7 +64,7 @@ namespace etoile
       | File |
       `-----*/
       RemoteProcedure<etoile::gear::Identifier> filecreate;
-      RemoteProcedure<void,
+      RemoteProcedure<etoile::gear::Identifier,
                       etoile::path::Chemin&> fileload;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,

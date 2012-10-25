@@ -74,16 +74,11 @@ namespace etoile
       return (identifier);
     }
 
-    ///
-    /// this method loads a file object given its chemin and initializes
-    /// an associated context.
-    ///
-    elle::Status        File::Load(
-                          const path::Chemin&                   chemin,
-                          gear::Identifier&                     identifier)
+    gear::Identifier
+    File::load(path::Chemin const& chemin)
     {
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Scope* scope;
+      gear::File* context;
 
       ELLE_TRACE_FUNCTION(chemin);
 
@@ -91,7 +86,8 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
         escape("unable to acquire the scope");
 
-      gear::Guard               guard(scope);
+      gear::Guard guard(scope);
+      gear::Identifier identifier;
 
       // declare a critical section.
       {
@@ -131,7 +127,7 @@ namespace etoile
           escape("unable to release the guard");
       }
 
-      return elle::Status::Ok;
+      return (identifier);
     }
 
     void
@@ -252,16 +248,12 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method discards the scope, potentially ignoring the
-    /// performed modifications.
-    ///
-    elle::Status        File::Discard(
-                          const gear::Identifier&               identifier)
+    void
+    File::discard(gear::Identifier const& identifier)
     {
-      gear::Actor*      actor;
-      gear::Scope*      scope;
-      gear::File*       context;
+      gear::Actor* actor;
+      gear::Scope* scope;
+      gear::File* context;
 
       ELLE_TRACE_FUNCTION(identifier);
 
@@ -269,7 +261,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
-      gear::Guard               guard(actor);
+      gear::Guard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -341,8 +333,6 @@ namespace etoile
             break;
           }
         }
-
-      return elle::Status::Ok;
     }
 
     void

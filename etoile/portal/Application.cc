@@ -99,9 +99,11 @@ namespace etoile
       this->rpcs->objectinformation = &wall::Object::information;
       this->rpcs->objectdiscard = &wall::Object::discard;
       this->rpcs->objectstore = &wall::Object::store;
+      this->rpcs->fileload = &wall::File::load;
       this->rpcs->filecreate = &wall::File::create;
       this->rpcs->fileread = &wall::File::read;
       this->rpcs->filewrite = &wall::File::write;
+      this->rpcs->filediscard = &wall::File::discard;
       this->rpcs->filestore = &wall::File::store;
       this->rpcs->linkcreate = &wall::Link::create;
       this->rpcs->linkbind = &wall::Link::bind;

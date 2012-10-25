@@ -22,15 +22,15 @@ namespace etoile
       | Static Methods |
       `---------------*/
     public:
-      /// Creates a directory though orphan since not attached to the hierarchy.
+      /// Create a directory though orphan since not attached to the hierarchy.
       static
       gear::Identifier
       create();
-      /// Loads the directory referenced through the given chemin.
+      /// Load the directory referenced through the given chemin.
       static
       gear::Identifier
       load(path::Chemin const& chemin);
-      /// Adds an entry to the given directory.
+      /// Add an entry to the given directory.
       static
       void
       add(gear::Identifier const& parent,
@@ -40,7 +40,8 @@ namespace etoile
       static elle::Status       Lookup(const gear::Identifier&,
                                        const path::Slab&,
                                        nucleus::neutron::Entry const*&);
-      /// Returns a set of entries located in [index, index + size[.
+
+      /// Return a set of entries located in [index, index + size[.
       static
       nucleus::neutron::Range<nucleus::neutron::Entry>
       consult(gear::Identifier const& identifer,

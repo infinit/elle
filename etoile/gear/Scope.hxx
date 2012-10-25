@@ -28,9 +28,10 @@ namespace etoile
           this->context = new T;
         }
 
-      // return the context by dynamically casting it.
-      context = static_cast<T*>(this->context);
-      assert(dynamic_cast<T*>(this->context) != nullptr);
+      // Return the context by dynamically casting it; this is required in order
+      // to make sure nobody can perform file operations on a directory scope.
+      if ((context = dynamic_cast<T*>(this->context)) == nullptr)
+        throw std::runtime_error("unable to use this scope's context as such");
 
       return elle::Status::Ok;
     }

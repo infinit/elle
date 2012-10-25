@@ -41,7 +41,14 @@ namespace satellite
     static
     void
     connect();
-    /// Set up the progress updating process.
+    /// Attach the given object's identifier to the Infinit
+    /// hierarchy, more precisely at the given path.
+    static
+    etoile::gear::Identifier
+    attach(etoile::gear::Identifier const& object,
+           elle::String const& path);
+    /// Set up the progress updating process and return a chemin
+    /// to the progress file so as to speed up opening and updating it.
     static
     etoile::path::Chemin
     from_setup();
@@ -65,12 +72,6 @@ namespace satellite
     static
     void
     to_update(elle::Natural64 const size);
-    /// Attach the given object's identifier to the Infinit
-    /// hierarchy, more precisely at the given path.
-    static
-    void
-    to_attach(etoile::gear::Identifier& object,
-              elle::String const& path);
     /// Creates a file to Infinit.
     static
     elle::Natural64

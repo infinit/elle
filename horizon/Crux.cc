@@ -1292,8 +1292,7 @@ namespace horizon
     chemin = etoile::wall::Path::resolve(etoile::path::Way(path));
 
     // Finally, the file is reopened.
-    if (etoile::wall::File::Load(chemin, file) == elle::Status::Error)
-      return (-ENOENT);
+    etoile::gear::Identifier identifier(etoile::wall::File::load(chemin));
 
     // Compute the future permissions as the current ones are
     // temporary.
@@ -1308,7 +1307,7 @@ namespace horizon
     // Store the identifier in the file handle.
     info->fh =
       reinterpret_cast<uint64_t>(new Handle(Handle::OperationCreate,
-                                            file,
+                                            identifier,
                                             permissions));
 
     // Add the created and opened file in the crib.
@@ -1330,14 +1329,12 @@ namespace horizon
 
     etoile::path::Way         way(path);
     etoile::path::Chemin      chemin;
-    etoile::gear::Identifier  identifier;
 
     // Resolve the path.
     chemin = (etoile::wall::Path::resolve(way));
 
     // Load the file.
-    if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
-      return (-ENOENT);
+    etoile::gear::Identifier identifier(etoile::wall::File::load(chemin));
 
     // Store the identifier in the file handle.
     info->fh =
@@ -1438,7 +1435,6 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path, static_cast<elle::Natural64>(size));
 
-    etoile::gear::Identifier  identifier;
     etoile::path::Way         way(path);
     struct ::fuse_file_info   info;
     int                       result;
@@ -1447,8 +1443,7 @@ namespace horizon
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
 
     // Load the file.
-    if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
-      return (-ENOENT);
+    etoile::gear::Identifier identifier(etoile::wall::File::load(chemin));
 
     Ward ward(identifier);
 

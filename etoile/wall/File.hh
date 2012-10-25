@@ -23,24 +23,24 @@ namespace etoile
       | Static Methods |
       `---------------*/
     public:
-      /// This method creates a new file object.
+      /// Create a new file object.
       ///
       /// Note however that the object is not attached to the hierarchy
       /// and is therefore considered as orphan.
       static
       gear::Identifier
       create();
-
-      static elle::Status       Load(const path::Chemin&,
-                                     gear::Identifier&);
-
-      /// Writes the file with the given region of data.
+      /// Load the file and returns an identifier for manipuling it.
+      static
+      gear::Identifier
+      load(path::Chemin const& chemin);
+      /// Write the file with the given region of data.
       static
       void
       write(gear::Identifier const& identifier,
             nucleus::neutron::Offset const& offset,
             elle::standalone::Region const& data);
-      /// Reads _size_ bytes of data from the file, at the given offset
+      /// Read _size_ bytes of data from the file, at the given offset
       /// _offset_.
       static
       elle::standalone::Region
@@ -51,8 +51,10 @@ namespace etoile
       static elle::Status       Adjust(const gear::Identifier&,
                                        const nucleus::neutron::Size&);
 
-      static elle::Status       Discard(const gear::Identifier&);
-
+      /// Discard the scope, potentially ignoring some modifications.
+      static
+      void
+      discard(gear::Identifier const& identifier);
       /// Commit the pending modifications by placing the scope in the journal.
       static
       void

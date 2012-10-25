@@ -58,7 +58,16 @@ namespace satellite
     ~Ward()
     {
       if (_clean && Transfer::socket != nullptr)
-        Transfer::rpcs->objectdiscard(this->_id);
+        {
+          try
+            {
+              Transfer::rpcs->objectdiscard(this->_id);
+            }
+          catch (...)
+            {
+              // Do nothing, we may already be throwing an exception.
+            }
+        }
     }
 
     void release()
@@ -96,58 +105,179 @@ namespace satellite
                                "unable to authenticate to Etoile");
   }
 
+  etoile::gear::Identifier
+  Transfer::attach(etoile::gear::Identifier const& object,
+                   elle::String const& path)
+  {
+    etoile::path::Slab name;
+    etoile::path::Way way(etoile::path::Way(path), name);
+
+    // Resolve parent directory.
+    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(way));
+
+    // Load parent directory.
+    etoile::gear::Identifier directory(Transfer::rpcs->directoryload(chemin));
+
+    Ward ward_directory(directory);
+
+    // Retrieve the subject's permissions on the object.
+    nucleus::neutron::Record record(
+      Transfer::rpcs->accesslookup(directory, agent::Agent::Subject));
+
+    // Check the record.
+    if ((record == nucleus::neutron::Record::Null) ||
+        ((record.permissions & nucleus::neutron::permissions::write) !=
+         nucleus::neutron::permissions::write))
+      throw std::runtime_error("the subject does not have the permission");
+
+    // Grant permissions for the user itself.
+    // Set default permissions: read and write.
+    nucleus::neutron::Permissions permissions =
+      nucleus::neutron::permissions::read |
+      nucleus::neutron::permissions::write;
+
+    // Set the owner permissions.
+    Transfer::rpcs->accessgrant(object, agent::Agent::Subject, permissions);
+
+    // Grant read permission for 'everybody' group.
+    switch (Transfer::descriptor->data().policy())
+      {
+      case horizon::Policy::accessible:
+        {
+          // grant the read permission to the 'everybody' group.
+          Transfer::rpcs->accessgrant(
+            object,
+            Transfer::descriptor->meta().everybody_subject(),
+            nucleus::neutron::permissions::read);
+
+          break;
+        }
+      case horizon::Policy::editable:
+        {
+          // XXX
+          assert(false && "not yet supported");
+
+          break;
+        }
+      case horizon::Policy::confidential:
+        {
+          // Nothing else to do in this case, the file system object
+          // remains private to its owner.
+
+          break;
+        }
+      default:
+        {
+          throw std::runtime_error("invalid policy");
+        }
+      }
+
+    // Add object to parent directory.
+    Transfer::rpcs->directoryadd(directory, name, object);
+
+    // Release the identifier tracking.
+    ward_directory.release();
+
+    return (directory);
+  }
+
   static elle::Natural64 _progress(0);
   static elle::Natural64 _size(0);
 
   etoile::path::Chemin
   Transfer::from_setup()
   {
-    // Resolve the directory.
-    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(
-      etoile::path::Way(elle::system::path::separator)));
+    // (1) Get the transfer size from the root directory.
+    {
+      // Resolve the path to the root directory.
+      etoile::path::Chemin chemin(
+        Transfer::rpcs->pathresolve(
+          etoile::path::Way(elle::system::path::separator)));
 
-    // Load the directory.
-    etoile::gear::Identifier identifier(
-      Transfer::rpcs->directoryload(chemin));
+      // Load the root directory.
+      etoile::gear::Identifier directory(
+        Transfer::rpcs->directoryload(chemin));
 
-    // Get the initial attribute, if present.
-    nucleus::neutron::Trait progress(
-      Transfer::rpcs->attributesget(identifier,
-                                    "infinit:transfer:progress"));
+      Ward ward_directory(directory);
 
-    if (progress == nucleus::neutron::Trait::Null)
-      {
-        // Set the initial attribute.
-        Transfer::rpcs->attributesset(identifier,
-                                      "infinit:transfer:progress", "0");
-        _progress = 0;
-      }
-    else
-      {
-        _progress = boost::lexical_cast<elle::Natural64>(progress.value);
-      }
+      // Then, retrieve the size of the transfer.
+      nucleus::neutron::Trait size(
+        Transfer::rpcs->attributesget(directory,
+                                      "infinit:transfer:size"));
 
-    // Then, retrieve the size of the transfer.
-    nucleus::neutron::Trait size(
-      Transfer::rpcs->attributesget(identifier,
-                                    "infinit:transfer:size"));
+      if (size == nucleus::neutron::Trait::Null)
+        throw std::runtime_error("no transfer size attribute present");
 
-    if (size == nucleus::neutron::Trait::Null)
-      throw std::runtime_error("no transfer size attribute present");
+      // Set the size variable.
+      _size = boost::lexical_cast<elle::Natural64>(size.value);
 
-    // Set the size variable.
-    _size = boost::lexical_cast<elle::Natural64>(size.value);
+      // Discard the directory since unchanged.
+      Transfer::rpcs->directorydiscard(directory);
 
-    // Store the directory since some modifications may have been
-    // performed.
-    Transfer::rpcs->directorystore(identifier);
+      ward_directory.release();
+    }
 
-    return (chemin);
+    // The way to the progress-specific file. Note that this file does not
+    // contain the progress in its data but in a specific attribute. This
+    // has been done so as to speed up the process of updating the progress.
+    //
+    // Indeed, by setting an attribute, only the metadata of this file needs
+    // to be retrieved while with the progress in the data, another block
+    // would need to be retrieved.
+    //
+    // Note that the progress attribute could not be set in the root directory
+    // because the root directory belongs to the user having transferred the
+    // data. The user retrieving it has to create an object he owns so as to
+    // set an attribute.
+    elle::String root(elle::String(1, elle::system::path::separator) +
+                      ".progress");
+    etoile::path::Way way(root);
+
+    // (2) Create the progress file.
+    {
+      // Create a file for the progress.
+      etoile::gear::Identifier file(Transfer::rpcs->filecreate());
+
+      Ward ward_file(file);
+
+      // Attach the file to the hierarchy.
+      etoile::gear::Identifier directory(Transfer::attach(file, way.path));
+
+      Ward ward_directory(directory);
+
+      // Set the initial attribute.
+      Transfer::rpcs->attributesset(file,
+                                    "infinit:transfer:progress",
+                                    "0");
+
+      // Set the progress to zero.
+      _progress = 0;
+
+      // Store the file.
+      Transfer::rpcs->filestore(file);
+
+      ward_file.release();
+
+      // Store parent directory.
+      Transfer::rpcs->directorystore(directory);
+
+      ward_directory.release();
+    }
+
+    return (Transfer::rpcs->pathresolve(way));
   }
 
   void
   Transfer::from_progress(elle::Natural64 increment)
   {
+    // The difference between the current progress and the last
+    // one which has been pushed in the attributes. Once this
+    // difference is reached, the attributes are updated.
+    //
+    // This is required so as to limit the number of updates while
+    // ensuring a smooth progress.
+    const elle::Real DIFFERENCE = 0.5;
+
     // Setup the progress update and keep the chemin which is
     // not going to change.
     static etoile::path::Chemin chemin(Transfer::from_setup());
@@ -159,13 +289,15 @@ namespace satellite
     // Compute the increment in terms of pourcentage of progress.
     elle::Real difference = (_progress - stale) * 100 / _size;
 
+    ELLE_TRACE("difference %s", difference);
+
     // If the difference is large enough, update the progress in the root
     // directory's attribtues.
-    if ((difference > 1.0) || (_progress == _size))
+    if ((difference > DIFFERENCE) || (_progress == _size))
       {
-        // Load the root directory.
+        // Load the progress file.
         etoile::gear::Identifier identifier(
-          Transfer::rpcs->directoryload(chemin));
+          Transfer::rpcs->fileload(chemin));
 
         Ward ward(identifier);
 
@@ -177,8 +309,10 @@ namespace satellite
                                       "infinit:transfer:progress",
                                       string);
 
+        ELLE_TRACE("update progress to %s", string);
+
         // Store the modifications.
-        Transfer::rpcs->directorystore(identifier);
+        Transfer::rpcs->filestore(identifier);
 
         ward.release();
 
@@ -231,7 +365,10 @@ namespace satellite
           {
           case nucleus::neutron::Genre::file:
             {
-              std::streamsize N = 5242880;
+              // 1MB seems large enough for the performance to remain
+              // good while ensuring a smooth progress i.e no jump from
+              // 4% to 38% for reasonable large files.
+              std::streamsize N = 1048576;
               std::ofstream stream(path, std::ios::binary);
               nucleus::neutron::Offset offset(0);
 
@@ -330,7 +467,7 @@ namespace satellite
   void
   Transfer::to_update(elle::Natural64 const size)
   {
-    etoile::path::Way root("/");
+    etoile::path::Way root(elle::system::path::separator);
 
     // Resolve the root directory.
     etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(root));
@@ -350,83 +487,6 @@ namespace satellite
     ward_directory.release();
   }
 
-  void
-  Transfer::to_attach(etoile::gear::Identifier& object,
-                      elle::String const& path)
-  {
-    etoile::path::Slab name;
-    etoile::path::Way way(etoile::path::Way(path), name);
-
-    // Resolve parent directory.
-    etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(way));
-
-    // Load parent directory.
-    etoile::gear::Identifier directory(Transfer::rpcs->directoryload(chemin));
-
-    Ward ward_directory(directory);
-
-    // Retrieve the subject's permissions on the object.
-    nucleus::neutron::Record record(
-      Transfer::rpcs->accesslookup(directory, agent::Agent::Subject));
-
-    // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
-         nucleus::neutron::permissions::write))
-      throw std::runtime_error("the subject does not have the permission");
-
-    // Grant permissions for the user itself.
-    // Set default permissions: read and write.
-    nucleus::neutron::Permissions permissions =
-      nucleus::neutron::permissions::read |
-      nucleus::neutron::permissions::write;
-
-    // Set the owner permissions.
-    Transfer::rpcs->accessgrant(object, agent::Agent::Subject, permissions);
-
-    // Grant read permission for 'everybody' group.
-    switch (Transfer::descriptor->data().policy())
-      {
-      case horizon::Policy::accessible:
-        {
-          // grant the read permission to the 'everybody' group.
-          Transfer::rpcs->accessgrant(
-            object,
-            Transfer::descriptor->meta().everybody_subject(),
-            nucleus::neutron::permissions::read);
-
-          break;
-        }
-      case horizon::Policy::editable:
-        {
-          // XXX
-          assert(false && "not yet supported");
-
-          break;
-        }
-      case horizon::Policy::confidential:
-        {
-          // Nothing else to do in this case, the file system object
-          // remains private to its owner.
-
-          break;
-        }
-      default:
-        {
-          throw std::runtime_error("invalid policy");
-        }
-      }
-
-    // Add object to parent directory.
-    Transfer::rpcs->directoryadd(directory, name, object);
-
-    // Store parent directory.
-    Transfer::rpcs->directorystore(directory);
-
-    // Release the identifier tracking.
-    ward_directory.release();
-  }
-
   elle::Natural64
   Transfer::to_create(elle::String const& source,
                       elle::String const& target)
@@ -437,7 +497,9 @@ namespace satellite
     Ward ward_file(file);
 
     // Attach the file to the hierarchy.
-    Transfer::to_attach(file, target);
+    etoile::gear::Identifier directory(Transfer::attach(file, target));
+
+    Ward ward_directory(directory);
 
     // Write the source file's content into the Infinit file freshly created.
     std::streamsize N = 5242880;
@@ -468,6 +530,11 @@ namespace satellite
     // Release the identifier tracking.
     ward_file.release();
 
+    // Store parent directory.
+    Transfer::rpcs->directorystore(directory);
+
+    ward_directory.release();
+
     // Return the number of bytes composing the file having been copied.
     return (static_cast<elle::Natural64>(offset));
   }
@@ -481,13 +548,20 @@ namespace satellite
     Ward ward_subdirectory(subdirectory);
 
     // Attach the directory to the hierarchy.
-    Transfer::to_attach(subdirectory, path);
+    etoile::gear::Identifier directory(Transfer::attach(subdirectory, path));
+
+    Ward ward_directory(directory);
 
     // Store subdirectory.
     Transfer::rpcs->directorystore(subdirectory);
 
     // Release the identifier tracking.
     ward_subdirectory.release();
+
+    // Store parent directory.
+    Transfer::rpcs->directorystore(directory);
+
+    ward_directory.release();
 
     // We consider that the directories do not account for the actual data but
     // for a single byte.
@@ -504,7 +578,9 @@ namespace satellite
     Ward ward_link(link);
 
     // Attach the link to the hierarchy.
-    Transfer::to_attach(link, target);
+    etoile::gear::Identifier directory(Transfer::attach(link, target));
+
+    Ward ward_directory(directory);
 
     etoile::path::Way way(boost::filesystem::read_symlink(source).string());
 
@@ -516,6 +592,11 @@ namespace satellite
 
     // Release the identifier tracking.
     ward_link.release();
+
+    // Store parent directory.
+    Transfer::rpcs->directorystore(directory);
+
+    ward_directory.release();
 
     return (way.path.length());
   }
@@ -823,36 +904,43 @@ namespace satellite
 // ---------- main ------------------------------------------------------------
 //
 
-elle::Status
+int
 _main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
     {
       satellite::main(argc, argv);
     }
+  catch (reactor::Exception const& e)
+    {
+      std::cerr << argv[0] << ": fatal error: " << e << std::endl;
+      goto _error;
+    }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      if (reactor::Exception const* re =
-          dynamic_cast<reactor::Exception const*>(&e))
-        std::cerr << re->backtrace() << std::endl;
-
-      elle::concurrency::scheduler().terminate();
-      return elle::Status::Error;
+      goto _error;
     }
+  catch (...)
+    {
+      std::cerr << argv[0] << ": unknown exception" << std::endl;
+      goto _error;
+    }
+
   elle::concurrency::scheduler().terminate();
-  return elle::Status::Ok;
+  return (0);
+
+ _error:
+  elle::concurrency::scheduler().terminate();
+  return (1);
 }
 
-///
-/// this is the program entry point.
-///
 int                     main(int                                argc,
                              char**                             argv)
 {
   reactor::Scheduler& sched = elle::concurrency::scheduler();
-  reactor::VThread<elle::Status> main(sched, "main",
-                                      boost::bind(&_main, argc, argv));
+  reactor::VThread<int> main(sched, "main",
+                             boost::bind(&_main, argc, argv));
   sched.run();
-  return main.result() == elle::Status::Ok ? 0 : 1;
+  return (main.result());
 }
