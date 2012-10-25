@@ -18,7 +18,18 @@ namespace horizon
   Ward::~Ward()
   {
     if (this->_clean)
-      etoile::wall::Object::discard(this->_id);
+      {
+        try
+          {
+            etoile::wall::Object::discard(this->_id);
+          }
+        catch (...)
+          {
+            // Ignore all the exceptions: we do not want exceptions to get out
+            // as we may already be throwing an exception, which would have
+            // called the Ward destructor.
+          }
+      }
   }
 
   /*--------.
