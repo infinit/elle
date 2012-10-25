@@ -30,6 +30,13 @@
 			remoteGlobalIDString = BD1A1BF91639469000186C48;
 			remoteInfo = FinderWindowApplication;
 		};
+		BD1A1C621639616400186C48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BD1A1C25163946A500186C48;
+			remoteInfo = FinderWindow;
+		};
 		BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
@@ -142,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				BD1A1C1F1639469200186C48 /* FinderWindowApplication.app */,
+				BD1A1C631639616400186C48 /* FinderWindow.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -323,6 +331,13 @@
 			fileType = wrapper.application;
 			path = FinderWindowApplication.app;
 			remoteRef = BD1A1C1E1639469200186C48 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD1A1C631639616400186C48 /* FinderWindow.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = FinderWindow.framework;
+			remoteRef = BD1A1C621639616400186C48 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */ = {
