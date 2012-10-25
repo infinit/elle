@@ -80,7 +80,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'm',
         "mountpoint",
         "specifies the mount point",
-        elle::utility::Parser::KindRequired) == elle::Status::Error)
+        elle::utility::Parser::KindOptional) == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
@@ -121,15 +121,14 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                       "unable to retrieve the network name");
     }
 
-  // retrieve the mount point.
-  if (Infinit::Parser->Value("Mountpoint",
-                             Infinit::Mountpoint) == elle::Status::Error)
+  // Retrieve the mount point.
+  try
     {
-      // display the usage.
-      Infinit::Parser->Usage();
-
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to retrieve the mount point");
+      Infinit::Parser->Value("Mountpoint", Infinit::Mountpoint);
+    }
+  catch (...)
+    {
+      // Nothing. No mountpoint is OK. FIXME though.
     }
 
   // initialize the Lune library.
@@ -209,9 +208,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to initialize Etoile");
 
   // initialize the horizon.
-  if (horizon::Horizon::Initialize() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to initialize the horizon");
+  if (!Infinit::Mountpoint.empty())
+    if (horizon::Horizon::Initialize() == elle::Status::Error)
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to initialize the horizon");
 
   // launch the program.
   elle::concurrency::Program::Launch();
@@ -221,9 +221,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   Infinit::Parser = nullptr;
 
   // clean the horizon.
-  if (horizon::Horizon::Clean() == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                    "unable to clean the horizon");
+  if (!Infinit::Mountpoint.empty())
+    if (horizon::Horizon::Clean() == elle::Status::Error)
+      throw reactor::Exception(elle::concurrency::scheduler(),
+                               "unable to clean the horizon");
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::Status::Error)
