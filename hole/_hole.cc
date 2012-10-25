@@ -102,7 +102,7 @@ namespace hole
     passport.load(elle::io::Path(lune::Lune::Passport));
 
     std::unique_ptr<hole::Hole> hole(
-      infinit::hole_factory(storage, passport, Infinit::Authority));
+      infinit::hole_factory(storage, passport, Infinit::authority()));
     etoile::depot::hole(hole.get());
     horizon::hole(hole.get());
     hole->join();
