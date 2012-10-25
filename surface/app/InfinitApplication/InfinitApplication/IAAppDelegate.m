@@ -14,23 +14,24 @@
 
 @implementation IAAppDelegate
 
-- (IBAction)greet:(id)sender
+- (void)awakeFromNib
 {
-    
-    [self doGreeting];
-}
-
-- (void)doGreeting
-{
-    [[NSAlert alertWithMessageText:@"CA MARCHE PAS" defaultButton:@"DEFAULT CONNARD" alternateButton:@""
-                       otherButton:@"" informativeTextWithFormat:@"NON OPTIONEL KONAR"] runModal];
-}
-
-- (void)awakeFromNib {
     NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
     self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
     [self.status_item setMenu:self.status_menu];
     [self setDefaultStatus];
+    self.drive_path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/Infinit"];
+    
+    NSFileManager* file_manager = [NSFileManager defaultManager];
+    BOOL is_dir;
+    if (![file_manager fileExistsAtPath:self.drive_path isDirectory:&is_dir])
+    {
+        if (![file_manager createDirectoryAtPath:self.drive_path
+                     withIntermediateDirectories:YES
+                                      attributes:nil
+                                           error:NULL])
+            NSLog(@"Error: Create folder failed %@", self.drive_path);
+    }
     
     self.ipc_proxy = nil;
     
@@ -47,8 +48,6 @@
             exit(EXIT_FAILURE);
         }
     }
-    
-    
 }
 
 - (IBAction)doInject:(id)sender
@@ -69,7 +68,10 @@
     else
     {
         NSLog(@"Calling IPC injector");
-        [self.ipc_proxy injectBundle:injected_bundle_path stubBundlePath:injected_bundle_stub_path];
+
+        [self.ipc_proxy injectBundle:injected_bundle_path
+                      stubBundlePath:injected_bundle_stub_path
+                           drivePath:self.drive_path];
     }
 }
 

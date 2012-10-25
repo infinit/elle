@@ -23,6 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BD1A1C1E1639469200186C48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BD1A1BF91639469000186C48;
+			remoteInfo = FinderWindowApplication;
+		};
 		BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
@@ -94,6 +101,7 @@
 /* Begin PBXFileReference section */
 		BD16A099162FF69300587152 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPCInterface.h; path = ../InfinitDaemon/InfinitDaemon/IPCInterface.h; sourceTree = "<group>"; };
 		BD16A09C1630125300587152 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../InfinitDaemon/InfinitDaemon/config.h; sourceTree = "<group>"; };
+		BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderWindowApplication.xcodeproj; path = FinderWindowApplication/FinderWindowApplication.xcodeproj; sourceTree = "<group>"; };
 		BD28A9FA162ED79A004F1697 /* InfinitApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfinitApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD28A9FE162ED79A004F1697 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD28AA01162ED79A004F1697 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -130,16 +138,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BD1A1C1B1639469100186C48 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C1F1639469200186C48 /* FinderWindowApplication.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BD28A9EF162ED79A004F1697 = {
 			isa = PBXGroup;
 			children = (
+				BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */,
 				BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */,
 				BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */,
+				BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */,
 				BD28AA1D162EDAAC004F1697 /* resources */,
 				BD28AA04162ED79A004F1697 /* InfinitApplication */,
 				BD28A9FD162ED79A004F1697 /* Frameworks */,
 				BD28A9FB162ED79A004F1697 /* Products */,
-				BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -281,6 +298,10 @@
 					ProjectRef = BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */;
 				},
 				{
+					ProductGroup = BD1A1C1B1639469100186C48 /* Products */;
+					ProjectRef = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
+				},
+				{
 					ProductGroup = BD28AA67162EEF38004F1697 /* Products */;
 					ProjectRef = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
 				},
@@ -297,6 +318,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		BD1A1C1F1639469200186C48 /* FinderWindowApplication.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FinderWindowApplication.app;
+			remoteRef = BD1A1C1E1639469200186C48 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
@@ -407,6 +435,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -437,6 +466,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;

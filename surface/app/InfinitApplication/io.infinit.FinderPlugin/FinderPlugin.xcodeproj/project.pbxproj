@@ -10,6 +10,7 @@
 		BD7212BD16317BEC00B2AB22 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD7212BB16317BEC00B2AB22 /* InfoPlist.strings */; };
 		BD7212C816317CBD00B2AB22 /* Test.m in Sources */ = {isa = PBXBuildFile; fileRef = BD7212C316317BF600B2AB22 /* Test.m */; };
 		BD7212C916317CD700B2AB22 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F97CD16314A4500C1BD49 /* Cocoa.framework */; };
+		BDC694791638214F001A64A0 /* 18px-sidebar-active.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC694781638214F001A64A0 /* 18px-sidebar-active.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,8 +20,11 @@
 		BD7212BC16317BEC00B2AB22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		BD7212BE16317BEC00B2AB22 /* FinderPlugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderPlugin-Prefix.pch"; sourceTree = "<group>"; };
 		BD7212C216317BF600B2AB22 /* Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
-		BD7212C316317BF600B2AB22 /* Test.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Test.m; sourceTree = "<group>"; };
+		BD7212C316317BF600B2AB22 /* Test.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test.m; sourceTree = "<group>"; };
 		BD740F3F1630333C0093157A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		BDC6947616380FE2001A64A0 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = file; name = config.h; path = ../../InfinitDaemon/InfinitDaemon/config.h; sourceTree = "<group>"; };
+		BDC6947716381255001A64A0 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = IPCInterface.h; path = ../../InfinitDaemon/InfinitDaemon/IPCInterface.h; sourceTree = "<group>"; };
+		BDC694781638214F001A64A0 /* 18px-sidebar-active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18px-sidebar-active.png"; sourceTree = "<group>"; };
 		BDD9D630163167D8007B941A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BDD9D631163167D8007B941A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BDD9D632163167D8007B941A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -41,8 +45,11 @@
 		BD7212B816317BEC00B2AB22 /* FinderPlugin */ = {
 			isa = PBXGroup;
 			children = (
+				BDC694781638214F001A64A0 /* 18px-sidebar-active.png */,
+				BDC6947716381255001A64A0 /* IPCInterface.h */,
 				BD7212C216317BF600B2AB22 /* Test.h */,
 				BD7212C316317BF600B2AB22 /* Test.m */,
+				BDC6947616380FE2001A64A0 /* config.h */,
 				BD7212B916317BEC00B2AB22 /* Supporting Files */,
 			);
 			path = FinderPlugin;
@@ -147,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD7212BD16317BEC00B2AB22 /* InfoPlist.strings in Resources */,
+				BDC694791638214F001A64A0 /* 18px-sidebar-active.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,9 +186,11 @@
 		BD7212C016317BEC00B2AB22 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPlugin/FinderPlugin-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "FinderPlugin/FinderPlugin-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -191,9 +201,11 @@
 		BD7212C116317BEC00B2AB22 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPlugin/FinderPlugin-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "FinderPlugin/FinderPlugin-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -264,6 +276,7 @@
 				BD7212C116317BEC00B2AB22 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BD740F361630333C0093157A /* Build configuration list for PBXProject "FinderPlugin" */ = {
 			isa = XCConfigurationList;

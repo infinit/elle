@@ -40,8 +40,11 @@
 }
 
 
-- (void)injectBundle:(NSString*)source_bundle_path stubBundlePath:(NSString*)stub_bundle_path
+- (void)injectBundle:(NSString*)source_bundle_path
+      stubBundlePath:(NSString*)stub_bundle_path
+           drivePath:(NSString*)drive_path
 {
+    self.drive_path = drive_path;
     pid_t process_id = [IPCInterface _getFinderPid];
     if (!process_id)
     {

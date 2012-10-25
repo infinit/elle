@@ -14,8 +14,12 @@
 
 @property(assign) BOOL should_keep_running;
 
-- (void)injectBundle:(NSString*)source_bundle_path stubBundlePath:(NSString*)target_bundle_path;
+- (void)injectBundle:(NSString*)source_bundle_path
+      stubBundlePath:(NSString*)target_bundle_path
+           drivePath:(NSString*)drive_path;
 - (void)quit;
 - (int)getVersion;
+
+@property (retain) NSString* drive_path;
 
 @end

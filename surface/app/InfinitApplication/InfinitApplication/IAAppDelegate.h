@@ -15,7 +15,7 @@
 @property (assign) IBOutlet NSWindow *window;
 
 @property (assign) IBOutlet NSMenu* status_menu;
-
+@property (retain) NSString* drive_path;
 @property (retain) NSStatusItem* status_item;
 @property (retain) NSImage* status_icon;
 @property (retain) NSImage* default_status_icon;

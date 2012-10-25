@@ -1,0 +1,484 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BD1A1BFE1639469100186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
+		BD1A1C081639469100186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C061639469100186C48 /* InfoPlist.strings */; };
+		BD1A1C0A1639469100186C48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C091639469100186C48 /* main.m */; };
+		BD1A1C0E1639469100186C48 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C0C1639469100186C48 /* Credits.rtf */; };
+		BD1A1C111639469100186C48 /* IAAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C101639469100186C48 /* IAAppDelegate.m */; };
+		BD1A1C141639469100186C48 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C121639469100186C48 /* MainMenu.xib */; };
+		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
+		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
+		BD1A1C30163946A600186C48 /* FinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C2F163946A600186C48 /* FinderWindow.m */; };
+		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
+		BD1A1C3A163948BB00186C48 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
+		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */; };
+		BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BD1A1C371639488700186C48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD1A1BF01639469000186C48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BD1A1C24163946A500186C48;
+			remoteInfo = FinderWindow;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BD1A1C391639488C00186C48 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BD1A1BF91639469000186C48 /* FinderWindowApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinderWindowApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD1A1BFD1639469100186C48 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		BD1A1C001639469100186C48 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		BD1A1C011639469100186C48 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		BD1A1C021639469100186C48 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BD1A1C051639469100186C48 /* FinderWindowApplication-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderWindowApplication-Info.plist"; sourceTree = "<group>"; };
+		BD1A1C071639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		BD1A1C091639469100186C48 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BD1A1C0B1639469100186C48 /* FinderWindowApplication-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderWindowApplication-Prefix.pch"; sourceTree = "<group>"; };
+		BD1A1C0D1639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		BD1A1C0F1639469100186C48 /* IAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAppDelegate.h; sourceTree = "<group>"; };
+		BD1A1C101639469100186C48 /* IAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAAppDelegate.m; sourceTree = "<group>"; };
+		BD1A1C131639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		BD1A1C25163946A500186C48 /* FinderWindow.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FinderWindow.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD1A1C29163946A500186C48 /* FinderWindow-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderWindow-Info.plist"; sourceTree = "<group>"; };
+		BD1A1C2B163946A500186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderWindow-Prefix.pch"; sourceTree = "<group>"; };
+		BD1A1C2E163946A600186C48 /* FinderWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FinderWindow.h; sourceTree = "<group>"; };
+		BD1A1C2F163946A600186C48 /* FinderWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderWindow.m; sourceTree = "<group>"; };
+		BD1A1C35163947E000186C48 /* FinderWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FinderWindow.xib; sourceTree = "<group>"; };
+		BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindowController.h; sourceTree = "<group>"; };
+		BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindowController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BD1A1BF61639469000186C48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1BFE1639469100186C48 /* Cocoa.framework in Frameworks */,
+				BD1A1C3A163948BB00186C48 /* FinderWindow.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BD1A1C21163946A500186C48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BD1A1BEE1639469000186C48 = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C031639469100186C48 /* FinderWindowApplication */,
+				BD1A1C27163946A500186C48 /* FinderWindow */,
+				BD1A1BFC1639469100186C48 /* Frameworks */,
+				BD1A1BFA1639469000186C48 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BD1A1BFA1639469000186C48 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1BF91639469000186C48 /* FinderWindowApplication.app */,
+				BD1A1C25163946A500186C48 /* FinderWindow.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD1A1BFC1639469100186C48 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1BFD1639469100186C48 /* Cocoa.framework */,
+				BD1A1BFF1639469100186C48 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BD1A1BFF1639469100186C48 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C001639469100186C48 /* AppKit.framework */,
+				BD1A1C011639469100186C48 /* CoreData.framework */,
+				BD1A1C021639469100186C48 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		BD1A1C031639469100186C48 /* FinderWindowApplication */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C0F1639469100186C48 /* IAAppDelegate.h */,
+				BD1A1C101639469100186C48 /* IAAppDelegate.m */,
+				BD1A1C121639469100186C48 /* MainMenu.xib */,
+				BD1A1C041639469100186C48 /* Supporting Files */,
+			);
+			path = FinderWindowApplication;
+			sourceTree = "<group>";
+		};
+		BD1A1C041639469100186C48 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C051639469100186C48 /* FinderWindowApplication-Info.plist */,
+				BD1A1C061639469100186C48 /* InfoPlist.strings */,
+				BD1A1C091639469100186C48 /* main.m */,
+				BD1A1C0B1639469100186C48 /* FinderWindowApplication-Prefix.pch */,
+				BD1A1C0C1639469100186C48 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BD1A1C27163946A500186C48 /* FinderWindow */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C2E163946A600186C48 /* FinderWindow.h */,
+				BD1A1C2F163946A600186C48 /* FinderWindow.m */,
+				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
+				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
+				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
+				BD1A1C28163946A500186C48 /* Supporting Files */,
+			);
+			path = FinderWindow;
+			sourceTree = "<group>";
+		};
+		BD1A1C28163946A500186C48 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A1C29163946A500186C48 /* FinderWindow-Info.plist */,
+				BD1A1C2A163946A500186C48 /* InfoPlist.strings */,
+				BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		BD1A1C22163946A500186C48 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		BD1A1BF81639469000186C48 /* FinderWindowApplication */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD1A1C171639469100186C48 /* Build configuration list for PBXNativeTarget "FinderWindowApplication" */;
+			buildPhases = (
+				BD1A1BF51639469000186C48 /* Sources */,
+				BD1A1BF61639469000186C48 /* Frameworks */,
+				BD1A1BF71639469000186C48 /* Resources */,
+				BD1A1C391639488C00186C48 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BD1A1C381639488700186C48 /* PBXTargetDependency */,
+			);
+			name = FinderWindowApplication;
+			productName = FinderWindowApplication;
+			productReference = BD1A1BF91639469000186C48 /* FinderWindowApplication.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BD1A1C24163946A500186C48 /* FinderWindow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD1A1C31163946A600186C48 /* Build configuration list for PBXNativeTarget "FinderWindow" */;
+			buildPhases = (
+				BD1A1C20163946A500186C48 /* Sources */,
+				BD1A1C21163946A500186C48 /* Frameworks */,
+				BD1A1C22163946A500186C48 /* Headers */,
+				BD1A1C23163946A500186C48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinderWindow;
+			productName = FinderWindow;
+			productReference = BD1A1C25163946A500186C48 /* FinderWindow.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BD1A1BF01639469000186C48 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = IA;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = infinit;
+			};
+			buildConfigurationList = BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindowApplication" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = BD1A1BEE1639469000186C48;
+			productRefGroup = BD1A1BFA1639469000186C48 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BD1A1BF81639469000186C48 /* FinderWindowApplication */,
+				BD1A1C24163946A500186C48 /* FinderWindow */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BD1A1BF71639469000186C48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C081639469100186C48 /* InfoPlist.strings in Resources */,
+				BD1A1C0E1639469100186C48 /* Credits.rtf in Resources */,
+				BD1A1C141639469100186C48 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BD1A1C23163946A500186C48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */,
+				BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BD1A1BF51639469000186C48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C0A1639469100186C48 /* main.m in Sources */,
+				BD1A1C111639469100186C48 /* IAAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BD1A1C20163946A500186C48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD1A1C30163946A600186C48 /* FinderWindow.m in Sources */,
+				BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BD1A1C381639488700186C48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BD1A1C24163946A500186C48 /* FinderWindow */;
+			targetProxy = BD1A1C371639488700186C48 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BD1A1C061639469100186C48 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD1A1C071639469100186C48 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		BD1A1C0C1639469100186C48 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD1A1C0D1639469100186C48 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		BD1A1C121639469100186C48 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD1A1C131639469100186C48 /* en */,
+			);
+			name = MainMenu.xib;
+			path = FinderWindowApplication;
+			sourceTree = SOURCE_ROOT;
+		};
+		BD1A1C2A163946A500186C48 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD1A1C2B163946A500186C48 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BD1A1C151639469100186C48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		BD1A1C161639469100186C48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		BD1A1C181639469100186C48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderWindowApplication/FinderWindowApplication-Prefix.pch";
+				INFOPLIST_FILE = "FinderWindowApplication/FinderWindowApplication-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		BD1A1C191639469100186C48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderWindowApplication/FinderWindowApplication-Prefix.pch";
+				INFOPLIST_FILE = "FinderWindowApplication/FinderWindowApplication-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		BD1A1C32163946A600186C48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderWindow/FinderWindow-Prefix.pch";
+				INFOPLIST_FILE = "FinderWindow/FinderWindow-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		BD1A1C33163946A600186C48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderWindow/FinderWindow-Prefix.pch";
+				INFOPLIST_FILE = "FinderWindow/FinderWindow-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindowApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD1A1C151639469100186C48 /* Debug */,
+				BD1A1C161639469100186C48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BD1A1C171639469100186C48 /* Build configuration list for PBXNativeTarget "FinderWindowApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD1A1C181639469100186C48 /* Debug */,
+				BD1A1C191639469100186C48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BD1A1C31163946A600186C48 /* Build configuration list for PBXNativeTarget "FinderWindow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD1A1C32163946A600186C48 /* Debug */,
+				BD1A1C33163946A600186C48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BD1A1BF01639469000186C48 /* Project object */;
+}

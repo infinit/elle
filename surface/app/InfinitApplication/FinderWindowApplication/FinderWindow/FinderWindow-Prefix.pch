@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'FinderWindow' target in the 'FinderWindow' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
