@@ -143,7 +143,10 @@ namespace elle
         {
           auto it = this->_enabled.find(name);
           if (it == this->_enabled.end())
-            throw std::runtime_error("Unknown component name '" + name + "'");
+            {
+              const_cast<Components*>(this)->enable(name);
+              return true;
+            }
           return it->second;
         }
 
@@ -163,20 +166,6 @@ namespace elle
                                  std::string const& message)
         : _component(component)
       {
-        try
-          {
-            // If this method does not throw, it means the component
-            // has already been registered leading it to be enabled
-            // or disabled.
-            Components::instance().enabled(this->_component);
-          }
-        catch (std::runtime_error const& e)
-          {
-            // If however an exception is thrown, the component has
-            // not been register, hence do it now.
-            Components::instance().enable(this->_component);
-          }
-
         this->_indent();
         this->_send(level, type, file, line, function, message);
       }
