@@ -1,6 +1,5 @@
 #include <satellites/progress/Progress.hh>
 
-#include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
