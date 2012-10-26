@@ -301,21 +301,21 @@ namespace elle
                 case Parser::KindNone:
                   {
                     // no option.
-                    this->longs[i].has_arg = 0;
+                    this->longs[i].has_arg = no_argument;
 
                     break;
                   }
                 case Parser::KindRequired:
                   {
                     // set the argument as being required.
-                    this->longs[i].has_arg = 1;
+                    this->longs[i].has_arg = required_argument;
 
                     break;
                   }
                 case Parser::KindOptional:
                   {
                     // set the argument as being optional.
-                    this->longs[i].has_arg = 2;
+                    this->longs[i].has_arg = optional_argument;
 
                     break;
                   }
