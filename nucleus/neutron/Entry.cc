@@ -6,15 +6,6 @@ namespace nucleus
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this defines an unexisting entry.
-    ///
-    const Entry                 Entry::Null;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 

@@ -23,11 +23,6 @@ namespace nucleus
     {
     public:
       //
-      // constants
-      //
-      static const Entry                Null;
-
-      //
       // types
       //
       typedef elle::String              Symbol;
