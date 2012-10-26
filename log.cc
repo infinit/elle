@@ -143,10 +143,7 @@ namespace elle
         {
           auto it = this->_enabled.find(name);
           if (it == this->_enabled.end())
-            {
-              const_cast<Components*>(this)->enable(name);
-              return true;
-            }
+            throw std::runtime_error("Unknown component name '" + name + "'");
           return it->second;
         }
 
@@ -166,6 +163,8 @@ namespace elle
                                  std::string const& message)
         : _component(component)
       {
+        Components::instance().enable(this->_component);
+
         this->_indent();
         this->_send(level, type, file, line, function, message);
       }
