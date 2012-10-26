@@ -18,7 +18,7 @@ int main()
                                kp.K,
                                nucleus::neutron::Genre::directory);
 
-  CHECK(blk.Seal(kp.k, nucleus::neutron::Access::Null));
+  CHECK(blk.Seal(kp.k));
 
   nucleus::proton::Address addr(blk.bind());
 
@@ -33,7 +33,7 @@ int main()
       nucleus::neutron::Object blk_copy;
       buf.reader() >> blk_copy;
 
-      blk_copy.validate(addr, nucleus::neutron::Access::Null);
+      blk_copy.validate(addr);
 
       assert(blk.owner_subject() == blk_copy.owner_subject());
     }

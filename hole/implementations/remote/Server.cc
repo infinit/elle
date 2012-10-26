@@ -119,12 +119,12 @@ namespace hole
                   nucleus::neutron::Access * access =
                     dynamic_cast<nucleus::neutron::Access *>(block.get());
                   // Validate the object, providing the access block
-                  object->validate(address, *access);
+                  object->validate(address, access);
                 }
               else
                 {
                   // Validate the object.
-                  object->validate(address, nucleus::neutron::Access::Null);
+                  object->validate(address, nullptr);
                 }
 
               break;
@@ -193,12 +193,12 @@ namespace hole
                     dynamic_cast<nucleus::neutron::Access *>((accesBlock.get()));
 
                   // Validate the object, providing the access block
-                  object->validate(address, *access);
+                  object->validate(address, access);
                 }
               else
                 {
                   // validate the object.
-                  object->validate(address, nucleus::neutron::Access::Null);
+                  object->validate(address, nullptr);
                 }
 
               break;

@@ -214,12 +214,12 @@ namespace hole
                           ELLE_DEBUG("%s: retrieve the access block", *this);
 
                           // Validate the object, providing the
-                          object->validate(address, *access);
+                          object->validate(address, access.get());
                         }
                       else
                         {
                           // Validate the object.
-                          object->validate(address, nucleus::neutron::Access::Null);
+                          object->validate(address, nullptr);
                         }
 
                       break;
@@ -321,18 +321,17 @@ namespace hole
                     nucleus::neutron::Access *access =
                       dynamic_cast<nucleus::neutron::Access *> (addressBlock.get());
 
-
                     if (access == nullptr)
                       throw reactor::Exception(elle::concurrency::scheduler(),
                                                "expected an access block");
 
                     // validate the object, providing the
-                    object->validate(address, *access);
+                    object->validate(address, access);
                   }
                   else
                   {
                     // validate the object.
-                    object->validate(address, nucleus::neutron::Access::Null);
+                    object->validate(address, nullptr);
                   }
 
                   break;

@@ -66,7 +66,7 @@ namespace hole
                     if (access == nullptr)
                       throw elle::Exception("Expected an access block.");
 
-                    object->validate(address, *access);
+                    object->validate(address, access.get());
                   }
                 }
               else
@@ -77,7 +77,7 @@ namespace hole
                       this)
                     {
                       // validate the object.
-                      object->validate(address, nucleus::neutron::Access::Null);
+                      object->validate(address, nullptr);
                     }
                 }
 
@@ -149,12 +149,12 @@ namespace hole
                     throw elle::Exception("Expected an access block.");
 
                   // Validate the object.
-                  object->validate(address, *access);
+                  object->validate(address, access.get());
                 }
               else
                 {
                   // validate the object.
-                  object->validate(address, nucleus::neutron::Access::Null);
+                  object->validate(address, nullptr);
                 }
 
               break;

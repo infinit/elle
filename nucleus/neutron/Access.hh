@@ -31,12 +31,6 @@ namespace nucleus
       static const Component component;
 
       //
-      // constants
-      //
-    public:
-      static const Access               Null;
-
-      //
       // construction
       //
     public:

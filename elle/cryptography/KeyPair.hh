@@ -28,20 +28,21 @@ namespace elle
       // static methods
       //
     public:
-      /// Initializes the keypair contexts.
+      /// Initialize the keypair contexts.
       static
       void
       initialize();
-      /// Cleans the keypair contexts.
+      /// Clean the keypair contexts.
       static
       void
       clean();
-
-      /// Returns a brand new, freshly generated key pair of the
+      /// Return a brand new, freshly generated key pair of the
       /// given length, or default one if not provided.
       static
       KeyPair
       generate(elle::Natural32 const length = Default::Length);
+      // XXX[to remove if possible]
+      static KeyPair const& null();
 
       //
       // constants
@@ -50,8 +51,6 @@ namespace elle
       {
         static const Natural32          Length;
       };
-
-      static KeyPair const& null();
 
       static const String               Extension;
 
@@ -67,12 +66,6 @@ namespace elle
       // methods
       //
     public:
-      Status            Generate();
-      Status            Generate(const Natural32);
-
-      Status            Create(const PublicKey&,
-                               const PrivateKey&);
-
       Status            Rotate(const Seed&,
                                KeyPair&) const;
 

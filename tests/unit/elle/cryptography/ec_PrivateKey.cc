@@ -21,8 +21,6 @@ void test_encrypt()
 
   elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
 
-  show_assert(pair.Generate());
-
   std::cout << "bim\n";
 
   show_assert(pair.K.Encrypt(my_secret_text, code));

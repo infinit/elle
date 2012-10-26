@@ -182,7 +182,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
                        directory.owner_token()) == e)
     throw std::runtime_error("unable to update the directory");
 
-  if (directory.Seal(identity.pair.k, access)                 == e)
+  if (directory.Seal(identity.pair.k, &access) == e)
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------

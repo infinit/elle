@@ -19,15 +19,13 @@
 void test_encryption()
 {
   elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
+  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(2048));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
   elle::cryptography::Clear clear;
 
   CHECK(elle::cryptography::Random::Generate(plain, 512));
-
-  CHECK(kp.Generate(2048));
 
   K = kp.K;
   k = kp.k;
@@ -42,7 +40,7 @@ void test_encryption()
 void test_noitpyrcne()
 {
   elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
+  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(4096));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
@@ -63,7 +61,7 @@ void test_noitpyrcne()
 void test_signature()
 {
   elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(2048));
+  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(1024));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Signature signature;

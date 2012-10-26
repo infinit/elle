@@ -387,12 +387,12 @@ namespace hole
                                                      "expected an access block");
 
                           // validate the object, providing the
-                          object->validate(address, *access);
+                          object->validate(address, access);
                         }
                       else
                         {
                           // validate the object.
-                          object->validate(address, nucleus::neutron::Access::Null);
+                          object->validate(address, nullptr);
                         }
 
                       break;
@@ -729,7 +729,7 @@ namespace hole
                       // validate the object, providing the
                       try
                         {
-                          object.validate(address, *access);
+                          object.validate(address, access.get());
                         }
                       catch (nucleus::Exception const& e)
                         {
@@ -743,7 +743,7 @@ namespace hole
                       // Validate the object.
                       try
                         {
-                          object.validate(address, nucleus::neutron::Access::Null);
+                          object.validate(address, nullptr);
                         }
                       catch (nucleus::Exception const& e)
                         {
@@ -838,12 +838,12 @@ namespace hole
                     throw reactor::Exception(elle::concurrency::scheduler(),
                                              "expected an access block");
                   // Validate the object, providing the
-                  object->validate(address, *access);
+                  object->validate(address, access.get());
                 }
               else
                 {
                   // Validate the object.
-                  object->validate(address, nucleus::neutron::Access::Null);
+                  object->validate(address, nullptr);
                 }
 
               break;
@@ -984,7 +984,7 @@ namespace hole
                           // validate the object, providing the
                           try
                             {
-                              object.validate(address, *access);
+                              object.validate(address, access.get());
                             }
                           catch (nucleus::Exception const& e)
                             {
@@ -998,7 +998,7 @@ namespace hole
                           // validate the object.
                           try
                             {
-                              object.validate(address, nucleus::neutron::Access::Null);
+                              object.validate(address, nullptr);
                             }
                           catch (nucleus::Exception const& e)
                             {
@@ -1082,12 +1082,12 @@ namespace hole
                                              "expected an access block");
 
                   // Validate the object.
-                  object->validate(address, *access);
+                  object->validate(address, access.get());
                 }
               else
                 {
                   // validate the object.
-                  object->validate(address, nucleus::neutron::Access::Null);
+                  object->validate(address, nullptr);
                 }
 
               break;

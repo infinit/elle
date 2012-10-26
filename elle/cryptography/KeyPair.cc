@@ -106,33 +106,8 @@ namespace elle
       // Make sure the cryptographic system is set up.
       cryptography::setup();
 
-      // XXX[to do better with constructors]
-      if (this->Generate(length) == Status::Error)
-        throw Exception("unable to generate the key pair");
-    }
+      // XXX[to improve so as to call the K/k constructors]
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method generate a RSA keypair.
-    ///
-    Status              KeyPair::Generate()
-    {
-      if (this->Generate(KeyPair::Default::Length) == Status::Error)
-        escape("unable to generate the key pair");
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method generates a key pair given the parameters.
-    ///
-    /// the argument length represents the length of the key, in bits.
-    ///
-    Status              KeyPair::Generate(const Natural32       length)
-    {
       struct Scope
       {
         ::EVP_PKEY* key;
@@ -164,25 +139,11 @@ namespace elle
         escape("unable to create the private key");
 
       assert(this->k.key() != nullptr);
-
-      return Status::Ok;
     }
 
-    ///
-    /// this method creates a key pair from both a public and private key.
-    ///
-    Status              KeyPair::Create(const PublicKey&        K,
-                                        const PrivateKey&       k)
-    {
-      // assign the attributes.
-      this->K = K;
-      this->k = k;
-
-      assert(this->K.key() != nullptr);
-      assert(this->k.key() != nullptr);
-
-      return Status::Ok;
-    }
+//
+// ---------- methods ---------------------------------------------------------
+//
 
     ///
     /// this method rotates a key pair based on a given seed.

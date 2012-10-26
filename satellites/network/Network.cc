@@ -220,7 +220,7 @@ namespace satellite
       escape("unable to update the directory");
 
     // seal the directory.
-    if (directory.Seal(identity.pair.k, access) == elle::Status::Error)
+    if (directory.Seal(identity.pair.k, &access) == elle::Status::Error)
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());

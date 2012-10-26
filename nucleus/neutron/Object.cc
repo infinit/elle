@@ -201,7 +201,7 @@ namespace nucleus
     /// this method seals the data and meta data by signing them.
     ///
     elle::Status        Object::Seal(elle::cryptography::PrivateKey const&    k,
-                                     const Access&              access)
+                                     Access const* access)
     {
       // re-sign the data if required.
       if (this->_data.state == proton::StateDirty)
@@ -245,13 +245,13 @@ namespace nucleus
               elle::cryptography::Digest      fingerprint;
 
               // test if there is an access block.
-              if (access == Access::Null)
+              if (access == nullptr)
                 escape("the Seal() method must take the object's "
                        "access block");
 
               // compute the fingerprint of the access (subject, permissions)
               // tuples.
-              if (access.Fingerprint(fingerprint) == elle::Status::Error)
+              if (access->Fingerprint(fingerprint) == elle::Status::Error)
                 escape("unable to compute the access block fingerprint");
 
               // sign the meta data, making sure to include the access
@@ -415,7 +415,7 @@ namespace nucleus
 
     void
     Object::validate(proton::Address const& address,
-                     Access const& access) const
+                     Access const* access) const
     {
       /// The method (i) calls the parent class for validation (iii) verifies
       /// the meta part's signature (iv) retrieves the author's public key
@@ -437,13 +437,13 @@ namespace nucleus
             elle::cryptography::Digest        fingerprint;
 
             // test if there is an access block.
-            if (access == Access::Null)
+            if (access == nullptr)
               throw Exception("the Validate() method must take the object's "
                               "access block");
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
-            if (access.Fingerprint(fingerprint) == elle::Status::Error)
+            if (access->Fingerprint(fingerprint) == elle::Status::Error)
               throw Exception("unable to compute the access block fingerprint");
 
             // verify the meta part, including the access fingerprint.
@@ -510,14 +510,14 @@ namespace nucleus
               Record* record;
 
               // check that an access block has been provided.
-              if (access == Access::Null)
+              if (access == nullptr)
                 throw Exception("the Validate() method must take the object's "
                                 "access block");
 
               // retrieve the access record corresponding to the author's
               // index.
-              if (access.Lookup(this->_author->lord.index,
-                                record) == elle::Status::Error)
+              if (access->Lookup(this->_author->lord.index,
+                                 record) == elle::Status::Error)
                 throw Exception("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
@@ -528,8 +528,8 @@ namespace nucleus
 
               // check that the subject is indeed a user.
               if (record->subject.type() != Subject::TypeUser)
-                throw Exception("the author references an access record which is "
-                                "not related to a user");
+                throw Exception("the author references an access record which "
+                                "is not related to a user");
 
               // finally, set the user's public key.
               //

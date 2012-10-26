@@ -100,7 +100,7 @@ namespace nucleus
                                      const Permissions&);
 
       elle::Status      Seal(elle::cryptography::PrivateKey const&,
-                             const Access&);
+                             Access const* access);
 
       /// Returns the address of the referenced Access block.
       proton::Address const&
@@ -161,7 +161,7 @@ namespace nucleus
       validate(proton::Address const& address) const;
       void
       validate(proton::Address const& address,
-               Access const& access) const;
+               Access const* access) const;
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;

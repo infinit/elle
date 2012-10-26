@@ -19,15 +19,6 @@ namespace nucleus
     const Component Access::component = ComponentAccess;
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the null access.
-    ///
-    const Access                        Access::Null;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 
