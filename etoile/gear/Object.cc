@@ -3,6 +3,7 @@
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Author.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -22,7 +23,8 @@ namespace etoile
       Context(NatureObject),
 
       object(nullptr),
-      access(nullptr)
+      access(nullptr),
+      author(nullptr)
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
@@ -36,7 +38,8 @@ namespace etoile
       Context(nature),
 
       object(nullptr),
-      access(nullptr)
+      access(nullptr),
+      author(nullptr)
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
@@ -50,6 +53,7 @@ namespace etoile
     {
       delete this->object;
       delete this->access;
+      delete this->author;
     }
 
 //
@@ -117,8 +121,11 @@ namespace etoile
         escape("unable to dump the record");
 
       // dump the author.
-      if (this->author.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the author");
+      if (this->author != nullptr)
+        {
+          if (this->author->Dump(margin + 2) == elle::Status::Error)
+            escape("unable to dump the author");
+        }
 
       return elle::Status::Ok;
     }

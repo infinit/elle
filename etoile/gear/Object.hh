@@ -9,7 +9,6 @@
 # include <nucleus/neutron/Object.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Record.hh>
-# include <nucleus/neutron/Author.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
@@ -97,7 +96,7 @@ namespace etoile
         elle::cryptography::SecretKey key;
         nucleus::neutron::Record record;
       } rights;
-      nucleus::neutron::Author author;
+      nucleus::neutron::Author* author;
     };
 
   }

@@ -26,7 +26,7 @@ namespace etoile
     elle::Status        Author::Forge(gear::Object&             context)
     {
       // if an author exists, return.
-      if (context.author != nucleus::neutron::Author::Null)
+      if (context.author != nullptr)
         return elle::Status::Ok;
 
       // determine the rights.
@@ -39,7 +39,8 @@ namespace etoile
         case nucleus::neutron::Object::RoleOwner:
           {
             // Create an owner author.
-            context.author = nucleus::neutron::Author();
+            context.author = new nucleus::neutron::Author;
+
             break;
           }
         case nucleus::neutron::Object::RoleLord:
@@ -57,7 +58,7 @@ namespace etoile
                      "access block");
 
             // Create a lord author.
-            context.author = nucleus::neutron::Author(index);
+            context.author = new nucleus::neutron::Author(index);
 
             break;
           }
@@ -69,6 +70,8 @@ namespace etoile
             break;
           }
         }
+
+      assert(context.author != nullptr);
 
       return elle::Status::Ok;
     }

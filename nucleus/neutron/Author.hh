@@ -18,10 +18,6 @@ namespace nucleus
     class Author:
       public elle::Printable
     {
-    public:
-      /// A null author.
-      static const Author               Null;
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -32,8 +28,6 @@ namespace nucleus
       /// granted access to an object (i.e is explicitely listed in the Access
       /// block).
       Author(Index const& idx);
-    private:
-      Author(Object::Role role);
 
     /*----------.
     | Operators |

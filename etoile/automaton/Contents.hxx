@@ -182,7 +182,7 @@ namespace etoile
             {
               // update the object with the null contents address.
               if (context.object->Update(
-                    context.author,
+                    *context.author,
                     nucleus::proton::Address::null,
                     0,
                     context.object->access(),
@@ -247,7 +247,7 @@ namespace etoile
 
           // update the object.
           if (context.object->Update(
-                context.author,
+                *context.author,
                 address,
                 size,
                 context.object->access(),

@@ -6,7 +6,6 @@ namespace nucleus
 {
   namespace neutron
   {
-    const Author Author::Null(Object::RoleUnknown);
 
     /*-------------.
     | Construction |
@@ -21,10 +20,6 @@ namespace nucleus
     {
       this->lord.index = index;
     }
-
-    Author::Author(Object::Role role):
-      role(role)
-    {}
 
     /*----------.
     | Operators |
