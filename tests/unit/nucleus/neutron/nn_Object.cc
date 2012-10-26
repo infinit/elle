@@ -18,13 +18,12 @@ int main()
                                kp.K,
                                nucleus::neutron::Genre::directory);
 
-  CHECK(blk.Seal(kp.k));
+  CHECK(blk.Seal(kp.k, nullptr));
 
   nucleus::proton::Address addr(blk.bind());
 
   std::string unique;
   static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
-  elle::print("unique string:", unique);
 
   elle::Buffer buf;
   buf.writer() << blk;
@@ -33,7 +32,7 @@ int main()
       nucleus::neutron::Object blk_copy;
       buf.reader() >> blk_copy;
 
-      blk_copy.validate(addr);
+      blk_copy.validate(addr, nullptr);
 
       assert(blk.owner_subject() == blk_copy.owner_subject());
     }
