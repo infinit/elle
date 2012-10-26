@@ -206,7 +206,7 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
 
     try
       {
-        root_block.validate(root_address, access_block);
+        root_block.validate(root_address, &access_block);
       }
     catch (nucleus::Exception const& e)
       {
