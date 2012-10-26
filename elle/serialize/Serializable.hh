@@ -4,9 +4,9 @@
 # include "fwd.hh"
 
 /// Desambiguate Serializable<T, ArchiveType = BinaryArchive> methods
-# define ELLE_SERIALIZE_SERIALIZABLE_METHODS(cls, ...)                        \
-  __ESS_SERIALIZE(cls, ##__VA_ARGS__)                                         \
-  __ESS_DESERIALIZE(cls, ##__VA_ARGS__)                                       \
+# define ELLE_SERIALIZE_SERIALIZABLE_METHODS(...)                       \
+  __ESS_SERIALIZE(__VA_ARGS__)                                          \
+  __ESS_DESERIALIZE(__VA_ARGS__)                                        \
 /**/
 
 ///
