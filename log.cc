@@ -163,6 +163,8 @@ namespace elle
                                  std::string const& message)
         : _component(component)
       {
+        // XXX[improve this because enable() is called every time something is
+        //     logged]
         Components::instance().enable(this->_component);
 
         this->_indent();
