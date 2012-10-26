@@ -8,15 +8,6 @@ namespace nucleus
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this variable can easily be used for comparing with invalid networks.
-    ///
-    const Network               Network::Null;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 

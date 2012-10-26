@@ -21,12 +21,6 @@ namespace nucleus
       public elle::Printable
     {
       //
-      // constants
-      //
-    public:
-      static const Network      Null;
-
-      //
       // constructors & destructors
       //
     public:
