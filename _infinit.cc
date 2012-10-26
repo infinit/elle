@@ -80,7 +80,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'm',
         "mountpoint",
         "specifies the mount point",
-        elle::utility::Parser::KindOptional) == elle::Status::Error)
+        elle::utility::Parser::KindRequired) == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
@@ -122,13 +122,17 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     }
 
   // Retrieve the mount point.
-  try
+  if (Infinit::Parser->Test("Mountpoint") == elle::Status::True)
     {
-      Infinit::Parser->Value("Mountpoint", Infinit::Mountpoint);
+      if (Infinit::Parser->Value("Mountpoint",
+                                 Infinit::Mountpoint) == elle::Status::Error)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "unable to retrieve the mountpoint");
     }
-  catch (...)
+  else
     {
-      // Nothing. No mountpoint is OK. FIXME though.
+      // Nothing to do, keep the mounpoint empty.
+      // XXX[to fix later though]
     }
 
   // initialize the Lune library.
