@@ -46,7 +46,7 @@ namespace nucleus
           elle::cryptography::KeyPair::generate());
 
         Token token(this->manager_subject().user(), pass.k);
-        this->upgrade(proton::Address::null, pass.K, token);
+        this->upgrade(proton::Address::null(), pass.K, token);
       }
     }
 
@@ -81,7 +81,7 @@ namespace nucleus
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = proton::Address::null;
+      this->_ensemble = proton::Address::null();
 
       this->state(proton::StateDirty);
     }

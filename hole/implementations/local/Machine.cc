@@ -51,7 +51,7 @@ namespace hole
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->access() != nucleus::proton::Address::null)
+              if (object->access() != nucleus::proton::Address::null())
                 {
                   ELLE_TRACE(
                     "Put nucleus::Object MutableBlock %p"
@@ -137,7 +137,7 @@ namespace hole
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->access() != nucleus::proton::Address::null)
+              if (object->access() != nucleus::proton::Address::null())
                 {
                   // Load the access block.
                   std::unique_ptr<nucleus::proton::Block> accesBlock

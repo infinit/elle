@@ -9,12 +9,25 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    Address const Address::null(Address::Type::null);
-    Address const Address::some(Address::Type::some);
+    Address const&
+    Address::null()
+    {
+      static Address address(Address::Type::null);
+
+      return (address);
+    }
+
+    Address const&
+    Address::some()
+    {
+      static Address address(Address::Type::some);
+
+      return (address);
+    }
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -130,11 +143,11 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       // check the value.
-      if (*this == Address::null)
+      if (*this == Address::null())
         {
           std::cout << alignment << "[Address] " << elle::none << std::endl;
         }
-      else if (*this == Address::some)
+      else if (*this == Address::some())
         {
           std::cout << alignment << "[Address] " << "(undef)" << std::endl;
         }

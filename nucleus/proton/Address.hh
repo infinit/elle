@@ -38,17 +38,21 @@ namespace nucleus
       public elle::Printable,
       public elle::concept::MakeUniquable<Address>
     {
-      //
-      // constants
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      /// Defines an unused address.
-      static Address const null;
-      /// Defines a not-yet-used address i.e an address with a irrelevant
+      /// Return an unused address.
+      static
+      Address const&
+      null();
+      /// Return a not-yet-used address i.e an address with a irrelevant
       /// value (for now) but whose state, once serialized, should reflect
       /// the one of a valid address; the size of the address once serialized
       /// should be extremely close (or equal) to the one of a valid address.
-      static Address const some;
+      static
+      Address const&
+      some();
 
       //
       // enumerations

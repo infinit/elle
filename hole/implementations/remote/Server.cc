@@ -111,7 +111,7 @@ namespace hole
 
               // Validate the object according to the presence of a
               // referenced access block.
-              if (object->access() != nucleus::proton::Address::null)
+              if (object->access() != nucleus::proton::Address::null())
                 {
                   std::unique_ptr<nucleus::proton::Block> block =
                     this->get(object->access());
@@ -184,7 +184,7 @@ namespace hole
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->access() != nucleus::proton::Address::null)
+              if (object->access() != nucleus::proton::Address::null())
                 {
                   std::unique_ptr<nucleus::proton::Block> accesBlock =
                     this->get(object->access());

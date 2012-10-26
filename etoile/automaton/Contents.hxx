@@ -39,7 +39,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // check if there exists a contents. if so, load the block.
-      if (context.object->contents() != nucleus::proton::Address::null)
+      if (context.object->contents() != nucleus::proton::Address::null())
         {
           // load the block.
           // XXX[the context should make use of unique_ptr instead
@@ -93,7 +93,7 @@ namespace etoile
       ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
 
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.object->contents() != nucleus::proton::Address::null)
+      if (context.object->contents() != nucleus::proton::Address::null())
         {
           ELLE_TRACE("record the Contents block '%s' for removal",
                      context.object->contents())
@@ -183,7 +183,7 @@ namespace etoile
               // update the object with the null contents address.
               if (context.object->Update(
                     *context.author,
-                    nucleus::proton::Address::null,
+                    nucleus::proton::Address::null(),
                     0,
                     context.object->access(),
                     context.object->owner_token()) == elle::Status::Error)

@@ -226,7 +226,7 @@ namespace etoile
 
                           ELLE_TRACE("the subject is _not_ the group manager");
 
-                          if (group->ensemble() != nucleus::proton::Address::null)
+                          if (group->ensemble() != nucleus::proton::Address::null())
                             {
                               std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
 

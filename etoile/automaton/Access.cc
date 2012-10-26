@@ -44,7 +44,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // if an access block is referenced in the object.
-      if (context.object->access() != nucleus::proton::Address::null)
+      if (context.object->access() != nucleus::proton::Address::null())
         {
           ELLE_TRACE("the Object references an Access block at '%s'",
                      context.object->access());
@@ -175,7 +175,7 @@ namespace etoile
                                 // i.e rights.key.
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
-                                  nucleus::proton::Address::null ?
+                                  nucleus::proton::Address::null() ?
                                   nucleus::neutron::Token::Null :
                                   nucleus::neutron::Token(subject.user(),
                                                           context.rights.key);
@@ -216,7 +216,7 @@ namespace etoile
                               {
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
-                                  nucleus::proton::Address::null ?
+                                  nucleus::proton::Address::null() ?
                                   nucleus::neutron::Token::Null :
                                   nucleus::neutron::Token(group->pass_K(),
                                                           context.rights.key);
@@ -261,7 +261,7 @@ namespace etoile
                           {
                             nucleus::neutron::Token token =
                               context.object->contents() ==
-                              nucleus::proton::Address::null ?
+                              nucleus::proton::Address::null() ?
                               nucleus::neutron::Token::Null :
                               nucleus::neutron::Token(subject.user(),
                                                       context.rights.key);
@@ -301,7 +301,7 @@ namespace etoile
                           {
                             nucleus::neutron::Token token =
                               context.object->contents() ==
-                              nucleus::proton::Address::null ?
+                              nucleus::proton::Address::null() ?
                               nucleus::neutron::Token::Null :
                               nucleus::neutron::Token(group->pass_K(),
                                                       context.rights.key);
@@ -810,7 +810,7 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // if the block is present.
-      if (context.object->access() != nucleus::proton::Address::null)
+      if (context.object->access() != nucleus::proton::Address::null())
         {
           ELLE_TRACE("record the Access block '%s' for removal",
                      context.object->access())
@@ -894,7 +894,7 @@ namespace etoile
                 context.object->author(),
                 context.object->contents(),
                 context.object->size(),
-                nucleus::proton::Address::null,
+                nucleus::proton::Address::null(),
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
         }

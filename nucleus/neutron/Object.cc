@@ -91,9 +91,9 @@ namespace nucleus
       {
         // Set the initial data with no contents and the owner as the author.
         if (this->Update(Author(),
-                         proton::Address::null,
+                         proton::Address::null(),
                          0,
-                         proton::Address::null,
+                         proton::Address::null(),
                          this->_meta.owner.token) == elle::Status::Error)
           throw Exception("unable to set the initial data");
       }
@@ -231,7 +231,7 @@ namespace nucleus
 
           // perform the meta signature depending on the presence of a
           // reference to an access block.
-          if (this->_meta.access != proton::Address::null)
+          if (this->_meta.access != proton::Address::null())
             {
               //
               // if an access block is referenced, the identities and
@@ -432,7 +432,7 @@ namespace nucleus
 
       // (ii)
       {
-        if (this->_meta.access != proton::Address::null)
+        if (this->_meta.access != proton::Address::null())
           {
             elle::cryptography::Digest        fingerprint;
 

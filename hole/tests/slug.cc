@@ -87,9 +87,9 @@ test()
   nucleus::neutron::Object block(network, user_keys.K,
                                  nucleus::neutron::Genre::file);
   block.Update(nucleus::neutron::Author(),
-               nucleus::proton::Address::null,
+               nucleus::proton::Address::null(),
                42,
-               nucleus::proton::Address::null,
+               nucleus::proton::Address::null(),
                nucleus::neutron::Token::Null);
   block.Seal(user_keys.k);
 

@@ -29,8 +29,8 @@ namespace test
 
       nucleus::proton::Address addr(blk.bind());
 
-      assert(addr != nucleus::proton::Address::null);
-      assert(addr != nucleus::proton::Address::some);
+      assert(addr != nucleus::proton::Address::null());
+      assert(addr != nucleus::proton::Address::some());
 
       blk.validate(addr);
 
