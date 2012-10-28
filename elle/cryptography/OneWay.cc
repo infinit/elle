@@ -18,7 +18,7 @@ namespace elle
                                      Digest&                    digest)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       static ::EVP_MD const* Algorithm = ::EVP_sha256();
 

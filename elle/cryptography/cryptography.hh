@@ -22,9 +22,10 @@ namespace elle
     /// !WARNING! Do not use unless you know exactly what you're doing.
     void
     clean();
-    /// Makes sure the cryptographic module has been set up.
+    /// Makes sure the cryptographic module has been set up. This method
+    /// can be called whenever one needs the cryptography to be set up.
     void
-    setup();
+    require();
 
   }
 }

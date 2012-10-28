@@ -98,13 +98,13 @@ namespace elle
     KeyPair::KeyPair()
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
     }
 
     KeyPair::KeyPair(elle::Natural32 const length)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // XXX[to improve so as to call the K/k constructors]
 
