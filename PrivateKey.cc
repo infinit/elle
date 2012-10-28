@@ -41,7 +41,7 @@ namespace elle
       _contexts{nullptr, nullptr, nullptr}
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
     }
 
     ///
@@ -53,7 +53,7 @@ namespace elle
       _contexts{nullptr, nullptr, nullptr}
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // create the private key by duplicating the internal numbers.
       if (k._key)

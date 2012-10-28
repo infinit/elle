@@ -55,7 +55,7 @@ namespace elle
     SecretKey::SecretKey()
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
     }
 
 //

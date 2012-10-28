@@ -37,6 +37,8 @@ namespace elle
 
       // Set the module has initialized.
       _initialized = true;
+
+      ELLE_TRACE_SCOPE("cryptography initialized");
     }
 
     void
@@ -65,12 +67,14 @@ namespace elle
 
       // Set the module has non-initialized.
       _initialized = false;
+
+      ELLE_TRACE_SCOPE("cryptography cleaned");
     }
 
     void
-    setup()
+    require()
     {
-      ELLE_DEBUG_SCOPE("setting up the cryptography");
+      ELLE_DEBUG_SCOPE("require the cryptography");
 
       if (_initialized == false)
         initialize();

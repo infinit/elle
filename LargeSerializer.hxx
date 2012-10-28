@@ -34,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
                           version)
 {
   // Make sure the cryptographic system is set up.
-  elle::cryptography::setup();
+  elle::cryptography::require();
 
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
   enforce(version == 0);
@@ -54,7 +54,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,
                           version)
 {
   // Make sure the cryptographic system is set up.
-  elle::cryptography::setup();
+  elle::cryptography::require();
 
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
   enforce(version == 0);
