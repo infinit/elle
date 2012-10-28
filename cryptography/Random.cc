@@ -49,7 +49,7 @@ namespace elle
         /// Enable for instance tests to override the random data source,
         /// so as to use /dev/urandom and avoid /dev/random enthropy
         /// starvation.
-        if ((source = getenv("INFINIT_RANDOM_SOURCE")) == nullptr)
+        if ((source = getenv("ELLE_RANDOM_SOURCE")) == nullptr)
           source = "/dev/random";
 
         if ((fd = ::open(source, O_RDONLY)) == -1)
@@ -124,7 +124,7 @@ namespace elle
     Status              Random::Generate(Character&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -140,7 +140,7 @@ namespace elle
     Status              Random::Generate(Real&                  value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -156,7 +156,7 @@ namespace elle
     Status              Random::Generate(Integer8&              value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -172,7 +172,7 @@ namespace elle
     Status              Random::Generate(Integer16&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -188,7 +188,7 @@ namespace elle
     Status              Random::Generate(Integer32&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -204,7 +204,7 @@ namespace elle
     Status              Random::Generate(Integer64&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -220,7 +220,7 @@ namespace elle
     Status              Random::Generate(Natural8&              value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -236,7 +236,7 @@ namespace elle
     Status              Random::Generate(Natural16&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -252,7 +252,7 @@ namespace elle
     Status              Random::Generate(Natural32&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -268,7 +268,7 @@ namespace elle
     Status              Random::Generate(Natural64&             value)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
@@ -285,7 +285,7 @@ namespace elle
                                          const Natural32        length)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
@@ -301,7 +301,7 @@ namespace elle
                                          const Natural32        length)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       static String     alphabet =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -331,7 +331,7 @@ namespace elle
                                          const Natural32        size)
     {
       // Make sure the cryptographic system is set up.
-      cryptography::setup();
+      cryptography::require();
 
       // prepare the region.
       if (value.Prepare(size) == Status::Error)
