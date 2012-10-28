@@ -54,9 +54,9 @@ namespace nucleus
       Address const&
       some();
 
-      //
-      // enumerations
-      //
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
       enum class Type
       {
@@ -65,9 +65,9 @@ namespace nucleus
         valid
       };
 
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Address(); // XXX[to deserialize]
       ELLE_SERIALIZE_CONSTRUCT(Address) {}
@@ -80,17 +80,26 @@ namespace nucleus
     private:
       Address(Type const type);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// this method returns a unique representation of the address.
+      /// Return a unique representation of the address.
       elle::String const
       unique() const;
+      /// Return the address' network.
+      Network const&
+      network() const;
+      /// Return the address' family.
+      Family const&
+      family() const;
+      /// Return the address' component.
+      neutron::Component const&
+      component() const;
 
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
       elle::Boolean
       operator ==(Address const& other) const;
@@ -103,9 +112,9 @@ namespace nucleus
       ELLE_OPERATOR_GTE(Address);
       ELLE_OPERATOR_ASSIGNMENT(Address);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -117,15 +126,40 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+    public:
+      /*-----------.
+      | structures |
+      `-----------*/
+      struct Valid
+      {
+        // construction
+      public:
+        Valid();
+        Valid(Network const& network,
+              Family const& family,
+              neutron::Component const& component,
+              elle::cryptography::Digest* digest);
+        ~Valid();
+
+      public:
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(Address::Valid);
+
+        // attributes
+      public:
+        ELLE_ATTRIBUTE_R(Network, network);
+        ELLE_ATTRIBUTE_R(Family, family);
+        ELLE_ATTRIBUTE_R(neutron::Component, component);
+        // XXX[_R only later for this attribute]
+        ELLE_ATTRIBUTE_RW(elle::cryptography::Digest*, digest);
+      };
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      ELLE_ATTRIBUTE(Type, type);
-      ELLE_ATTRIBUTE_R(Network, network);
-      ELLE_ATTRIBUTE_R(Family, family);
-      ELLE_ATTRIBUTE_R(neutron::Component, component);
-      ELLE_ATTRIBUTE(elle::cryptography::Digest, digest);
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Valid*, valid);
     };
 
   }

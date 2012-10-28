@@ -33,17 +33,26 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    Address::Address()
+    Address::Address():
+      _valid(nullptr)
     {
     }
 
     Address::Address(Address const& other):
       _type(other._type),
-      _network(other._network),
-      _family(other._family),
-      _component(other._component),
-      _digest(other._digest)
+      _valid(nullptr)
     {
+      if (other._valid != nullptr)
+        {
+          ELLE_ASSERT(other._valid->digest() != nullptr);
+
+          this->_valid =
+            new Address::Valid(
+              other._valid->network(),
+              other._valid->family(),
+              other._valid->component(),
+              new elle::cryptography::Digest(*other._valid->digest()));
+        }
     }
 
     Address::Address(Type const type):
@@ -65,6 +74,27 @@ namespace nucleus
         }
     }
 
+    Address::Valid::Valid():
+      _digest(nullptr)
+    {
+    }
+
+    Address::Valid::Valid(Network const& network,
+                          Family const& family,
+                          neutron::Component const& component,
+                          elle::cryptography::Digest* digest):
+      _network(network),
+      _family(family),
+      _component(component),
+      _digest(digest)
+    {
+    }
+
+    Address::Valid::~Valid()
+    {
+      delete this->_digest;
+    }
+
 //
 // ---------- methosd ---------------------------------------------------------
 //
@@ -72,7 +102,9 @@ namespace nucleus
     elle::String const
     Address::unique() const
     {
-      assert(this->_type == Type::valid);
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+      ELLE_ASSERT(this->_valid->digest() != nullptr);
 
       // note that a unique element i.e the digest has already been computed
       // when the address was created.
@@ -80,8 +112,36 @@ namespace nucleus
       // therefore, this method simply returns a string representation of
       // the digest.
       return (elle::format::hexadecimal::encode(
-                reinterpret_cast<const char*>(this->_digest.region.contents),
-                this->_digest.region.size));
+                reinterpret_cast<const char*>(
+                  this->_valid->digest()->region.contents),
+                this->_valid->digest()->region.size));
+    }
+
+    Network const&
+    Address::network() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->network());
+    }
+
+    Family const&
+    Address::family() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->family());
+    }
+
+    neutron::Component const&
+    Address::component() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->component());
     }
 
 //
@@ -98,7 +158,14 @@ namespace nucleus
         return (false);
 
       if (this->_type == Type::valid)
-        return (this->_digest == other._digest);
+        {
+          ELLE_ASSERT(this->_valid != nullptr);
+          ELLE_ASSERT(this->_valid->digest() != nullptr);
+          ELLE_ASSERT(other._valid != nullptr);
+          ELLE_ASSERT(other._valid->digest() != nullptr);
+
+          return (*this->_valid->digest() == *other._valid->digest());
+        }
       else
         return (true);
     }
@@ -113,7 +180,14 @@ namespace nucleus
         return (this->_type < other._type);
 
       if (this->_type == Type::valid)
-        return (this->_digest < other._digest);
+        {
+          ELLE_ASSERT(this->_valid != nullptr);
+          ELLE_ASSERT(this->_valid->digest() != nullptr);
+          ELLE_ASSERT(other._valid != nullptr);
+          ELLE_ASSERT(other._valid->digest() != nullptr);
+
+          return (*this->_valid->digest() < *other._valid->digest());
+        }
       else
         return (false);
     }
@@ -128,7 +202,14 @@ namespace nucleus
         return (this->_type <= other._type);
 
       if (this->_type == Type::valid)
-        return (this->_digest <= other._digest);
+        {
+          ELLE_ASSERT(this->_valid != nullptr);
+          ELLE_ASSERT(this->_valid->digest() != nullptr);
+          ELLE_ASSERT(other._valid != nullptr);
+          ELLE_ASSERT(other._valid->digest() != nullptr);
+
+          return (*this->_valid->digest() <= *other._valid->digest());
+        }
       else
         return (false);
     }
@@ -143,33 +224,46 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       // check the value.
-      if (*this == Address::null())
+      switch (this->_type)
         {
-          std::cout << alignment << "[Address] " << elle::none << std::endl;
-        }
-      else if (*this == Address::some())
-        {
-          std::cout << alignment << "[Address] " << "(undef)" << std::endl;
-        }
-      else
-        {
-          // display the name.
-          std::cout << alignment << "[Address] " << this << std::endl;
+        case Address::Type::null:
+          {
+            std::cout << alignment << "[Address] " << elle::none << std::endl;
 
-          if (this->_network.Dump(margin + 2) == elle::Status::Error)
-            escape("XXX");
+            break;
+          }
+        case Address::Type::some:
+          {
+            std::cout << alignment << "[Address] " << "(undef)" << std::endl;
 
-          // display the family.
-          std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
-                    << this->_family << std::endl;
+            break;
+          }
+        case Address::Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+            ELLE_ASSERT(this->_valid->digest() != nullptr);
 
-          // display the component.
-          std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
-                    << this->_component << std::endl;
+            // display the name.
+            std::cout << alignment << "[Address] " << this << std::endl;
 
-          // dump the digest.
-          if (this->_digest.Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the digest");
+            if (this->_valid->network().Dump(margin + 2) == elle::Status::Error)
+              escape("XXX");
+
+            // display the family.
+            std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
+                      << this->_valid->family() << std::endl;
+
+            // display the component.
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Component] "
+                      << this->_valid->component() << std::endl;
+
+            // dump the digest.
+            if (this->_valid->digest()->Dump(margin + 2) == elle::Status::Error)
+              escape("unable to dump the digest");
+
+            break;
+          }
         }
 
       return elle::Status::Ok;
@@ -186,12 +280,14 @@ namespace nucleus
         {
         case Type::valid:
           {
+            ELLE_ASSERT(this->_valid != nullptr);
+
             stream << "address{"
-                   << this->_network
+                   << this->_valid->network()
                    << ", "
-                   << this->_family
+                   << this->_valid->family()
                    << ", "
-                   << this->_component
+                   << this->_valid->component()
                    << ", "
                    << this->unique()
                    << "}";
