@@ -81,42 +81,8 @@ namespace lune
   void
   Descriptor::validate(elle::Authority const& authority) const
   {
-    switch (this->version())
-      {
-      case 0:
-        {
-          elle::Real contention(0.5);
-          elle::Real balancing(0.2);
-
-          if (authority.K.Verify(
-                this->_meta._signature,
-                elle::serialize::make_tuple(
-                  this->_meta._id,
-                  this->_data._name,
-                  this->_meta._model,
-                  this->_data._openness,
-                  this->_meta._root,
-                  this->_meta._everybody.identity,
-                  this->_meta._history,
-                  this->_meta._extent,
-                  contention,
-                  balancing,
-                  this->_data._policy)) == elle::Status::Error)
-            throw std::runtime_error("unable to verify the signature");
-
-          break;
-        }
-      case 1:
-        {
-          this->_meta.validate(authority);
-          this->_data.validate(this->_meta.administrator_K());
-
-          break;
-        }
-      default:
-        throw std::runtime_error(
-          elle::sprintf("unknown format '%s'", this->version()));
-      }
+    this->_meta.validate(authority);
+    this->_data.validate(this->_meta.administrator_K());
   }
 
   Descriptor::Meta const&
