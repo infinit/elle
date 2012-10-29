@@ -257,6 +257,8 @@ if __name__ == "__main__":
     os.environ["INFINIT_BUILD"] = args.builddir
     infinitools.patch_satellites_path(args.builddir)
 
+    functional_success = False
+    unit_success = False
     report = OrderedDict()
     # Run the functionals tests
     if not args.scripts:
