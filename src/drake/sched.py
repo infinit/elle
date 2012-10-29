@@ -193,6 +193,9 @@ class Waitable:
   def __wake_one(self):
     if self.__waiting:
       self.__wake(next(iter(self.__waiting)))
+      return True
+    else:
+      return False
 
   def __wake(self, coro):
     coro._Coroutine__unwait(self)
