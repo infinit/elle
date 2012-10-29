@@ -28,25 +28,11 @@ download()
 	snapshot="${1}"
 	fingerprint="${2}"
 	tarball="${3}"
-
-	TRIES=3
-
-	for i in $(seq 0 ${TRIES})
-	do
-		if [ ! -f "${tarball}" ]
-		then
-			run wget "${snapshot}" -O "${tarball}" ||
-				fatal "unable to download the snapshot"
-		fi
-
-		checksum=$(run openssl dgst -md5 "${tarball}" | cut -d' ' -f2)
-
-		test "${fingerprint}" = "${checksum}" && return
-
-		rm -f "${tarball}"
-	done
-
-	fatal "the checksum differs for '${tarball}'"
+	if [ ! -f "${tarball}" ]
+        then
+	    run wget "${snapshot}" -O "${tarball}" || \
+	        fatal "unable to download the snapshot"
+        fi
 }
 
 download "${OPENSSL_SNAPSHOT}" "${OPENSSL_FINGERPRINT}" "${OPENSSL_TARBALL}"
