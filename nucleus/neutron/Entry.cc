@@ -90,7 +90,7 @@ namespace nucleus
     ///
     /// this method returns the symbol of an entry i.e the name.
     ///
-    elle::String&
+    elle::String const&
     Entry::symbol()
     {
       return (this->name);

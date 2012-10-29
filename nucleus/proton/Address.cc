@@ -58,7 +58,7 @@ namespace nucleus
     Address::Address(Type const type):
       _type(type)
     {
-      switch (type)
+      switch (this->_type)
         {
         case Type::valid:
           {
@@ -70,8 +70,16 @@ namespace nucleus
           {
             // Nothing to do; this is the right way to construct such special
             // addresses
+            break;
           }
+        default:
+          throw Exception("unknown address type '%s'", this->_type);
         }
+    }
+
+    Address::~Address()
+    {
+      delete this->_valid;
     }
 
     Address::Valid::Valid():
@@ -264,6 +272,8 @@ namespace nucleus
 
             break;
           }
+        default:
+          throw Exception("unknown address type '%s'", this->_type);
         }
 
       return elle::Status::Ok;
@@ -303,6 +313,8 @@ namespace nucleus
             stream << "address(some)";
             break;
           }
+        default:
+          throw Exception("unknown address type '%s'", this->_type);
         }
     }
 

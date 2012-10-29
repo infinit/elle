@@ -166,7 +166,7 @@ namespace nucleus
     ///
     /// this method returns the symbol of a record i.e the subject.
     ///
-    Subject&
+    Subject const&
     Record::symbol()
     {
       return (this->subject);

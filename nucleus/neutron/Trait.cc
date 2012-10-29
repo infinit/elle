@@ -1,111 +1,228 @@
 #include <nucleus/neutron/Trait.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/io/Dumpable.hh>
-#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    ///
-    /// this defines an unexisting trait.
-    ///
-    const Trait                 Trait::Null;
+    Trait const&
+    Trait::null()
+    {
+      static Trait trait(Trait::Type::null);
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      return (trait);
+    }
 
-    ///
-    /// empty constructor.
-    ///
-    Trait::Trait()
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Trait::Trait():
+      _valid(nullptr)
     {
     }
 
-    ///
-    /// default constructor.
-    ///
-    Trait::Trait(const elle::String&                            name,
-                 const elle::String&                            value):
-      name(name),
-      value(value)
+    Trait::Trait(elle::String const& name,
+                 elle::String const& value):
+      _type(Type::valid),
+      _valid(new Valid(name, value))
     {
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    Trait::Trait(Trait const& other):
+      _type(other._type),
+      _valid(nullptr)
+    {
+      if (other._valid != nullptr)
+        {
+          this->_valid = new Trait::Valid(other._valid->name(),
+                                          other._valid->value());
+        }
+    }
+
+    Trait::Trait(Type const type):
+      _type(type),
+      _valid(nullptr)
+    {
+      switch (this->_type)
+        {
+        case Type::valid:
+          {
+            throw Exception("valid traits cannot be built through this "
+                            "constructor");
+          }
+        case Type::null:
+          {
+            // Nothing to do; this is the right way to construct such special
+            // traits.
+            break;
+          }
+        default:
+          throw Exception("unknown trait type '%s'", this->_type);
+        }
+    }
+
+    Trait::~Trait()
+    {
+      delete this->_valid;
+    }
+
+    Trait::Valid::Valid()
+    {
+    }
+
+    Trait::Valid::Valid(elle::String const& name,
+                        elle::String const& value):
+      _name(name),
+      _value(value)
+    {
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    elle::String const&
+    Trait::name() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->name());
+    }
+
+    elle::String const&
+    Trait::value() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->value());
+    }
+
+    void
+    Trait::value(elle::String const& value) const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      this->_valid->value(value);
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Trait::operator ==(Trait const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
         return true;
 
-      // compare the name and value.
-      if ((this->name != other.name) ||
-          (this->value != other.value))
-        return false;
+      if (this->_type != other._type)
+        return (false);
 
-      return true;
+      if (this->_type == Type::valid)
+        {
+          ELLE_ASSERT(this->_valid != nullptr);
+          ELLE_ASSERT(other._valid != nullptr);
+
+          if ((this->_valid->name() != other._valid->name()) ||
+              (this->_valid->value() != other._valid->value()))
+            return (false);
+        }
+      else
+        return (true);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    ///
-    /// this function dumps a trait.
-    ///
     elle::Status        Trait::Dump(elle::Natural32             margin) const
     {
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Trait]" << std::endl;
 
-      // dump the name.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Name] " << this->name << std::endl;
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            std::cout << alignment << "[Trait] " << elle::none << std::endl;
 
-      // dump the value.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Value] " << this->value << std::endl;
+            break;
+          }
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+
+            // dump the name.
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Name] " << this->_valid->name() << std::endl;
+
+            // dump the value.
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Value] " << this->_valid->value() << std::endl;
+
+            break;
+          }
+        default:
+          throw Exception("unknown trait type '%s'", this->_type);
+        }
 
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Trait::print(std::ostream& stream) const
     {
-      stream << "trait("
-             << this->name
-             << ", "
-             << this->value
-             << ")";
+      switch (this->_type)
+        {
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+
+            stream << "trait("
+                   << this->_valid->name()
+                   << ", "
+                   << this->_valid->value()
+                   << ")";
+
+            break;
+          }
+        case Type::null:
+          {
+            stream << "address(null)";
+            break;
+          }
+        default:
+          throw Exception("unknown trait type '%s'", this->_type);
+        }
     }
 
-//
-// ---------- rangeable -------------------------------------------------------
-//
+    /*----------.
+    | Rangeable |
+    `----------*/
 
-    ///
-    /// this method returns the symbol of a trait i.e the name.
-    ///
-    elle::String&
+    elle::String const&
     Trait::symbol()
     {
-      return (this->name);
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->name());
     }
 
   }

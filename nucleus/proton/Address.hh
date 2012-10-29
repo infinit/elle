@@ -77,6 +77,7 @@ namespace nucleus
               const neutron::Component&,
               const T&...);
       Address(Address const& other);
+      ~Address();
     private:
       Address(Type const type);
 

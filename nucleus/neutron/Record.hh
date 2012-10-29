@@ -81,7 +81,7 @@ namespace nucleus
       print(std::ostream& stream) const;
       // rangeable
       virtual
-      Subject&
+      Subject const&
       symbol();
 
       //

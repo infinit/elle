@@ -17,7 +17,7 @@ namespace nucleus
     elle::Status        Attributes::Add(Trait*                  trait)
     {
       // check that the trait's name is non-empty.
-      if (trait->name.empty() == true)
+      if (trait->name().empty() == true)
         escape("unable to create an empty-named trait in the attributes");
 
       // add the trait in the range.
@@ -99,7 +99,7 @@ namespace nucleus
         escape("unable to locate the named trait");
 
       // update the value.
-      (*iterator)->value = value;
+      (*iterator)->value(value);
 
       return elle::Status::Ok;
     }

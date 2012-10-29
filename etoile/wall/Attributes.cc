@@ -100,7 +100,7 @@ namespace etoile
       if (trait != nullptr)
         return (*trait);
       else
-        return (nucleus::neutron::Trait::Null);
+        return (nucleus::neutron::Trait::null());
     }
 
     nucleus::neutron::Range<nucleus::neutron::Trait>

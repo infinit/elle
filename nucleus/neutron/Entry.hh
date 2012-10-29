@@ -56,7 +56,7 @@ namespace nucleus
       print(std::ostream& stream) const;
       // rangeable
       virtual
-      elle::String&
+      elle::String const&
       symbol();
 
       //

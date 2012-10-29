@@ -200,8 +200,8 @@ namespace horizon
             etoile::wall::Attributes::get(handle->identifier, "perm::exec"));
 
           // Check the trait.
-          if ((trait != nucleus::neutron::Trait::Null) &&
-              (trait.value == "true"))
+          if ((trait != nucleus::neutron::Trait::null()) &&
+              (trait.value() == "true"))
             {
               // Active the exec bit.
               stat->st_mode |= S_IXUSR;
@@ -610,8 +610,8 @@ namespace horizon
                 etoile::wall::Attributes::get(identifier, "perm::exec"));
 
               // Check the trait.
-              if (!((trait != nucleus::neutron::Trait::Null) &&
-                    (trait.value == "true")))
+              if (!((trait != nucleus::neutron::Trait::null()) &&
+                    (trait.value() == "true")))
                 goto _access;
 
               break;
@@ -632,8 +632,8 @@ namespace horizon
                 etoile::wall::Attributes::get(identifier, "perm::exec"));
 
               // Check the trait.
-              if (!((trait != nucleus::neutron::Trait::Null) &&
-                    (trait.value == "true")))
+              if (!((trait != nucleus::neutron::Trait::null()) &&
+                    (trait.value() == "true")))
                 goto _access;
 
               break;
@@ -893,7 +893,7 @@ namespace horizon
     ward.release();
 
     // Test if a trait has been found.
-    if (trait == nucleus::neutron::Trait::Null)
+    if (trait == nucleus::neutron::Trait::null())
       return (-ENOATTR);
 
     // If the size is null, it means that this call must be
@@ -901,15 +901,15 @@ namespace horizon
     // value.
     if (size == 0)
       {
-        return (trait.value.length());
+        return (trait.value().length());
       }
     else
       {
         // Otherwise, copy the trait value in the value buffer.
-        ::memcpy(value, trait.value.data(), trait.value.length());
+        ::memcpy(value, trait.value().data(), trait.value().length());
 
         // Return the length of the value.
-        return (trait.value.length());
+        return (trait.value().length());
       }
   }
 
@@ -942,7 +942,7 @@ namespace horizon
       {
         // Compute the size.
         for (auto trait: range)
-          size = size + trait->name.length() + 1;
+          size = size + trait->name().length() + 1;
 
         // Discard the object, now that it will no longer be
         // accessed.
@@ -962,10 +962,10 @@ namespace horizon
           {
             // Concatenate the name.
             ::strcpy(list + offset,
-                     trait->name.c_str());
+                     trait->name().c_str());
 
             // Adjust the offset.
-            offset = offset + trait->name.length() + 1;
+            offset = offset + trait->name().length() + 1;
           }
 
         // Discard the object now that it will no longer be
