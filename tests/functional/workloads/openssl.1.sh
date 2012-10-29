@@ -51,7 +51,7 @@ download()
 
 download "${OPENSSL_SNAPSHOT}" "${OPENSSL_FINGERPRINT}" "${OPENSSL_TARBALL}"
 
-run tar xf "${OPENSSL_TARBALL}" || fatal "unable to extract the tarball"
+run tar -xvf "${OPENSSL_TARBALL}" || fatal "unable to extract the tarball"
 
 cd "${OPENSSL_NAME}" || fatal "unable to enter the directory"
 
