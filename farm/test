@@ -267,6 +267,8 @@ if __name__ == "__main__":
     # Run the unit tests (if no script was specified explicitly)
     if not args.scripts:
         unit_success = unit_tests(report)
+    else:
+        unit_success = True
 
     with open("report", "w") as reportfile:
         import pprint
