@@ -207,6 +207,15 @@ class TestScheduler(unittest.TestCase):
     c = sched.Coroutine(coro, 'coro', self.scheduler)
     self.scheduler.run()
 
+  def test_semaphore_simple(self):
+    s = sched.Semaphore(1)
+    def lock_f():
+      with s:
+        pass
+    lock = sched.Coroutine(lock_f, 'lock', self.scheduler)
+    self.scheduler.run()
+    assert s.count == 1
+
   def test_semaphore(self):
 
     s = sched.Semaphore(1)

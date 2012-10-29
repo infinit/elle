@@ -428,8 +428,7 @@ class Semaphore(Waitable, Lockable):
 
   def _Lockable__unlock(self):
     if self.__count == 0:
-      Waitable._Waitable__wake_one(self)
-      return True
-    else:
-      self.__count += 1
-      return False
+      if Waitable._Waitable__wake_one(self):
+        return True
+    self.__count += 1
+    return False
