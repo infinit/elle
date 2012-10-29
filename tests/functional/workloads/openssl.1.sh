@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 cd "$MNT1"
 
 OPENSSL_VERSION="1.0.1c"
