@@ -36,10 +36,10 @@ DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
 """
 
 with open(p1, 'w') as f:
-    f.write(DATA)
+    f.write(DATA.encode("utf8"))
 
 with open(p1, 'r') as f:
-    s = f.read()
+    s = f.read().decode("utf8")
     print(s, file=sys.stderr)
     assert s == DATA
 

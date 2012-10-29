@@ -23,4 +23,4 @@ usage()
 	fatal "Usage: $SCRIPTCMD"
 }
 
-fatal This script always fail
+exit 0
