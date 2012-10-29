@@ -2,6 +2,12 @@
 
 set -e
 
+run ()
+{
+    echo "Running $@"
+    "$@"
+}
+
 cd "$MNT1"
 
 OPENSSL_VERSION="1.0.1c"
@@ -29,11 +35,11 @@ download()
 	do
 		if [ ! -f "${tarball}" ]
 		then
-			wget "${snapshot}" -O "${tarball}" ||
+			run wget "${snapshot}" -O "${tarball}" ||
 				fatal "unable to download the snapshot"
 		fi
 
-		checksum=$(openssl dgst -md5 "${tarball}" | cut -d' ' -f2)
+		checksum=$(run openssl dgst -md5 "${tarball}" | cut -d' ' -f2)
 
 		test "${fingerprint}" = "${checksum}" && return
 
@@ -45,11 +51,10 @@ download()
 
 download "${OPENSSL_SNAPSHOT}" "${OPENSSL_FINGERPRINT}" "${OPENSSL_TARBALL}"
 
-tar xf "${OPENSSL_TARBALL}" || fatal "unable to extract the tarball"
+run tar xf "${OPENSSL_TARBALL}" || fatal "unable to extract the tarball"
 
 cd "${OPENSSL_NAME}" || fatal "unable to enter the directory"
 
-./config shared || fatal "unable to configure"
+run ./config shared || fatal "unable to configure"
 
-make || fatal "unable to build"
-
+run make || fatal "unable to build"
