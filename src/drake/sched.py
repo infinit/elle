@@ -407,10 +407,15 @@ class Semaphore(Waitable, Lockable):
   def count(self):
     return self.__count
 
+  def __str__(self):
+    return 'Semaphore %s' % id(self)
+
   def _Waitable__wait(self, coro):
     if self.count == 0:
+      drake.debug.debug('%s: wait' % self)
       return Waitable._Waitable__wait(self, coro)
     else:
+      drake.debug.debug('%s: lock one' % self)
       self.__count = self.__count - 1
       return False
 
