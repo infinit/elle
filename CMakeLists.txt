@@ -278,10 +278,10 @@ set(INFINIT_LIBRARIES
 )
 
 add_subdirectory(satellites)
-add_subdirectory(plasma)
 add_subdirectory(tests)
 add_subdirectory(surface)
 add_subdirectory(oracle)
+add_subdirectory(plasma)
 
 add_executable(8infinit
   _infinit.cc

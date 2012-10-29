@@ -147,7 +147,7 @@ namespace nucleus
         ELLE_SERIALIZE_FRIEND_FOR(Address::Valid);
 
         // attributes
-      public:
+      private:
         ELLE_ATTRIBUTE_R(Network, network);
         ELLE_ATTRIBUTE_R(Family, family);
         ELLE_ATTRIBUTE_R(neutron::Component, component);

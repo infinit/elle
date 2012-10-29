@@ -60,17 +60,17 @@ namespace nucleus
     {
       switch (this->_type)
         {
-        case Type::valid:
-          {
-            throw Exception("valid addresses cannot be built through this "
-                            "constructor");
-          }
         case Type::null:
         case Type::some:
           {
             // Nothing to do; this is the right way to construct such special
             // addresses
             break;
+          }
+        case Type::valid:
+          {
+            throw Exception("valid addresses cannot be built through this "
+                            "constructor");
           }
         default:
           throw Exception("unknown address type '%s'", this->_type);
@@ -174,8 +174,8 @@ namespace nucleus
 
           return (*this->_valid->digest() == *other._valid->digest());
         }
-      else
-        return (true);
+
+      return (true);
     }
 
     elle::Boolean
@@ -196,8 +196,8 @@ namespace nucleus
 
           return (*this->_valid->digest() < *other._valid->digest());
         }
-      else
-        return (false);
+
+      return (false);
     }
 
     elle::Boolean
@@ -218,8 +218,8 @@ namespace nucleus
 
           return (*this->_valid->digest() <= *other._valid->digest());
         }
-      else
-        return (false);
+
+      return (false);
     }
 
 //
@@ -288,6 +288,16 @@ namespace nucleus
     {
       switch (this->_type)
         {
+        case Type::null:
+          {
+            stream << "address(null)";
+            break;
+          }
+        case Type::some:
+          {
+            stream << "address(some)";
+            break;
+          }
         case Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
@@ -301,16 +311,6 @@ namespace nucleus
                    << ", "
                    << this->unique()
                    << "}";
-            break;
-          }
-        case Type::null:
-          {
-            stream << "address(null)";
-            break;
-          }
-        case Type::some:
-          {
-            stream << "address(some)";
             break;
           }
         default:

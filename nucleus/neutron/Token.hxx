@@ -15,53 +15,44 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     template <typename T>
-    Token::Token(elle::cryptography::PublicKey const& K,
-                 T const& secret):
-      _code(nullptr)
+    Token::Token(T const& secret,
+                 elle::cryptography::PublicKey const& K):
+      _type(Type::valid),
+      _valid(nullptr)
     {
-      // XXX[la methode update devrait etre viree et un token devrait etre
-      //     cree via le constructeur a chaque fois OU renommer Update()]
-      if (this->Update(K, secret) == elle::Status::Error)
-        throw Exception("unable to construct the token");
-    }
+      elle::cryptography::Code code;
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    template <typename T>
-    elle::Status Token::Update(elle::cryptography::PublicKey const& K,
-                               T const& secret)
-    {
-      delete this->_code;
-
-      // allocate a new code.
-      this->_code = new elle::cryptography::Code;
-
-      // encrypt the given secret with the given public key.
-      if (K.Encrypt(secret, *this->_code) == elle::Status::Error)
+      // Encrypt the given secret with the given public key.
+      if (K.Encrypt(secret, code) == elle::Status::Error)
         escape("unable to encrypt the secret");
 
-      return elle::Status::Ok;
+      // XXX[this could be improved by putting it directly in the
+      //     initialization list]
+      this->_valid = new Valid(code);
     }
 
+    /*--------.
+    | Methods |
+    `--------*/
+
     template <typename T>
-    elle::Status Token::Extract(elle::cryptography::PrivateKey const&  k,
-                                T& secret) const
+    T
+    Token::extract(elle::cryptography::PrivateKey const& k) const
     {
-      if (this->_code == nullptr)
-        escape("unable to retrieve the secret out of a null token");
+      T secret;
+
+      ELLE_ASSERT(this->_valid != nullptr);
 
       // Decrypt the code, revealing the secret information.
-      if (k.Decrypt(*this->_code, secret) == elle::Status::Error)
+      if (k.Decrypt(this->_valid->code(), secret) == elle::Status::Error)
         escape("unable to decrypt the token");
 
-      return elle::Status::Ok;
+      return (secret);
     }
 
   }
@@ -70,7 +61,6 @@ namespace nucleus
 //
 // ---------- serialize -------------------------------------------------------
 //
-
 
 # include <elle/serialize/Pointer.hh>
 
@@ -81,7 +71,32 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Token,
 {
   enforce(version == 0);
 
-  archive & elle::serialize::pointer(value._code);
+  archive & value._type;
+  switch (value._type)
+    {
+    case nucleus::neutron::Token::Type::null:
+      {
+        break;
+      }
+    case nucleus::neutron::Token::Type::valid:
+      {
+        archive & elle::serialize::alive_pointer(value._valid);
+
+        break;
+      }
+    default:
+      throw Exception("unknown token type '%s'", value._type);
+    }
+}
+
+ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Token::Valid,
+                      archive,
+                      value,
+                      version)
+{
+  enforce(version == 0);
+
+  archive & value._code;
 }
 
 #endif

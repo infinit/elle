@@ -41,10 +41,8 @@ namespace nucleus
       _valid(nullptr)
     {
       if (other._valid != nullptr)
-        {
-          this->_valid = new Trait::Valid(other._valid->name(),
-                                          other._valid->value());
-        }
+        this->_valid = new Trait::Valid(other._valid->name(),
+                                        other._valid->value());
     }
 
     Trait::Trait(Type const type):
@@ -53,16 +51,16 @@ namespace nucleus
     {
       switch (this->_type)
         {
-        case Type::valid:
-          {
-            throw Exception("valid traits cannot be built through this "
-                            "constructor");
-          }
         case Type::null:
           {
             // Nothing to do; this is the right way to construct such special
             // traits.
             break;
+          }
+        case Type::valid:
+          {
+            throw Exception("valid traits cannot be built through this "
+                            "constructor");
           }
         default:
           throw Exception("unknown trait type '%s'", this->_type);
@@ -138,8 +136,8 @@ namespace nucleus
               (this->_valid->value() != other._valid->value()))
             return (false);
         }
-      else
-        return (true);
+
+      return (true);
     }
 
     /*---------.
@@ -149,8 +147,6 @@ namespace nucleus
     elle::Status        Trait::Dump(elle::Natural32             margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      std::cout << alignment << "[Trait]" << std::endl;
 
       switch (this->_type)
         {
@@ -164,11 +160,11 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            // dump the name.
+            std::cout << alignment << "[Trait]" << std::endl;
+
             std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Name] " << this->_valid->name() << std::endl;
 
-            // dump the value.
             std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Value] " << this->_valid->value() << std::endl;
 
@@ -190,6 +186,11 @@ namespace nucleus
     {
       switch (this->_type)
         {
+        case Type::null:
+          {
+            stream << "trait(null)";
+            break;
+          }
         case Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
@@ -200,11 +201,6 @@ namespace nucleus
                    << this->_valid->value()
                    << ")";
 
-            break;
-          }
-        case Type::null:
-          {
-            stream << "address(null)";
             break;
           }
         default:

@@ -50,7 +50,7 @@ void test()
 
   ELLE_TRACE("Upgrade the group")
     {
-      nucleus::neutron::Token manager_token(group.manager_K(), pass.k);
+      nucleus::neutron::Token manager_token(pass.k, group.manager_K());
 
       group.upgrade(ensemble_address, pass.K, manager_token);
 

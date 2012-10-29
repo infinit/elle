@@ -115,7 +115,7 @@ namespace nucleus
         ELLE_SERIALIZE_FRIEND_FOR(Trait::Valid);
 
         // attributes
-      public:
+      private:
         ELLE_ATTRIBUTE_R(elle::String, name);
         ELLE_ATTRIBUTE_RW(elle::String, value);
       };

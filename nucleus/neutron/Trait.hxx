@@ -14,16 +14,18 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Trait,
   archive & value._type;
   switch (value._type)
     {
-      case nucleus::neutron::Trait::Type::null:
-        {
-          break;
-        }
-      case nucleus::neutron::Trait::Type::valid:
-        {
-          archive & elle::serialize::alive_pointer(value._valid);
+    case nucleus::neutron::Trait::Type::null:
+      {
+        break;
+      }
+    case nucleus::neutron::Trait::Type::valid:
+      {
+        archive & elle::serialize::alive_pointer(value._valid);
 
-          break;
-        }
+        break;
+      }
+    default:
+      throw Exception("unknown trait type '%s'", value._type);
     }
 }
 

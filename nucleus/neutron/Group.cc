@@ -15,7 +15,7 @@ namespace nucleus
 //
 // ---------- constants -------------------------------------------------------
 //
- 
+
     const Component Group::component = ComponentGroup;
 
 //
@@ -45,7 +45,7 @@ namespace nucleus
         elle::cryptography::KeyPair pass(
           elle::cryptography::KeyPair::generate());
 
-        Token token(this->manager_subject().user(), pass.k);
+        Token token(pass.K, this->manager_subject().user());
         this->upgrade(proton::Address::null(), pass.K, token);
       }
     }

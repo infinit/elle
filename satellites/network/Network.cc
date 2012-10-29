@@ -185,7 +185,7 @@ namespace satellite
           if (record->Update(
                 subject,
                 permissions,
-                nucleus::neutron::Token::Null) == elle::Status::Error)
+                nucleus::neutron::Token::null()) == elle::Status::Error)
             escape("unable to update the record");
 
           if (access.Add(record) == elle::Status::Error)

@@ -34,6 +34,7 @@ namespace nucleus
     {
       this->_meta.state = proton::StateClean;
       this->_meta.owner.permissions = permissions::none;
+      this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 
@@ -68,6 +69,7 @@ namespace nucleus
       //
       this->_meta.state = proton::StateClean;
       this->_meta.owner.permissions = permissions::none;
+      this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 

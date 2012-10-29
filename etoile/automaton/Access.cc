@@ -176,9 +176,9 @@ namespace etoile
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
                                   nucleus::proton::Address::null() ?
-                                  nucleus::neutron::Token::Null :
-                                  nucleus::neutron::Token(subject.user(),
-                                                          context.rights.key);
+                                  nucleus::neutron::Token::null() :
+                                  nucleus::neutron::Token(context.rights.key,
+                                                          subject.user());
 
                                 // update the record.
                                 if (context.access->Update(
@@ -217,9 +217,9 @@ namespace etoile
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
                                   nucleus::proton::Address::null() ?
-                                  nucleus::neutron::Token::Null :
-                                  nucleus::neutron::Token(group->pass_K(),
-                                                          context.rights.key);
+                                  nucleus::neutron::Token::null() :
+                                  nucleus::neutron::Token(context.rights.key,
+                                                          group->pass_K());
 
                                 // update the record.
                                 if (context.access->Update(
@@ -262,9 +262,9 @@ namespace etoile
                             nucleus::neutron::Token token =
                               context.object->contents() ==
                               nucleus::proton::Address::null() ?
-                              nucleus::neutron::Token::Null :
-                              nucleus::neutron::Token(subject.user(),
-                                                      context.rights.key);
+                              nucleus::neutron::Token::null() :
+                              nucleus::neutron::Token(context.rights.key,
+                                                      subject.user());
 
                             // allocate a new record.
                             record.reset(
@@ -302,9 +302,9 @@ namespace etoile
                             nucleus::neutron::Token token =
                               context.object->contents() ==
                               nucleus::proton::Address::null() ?
-                              nucleus::neutron::Token::Null :
-                              nucleus::neutron::Token(group->pass_K(),
-                                                      context.rights.key);
+                              nucleus::neutron::Token::null() :
+                              nucleus::neutron::Token(context.rights.key,
+                                                      group->pass_K());
 
                             // allocate a new record.
                             record.reset(
@@ -629,7 +629,7 @@ namespace etoile
                 try
                   {
                     record->token =
-                      nucleus::neutron::Token(record->subject.user(), key);
+                      nucleus::neutron::Token(key, record->subject.user());
                   }
                 catch (std::exception const& e)
                   {
@@ -658,7 +658,7 @@ namespace etoile
                         nucleus::proton::Revision::Last);
 
                     record->token =
-                      nucleus::neutron::Token(group->pass_K(), key);
+                      nucleus::neutron::Token(key, group->pass_K());
                   }
                 catch (std::exception const& e)
                   {
@@ -689,7 +689,7 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      nucleus::neutron::Token token(context.object->owner_K(), key);
+      nucleus::neutron::Token token(key, context.object->owner_K());
 
       // update the object with the new owner token.
       //
@@ -757,7 +757,7 @@ namespace etoile
             continue;
 
           // Reset the token.
-          record->token = nucleus::neutron::Token(nucleus::neutron::Token::Null);
+          record->token = nucleus::neutron::Token::null();
 
           // Set the access block as being dirty.
           //
@@ -777,7 +777,7 @@ namespace etoile
                 context.object->contents(),
                 context.object->size(),
                 context.object->access(),
-                nucleus::neutron::Token::Null) == elle::Status::Error)
+                nucleus::neutron::Token::null()) == elle::Status::Error)
             escape("unable to update the object");
         }
 

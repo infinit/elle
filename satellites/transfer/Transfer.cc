@@ -205,11 +205,11 @@ namespace satellite
         Transfer::rpcs->attributesget(directory,
                                       "infinit:transfer:size"));
 
-      if (size == nucleus::neutron::Trait::Null)
+      if (size == nucleus::neutron::Trait::null())
         throw std::runtime_error("no transfer size attribute present");
 
       // Set the size variable.
-      _size = boost::lexical_cast<elle::Natural64>(size.value);
+      _size = boost::lexical_cast<elle::Natural64>(size.value());
 
       // Discard the directory since unchanged.
       Transfer::rpcs->directorydiscard(directory);
@@ -340,10 +340,10 @@ namespace satellite
         0, std::numeric_limits<nucleus::neutron::Index>::max()));
 
     // Go through the entries.
-    for (auto trait: entries)
+    for (auto entry: entries)
       {
         etoile::path::Way _source(source.path +
-                                  trait->name);
+                                  entry->name);
 
         ELLE_TRACE("source %s", _source.path.c_str());
 

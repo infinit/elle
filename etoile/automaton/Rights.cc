@@ -60,13 +60,13 @@ namespace etoile
           context.rights.permissions = context.object->owner_permissions();
 
           // if a token is present, decrypt it.
-          if (context.object->owner_token() != nucleus::neutron::Token::Null)
+          if (context.object->owner_token() != nucleus::neutron::Token::null())
             {
               // extract the secret key from the token.
-              if (context.object->owner_token().Extract(
-                    agent::Agent::Identity.pair.k,
-                    context.rights.key) == elle::Status::Error)
-                escape("unable to extract the secret key from the token");
+              context.rights.key =
+                context.object->owner_token().
+                  extract<elle::cryptography::SecretKey>(
+                    agent::Agent::Identity.pair.k);
             }
 
           // set the record for ease purpose.
@@ -113,13 +113,14 @@ namespace etoile
               context.rights.record = *record;
 
               // if a token is present, decrypt it.
-              if (context.rights.record.token != nucleus::neutron::Token::Null)
+              if (context.rights.record.token !=
+                  nucleus::neutron::Token::null())
                 {
                   // extract the secret key from the token.
-                  if (context.rights.record.token.Extract(
-                        agent::Agent::Identity.pair.k,
-                        context.rights.key) == elle::Status::Error)
-                    escape("unable to extract the secret key from the token");
+                  context.rights.key =
+                    context.rights.record.token.
+                      extract<elle::cryptography::SecretKey>(
+                        agent::Agent::Identity.pair.k);
                 }
             }
           else
@@ -179,7 +180,7 @@ namespace etoile
                           // to be able to decrypt the object's content, should
                           // a token be present though.
                           if (context.rights.record.token !=
-                              nucleus::neutron::Token::Null)
+                              nucleus::neutron::Token::null())
                             {
                               elle::cryptography::PrivateKey pass_k;
 
@@ -195,9 +196,9 @@ namespace etoile
 
                                   // First, extract the private pass from the
                                   // manager's fellow.
-                                  if (token.Extract(agent::Agent::Identity.pair.k,
-                                                    pass_k) == elle::Status::Error)
-                                    escape("unable to extract the token");
+                                  pass_k =
+                                    token.extract<elle::cryptography::PrivateKey>(
+                                      agent::Agent::Identity.pair.k);
                                 }
                               catch (std::exception const& e)
                                 {
@@ -208,10 +209,9 @@ namespace etoile
 
                               // With the private pass, one can decrypt the
                               // access token associated with the group.
-                              if (context.rights.record.token.Extract(
-                                    pass_k,
-                                    context.rights.key) == elle::Status::Error)
-                                escape("unable to extract the secret key from the token");
+                              context.rights.key =
+                                context.rights.record.token.extract<elle::cryptography::SecretKey>(
+                                  pass_k);
                             }
                           else
                             {
@@ -276,7 +276,7 @@ namespace etoile
                                   // as to be able to decrypt the object's
                                   // content, should a token be present though.
                                   if (context.rights.record.token !=
-                                      nucleus::neutron::Token::Null)
+                                      nucleus::neutron::Token::null())
                                     {
                                       elle::cryptography::PrivateKey pass_k;
 
@@ -288,16 +288,15 @@ namespace etoile
 
                                       // First, extract the private pass
                                       // from the fellow.
-                                      token.Extract(agent::Agent::Identity.pair.k, pass_k);
+                                      pass_k =
+                                        token.extract<elle::cryptography::PrivateKey>(
+                                          agent::Agent::Identity.pair.k);
 
                                       // With the private pass, one can decrypt
                                       // the access token associated with the
                                       // group.
-                                      if (context.rights.record.token.Extract(
-                                            pass_k,
-                                            context.rights.key) == elle::Status::Error)
-                                        escape("unable to extract the secret "
-                                               "key from the token");
+                                      context.rights.key =
+                                        context.rights.record.token.extract<elle::cryptography::SecretKey>(pass_k);
                                     }
                                   else
                                     {

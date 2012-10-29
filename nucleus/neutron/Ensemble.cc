@@ -16,7 +16,7 @@ namespace nucleus
 //
 // ---------- constants -------------------------------------------------------
 //
- 
+
     const Component Ensemble::component = ComponentEnsemble;
 
 //
@@ -187,14 +187,12 @@ namespace nucleus
             {
             case Subject::TypeUser:
               {
-                Token token(fellow->subject().user(), pass_k);
-
                 ELLE_TRACE_SCOPE("update fellow user '%s'", fellow->subject());
 
                 // Update the fellow's token with the freshly constructed
                 // token which embeds the new private key encrypted with the
                 // user's public key so that only he can decrypt it.
-                fellow->token(token);
+                fellow->token(Token(pass_k, fellow->subject().user()));
 
                 break;
               }

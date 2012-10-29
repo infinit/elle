@@ -112,11 +112,11 @@ namespace satellite
         Progress::rpcs->attributesget(directory,
                                       "infinit:transfer:size"));
 
-      if (size == nucleus::neutron::Trait::Null)
+      if (size == nucleus::neutron::Trait::null())
         throw std::runtime_error("no transfer size attribute present");
 
       // Set the size variable.
-      _size = boost::lexical_cast<elle::Natural64>(size.value);
+      _size = boost::lexical_cast<elle::Natural64>(size.value());
 
       // Discard the directory since unchanged.
       Progress::rpcs->directorydiscard(directory);
@@ -156,14 +156,14 @@ namespace satellite
         Progress::rpcs->attributesget(identifier,
                                       "infinit:transfer:progress"));
 
-      if (progress == nucleus::neutron::Trait::Null)
+      if (progress == nucleus::neutron::Trait::null())
         {
           std::cout << "0" << std::endl;
           return;
         }
 
       // Set the progress variable.
-      _progress = boost::lexical_cast<elle::Natural64>(progress.value);
+      _progress = boost::lexical_cast<elle::Natural64>(progress.value());
 
       // Discard the file.
       Progress::rpcs->filediscard(identifier);

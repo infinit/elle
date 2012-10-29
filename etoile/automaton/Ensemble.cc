@@ -186,11 +186,9 @@ namespace etoile
           // XXX
           {
             nucleus::neutron::Token token(context.group->manager_token());
-            elle::cryptography::PrivateKey k;
-
-            if (token.Extract(agent::Agent::Identity.pair.k,
-                              k) == elle::Status::Error)
-              escape("unable to extract the token");
+            elle::cryptography::PrivateKey k(
+              token.extract<elle::cryptography::PrivateKey>(
+                agent::Agent::Identity.pair.k));
 
             pass.K = context.group->pass_K();
             pass.k = k;
@@ -229,8 +227,8 @@ namespace etoile
 
               // Regenerate the group manager's token.
               nucleus::neutron::Token manager_token(
-                context.group->manager_subject().user(),
-                pass.k);
+                pass.K,
+                context.group->manager_subject().user());
 
               context.group->upgrade(address, pass.K, manager_token);
             }

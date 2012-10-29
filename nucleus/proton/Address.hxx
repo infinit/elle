@@ -65,23 +65,25 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
   archive & value._type;
   switch (value._type)
     {
-      case nucleus::proton::Address::Type::null:
-        {
-          break;
-        }
-      case nucleus::proton::Address::Type::some:
-        {
-          // XXX[to handle for porcupine]
-          elle::abort("invalid address type: some");
+    case nucleus::proton::Address::Type::null:
+      {
+        break;
+      }
+    case nucleus::proton::Address::Type::some:
+      {
+        // XXX[to handle for porcupine]
+        elle::abort("invalid address type: some");
 
-          break;
-        }
-      case nucleus::proton::Address::Type::valid:
-        {
-          archive & elle::serialize::alive_pointer(value._valid);
+        break;
+      }
+    case nucleus::proton::Address::Type::valid:
+      {
+        archive & elle::serialize::alive_pointer(value._valid);
 
-          break;
-        }
+        break;
+      }
+    default:
+      throw Exception("unknown address type '%s'", value._type);
     }
 }
 

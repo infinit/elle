@@ -63,22 +63,11 @@ namespace nucleus
                    elle::cryptography::SecretKey const& key,
                    elle::cryptography::PublicKey const& K)
     {
-      Token token;
-
       // then, if the subject has the read permission, create a token.
       if ((this->permissions & permissions::read) == permissions::read)
-        {
-          // create the token with the given public key K.
-          if (token.Update(K, key) == elle::Status::Error)
-            escape("unable to create the token");
-        }
+        return (this->Update(subject, permissions, Token(key, K)));
       else
-        {
-          // reinitialize the token.
-          token = Token::Null;
-        }
-
-      return (this->Update(subject, permissions, token));
+        return (this->Update(subject, permissions, Token::null()));
     }
 
     ///

@@ -3,8 +3,10 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/cryptography/fwd.hh>
+# include <elle/cryptography/Code.hh>
 
 namespace nucleus
 {
@@ -18,55 +20,60 @@ namespace nucleus
     class Token:
       public elle::Printable
     {
-      //
-      // constants
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      /// Defines an empty/unused token.
-      static const Token Null;
+      /// Return an unused token.
+      static
+      Token const&
+      null();
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Enumerations |
+      `-------------*/
+    public:
+      enum class Type
+      {
+        null,
+        valid
+      };
+
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Token();
       template <typename T>
-      Token(elle::cryptography::PublicKey const& K,
-            T const& secret);
-      Token(const Token&);
+      Token(T const& secret,
+            elle::cryptography::PublicKey const& K);
+      Token(Token const& other);
       ~Token();
+    private:
+      Token(Type const type);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX[to rename]
-      template <typename T>
-      elle::Status
-      Update(elle::cryptography::PublicKey const& K,
-             T const& secret);
-      /// Extracts the secret information from the token by decrypting
+      /// Extract the secret information from the token by decrypting
       /// the code with the given private key which only the user has.
       template <typename T>
-      elle::Status
-      Extract(elle::cryptography::PrivateKey const& k,
-              T& secret) const;
-      /// Returns the code pointer.
-      elle::cryptography::Code const*
-      code() const;
+      T
+      extract(elle::cryptography::PrivateKey const& k) const;
 
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
       elle::Boolean
       operator ==(Token const& other) const;
       ELLE_OPERATOR_NEQ(Token);
       ELLE_OPERATOR_ASSIGNMENT(Token);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -78,16 +85,37 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Token);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Structures |
+      `-----------*/
     public:
-      elle::cryptography::Code* _code;
+      struct Valid
+      {
+        // construction
+      public:
+        Valid();
+        Valid(elle::cryptography::Code const& code);
+
+      public:
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(Token::Valid);
+
+        // attributes
+      private:
+        ELLE_ATTRIBUTE_R(elle::cryptography::Code, code);
+      };
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    public:
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Valid*, valid);
     };
 
   }
 }
 
-#include <nucleus/neutron/Token.hxx>
+# include <nucleus/neutron/Token.hxx>
 
 #endif

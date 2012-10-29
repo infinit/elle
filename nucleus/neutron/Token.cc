@@ -12,107 +12,155 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- definition ------------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    const Token Token::Null;
+    Token const&
+    Token::null()
+    {
+      static Token token(Token::Type::null);
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      return (token);
+    }
+
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Token::Token():
-      _code(nullptr)
+      _valid(nullptr)
     {
     }
 
-    Token::Token(const Token& other)
+    Token::Token(const Token& other):
+      _type(other._type),
+      _valid(nullptr)
     {
-      if (other._code != nullptr)
+      if (other._valid != nullptr)
+        this->_valid = new Token::Valid(other._valid->code());
+    }
+
+    Token::Token(Type const type):
+      _type(type),
+      _valid(nullptr)
+    {
+      switch (this->_type)
         {
-          // Duplicate the code.
-          this->_code = new elle::cryptography::Code(*other.code());
+        case Type::null:
+          {
+            // Nothing to do; this is the right way to construct such special
+            // tokens.
+            break;
+          }
+        case Type::valid:
+          {
+            throw Exception("valid tokens cannot be built through this "
+                            "constructor");
+          }
+        default:
+          throw Exception("unknown token type '%s'", this->_type);
         }
-      else
-        this->_code = nullptr;
     }
 
     Token::~Token()
     {
-      delete this->_code;
+      delete this->_valid;
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    elle::cryptography::Code const*
-    Token::code() const
+    Token::Valid::Valid()
     {
-      return (this->_code);
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    Token::Valid::Valid(elle::cryptography::Code const& code):
+      _code(code)
+    {
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Token::operator ==(Token const& other) const
     {
-      // check if the objects are the same.
       if (this == &other)
         return true;
 
-      // compare the code.
-      if ((this->_code == nullptr) || (other._code == nullptr))
+      if (this->_type != other._type)
+        return (false);
+
+      if (this->_type == Type::valid)
         {
-          if (this->_code != other._code)
-            return false;
-        }
-      else
-        {
-          if (*this->_code != *other._code)
-            return false;
+          ELLE_ASSERT(this->_valid != nullptr);
+          ELLE_ASSERT(other._valid != nullptr);
+
+          if ((this->_valid->code() != other._valid->code()))
+            return (false);
         }
 
-      return true;
+      return (true);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status        Token::Dump(elle::Natural32     margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Token] " << std::endl;
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            std::cout << alignment << "[Token] " << elle::none << std::endl;
 
-      if (this->_code != nullptr)
-        {
-          if (this->_code->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the parent Code class");
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Code] " << elle::none << std::endl;
+            break;
+          }
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+
+            std::cout << alignment << "[Token] " << std::endl;
+
+            if (this->_valid->code().Dump(margin + 2) == elle::Status::Error)
+              escape("unable to dump the parent Code class");
+          }
+        default:
+          throw Exception("unknown token type '%s'", this->_type);
         }
 
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Token::print(std::ostream& stream) const
     {
-      stream << "code("
-             << *this->_code
-             << ")";
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            stream << "token(null)";
+            break;
+          }
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+
+            stream << "code("
+                   << this->_valid->code()
+                   << ")";
+
+            break;
+          }
+        default:
+          throw Exception("unknown token type '%s'", this->_type);
+        }
     }
 
   }
