@@ -163,7 +163,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   if (access.Add(new nucleus::neutron::Record{
         subject,
         permissions,
-        nucleus::neutron::Token::Null
+        nucleus::neutron::Token::null()
         }) == elle::Status::Error)
     throw std::runtime_error("unable to add the record to the access");
 
