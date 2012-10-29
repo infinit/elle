@@ -1,0 +1,18 @@
+If you wish to run the test locally.
+
+$ DIR_BUILD=<path to your dirbuild> DIR_SOURCE=<path to your sourcedir> ./test
+
+By default, DIR_BUILD is set to ../build and DIR_SOURCE to ../source.
+
+In order to have a preview of the available options, just do:
+$ DIR_BUILD=<path to your dirbuild> DIR_SOURCE=<path to your sourcedir> ./test -h
+
+Example:
+
+
+# Run all the functionals test in ${DIR_SOURCE}/tests/functionals/scripts
+$ DIR_BUILD=../build/ DIR_SOURCE=../ ./test
+
+# Run only on test:
+# Note that you have to specify the name of the test; for instance if the filename is test.2.py then:
+$ DIR_BUILD=../build/ DIR_SOURCE=../ ./test -s test
