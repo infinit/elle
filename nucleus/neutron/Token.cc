@@ -38,7 +38,7 @@ namespace nucleus
       _valid(nullptr)
     {
       if (other._valid != nullptr)
-        this->_valid = new Token::Valid(other._valid->code());
+        this->_valid = new Valid(other._valid->code());
     }
 
     Token::Token(Type const type):

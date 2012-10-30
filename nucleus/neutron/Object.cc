@@ -187,11 +187,10 @@ namespace nucleus
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
-      if (this->_meta.owner.record->Update(
-            this->owner_subject(),
-            this->_meta.owner.permissions,
-            this->_meta.owner.token) == elle::Status::Error)
-        escape("unable to create the owner access record");
+      delete this->_meta.owner.record;
+      this->_meta.owner.record = new Record(this->owner_subject(),
+                                            this->_meta.owner.permissions,
+                                            this->_meta.owner.token);
 
       // set the the block as dirty.
       this->state(proton::StateDirty);
@@ -523,20 +522,20 @@ namespace nucleus
                 throw Exception("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
-              if ((record->permissions & permissions::write) !=
+              if ((record->permissions() & permissions::write) !=
                   permissions::write)
                 throw Exception("the object's author does not seem to have had "
                                 "the permission to modify this object");
 
               // check that the subject is indeed a user.
-              if (record->subject.type() != Subject::TypeUser)
+              if (record->subject().type() != Subject::TypeUser)
                 throw Exception("the author references an access record which "
                                 "is not related to a user");
 
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = record->subject.user();
+              author = record->subject().user();
 
               break;
             }

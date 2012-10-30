@@ -103,7 +103,7 @@ namespace nucleus
           Record*       record = *scoutor;
 
           // if found, stop.
-          if (record->subject == subject)
+          if (record->subject() == subject)
             return elle::Status::Ok;
         }
 
@@ -151,8 +151,8 @@ namespace nucleus
       if (this->Lookup(subject, record) == elle::Status::Error)
         escape("unable to retrieve the subject's record");
 
-      record->permissions = permissions;
-      record->token = token;
+      record->permissions(permissions);
+      record->token(token);
 
       // set the block as dirty.
       this->state(proton::StateDirty);
@@ -236,8 +236,8 @@ namespace nucleus
           auto it = this->_range.container.begin(),
                end = this->_range.container.end();
           for (; it != end; ++it)
-              buffer.writer() << (*it)->subject
-                              << (*it)->permissions;
+            buffer.writer() << (*it)->subject()
+                            << (*it)->permissions();
         }
       catch (std::exception const& err)
         {

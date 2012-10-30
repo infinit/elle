@@ -320,8 +320,8 @@ namespace horizon
         etoile::wall::Access::lookup(handle->identifier,
                                      agent::Agent::Subject));
 
-      if ((record == nucleus::neutron::Record::Null) ||
-          ((record.permissions & nucleus::neutron::permissions::read) !=
+      if ((record == nucleus::neutron::Record::null()) ||
+          ((record.permissions() & nucleus::neutron::permissions::read) !=
            nucleus::neutron::permissions::read))
         return (-EACCES);
     }
@@ -419,8 +419,8 @@ namespace horizon
       etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -519,8 +519,8 @@ namespace horizon
       etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -593,7 +593,7 @@ namespace horizon
       etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
     // Check the record.
-    if (record == nucleus::neutron::Record::Null)
+    if (record == nucleus::neutron::Record::null())
       goto _access;
 
     // Retrieve information on the object.
@@ -620,7 +620,8 @@ namespace horizon
             {
               // Check if the user has the read permission meaning
               // the exec bit
-              if ((record.permissions & nucleus::neutron::permissions::read) !=
+              if ((record.permissions() &
+                   nucleus::neutron::permissions::read) !=
                   nucleus::neutron::permissions::read)
                 goto _access;
 
@@ -644,7 +645,7 @@ namespace horizon
     // Check if the permissions match the mask for reading.
     if (mask & R_OK)
       {
-        if ((record.permissions & nucleus::neutron::permissions::read) !=
+        if ((record.permissions() & nucleus::neutron::permissions::read) !=
             nucleus::neutron::permissions::read)
           goto _access;
       }
@@ -652,7 +653,7 @@ namespace horizon
     // Check if the permissions match the mask for writing.
     if (mask & W_OK)
       {
-        if ((record.permissions & nucleus::neutron::permissions::write) !=
+        if ((record.permissions() & nucleus::neutron::permissions::write) !=
             nucleus::neutron::permissions::write)
           goto _access;
       }
@@ -1058,8 +1059,8 @@ namespace horizon
       etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -1154,8 +1155,8 @@ namespace horizon
       etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::read) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::read) !=
          nucleus::neutron::permissions::read))
       return (-EACCES);
 
@@ -1205,8 +1206,8 @@ namespace horizon
       etoile::wall::Access::lookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -1369,8 +1370,8 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -1410,8 +1411,8 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::read) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::read) !=
          nucleus::neutron::permissions::read))
       return (-EACCES);
 
@@ -1484,8 +1485,8 @@ namespace horizon
       etoile::wall::Access::lookup(handle->identifier, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 
@@ -1595,8 +1596,8 @@ namespace horizon
                                                 agent::Agent::Subject);
 
         ELLE_TRACE("check the record")
-          if ((record == nucleus::neutron::Record::Null) ||
-              ((record.permissions & nucleus::neutron::permissions::write) !=
+          if ((record == nucleus::neutron::Record::null()) ||
+              ((record.permissions() & nucleus::neutron::permissions::write) !=
                nucleus::neutron::permissions::write))
             return (-EACCES);
 
@@ -1665,8 +1666,8 @@ namespace horizon
           etoile::wall::Access::lookup(identifier_to, agent::Agent::Subject));
 
         // Check the record.
-        if ((record == nucleus::neutron::Record::Null) ||
-            ((record.permissions & nucleus::neutron::permissions::write) !=
+        if ((record == nucleus::neutron::Record::null()) ||
+            ((record.permissions() & nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
           return (-EACCES);
 
@@ -1684,8 +1685,8 @@ namespace horizon
           identifier_from, agent::Agent::Subject);
 
         // Check the record.
-        if ((record == nucleus::neutron::Record::Null) ||
-            ((record.permissions & nucleus::neutron::permissions::write) !=
+        if ((record == nucleus::neutron::Record::null()) ||
+            ((record.permissions() & nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
           return (-EACCES);
 
@@ -1791,8 +1792,8 @@ namespace horizon
       etoile::wall::Access::lookup(identifier_parent, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       return (-EACCES);
 

@@ -107,18 +107,17 @@ namespace etoile
               context.rights.role = nucleus::neutron::Object::RoleLord;
 
               // set the permissions according to the access record.
-              context.rights.permissions = record->permissions;
+              context.rights.permissions = record->permissions();
 
               // finally, set the record for ease purpose.
               context.rights.record = *record;
 
               // if a token is present, decrypt it.
-              if (context.rights.record.token !=
-                  nucleus::neutron::Token::null())
+              if (context.rights.record.token() != nullptr)
                 {
                   // extract the secret key from the token.
                   context.rights.key =
-                    context.rights.record.token.
+                    context.rights.record.token()->
                       extract<elle::cryptography::SecretKey>(
                         agent::Agent::Identity.pair.k);
                 }
@@ -138,12 +137,13 @@ namespace etoile
               // which have been granted some permissions over the object.
               for (auto record: *context.access)
                 {
-                  if (record->subject.type() == nucleus::neutron::Subject::TypeGroup)
+                  if (record->subject().type() ==
+                      nucleus::neutron::Subject::TypeGroup)
                     {
                       std::unique_ptr<nucleus::neutron::Group> group;
 
                       ELLE_TRACE_SCOPE("looking at the group '%s'",
-                                           record->subject.group());
+                                       record->subject().group());
 
                       // XXX[remove try/catch later]
                       try
@@ -151,7 +151,7 @@ namespace etoile
                           // Retrieve the group block.
                           group =
                             depot::Depot::pull_group(
-                              record->subject.group(),
+                              record->subject().group(),
                               nucleus::proton::Revision::Last);
                         }
                       catch (std::exception const& e)
@@ -163,24 +163,23 @@ namespace etoile
                       if (agent::Agent::Subject == group->manager_subject())
                         {
                           ELLE_TRACE("the subject is the manager of "
-                                         "the group '%s'",
-                                         record->subject.group());
+                                     "the group '%s'",
+                                     record->subject().group());
 
                           context.rights.role = nucleus::neutron::Object::RoleVassal;
-                          context.rights.permissions = record->permissions;
+                          context.rights.permissions = record->permissions();
 
                           // Compute a token with the appropriate information taken
                           // from the group and the access record.
                           nucleus::neutron::Record r(group->manager_subject(),
-                                                     record->permissions,
-                                                     record->token);
+                                                     record->permissions(),
+                                                     record->token());
                           context.rights.record = r;
 
                           // Finally, extract the key from the record so as
                           // to be able to decrypt the object's content, should
                           // a token be present though.
-                          if (context.rights.record.token !=
-                              nucleus::neutron::Token::null())
+                          if (context.rights.record.token() != nullptr)
                             {
                               elle::cryptography::PrivateKey pass_k;
 
@@ -210,7 +209,7 @@ namespace etoile
                               // With the private pass, one can decrypt the
                               // access token associated with the group.
                               context.rights.key =
-                                context.rights.record.token.extract<elle::cryptography::SecretKey>(
+                                context.rights.record.token()->extract<elle::cryptography::SecretKey>(
                                   pass_k);
                             }
                           else
@@ -261,22 +260,21 @@ namespace etoile
                                   context.rights.role =
                                     nucleus::neutron::Object::RoleVassal;
                                   context.rights.permissions =
-                                    record->permissions;
+                                    record->permissions();
 
                                   // Compute a token with the appropriate
                                   // information taken from the group and the
                                   // access record.
                                   nucleus::neutron::Record r(
                                     fellow.subject(),
-                                    record->permissions,
-                                    record->token);
+                                    record->permissions(),
+                                    record->token());
                                   context.rights.record = r;
 
                                   // Finally, extract the key from the record so
                                   // as to be able to decrypt the object's
                                   // content, should a token be present though.
-                                  if (context.rights.record.token !=
-                                      nucleus::neutron::Token::null())
+                                  if (context.rights.record.token() != nullptr)
                                     {
                                       elle::cryptography::PrivateKey pass_k;
 
@@ -296,7 +294,7 @@ namespace etoile
                                       // the access token associated with the
                                       // group.
                                       context.rights.key =
-                                        context.rights.record.token.extract<elle::cryptography::SecretKey>(pass_k);
+                                        context.rights.record.token()->extract<elle::cryptography::SecretKey>(pass_k);
                                     }
                                   else
                                     {
@@ -352,7 +350,7 @@ namespace etoile
       context.rights.permissions = permissions;
 
       // also update the record which also include the user's permission.
-      context.rights.record.permissions = permissions;
+      context.rights.record.permissions(permissions);
 
       return elle::Status::Ok;
     }

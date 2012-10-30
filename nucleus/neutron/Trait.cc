@@ -41,8 +41,8 @@ namespace nucleus
       _valid(nullptr)
     {
       if (other._valid != nullptr)
-        this->_valid = new Trait::Valid(other._valid->name(),
-                                        other._valid->value());
+        this->_valid = new Valid(other._valid->name(),
+                                 other._valid->value());
     }
 
     Trait::Trait(Type const type):
@@ -122,7 +122,7 @@ namespace nucleus
     Trait::operator ==(Trait const& other) const
     {
       if (this == &other)
-        return true;
+        return (true);
 
       if (this->_type != other._type)
         return (false);

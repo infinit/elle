@@ -27,7 +27,8 @@ namespace nucleus
     {
       this->_valid = new Address::Valid(network, family, component, nullptr);
 
-      // XXX[this could be improved if OneWay::hash() returned a digest]
+      // XXX[this could be improved if OneWay::hash() returned a digest.
+      //     besides the Digest* could be remplaced by Digest]
       this->_valid->digest(new elle::cryptography::Digest);
 
       // compute the digest based on the parameters. note that most of

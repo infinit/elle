@@ -1,4 +1,5 @@
 #include <nucleus/neutron/Record.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -7,158 +8,269 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    ///
-    /// this defines an unexisting record.
-    ///
-    const Record                Record::Null;
+    Record const&
+    Record::null()
+    {
+      static Record record(Record::Type::null);
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      return (record);
+    }
 
-    ///
-    /// empty constructor.
-    ///
-    Record::Record()
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Record::Record():
+      _valid(nullptr)
     {
     }
 
-    ///
-    /// default constructor.
-    ///
     Record::Record(Subject const& subject,
                    Permissions permissions,
                    Token const& token):
-      subject(subject),
-      permissions(permissions),
-      token(token)
+      _type(Type::valid),
+      _valid(new Valid(subject, permissions, token))
     {
     }
 
     Record::Record(Subject const& subject,
                    Permissions permissions,
-                   elle::cryptography::SecretKey const& secret,
-                   elle::cryptography::PublicKey const& K):
-      subject(subject),
-      permissions(permissions)
+                   Token const* token):
+      Record(subject, permissions,
+             token != nullptr ? *token : Token::null())
     {
-      if (this->Update(subject, permissions, secret, K) == elle::Status::Error)
-        throw Exception("unable to update the recor"); // XXX[useless later]
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method creates/updates a record.
-    ///
-    elle::Status
-    Record::Update(Subject const& subject,
-                   Permissions permissions,
-                   elle::cryptography::SecretKey const& key,
-                   elle::cryptography::PublicKey const& K)
+    Record::Record(Record const& other):
+      _type(other._type),
+      _valid(nullptr)
     {
-      // then, if the subject has the read permission, create a token.
-      if ((this->permissions & permissions::read) == permissions::read)
-        return (this->Update(subject, permissions, Token(key, K)));
-      else
-        return (this->Update(subject, permissions, Token::null()));
+      if (other._valid != nullptr)
+        {
+          this->_valid =
+            new Valid(
+              other._valid->subject(),
+              other._valid->permissions(),
+              other._valid->token() != nullptr ?
+              *other._valid->token() :
+              Token::null());
+        }
     }
 
-    ///
-    /// this method creates/updates a record with a ready-to-be-used token.
-    ///
-    elle::Status
-    Record::Update(Subject const& subject,
-                   Permissions permissions,
-                   Token const& token)
+    Record::Record(Type const type):
+      _type(type),
+      _valid(nullptr)
     {
-      this->subject = subject;
-      this->permissions = permissions;
-      this->token = token;
-
-      return elle::Status::Ok;
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            // Nothing to do; this is the right way to construct such special
+            // records.
+            break;
+          }
+        case Type::valid:
+          {
+            throw Exception("valid records cannot be built through this "
+                            "constructor");
+          }
+        default:
+          throw Exception("unknown record type '%s'", this->_type);
+        }
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    Record::~Record()
+    {
+      delete this->_valid;
+    }
+
+    Record::Valid::Valid():
+      _token(nullptr)
+    {
+    }
+
+    Record::Valid::Valid(Subject const& subject,
+                         Permissions permissions,
+                         Token const& token):
+      _subject(subject),
+      _permissions(permissions),
+      _token(new Token(token))
+    {
+    }
+
+    Record::Valid::~Valid()
+    {
+      delete this->_token;
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    Subject const&
+    Record::subject() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->subject());
+    }
+
+    Permissions
+    Record::permissions() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->permissions());
+    }
+
+    void
+    Record::permissions(Permissions permissions)
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      this->_valid->permissions(permissions);
+    }
+
+    Token const*
+    Record::token() const
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->token());
+    }
+
+    void
+    Record::token(Token const& token)
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      this->_valid->token(token);
+    }
+
+    void
+    Record::Valid::token(Token const& token)
+    {
+      delete this->_token;
+      this->_token = new Token(token);
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Record::operator ==(Record const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return true;
+        return (true);
 
-      // compare the attributes.
-      if ((this->subject != other.subject) ||
-          (this->permissions != other.permissions) ||
-          (this->token != other.token))
-        return false;
+      if (this->_type != other._type)
+        return (false);
 
-      return true;
+      if (this->_type == Type::valid)
+        throw Exception("it does not make any sense to compare valid records");
+
+      return (true);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    ///
-    /// this function dumps a record.
-    ///
     elle::Status        Record::Dump(const elle::Natural32 margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Record]" << std::endl;
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            std::cout << alignment << "[Record] " << elle::none << std::endl;
 
-      // dump the subject.
-      if (this->subject.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the subject");
+            break;
+          }
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
 
-      // dump the permissions.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Permissions] " << std::dec
-                << (int)this->permissions << std::endl;
+            std::cout << alignment << "[Record]" << std::endl;
 
-      // dump the token.
-      if (this->token.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the token");
+            if (this->_valid->subject().Dump(margin + 2) == elle::Status::Error)
+              escape("unable to dump the subject");
+
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Permissions] " << std::dec
+                      << this->_valid->permissions() << std::endl;
+
+            if (this->_valid->token() != nullptr)
+              {
+                if (this->_valid->token()->Dump(margin + 2) == elle::Status::Error)
+                  escape("unable to dump the token");
+              }
+            else
+              std::cout << alignment << elle::io::Dumpable::Shift
+                        << "[Record] " << elle::none << std::endl;
+
+            break;
+          }
+        default:
+          throw Exception("unknown record type '%s'", this->_type);
+        }
 
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Record::print(std::ostream& stream) const
     {
-      stream << "record("
-             << this->subject
-             << ", "
-             << this->permissions
-             << ")";
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            stream << "record(null)";
+            break;
+          }
+        case Type::valid:
+          {
+            ELLE_ASSERT(this->_valid != nullptr);
+
+            stream << "record("
+                   << this->_valid->subject()
+                   << ", "
+                   << this->_valid->permissions()
+                   << ")";
+
+            break;
+          }
+        default:
+          throw Exception("unknown record type '%s'", this->_type);
+        }
     }
 
-//
-// ---------- rangeable -------------------------------------------------------
-//
+    /*----------.
+    | Rangeable |
+    `----------*/
 
-    ///
-    /// this method returns the symbol of a record i.e the subject.
-    ///
     Subject const&
     Record::symbol()
     {
-      return (this->subject);
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      return (this->_valid->subject());
     }
 
   }

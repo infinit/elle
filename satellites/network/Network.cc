@@ -143,7 +143,6 @@ namespace satellite
         {
           // Create an access block and add the 'everybody' group
           // to it.
-          nucleus::neutron::Record* record = new nucleus::neutron::Record;
           nucleus::neutron::Subject subject;
           nucleus::neutron::Permissions permissions;
 
@@ -182,11 +181,8 @@ namespace satellite
 
           // Note that a null token is provided because the root directory
           // contains no data.
-          if (record->Update(
-                subject,
-                permissions,
-                nucleus::neutron::Token::null()) == elle::Status::Error)
-            escape("unable to update the record");
+          nucleus::neutron::Record* record =
+            new nucleus::neutron::Record(subject, permissions);
 
           if (access.Add(record) == elle::Status::Error)
             escape("unable to add the record to the access");

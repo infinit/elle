@@ -613,11 +613,11 @@ namespace etoile
         {
           // Ignore records which relate to subjects which do not have
           // the read permission; these ones do not have a token.
-          if ((record->permissions & nucleus::neutron::permissions::read) !=
+          if ((record->permissions() & nucleus::neutron::permissions::read) !=
               nucleus::neutron::permissions::read)
             continue;
 
-          switch (record->subject.type())
+          switch (record->subject().type())
             {
             case nucleus::neutron::Subject::TypeUser:
               {
@@ -628,8 +628,8 @@ namespace etoile
                 // XXX[remove try/catch later]
                 try
                   {
-                    record->token =
-                      nucleus::neutron::Token(key, record->subject.user());
+                    record->token(
+                      nucleus::neutron::Token(key, record->subject().user()));
                   }
                 catch (std::exception const& e)
                   {
@@ -654,11 +654,11 @@ namespace etoile
                     //     of releasing here.]
                     group =
                       depot::Depot::pull_group(
-                        record->subject.group(),
+                        record->subject().group(),
                         nucleus::proton::Revision::Last);
 
-                    record->token =
-                      nucleus::neutron::Token(key, group->pass_K());
+                    record->token(
+                      nucleus::neutron::Token(key, group->pass_K()));
                   }
                 catch (std::exception const& e)
                   {
@@ -752,12 +752,12 @@ namespace etoile
       for (auto record: *context.access)
         {
           // Check if the subject has the proper permissions.
-          if ((record->permissions & nucleus::neutron::permissions::read) !=
+          if ((record->permissions() & nucleus::neutron::permissions::read) !=
               nucleus::neutron::permissions::read)
             continue;
 
           // Reset the token.
-          record->token = nucleus::neutron::Token::null();
+          record->token(nucleus::neutron::Token::null());
 
           // Set the access block as being dirty.
           //
@@ -1009,7 +1009,8 @@ namespace etoile
                 // write permission.
                 //
                 // if he has, nothing has to be done.
-                if ((record->permissions & nucleus::neutron::permissions::write) ==
+                if ((record->permissions() &
+                     nucleus::neutron::permissions::write) ==
                     nucleus::neutron::permissions::write)
                   break;
               }

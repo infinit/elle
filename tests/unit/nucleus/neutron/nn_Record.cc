@@ -13,13 +13,13 @@ test()
 {
   elle::Buffer buf;
 
-  buf.writer() << nucleus::neutron::Record::Null;
+  buf.writer() << nucleus::neutron::Record::null();
 
   nucleus::neutron::Record record;
 
   buf.reader() >> record;
 
-  assert(record == nucleus::neutron::Record::Null);
+  assert(record == nucleus::neutron::Record::null());
 }
 
 int main(int, char** argv)
