@@ -1298,7 +1298,7 @@
 				<string key="NSName">_NSMainMenu</string>
 			</object>
 			<object class="NSCustomView" id="908603183">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSTextField" id="123192768">
@@ -1342,6 +1342,7 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{600, 486}</string>
+				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="123192768"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
@@ -1356,7 +1357,7 @@
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="439893737">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSScrollView" id="725408073">
@@ -1370,13 +1371,13 @@
 										<object class="NSView" id="127494448">
 											<reference key="NSNextResponder" ref="300542340"/>
 											<int key="NSvFlags">274</int>
-											<string key="NSFrameSize">{585, 274}</string>
+											<string key="NSFrameSize">{555, 244}</string>
 											<reference key="NSSuperview" ref="300542340"/>
-											<reference key="NSNextKeyView" ref="459660155"/>
+											<reference key="NSNextKeyView" ref="301430942"/>
 											<string key="NSReuseIdentifierKey">_NS:13</string>
 										</object>
 									</array>
-									<string key="NSFrame">{{1, 1}, {600, 289}}</string>
+									<string key="NSFrame">{{1, 1}, {585, 274}}</string>
 									<reference key="NSSuperview" ref="725408073"/>
 									<reference key="NSNextKeyView" ref="127494448"/>
 									<string key="NSReuseIdentifierKey">_NS:11</string>
@@ -1389,6 +1390,7 @@
 									<int key="NSvFlags">256</int>
 									<string key="NSFrame">{{586, 1}, {15, 274}}</string>
 									<reference key="NSSuperview" ref="725408073"/>
+									<reference key="NSNextKeyView" ref="459660155"/>
 									<string key="NSReuseIdentifierKey">_NS:15</string>
 									<reference key="NSTarget" ref="725408073"/>
 									<string key="NSAction">_doScroller:</string>
@@ -1400,7 +1402,6 @@
 									<int key="NSvFlags">256</int>
 									<string key="NSFrame">{{1, 275}, {585, 15}}</string>
 									<reference key="NSSuperview" ref="725408073"/>
-									<reference key="NSNextKeyView" ref="301430942"/>
 									<string key="NSReuseIdentifierKey">_NS:26</string>
 									<int key="NSsFlags">1</int>
 									<reference key="NSTarget" ref="725408073"/>
@@ -1432,9 +1433,9 @@
 												<object class="NSButton" id="574693368">
 													<reference key="NSNextResponder" ref="231845197"/>
 													<int key="NSvFlags">268</int>
-													<string key="NSFrame">{{560, 152}, {29, 26}}</string>
+													<string key="NSFrame">{{545, 122}, {29, 26}}</string>
 													<reference key="NSSuperview" ref="231845197"/>
-													<reference key="NSNextKeyView" ref="904757567"/>
+													<reference key="NSNextKeyView" ref="662893071"/>
 													<string key="NSReuseIdentifierKey">_NS:9</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSButtonCell" key="NSCell" id="346140603">
@@ -1511,13 +1512,13 @@ A</bytes>
 													</object>
 												</object>
 											</array>
-											<string key="NSFrameSize">{585, 176}</string>
+											<string key="NSFrameSize">{555, 146}</string>
 											<reference key="NSSuperview" ref="261284373"/>
 											<reference key="NSNextKeyView" ref="574693368"/>
 											<string key="NSReuseIdentifierKey">_NS:13</string>
 										</object>
 									</array>
-									<string key="NSFrame">{{1, 1}, {600, 191}}</string>
+									<string key="NSFrame">{{1, 1}, {585, 176}}</string>
 									<reference key="NSSuperview" ref="797925890"/>
 									<reference key="NSNextKeyView" ref="231845197"/>
 									<string key="NSReuseIdentifierKey">_NS:11</string>
@@ -1530,7 +1531,7 @@ A</bytes>
 									<int key="NSvFlags">256</int>
 									<string key="NSFrame">{{586, 1}, {15, 176}}</string>
 									<reference key="NSSuperview" ref="797925890"/>
-									<reference key="NSNextKeyView" ref="725408073"/>
+									<reference key="NSNextKeyView" ref="904757567"/>
 									<string key="NSReuseIdentifierKey">_NS:15</string>
 									<reference key="NSTarget" ref="797925890"/>
 									<string key="NSAction">_doScroller:</string>
@@ -1542,7 +1543,7 @@ A</bytes>
 									<int key="NSvFlags">256</int>
 									<string key="NSFrame">{{1, 177}, {585, 15}}</string>
 									<reference key="NSSuperview" ref="797925890"/>
-									<reference key="NSNextKeyView" ref="662893071"/>
+									<reference key="NSNextKeyView" ref="725408073"/>
 									<string key="NSReuseIdentifierKey">_NS:26</string>
 									<int key="NSsFlags">1</int>
 									<reference key="NSTarget" ref="797925890"/>
@@ -1618,9 +1619,10 @@ A</bytes>
 						</object>
 					</array>
 					<string key="NSFrameSize">{600, 526}</string>
+					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="464821697"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1920, 1058}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1920, 1080}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
@@ -3693,20 +3695,20 @@ A</bytes>
 						<reference key="object" ref="231845197"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="574693368"/>
-							<object class="IBNSLayoutConstraint" id="743092355">
+							<object class="IBNSLayoutConstraint" id="13113971">
 								<reference key="firstItem" ref="574693368"/>
-								<int key="firstAttribute">6</int>
+								<int key="firstAttribute">5</int>
 								<int key="relation">0</int>
 								<reference key="secondItem" ref="231845197"/>
-								<int key="secondAttribute">6</int>
+								<int key="secondAttribute">5</int>
 								<float key="multiplier">1</float>
 								<object class="IBLayoutConstant" key="constant">
-									<double key="value">0.0</double>
+									<double key="value">549</double>
 								</object>
 								<float key="priority">1000</float>
 								<reference key="containingView" ref="231845197"/>
-								<int key="scoringType">8</int>
-								<float key="scoringTypeFloat">29</float>
+								<int key="scoringType">3</int>
+								<float key="scoringTypeFloat">9</float>
 								<int key="contentType">3</int>
 							</object>
 							<object class="IBNSLayoutConstraint" id="261438436">
@@ -3781,11 +3783,6 @@ A</bytes>
 						<int key="objectID">961</int>
 						<reference key="object" ref="680050044"/>
 						<reference key="parent" ref="439893737"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">953</int>
-						<reference key="object" ref="743092355"/>
-						<reference key="parent" ref="231845197"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">967</int>
@@ -4000,6 +3997,11 @@ A</bytes>
 						<reference key="object" ref="305017676"/>
 						<reference key="parent" ref="908603183"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1064</int>
+						<reference key="object" ref="13113971"/>
+						<reference key="parent" ref="231845197"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4027,6 +4029,7 @@ A</bytes>
 				<string key="1059.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1061.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1062.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="1064.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="112.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="124.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="125.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4204,8 +4207,8 @@ A</bytes>
 				<string key="82.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="820.CustomClassName">OONetworkBrowserView</string>
 				<array class="NSMutableArray" key="820.IBNSViewMetadataConstraints">
-					<reference ref="743092355"/>
 					<reference ref="261438436"/>
+					<reference ref="13113971"/>
 				</array>
 				<string key="820.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4214,7 +4217,6 @@ A</bytes>
 				<boolean value="NO" key="934.IBNSViewMetadataTranslatesAutoresizingMaskIntoConstraints"/>
 				<string key="934.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="935.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="953.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="960.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="961.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="967.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4240,206 +4242,9 @@ A</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1063</int>
+			<int key="maxID">1064</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes">
-			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
-				<object class="IBPartialClassDescription">
-					<string key="className">IKImageBrowserView</string>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="_dataSource">id</string>
-						<string key="_delegate">id</string>
-						<string key="_dragDestinationDelegate">id</string>
-						<string key="_horizontalScroller">NSScroller</string>
-						<string key="_verticalScroller">NSScroller</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="_dataSource">
-							<string key="name">_dataSource</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="_delegate">
-							<string key="name">_delegate</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="_dragDestinationDelegate">
-							<string key="name">_dragDestinationDelegate</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="_horizontalScroller">
-							<string key="name">_horizontalScroller</string>
-							<string key="candidateClassName">NSScroller</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="_verticalScroller">
-							<string key="name">_verticalScroller</string>
-							<string key="candidateClassName">NSScroller</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IKImageBrowserView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSLayoutConstraint</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OOAppDelegate</string>
-					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">window</string>
-						<string key="NS.object.0">NSWindow</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">window</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">window</string>
-							<string key="candidateClassName">NSWindow</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OOAppDelegate.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OOBrowserWindow</string>
-					<string key="superclassName">NSWindow</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OOBrowserWindow.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OOBrowserWindowController</string>
-					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="createNetwork:">id</string>
-						<string key="startAnimations:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="createNetwork:">
-							<string key="name">createNetwork:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startAnimations:">
-							<string key="name">startAnimations:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="networkBrowser">IKImageBrowserView</string>
-						<string key="networkBrowserViewManager">OONetworkBrowserViewManager</string>
-						<string key="networkNameTextField">NSTextField</string>
-						<string key="offView">NSView</string>
-						<string key="onView">NSView</string>
-						<string key="userBrowser">IKImageBrowserView</string>
-						<string key="userBrowserViewManager">OOUserBrowserViewManager</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="networkBrowser">
-							<string key="name">networkBrowser</string>
-							<string key="candidateClassName">IKImageBrowserView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="networkBrowserViewManager">
-							<string key="name">networkBrowserViewManager</string>
-							<string key="candidateClassName">OONetworkBrowserViewManager</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="networkNameTextField">
-							<string key="name">networkNameTextField</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="offView">
-							<string key="name">offView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="onView">
-							<string key="name">onView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="userBrowser">
-							<string key="name">userBrowser</string>
-							<string key="candidateClassName">IKImageBrowserView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="userBrowserViewManager">
-							<string key="name">userBrowserViewManager</string>
-							<string key="candidateClassName">OOUserBrowserViewManager</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OOBrowserWindowController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OONetworkBrowserView</string>
-					<string key="superclassName">IKImageBrowserView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OONetworkBrowserView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OONetworkBrowserViewManager</string>
-					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="networkBrowser">IKImageBrowserView</string>
-						<string key="userBrowser">IKImageBrowserView</string>
-						<string key="userBrowserViewManager">OOUserBrowserViewManager</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="networkBrowser">
-							<string key="name">networkBrowser</string>
-							<string key="candidateClassName">IKImageBrowserView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="userBrowser">
-							<string key="name">userBrowser</string>
-							<string key="candidateClassName">IKImageBrowserView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="userBrowserViewManager">
-							<string key="name">userBrowserViewManager</string>
-							<string key="candidateClassName">OOUserBrowserViewManager</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OONetworkBrowserViewManager.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OOUserBrowserView</string>
-					<string key="superclassName">IKImageBrowserView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OOUserBrowserView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OOUserBrowserViewManager</string>
-					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">userBrowser</string>
-						<string key="NS.object.0">IKImageBrowserView</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">userBrowser</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">userBrowser</string>
-							<string key="candidateClassName">IKImageBrowserView</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/OOUserBrowserViewManager.h</string>
-					</object>
-				</object>
-			</array>
-		</object>
+		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencies">

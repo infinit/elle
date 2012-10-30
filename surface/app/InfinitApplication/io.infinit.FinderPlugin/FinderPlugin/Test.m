@@ -13,6 +13,9 @@
 #import <objc/runtime.h>
 #import <syslog.h>
 
+#import <FinderWindow/IAFinderWindowController.h>
+#import <FinderWindow/IAFinderWindow.h>
+
 
 #define CSTR(o) ([o isKindOfClass:[NSArray class]]          \
 ? [[o componentsJoinedByString: @", "] UTF8String]      \
@@ -21,6 +24,36 @@
 
 #define CLS(cls) NSClassFromString(@#cls)
 
+
+# define SETUP_HOOK_DYNAMIC_METHOD(cls, hook)  do {  \
+    BOOL result = [Test _exchangeImplementation:NSClassFromString(@#cls)        \
+ofMethod:@selector(hook)                                     \
+withMethod:@selector(_hook_ ## hook)];                         \
+if (!result)                                                                                    \
+{                                                                                               \
+syslog(LOG_ERR, "Couldn't exchange implementations of " #hook);                             \
+return;                                                                                     \
+}                                                                                               \
+else                                                                                            \
+syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                                                  \
+} while(false)
+/**/
+
+# define HOOK_NAV_SETUP(hook)      do {                                                                     \
+BOOL result = [Test _exchangeStaticImplementation:NSClassFromString(@"NSNavFBENode")        \
+ofMethod:@selector(hook)                                     \
+withMethod:@selector(_hook_ ## hook)];                         \
+if (!result)                                                                                    \
+{                                                                                               \
+syslog(LOG_ERR, "Couldn't exchange implementations of " #hook);                             \
+return;                                                                                     \
+}                                                                                               \
+else                                                                                            \
+syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                                                  \
+} while(false)
+/**/
+
+
 @interface NSWindowController (Test)
 
 - (BOOL)_isInfinitWindow;
@@ -28,7 +61,93 @@
 
 @end
 
+@interface WindowLoader : NSObject
+
++ (WindowLoader*) instance;
+
+- (void) initialize;
+@property (retain) IAFinderWindowController* window_controller;
+
+@end
+
+@implementation WindowLoader
+
++ (WindowLoader*) instance
+{
+    static WindowLoader* i = nil;
+    if (i == nil)
+    {
+        i = [[WindowLoader alloc] init];
+        [i retain];
+    }
+    return i;
+}
+
+- (void) initialize
+{
+    id windows = [NSApp windows];
+    for (NSWindow* window in windows)
+    {
+        NSWindowController* window_controller = [window windowController];
+        if (window_controller != nil && [window_controller _isInfinitWindow])
+            [window_controller _initializeInfinitWindow];
+    }
+}
+
++ (IAFinderWindow*) retreiveInfinitWindowFor:(NSWindow*)browserWindow
+{
+    for (NSWindow* w in [browserWindow childWindows])
+    {
+        if ([w isKindOfClass:[IAFinderWindow class]])
+        {
+            return (IAFinderWindow *)w;
+        }
+    }
+    return nil;
+}
+
++ (IAFinderWindow*) retreiveOrCreateInfinitWindowFor:(NSWindow*)browserWindow
+{
+    IAFinderWindow* window = [WindowLoader retreiveInfinitWindowFor:browserWindow];
+    if (window == nil)
+    {
+        IAFinderWindowController* window_controller = [[IAFinderWindowController alloc] init];
+        window = (IAFinderWindow*)[window_controller window];
+        [browserWindow addChildWindow:window
+                              ordered:NSWindowAbove];
+    }
+    assert(window != nil);
+    return window;
+}
+
+@end
+
 @implementation Test
+
+
++ (void)load
+{
+    syslog(LOG_NOTICE, "Loading injector");
+    
+    
+    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
+    //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneForCell:);
+    //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForKind:);
+    //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForZone:);
+    SETUP_HOOK_DYNAMIC_METHOD(TSidebarItemCell, drawWithFrame:inView:);
+    SETUP_HOOK_DYNAMIC_METHOD(TBrowserWindowController, commonFinishInitialization);
+    
+    SETUP_HOOK_DYNAMIC_METHOD(TColumnViewController, menuNeedsUpdate:);
+    SETUP_HOOK_DYNAMIC_METHOD(TListViewController, menuNeedsUpdate:);
+    SETUP_HOOK_DYNAMIC_METHOD(NSMenu, _popUpContextMenu:withEvent:forView:withFont:);
+    SETUP_HOOK_DYNAMIC_METHOD(TIconViewController, nodeAtIndex:);
+    
+    HOOK_NAV_SETUP(specialNodeOfType:);
+    
+
+    [[WindowLoader instance] initialize];
+}
+
 
 
 + (BOOL)_exchangeImplementation:(Class)cls ofMethod:(SEL)arg1 withMethod:(SEL)arg2
@@ -87,58 +206,6 @@
     return YES;
 }
 
-# define SETUP_HOOK_DYNAMIC_METHOD(cls, hook)      do {                                                                     \
-BOOL result = [Test _exchangeImplementation:NSClassFromString(@#cls)        \
-ofMethod:@selector(hook)                                     \
-withMethod:@selector(_hook_ ## hook)];                         \
-if (!result)                                                                                    \
-{                                                                                               \
-syslog(LOG_ERR, "Couldn't exchange implementations of " #hook);                             \
-return;                                                                                     \
-}                                                                                               \
-else                                                                                            \
-syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                                                  \
-} while(false)
-/**/
-
-# define HOOK_NAV_SETUP(hook)      do {                                                                     \
-BOOL result = [Test _exchangeStaticImplementation:NSClassFromString(@"NSNavFBENode")        \
-ofMethod:@selector(hook)                                     \
-withMethod:@selector(_hook_ ## hook)];                         \
-if (!result)                                                                                    \
-{                                                                                               \
-syslog(LOG_ERR, "Couldn't exchange implementations of " #hook);                             \
-return;                                                                                     \
-}                                                                                               \
-else                                                                                            \
-syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                                                  \
-} while(false)
-/**/
-
-+ (void)load
-{
-    syslog(LOG_NOTICE, "Loading injector");
-
-    
-    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
-//    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneForCell:);
-//    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForKind:);
-//    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForZone:);
-    SETUP_HOOK_DYNAMIC_METHOD(TSidebarItemCell, drawWithFrame:inView:);
-    SETUP_HOOK_DYNAMIC_METHOD(TBrowserWindowController, commonFinishInitialization);
-    
-    
-    HOOK_NAV_SETUP(specialNodeOfType:);
-    
-    id windows = [NSApp windows];
-    for (NSWindow* window in windows)
-    {
-        NSWindowController* window_controller = [window windowController];
-        if (window_controller != nil && [window_controller _isInfinitWindow])
-            [window_controller _initializeInfinitWindow];
-    }
-}
-
 + (NSString*)getDrivePath
 {
     static NSString* path = nil;
@@ -192,11 +259,33 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
 struct TFENode
 {
     void* opaque_node_ref;
-    void* tab[10];
+    void* tab[4];
 };
 
 
 @implementation NSViewController (Test)
+
+- (struct TFENode)_hook_nodeAtIndex:(unsigned long long)arg1
+{
+    // Helper to cast to the right structure
+    return [self _hook_nodeAtIndex:arg1];
+}
+- (void) _hook_menuNeedsUpdate:(id)arg1
+{
+    [self _hook_menuNeedsUpdate:arg1 ];
+    [arg1 insertItem:[NSMenuItem separatorItem] atIndex:2];
+    NSMenuItem *infItem = [arg1 insertItemWithTitle:@"Infinit" action:nil keyEquivalent:@"" atIndex:3];
+    NSMenu *submenu = [[NSMenu alloc] init];
+    NSMenuItem *infMenuItem = [submenu addItemWithTitle:@"Share this folder ..." action:@selector(openEchowavesURL:) keyEquivalent:@""];
+    [infItem setSubmenu:submenu];
+    [arg1 insertItem:[NSMenuItem separatorItem] atIndex:4];
+    [infMenuItem setTarget:self];
+}
+
+- (void) openEchowavesURL:(id)sender {
+    // function details here
+    NSLog(@"Hello Infinit !!!!!");
+}
 
 - (id)_hook_zoneList:(int)arg1
 {
@@ -350,8 +439,14 @@ struct TFENode
 - (void)_hook_commonFinishInitialization
 {
     [self _hook_commonFinishInitialization];
+    [self _initializeInfinitWindow];
     if ([self _isInfinitWindow])
-        [self _initializeInfinitWindow];
+    {
+        [[[WindowLoader retreiveInfinitWindowFor:[self window]] windowController] showWindow:self];
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderFront:self];
+    }
+    else
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderOut:self];
 }
 
 - (BOOL)_isInfinitWindow
@@ -376,13 +471,89 @@ struct TFENode
 
 - (void)_initializeInfinitWindow
 {
-    [[self window] setTitle:@"MEGA TITLE DE OUF"];
+    //[[self window] setTitle:@"MEGA TITLE DE OUF"];
+    NSWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
     
+    [window setFrame:[self getInfinitWindowsFrameFor:window]
+             display:YES
+             animate:NO];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveUpdateFrameNotification:)
+                                                 name:NSWindowDidResizeNotification
+                                               object:nil ];
+    //[[window windowController] showWindow:self];
+}
+
+
+- (void)receiveUpdateFrameNotification:(NSNotification *) notification {
+    IAFinderWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
+    if (window != nil) {
+        [window setFrame:[self getInfinitWindowsFrameFor:window]
+                 display:YES];
+    }
 }
 //
 //- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
 //{
 //    return @"BEGA OUFLE DE ITLE";
 //}
+
+
+- (NSRect)getInfinitWindowsFrameFor:(IAFinderWindow*)arg1 {
+    id browserWindow = [self browserWindow];
+    id browserViewContainer = [self browserViewContainer];
+    id browserViewController = [self browserViewController];
+    id browserView = [browserViewController view];
+    NSRect windowFrame = [browserWindow frame];
+    NSRect browserViewContainerFrame = [browserViewContainer frame];
+    NSRect browserViewFrame = [browserView frame];
+    
+    CGFloat x = windowFrame.origin.x + browserViewFrame.origin.x + browserViewContainerFrame.origin.x;
+    CGFloat y = windowFrame.origin.y + browserViewFrame.origin.y + browserViewContainerFrame.origin.y;
+    CGFloat w = browserViewFrame.size.width;
+    CGFloat h = browserViewFrame.size.height - 1;
+    NSRect frame = [arg1 frame];
+    if (arg1 == Nil) {
+        frame = NSMakeRect(x, y, w, h);
+    } else {
+        frame = [arg1 frame];
+        frame.origin.x = x;
+        frame.origin.y = y;
+        frame.size.width = w;
+        frame.size.height = h;
+    }
+    return frame;
+}
+
+
+@end
+
+
+@implementation NSMenu (Test)
+
+- (void)_hook__popUpContextMenu:(id)arg1 withEvent:(id)arg2 forView:(id)arg3 withFont:(id)arg4
+{
+    if ([arg3 isKindOfClass:NSClassFromString(@"TIconView")])
+    {
+        id controller = [arg3 controller];
+        id bbb = [controller selectedItems];
+        int n = [bbb count];
+        if ([bbb count] == 1)
+        {
+            unsigned long long int selected_menu_node_index = [bbb firstIndex];
+            TFENode selected_menu_node = [controller _hook_nodeAtIndex:selected_menu_node_index];
+            NSLog([[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:selected_menu_node.opaque_node_ref] path]);
+        }
+        [self insertItem:[NSMenuItem separatorItem] atIndex:2];
+        NSMenuItem *infItem = [self insertItemWithTitle:@"Infinit" action:nil keyEquivalent:@"" atIndex:3];
+        NSMenu *submenu = [[NSMenu alloc] init];
+        NSMenuItem *infMenuItem = [submenu addItemWithTitle:@"Share this folder ..." action:@selector(openEchowavesURL:) keyEquivalent:@""];
+        [infItem setSubmenu:submenu];
+        [self insertItem:[NSMenuItem separatorItem] atIndex:4];
+        [infMenuItem setTarget:controller];
+    }
+    [self _hook__popUpContextMenu:arg1 withEvent:arg2 forView:arg3 withFont:arg4];
+}
 
 @end

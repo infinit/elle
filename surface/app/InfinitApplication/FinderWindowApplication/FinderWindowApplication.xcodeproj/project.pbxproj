@@ -15,12 +15,20 @@
 		BD1A1C141639469100186C48 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C121639469100186C48 /* MainMenu.xib */; };
 		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
 		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
-		BD1A1C30163946A600186C48 /* FinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C2F163946A600186C48 /* FinderWindow.m */; };
 		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
-		BD1A1C3A163948BB00186C48 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
 		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */; };
 		BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
+		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
+		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
+		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
+		BD84096E16401131004C9C97 /* libgap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD84096D16401131004C9C97 /* libgap.dylib */; };
+		BD84096F16401152004C9C97 /* libgap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD84096D16401131004C9C97 /* libgap.dylib */; };
+		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
+		BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
+		BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +52,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BD84096C1640110D004C9C97 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BD84096E16401131004C9C97 /* libgap.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -64,11 +82,17 @@
 		BD1A1C29163946A500186C48 /* FinderWindow-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderWindow-Info.plist"; sourceTree = "<group>"; };
 		BD1A1C2B163946A500186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderWindow-Prefix.pch"; sourceTree = "<group>"; };
-		BD1A1C2E163946A600186C48 /* FinderWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FinderWindow.h; sourceTree = "<group>"; };
-		BD1A1C2F163946A600186C48 /* FinderWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderWindow.m; sourceTree = "<group>"; };
 		BD1A1C35163947E000186C48 /* FinderWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FinderWindow.xib; sourceTree = "<group>"; };
 		BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindowController.h; sourceTree = "<group>"; };
 		BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindowController.m; sourceTree = "<group>"; };
+		BD840966163EFC16004C9C97 /* gap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../../../gap/gap.h; sourceTree = "<group>"; };
+		BD840968163EFC3F004C9C97 /* IAGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGapState.h; sourceTree = "<group>"; };
+		BD840969163EFC3F004C9C97 /* IAGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGapState.m; sourceTree = "<group>"; };
+		BD84096D16401131004C9C97 /* libgap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgap.dylib; path = ../../../../build/macosx64/surface/gap/libgap.dylib; sourceTree = "<group>"; };
+		BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindow.h; sourceTree = "<group>"; };
+		BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindow.m; sourceTree = "<group>"; };
+		BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IALoginViewController.h; sourceTree = "<group>"; };
+		BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IALoginViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +101,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD1A1BFE1639469100186C48 /* Cocoa.framework in Frameworks */,
-				BD1A1C3A163948BB00186C48 /* FinderWindow.framework in Frameworks */,
+				BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD84096F16401152004C9C97 /* libgap.dylib in Frameworks */,
 				BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +120,7 @@
 		BD1A1BEE1639469000186C48 = {
 			isa = PBXGroup;
 			children = (
+				BD84096D16401131004C9C97 /* libgap.dylib */,
 				BD1A1C031639469100186C48 /* FinderWindowApplication */,
 				BD1A1C27163946A500186C48 /* FinderWindow */,
 				BD1A1BFC1639469100186C48 /* Frameworks */,
@@ -156,11 +182,16 @@
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
-				BD1A1C2E163946A600186C48 /* FinderWindow.h */,
-				BD1A1C2F163946A600186C48 /* FinderWindow.m */,
+				BD840966163EFC16004C9C97 /* gap.h */,
+				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
+				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
 				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
 				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
 				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
+				BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */,
+				BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */,
+				BD840968163EFC3F004C9C97 /* IAGapState.h */,
+				BD840969163EFC3F004C9C97 /* IAGapState.m */,
 				BD1A1C28163946A500186C48 /* Supporting Files */,
 			);
 			path = FinderWindow;
@@ -184,6 +215,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */,
+				BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */,
+				BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */,
+				BD840967163EFC16004C9C97 /* gap.h in Headers */,
+				BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +252,7 @@
 				BD1A1C21163946A500186C48 /* Frameworks */,
 				BD1A1C22163946A500186C48 /* Headers */,
 				BD1A1C23163946A500186C48 /* Resources */,
+				BD84096C1640110D004C9C97 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -291,8 +327,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD1A1C30163946A600186C48 /* FinderWindow.m in Sources */,
 				BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */,
+				BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */,
+				BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */,
+				BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +468,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderWindow/FinderWindow-Prefix.pch";
 				INFOPLIST_FILE = "FinderWindow/FinderWindow-Info.plist";
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../build/macosx64/surface/gap\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -445,6 +488,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderWindow/FinderWindow-Prefix.pch";
 				INFOPLIST_FILE = "FinderWindow/FinderWindow-Info.plist";
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../build/macosx64/surface/gap\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -469,6 +517,7 @@
 				BD1A1C191639469100186C48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BD1A1C31163946A600186C48 /* Build configuration list for PBXNativeTarget "FinderWindow" */ = {
 			isa = XCConfigurationList;
@@ -477,6 +526,7 @@
 				BD1A1C33163946A600186C48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
