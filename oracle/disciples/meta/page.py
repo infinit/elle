@@ -84,6 +84,16 @@ class Page(object):
         seasoned = seasoned.encode('utf-8')
         return hashlib.md5(seasoned).hexdigest()
 
+    def notifySwaggers(self, data):
+        swgs = self.user["swaggers"]
+        d = {
+                "recipient_id" : list(swgs),
+                "sender_id" : self.user["_id"],
+            }
+        d.update(data)
+        self.notifier.notify_send(d)
+
+
     def error(self, s):
         return json.dumps({
             'success': False,

@@ -359,6 +359,7 @@ class Login(Page):
         email = self.data.get('email')
         password = self.data.get('password')
         if self.authenticate(email, password):
+            self.notifySwaggers({"notification_id" : 8, "status" : 1})
             return self.success({
                 "_id" : self.user["_id"],
                 'token': self.session.session_id,
@@ -382,6 +383,7 @@ class Logout(Page):
         if not self.user:
             return self.error("Not logged in")
         self.logout()
+        self.notifySwaggers({"notification_id": 8, "status" : 2})
         return self.success()
 
 
