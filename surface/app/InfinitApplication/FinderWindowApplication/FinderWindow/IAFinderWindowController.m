@@ -8,11 +8,12 @@
 
 #import "IAFinderWindowController.h"
 #import "IALoginViewController.h"
+#import "IAGapState.h"
 
 @interface IAFinderWindowController ()
 
 @property (retain) IBOutlet IALoginViewController* login_view_controller;
-@property (retain) IBOutlet NSView* login_view;
+//@property (retain) IBOutlet NSView* login_view;
 
 @end
 
@@ -23,9 +24,12 @@
     self = [super initWithWindowNibName:@"FinderWindow"];
     
     if (self) {
-
+        NSLog(@"SUBSCRIBE for %@", self);
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(_onUserLoggedIn:)
+                                                     name:IA_GAP_EVENT_LOGIN_OPERATION
+                                                   object:nil];
     }
-    
     return self;
 }
 
@@ -35,5 +39,13 @@
     [[self window] setContentView:[self.login_view_controller view]];
 }
 
+- (void)_onUserLoggedIn:(NSNotification*)notification
+{
+    if ([[notification name] isEqualToString:IA_GAP_EVENT_LOGIN_OPERATION])
+    {
+        IAGapOperationResult* result = [notification object];
+        NSLog(@"Yeah, got user notification: %@", result);
+    }
+}
 
 @end

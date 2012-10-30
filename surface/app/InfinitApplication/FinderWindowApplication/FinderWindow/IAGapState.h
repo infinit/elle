@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define IA_GAP_EVENT_LOGGED_IN @"IA_GAP_EVENT_LOGGED_IN"
+#define IA_GAP_EVENT_LOGIN_OPERATION @"IA_GAP_EVENT_LOGIN_OPERATION"
 
 /**
  * @brief An operation return value

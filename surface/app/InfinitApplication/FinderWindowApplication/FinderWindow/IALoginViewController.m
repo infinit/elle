@@ -15,6 +15,7 @@
 @property(retain) IBOutlet NSTextFieldCell* login;
 @property(retain) IBOutlet NSSecureTextFieldCell* password;
 @property(retain) IBOutlet NSButton* login_button;
+@property(retain) IBOutlet NSTextField* error_message;
 
 -(IBAction) doLogin:(id)sender;
 
@@ -29,6 +30,13 @@
     }
     return self;
 }
+
+
+- (void)awakeFromNib
+{
+    [self.error_message setStringValue:@""];
+}
+
 
 // Login button
 -(IBAction) doLogin:(id)sender
@@ -53,6 +61,11 @@
     [self.login_button setHidden:NO];
     [self.login setEnabled:YES];
     [self.password setEnabled:YES];
+    
+    if (![result success])
+        [self.error_message setStringValue:@"Wrong login / password"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_LOGIN_OPERATION
+                                                        object:result];
 }
 
 @end
