@@ -36,6 +36,7 @@ DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
 """
 
 with open(p1, 'w') as f:
+    f.encoding = "utf8"
     f.write(DATA)
 
 with open(p1, 'r') as f:
