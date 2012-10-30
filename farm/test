@@ -254,6 +254,9 @@ if __name__ == "__main__":
     parser.add_argument('--builddir', '-b', default=BUILD,
             help="the build directory containing the binaries")
 
+    parser.add_argument('--no-unit', action="store_true", default=False,
+            help="do not run the unit tests")
+
     args = parser.parse_args()
 
     # Update the env and paths for compatibility purpose
@@ -270,7 +273,7 @@ if __name__ == "__main__":
         functional_success = functionals_tests(args.scriptdir, report, args.scripts.split(","))
 
     # Run the unit tests (if no script was specified explicitly)
-    if not args.scripts:
+    if not args.scripts and not args.no_unit:
         unit_success = unit_tests(report)
     else:
         unit_success = True
