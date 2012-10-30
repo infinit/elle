@@ -1590,10 +1590,10 @@ namespace horizon
 
         Ward ward_directory(directory);
 
-        nucleus::neutron::Record record;
-        ELLE_TRACE("retrieve the subject's permissions on the object")
-          record = etoile::wall::Access::lookup(directory,
-                                                agent::Agent::Subject);
+        ELLE_TRACE("retrieve the subject's permissions on the object");
+        nucleus::neutron::Record record(
+          etoile::wall::Access::lookup(directory,
+                                       agent::Agent::Subject));
 
         ELLE_TRACE("check the record")
           if ((record == nucleus::neutron::Record::null()) ||
@@ -1662,12 +1662,12 @@ namespace horizon
         Ward ward_to(identifier_to);
 
         // Retrieve the subject's permissions on the object.
-        nucleus::neutron::Record record(
+        nucleus::neutron::Record record_to(
           etoile::wall::Access::lookup(identifier_to, agent::Agent::Subject));
 
         // Check the record.
-        if ((record == nucleus::neutron::Record::null()) ||
-            ((record.permissions() & nucleus::neutron::permissions::write) !=
+        if ((record_to == nucleus::neutron::Record::null()) ||
+            ((record_to.permissions() & nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
           return (-EACCES);
 
@@ -1681,12 +1681,14 @@ namespace horizon
         Ward ward_from(identifier_from);
 
         // Retrieve the subject's permissions on the object.
-        record = etoile::wall::Access::lookup(
-          identifier_from, agent::Agent::Subject);
+        nucleus::neutron::Record record_from(
+          etoile::wall::Access::lookup(
+            identifier_from, agent::Agent::Subject));
 
         // Check the record.
-        if ((record == nucleus::neutron::Record::null()) ||
-            ((record.permissions() & nucleus::neutron::permissions::write) !=
+        if ((record_from == nucleus::neutron::Record::null()) ||
+            ((record_from.permissions() &
+              nucleus::neutron::permissions::write) !=
              nucleus::neutron::permissions::write))
           return (-EACCES);
 

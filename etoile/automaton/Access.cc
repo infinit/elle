@@ -400,7 +400,7 @@ namespace etoile
 
           // return the record, if present.
           if (context.rights.role != nucleus::neutron::Object::RoleNone)
-            record = &context.rights.record;
+            record = context.rights.record;
           else
             record = nullptr;
         }

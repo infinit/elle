@@ -77,7 +77,8 @@ namespace nucleus
       elle::Boolean
       operator ==(Record const& other) const;
       ELLE_OPERATOR_NEQ(Record);
-      ELLE_OPERATOR_ASSIGNMENT(Record);
+      /// Do not allow record assignment: use the copy constructor instead.
+      ELLE_OPERATOR_NO_ASSIGNMENT(Record);
 
       /*--------.
       | Methods |
