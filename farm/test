@@ -141,7 +141,10 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
             import html
             if "std" not in script_report:
                 script_report["std"] = OrderedDict()
-            script_report["std"]["out"] = html.escape(out.decode("utf8"))
+            if out:
+                script_report["std"]["out"] = html.escape(out.decode("utf8"))
+            else:
+                script_report["std"]["out"] = ""
             for w in watchers:
                 w.post_run(s)
     for w in watchers:
