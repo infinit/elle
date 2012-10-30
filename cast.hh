@@ -16,8 +16,7 @@ namespace elle
     {
       T* res = dynamic_cast<T*>(p.get());
       if (!res)
-        throw std::runtime_error(elle::sprintf("%s of type %s cannot be cast to type %s",
-                                               *p, typeid(*p).name(), typeid(T).name()));
+        return nullptr;
       p.release();
       return std::unique_ptr<T>(static_cast<T*>(res));
     }
@@ -28,8 +27,7 @@ namespace elle
     {
       T* res = dynamic_cast<T*>(p.get());
       if (!res)
-        throw std::runtime_error(elle::sprintf("%s of type %s cannot be cast to type %s",
-                                               *p, typeid(*p).name(), typeid(T).name()));
+        return nullptr;
       p.release();
       return std::unique_ptr<T>(static_cast<T*>(res));
     }
