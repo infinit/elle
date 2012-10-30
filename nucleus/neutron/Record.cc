@@ -50,15 +50,13 @@ namespace nucleus
       _valid(nullptr)
     {
       if (other._valid != nullptr)
-        {
-          this->_valid =
-            new Valid(
-              other._valid->subject(),
-              other._valid->permissions(),
-              other._valid->token() != nullptr ?
-              *other._valid->token() :
-              Token::null());
-        }
+        this->_valid =
+          new Valid(
+            other._valid->subject(),
+            other._valid->permissions(),
+            other._valid->token() != nullptr ?
+            *other._valid->token() :
+            Token::null());
     }
 
     Record::Record(Type const type):
@@ -218,7 +216,7 @@ namespace nucleus
               }
             else
               std::cout << alignment << elle::io::Dumpable::Shift
-                        << "[Record] " << elle::none << std::endl;
+                        << "[Token] " << elle::none << std::endl;
 
             break;
           }

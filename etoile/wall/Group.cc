@@ -233,7 +233,7 @@ namespace etoile
         if (fellow)
           return *fellow;
         else
-          return nucleus::neutron::Fellow::Null;
+          return nucleus::neutron::Fellow::null();
       }
     }
 

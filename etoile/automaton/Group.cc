@@ -135,9 +135,14 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
+              /// Deliberately provide a null token because the right token
+              /// will be generated when the group is closed. This improves
+              /// the performance by delaying the cryptographic operations.
               context.ensemble->add(
                 std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-                  new nucleus::neutron::Fellow(subject))));
+                            new nucleus::neutron::Fellow(
+                              subject,
+                              nucleus::neutron::Token::null()))));
             }
           catch (...)
             {

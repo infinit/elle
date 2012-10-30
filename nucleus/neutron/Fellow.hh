@@ -21,50 +21,72 @@ namespace nucleus
       public elle::Printable,
       public elle::io::Dumpable
     {
-      //
-      // types
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      /// This type is used by the Range class for determining the type of
-      /// the items' differenciable elements i.e kind of keys.
+      /// Return a null fellow i.e a fellow which represent an non-applicable
+      /// value.
+      static
+      Fellow const&
+      null();
+
+      /*-------------.
+      | Enumerations |
+      `-------------*/
+    public:
+      enum class Type
+      {
+        null,
+        valid
+      };
+
+      /*------.
+      | Types |
+      `------*/
+    public:
       typedef Subject Symbol;
 
-      //
-      // constants
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      /// This constant defines a null/empty/unused fellow.
-      static const Fellow Null;
-
-      //
-      // construction
-      //
-    public:
-      Fellow();
-      Fellow(Subject const& subject);
+      Fellow(); // XXX[deserialize]
+      /// Construct a fellow with a subject and its associated token.
       Fellow(Subject const& subject,
              Token const& token);
+      Fellow(Fellow const& other);
+      ~Fellow();
+    private:
+      Fellow(Type const type);
 
-      //
-      // methods
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
-      /// Returns the subject.
+      elle::Boolean
+      operator ==(Fellow const& other) const;
+      ELLE_OPERATOR_NEQ(Fellow);
+      /// Do not allow fellow assignment: use the copy constructor instead.
+      ELLE_OPERATOR_NO_ASSIGNMENT(Fellow);
+
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// Return the fellow's subject.
       Subject const&
       subject() const;
-      /// Returns the subject.
-      Subject&
-      subject();
-      /// Returns the token.
+      /// Return the fellow's token.
       Token const&
       token() const;
-      /// Specifies a new token.
+      /// Update the fellow's token.
       void
       token(Token const& token);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -76,15 +98,53 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
       // rangeable
-      Subject&
+      Subject const&
       symbol();
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Structures |
+      `-----------*/
+    public:
+      struct Valid
+      {
+        // construction
+      public:
+        Valid();
+        Valid(Subject const& subject,
+              Token const& token);
+        ~Valid();
+
+        // methods
+      public:
+        /// Update the token.
+        void
+        token(Token const& token);
+
+      public:
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(Fellow::Valid);
+
+        // attributes
+      private:
+        ELLE_ATTRIBUTE_R(Subject, subject);
+        /// Note that contrary to the Record class, every
+        /// fellow has a token since such a token protects
+        /// the group's pass. Since every group has a pass,
+        /// no matter the revision of the group, fellows have
+        /// a token.
+        /// However, since once must be able to re-generate
+        /// a token, following the modification of the group's
+        /// pass for example, the token is represented through
+        /// a pointer.
+        ELLE_ATTRIBUTE_RW(Token*, token);
+      };
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Subject _subject;
-      Token _token;
+      ELLE_ATTRIBUTE_R(Type, type)
+      ELLE_ATTRIBUTE(Valid*, valid);
     };
 
   }

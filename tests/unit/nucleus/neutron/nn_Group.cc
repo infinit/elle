@@ -35,7 +35,8 @@ void test()
 
         ensemble.add(
           std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-            new nucleus::neutron::Fellow(subject))));
+                      new nucleus::neutron::Fellow(
+                        subject, nucleus::neutron::Token::null()))));
 
         assert(group.state() == nucleus::proton::StateDirty);
       }
