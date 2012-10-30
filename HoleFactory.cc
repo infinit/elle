@@ -29,12 +29,13 @@ namespace infinit
 
     switch (descriptor.meta().model().type)
       {
-        // case Model::TypeLocal:
-        // {
-        //   this->_implementation =
-        //     new implementations::local::Implementation(*this, network);
-        //   break;
-        // }
+        case hole::Model::TypeLocal:
+        {
+          return std::unique_ptr<hole::Hole>(
+            new hole::implementations::local::Implementation(
+              storage, passport, authority));
+          break;
+        }
         case hole::Model::TypeRemote:
         {
           // Retrieve the locus.
