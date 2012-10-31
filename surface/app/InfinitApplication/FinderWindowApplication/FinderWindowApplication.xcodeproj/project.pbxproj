@@ -28,6 +28,10 @@
 		BD8409A616412C2B004C9C97 /* IAMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409A416412C2B004C9C97 /* IAMainView.m */; };
 		BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409A816412CE3004C9C97 /* IAMainViewController.h */; };
 		BD8409AB16412CE3004C9C97 /* IAMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409A916412CE3004C9C97 /* IAMainViewController.m */; };
+		BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */; };
+		BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */; };
+		BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409D11641A247004C9C97 /* IARegisterView.h */; };
+		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
 		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
 		BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
@@ -97,6 +101,10 @@
 		BD8409A416412C2B004C9C97 /* IAMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAMainView.m; sourceTree = "<group>"; };
 		BD8409A816412CE3004C9C97 /* IAMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAMainViewController.h; sourceTree = "<group>"; };
 		BD8409A916412CE3004C9C97 /* IAMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAMainViewController.m; sourceTree = "<group>"; };
+		BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterViewController.h; sourceTree = "<group>"; };
+		BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterViewController.m; sourceTree = "<group>"; };
+		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
+		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
 		BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindow.h; sourceTree = "<group>"; };
 		BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindow.m; sourceTree = "<group>"; };
 		BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IALoginViewController.h; sourceTree = "<group>"; };
@@ -204,6 +212,10 @@
 				BD8409A416412C2B004C9C97 /* IAMainView.m */,
 				BD8409A816412CE3004C9C97 /* IAMainViewController.h */,
 				BD8409A916412CE3004C9C97 /* IAMainViewController.m */,
+				BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */,
+				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
+				BD8409D11641A247004C9C97 /* IARegisterView.h */,
+				BD8409D21641A247004C9C97 /* IARegisterView.m */,
 				BD1A1C28163946A500186C48 /* Supporting Files */,
 			);
 			path = FinderWindow;
@@ -233,6 +245,8 @@
 				BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */,
 				BD8409A516412C2B004C9C97 /* IAMainView.h in Headers */,
 				BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */,
+				BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */,
+				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +361,8 @@
 				BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */,
 				BD8409A616412C2B004C9C97 /* IAMainView.m in Sources */,
 				BD8409AB16412CE3004C9C97 /* IAMainViewController.m in Sources */,
+				BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */,
+				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

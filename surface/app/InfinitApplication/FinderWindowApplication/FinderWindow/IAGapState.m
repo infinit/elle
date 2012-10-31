@@ -136,6 +136,15 @@ typedef int(^gap_operation_t)(void);
 
 @end
 
+
+
+
+
+
+
+static void on_user_status(gap_UserStatusNotification const* n);
+
+
 @interface IAGapState ()
 {
     gap_State* _state;
@@ -185,6 +194,7 @@ typedef int(^gap_operation_t)(void);
     if (!_polling || !_logged_in)
         return;
     NSLog(@"Do poll");
+    gap_Status ret = gap_poll(_state);
     [self addOperation:[[TimerOperation alloc] initWithInterval:1
                                                 performSelector:@selector(_poll)
                                                        onObject:self]];
@@ -204,7 +214,9 @@ typedef int(^gap_operation_t)(void);
     }
 }
 
-//- Login -------------------------------------------------------------------------------------
+//- User -------------------------------------------------------------------------------------
+
+
 
 - (void)                login:(NSString*)login
                  withPassword:(NSString*)password
@@ -220,14 +232,29 @@ typedef int(^gap_operation_t)(void);
         int res = gap_login(self.state,
                             [login UTF8String],
                             hash_password);
+        NSLog(@"Pass: %s", hash_password);
         gap_hash_free(hash_password);
  /*       if (res == gap_ok)
             res = gap_set_device_name(self.state, [device_name UTF8String]);*/
+        
+        if (res == gap_ok)
+            res = gap_trophonius_connect(self.state);
+        else
+            NSLog(@"Cannot login !");
+        
+        if (res == gap_ok)
+            res = gap_user_status_callback(self.state, &on_user_status);
+        else
+            NSLog(@"Cannot connect to tropho");
+        
         if (res == gap_ok)
         {
             self.logged_in = TRUE;
             [this _startPolling];
         }
+        else
+            NSLog(@"Cannot register callback");
+        
         return res;
     } performSelector:selector onObject:object];
 }
@@ -246,3 +273,8 @@ typedef int(^gap_operation_t)(void);
 }
 
 @end
+
+static void on_user_status(gap_UserStatusNotification const* n)
+{
+    NSLog(@"CDSJKFADSJKL");
+}

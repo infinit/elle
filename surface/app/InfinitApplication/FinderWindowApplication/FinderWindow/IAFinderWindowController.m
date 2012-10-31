@@ -9,13 +9,17 @@
 #import "IAFinderWindowController.h"
 #import "IALoginViewController.h"
 #import "IAMainViewController.h"
+#import "IARegisterViewController.h"
 
 #import "IAGapState.h"
 
 @interface IAFinderWindowController ()
 
 @property (retain) IBOutlet IALoginViewController* login_view_controller;
+@property (retain) IBOutlet IARegisterViewController* register_view_controller;
 @property (retain) IBOutlet IAMainViewController* main_view_controller;
+
+-(IBAction)switchToRegisterView:(id)sender;
 
 @end
 
@@ -50,6 +54,10 @@
     }
 }
 
+-(IBAction)switchToRegisterView:(id)sender
+{
+    [[self window] setContentView:[self.register_view_controller view]];
+}
 
 - (void)_updateCurrentView
 {
