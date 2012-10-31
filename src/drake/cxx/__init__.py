@@ -944,7 +944,7 @@ class LibraryConfiguration(drake.Configuration):
 
     """Configuration for a classical C/C++ library."""
 
-    def __init__(self, token, prefix = None, include_dir = None):
+    def __init__(self, token, prefix = None, include_dir = None, libs = []):
         """Find and create a configuration for the library.
 
         prefix -- Where to find the library.
@@ -964,6 +964,8 @@ class LibraryConfiguration(drake.Configuration):
         self.__config = drake.cxx.Config()
         self.__config.add_system_include_path(self.__prefix / include_dir)
         self.__config.lib_path(self.__prefix / 'lib')
+        for lib in libs:
+            self.__config.lib(lib)
 
     def config(self):
 
