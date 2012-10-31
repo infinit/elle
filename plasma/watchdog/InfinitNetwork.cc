@@ -159,7 +159,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("unable to create the group subject");
 
   //- access-------------------------------------------------------------------
-  nucleus::neutron::Access access;
+  nucleus::neutron::Access access(network, identity.pair.K);
   if (access.Add(new nucleus::neutron::Record{
         subject,
         permissions,
@@ -204,16 +204,17 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     elle::io::Unique group_address_;
     group_address.Save(group_address_);
 
+
     this->_on_got_descriptor(this->_manager.meta().update_network(
-          this->_description._id,
-          nullptr,
-          &root_block_,
-          &root_address_,
-          &access_block_,
-          &access_address_,
-          &group_block_,
-          &group_address_
-    ));
+                               this->_description._id,
+                               nullptr,
+                               &root_block_,
+                               &root_address_,
+                               &access_block_,
+                               &access_address_,
+                               &group_block_,
+                               &group_address_
+                               ));
   }
 }
 
@@ -234,8 +235,10 @@ void InfinitNetwork::_prepare_directory()
   LOG("Create lune descriptor of %s", this->_description._id);
 
   using elle::serialize::from_string;
-
-  lune::Descriptor descriptor{from_string(_description.descriptor)};
+  using elle::serialize::InputBase64Archive;
+  lune::Descriptor descriptor{
+    from_string<InputBase64Archive>(_description.descriptor)
+  };
 
   // XXX[pas forcement necessaire si le format n'a pas change entre
   //     la version du descriptor et celle d'Infinit. il faudrait
@@ -256,18 +259,36 @@ void InfinitNetwork::_prepare_directory()
   LOG("Storing the descriptor of %s", this->_description._id);
   descriptor.store(this->_description._id);
 
-  nucleus::neutron::Object directory{from_string(_description.root_block)};
+  nucleus::neutron::Object directory{
+    from_string<InputBase64Archive>(_description.root_block)
+  };
 
   storage.store(descriptor.meta().root(), directory);
   LOG("Root block stored.");
 
-  nucleus::neutron::Access access{from_string(_description.access_block)};
-  nucleus::proton::Address access_address{from_string(_description.access_address)};
+  LOG("Storing access block.");
+  LOG("block: '%s'.", _description.access_block);
+  nucleus::neutron::Access access{
+    from_string<InputBase64Archive>(_description.access_block)
+  };
+  LOG("address: '%s'.", _description.access_address);
+  nucleus::proton::Address access_address{
+    from_string<InputBase64Archive>(_description.access_address)
+  };
+  LOG("Deserialization complete.");
   storage.store(access_address, access);
-  LOG("Access block stored.");
+  LOG("Address block stored.");
 
-  nucleus::neutron::Group group{from_string(_description.group_block)};
-  nucleus::proton::Address group_address{from_string(_description.group_address)};
+  LOG("Storing group block.");
+  LOG("block: '%s'.", _description.group_block);
+  nucleus::neutron::Group group{
+    from_string<InputBase64Archive>(_description.group_block)
+  };
+  LOG("address: '%s'.", _description.group_address);
+  nucleus::proton::Address group_address{
+    from_string<InputBase64Archive>(_description.group_address)
+  };
+  LOG("Deserialization complete.");
   storage.store(group_address, group);
   LOG("Group block stored.");
 
@@ -344,9 +365,10 @@ void InfinitNetwork::_start_process()
   if (this->_process.state() != QProcess::NotRunning)
     return;
 
-  LOG("Starting infinit process (mount point: %s", this->_mount_point);
+  LOG("Starting infinit process (mount point: %s)", this->_mount_point);
 
-  path::make_path(this->_mount_point);
+  if (!path::exists(this->_mount_point))
+    path::make_path(this->_mount_point);
 
   ELLE_DEBUG("Create mount point link");
   {
@@ -354,6 +376,7 @@ void InfinitNetwork::_start_process()
       common::system::home_directory(),
       "Infinit"
     );
+
     if (!path::exists(mnt_link_dir))
       path::make_directory(mnt_link_dir);
 

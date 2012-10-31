@@ -1,6 +1,7 @@
 #ifndef LUNE_DESCRIPTOR_HH
 # define LUNE_DESCRIPTOR_HH
 
+# include <elle/Authority.hh>
 # include <elle/Version.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/cryptography/Signature.hh>

@@ -1,6 +1,8 @@
 #ifndef  ELLE_SERIALIZE_EXTRACT_HXX
 # define ELLE_SERIALIZE_EXTRACT_HXX
 
+# include "Exception.hh"
+
 namespace elle
 {
   namespace serialize
@@ -17,8 +19,12 @@ namespace elle
     public:
       explicit
       Extractor(std::unique_ptr<std::istream>&& stream):
-        Archive(*(_stream = std::move(stream)))
-      {}
+        Archive(*stream),
+        _stream(std::move(stream))
+      {
+        if (!this->_stream->good())
+          throw Exception("stream integrity is bad");
+      }
 
       Extractor(Extractor&& other):
         Extractor(std::move(other._stream))
@@ -40,14 +46,14 @@ namespace elle
       new_istringstream(std::string const& str);
     }
 
-    template <typename Archive = OutputBinaryArchive>
+    template <typename Archive>
     Extractor<Archive>
     from_file(std::string const& path)
     {
       return Extractor<Archive>(std::move(detail::new_ifstream(path)));
     }
 
-    template <typename Archive = OutputBinaryArchive>
+    template <typename Archive>
     Extractor<Archive>
     from_string(std::string const& str)
     {

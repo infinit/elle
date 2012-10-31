@@ -16,6 +16,7 @@ static void _initAll();
 
 int     main(int ac, char* av[])
 {
+
   plasma::watchdog::Application app(ac, av);
 
   try
@@ -89,9 +90,14 @@ static void _init_daemon(std::string const& infinit_home)
           {
             int res = fork();
             if (res < 0)
-              exit(1); /* fork error */
+              {
+                perror("fork");
+                exit(1); /* fork error */
+              }
             if (res > 0)
-              exit(0); /* parent exits */
+              {
+                exit(0); /* parent exits */
+              }
           }
 
         /* child (daemon) continues */
@@ -101,9 +107,14 @@ static void _init_daemon(std::string const& infinit_home)
           {
             int res = ::fork();
             if (res < 0)
-              exit(1); /* fork error */
+              {
+                perror("fork");
+                exit(1); /* fork error */
+              }
             if (res > 0)
-              exit(0); /* parent exits */
+              {
+                exit(0); /* parent exits */
+              }
           }
 
         //for (i=getdtablesize();i>=0;--i)
@@ -118,11 +129,15 @@ static void _init_daemon(std::string const& infinit_home)
 
         lfp = ::open(lock_file.c_str(), O_RDWR | O_CREAT, 0640);
         if (lfp < 0)
-          exit(1); /* can not open */
-
+          {
+            ELLE_ERR("Can not open '%s'.", lock_file.c_str());
+            exit(1); /* can not open */
+          }
         if (lockf(lfp, F_TLOCK,0) < 0)
-          exit(0); /* can not lock */
-
+          {
+            ELLE_ERR("Can not lock '%s'.", lock_file.c_str());
+            exit(0); /* can not lock */
+          }
         /* first instance continues */
         sprintf(str,"%d\n",getpid());
         write(lfp, str, strlen(str)); /* record pid to lockfile */

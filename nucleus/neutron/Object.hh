@@ -83,7 +83,10 @@ namespace nucleus
       Object(); // XXX[use deserialize constructor]
 
       ELLE_SERIALIZE_CONSTRUCT(Object, ImprintBlock)
-      { this->_author = nullptr; }
+      {
+        this->_author = nullptr;
+        this->_meta.owner.record = nullptr;
+      }
 
       ~Object();
 
@@ -96,6 +99,7 @@ namespace nucleus
                                const Size& size,
                                const proton::Address& access,
                                const Token& owner_token);
+
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
