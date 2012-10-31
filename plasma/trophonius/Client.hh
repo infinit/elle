@@ -34,9 +34,10 @@
                                                                         \
         void                                                          \
         call(elle::format::json::Dictionary const* dic);            \
-    private:                                                            \
-      callbackPrototype callback;                                       \
-  };                                                                    \
+      private:                                                          \
+        callbackPrototype callback;                                     \
+    };                                                                  \
+/**/
 
 namespace plasma
 {
@@ -54,22 +55,20 @@ namespace plasma
     class Client
     {
     public :
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Bite, gap_Bite)
+      // Generate: LogoutHandler and LogoutNotification.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus, gap_UserStatusNotification)
 
-      // // Generate handler: FriendRequestHandler.
-      // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FriendRequest, register_friend_struct)
+      // Generate: FileTransferRequestHandler and FileTransferRequestNotification.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferRequest, gap_FileTransferRequestNotification)
 
-      // // Generate handler: FriendRequestStatus.
-      // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FriendRequestStatus, register_friend_status_struct)
+      // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus, gap_FileTransferStatusNotification)
 
-      // Generate handler: FileTransferHandler.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransfer, gap_FileTransfer)
+      // Generate: MessageHandler and MessageNotification.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message, gap_MessageNotification)
 
-      // Generate handler: FileTransferStatusHandler
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus, gap_FileTransferStatus)
-
-      // // Generate handler: RefreshFriendsHandler.
-      // _PLASMA_TROPHONIUS_GENERATE_HANDLERS(RefreshFriends)
+      // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Bite, gap_BiteNotification)
 
     public:
       struct Impl;

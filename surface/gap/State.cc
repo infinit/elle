@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 
 #include <openssl/sha.h>
 
@@ -22,6 +21,7 @@
 #include <elle/os/path.hh>
 #include <elle/Passport.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
+#include "elle/utility/Time.hh"
 
 #include <common/common.hh>
 
@@ -35,13 +35,25 @@
 
 #include "State.hh"
 
-
-
 #include <signal.h>
 
-
-
 ELLE_LOG_COMPONENT("infinit.surface.gap");
+
+#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)               \
+  template<>                                                            \
+  void                                                                  \
+  State::attach_callback<data>(std::function<void (data const*)> callback) \
+  {                                                                     \
+    if(_notification_handler.find(indice) != _notification_handler.end()) \
+      {                                                                 \
+        return;                                                         \
+      }                                                                 \
+  _notification_handler.insert(                                         \
+    std::make_pair(                                                     \
+      indice,                                                           \
+      new handler(callback)));                                          \
+  }                                                                     \
+/**/
 
 namespace surface
 {
@@ -142,11 +154,12 @@ namespace surface
                               elle::format::json::Dictionary* response)
     {
       QLocalSocket conn;
+
       conn.connectToServer(common::watchdog::server_name().c_str());
       if (!conn.waitForConnected(2000))
         throw Exception{
             gap_internal_error,
-            "Couldn't connect to the watchdog"
+              "Couldn't connect to the watchdog:" + conn.error()
         };
 
       json::Dictionary req;
@@ -258,7 +271,6 @@ namespace surface
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
 
-      printf("\n%s\n\n", this->_meta->token().c_str());
       this->_me._id = res._id;
       this->_me.fullname = res.fullname;
       this->_me.email = res.email;
@@ -329,6 +341,77 @@ namespace surface
       this->_meta->debug_ask_notif(request);
     }
 
+    std::string
+    State::invite_user(std::string const& email)
+    {
+      auto response = this->_meta->invite_user(email);
+
+      return response._id;
+    }
+
+    void
+    State::send_file_to_new_user(std::string const& recipient_email,
+                                 std::string const& file_path)
+    {
+      std::string recipient_id = this->invite_user(recipient_email);
+
+      this->send_file(recipient_id,
+                      file_path);
+    }
+
+    void
+    State::send_file(std::string const& recipient_id,
+                     std::string const& file_path)
+    {
+      if (!fs::exists(file_path))
+        return;
+
+      int size = get_size(file_path);
+      std::string name = fs::path(file_path).filename().string();
+
+      // Build timestamp.
+      elle::utility::Time time;
+      time.Current();
+
+      // Create an ostream to convert timestamp to string.
+      std::ostringstream oss;
+      oss << time.nanoseconds;
+
+      // FIXME: How to compute network name ?
+      std::string network_name =
+        this->_me._id +
+        + " - "
+        + recipient_id
+        + " - "
+        + name
+        + " - "
+        + oss.str();
+
+      ELLE_DEBUG("Creating temporary network '%s'.", network_name);
+
+      // std::string network_id = this->create_network(network_name);
+
+      // this->refresh_networks();
+
+      // this->network_add_user(network_id, recipient_id);
+
+      // this->_meta->send_file(recipient_id,
+      //                        name,
+      //                        size,
+      //                        fs::is_directory(file_path));
+
+    }
+
+    void
+    State::send_message(std::string const& recipient_id,
+                        std::string const& message)
+    {
+      this->_meta->send_message(recipient_id,
+                                this->_me._id,
+                                message);
+    }
+
+
     void
     State::register_(std::string const& fullname,
                      std::string const& email,
@@ -343,44 +426,26 @@ namespace surface
       this->login(email, password);
     }
 
-      template<>
-      void
-      State::attach_callback<gap_Bite>(std::function<void (gap_Bite const*)> callback)
-      {
-        if(_notification_handler.find(0) != _notification_handler.end())
-          return;
+    _REGISTER_CALLBACK_HANDLER(gap_UserStatusNotification,
+                               8,
+                               plasma::trophonius::Client::UserStatusHandler)
 
-        _notification_handler.insert(
-          std::make_pair(
-            0,
-            new plasma::trophonius::Client::BiteHandler(callback)));
-      }
+    _REGISTER_CALLBACK_HANDLER(gap_FileTransferRequestNotification,
+                               7,
+                               plasma::trophonius::Client::FileTransferRequestHandler)
 
-    template<>
-    void
-    State::attach_callback<gap_FileTransfer>(std::function<void(gap_FileTransfer const*)> callback)
-    {
-      if(_notification_handler.find(1) != _notification_handler.end())
-        return;
+    _REGISTER_CALLBACK_HANDLER(gap_FileTransferStatusNotification,
+                               11,
+                               plasma::trophonius::Client::FileTransferStatusHandler)
 
-      _notification_handler.insert(
-        std::make_pair(
-          1,
-          new plasma::trophonius::Client::FileTransferHandler(callback)));
-     }
+    _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
+                               217,
+                               plasma::trophonius::Client::MessageHandler)
 
-    template<>
-    void
-    State::attach_callback<gap_FileTransferStatus>(std::function<void(gap_FileTransferStatus const*)> callback)
-    {
-      if(_notification_handler.find(2) != _notification_handler.end())
-        return;
+    _REGISTER_CALLBACK_HANDLER(gap_BiteNotification,
+                               0,
+                               plasma::trophonius::Client::BiteHandler)
 
-      _notification_handler.insert(
-        std::make_pair(
-          2,
-          new plasma::trophonius::Client::FileTransferStatusHandler(callback)));
-    }
 
     template<typename T>
     void
@@ -455,12 +520,13 @@ namespace surface
 
     //- Network management ----------------------------------------------------
 
-    void
+    std::string
     State::create_network(std::string const& name)
     {
       auto response = this->_meta->create_network(name);
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
+      return response.created_network_id;
     }
 
     std::map<std::string, Network*> const&
@@ -822,6 +888,34 @@ namespace surface
         }
     }
 
+    size_t
+    State::get_size(fs::path const& path)
+    {
+      if (!fs::exists(path))
+        return 0;
+
+      if (!fs::is_directory(path))
+        return fs::file_size(path);
+
+      size_t size = 0;
+      fs::directory_iterator end_itr;
+
+      for (fs::directory_iterator itr(path);
+           itr != end_itr;
+           ++itr)
+        {
+          if (fs::is_directory(itr->status()))
+            {
+              size += get_size(itr->path());
+            }
+          else
+            {
+              size += fs::file_size(itr->path());
+            }
+        }
+      return size;
+    }
+
     // - TROPHONIUS ----------------------------------------------------
     /// Connect to trophonius
     void
@@ -832,16 +926,6 @@ namespace surface
 
       ELLE_DEBUG("Connect to trophonius with 'id': %s and 'token':  %s",
                  this->_meta->identity(), this->_meta->token());
-    }
-
-    /// Send message to user @id via trophonius
-    void
-    State::send_message(std::string const& recipient_id,
-                       std::string const& message)
-    {
-      this->_meta->send_message(this->_meta->identity(),
-                                recipient_id,
-                                message);
     }
   }
 }

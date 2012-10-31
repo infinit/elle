@@ -78,66 +78,76 @@ extern "C" {
     gap_trophonius_connect(gap_State* state);
 
     /// - Trophonius ----------------------------------------------------------
+
     ////////////////////////////////
-    // Register friend request callback.
+    // Login/Logout/AFK/... Notification
     typedef struct
     {
-      const char* debug;
-    } gap_Bite;
-    typedef void (*OnBite) (gap_State*,
-                            gap_Bite const*);
-    gap_Status
-    gap_BindOnBite(gap_State*,
-                   OnBite);
+      const char* sender_id;
+      int status;
+    } gap_UserStatusNotification;
 
     ////////////////////////////////
     // File transfer recieved callback.
     typedef struct
     {
       const char* sender_id;
-      int transaction_id;
       const char* file_name;
+      int transaction_id;
       int file_size;
-    } gap_FileTransfer;
-    typedef void (*OnFileTransfer)(gap_State*,
-                                   gap_FileTransfer const*);
-
-    gap_Status
-    gap_BindOnFileTransfer(gap_State*,
-                           OnFileTransfer);
+      int is_directory;
+    } gap_FileTransferRequestNotification;
 
     ////////////////////////////////
     // File transfer status callback.
     typedef struct
     {
+      const char* sender_id;
       int transaction_id;
       int status;
-    } gap_FileTransferStatus;
-    typedef void (*OnFileTransferStatus)(gap_State*,
-                                         gap_FileTransferStatus const*);
-
-    gap_Status
-    gap_BindOnFileTransferStatus(gap_State*,
-                                 OnFileTransferStatus);
+    } gap_FileTransferStatusNotification;
 
     ////////////////////////////////
-    // Refresh user list.
+    // Chat message.
     typedef struct
     {
-    } gap_RefreshUserList;
-    typedef void (*OnRefreshUserList)(gap_State*,
-                                      gap_RefreshUserList const*);
+      const char* sender_id;
+      /* FIXME: remove that shit */
+      const char* recipient_id;
+      const char* message;
+    } gap_MessageNotification;
 
-    gap_Status
-    gap_BindOnRefreshUserList(gap_State*,
-                              OnRefreshUserList);
+    ////////////////////////////////
+    // Bite callback.
+    typedef struct
+    {
+      const char* debug;
+    } gap_BiteNotification;
 
     // Poll
     gap_Status
     gap_poll (gap_State* state);
 
-    /// - Device --------------------------------------------------------------
+    gap_Status
+    gap_send_file(gap_State* state,
+                  const char* recipient_id,
+                  const char* path);
 
+    gap_Status
+    gap_invite_user(gap_State* state,
+                    const char* email);
+
+    gap_Status
+    gap_send_file_to_new_user(gap_State* state,
+                              const char* email,
+                              const char* file_path);
+
+    gap_Status
+    gap_message(gap_State* state,
+                const char* recipient_id,
+                const char* message);
+
+    /// - Device --------------------------------------------------------------
     /// Returns the local device status.
     gap_Status gap_device_status(gap_State* state);
 

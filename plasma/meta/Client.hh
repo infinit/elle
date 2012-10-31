@@ -36,6 +36,9 @@ namespace plasma
     struct AskNotificationResponse : plasma::Response
     {};
 
+    struct MessageResponse : plasma::Response
+    {};
+
     struct UserResponse : plasma::Response
     {
       std::string _id;
@@ -44,13 +47,19 @@ namespace plasma
       std::string public_key;
     };
 
+    struct InviteUserResponse : plasma::Response
+    {
+      std::string _id;
+    };
+
     struct UsersResponse : plasma::Response
     {
       std::list<std::string> users;
     };
 
-    struct SendMessageResponse : plasma::Response
-    {};
+    struct SendFileResponse : plasma::Response
+    {
+    };
 
     struct NetworksResponse : plasma::Response
     {
@@ -156,9 +165,18 @@ namespace plasma
       update_device(std::string const& _id,
                     std::string const& name);
 
-      SendMessageResponse
-      send_message(std::string const& sender_id,
-                   std::string const& recipient_id,
+      InviteUserResponse
+      invite_user(std::string const& email);
+
+      SendFileResponse
+      send_file(std::string const& recipient_id,
+                std::string const& file_name,
+                size_t size,
+                bool is_dir = false);
+
+      MessageResponse
+      send_message(std::string const& recipient_id,
+                   std::string const& sender_id, // DEBUG.
                    std::string const& message);
 
       // DEBUG

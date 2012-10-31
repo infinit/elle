@@ -43,6 +43,11 @@ class State:
             'OnBite',
             'OnFileTransfer',
             'OnFileTransferStatus',
+            'OnMessage',
+            'send_file',
+            'invite_user',
+            'invite_user_and_send_file',
+            'send_message',
         ]
 
         def make_method(m):
@@ -91,9 +96,6 @@ class State:
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         self._call('register', fullname, email, pw_hash, dev_name, activation_code)
-
-    def send_message(self, recipient_id, message):
-        self._call('send_message', '1234567890123456789012345678901234567890', 'biet')
 
     def ask_notif(self, id):
         self._call('ask_notif', id)

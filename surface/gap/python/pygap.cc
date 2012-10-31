@@ -91,39 +91,71 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("logout", &gap_logout);
   py::def("register", &gap_register);
 
-  //- Trophonius interactions.
+  py::def("invite_user", &gap_invite_user);
+  py::def("invite_user_and_send_file", &gap_send_file_to_new_user);
+  py::def("send_message", &gap_message);
+  py::def("send_file", &gap_send_file);
   py::def("connect", &gap_trophonius_connect);
   py::def("ask_notif", &gap_meta_ask_notif);
 
   py::def("poll", &gap_poll);
 
-  // bite notif
-  py::class_<gap_Bite, boost::noncopyable>("Bite", py::no_init)
-    .def_readonly("debug", &gap_Bite::debug);
+  //- Notifications ------------------------------------------------------------
+
+  ////////////////////////////////
+  // User status.
+  py::class_<gap_UserStatusNotification, boost::noncopyable>("UserStatus", py::no_init)
+    .def_readonly("sender_id", &gap_UserStatusNotification::sender_id)
+    .def_readonly("status", &gap_UserStatusNotification::status);
   py::def(
     "OnBite",
-    &_gap_set_callback<gap_Bite>
+    &_gap_set_callback<gap_BiteNotification>
   );
 
-  py::class_<gap_FileTransfer, boost::noncopyable>("FileTransfer", py::no_init)
-    .def_readonly("sender_id", &gap_FileTransfer::sender_id)
-    .def_readonly("transaction_id", &gap_FileTransfer::transaction_id)
-    .def_readonly("file_name", &gap_FileTransfer::file_name)
-    .def_readonly("file_size", &gap_FileTransfer::file_size);
+  ////////////////////////////////
+  // File transfer request.
+  py::class_<gap_FileTransferRequestNotification, boost::noncopyable>("FileTransferRequest", py::no_init)
+    .def_readonly("sender_id", &gap_FileTransferRequestNotification::sender_id)
+    .def_readonly("transaction_id", &gap_FileTransferRequestNotification::transaction_id)
+    .def_readonly("file_name", &gap_FileTransferRequestNotification::file_name)
+    .def_readonly("file_size", &gap_FileTransferRequestNotification::file_size);
   py::def(
     "OnFileTransfer",
-    &_gap_set_callback<gap_FileTransfer>
+    &_gap_set_callback<gap_FileTransferRequestNotification>
   );
 
-  py::class_<gap_FileTransferStatus, boost::noncopyable>("FileTransferStatus", py::no_init)
-    .def_readonly("transaction_id", &gap_FileTransferStatus::transaction_id)
-    .def_readonly("status", &gap_FileTransferStatus::status);
+  ////////////////////////////////
+  // File transfer status.
+  py::class_<gap_FileTransferStatusNotification, boost::noncopyable>("FileTransferStatus", py::no_init)
+    .def_readonly("transaction_id", &gap_FileTransferStatusNotification::transaction_id)
+    .def_readonly("status", &gap_FileTransferStatusNotification::status);
+
   py::def(
     "OnFileTransferStatus",
-    &_gap_set_callback<gap_FileTransferStatus>
+    &_gap_set_callback<gap_FileTransferStatusNotification>
   );
 
-  //- Infinit services status -------------------------------------------------
+  ////////////////////////////////
+  // Message.
+  py::class_<gap_MessageNotification, boost::noncopyable>("Message", py::no_init)
+    .def_readonly("sender_id", &gap_MessageNotification::sender_id)
+    .def_readonly("message", &gap_MessageNotification::message);
+
+  py::def(
+    "OnMessage",
+    &_gap_set_callback<gap_MessageNotification>
+    );
+
+
+  py::class_<gap_BiteNotification, boost::noncopyable>("Bite", py::no_init)
+    .def_readonly("debug", &gap_BiteNotification::debug);
+  py::def(
+    "OnBite",
+    &_gap_set_callback<gap_BiteNotification>
+  );
+
+
+   //- Infinit services status -------------------------------------------------
 
   py::def("meta_status", &gap_meta_status);
 

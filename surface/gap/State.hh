@@ -4,6 +4,7 @@
 # include <string>
 # include <map>
 
+# include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
 
 # include <plasma/meta/Client.hh>
@@ -15,7 +16,6 @@ namespace surface
 {
   namespace gap
   {
-
     struct FileInfos
     {
       std::string                 mount_point;
@@ -32,8 +32,6 @@ namespace surface
       std::string email;
       std::string public_key;
     };
-
-
 
     typedef ::plasma::meta::NetworkResponse Network;
 
@@ -115,6 +113,16 @@ namespace surface
       void
       ask_notif(int i);
 
+      std::string
+      invite_user(std::string const& email);
+
+      void
+      send_file_to_new_user(std::string const& recipient_email,
+                            std::string const& file_path);
+      void
+      send_file(std::string const& recipient_id,
+                std::string const& file_path);
+
     private:
       User _me;
 
@@ -152,6 +160,13 @@ namespace surface
       FileInfos const&
       file_infos(std::string const& abspath);
 
+      /// Get size of a given path.
+      size_t
+      get_size(boost::filesystem::path const& path);
+
+      std::string
+      get_name(boost::filesystem::path const& path);
+
       /// Set the permissions for a file.
       void
       set_permissions(std::string const& user_id,
@@ -173,7 +188,8 @@ namespace surface
       std::map<std::string, Network*> const& networks();
 
       /// Create a new network.
-      void create_network(std::string const& name);
+      std::string
+      create_network(std::string const& name);
 
       /// Force the watchdog to check for new networks.
       void
@@ -195,33 +211,6 @@ namespace surface
       void
       network_add_user(std::string const& network_id,
                        std::string const& user);
-
-      /// Add user to featured users.
-      void
-      add_friend(std::string const& mail_or_id) { (void) mail_or_id; };
-
-      /// Remove user from featured users.
-      void
-      remove_friend(std::string const& id) { (void) id; }
-
-      /// Accept friendship.
-      void
-      accept_friendship(std::string const& id) { (void) id; }
-
-      /// Deny friendship.
-      void
-      deny_friendship(std::string const& id) { (void) id; }
-
-      /// Send a file to user.
-      void
-      send_file(std::string const& mail_or_id,
-                std::string const& file_path,
-                std::string const& transaction_id)
-      {
-        (void) mail_or_id;
-        (void) file_path;
-        (void) transaction_id;
-      }
 
       /// Accept file transfer.
       void

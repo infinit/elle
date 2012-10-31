@@ -46,31 +46,36 @@ namespace plasma
       }
     };
 
+
+    // FIXME: Stop desierializing item 'à la mano' from json dictionnary.
+
     ////////////////////////////////
-    // BiteHandler.
+    // User status: Login/Logout/AFK/...
     void
-    Client::BiteHandler::call(json::Dictionary const* dic)
+    Client::UserStatusHandler::call(json::Dictionary const* dic)
     {
-      BiteNotification * notif = new BiteNotification();
+      ELLE_TRACE("Handling user status modification.");
 
-      std::string temp = (*dic)["debug"].as_string();
-      notif->debug = temp.c_str();
+      UserStatusNotification *notif = new UserStatusNotification();
 
-      // Use callback function.
-      (callback)(notif);
+      std::string temp = (*dic)["sender_id"].as_string();
+      notif->sender_id = temp.c_str();
+
+      notif->status = (*dic)["status"].as_integer();
 
       delete dic;
+      (callback)(notif);
     }
 
     ////////////////////////////////
     // FileTransferHandler.
     void
-    Client::FileTransferHandler::call(json::Dictionary const* dic)
+    Client::FileTransferRequestHandler::call(json::Dictionary const* dic)
     {
-      // Desierialize item 'à la mano' from json dictionnary.
-      FileTransferNotification * notif = new FileTransferNotification();
+      ELLE_TRACE("Handling new file transfer request.");
 
-      // The unique id of the file transfer.
+      FileTransferRequestNotification *notif = new FileTransferRequestNotification();
+
       notif->transaction_id = (*dic)["transaction_id"].as_integer();
 
       std::string temp = (*dic)["sender_id"].as_string();
@@ -81,10 +86,8 @@ namespace plasma
 
       notif->file_size = (*dic)["file_size"].as_integer();
 
-      // Use callback function.
-      (callback)(notif);
-
       delete dic;
+      (callback)(notif);
     }
 
     ////////////////////////////////
@@ -92,13 +95,33 @@ namespace plasma
     void
     Client::FileTransferStatusHandler::call(json::Dictionary const* dic)
     {
+      ELLE_TRACE("Handling file transfer status update.");
+
       FileTransferStatusNotification * notif = new FileTransferStatusNotification();
 
-      // The unique id of the file transfer.
       notif->transaction_id = (*dic)["transaction_id"].as_integer();
 
-      // The unique id of the file transfer.
-      notif->status = (*dic)["status"].as_integer();
+      notif->status = (*dic)["transaction_status"].as_integer();
+
+      (callback)(notif);
+
+      delete dic;
+    }
+
+    ////////////////////////////////
+    // Message.
+    void
+    Client::MessageHandler::call(json::Dictionary const* dic)
+    {
+      ELLE_TRACE("Handling new message.");
+
+      MessageNotification * notif = new MessageNotification();
+
+      std::string temp = (*dic)["sender_id"].as_string();
+      notif->sender_id = temp.c_str();
+
+      temp = (*dic)["message"].as_string();
+      notif->message = temp.c_str();
 
       // Use callback function.
       (callback)(notif);
@@ -106,19 +129,23 @@ namespace plasma
       delete dic;
     }
 
-    // ////////////////////////////////
-    // // RefreshFriendsHandler.
-    // void
-    // Client::RefreshFriendsHandler::call(json::Dictionary const& dic)
-    // {
-    //   RefreshFriendsNotification notif;
 
-    //   (void) dic;
+    ////////////////////////////////
+    // BiteHandler.
+    void
+    Client::BiteHandler::call(json::Dictionary const* dic)
+    {
 
-    //   // Use callback function.
-    //   (callback)(notif);
-    // }
+      BiteNotification * notif = new BiteNotification();
 
+      std::string temp = (*dic)["debug"].as_string();
+      notif->debug = temp.c_str();
+
+      // Use callback function.
+      (callback)(notif);
+
+      delete dic;
+    }
 
     Client::Client(std::string const& server,
                    uint16_t port,

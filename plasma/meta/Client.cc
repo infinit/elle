@@ -8,7 +8,7 @@
 
 #include <elle/idiom/Close.hh>
 
-ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
+ELLE_LOG_COMPONENT("Infinit.plasma.meta.Client");
 
 // - API responses serializers ------------------------------------------------
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
@@ -76,7 +76,18 @@ SERIALIZE_RESPONSE(plasma::meta::UpdateDeviceResponse, ar, res)
   ar & named("passport", res.passport);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::SendMessageResponse, ar, res)
+SERIALIZE_RESPONSE(plasma::meta::InviteUserResponse, ar, res)
+{
+  ar & named("_id", res._id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::SendFileResponse, ar, res)
+{
+  (void) ar;
+  (void) res;
+}
+
+SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
 {
   (void) ar;
   (void) res;
@@ -257,21 +268,62 @@ namespace plasma
 
     }
 
-    SendMessageResponse
-    Client::send_message(std::string const& sender_id,
-                         std::string const& recipient_id,
-                         std::string const& message)
+    InviteUserResponse
+    Client::invite_user(std::string const& email)
     {
-       json::Dictionary request{std::map<std::string, std::string>
-         {
-           {"recipient_id", recipient_id},
-           {"sender_id", sender_id},
-           {"message", message}}};
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"email", email}
+        }};
 
-      auto res = this->_client.post<SendMessageResponse>("/user/connection", request);
+      auto res = this->_client.post<InviteUserResponse>("/user/invite", request);
 
       return res;
     }
+
+    SendFileResponse
+    Client::send_file(std::string const& recipient_id,
+                      std::string const& file_name,
+                      size_t size,
+                      bool is_dir
+)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"recipient_id", recipient_id},
+          {"file_name", file_name},
+        }};
+      request["file_size"] = size;
+      request["is_dir"] = is_dir;
+      request["notification_id"] = 7;
+
+      auto res = this->_client.post<SendFileResponse>("/user/share", request);
+
+      return res;
+    }
+
+    MessageResponse
+    Client::send_message(std::string const& recipient_id,
+                         std::string const& sender_id,
+                         std::string const& message)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"recipient_id", recipient_id},
+          {"sender_id", sender_id},
+          {"message", message},
+        }};
+
+      // FIXME: Time.h ????
+      request["time"] = 0;
+      request["notification_id"] = 217;
+
+      // FIXME: /user/message
+      auto res = this->_client.post<MessageResponse>("/debug", request);
+
+      return res;
+    }
+
 
     AskNotificationResponse
     Client::debug_ask_notif(json::Dictionary const& dic)

@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 #include <elle/log.hh>
-#include <elle/Elle.hh>
+#include <elle/elle.hh>
 #include <elle/HttpClient.hh>
 
 #include <lune/Lune.hh>
@@ -137,6 +137,47 @@ extern "C"
       return gap_ok;
     }
 
+    gap_Status
+    gap_invite_user(gap_State* state,
+                    const char* email)
+    {
+      __TO_CPP(state)->invite_user(email);
+
+      return gap_ok;
+    }
+
+    gap_Status
+    gap_send_file_to_new_user(gap_State* state,
+                              const char* email,
+                              const char* path)
+    {
+      __TO_CPP(state)->send_file_to_new_user(email,
+                                             path);
+
+      return gap_ok;
+    }
+
+    gap_Status
+    gap_send_file(gap_State* state,
+                  const char* recipient_id,
+                  const char* path)
+    {
+      __TO_CPP(state)->send_file(recipient_id,
+                                 path);
+
+      return gap_ok;
+    }
+
+    gap_Status
+    gap_message(gap_State* state,
+                const char* recipient_id,
+                const char* message)
+    {
+      __TO_CPP(state)->send_message(recipient_id, message);
+
+      return gap_ok;
+    }
+
     /// - Authentication ------------------------------------------------------
 
     char* gap_hash_password(gap_State* state,
@@ -195,7 +236,7 @@ extern "C"
 
       if (ret == gap_ok && device_name != nullptr)
         {
-          __WRAP_CPP(state, update_device, device_name, true);
+          __WRAP_CPP(state, update_device, device_name);
         }
       return ret;
     }
@@ -208,44 +249,6 @@ extern "C"
       return ret;
     }
 
-    gap_Status
-    gap_trophonius_send_message(gap_State* state,
-                                char const* recipient_id,
-                                char const* message)
-    {
-      __WRAP_CPP_RET(state, send_message, recipient_id, message);
-
-      return ret;
-    }
-
-    // gap_Status
-    // gap_BindOnBite(gap_State* state,
-    //                OnBite callback)
-    // {
-    //   __TO_CPP(state)->attach_callback<gap_Bite>(
-    //     std::bind(callback, state, std::placeholders::_1)
-    //     );
-
-    //   return gap_ok;
-    // }
-
-    // gap_Status
-    // gap_trophonius_register_friend_request_notification_callback(gap_State *state,
-    //                                                              register_friend_callback callback)
-    // {
-    //   __TO_CPP(state)->attach_callback<register_friend_struct>(callback);
-
-    //   return gap_ok;
-    // }
-
-    // gap_Status
-    // gap_trophonius_register_friend_request_status_notification_callback(gap_State *state,
-    //                                                                     register_friend_status_callback callback)
-    // {
-    //   __TO_CPP(state)->attach_callback<register_friend_status_struct>(callback);
-
-    //   return gap_ok;
-    // }
 
     gap_Status
     gap_poll(gap_State* state)
