@@ -117,14 +117,14 @@ class Config:
         return list(self._system_includes)
 
 
-    def lib_path(self, path):
+    def lib_path(self, path, runtime = False):
 
         if path == Path('/lib') or path == Path('/usr/lib'):
             return
         p = Path(path)
         if not p.absolute():
             p = srctree() / prefix() / p
-        self.lib_paths[p] = None
+        self.lib_paths[p] = runtime
 
 
     def lib(self, lib):
@@ -302,22 +302,26 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        return '%s %s%s%s %s -o %s %s' % \
+        lib_rpaths = (path for path in cfg.lib_paths if cfg.lib_paths[path])
+        return '%s %s%s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
+                concatenate(lib_rpaths, '-Wl,-rpath='),
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'))
 
     def dynlink(self, cfg, objs, exe):
 
-        return '%s %s%s%s %s -shared -o %s %s' % \
+        lib_rpaths = (path for path in cfg.lib_paths if cfg.lib_paths[path])
+        return '%s %s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
+                concatenate(lib_rpaths, '-Wl,-rpath='),
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'),
