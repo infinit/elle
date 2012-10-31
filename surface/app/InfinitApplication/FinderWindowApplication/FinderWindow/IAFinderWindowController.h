@@ -10,4 +10,6 @@
 
 @interface IAFinderWindowController : NSWindowController
 
+- (id)initFromNib;
+
 @end

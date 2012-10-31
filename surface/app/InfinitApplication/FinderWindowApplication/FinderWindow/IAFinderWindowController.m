@@ -8,23 +8,24 @@
 
 #import "IAFinderWindowController.h"
 #import "IALoginViewController.h"
+#import "IAMainViewController.h"
+
 #import "IAGapState.h"
 
 @interface IAFinderWindowController ()
 
 @property (retain) IBOutlet IALoginViewController* login_view_controller;
-//@property (retain) IBOutlet NSView* login_view;
+@property (retain) IBOutlet IAMainViewController* main_view_controller;
 
 @end
 
 @implementation IAFinderWindowController
 
-- (id)init
+- (id)initFromNib
 {
     self = [super initWithWindowNibName:@"FinderWindow"];
     
     if (self) {
-        NSLog(@"SUBSCRIBE for %@", self);
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(_onUserLoggedIn:)
                                                      name:IA_GAP_EVENT_LOGIN_OPERATION
@@ -36,15 +37,29 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    [[self window] setContentView:[self.login_view_controller view]];
+    [self _updateCurrentView];
 }
 
 - (void)_onUserLoggedIn:(NSNotification*)notification
 {
-    if ([[notification name] isEqualToString:IA_GAP_EVENT_LOGIN_OPERATION])
+    if ([[notification name] isEqualToString:IA_GAP_EVENT_LOGIN_OPERATION] &&
+        [[notification object] success])
     {
-        IAGapOperationResult* result = [notification object];
-        NSLog(@"Yeah, got user notification: %@", result);
+        // We actually are connected!
+        [self _updateCurrentView];
+    }
+}
+
+
+- (void)_updateCurrentView
+{
+    if ([IAGapState instance].logged_in)
+    {
+        [[self window] setContentView:[self.main_view_controller view]];
+    }
+    else
+    {
+        [[self window] setContentView:[self.login_view_controller view]];
     }
 }
 

@@ -22,6 +22,12 @@
 
 @interface IAGapState : NSOperationQueue
 
+/**
+ * @brief Logged in status.
+ */
+
+@property BOOL logged_in;
+
 /** 
  * @brief Returns an IAGapState singleton.
  *

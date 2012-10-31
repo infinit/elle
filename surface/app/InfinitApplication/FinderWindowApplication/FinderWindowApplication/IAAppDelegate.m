@@ -13,8 +13,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.window_controller = [[IAFinderWindowController alloc] init];
-    [self.window_controller showWindow:self];
+    self.window_controller = [[IAFinderWindowController alloc] initFromNib];
+    [self.window_controller showWindow:self]; 
 }
 
 @end

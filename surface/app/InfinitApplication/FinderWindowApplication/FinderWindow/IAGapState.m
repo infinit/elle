@@ -11,6 +11,94 @@
 #import "gap.h"
 
 
+@interface TimerOperation : NSOperation
+{
+@private
+    NSTimer*    _timer;
+    double      _interval;
+    SEL         _selector;
+    id          _object;
+}
+
+@property (nonatomic, readonly) BOOL isExecuting;
+@property (nonatomic, readonly) BOOL isFinished;
+
+@end
+
+@implementation TimerOperation
+
+@synthesize isExecuting = _executing;
+@synthesize isFinished  = _finished;
+
+- (id) initWithInterval:(double)seconds
+        performSelector:(SEL)selector
+               onObject:(id)object
+{
+    if ((self = [super init])) {
+        _executing = NO;
+        _finished  = NO;
+        _timer = nil;
+        _interval = seconds;
+        _selector = selector;
+        _object = object;
+    }
+    
+    return self;
+}
+
+- (BOOL) isConcurrent {
+    return YES;
+}
+
+- (void) finish {
+    [self willChangeValueForKey:@"isFinished"];
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = NO;
+    _finished = YES;
+    [self didChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void) start {
+    if ([self isCancelled]) {
+        [self willChangeValueForKey:@"isFinished"];
+        _finished = YES;
+        [self didChangeValueForKey:@"isFinished"];
+    } else {
+        [self willChangeValueForKey:@"isExecuting"];
+        [self performSelectorOnMainThread:@selector(main)
+                               withObject:nil
+                            waitUntilDone:NO];
+        _executing = YES;
+        [self didChangeValueForKey:@"isExecuting"];
+    }
+}
+
+- (void) timerFired:(NSTimer*)timer
+{
+    if (![self isCancelled])
+    {
+        NSLog(@"Timer fired !");
+        [_object performSelector:_selector];
+        [self finish];
+    }
+}
+
+- (void) main {
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                              target:self
+                                            selector:@selector(timerFired:)
+                                            userInfo:nil
+                                             repeats:NO];
+}
+
+- (void) cancel {
+    [_timer invalidate];
+    [super cancel];
+}
+
+@end
+
 // Block type to queue gap operation
 typedef int(^gap_operation_t)(void);
 
@@ -50,8 +138,11 @@ typedef int(^gap_operation_t)(void);
 
 @interface IAGapState ()
 {
-    gap_State* state;
+    gap_State* _state;
+    BOOL _logged_in;
+    BOOL _polling;
 }
+
 
 @property gap_State* state;
 
@@ -59,12 +150,13 @@ typedef int(^gap_operation_t)(void);
 
 @implementation IAGapState
 
-@synthesize state;
+@synthesize state = _state;
+@synthesize logged_in = _logged_in;
 
 + (IAGapState*) instance
 {
     static IAGapState* instance = NULL;
-    
+
     if (instance == NULL)
         instance = [[IAGapState alloc] init];
     if (instance == NULL)
@@ -79,12 +171,40 @@ typedef int(^gap_operation_t)(void);
     if (!self)
         return nil;
     
-    self.state = gap_new();
-    if (self.state == NULL)
+    _state = gap_new();
+    if (_state == NULL)
         [NSException raise:@"bad_alloc" format:@"Cannot create a new gap state"];
+    _logged_in = FALSE;
+    _polling = FALSE;
     return self;
 }
 
+// Wrapper that is only called from _startPolling or a timer
+- (void)_poll
+{
+    if (!_polling || !_logged_in)
+        return;
+    NSLog(@"Do poll");
+    [self addOperation:[[TimerOperation alloc] initWithInterval:1
+                                                performSelector:@selector(_poll)
+                                                       onObject:self]];
+}
+
+// Start polling trophonius
+- (void)_startPolling
+{
+    @synchronized(self)
+    {
+        if (!_polling && _logged_in)
+        {
+            _polling = TRUE;
+            NSLog(@"Start polling");
+            [self _poll];
+        }
+    }
+}
+
+//- Login -------------------------------------------------------------------------------------
 
 - (void)                login:(NSString*)login
                  withPassword:(NSString*)password
@@ -92,22 +212,32 @@ typedef int(^gap_operation_t)(void);
               performSelector:(SEL)selector
                      onObject:(id)object;
 {
+    __weak id this = self;
     [self _addOperation:^(void) {
-        char* hash_password = gap_hash_password(self.state, [login UTF8String], [password UTF8String]);
-        int res = gap_login(self.state, [login UTF8String], hash_password);
+        char* hash_password = gap_hash_password(self.state,
+                                                [login UTF8String],
+                                                [password UTF8String]);
+        int res = gap_login(self.state,
+                            [login UTF8String],
+                            hash_password);
         gap_hash_free(hash_password);
+ /*       if (res == gap_ok)
+            res = gap_set_device_name(self.state, [device_name UTF8String]);*/
         if (res == gap_ok)
-            res = gap_set_device_name(self.state, [device_name UTF8String]);
+        {
+            self.logged_in = TRUE;
+            [this _startPolling];
+        }
         return res;
     } performSelector:selector onObject:object];
 }
 
+// Wrap any operation in a block and execute it in the mail thread
 -(void) _addOperation:(gap_operation_t)operation
       performSelector:(SEL)selector
              onObject:(id)object
 {
     [self addOperationWithBlock:^(void) {
-            sleep(2); //XXX
         int result = operation();
         [object performSelectorOnMainThread:selector
                                  withObject:[[IAGapOperationResult alloc] initWithStatusCode:result]
