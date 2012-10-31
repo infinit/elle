@@ -25,7 +25,7 @@ extern "C"
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 
 # define CATCH_ALL(_func_)                                                    \
-  catch (elle::HTTPException const& err)                                  \
+  catch (elle::HTTPException const& err)                                      \
     {                                                                         \
         ELLE_ERR(#_func_ " error: %s", err.what());                           \
         if (err.code == elle::ResponseCode::error)                            \
@@ -543,6 +543,24 @@ extern "C"
           return it->second;
         }
       CATCH_ALL(get_permissions);
+
+      (void) ret;
+      return gap_error;
+    }
+
+    // - Trophonius -----------------------------------------------------------
+
+
+    gap_Status
+    gap_user_status_callback(gap_State* state,
+                             gap_user_status_callback_t cb)
+    {
+      gap_Status ret;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_UserStatusNotification>(cb);
+        }
+      CATCH_ALL(user_status_callback);
 
       (void) ret;
       return gap_error;

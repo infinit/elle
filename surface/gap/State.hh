@@ -222,8 +222,8 @@ namespace surface
 
       /// Trophonius binding.
     private:
-      typedef std::map<int, plasma::trophonius::BasicHandler*> handlerMap;
-      handlerMap _notification_handler;
+      typedef std::map<int, plasma::trophonius::BasicHandler*> HandlerMap;
+      HandlerMap _notification_handler;
 
     public:
       template<typename T>

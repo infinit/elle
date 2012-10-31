@@ -52,99 +52,83 @@ namespace plasma
     ////////////////////////////////
     // User status: Login/Logout/AFK/...
     void
-    Client::UserStatusHandler::call(json::Dictionary const* dic)
+    Client::UserStatusHandler::_call(json::Dictionary const& dic,
+                                     std::unique_ptr<Notification>&& notification)
     {
       ELLE_TRACE("Handling user status modification.");
 
-      UserStatusNotification *notif = new UserStatusNotification();
+      std::string temp = dic["sender_id"].as_string();
+      notification->sender_id = temp.c_str();
 
-      std::string temp = (*dic)["sender_id"].as_string();
-      notif->sender_id = temp.c_str();
-
-      notif->status = (*dic)["status"].as_integer();
-
-      delete dic;
-      (callback)(notif);
+      notification->status = dic["status"].as_integer();
+      this->callback(notification.get());
     }
 
     ////////////////////////////////
     // FileTransferHandler.
     void
-    Client::FileTransferRequestHandler::call(json::Dictionary const* dic)
+    Client::FileTransferRequestHandler::_call(json::Dictionary const& dic,
+                                              std::unique_ptr<Notification>&& notification)
     {
       ELLE_TRACE("Handling new file transfer request.");
 
-      FileTransferRequestNotification *notif = new FileTransferRequestNotification();
+      notification->transaction_id = dic["transaction_id"].as_integer();
 
-      notif->transaction_id = (*dic)["transaction_id"].as_integer();
+      std::string temp = dic["sender_id"].as_string();
+      notification->sender_id = temp.c_str();
 
-      std::string temp = (*dic)["sender_id"].as_string();
-      notif->sender_id = temp.c_str();
+      temp = dic["file_name"].as_string();
+      notification->file_name = temp.c_str();
 
-      temp = (*dic)["file_name"].as_string();
-      notif->file_name = temp.c_str();
-
-      notif->file_size = (*dic)["file_size"].as_integer();
-
-      delete dic;
-      (callback)(notif);
+      notification->file_size = dic["file_size"].as_integer();
+      this->callback(notification.get());
     }
 
     ////////////////////////////////
     // FileTransferStatusHandler.
     void
-    Client::FileTransferStatusHandler::call(json::Dictionary const* dic)
+    Client::FileTransferStatusHandler::_call(json::Dictionary const& dic,
+                                             std::unique_ptr<Notification>&& notification)
     {
       ELLE_TRACE("Handling file transfer status update.");
 
-      FileTransferStatusNotification * notif = new FileTransferStatusNotification();
+      notification->transaction_id = dic["transaction_id"].as_integer();
 
-      notif->transaction_id = (*dic)["transaction_id"].as_integer();
+      notification->status = dic["transaction_status"].as_integer();
 
-      notif->status = (*dic)["transaction_status"].as_integer();
-
-      (callback)(notif);
-
-      delete dic;
+      this->callback(notification.get());
     }
 
     ////////////////////////////////
     // Message.
     void
-    Client::MessageHandler::call(json::Dictionary const* dic)
+    Client::MessageHandler::_call(json::Dictionary const& dic,
+                                  std::unique_ptr<Notification>&& notification)
     {
       ELLE_TRACE("Handling new message.");
 
-      MessageNotification * notif = new MessageNotification();
+      std::string temp = dic["sender_id"].as_string();
+      notification->sender_id = temp.c_str();
 
-      std::string temp = (*dic)["sender_id"].as_string();
-      notif->sender_id = temp.c_str();
-
-      temp = (*dic)["message"].as_string();
-      notif->message = temp.c_str();
+      temp = dic["message"].as_string();
+      notification->message = temp.c_str();
 
       // Use callback function.
-      (callback)(notif);
-
-      delete dic;
+      this->callback(notification.get());
     }
 
 
     ////////////////////////////////
     // BiteHandler.
     void
-    Client::BiteHandler::call(json::Dictionary const* dic)
+    Client::BiteHandler::_call(json::Dictionary const& dic,
+                               std::unique_ptr<Notification>&& notification)
     {
-
-      BiteNotification * notif = new BiteNotification();
-
-      std::string temp = (*dic)["debug"].as_string();
-      notif->debug = temp.c_str();
+      std::string temp = dic["debug"].as_string();
+      notification->debug = temp.c_str();
 
       // Use callback function.
-      (callback)(notif);
-
-      delete dic;
+      this->callback(notification.get());
     }
 
     Client::Client(std::string const& server,
@@ -256,11 +240,10 @@ namespace plasma
 
       std::unique_ptr<json::Dictionary> ret;
 
-      if(!_notifications.empty())
+      if (!_notifications.empty())
         {
           // Fill dictionary.
           ret.reset(_notifications.front());
-
           _notifications.pop();
         }
 
@@ -270,7 +253,7 @@ namespace plasma
     bool
     Client::has_notification(void)
     {
-      return ! (_notifications.empty());
+      return !(_notifications.empty());
     }
 
   }

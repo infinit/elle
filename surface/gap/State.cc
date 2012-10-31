@@ -39,20 +39,20 @@
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
 
-#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)               \
-  template<>                                                            \
-  void                                                                  \
-  State::attach_callback<data>(std::function<void (data const*)> callback) \
-  {                                                                     \
-    if(_notification_handler.find(indice) != _notification_handler.end()) \
-      {                                                                 \
-        return;                                                         \
-      }                                                                 \
-  _notification_handler.insert(                                         \
-    std::make_pair(                                                     \
-      indice,                                                           \
-      new handler(callback)));                                          \
-  }                                                                     \
+#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                     \
+  template<>                                                                  \
+  void                                                                        \
+  State::attach_callback<data>(std::function<void (data const*)> callback)    \
+  {                                                                           \
+    if(_notification_handler.find(indice) != _notification_handler.end())     \
+      {                                                                       \
+        return;                                                               \
+      }                                                                       \
+  _notification_handler.insert(                                               \
+    std::make_pair(                                                           \
+      indice,                                                                 \
+      new handler(callback)));                                                \
+  }                                                                           \
 /**/
 
 namespace surface
@@ -458,25 +458,24 @@ namespace surface
     bool
     State::poll()
     {
-      std::unique_ptr<json::Dictionary> dic = this->_trophonius->poll();
+      std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
 
-      if(!dic)
+      if(!dict_ptr)
         return false;
 
-      if(!dic->contains("notification_id"))
+      json::Dictionary const& dict = *dict_ptr;
+
+      if(!dict.contains("notification_id"))
         return false;
 
-      int notification_id = (*dic)["notification_id"].as_integer();
+      int notification_id = dict["notification_id"].as_integer();
 
-      handlerMap::const_iterator handler =
-        _notification_handler.find(notification_id);
+      auto handler = _notification_handler.find(notification_id);
 
       if (handler == _notification_handler.end())
         return false;
 
-      (*handler).second->call(dic.get());
-
-      dic.release();
+      (handler->second)->call(dict);
 
       return true;
     }

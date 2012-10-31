@@ -18,25 +18,48 @@
 // Declare a struct object_nameHandler.
 // Define a type callbackPrototype.
 // Override call from BasicHandler.
-# define _PLASMA_TROPHONIUS_GENERATE_HANDLERS(object_name, type)             \
+# define _PLASMA_TROPHONIUS_GENERATE_HANDLERS(__name)                   \
   public :                                                              \
-    struct object_name ## Handler : plasma::trophonius::BasicHandler    \
+    struct __name ## Handler:                                           \
+      public plasma::trophonius::BasicHandler                           \
     {                                                                   \
-      struct object_name ## Notification : plasma::Notification, type   \
-        {                                                               \
-        };                                                              \
-        typedef std::function<void (type const*)> callbackPrototype;     \
+    private:                                                            \
+      typedef gap_ ## __name ## Notification type_t;                    \
+    public:                                                             \
+      typedef std::function<void(type_t const*)> CallbackPrototype;     \
                                                                         \
-        object_name ## Handler(callbackPrototype const& callback)       \
-        {                                                               \
-          this->callback = callback;                                    \
-        }                                                               \
+    public:                                                             \
+      struct Notification:                                              \
+        public plasma::Notification,                                    \
+        public type_t                                                   \
+      {};                                                               \
                                                                         \
-        void                                                          \
-        call(elle::format::json::Dictionary const* dic);            \
-      private:                                                          \
-        callbackPrototype callback;                                     \
-    };                                                                  \
+    private:                                                            \
+      CallbackPrototype _callback;                                      \
+                                                                        \
+      void callback(Notification const* n)                              \
+      {                                                                 \
+        assert(this->_callback);                                        \
+        this->_callback(n);                                             \
+      }                                                                 \
+                                                                        \
+    public:                                                             \
+      __name ## Handler(CallbackPrototype const& callback)              \
+      {                                                                 \
+        this->_callback = callback;                                     \
+      }                                                                 \
+                                                                        \
+      void                                                              \
+      call(elle::format::json::Dictionary const& dic)                   \
+      {                                                                 \
+        _call(dic, std::unique_ptr<Notification>(new Notification));    \
+      }                                                                 \
+                                                                        \
+    private:                                                            \
+      void                                                              \
+      _call(elle::format::json::Dictionary const& dic,                  \
+              std::unique_ptr<Notification>&& notification);            \
+    }                                                                   \
 /**/
 
 namespace plasma
@@ -47,7 +70,11 @@ namespace plasma
     {
       virtual
       void
-      call(elle::format::json::Dictionary const* dic) = 0;
+      call(elle::format::json::Dictionary const& dic) = 0;
+
+      virtual
+      ~BasicHandler()
+      {}
     };
 
     namespace json = elle::format::json;
@@ -56,19 +83,19 @@ namespace plasma
     {
     public :
       // Generate: LogoutHandler and LogoutNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus, gap_UserStatusNotification)
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus);
 
       // Generate: FileTransferRequestHandler and FileTransferRequestNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferRequest, gap_FileTransferRequestNotification)
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferRequest);
 
       // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus, gap_FileTransferStatusNotification)
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus);
 
       // Generate: MessageHandler and MessageNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message, gap_MessageNotification)
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message);
 
       // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Bite, gap_BiteNotification)
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Bite);
 
     public:
       struct Impl;

@@ -6,7 +6,7 @@ extern "C" {
 # endif
 
     /// Status returned from gap calls.
-    typedef enum gap_Status
+    typedef enum
     {
       gap_ok = 0,
       gap_error = -1,
@@ -79,6 +79,15 @@ extern "C" {
 
     /// - Trophonius ----------------------------------------------------------
 
+    typedef enum
+    {
+      gap_notification_debug = 0,
+      gap_notification_user_status,
+      gap_notification_file_transfer_request,
+      gap_notification_file_transfer_status,
+      gap_notification_message,
+    } gap_Notification;
+
     ////////////////////////////////
     // Login/Logout/AFK/... Notification
     typedef struct
@@ -86,6 +95,12 @@ extern "C" {
       const char* sender_id;
       int status;
     } gap_UserStatusNotification;
+
+    typedef void (*gap_user_status_callback_t)(gap_UserStatusNotification const*);
+
+    gap_Status
+    gap_user_status_callback(gap_State* state,
+                             gap_user_status_callback_t cb);
 
     ////////////////////////////////
     // File transfer recieved callback.
@@ -121,12 +136,12 @@ extern "C" {
     // Bite callback.
     typedef struct
     {
-      const char* debug;
+      char const* debug;
     } gap_BiteNotification;
 
     // Poll
     gap_Status
-    gap_poll (gap_State* state);
+    gap_poll(gap_State* state);
 
     gap_Status
     gap_send_file(gap_State* state,
