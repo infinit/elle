@@ -69,6 +69,8 @@ class Boost(drake.Configuration):
             self.cfg_date.lib('boost_date_time')
             self.cfg_regex = Config()
             self.cfg_regex.lib('boost_regex')
+            self.cfg_program_options = Config()
+            self.cfg_program_options.lib('boost_program_options')
             return
 
         raise Exception('no matching boost for the requested version (%s) in %s. Found versions: %s.' % \
@@ -101,6 +103,10 @@ class Boost(drake.Configuration):
     def config_date(self):
 
         return self.cfg_date
+
+    def config_program_options(self):
+
+        return self.cfg_program_options
 
     def config_regex(self):
 
