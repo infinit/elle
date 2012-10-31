@@ -550,20 +550,18 @@ extern "C"
 
     // - Trophonius -----------------------------------------------------------
 
-
     gap_Status
     gap_user_status_callback(gap_State* state,
                              gap_user_status_callback_t cb)
     {
-      gap_Status ret;
+      gap_Status ret = gap_ok;
       try
         {
           __TO_CPP(state)->attach_callback<gap_UserStatusNotification>(cb);
         }
       CATCH_ALL(user_status_callback);
 
-      (void) ret;
-      return gap_error;
+      return ret;
     }
 
 } // ! extern "C"
