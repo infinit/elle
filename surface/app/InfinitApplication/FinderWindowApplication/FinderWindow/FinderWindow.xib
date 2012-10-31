@@ -38,9 +38,6 @@
 			<object class="NSCustomObject" id="1004">
 				<string key="NSClassName">NSApplication</string>
 			</object>
-			<object class="NSCustomObject" id="444088107">
-				<string key="NSClassName">IALoginViewController</string>
-			</object>
 			<object class="NSCustomObject" id="184765977">
 				<string key="NSClassName">IAFinderWindowController</string>
 			</object>
@@ -107,6 +104,9 @@
 				<string key="NSScreenRect">{{0, 0}, {1920, 1058}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
+			</object>
+			<object class="NSCustomObject" id="444088107">
+				<string key="NSClassName">IALoginViewController</string>
 			</object>
 			<object class="NSCustomView" id="1010704450">
 				<reference key="NSNextResponder"/>
@@ -241,7 +241,7 @@
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="1005"/>
 					</object>
-					<int key="connectionID">329</int>
+					<int key="connectionID">335</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -249,15 +249,7 @@
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="444088107"/>
 					</object>
-					<int key="connectionID">330</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">view</string>
-						<reference key="source" ref="444088107"/>
-						<reference key="destination" ref="1010704450"/>
-					</object>
-					<int key="connectionID">203</int>
+					<int key="connectionID">337</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -301,11 +293,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">view</string>
+						<reference key="source" ref="444088107"/>
+						<reference key="destination" ref="1010704450"/>
+					</object>
+					<int key="connectionID">334</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">login_view_controller</string>
 						<reference key="source" ref="184765977"/>
 						<reference key="destination" ref="444088107"/>
 					</object>
-					<int key="connectionID">206</int>
+					<int key="connectionID">332</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -313,7 +313,7 @@
 						<reference key="source" ref="184765977"/>
 						<reference key="destination" ref="1005"/>
 					</object>
-					<int key="connectionID">328</int>
+					<int key="connectionID">333</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -930,7 +930,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">330</int>
+			<int key="maxID">337</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

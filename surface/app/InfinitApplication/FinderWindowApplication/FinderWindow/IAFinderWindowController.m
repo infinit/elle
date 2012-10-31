@@ -19,12 +19,11 @@
 
 @implementation IAFinderWindowController
 
-- (id)init
+- (id)initFromNib
 {
     self = [super initWithWindowNibName:@"FinderWindow"];
     
     if (self) {
-        NSLog(@"SUBSCRIBE for %@", self);
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(_onUserLoggedIn:)
                                                      name:IA_GAP_EVENT_LOGIN_OPERATION
