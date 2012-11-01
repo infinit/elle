@@ -160,7 +160,9 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   std::unique_ptr<hole::Hole> hole(
     infinit::hole_factory(storage, passport, Infinit::authority()));
   etoile::depot::hole(hole.get());
+#ifdef INFINIT_HORIZON
   horizon::hole(hole.get());
+#endif
   hole->join();
 
   // FIXME
@@ -213,9 +215,15 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // initialize the horizon.
   if (!Infinit::Mountpoint.empty())
+#ifdef INFINIT_HORIZON
     if (horizon::Horizon::Initialize() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to initialize the horizon");
+#else
+  throw reactor::Exception(elle::concurrency::scheduler(),
+                           "horizon was disabled at compilation time "
+                           "but a mountpoint was given on the command line");
+#endif
 
   // launch the program.
   elle::concurrency::Program::Launch();
@@ -224,11 +232,13 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   delete Infinit::Parser;
   Infinit::Parser = nullptr;
 
+#ifdef INFINIT_HORIZON
   // clean the horizon.
   if (!Infinit::Mountpoint.empty())
     if (horizon::Horizon::Clean() == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to clean the horizon");
+#endif
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::Status::Error)

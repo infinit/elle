@@ -5,7 +5,6 @@ add_library(horizon
   Crux.cc
   Handle.cc
   Horizon.cc
-  Policy.cc
   Ward.cc
 )
 
