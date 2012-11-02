@@ -16,6 +16,7 @@
 
 @property(retain) IBOutlet NSSecureTextFieldCell* password;
 @property(retain) IBOutlet NSSecureTextFieldCell* password_confirm;
+@property(retain) IBOutlet NSSecureTextFieldCell* activation_code;
 
 @property(retain) IBOutlet NSTextField* error_message;
 
@@ -45,6 +46,7 @@
                         withFullname:[self.fullname stringValue]
                          andPassword:[self.password stringValue]
                        andDeviceName:@"TODO"
+                   andActivationCode:[self.activation_code stringValue]
                      performSelector:@selector(onRegister:)
                             onObject:self];
 }

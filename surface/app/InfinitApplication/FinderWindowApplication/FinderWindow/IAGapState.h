@@ -54,6 +54,7 @@
                      withFullname:(NSString*)fullname
                       andPassword:(NSString*)password
                     andDeviceName:(NSString*)device_name
+                andActivationCode:(NSString*)activation_code
                   performSelector:(SEL)selector
                          onObject:(id)object;
 
