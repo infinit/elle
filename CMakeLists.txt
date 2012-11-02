@@ -49,6 +49,11 @@ endif()
 set(INFINIT_PLATFORM "${INFINIT_PLATFORM_NO_ARCH}${INFINIT_ARCHITECTURE}")
 add_definitions(-DBOOST_PP_VARIADICS)
 
+
+# - Components configuration --------------------------------------------------
+
+add_definitions(-DINFINIT_HORIZON)
+
 message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
 # - Build type ----------------------------------------------------------------
