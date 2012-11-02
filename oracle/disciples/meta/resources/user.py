@@ -15,7 +15,7 @@ class Share(Page):
 
 	def POST(self):
 		if self.notifier is not None:
-			self.notifier.send_notify({**self.data})
+			self.notifier.send_notify(**self.data)
 
 class Search(Page):
     __pattern__ = "/user/search"
@@ -304,11 +304,7 @@ class Register(Page):
                 if not invitation:
                     errors.append('Your activation code is wrong  ?!')
         if len(errors):
-            return json.dumps({
-                'success': False,
-                'errors': errors,
-                'error': ', '.join(errors),
-            })
+	    return self.error(", ".join(errors))
 
         user["_id"] = database.users().save({})
 
@@ -328,6 +324,7 @@ class Register(Page):
             public_key=public_key,
             networks=[],
             devices=[],
+	    swaggers=[],
             accounts=[
                 {'type':'email', 'id': user['email']}
             ]

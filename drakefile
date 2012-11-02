@@ -2,7 +2,7 @@ import drake.cxx
 import drake.cxx.boost
 import drake.cxx.qt
 
-def configure(cxx_toolkit, cxx_config):
+def configure(cxx_toolkit, cxx_config, enable_horizon = True):
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config.enable_debug_symbols()
@@ -28,7 +28,9 @@ def configure(cxx_toolkit, cxx_config):
   # Elle
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   # Fuse
-  cxx_config.define('_FILE_OFFSET_BITS', 64) # FIXME: only needed for horizon
+  if enable_horizon:
+    cxx_config.define('_FILE_OFFSET_BITS', 64) # FIXME: only needed for horizon
+    cxx_config.define('INFINIT_HORIZON')
 
   # Lune
   lune_sources = drake.nodes(
@@ -50,6 +52,8 @@ def configure(cxx_toolkit, cxx_config):
     'lune/Phrase.cc',
     'lune/Phrase.hh',
     'lune/Phrase.hxx',
+    'lune/Policy.cc',
+    'lune/Policy.hh',
     'lune/Set.cc',
     'lune/Set.hh',
     'lune/Set.hxx',
@@ -466,47 +470,46 @@ def configure(cxx_toolkit, cxx_config):
                                 cxx_toolkit, cxx_config)
 
   # Horizon
-  horizon_sources = drake.nodes(
-    'horizon/Crib.cc',
-    'horizon/Crib.hh',
-    'horizon/Crux.cc',
-    'horizon/Handle.cc',
-    'horizon/Handle.hh',
-    'horizon/Horizon.cc',
-    'horizon/Horizon.hh',
-    'horizon/Policy.cc',
-    'horizon/Policy.hh',
-    'horizon/Ward.cc',
-    'horizon/Ward.hh',
-    'horizon/linux/FUSE.cc',
-    'horizon/linux/FUSE.hh',
-    'horizon/linux/FUker.cc',
-    'horizon/linux/FUker.hh',
-    'horizon/linux/Linux.cc',
-    'horizon/linux/Linux.hh',
-    # 'horizon/macosx/MacOSX.cc',
-    # 'horizon/macosx/FUker.hh',
-    # 'horizon/macosx/FUSE.hh',
-    # 'horizon/macosx/Janitor.cc',
-    # 'horizon/macosx/FUker.cc',
-    # 'horizon/macosx/Handle.cc',
-    # 'horizon/macosx/FUSE.cc',
-    # 'horizon/macosx/Crux.hh',
-    # 'horizon/macosx/Janitor.hh',
-    # 'horizon/macosx/Crux.cc',
-    # 'horizon/macosx/Crib.hh',
-    # 'horizon/macosx/MacOSX.hh',
-    # 'horizon/macosx/Handle.hh',
-    # 'horizon/macosx/Crib.cc',
-    # 'horizon/macosx/Janitor.hxx',
-    # 'horizon/windows/Windows.cc',
-    # 'horizon/windows/Windows.hh',
-    'horizon/operations.hh',
-    )
-  horizon_lib = drake.cxx.DynLib('lib/horizon', horizon_sources,
-                                 cxx_toolkit, cxx_config)
-  horizon_slib = drake.cxx.StaticLib('lib/horizon', horizon_sources,
-                                  cxx_toolkit, cxx_config)
+  if enable_horizon:
+    horizon_sources = drake.nodes(
+      'horizon/Crib.cc',
+      'horizon/Crib.hh',
+      'horizon/Crux.cc',
+      'horizon/Handle.cc',
+      'horizon/Handle.hh',
+      'horizon/Horizon.cc',
+      'horizon/Horizon.hh',
+      'horizon/Ward.cc',
+      'horizon/Ward.hh',
+      'horizon/linux/FUSE.cc',
+      'horizon/linux/FUSE.hh',
+      'horizon/linux/FUker.cc',
+      'horizon/linux/FUker.hh',
+      'horizon/linux/Linux.cc',
+      'horizon/linux/Linux.hh',
+      # 'horizon/macosx/MacOSX.cc',
+      # 'horizon/macosx/FUker.hh',
+      # 'horizon/macosx/FUSE.hh',
+      # 'horizon/macosx/Janitor.cc',
+      # 'horizon/macosx/FUker.cc',
+      # 'horizon/macosx/Handle.cc',
+      # 'horizon/macosx/FUSE.cc',
+      # 'horizon/macosx/Crux.hh',
+      # 'horizon/macosx/Janitor.hh',
+      # 'horizon/macosx/Crux.cc',
+      # 'horizon/macosx/Crib.hh',
+      # 'horizon/macosx/MacOSX.hh',
+      # 'horizon/macosx/Handle.hh',
+      # 'horizon/macosx/Crib.cc',
+      # 'horizon/macosx/Janitor.hxx',
+      # 'horizon/windows/Windows.cc',
+      # 'horizon/windows/Windows.hh',
+      'horizon/operations.hh',
+      )
+    horizon_lib = drake.cxx.DynLib('lib/horizon', horizon_sources,
+                                   cxx_toolkit, cxx_config)
+    horizon_slib = drake.cxx.StaticLib('lib/horizon', horizon_sources,
+                                       cxx_toolkit, cxx_config)
 
   ## -------- ##
   ## Programs ##
@@ -524,13 +527,15 @@ def configure(cxx_toolkit, cxx_config):
     protocol_lib,
     reactor.lib_dynamic,
     elle.lib_dynamic,
-    horizon_slib,
     ]
+  if enable_horizon:
+    infinit_libs.append(horizon_slib)
 
   # 8infinit
   infinit_bin_config = drake.cxx.Config(cxx_config)
   infinit_bin_config += boost.config_thread()
-  infinit_bin_config.lib('fuse')
+  if enable_horizon:
+    infinit_bin_config.lib('fuse')
   infinit_bin = drake.cxx.Executable('bin/8infinit',
                                      drake.nodes('_infinit.cc') + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)

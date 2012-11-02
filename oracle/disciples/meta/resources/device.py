@@ -113,7 +113,7 @@ class Update(Page):
         assert '_id' in device
         id_ = database.ObjectId(device['_id'].strip())
         if not id_ in self.user['devices']:
-            raise web.Forbidden("This network does not belong to you")
+            self.forbidden("This network does not belong to you")
         to_save = database.devices().find_one({
             '_id': database.ObjectId(id_)
         })
