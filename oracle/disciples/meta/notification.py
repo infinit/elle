@@ -21,7 +21,7 @@ class TrophoniusNotify(Notifier):
 
 	def send_notify(self, message):
 		if isinstance(message, dict):
-			msg = json.dumps(message)
+			msg = json.dumps(message, default = str)
 		elif isinstance(message, str):
 			msg = message
 		self.conn.send("{}\n".format(msg))
