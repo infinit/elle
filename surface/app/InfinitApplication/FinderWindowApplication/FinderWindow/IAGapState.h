@@ -46,4 +46,16 @@
                      onObject:(id)object;
 
 
+
+/**
+ * @brief Register to meta.
+ */
+- (void)                register_:(NSString*)login
+                     withFullname:(NSString*)fullname
+                      andPassword:(NSString*)password
+                    andDeviceName:(NSString*)device_name
+                  performSelector:(SEL)selector
+                         onObject:(id)object;
+
+
 @end

@@ -7,8 +7,19 @@
 //
 
 #import "IARegisterViewController.h"
+#import "IAGapState.h"
 
 @interface IARegisterViewController ()
+
+@property(retain) IBOutlet NSTextFieldCell* fullname;
+@property(retain) IBOutlet NSTextFieldCell* login;
+
+@property(retain) IBOutlet NSSecureTextFieldCell* password;
+@property(retain) IBOutlet NSSecureTextFieldCell* password_confirm;
+
+@property(retain) IBOutlet NSTextField* error_message;
+
+- (IBAction)doRegister:(id)sender;
 
 @end
 
@@ -18,10 +29,31 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Initialization code here.
     }
     
     return self;
 }
 
+- (void)awakeFromNib
+{
+    [self.error_message setStringValue:@""];
+}
+
+- (IBAction)doRegister:(id)sender
+{
+    [[IAGapState instance] register_:[self.login stringValue]
+                        withFullname:[self.fullname stringValue]
+                         andPassword:[self.password stringValue]
+                       andDeviceName:@"TODO"
+                     performSelector:@selector(onRegister)
+                            onObject:self];
+}
+
+- (void) onRegister:(NSNotification*)notification
+{
+    if ([[notification object] success])
+        NSLog(@"Successfully registered !");
+    else
+        NSLog(@"Couldn't register :(");
+}
 @end

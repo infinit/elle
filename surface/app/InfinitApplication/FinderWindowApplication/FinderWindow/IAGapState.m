@@ -234,8 +234,8 @@ static void on_user_status(gap_UserStatusNotification const* n);
                             hash_password);
         NSLog(@"Pass: %s", hash_password);
         gap_hash_free(hash_password);
- /*       if (res == gap_ok)
-            res = gap_set_device_name(self.state, [device_name UTF8String]);*/
+        if (res == gap_ok)
+            res = gap_set_device_name(self.state, [device_name UTF8String]);
         
         if (res == gap_ok)
             res = gap_trophonius_connect(self.state);
@@ -255,6 +255,28 @@ static void on_user_status(gap_UserStatusNotification const* n);
         else
             NSLog(@"Cannot register callback");
         
+        return res;
+    } performSelector:selector onObject:object];
+}
+
+- (void)                register_:(NSString*)login
+                     withFullname:(NSString*)fullname
+                      andPassword:(NSString*)password
+                    andDeviceName:(NSString*)device_name
+                  performSelector:(SEL)selector
+                         onObject:(id)object
+{
+    [self _addOperation:^(void) {
+        gap_Status res;
+        char* hash_password = gap_hash_password(self.state,
+                                                [login UTF8String],
+                                                [password UTF8String]);
+        res = gap_register(self.state,
+                           [fullname UTF8String],
+                           [login UTF8String],
+                           hash_password,
+                           [device_name UTF8String],
+                           "bitebite");
         return res;
     } performSelector:selector onObject:object];
 }
