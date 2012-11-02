@@ -263,6 +263,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
                      withFullname:(NSString*)fullname
                       andPassword:(NSString*)password
                     andDeviceName:(NSString*)device_name
+                andActivationCode:(NSString*)activation_code
                   performSelector:(SEL)selector
                          onObject:(id)object
 {
@@ -277,9 +278,11 @@ static void on_user_status(gap_UserStatusNotification const* n);
                            [login UTF8String],
                            hash_password,
                            [device_name UTF8String],
-                           "bitebite");
+                           [activation_code UTF8String]);
+        
         if (res == gap_ok)
-            res = gap_set_device_name(self.state, [device_name UTF8String]);
+            res = gap_set_device_name(self.state,
+                                      [device_name UTF8String]);
         if (res == gap_ok)
         {
             self.logged_in = true;
