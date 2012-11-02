@@ -266,6 +266,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
                   performSelector:(SEL)selector
                          onObject:(id)object
 {
+    __weak id this = self;
     [self _addOperation:^(void) {
         gap_Status res;
         char* hash_password = gap_hash_password(self.state,
@@ -277,6 +278,13 @@ static void on_user_status(gap_UserStatusNotification const* n);
                            hash_password,
                            [device_name UTF8String],
                            "bitebite");
+        if (res == gap_ok)
+            res = gap_set_device_name(self.state, [device_name UTF8String]);
+        if (res == gap_ok)
+        {
+            self.logged_in = true;
+            [this _startPolling];
+        }
         return res;
     } performSelector:selector onObject:object];
 }
