@@ -7,5 +7,6 @@ add_library(lune ${LINK_METHOD}
   Identity.cc
   Lune.cc
   Phrase.cc
+  Policy.cc
   Set.cc
 )

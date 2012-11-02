@@ -74,10 +74,12 @@ class Page(object):
     def registerUser(self, **kwargs):
         user = database.users().save(kwargs)
         return user
+    def forbidden(self, msg):
+        raise web.HTTPError("403 {}".format(msg))
 
     def requireLoggedIn(self):
         if not self.user:
-            raise web.Forbidden()
+            self.forbidden("Authentication required.")
 
     def hashPassword(self, password):
         seasoned = password + conf.SALT
@@ -91,13 +93,14 @@ class Page(object):
                 "sender_id" : self.user["_id"],
             }
         d.update(data)
-        self.notifier.notify_send(d)
+        self.notifier.send_notify(d)
 
 
-    def error(self, s):
+    def error(self, s, i = 666):
         return json.dumps({
             'success': False,
-            'error': str(s),
+            'error_code': i,
+            'error_details': str(s),
         })
 
     def success(self, obj={}):
