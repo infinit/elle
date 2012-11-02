@@ -592,14 +592,6 @@
 					<int key="connectionID">403</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">doLogin:</string>
-						<reference key="source" ref="444088107"/>
-						<reference key="destination" ref="543690141"/>
-					</object>
-					<int key="connectionID">504</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">error_message</string>
 						<reference key="source" ref="444088107"/>
@@ -710,6 +702,14 @@
 						<reference key="destination" ref="590562932"/>
 					</object>
 					<int key="connectionID">571</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">doRegister:</string>
+						<reference key="source" ref="402754651"/>
+						<reference key="destination" ref="543690141"/>
+					</object>
+					<int key="connectionID">572</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2628,7 +2628,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">571</int>
+			<int key="maxID">572</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

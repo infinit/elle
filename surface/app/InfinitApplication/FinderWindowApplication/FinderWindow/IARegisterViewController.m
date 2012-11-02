@@ -45,15 +45,17 @@
                         withFullname:[self.fullname stringValue]
                          andPassword:[self.password stringValue]
                        andDeviceName:@"TODO"
-                     performSelector:@selector(onRegister)
+                     performSelector:@selector(onRegister:)
                             onObject:self];
 }
 
-- (void) onRegister:(NSNotification*)notification
+- (void) onRegister:(IAGapOperationResult*)result
 {
-    if ([[notification object] success])
+    if ([result success])
         NSLog(@"Successfully registered !");
     else
         NSLog(@"Couldn't register :(");
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_LOGIN_OPERATION
+                                                        object:result];
 }
 @end
