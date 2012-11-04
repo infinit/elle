@@ -1,9 +1,9 @@
-#ifndef ELLE_CRYPTOGRAPHY_DIGEST_HXX
-# define ELLE_CRYPTOGRAPHY_DIGEST_HXX
+#ifndef ELLE_CRYPTOGRAPHY_CLEAR_HXX
+# define ELLE_CRYPTOGRAPHY_CLEAR_HXX
 
 # include <cassert>
 
-ELLE_SERIALIZE_SIMPLE(elle::cryptography::Digest,
+ELLE_SERIALIZE_SIMPLE(elle::cryptography::Clear,
                       archive,
                       value,
                       version)

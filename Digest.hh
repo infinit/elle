@@ -2,60 +2,73 @@
 # define ELLE_CRYPTOGRAPHY_DIGEST_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Buffer.hh>
 
-# include <elle/standalone/Region.hh>
+# include <elle/io/Dumpable.hh>
+
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/HexadecimalArchive.hh>
-# include <elle/radix/Object.hh>
-# include <elle/idiom/Open.hh>
 
 namespace elle
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents an asymmetrically encrypted text.
-    ///
-    class Digest
-      : public radix::Object
-      , public elle::concept::MakeUniquable<
-            Digest,
-            elle::serialize::HexadecimalArchive
-        >
+    /// XXX
+    class Digest:
+      public elle::io::Dumpable,
+      public elle::concept::MakeUniquable<
+        Digest,
+        elle::serialize::HexadecimalArchive
+      >
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      //
-      // constants
-      //
-      static const Digest               Null;
+      Digest() // XXX[to deserialize]
+      {
+      }
+      explicit
+      Digest(elle::Natural64 const size);
+      Digest(Digest const& other);
+      Digest(Digest&& other);
 
-      //
-      // constructors & destructors
-      //
-      Digest();
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      Boolean
+      operator ==(Digest const& other) const;
+      Boolean
+      operator <(Digest const& other) const;
+      Boolean
+      operator <=(Digest const& other) const;
+      ELLE_OPERATOR_NEQ(Digest);
+      ELLE_OPERATOR_GT(Digest);
+      ELLE_OPERATOR_GTE(Digest);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Digest);
 
-      //
-      // interfaces
-      //
-
-      // object
-      declare(Digest);
-      Boolean           operator==(const Digest&) const;
-      Boolean           operator<(const Digest&) const;
-
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // dumpable
-      Status            Dump(const Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Digest);
 
-      //
-      // attributes
-      //
-      standalone::Region region;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_RX(Buffer, buffer);
     };
-
   }
 }
 
-#include <elle/cryptography/Digest.hxx>
+# include <elle/cryptography/Digest.hxx>
 
 #endif

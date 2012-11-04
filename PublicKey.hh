@@ -1,26 +1,27 @@
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
-#define ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
+# define ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
 
-#include <elle/types.hh>
-#include <elle/Printable.hh>
+# include <elle/types.hh>
+# include <elle/Printable.hh>
 
-#include <elle/radix/Object.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/concept/Uniquable.hh>
+# include <elle/concept/Uniquable.hh>
 
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Signature.hh>
+# include <elle/cryptography/Plain.hh>
+# include <elle/cryptography/Code.hh>
+# include <elle/cryptography/Clear.hh>
+# include <elle/cryptography/Signature.hh>
+# include <elle/cryptography/oneway.hh>
 
-#include <elle/Buffer.hh>
+# include <elle/Buffer.hh>
 
-#include <elle/idiom/Close.hh>
-# include <openssl/rsa.h>
-# include <openssl/bn.h>
-# include <openssl/err.h>
-# include <openssl/evp.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <openssl/rsa.h>
+#  include <openssl/bn.h>
+#  include <openssl/err.h>
+#  include <openssl/evp.h>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -35,6 +36,15 @@ namespace elle
       public elle::concept::MakeUniquable<PublicKey>,
       public elle::Printable
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const oneway::Algorithm oneway;
+      };
+
     public:
       //
       // constructors & destructors

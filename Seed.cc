@@ -1,6 +1,6 @@
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 
 #include <elle/cryptography/Seed.hh>
 
@@ -43,8 +43,10 @@ namespace elle
       size = length / 8;
 
       // randomize the region.
-      if (Random::Generate(this->region, size) == Status::Error)
-        escape("unable to generate the region");
+      // XXX[change the attribute to a buffer]
+      Buffer buffer(random::generate<Buffer>(size));
+      if (this->region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
+        escape("XXX");
 
       return Status::Ok;
     }
