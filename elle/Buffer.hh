@@ -93,11 +93,14 @@ namespace elle
     InputBufferArchive
     reader() const;
 
+    // XXX[to remove in the future, if we use DumpArchives]
     void
     dump(const Natural32 shift = 0) const;
 
     bool
     operator <(Buffer const& other) const;
+    bool
+    operator <=(Buffer const& other) const;
     bool
     operator ==(Buffer const& other) const;
 
@@ -125,6 +128,7 @@ namespace elle
       , _size(size)
     {}
 
+    explicit
     WeakBuffer(Buffer const& buffer)
       : _contents(buffer.mutable_contents())
       , _size(buffer.size())
@@ -146,6 +150,17 @@ namespace elle
 
     InputBufferArchive
     reader() const;
+
+    // XXX[to remove in the future, if we use DumpArchives]
+    void
+    dump(const Natural32 shift = 0) const;
+
+    bool
+    operator <(WeakBuffer const& other) const;
+    bool
+    operator <=(WeakBuffer const& other) const;
+    bool
+    operator ==(WeakBuffer const& other) const;
   };
 
 }

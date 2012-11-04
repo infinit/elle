@@ -2,6 +2,8 @@
 # define ETOILE_GEAR_CONTEXT_HH
 
 # include <elle/types.hh>
+# include <elle/io/Dumpable.hh>
+
 # include <nucleus/proton/Transcript.hh>
 
 # include <etoile/gear/Nature.hh>
@@ -26,7 +28,7 @@ namespace etoile
     /// because the most important operation always superseed the others.
     ///
     class Context:
-      public elle::radix::Object
+      public elle::io::Dumpable
     {
     public:
       //

@@ -2,10 +2,11 @@
 # define NUCLEUS_PROTON_BLOCK_HH
 
 # include <elle/attribute.hh>
+# include <elle/Printable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Digest.hh>
-# include <elle/Printable.hh>
+# include <elle/cryptography/oneway.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/Serializable.hh>
@@ -46,6 +47,15 @@ namespace nucleus
       public elle::Printable,
       private boost::noncopyable
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const elle::cryptography::oneway::Algorithm oneway;
+      };
+
       /*-------------.
       | Construction |
       `-------------*/

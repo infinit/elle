@@ -1,8 +1,8 @@
-#include <elle/cryptography/Random.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 #include <elle/log.hh>
 #include <elle/serialize/PairSerializer.hxx>
+#include <elle/cryptography/random.hh>
 
 #include <reactor/network/tcp-server.hh>
 #include <reactor/thread.hh>
@@ -105,10 +105,8 @@ namespace etoile
       // generate a random string, create a phrase with it along with
       // the socket used by portal so that applications have everything
       // to connect to and authenticate to portal.
-      elle::String pass;
-
-      if (elle::cryptography::Random::Generate(pass) == elle::Status::Error)
-        escape("unable to generate a random string");
+      elle::String pass(elle::cryptography::random::generate<elle::String>(
+                          Portal::pass_length));
 
       if (Portal::phrase.Create(port,
                                 pass) == elle::Status::Error)

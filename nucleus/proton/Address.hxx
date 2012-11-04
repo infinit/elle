@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
-# include <elle/cryptography/OneWay.hh>
 # include <elle/serialize/TupleSerializer.hxx>
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
@@ -23,25 +22,17 @@ namespace nucleus
                      const neutron::Component& component,
                      const T&... parameters):
       _type(Type::valid),
-      _valid(nullptr)
+      _valid(new Address::Valid(network,
+                                family,
+                                component,
+                                elle::cryptography::oneway::hash(
+                                  elle::serialize::make_tuple(
+                                    network,
+                                    family,
+                                    component,
+                                    parameters...),
+                                  Address::Algorithms::oneway)))
     {
-      this->_valid = new Address::Valid(network, family, component, nullptr);
-
-      // XXX[this could be improved if OneWay::hash() returned a digest.
-      //     besides the Digest* could be remplaced by Digest]
-      this->_valid->digest(new elle::cryptography::Digest);
-
-      // compute the digest based on the parameters. note that most of
-      // the components requesting this method pass family and component
-      // in the parameters as well. for examples, please refer to
-      // ContentHashBlock, PublicKeyBlock etc.
-      if (elle::cryptography::OneWay::Hash(
-            elle::serialize::make_tuple(this->_valid->network(),
-                                        this->_valid->family(),
-                                        this->_valid->component(),
-                                        parameters...),
-            *this->_valid->digest()) == elle::Status::Error)
-        throw Exception("unable to hash the given parameter(s)");
     }
 
   }
@@ -50,9 +41,6 @@ namespace nucleus
 //
 // ---------- serialize -------------------------------------------------------
 //
-
-# include <elle/idiom/Close.hh>
-# include <elle/idiom/Open.hh>
 
 # include <elle/cryptography/Digest.hh>
 
@@ -98,7 +86,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address::Valid,
   archive & value._network;
   archive & value._family;
   archive & value._component;
-  archive & elle::serialize::alive_pointer(value._digest);
+  archive & value._digest;
 }
 
 #endif

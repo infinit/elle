@@ -6,11 +6,11 @@
 # include <elle/cryptography/Code.hh>
 # include <elle/cryptography/Digest.hh>
 # include <elle/cryptography/KeyPair.hh>
-# include <elle/cryptography/OneWay.hh>
+# include <elle/cryptography/oneway.hh>
 # include <elle/cryptography/Plain.hh>
 # include <elle/cryptography/PrivateKey.hh>
 # include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/Random.hh>
+# include <elle/cryptography/random.hh>
 # include <elle/cryptography/SecretKey.hh>
 # include <elle/cryptography/Seed.hh>
 # include <elle/cryptography/Signature.hh>

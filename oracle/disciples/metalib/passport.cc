@@ -1,6 +1,6 @@
 #include "metalib.hh"
 
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 
@@ -43,11 +43,8 @@ static elle::Passport create_passport(elle::String const& id,
   //
   {
     hole::Label               label;
-    elle::standalone::Region              region;
-
-    // generate a random region.
-    if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
-      throw std::runtime_error("unable to generate a random region");
+    elle::standalone::Region region(
+      elle::cryptography::random::generate<elle::standalone::Region>());
 
     // create a label.
     if (label.Create(region) == elle::Status::Error)

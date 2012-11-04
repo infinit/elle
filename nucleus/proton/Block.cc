@@ -1,6 +1,5 @@
-#include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -12,6 +11,12 @@ namespace nucleus
 {
   namespace proton
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    elle::cryptography::oneway::Algorithm const Block::Algorithms::oneway(
+      elle::cryptography::oneway::Algorithm::sha256);
 
     /*-------------.
     | Construction |
@@ -30,24 +35,16 @@ namespace nucleus
       _network(network),
       _family(family),
       _component(component),
+      _creator(elle::cryptography::oneway::hash(creator_K,
+                                                Block::Algorithms::oneway)),
+      _salt(elle::cryptography::random::generate<elle::Natural64>()),
       _state(StateClean)
     {
       // XXX[to improve and put in the list above]
 
-      // Compute the hash of the creator's key so as to be able to authenticate
-      // it later.
-      if (elle::cryptography::OneWay::Hash(
-            creator_K, this->_creator) == elle::Status::Error)
-        throw Exception("unable to hash the creator's public key");
-
       // Compute the creation timetimestamp.
       if (this->_creation_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to retrieve the current time");
-
-      // Generate a random number for the salt.
-      if (elle::cryptography::Random::Generate(this->_salt) ==
-          elle::Status::Error)
-        throw Exception("unable to generate the salt");
     }
 
     /*-----------.

@@ -5,12 +5,17 @@
 
 #include <elle/Buffer.hh>
 #include <elle/cryptography/Digest.hh>
-#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    elle::cryptography::oneway::Algorithm const Access::Algorithms::oneway(
+      elle::cryptography::oneway::Algorithm::sha256);
 
 //
 // ---------- constants -------------------------------------------------------
@@ -221,33 +226,21 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method computes a hash of the (subject, permissions) tuples
-    /// composing the access object.
-    ///
-    /// this is required by the object class for access control purposes.
-    ///
-    elle::Status Access::Fingerprint(elle::cryptography::Digest& digest) const
+    elle::cryptography::Digest
+    Access::fingerprint() const
     {
       elle::Buffer buffer;
 
-      try
-        {
-          auto it = this->_range.container.begin(),
-               end = this->_range.container.end();
-          for (; it != end; ++it)
-            buffer.writer() << (*it)->subject()
-                            << (*it)->permissions();
-        }
-      catch (std::exception const& err)
-        {
-          escape("Couldn't serialize a record: %s", err.what());
-        }
+      for (auto record: this->_range)
+        buffer.writer() << record->subject()
+                        << record->permissions();
 
-      if (elle::cryptography::OneWay::Hash(buffer, digest) == elle::Status::Error)
-        escape("unable to hash the set of archived tuples");
+      elle::cryptography::Digest digest(
+        elle::cryptography::oneway::hash(
+          elle::cryptography::Plain(elle::WeakBuffer(buffer)),
+          Access::Algorithms::oneway));
 
-      return elle::Status::Ok;
+      return (digest);
     }
 
 //

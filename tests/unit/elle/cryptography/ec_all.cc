@@ -1,10 +1,11 @@
 #include <iostream>
 
 #include <elle/types.hh>
+#include <elle/Buffer.hh>
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/Plain.hh>
@@ -18,78 +19,82 @@
 
 void test_encryption()
 {
-  elle::cryptography::Plain plain;
   elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(2048));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
   elle::cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
+  elle::WeakBuffer weakbuffer(buffer);
+  elle::cryptography::Plain plain(weakbuffer);
 
   K = kp.K;
   k = kp.k;
 
-  CHECK(K.Encrypt(plain, code));
+  CHECK(K.Encrypt(plain.buffer(), code)); // XXX
 
-  CHECK(k.Decrypt(code, clear));
+  CHECK(k.Decrypt(code, clear.buffer())); // XXX
 
   assert(plain == clear);
 }
 
 void test_noitpyrcne()
 {
-  elle::cryptography::Plain plain;
   elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(4096));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
   elle::cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
+  elle::WeakBuffer weakbuffer(buffer);
+  elle::cryptography::Plain plain(weakbuffer);
 
   K = kp.K;
   k = kp.k;
 
-  CHECK(k.Encrypt(plain, code));
+  CHECK(k.Encrypt(plain.buffer(), code)); // XXX
 
-  CHECK(K.Decrypt(code, clear));
+  CHECK(K.Decrypt(code, clear.buffer()));
 
   assert(plain == clear);
 }
 
 void test_signature()
 {
-  elle::cryptography::Plain plain;
   elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(1024));
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Signature signature;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
+  elle::WeakBuffer weakbuffer(buffer);
+  elle::cryptography::Plain plain(weakbuffer);
 
   K = kp.K;
   k = kp.k;
 
-  signature = k.sign(plain);
+  signature = k.sign(plain.buffer()); // XXX
 
-  CHECK(K.Verify(signature, plain));
+  CHECK(K.Verify(signature, plain.buffer())); // XXX
 }
 
 void test_cipher()
 {
-  elle::cryptography::Plain plain;
   elle::cryptography::SecretKey secret;
   elle::cryptography::Cipher cipher;
   elle::cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
+  elle::WeakBuffer weakbuffer(buffer);
+  elle::cryptography::Plain plain(weakbuffer);
 
   CHECK(secret.Generate(256));
 
-  CHECK(secret.Encrypt(plain, cipher));
+  CHECK(secret.Encrypt(plain.buffer(), cipher)); // XXX
 
-  CHECK(secret.Decrypt(cipher, clear));
+  CHECK(secret.Decrypt(cipher, clear.buffer()));
 
   assert(plain == clear);
 }
@@ -107,7 +112,7 @@ void test_rotation()
                 PublicKey       K;
 
                 // generate the initial seed.
-                if (seed.Generate() == Status::Error)
+                if (seed.generate() == Status::Error)
                   escape("unable to generate the seed");
 
                 // rotate the key pair once in order to be truly random
@@ -116,7 +121,7 @@ void test_rotation()
                   escape("unable to rotate the initial key pair");
 
                 // generate a random number of rotations to apply.
-                rotations = Random::Generate(Test::MinimumKeyRotations,
+                rotations = random::generate(Test::MinimumKeyRotations,
                                              Test::MaximumKeyRotations);
 
                 // assign the current seed and key pair.

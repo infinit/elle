@@ -2,10 +2,10 @@
 # define HOLE_LABEL_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 # include <elle/cryptography/fwd.hh>
-
-# include <elle/idiom/Open.hh>
+# include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/oneway.hh>
+# include <elle/serialize/fwd.hh>
 
 namespace hole
 {
@@ -22,44 +22,54 @@ namespace hole
   /// labels lie in the same namespace. indeed, both are digests which
   /// can be easily turned into hexadecimal strings for instance.
   ///
-  class Label:
-    public elle::radix::Object
+  class Label
   {
+    /*----------.
+    | Constants |
+    `----------*/
   public:
-    //
-    // constants
-    //
-    static const Label          Null;
+    struct Algorithms
+    {
+      static const elle::cryptography::oneway::Algorithm oneway;
+    };
 
-    //
-    // constructors & destructors
-    //
+    /*-------------.
+    | Construction |
+    `-------------*/
+  public:
     Label();
-    Label(const Label&);
-    ~Label();
-
-    //
-    // methods
-    //
+    /// Create the label based on an element by computing its digest.
     template <typename T>
-    elle::Status        Create(const T&);
+    Label(T const& element);
 
-    //
-    // interfaces
-    //
+    /*----------.
+    | Operators |
+    `----------*/
+  public:
+    elle::Boolean
+    operator ==(Label const& other) const;
+    elle::Boolean
+    operator <(Label const& other) const;
+    elle::Boolean
+    operator <=(Label const& other) const;
+    ELLE_OPERATOR_GT(Label);
+    ELLE_OPERATOR_GTE(Label);
+    ELLE_OPERATOR_NO_ASSIGNMENT(Label);
 
-    // object
-    declare(Label);
-    elle::Boolean       operator==(const Label&) const;
-    elle::Boolean       operator<(const Label&) const;
-
+    /*-----------.
+    | Interfaces |
+    `-----------*/
+  public:
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
+    // serializable
+    ELLE_SERIALIZE_FRIEND_FOR(Label);
 
-    //
-    // attributes
-    //
-    elle::cryptography::Digest*       digest;
+    /*-----------.
+    | Attributes |
+    `-----------*/
+  private:
+    ELLE_ATTRIBUTE(elle::cryptography::Digest, digest);
   };
 
 }

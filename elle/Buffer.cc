@@ -186,6 +186,14 @@ namespace elle
   }
 
   bool
+  Buffer::operator <=(Buffer const& other) const
+  {
+    if (this->_size != other._size)
+      return this->_size < other._size;
+    return ::memcmp(this->_contents, other._contents, this->_size) <= 0;
+  }
+
+  bool
   Buffer::operator ==(Buffer const& other) const
   {
     if (this->_size != other._size)
@@ -197,6 +205,78 @@ namespace elle
   WeakBuffer::reader() const
   {
     return InputBufferArchive(*this);
+  }
+
+  void
+  WeakBuffer::dump(const Natural32 margin) const
+  {
+    Natural32         space = 78 - margin - io::Dumpable::Shift.length();
+    String            alignment(margin, ' ');
+    Natural32         i;
+    Natural32         j;
+
+    std::cout << alignment
+              << "[Buffer] "
+              << "address(" << static_cast<Void*>(this->_contents) << ") "
+              << "size(" << std::dec << this->_size << ")"
+              << std::endl;
+
+    // since a byte is represented by two characters.
+    space = space / 2;
+
+    // set the fill to '0'.
+    std::cout.fill('0');
+
+    // display the region.
+    for (i = 0; i < (this->_size / space); i++)
+      {
+        std::cout << alignment << io::Dumpable::Shift;
+
+        for (j = 0; j < space; j++)
+          std::cout << std::nouppercase
+                    << std::hex
+                    << std::setw(2)
+                    << (int)this->_contents[i * space + j];
+
+        std::cout << std::endl;
+      }
+
+    if ((this->_size % space) != 0)
+      {
+        std::cout << alignment << io::Dumpable::Shift;
+
+        for (size_t j = 0; j < (this->_size % space); j++)
+          std::cout << std::nouppercase
+                    << std::hex
+                    << std::setw(2)
+                    << (int)this->_contents[i * space + j];
+
+        std::cout << std::endl;
+      }
+  }
+
+  bool
+  WeakBuffer::operator <(WeakBuffer const& other) const
+  {
+    if (this->_size != other._size)
+      return this->_size < other._size;
+    return ::memcmp(this->_contents, other._contents, this->_size) < 0;
+  }
+
+  bool
+  WeakBuffer::operator <=(WeakBuffer const& other) const
+  {
+    if (this->_size != other._size)
+      return this->_size < other._size;
+    return ::memcmp(this->_contents, other._contents, this->_size) <= 0;
+  }
+
+  bool
+  WeakBuffer::operator ==(WeakBuffer const& other) const
+  {
+    if (this->_size != other._size)
+      return false;
+    return ::memcmp(this->_contents, other._contents, this->_size) == 0;
   }
 
   ///////////////////////////////////////////////////////////////////////////

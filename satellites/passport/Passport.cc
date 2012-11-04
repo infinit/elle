@@ -2,7 +2,7 @@
 
 #include <Infinit.hh>
 
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 #include <elle/io/Console.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
@@ -26,8 +26,6 @@ namespace satellite
   ///
   elle::Status          Passport::Create()
   {
-    elle::Passport      passport;
-
     //
     // test the arguments.
     //
@@ -62,25 +60,19 @@ namespace satellite
     // create the passport.
     //
     {
-      hole::Label               label;
-      elle::standalone::Region              region;
-      elle::String              id;
+      elle::Natural32 const id_length = 128;
+      elle::Natural32 const buffer_size = 512;
 
-      // generate a random string.
-      if (elle::cryptography::Random::Generate(id) == elle::Status::Error)
-        escape("unable to generate a random string");
-
-      // generate a random region.
-      if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
-        escape("unable to generate a random region");
+      elle::String id(
+        elle::cryptography::random::generate<elle::String>(id_length));
+      elle::Buffer buffer(
+        elle::cryptography::random::generate<elle::Buffer>(buffer_size));
 
       // create a label.
-      if (label.Create(region) == elle::Status::Error)
-        escape("unable to create a label");
+      hole::Label label(buffer);
 
       // create the passport.
-      if (passport.Create(label, id) == elle::Status::Error)
-        escape("unable to create the passport");
+      elle::Passport passport(label, id);
 
       // seal the passport.
       if (passport.Seal(authority) == elle::Status::Error)

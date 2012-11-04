@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HXX
 # define NUCLEUS_PROTON_CONTENTHASHBLOCK_HXX
 
-# include <elle/cryptography/Random.hh>
 # include <elle/print.hh>
 
 # include <nucleus/proton/ImmutableBlock.hh>

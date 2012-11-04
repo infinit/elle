@@ -243,7 +243,6 @@ namespace nucleus
               // access records is computed which is then included in
               // the meta signature.
               //
-              elle::cryptography::Digest      fingerprint;
 
               // test if there is an access block.
               if (access == nullptr)
@@ -252,8 +251,7 @@ namespace nucleus
 
               // compute the fingerprint of the access (subject, permissions)
               // tuples.
-              if (access->Fingerprint(fingerprint) == elle::Status::Error)
-                escape("unable to compute the access block fingerprint");
+              elle::cryptography::Digest fingerprint(access->fingerprint());
 
               // sign the meta data, making sure to include the access
               // fingerprint.
@@ -435,8 +433,6 @@ namespace nucleus
       {
         if (this->_meta.access != proton::Address::null())
           {
-            elle::cryptography::Digest        fingerprint;
-
             // test if there is an access block.
             if (access == nullptr)
               throw Exception("the Validate() method must take the object's "
@@ -444,8 +440,7 @@ namespace nucleus
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
-            if (access->Fingerprint(fingerprint) == elle::Status::Error)
-              throw Exception("unable to compute the access block fingerprint");
+            elle::cryptography::Digest fingerprint(access->fingerprint());
 
             // verify the meta part, including the access fingerprint.
             if (this->owner_K().Verify(
