@@ -1,87 +1,73 @@
 #include <elle/cryptography/Digest.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace elle
 {
   namespace cryptography
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this defines a null digest.
-    ///
-    const Digest                Digest::Null;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Digest::Digest()
+    Digest::Digest(elle::Natural64 const size):
+      _buffer(size)
     {
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this method check if two digests match.
-    ///
-    Boolean             Digest::operator==(const Digest&        element) const
+    Digest::Digest(Digest const& other):
+      _buffer(other._buffer.contents(), other._buffer.size())
     {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
-
-      return (this->region == element.region);
     }
 
-    ///
-    /// this method compares the digests.
-    ///
-    Boolean             Digest::operator<(const Digest&         element) const
+    Digest::Digest(Digest&& other):
+      _buffer(std::move(other._buffer))
     {
-      return (this->region < element.region);
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Digest, _());
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this method dumps the digest.
-    ///
-    Status              Digest::Dump(const Natural32            margin) const
+    elle::Status
+    Digest::Dump(elle::Natural32           margin) const
     {
-      String            alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
-      // display depending on the value.
-      if (*this == Digest::Null)
-        {
-          std::cout << alignment << "[Digest] " << none << std::endl;
-        }
-      else
-        {
-          std::cout << alignment << "[Digest]" << std::endl;
+      std::cout << alignment << "[Digest] " << this << std::endl;
 
-          // dump the region.
-          if (this->region.Dump(margin + 2) == Status::Error)
-              escape("unable to dump the region");
-        }
+      this->_buffer.dump(margin + 2);
 
-      return Status::Ok;
+      return elle::Status::Ok;
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    Boolean
+    Digest::operator ==(Digest const& other) const
+    {
+      if (this == &other)
+        return (true);
+
+      return (this->_buffer == other._buffer);
+    }
+
+    Boolean
+    Digest::operator <(Digest const& other) const
+    {
+      if (this == &other)
+        return (false);
+
+      return (this->_buffer < other._buffer);
+    }
+
+    Boolean
+    Digest::operator <=(Digest const& other) const
+    {
+      if (this == &other)
+        return (true);
+
+      return (this->_buffer <= other._buffer);
     }
 
   }

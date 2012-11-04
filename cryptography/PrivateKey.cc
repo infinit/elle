@@ -1,6 +1,5 @@
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Seed.hh>
 #include <elle/cryptography/cryptography.hh>
@@ -19,6 +18,12 @@ namespace elle
 {
   namespace cryptography
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    oneway::Algorithm const PrivateKey::Algorithms::oneway(
+      oneway::Algorithm::sha256);
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -289,23 +294,23 @@ namespace elle
     }
 
     Signature
-    PrivateKey::sign(elle::WeakBuffer const&  plain) const
+    PrivateKey::sign(elle::WeakBuffer const& buffer) const
     {
       Signature signature;
-      Digest digest;
       ::size_t size;
 
+      // XXX[remove Plain(buffer) in favor of plain which should be the argument]
       // Compute the plain's digest.
-      if (OneWay::Hash(plain, digest) == Status::Error)
-        throw Exception("unable to hash the plain");
+      Digest digest(oneway::hash(Plain(buffer),
+                                 PrivateKey::Algorithms::oneway));
 
       // Retrieve information on the size of the output signature.
       if (::EVP_PKEY_sign(
             this->_contexts.sign,
             nullptr,
             &size,
-            reinterpret_cast<const unsigned char*>(digest.region.contents),
-            digest.region.size) <= 0)
+            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
+            digest.buffer().size()) <= 0)
         throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Prepare the signature so it can receive the upcoming portion.
@@ -317,8 +322,8 @@ namespace elle
             this->_contexts.sign,
             reinterpret_cast<unsigned char*>(signature.region.contents),
             &size,
-            reinterpret_cast<const unsigned char*>(digest.region.contents),
-            digest.region.size) <= 0)
+            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
+            digest.buffer().size()) <= 0)
         throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // set the code size.

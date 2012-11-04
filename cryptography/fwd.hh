@@ -1,18 +1,17 @@
 #ifndef ELLE_CRYPTOGRAPHY_FWD_HH
 # define ELLE_CRYPTOGRAPHY_FWD_HH
 
-# include <elle/cryptography/Plain.hh>
-# include <elle/cryptography/Clear.hh>
-
 namespace elle
 {
   namespace cryptography
   {
 
     class Cipher;
+    class Clear;
     class Code;
     class Digest;
     class KeyPair;
+    class Plain;
     class PrivateKey;
     class PublicKey;
     class SecretKey;
