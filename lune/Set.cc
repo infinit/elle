@@ -59,7 +59,7 @@ namespace lune
   elle::io::Path
   Set::_path(elle::String const& network)
   {
-    return (elle::io::Path(Lune::Network::Set,
+    return (elle::io::Path(Lune::Set,
                            elle::io::Piece("%NETWORK%", network)));
   }
 

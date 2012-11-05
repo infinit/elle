@@ -174,7 +174,7 @@ namespace lune
   elle::io::Path
   Identity::_path(elle::String const& user)
   {
-    return (elle::io::Path(Lune::User::Identity,
+    return (elle::io::Path(Lune::Identity,
                            elle::io::Piece("%USER%", user)));
   }
 

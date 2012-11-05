@@ -23,7 +23,7 @@ namespace lune
   elle::io::Path
   Dictionary::_path(elle::String const& user)
   {
-    return (elle::io::Path(Lune::User::Dictionary,
+    return (elle::io::Path(Lune::Dictionary,
                            elle::io::Piece("%USER%", user)));
   }
 

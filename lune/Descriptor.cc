@@ -100,7 +100,7 @@ namespace lune
   elle::io::Path
   Descriptor::_path(elle::String const& network)
   {
-    return (elle::io::Path(Lune::Network::Descriptor,
+    return (elle::io::Path(Lune::Descriptor,
                            elle::io::Piece("%NETWORK%", network)));
   }
 
