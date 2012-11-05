@@ -6,6 +6,7 @@
 # include <elle/cryptography/Digest.hh>
 # include <elle/cryptography/oneway.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/io/Dumpable.hh>
 
 namespace hole
 {
@@ -22,7 +23,8 @@ namespace hole
   /// labels lie in the same namespace. indeed, both are digests which
   /// can be easily turned into hexadecimal strings for instance.
   ///
-  class Label
+  class Label:
+    public elle::io::Dumpable
   {
     /*----------.
     | Constants |
@@ -37,7 +39,7 @@ namespace hole
     | Construction |
     `-------------*/
   public:
-    Label();
+    Label(); // XXX[deserialize]
     /// Create the label based on an element by computing its digest.
     template <typename T>
     Label(T const& element);
