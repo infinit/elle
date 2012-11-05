@@ -1,20 +1,21 @@
 #include "Buffer.hh"
 
 #include <elle/Exception.hh>
-#include <elle/io/Dumpable.hh>
 #include <elle/IOStream.hh>
 #include <elle/log.hh>
+
+#include <elle/io/Dumpable.hh>
+#include <elle/format/hexadecimal.hh>
 
 #include <iomanip>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 
+ELLE_LOG_COMPONENT("elle.Buffer");
+
 namespace elle
 {
-
-  ELLE_LOG_COMPONENT("elle.utility.Buffer");
-
   void detail::MallocDeleter::operator ()(void* data)
   {
     ::free(data);
@@ -56,7 +57,7 @@ namespace elle
     , _buffer_size(other._buffer_size)
   {
     other._contents = nullptr;
-#ifdef DEBUG
+#ifdef DEBUG // XXX[is this macro documented somewhere?]
     other._size = 0;
     other._buffer_size = 0;
 #endif
@@ -167,6 +168,19 @@ namespace elle
       }
   }
 
+  /*----------.
+  | Printable |
+  `----------*/
+
+  void
+  Buffer::print(std::ostream& stream) const
+  {
+    stream <<
+      format::hexadecimal::encode(
+        reinterpret_cast<const char*>(this->_contents),
+        this->_size);
+  }
+
   size_t
   Buffer::_next_size(size_t size)
   {
@@ -199,6 +213,30 @@ namespace elle
     if (this->_size != other._size)
       return false;
     return ::memcmp(this->_contents, other._contents, this->_size) == 0;
+  }
+
+  bool
+  Buffer::operator <(WeakBuffer const& other) const
+  {
+    if (this->_size != other.size())
+      return this->_size < other.size();
+    return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
+  }
+
+  bool
+  Buffer::operator <=(WeakBuffer const& other) const
+  {
+    if (this->_size != other.size())
+      return this->_size < other.size();
+    return ::memcmp(this->_contents, other.contents(), this->_size) <= 0;
+  }
+
+  bool
+  Buffer::operator ==(WeakBuffer const& other) const
+  {
+    if (this->_size != other.size())
+      return false;
+    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
   InputBufferArchive
@@ -277,6 +315,39 @@ namespace elle
     if (this->_size != other._size)
       return false;
     return ::memcmp(this->_contents, other._contents, this->_size) == 0;
+  }
+
+  bool
+  WeakBuffer::operator <(Buffer const& other) const
+  {
+    if (this->_size != other.size())
+      return this->_size < other.size();
+    return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
+  }
+
+  bool
+  WeakBuffer::operator <=(Buffer const& other) const
+  {
+    if (this->_size != other.size())
+      return this->_size < other.size();
+    return ::memcmp(this->_contents, other.contents(), this->_size) <= 0;
+  }
+
+  bool
+  WeakBuffer::operator ==(Buffer const& other) const
+  {
+    if (this->_size != other.size())
+      return false;
+    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
+  }
+
+  void
+  WeakBuffer::print(std::ostream& stream) const
+  {
+    stream <<
+      format::hexadecimal::encode(
+        reinterpret_cast<const char*>(this->_contents),
+        this->_size);
   }
 
   ///////////////////////////////////////////////////////////////////////////

@@ -1,10 +1,13 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
-# include <memory>
+# include <elle/types.hh>
+# include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <elle/serialize/fwd.hh>
-# include <elle/types.hh>
+
+# include <memory>
 
 namespace elle
 {
@@ -25,7 +28,8 @@ namespace elle
   /// Note that this class owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the data
-  class Buffer
+  class Buffer:
+    public Printable
   {
     friend class serialize::Serializer<Buffer>;
   public:
@@ -103,6 +107,27 @@ namespace elle
     operator <=(Buffer const& other) const;
     bool
     operator ==(Buffer const& other) const;
+    ELLE_OPERATOR_GT(Buffer);
+    ELLE_OPERATOR_GTE(Buffer);
+    ELLE_OPERATOR_NEQ(Buffer);
+    bool
+    operator <(WeakBuffer const& other) const;
+    bool
+    operator <=(WeakBuffer const& other) const;
+    bool
+    operator ==(WeakBuffer const& other) const;
+    ELLE_OPERATOR_GT(WeakBuffer);
+    ELLE_OPERATOR_GTE(WeakBuffer);
+    ELLE_OPERATOR_NEQ(WeakBuffer);
+
+    /*-----------.
+    | Interfaces |
+    `-----------*/
+  public:
+    // printable
+    virtual
+    void
+    print(std::ostream& stream) const;
 
   private:
     static size_t _next_size(size_t);
@@ -116,7 +141,8 @@ namespace elle
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
   ///
-  class WeakBuffer
+  class WeakBuffer:
+    public Printable
   {
   private:
     Byte*     _contents;
@@ -134,9 +160,9 @@ namespace elle
       , _size(buffer.size())
     {}
 
-    WeakBuffer(WeakBuffer const& buffer)
-      : _contents(buffer.mutable_contents())
-      , _size(buffer.size())
+    WeakBuffer(WeakBuffer const& other)
+      : _contents(other._contents)
+      , _size(other._size)
     {}
 
     WeakBuffer(WeakBuffer&& other)
@@ -161,6 +187,27 @@ namespace elle
     operator <=(WeakBuffer const& other) const;
     bool
     operator ==(WeakBuffer const& other) const;
+    ELLE_OPERATOR_GT(WeakBuffer);
+    ELLE_OPERATOR_GTE(WeakBuffer);
+    ELLE_OPERATOR_NEQ(WeakBuffer);
+    bool
+    operator <(Buffer const& other) const;
+    bool
+    operator <=(Buffer const& other) const;
+    bool
+    operator ==(Buffer const& other) const;
+    ELLE_OPERATOR_GT(Buffer);
+    ELLE_OPERATOR_GTE(Buffer);
+    ELLE_OPERATOR_NEQ(Buffer);
+
+    /*-----------.
+    | Interfaces |
+    `-----------*/
+  public:
+    // printable
+    virtual
+    void
+    print(std::ostream& stream) const;
   };
 
 }
