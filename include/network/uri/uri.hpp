@@ -15,6 +15,7 @@
 #include <iterator>
 #include <algorithm>
 #include <functional>
+#include <stdexcept>
 
 
 namespace network {
@@ -30,6 +31,20 @@ namespace network {
       seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
     }
   } // namespace detail
+
+  class uri_syntax_error : public std::runtime_error {
+
+  public:
+
+    uri_syntax_error(const char *what) : std::runtime_error(what) {
+
+    }
+
+    virtual ~uri_syntax_error() {
+
+    }
+
+  };
 
   class uri {
 
@@ -263,7 +278,7 @@ namespace network {
     const_iterator first(std::begin(uri_)), last(std::end(uri_));
     bool is_valid = detail::parse(first, last, uri_parts_);
     if (!is_valid) {
-
+      throw uri_syntax_error("Unable to parse URI string.");
     }
 
     if (!uri_parts_.scheme) {

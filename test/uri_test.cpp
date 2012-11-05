@@ -576,9 +576,7 @@ BOOST_AUTO_TEST_CASE(issue_67_test) {
   const std::string site_name("http://www.google.com");
   network::uri bar0;
   network::uri bar1 = site_name;
-  bar0 = site_name;
-  //BOOST_CHECK(bar0.is_valid());
-  //BOOST_CHECK(bar1.is_valid());
+  BOOST_CHECK_NO_THROW(bar0 = site_name);
 }
 
 //BOOST_AUTO_TEST_CASE(from_parts_1) {
