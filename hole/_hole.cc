@@ -12,8 +12,9 @@
 #include <hole/Hole.hh>
 #include <hole/storage/Directory.hh>
 
-#include <horizon/Horizon.hh>
-
+#ifdef INFINIT_HORIZON
+# include <horizon/Horizon.hh>
+#endif
 #include <HoleFactory.hh>
 
 namespace hole
@@ -104,7 +105,9 @@ namespace hole
     std::unique_ptr<hole::Hole> hole(
       infinit::hole_factory(storage, passport, Infinit::authority()));
     etoile::depot::hole(hole.get());
+#ifdef INFINIT_HORIZON
     horizon::hole(hole.get());
+#endif
     hole->join();
 
     // launch the program.
