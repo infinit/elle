@@ -209,7 +209,7 @@ add_custom_command(
 # - Dependencies --------------------------------------------------------------
 
 ## Loading boost
-set(Boost_USE_STATIC_LIBS ON) # XXX[required for boost_filesystem to work :(]
+set(Boost_USE_STATIC_LIBS ${USE_STATIC_LIBS})
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost
