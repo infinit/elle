@@ -4,12 +4,13 @@
 # include <elle/types.hh>
 
 # include <elle/cryptography/fwd.hh>
+# include <elle/cryptography/Digest.hh>
 
 namespace elle
 {
   namespace cryptography
   {
-    /// Contains everything related to hashing.
+    /// Contain everything related to hashing.
     namespace oneway
     {
       /*-------------.
@@ -30,14 +31,8 @@ namespace elle
       | Static Methods |
       `---------------*/
       /// Hash a plain text and return a digest.
-      ///
-      /// Note that an rvalue reference is used here in order to catch all
-      /// the plain-based calls.
       Digest
       hash(Plain const& plain,
-           Algorithm algorithm);
-      Digest
-      hash(Plain&& plain,
            Algorithm algorithm);
       /// Hash anything serializable and return a digest.
       template <typename T>

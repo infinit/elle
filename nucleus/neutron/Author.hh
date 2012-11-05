@@ -36,7 +36,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Author const& other) const;
       ELLE_OPERATOR_NEQ(Author);
-      ELLE_OPERATOR_ASSIGNMENT(Author);
+      ELLE_OPERATOR_ASSIGNMENT(Author); // XXX
 
       //
       // interfaces

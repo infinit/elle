@@ -16,9 +16,13 @@ namespace elle
       | Functions |
       `----------*/
       /// Initialize the random generator.
+      ///
+      /// !WARNING! Do not use unless you know exactly what you're doing.
       void
       initialize();
       /// Clean the random generator.
+      ///
+      /// !WARNING! Do not use unless you know exactly what you're doing.
       void
       clean();
       /// Generate a random value for the given type.

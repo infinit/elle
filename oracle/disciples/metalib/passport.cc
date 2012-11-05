@@ -26,7 +26,6 @@ static elle::Passport create_passport(elle::String const& id,
                                       elle::String const& authority_password)
 {
   elle::io::Path      authority_path;
-  elle::Passport      passport;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
@@ -41,23 +40,22 @@ static elle::Passport create_passport(elle::String const& id,
   //
   // create the passport.
   //
-  {
-    hole::Label               label;
-    elle::standalone::Region region(
-      elle::cryptography::random::generate<elle::standalone::Region>());
+  elle::Buffer buffer(
+    elle::cryptography::random::generate<elle::Buffer>(512));
+  // XXX
+  elle::standalone::Region region;
+  if (region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
+    escape("XXX");
 
-    // create a label.
-    if (label.Create(region) == elle::Status::Error)
-      throw std::runtime_error("unable to create a label");
+  // create a label.
+  hole::Label label(region);
 
-    // create the passport.
-    if (passport.Create(label, id) == elle::Status::Error)
-      throw std::runtime_error("unable to create the passport");
+  // create the passport.
+  elle::Passport passport(label, id);
 
-    // seal the passport.
-    if (passport.Seal(authority) == elle::Status::Error)
-      throw std::runtime_error("unable to seal the passport");
-  }
+  // seal the passport.
+  if (passport.Seal(authority) == elle::Status::Error)
+    throw std::runtime_error("unable to seal the passport");
 
   return passport;
 }

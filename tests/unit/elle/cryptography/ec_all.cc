@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <elle/types.hh>
 #include <elle/Buffer.hh>
 #include <elle/cryptography/PrivateKey.hh>
@@ -13,71 +11,68 @@
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
 
-#include <elle/idiom/Open.hh>
+#include <iostream>
 
 #define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 void test_encryption()
 {
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(2048));
+  elle::cryptography::KeyPair kp{elle::cryptography::KeyPair::generate(2048)};
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
   elle::cryptography::Clear clear;
 
-  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
-  elle::WeakBuffer weakbuffer(buffer);
-  elle::cryptography::Plain plain(weakbuffer);
+  elle::Buffer buffer{elle::cryptography::random::generate<elle::Buffer>(512)};
+  elle::cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
 
-  CHECK(K.Encrypt(plain.buffer(), code)); // XXX
+  CHECK(K.Encrypt(plain, code));
 
-  CHECK(k.Decrypt(code, clear.buffer())); // XXX
+  CHECK(k.Decrypt(code, clear));
 
   assert(plain == clear);
 }
 
 void test_noitpyrcne()
 {
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(4096));
+  elle::cryptography::KeyPair kp{elle::cryptography::KeyPair::generate(4096)};
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Code code;
   elle::cryptography::Clear clear;
 
-  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
-  elle::WeakBuffer weakbuffer(buffer);
-  elle::cryptography::Plain plain(weakbuffer);
+  elle::Buffer buffer{elle::cryptography::random::generate<elle::Buffer>(512)};
+  elle::cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
 
-  CHECK(k.Encrypt(plain.buffer(), code)); // XXX
+  CHECK(k.Encrypt(plain, code));
 
-  CHECK(K.Decrypt(code, clear.buffer()));
+  CHECK(K.Decrypt(code, clear));
 
   assert(plain == clear);
 }
 
 void test_signature()
 {
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(1024));
+  elle::cryptography::KeyPair kp{elle::cryptography::KeyPair::generate(1024)};
   elle::cryptography::PublicKey K;
   elle::cryptography::PrivateKey k;
   elle::cryptography::Signature signature;
 
-  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
-  elle::WeakBuffer weakbuffer(buffer);
-  elle::cryptography::Plain plain(weakbuffer);
+  elle::Buffer buffer{elle::cryptography::random::generate<elle::Buffer>(512)};
+  elle::cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
 
-  signature = k.sign(plain.buffer()); // XXX
+  signature = k.sign(plain);
 
-  CHECK(K.Verify(signature, plain.buffer())); // XXX
+  CHECK(K.Verify(signature, plain));
 }
 
 void test_cipher()
@@ -86,15 +81,14 @@ void test_cipher()
   elle::cryptography::Cipher cipher;
   elle::cryptography::Clear clear;
 
-  elle::Buffer buffer(elle::cryptography::random::generate<elle::Buffer>(512));
-  elle::WeakBuffer weakbuffer(buffer);
-  elle::cryptography::Plain plain(weakbuffer);
+  elle::Buffer buffer{elle::cryptography::random::generate<elle::Buffer>(512)};
+  elle::cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   CHECK(secret.Generate(256));
 
-  CHECK(secret.Encrypt(plain.buffer(), cipher)); // XXX
+  CHECK(secret.Encrypt(plain, cipher));
 
-  CHECK(secret.Decrypt(cipher, clear.buffer()));
+  CHECK(secret.Decrypt(cipher, clear));
 
   assert(plain == clear);
 }

@@ -235,10 +235,10 @@ namespace nucleus
         buffer.writer() << record->subject()
                         << record->permissions();
 
-      elle::cryptography::Digest digest(
+      elle::cryptography::Digest digest{
         elle::cryptography::oneway::hash(
-          elle::cryptography::Plain(elle::WeakBuffer(buffer)),
-          Access::Algorithms::oneway));
+          elle::cryptography::Plain{elle::WeakBuffer{buffer}},
+          Access::Algorithms::oneway)};
 
       return (digest);
     }

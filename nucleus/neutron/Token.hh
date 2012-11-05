@@ -69,7 +69,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Token const& other) const;
       ELLE_OPERATOR_NEQ(Token);
-      ELLE_OPERATOR_ASSIGNMENT(Token);
+      ELLE_OPERATOR_ASSIGNMENT(Token); // XXX
 
       /*-----------.
       | Interfaces |

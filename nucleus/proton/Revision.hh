@@ -60,7 +60,7 @@ namespace nucleus
       ELLE_OPERATOR_NEQ(Revision);
       ELLE_OPERATOR_LTE(Revision);
       ELLE_OPERATOR_GTE(Revision);
-      ELLE_OPERATOR_ASSIGNMENT(Revision);
+      ELLE_OPERATOR_ASSIGNMENT(Revision); // XXX
 
       //
       // interfaces

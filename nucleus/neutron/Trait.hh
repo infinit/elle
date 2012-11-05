@@ -78,7 +78,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Trait const& other) const;
       ELLE_OPERATOR_NEQ(Trait);
-      ELLE_OPERATOR_ASSIGNMENT(Trait);
+      ELLE_OPERATOR_ASSIGNMENT(Trait); // XXX
 
       /*-----------.
       | Interfaces |

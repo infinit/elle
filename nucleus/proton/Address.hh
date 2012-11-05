@@ -121,7 +121,7 @@ namespace nucleus
       ELLE_OPERATOR_NEQ(Address);
       ELLE_OPERATOR_GT(Address);
       ELLE_OPERATOR_GTE(Address);
-      ELLE_OPERATOR_ASSIGNMENT(Address);
+      ELLE_OPERATOR_ASSIGNMENT(Address); // XXX
 
       /*-----------.
       | Interfaces |
