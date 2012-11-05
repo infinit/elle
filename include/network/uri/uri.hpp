@@ -96,18 +96,17 @@ namespace network {
 
     };
 
-    uri()
-      : is_valid_(false) {
+    uri() {
 
     }
 
     uri(const std::string &uri)
-      : uri_(std::begin(uri), std::end(uri)), is_valid_(false) {
+      : uri_(std::begin(uri), std::end(uri)) {
       parse();
     }
 
     uri(const std::wstring &uri)
-      : uri_(std::begin(uri), std::end(uri)), is_valid_(false) {
+      : uri_(std::begin(uri), std::end(uri)) {
       parse();
     }
 
@@ -115,7 +114,7 @@ namespace network {
       class FwdIter
       >
     uri(const FwdIter &first, const FwdIter &last)
-      : uri_(first, last), is_valid_(false) {
+      : uri_(first, last) {
       parse();
     }
 
@@ -149,7 +148,6 @@ namespace network {
     void swap(uri &other) {
       std::swap(uri_, other.uri_);
       std::swap(uri_parts_, other.uri_parts_);
-      std::swap(is_valid_, other.is_valid_);
     }
 
     const_iterator begin() const {
@@ -214,10 +212,6 @@ namespace network {
       return uri_;
     }
 
-    const value_type *c_str() const {
-      return uri_.c_str();
-    }
-
     std::string string() const {
       return std::string(std::begin(uri_), std::end(uri_));
     }
@@ -230,12 +224,8 @@ namespace network {
       return uri_.empty();
     }
 
-    bool is_valid() const {
-      return is_valid_;
-    }
-
     bool is_absolute() const {
-      return is_valid() && !boost::empty(scheme());
+      return !boost::empty(scheme());
     }
 
     bool is_opaque() const {
@@ -261,21 +251,26 @@ namespace network {
 
     string_type uri_;
     detail::uri_parts<const_iterator> uri_parts_;
-    bool is_valid_;
 
   };
 
   inline
   void uri::parse() {
-    const_iterator first(std::begin(uri_)), last(std::end(uri_));
-    is_valid_ = detail::parse(first, last, uri_parts_);
-    if (is_valid_) {
-      if (!uri_parts_.scheme) {
-        uri_parts_.scheme = part_range(std::begin(uri_),
-                                       std::begin(uri_));
-      }
-      uri_parts_.update();
+    if (uri_.empty()) {
+      return;
     }
+
+    const_iterator first(std::begin(uri_)), last(std::end(uri_));
+    bool is_valid = detail::parse(first, last, uri_parts_);
+    if (!is_valid) {
+
+    }
+
+    if (!uri_parts_.scheme) {
+      uri_parts_.scheme = part_range(std::begin(uri_),
+				     std::begin(uri_));
+    }
+    uri_parts_.update();
   }
 
   inline
@@ -321,7 +316,22 @@ namespace network {
 
   inline
   bool operator < (const uri &lhs, const uri &rhs) {
-    return lhs.string() < rhs.string();
+    return lhs.native() < rhs.native();
+  }
+
+  inline
+  bool operator > (const uri &lhs, const uri &rhs) {
+    return rhs < lhs;
+  }
+
+  inline
+  bool operator <= (const uri &lhs, const uri &rhs) {
+    return !(rhs < lhs);
+  }
+
+  inline
+  bool operator >= (const uri &lhs, const uri &rhs) {
+    return !(lhs < rhs);
   }
 } // namespace network
 

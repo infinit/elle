@@ -262,11 +262,11 @@ namespace network {
   bool operator == (const uri &lhs, const uri &rhs) {
 
     // if both URIs are empty, then we should define them as equal even though they're still invalid.
-    if (boost::empty(lhs) && boost::empty(rhs)) {
+    if (lhs.empty() && rhs.empty()) {
       return true;
     }
 
-    if (!lhs.is_valid() || !rhs.is_valid()) {
+    if (lhs.empty() || rhs.empty()) {
       return false;
     }
 
