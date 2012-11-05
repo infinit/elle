@@ -55,7 +55,7 @@ add_library(elle ${LINK_METHOD}
   cryptography/Output.cc
   cryptography/PrivateKey.cc
   cryptography/PublicKey.cc
-  cryptography/random.cc
+  cryptography/Random.cc
   cryptography/SecretKey.cc
   cryptography/Seed.cc
   cryptography/Signature.cc
