@@ -76,6 +76,7 @@ def configure(cxx_toolkit, cxx_config):
     'cryptography/PublicKey.hxx',
     'cryptography/random.cc',
     'cryptography/random.hh',
+    'cryptography/random.hxx',
     'cryptography/SecretKey.cc',
     'cryptography/SecretKey.hh',
     'cryptography/SecretKey.hxx',
