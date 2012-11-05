@@ -5,20 +5,21 @@ namespace elle
 {
   namespace cryptography
   {
-
     class Cipher;
-    class Clear;
     class Code;
-    class Digest;
     class KeyPair;
-    class Plain;
+    class Input;
+    class Output;
     class PrivateKey;
     class PublicKey;
     class SecretKey;
     class Seed;
     class Signature;
-
   }
 }
+
+# include <elle/cryptography/Clear.hh>
+# include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/Plain.hh>
 
 #endif

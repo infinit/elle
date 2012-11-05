@@ -6,7 +6,9 @@
 # include <elle/cryptography/Code.hh>
 # include <elle/cryptography/Digest.hh>
 # include <elle/cryptography/KeyPair.hh>
+# include <elle/cryptography/Input.hh>
 # include <elle/cryptography/oneway.hh>
+# include <elle/cryptography/Output.hh>
 # include <elle/cryptography/Plain.hh>
 # include <elle/cryptography/PrivateKey.hh>
 # include <elle/cryptography/PublicKey.hh>
