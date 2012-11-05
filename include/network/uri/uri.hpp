@@ -11,29 +11,17 @@
 
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
-#include <network/uri/schemes.hpp>
 #include <boost/range/algorithm/equal.hpp>
-#include <boost/range/algorithm/copy.hpp>
-#include <boost/range/as_literal.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/optional.hpp>
-#include <boost/functional/hash_fwd.hpp>
+#include <iterator>
 #include <algorithm>
 #include <functional>
 
 
 namespace network {
   namespace detail {
-#if defined(BOOST_WINDOWS)
-    bool parse(std::wstring::const_iterator first,
-               std::wstring::const_iterator last,
-               uri_parts<std::wstring::const_iterator> &parts);
-#else
     bool parse(std::string::const_iterator first,
                std::string::const_iterator last,
                uri_parts<std::string::const_iterator> &parts);
-#endif // defined(BOOST_WINDOWS)
 
     template <class T>
     inline
@@ -49,29 +37,19 @@ namespace network {
 
   public:
 
-#if defined(BOOST_WINDOWS)
-    typedef wchar_t value_type;
-#else
-    typedef char value_type;
-#endif // defined(BOOST_WINDOWS)
-
-    typedef std::basic_string<value_type> string_type;
+    typedef std::string string_type;
     typedef string_type::const_iterator iterator;
     typedef string_type::const_iterator const_iterator;
+    typedef std::iterator_traits<const_iterator>::value_type value_type;
 
     class part_range {
 
     public:
 
-#if defined(BOOST_WINDOWS)
-      typedef wchar_t value_type;
-#else
-      typedef char value_type;
-#endif // defined(BOOST_WINDOWS)
-
-      typedef std::basic_string<value_type> string_type;
+      typedef std::string string_type;
       typedef string_type::const_iterator iterator;
       typedef string_type::const_iterator const_iterator;
+      typedef std::iterator_traits<const_iterator>::value_type value_type;
 
       typedef bool (part_range::*unspecified_bool_type)() const;
 

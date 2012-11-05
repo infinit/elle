@@ -22,11 +22,7 @@ namespace network {
 
     // add trailing /
     if (empty(path)) {
-#if defined(BOOST_WINDOWS)
-      return uri::string_type(L"/");
-#else
       return uri::string_type("/");
-#endif // defined(BOOST_WINDOWS)
     }
 
     std::vector<uri::string_type> path_segments;

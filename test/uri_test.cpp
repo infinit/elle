@@ -14,6 +14,7 @@
 #include <map>
 #include <set>
 #include <boost/unordered_set.hpp>
+#include <boost/range/as_literal.hpp>
 
 
 BOOST_AUTO_TEST_CASE(basic_uri_scheme_test) {

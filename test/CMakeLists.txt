@@ -9,7 +9,6 @@ set(
   uri_test
   uri_encoding_test
   #uri_builder_test
-  #scheme_tests
   )
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)

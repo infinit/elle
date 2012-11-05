@@ -11,6 +11,7 @@
 
 #include <boost/range/iterator_range.hpp>
 #include <boost/optional.hpp>
+#include <iterator>
 
 namespace network {
   namespace detail {

@@ -4,5 +4,5 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 
-set(Uri_SRCS uri.cpp schemes.cpp normalize.cpp)
+set(Uri_SRCS uri.cpp uri_io.cpp normalize.cpp)
 add_library(uri ${Uri_SRCS})

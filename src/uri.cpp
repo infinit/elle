@@ -249,16 +249,6 @@ namespace network {
   };
 
   namespace detail {
-#if defined(BOOST_WINDOWS)
-    bool parse(std::wstring::const_iterator first,
-	       std::wstring::const_iterator last,
-	       uri_parts<std::wstring::const_iterator> &parts) {
-      namespace qi = boost::spirit::qi;
-      static uri_grammar<std::wstring> grammar;
-      bool is_valid = qi::parse(first, last, grammar, parts);
-      return is_valid && (first == last);
-    }
-#else
     bool parse(std::string::const_iterator first,
 	       std::string::const_iterator last,
 	       uri_parts<std::string::const_iterator> &parts) {
@@ -267,7 +257,6 @@ namespace network {
       bool is_valid = qi::parse(first, last, grammar, parts);
       return is_valid && (first == last);
     }
-#endif // defined(BOOST_WINDOWS)
   } // namespace detail
 
   bool operator == (const uri &lhs, const uri &rhs) {
