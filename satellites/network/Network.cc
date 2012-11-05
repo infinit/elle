@@ -11,6 +11,7 @@
 #include <elle/io/Console.hh>
 #include <elle/io/Directory.hh>
 #include <elle/io/Piece.hh>
+#include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
