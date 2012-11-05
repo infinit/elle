@@ -90,8 +90,8 @@ test()
                nucleus::proton::Address::null(),
                42,
                nucleus::proton::Address::null(),
-               nucleus::neutron::Token::Null);
-  block.Seal(user_keys.k);
+               nucleus::neutron::Token::null());
+  block.Seal(user_keys.k, nullptr);
 
   auto address = block.bind();
   s1.push(address, block);
@@ -122,7 +122,7 @@ test_separate_missing()
 
   nucleus::neutron::Object block(network, user_keys.K,
                                  nucleus::neutron::Genre::file);
-  block.Seal(user_keys.k);
+  block.Seal(user_keys.k, nullptr);
 
   auto address = block.bind();
   s1.push(address, block);
