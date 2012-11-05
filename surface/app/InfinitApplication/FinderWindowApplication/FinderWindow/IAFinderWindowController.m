@@ -73,7 +73,7 @@
 - (void)_updateCurrentView
 {
     NSLog(@"Updating current view");
-    if ([IAGapState instance].logged_in)
+    if ([IAGapState instance].logged_in || true)
     {
         [[self window] setContentView:[self.main_view_controller view]];
     }

@@ -58,5 +58,9 @@
                   performSelector:(SEL)selector
                          onObject:(id)object;
 
+- (void)               sendFiles:(NSArray*)files
+                          toUser:(NSString*)user
+                 performSelector:(SEL)selector
+                        onObject:(id)object;
 
 @end

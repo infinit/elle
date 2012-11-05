@@ -111,7 +111,7 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     IAFinderWindow* window = [WindowLoader retreiveInfinitWindowFor:browserWindow];
     if (window == nil)
     {
-        IAFinderWindowController* window_controller = [[IAFinderWindowController alloc] init];
+        IAFinderWindowController* window_controller = [[IAFinderWindowController alloc] initFromNib];
         window = (IAFinderWindow*)[window_controller window];
         [browserWindow addChildWindow:window
                               ordered:NSWindowAbove];

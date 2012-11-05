@@ -14,7 +14,12 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     self.window_controller = [[IAFinderWindowController alloc] initFromNib];
-    [self.window_controller showWindow:self]; 
+
+    NSPoint p;
+    p.x = 400;
+    p.y = 200;
+    [[self.window_controller window] setFrameOrigin:p];
+    [self.window_controller showWindow:self];
 }
 
 @end
