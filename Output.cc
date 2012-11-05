@@ -1,5 +1,4 @@
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Plain.hh>
+#include <elle/cryptography/Output.hh>
 
 namespace elle
 {
@@ -9,17 +8,17 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Clear::Clear(elle::Natural64 const size):
+    Output::Output(elle::Natural64 const size):
       _buffer(size)
     {
     }
 
-    Clear::Clear(Clear const& other):
+    Output::Output(Output const& other):
       _buffer(other._buffer.contents(), other._buffer.size())
     {
     }
 
-    Clear::Clear(Clear&& other):
+    Output::Output(Output&& other):
       _buffer(std::move(other._buffer))
     {
     }
@@ -29,7 +28,7 @@ namespace elle
     `----------*/
 
     Boolean
-    Clear::operator ==(Clear const& other) const
+    Output::operator ==(Output const& other) const
     {
       if (this == &other)
         return (true);
@@ -38,7 +37,7 @@ namespace elle
     }
 
     Boolean
-    Clear::operator <(Clear const& other) const
+    Output::operator <(Output const& other) const
     {
       if (this == &other)
         return (false);
@@ -47,7 +46,7 @@ namespace elle
     }
 
     Boolean
-    Clear::operator <=(Clear const& other) const
+    Output::operator <=(Output const& other) const
     {
       if (this == &other)
         return (true);
@@ -56,9 +55,21 @@ namespace elle
     }
 
     Boolean
-    Clear::operator ==(Plain const& other) const
+    Output::operator ==(Input const& other) const
     {
       return (WeakBuffer(this->_buffer) == other.buffer());
+    }
+
+    Boolean
+    Output::operator <(Input const& other) const
+    {
+      return (WeakBuffer(this->_buffer) < other.buffer());
+    }
+
+    Boolean
+    Output::operator <=(Input const& other) const
+    {
+      return (WeakBuffer(this->_buffer) <= other.buffer());
     }
 
     /*---------.
@@ -66,15 +77,25 @@ namespace elle
     `---------*/
 
     elle::Status
-    Clear::Dump(elle::Natural32           margin) const
+    Output::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Clear] " << this << std::endl;
+      std::cout << alignment << "[Output] " << this << std::endl;
 
       this->_buffer.dump(margin + 2);
 
       return elle::Status::Ok;
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Output::print(std::ostream& stream) const
+    {
+      stream << this->_buffer;
     }
   }
 }

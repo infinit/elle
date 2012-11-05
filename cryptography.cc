@@ -20,7 +20,6 @@ namespace elle
 
     static elle::Boolean _initialized = false;
 
-    static
     void
     initialize()
     {
@@ -42,7 +41,6 @@ namespace elle
       ELLE_TRACE_SCOPE("cryptography initialized");
     }
 
-    static
     void
     clean()
     {

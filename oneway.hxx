@@ -2,7 +2,6 @@
 # define ELLE_CRYPTOGRAPHY_ONEWAY_HXX
 
 # include <elle/cryptography/Plain.hh>
-# include <elle/cryptography/Digest.hh>
 
 # include <elle/serialize/BaseArchive.hxx>
 
@@ -28,7 +27,7 @@ namespace elle
         elle::Buffer buffer;
         buffer.writer() << value;
 
-        return (hash(Plain(WeakBuffer(buffer)), algorithm));
+        return (hash(Plain{WeakBuffer{buffer}}, algorithm));
       }
     }
   }

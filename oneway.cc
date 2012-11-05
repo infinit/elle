@@ -95,13 +95,6 @@ namespace elle
 
         return (digest);
       }
-
-      Digest
-      hash(Plain&& plain,
-           Algorithm algorithm)
-      {
-        return (hash(static_cast<Plain const&>(plain), algorithm)); // XXX[???]
-      }
     }
   }
 }

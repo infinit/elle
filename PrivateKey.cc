@@ -301,8 +301,7 @@ namespace elle
 
       // XXX[remove Plain(buffer) in favor of plain which should be the argument]
       // Compute the plain's digest.
-      Digest digest(oneway::hash(Plain(buffer),
-                                 PrivateKey::Algorithms::oneway));
+      Digest digest(oneway::hash(buffer, PrivateKey::Algorithms::oneway));
 
       // Retrieve information on the size of the output signature.
       if (::EVP_PKEY_sign(
