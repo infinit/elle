@@ -62,7 +62,7 @@
 - (NSInteger)                                   tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 // returns the cell residing at the specified row
 - (UITableViewCell*)                            tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
-// 
+//
 - (void) updateFromSearch:(NSString *) searchChars;
 - (BOOL)loadMoreFiles:(id)sender;
 - (void)resetLoadedFilesCounter;

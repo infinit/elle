@@ -25,7 +25,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     UITableViewCell *logOutCell = [oTableView dequeueReusableCellWithIdentifier:@"logOutCell"];
     if (logOutCell == nil) {
         logOutCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"logOutCell"];
@@ -36,19 +36,19 @@
     [sampleButton setBackgroundImage:[[UIImage imageNamed:@"red-button.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] forState:UIControlStateNormal];
     [sampleButton addTarget:self action:@selector(logOut:) forControlEvents:UIControlEventTouchUpInside];
     [logOutCell.contentView addSubview:sampleButton];
-    
+
     UITableViewCell *testCell = [oTableView dequeueReusableCellWithIdentifier:@"testCell"];
     if (testCell == nil) {
         testCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"testCell"];
     }
-    
+
     NSArray *firstSection = [NSArray arrayWithObjects:logOutCell, nil];
     NSArray *secondSection = [NSArray arrayWithObjects:testCell,
                                 [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"testCell"], nil];
 //    NSArray *thirdSection = [NSArray arrayWithObject:@"Yellow"];
-    
+
     optionsList = [[NSMutableArray alloc] initWithObjects:firstSection, secondSection/*, thirdSection*/, nil];
-    
+
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
 }
@@ -86,7 +86,7 @@
 {
     NSArray *sectionContents = [[self optionsList] objectAtIndex:[indexPath section]];
     UITableViewCell *contentForThisRow = [sectionContents objectAtIndex:[indexPath row]];
-    
+
     if (contentForThisRow) {        // Configure the cell.
         return contentForThisRow;
         //cell.textLabel.text = contentForThisRow;
@@ -94,11 +94,11 @@
     else {
         static NSString *CellIdentifier = @"Cell";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        
+
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
-        
+
         return cell;
     }
 }
@@ -119,10 +119,10 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
 }
 */
 

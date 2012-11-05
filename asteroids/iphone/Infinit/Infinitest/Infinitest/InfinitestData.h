@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface InfinitestData : NSObject <UITableViewDataSource> {          
-   // NSMutableArray                                              *_files; 
+@interface InfinitestData : NSObject <UITableViewDataSource> {
+   // NSMutableArray                                              *_files;
    // NSFileManager                                               *_fileMgr;
     //NSString                                                    *_documentsDirectory;
     //id <UIDocumentInteractionControllerDelegate>                _DICDelegate;

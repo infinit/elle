@@ -37,16 +37,16 @@
         DICDelegate = dic;
 
         files = [[NSMutableArray alloc] init];
-        
+
         // Create file manager
         fileMgr = [NSFileManager defaultManager];
-        
+
         // Point to Document directory
         filesDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-        
+
         [self updateFromDirectory];
     }
-    
+
     return self;
 }
 
@@ -59,32 +59,32 @@
     while (fileURL = [e nextObject]) {
         NSLog(@"file = %@", [filesDirectory stringByAppendingPathComponent:fileURL]);
         UIDocumentInteractionController *interactionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[filesDirectory stringByAppendingPathComponent:fileURL]]];
-        
+
         interactionController.delegate = DICDelegate;
-        
-        [files addObject:interactionController];   
+
+        [files addObject:interactionController];
     }
 }
 
 - (void) addFile {
     // File we want to create in the documents directory
-    NSString *filePath = [[filesDirectory 
+    NSString *filePath = [[filesDirectory
                           stringByAppendingPathComponent:@"file"] stringByAppendingFormat:@"%d.txt", [files count]];
-    
+
     // String to write
     NSString *str = [@"Content" stringByAppendingFormat:@"%d", [files count]];
-    
+
     // For error information
     NSError *error;
-    
+
     // Write the file
     [str writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    
+
     // Show contents of Documents directory
     NSLog(@"Documents directory (%@): %@",
           filesDirectory,
           [fileMgr contentsOfDirectoryAtPath:filesDirectory error:&error]);
-    
+
     [files addObject:[@"file" stringByAppendingFormat:@"%d.txt", [files count]]];
 }
 

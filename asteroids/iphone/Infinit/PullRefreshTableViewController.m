@@ -81,7 +81,7 @@
     textHeaderPull = @"Pull down to refresh...";
     textHeaderRelease = @"Release to refresh...";
     textHeaderLoading = @"Loading...";
-    
+
     textFooterPull = @"Pull up to load more...";
     textFooterRelease = @"Release to load more...";
     textFooterLoading = @"Loading...";
@@ -114,7 +114,7 @@
 - (void)addPullToRefreshFooter {
     refreshFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEIGHT)];
     refreshFooterView.backgroundColor = [UIColor clearColor];
-    
+
     refreshFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEIGHT)];
     refreshFooterLabel.backgroundColor = [UIColor clearColor];
     refreshFooterLabel.font = [UIFont boldSystemFontOfSize:12.0];
@@ -124,11 +124,11 @@
     refreshFooterArrow.frame = CGRectMake(floorf((REFRESH_HEIGHT - 27) / 2),
                                           (floorf(REFRESH_HEIGHT - 44) / 2),
                                           27, 44);
-    
+
     refreshFooterSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     refreshFooterSpinner.frame = CGRectMake(floorf(floorf(REFRESH_HEIGHT - 20) / 2), floorf((REFRESH_HEIGHT - 20) / 2), 20, 20);
     refreshFooterSpinner.hidesWhenStopped = YES;
-    
+
     [refreshFooterView addSubview:refreshFooterLabel];
     [refreshFooterView addSubview:refreshFooterArrow];
     [refreshFooterView addSubview:refreshFooterSpinner];
@@ -245,7 +245,7 @@
 - (void)startFooterLoading {
     if (isFooterPresent) {
         isFooterLoading = YES;
-    
+
         // Show the footer
         [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationDuration:0.3];

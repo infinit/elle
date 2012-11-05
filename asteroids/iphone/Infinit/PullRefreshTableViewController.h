@@ -40,7 +40,7 @@
     NSString *textHeaderPull;
     NSString *textHeaderRelease;
     NSString *textHeaderLoading;
-    
+
     UIView *refreshFooterView;
     UILabel *refreshFooterLabel;
     UIImageView *refreshFooterArrow;
@@ -50,7 +50,7 @@
     NSString *textFooterPull;
     NSString *textFooterRelease;
     NSString *textFooterLoading;
-    
+
     BOOL    isFooterPresent;
 }
 

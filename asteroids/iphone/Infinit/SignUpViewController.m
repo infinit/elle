@@ -31,7 +31,7 @@
 - (IBAction)oSignUp:(id)sender {
     BOOL success = FALSE;
     NSInteger checkResult = 1;
-    
+
     [self.oEmail setEnabled:FALSE];
     [self.oName setEnabled:FALSE];
     [self.oPassw setEnabled:FALSE];
@@ -40,10 +40,10 @@
     [self.oSpinner startAnimating];
 
     checkResult = [self checkInputUpToTag:3];
-    
+
     if (checkResult == 0) {
         NSString* pswd = [InfinitCrypto cryptEmail:self.oEmail.text Password:self.oPassw.text];
-        
+
         NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:
                                     self.oEmail.text,   @"email",
                                     self.oName.text ,   @"fullname",
@@ -77,7 +77,7 @@
         if (resultString.length > 0)
         {
             NSDictionary *resultsDictionary = [resultString objectFromJSONString];
-                
+
             if (! CFBooleanGetValue((__bridge CFBooleanRef)([resultsDictionary valueForKey:@"success"]))) {
                 if (([resultsDictionary  valueForKey:@"error"]) &&
                       ([[resultsDictionary  valueForKey:@"error"] isEqualToString:@"This email is already registered"])) {
@@ -88,7 +88,7 @@
             }
             else
                 success = TRUE;
-            
+
             NSLog(@"\n\t=> %@ \n\t=> %@ \n\t=> %@", resultString, error.userInfo, response.description);
         }
         else {
@@ -96,10 +96,10 @@
             [self.oNetworkErrorImageView setHidden:FALSE];
         }
     }
-    
+
     [self.oSpinner stopAnimating];
     [self.oSpinner setHidden:TRUE];
-    
+
     if (success) {
         [self.oEmail removeFromSuperview];
         [self.oName removeFromSuperview];
@@ -136,10 +136,10 @@
     self.oEmailLbl.textColor = [UIColor orangeColor];
     self.oEmailLbl.text = @"Your email";
     [self.oName setEnabled:TRUE];
-    
+
     if (tag == 1)
         return 0;
-    
+
     if (self.oName.text.length < 3)
     {
         self.oNameLbl.textColor = [UIColor redColor];
@@ -160,10 +160,10 @@
     self.oNameLbl.textColor = [UIColor orangeColor];
     self.oNameLbl.text = @"Full name";
     [self.oPassw setEnabled:TRUE];
-    
+
     if (tag == 2)
         return 0;
-    
+
     if (self.oPassw.text.length < 3)
     {
         self.oPasswLbl.textColor = [UIColor redColor];
@@ -220,24 +220,24 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         UIImage* infinitBack = [UIImage imageNamed:@"gain-background.png"];
-        
+
         UIGraphicsBeginImageContext(self.view.bounds.size);
-        
+
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextTranslateCTM(context, 0.0, self.view.bounds.size.height);
         CGContextScaleCTM(context, 1.0, -1.0);
-        
+
         CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, self.view.bounds.size.width, self.view.bounds.size.height), infinitBack.CGImage);
-        
+
         UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-        
+
         UIGraphicsEndImageContext();
-        
+
         self.view.backgroundColor = [UIColor colorWithPatternImage:scaledImage];
-        
+
        // self.oSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
        // [self._spinner setFrame:self.oSignUpButton.frame];
-        
+
         self.oResultLbl.textColor = [UIColor orangeColor];
     }
     return self;
@@ -251,7 +251,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -271,7 +271,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
+
     [UIView animateWithDuration:0.3 animations:^() {
         [self.loginView setBackgroundColor:[UIColor clearColor]];
     }];

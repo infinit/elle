@@ -21,7 +21,7 @@ typedef enum {
 //- (CGAffineTransform)baseTransform;       Not used currently
 
 // Use applicationViewFrame to get the correctly calculated view's frame
-// for use as a reference to our sidebar's view 
+// for use as a reference to our sidebar's view
 - (CGRect)applicationViewFrame;
 
 
@@ -34,4 +34,3 @@ typedef enum {
 @interface UINavigationController (JTRevealSidebarV2)
 - (UIViewController *)selectedViewController;
 @end
-

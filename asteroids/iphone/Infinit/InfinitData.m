@@ -96,16 +96,16 @@ static NSMutableArray *checkedData = nil;
     NSString*             fileURL;
     NSInteger           i = 0;
     NSMutableDictionary*                networkNames = [[NSMutableDictionary alloc] init];
-    
+
     [files removeAllObjects];
-        
+
     if (self.rootList && token) {    // Online
         //NSLog(@"%@", [InfinitDevices singleton].devices);
         NSLog(@"<%@>, %@", [InfinitNetworks singleton].networks, token);
-        
+
         InfinitNetwork  *ifNetwork;
         NSEnumerator *nextNetwork = [[InfinitNetworks singleton].networks objectEnumerator];
-        
+
         while ((ifNetwork = nextNetwork.nextObject)) {
             [networkNames setObject:ifNetwork.name forKey:ifNetwork.name];
         }
@@ -139,7 +139,7 @@ static NSMutableArray *checkedData = nil;
 
 - (void) updateFromSearch:(NSString *) searchChars {
     NSArray *containsJ;
-    
+
     if ([searchChars isEqualToString:@""])
     {
         [files removeAllObjects];
@@ -181,14 +181,14 @@ static NSMutableArray *checkedData = nil;
 
 - (void) addFileTextInputCell {
     self->fileTextInput = YES;
-    
+
     [self toggleInputCell];
 }
 
 - (void) addLinkTextInputCell {
     self->linkTextInput = YES;
     self->fileTextInput = YES;
-    
+
     [self toggleInputCell];
 }
 
@@ -202,7 +202,7 @@ static NSMutableArray *checkedData = nil;
     else {
         [addViewButtonItem setEnabled:YES   ];
     }
-    
+
     self->displayTextInputCell = set;
    // self.lockReveal = set;
     gLockReveal = set;
@@ -241,7 +241,7 @@ static NSMutableArray *checkedData = nil;
     if (self->displayTextInputCell && row == 0) {
         UITableViewCell* cell;
         NSString *placeHolderTxt;
-        
+
         if (self->dirTextInput)
         {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"dirTextInputCell"];
@@ -262,7 +262,7 @@ static NSMutableArray *checkedData = nil;
         txtField.autocorrectionType = UITextAutocorrectionTypeNo;
 
         [txtField setPlaceholder:placeHolderTxt];
-        
+
         [txtField setKeyboardType:UIKeyboardTypeNamePhonePad];
         [txtField setTextColor:[UIColor whiteColor]];
         txtField.returnKeyType = UIReturnKeyDone;
@@ -270,9 +270,9 @@ static NSMutableArray *checkedData = nil;
         [cell.contentView addSubview:txtField];
         [txtField setDelegate:(id) self];
         [txtField becomeFirstResponder];
-        
+
         cell.contentView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.8];
-        
+
         return cell;
     }
     else
@@ -280,7 +280,7 @@ static NSMutableArray *checkedData = nil;
         ZKRevealingTableViewCell *cell;
         //UITableViewCell*    driveCell;
         DriveCell*  driveCell;
-        
+
         if (self.rootList)
         {
             self.folderImage = [UIImage imageNamed:@"drive-folder.png"];
@@ -290,7 +290,7 @@ static NSMutableArray *checkedData = nil;
             cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
 
         CGRect fileNameRect;
-        
+
         if (self.rootList)
             fileNameRect = CGRectMake(65, 15, 270, 20);
         else
@@ -380,9 +380,9 @@ static NSMutableArray *checkedData = nil;
                 driveCell.contentView.backgroundColor = [[UIColor alloc] initWithPatternImage:[UIImage imageNamed:@"striped-background.png"]];
             }
 
-            if (token) {    // Online   
+            if (token) {    // Online
                 NSArray*    networkKeys = [[InfinitNetworks singleton].networks allKeys];
-            
+
                 InfinitNetwork* network = [[InfinitNetworks singleton].networks objectForKey:[networkKeys objectAtIndex:row]];
 
                 driveCell.textLabel.text = [network name];
@@ -400,7 +400,7 @@ static NSMutableArray *checkedData = nil;
             [[cell.contentView.subviews objectAtIndex:0] removeFromSuperview];
             if (cell.contentView.subviews.count)
                 [[cell.contentView.subviews objectAtIndex:0] removeFromSuperview];
-            
+
             if (ifFile.isDirectory) {
                 cell.emailButton.enabled = NO;
                 [cell.contentView addSubview:ifFile.checkStatusView];
@@ -437,16 +437,16 @@ static NSMutableArray *checkedData = nil;
             else
                 cell.imageView.image = [ifFile.dic.icons objectAtIndex:1];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            
+
             if (!cell.longTouchGesture) {
                 cell.longTouchGesture = [[TaggedLongPressGestureRecognizer alloc] initWithTarget:self.rootView action:@selector(handleCellLongPress:)];
                 cell.longTouchGesture.delegate = self.rootView;
-                
+
                 [cell addGestureRecognizer:cell.longTouchGesture];
             }
             cell.longTouchGesture.fromFile = ifFile;
         }
-        
+
         return cell;
     }
 }
@@ -478,11 +478,11 @@ static NSMutableArray *checkedData = nil;
 {
     NSString*       fileURL;
     NSInteger       i = 0;
-    
+
     while ((i++ < FILES_LIST_BATCH_SIZE) && (fileURL = [nextFile nextObject])) {
         [files addObject:[[InfinitFile alloc] initWithFileURL:[filesDirectory stringByAppendingPathComponent:fileURL] dicDelegate:DICDelegate]];
     }
-    
+
     return (fileURL != nil);
 }
 
@@ -498,7 +498,7 @@ static NSMutableArray *checkedData = nil;
         self.currentlyRevealedCell = nil;
 
         [self.fileMgr removeItemAtPath:[self.filesDirectory stringByAppendingPathComponent:[[[self.files objectAtIndex:row] dic] name]] error:nil];
-        
+
         [self.files removeObjectAtIndex:row];
 
         [self._tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:row inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
@@ -603,9 +603,9 @@ static NSMutableArray *checkedData = nil;
 
 -(void) saveData:(NSData*) data toFile:(NSString*) name {
     NSString* path = [self.filesDirectory stringByAppendingPathComponent:name];
-    
+
     [self.fileMgr createDirectoryAtPath:self.filesDirectory withIntermediateDirectories:TRUE attributes:nil error:nil];
-    
+
     [data writeToFile:path atomically:NO];
     [files insertObject:[[InfinitFile alloc] initWithFileURL:path dicDelegate:DICDelegate] atIndex:0];
     [self._tableView reloadData];
@@ -620,7 +620,7 @@ static NSMutableArray *checkedData = nil;
 
     [dlFile startDownloadWithFilePath:path tableView:self._tableView];
 
-    [self._tableView reloadData];    
+    [self._tableView reloadData];
 }
 
 -(void) insertFilePath:(NSString*) filePath {

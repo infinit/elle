@@ -12,7 +12,7 @@
 
 @interface RootViewController : UITableViewController <UIDocumentInteractionControllerDelegate> {
     IBOutlet UITableView    *oTableView;
-    
+
     InfinitestData*         _data;
 }
 
