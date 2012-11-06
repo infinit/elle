@@ -617,6 +617,17 @@ class Linker(Builder):
 
     name = 'executable linkage'
 
+    def hash(self):
+        flags = self.config.flags
+        flags.sort()
+        frameworks = list(self.config.frameworks())
+        frameworks.sort()
+        lib_paths = list(((path, self.config.lib_paths[path]) for path in self.config.lib_paths))
+        lib_paths.sort()
+        libs = self.config.libs
+        libs.sort()
+        objs = ' '.join(sorted(map(str, self.objs)))
+        return '\n'.join(map(str, (objs, flags, frameworks, lib_paths, libs)))
 
     def dependencies(self):
 
@@ -653,19 +664,6 @@ class DynLibLinker(Builder):
 
 
     name = 'dynamic library linkage'
-
-
-    def hash(self):
-        flags = self.config.flags
-        flags.sort()
-        frameworks = list(self.config.frameworks())
-        frameworks.sort()
-        lib_paths = list(self.config.lib_paths.keys())
-        lib_paths.sort()
-        libs = self.config.libs
-        libs.sort()
-        objs = ' '.join(sorted(map(str, self.objs)))
-        return '\n'.join(map(str, (objs, flags, frameworks, lib_paths, libs)))
 
     def dependencies(self):
 
