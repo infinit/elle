@@ -5,7 +5,6 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 #define BOOST_TEST_MODULE URI encoding test
-#include <boost/config/warning_disable.hpp>
 #include <boost/test/unit_test.hpp>
 #include <network/uri/encode.hpp>
 #include <network/uri/decode.hpp>
