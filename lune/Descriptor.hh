@@ -132,8 +132,6 @@ namespace lune
     | Constants |
     `----------*/
   public:
-    static const elle::String           Extension;
-
     static const elle::Boolean          History;
     static const elle::Natural32        Extent;
 
@@ -142,7 +140,8 @@ namespace lune
     `-------------*/
   public:
     explicit
-    Descriptor(elle::String const& network);
+    Descriptor(elle::String const& user,
+               elle::String const& network);
     Descriptor(elle::String const& id,
                elle::cryptography::PublicKey const& administrator_K,
                hole::Model const& model,
@@ -178,7 +177,8 @@ namespace lune
     /// XXX
     static
     elle::io::Path
-    _path(elle::String const& network);
+    _path(elle::String const& user,
+          elle::String const& network);
 
     /*-----------.
     | Interfaces |
@@ -195,15 +195,19 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
-    load(elle::String const& network);
+    load(elle::String const& user,
+         elle::String const& network);
     void
-    store(elle::String const& network) const;
+    store(elle::String const& user,
+          elle::String const& network) const;
     static
     void
-    erase(elle::String const& network);
+    erase(elle::String const& user,
+          elle::String const& network);
     static
     elle::Boolean
-    exists(elle::String const& network);
+    exists(elle::String const& user,
+           elle::String const& network);
 
     /*-----------.
     | Structures |

@@ -29,8 +29,6 @@ namespace lune
     public elle::concept::MakeUniquable<Identity>
   {
   public:
-    static const elle::String           Extension;
-
     //
     // enumerations
     //

@@ -112,7 +112,7 @@ namespace etoile
                                 pass) == elle::Status::Error)
         escape("unable to create the phrase");
 
-      Portal::phrase.store(Infinit::Network, "portal");
+      Portal::phrase.store(Infinit::User, Infinit::Network, "portal");
 
       return elle::Status::Ok;
     }
@@ -124,7 +124,7 @@ namespace etoile
     {
       Portal::Scoutor scoutor;
 
-      lune::Phrase::erase(Infinit::Network, "portal");
+      lune::Phrase::erase(Infinit::User, Infinit::Network, "portal");
 
       // delete the acceptor.
       Portal::acceptor->terminate_now();

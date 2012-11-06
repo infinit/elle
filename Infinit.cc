@@ -103,8 +103,8 @@ elle::Status            Infinit::Initialize()
   //
   {
     // if the configuration file exists...
-    if (lune::Configuration::exists() == true)
-      Infinit::Configuration.load();
+    if (lune::Configuration::exists(Infinit::User) == true)
+      Infinit::Configuration.load(Infinit::User);
 
     // pull the parameters.
     if (Infinit::Configuration.Pull() == elle::Status::Error)

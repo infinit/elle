@@ -34,10 +34,10 @@ namespace lune
   elle::io::Pattern Lune::Dictionary;
   elle::io::Pattern Lune::Passport;
   elle::io::Pattern Lune::Configuration;
-  elle::io::Pattern Lune::Phrase;
   elle::io::Pattern Lune::Networks;
   elle::io::Pattern Lune::Network;
   elle::io::Pattern Lune::Descriptor;
+  elle::io::Pattern Lune::Phrase;
   elle::io::Pattern Lune::Set;
   elle::io::Pattern Lune::Shelter;
 
@@ -86,8 +86,7 @@ namespace lune
             elle::system::path::separator +
             "%USER%" +
             elle::system::path::separator +
-            "%USER%" +
-            Identity::Extension) == elle::Status::Error)
+            "%USER%.idy") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Dictionary.Create(
@@ -97,8 +96,7 @@ namespace lune
             elle::system::path::separator +
             "%USER%" +
             elle::system::path::separator +
-            "%USER%" +
-            Dictionary::Extension) == elle::Status::Error)
+            "%USER%.dic") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Passport.Create(
@@ -108,8 +106,7 @@ namespace lune
             elle::system::path::separator +
             "%USER%" +
             elle::system::path::separator +
-            "%USER%" +
-            Passport::Extension) == elle::Status::Error)
+            "%USER%.ppt") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Configuration.Create(
@@ -119,19 +116,7 @@ namespace lune
             elle::system::path::separator +
             "%USER%" +
             elle::system::path::separator +
-            "%USER%" +
-            Configuration::Extension) == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      if (Lune::Phrase.Create(
-            home +
-            elle::system::path::separator +
-            "users" +
-            elle::system::path::separator +
-            "%USER%" +
-            elle::system::path::separator +
-            "%NAME%" +
-            Phrase::Extension) == elle::Status::Error)
+            "%USER%.conf") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Networks.Create(
@@ -167,8 +152,21 @@ namespace lune
             elle::system::path::separator +
             "%NETWORK%" +
             elle::system::path::separator +
+            "%NETWORK%.dsc") == elle::Status::Error)
+        escape("unable to create the pattern");
+
+      if (Lune::Phrase.Create(
+            home +
+            elle::system::path::separator +
+            "users" +
+            elle::system::path::separator +
+            "%USER%" +
+            elle::system::path::separator +
+            "networks" +
+            elle::system::path::separator +
             "%NETWORK%" +
-            Descriptor::Extension) == elle::Status::Error)
+            elle::system::path::separator +
+            "%NAME%.phr") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Set.Create(
@@ -182,8 +180,7 @@ namespace lune
             elle::system::path::separator +
             "%NETWORK%" +
             elle::system::path::separator +
-            "%NETWORK%" +
-            Set::Extension) == elle::Status::Error)
+            "%NETWORK%.set") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Shelter.Create(

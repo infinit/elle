@@ -24,11 +24,6 @@ namespace lune
   ELLE_LOG_COMPONENT("infinit.lune.Descriptor");
 
   ///
-  /// this string defines the descriptor files extension.
-  ///
-  const elle::String            Descriptor::Extension = ".dsc";
-
-  ///
   /// this constant defines whether or not the history functionality
   /// is activated for this network.
   ///
@@ -44,13 +39,14 @@ namespace lune
 // ---------- descriptor ------------------------------------------------------
 //
 
-  Descriptor::Descriptor(elle::String const& network)
+  Descriptor::Descriptor(elle::String const& user,
+                         elle::String const& network)
   {
     ELLE_TRACE("Creating descriptor of network %s in %s",
-               network, this->_path(network));
-    if (Descriptor::exists(network) == false)
+               network, this->_path(user, network));
+    if (Descriptor::exists(user, network) == false)
       throw elle::Exception("this network does not seem to exist");
-    this->load(this->_path(network));
+    this->load(this->_path(user, network));
     this->validate(Infinit::authority());
   }
 
@@ -98,9 +94,11 @@ namespace lune
   }
 
   elle::io::Path
-  Descriptor::_path(elle::String const& network)
+  Descriptor::_path(elle::String const& user,
+                    elle::String const& network)
   {
     return (elle::io::Path(Lune::Descriptor,
+                           elle::io::Piece("%USER%", user),
                            elle::io::Piece("%NETWORK%", network)));
   }
 
@@ -121,29 +119,32 @@ namespace lune
   }
 
   void
-  Descriptor::load(elle::String const& network)
+  Descriptor::load(elle::String const& user,
+                   elle::String const& network)
   {
-    this->load(Descriptor::_path(network));
+    this->load(Descriptor::_path(user, network));
   }
 
   void
-  Descriptor::store(elle::String const& network) const
+  Descriptor::store(elle::String const& user,
+                    elle::String const& network) const
   {
-    this->store(Descriptor::_path(network));
+    this->store(Descriptor::_path(user, network));
   }
 
   void
-  Descriptor::erase(elle::String const& network)
+  Descriptor::erase(elle::String const& user,
+                    elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Descriptor::_path(network));
+    elle::concept::Fileable<>::erase(Descriptor::_path(user, network));
   }
 
   elle::Boolean
-  Descriptor::exists(elle::String const& network)
+  Descriptor::exists(elle::String const& user,
+                     elle::String const& network)
   {
     return elle::os::path::exists(
-        Descriptor::_path(network).string()
-    );
+      Descriptor::_path(user, network).string());
   }
 
 //

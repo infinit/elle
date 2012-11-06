@@ -22,11 +22,6 @@ namespace lune
   {
   public:
     //
-    // constants
-    //
-    static const elle::String           Extension;
-
-    //
     // types
     //
     // XXX use std::set<elle::network::Locus> !
@@ -42,7 +37,8 @@ namespace lune
     /// XXX
     static
     elle::io::Path
-    _path(elle::String const& network);
+    _path(elle::String const& user,
+          elle::String const& network);
 
     //
     // interfaces
@@ -58,15 +54,19 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
-    load(elle::String const& network);
+    load(elle::String const& user,
+         elle::String const& network);
     void
-    store(elle::String const& network) const;
+    store(elle::String const& user,
+          elle::String const& network) const;
     static
     void
-    erase(elle::String const& network);
+    erase(elle::String const& user,
+          elle::String const& network);
     static
     elle::Boolean
-    exists(elle::String const& network);
+    exists(elle::String const& user,
+           elle::String const& network);
 
     //
     // attributes

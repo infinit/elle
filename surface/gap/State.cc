@@ -21,7 +21,9 @@
 #include <elle/os/path.hh>
 #include <elle/Passport.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
-#include "elle/utility/Time.hh"
+#include <elle/utility/Time.hh>
+#include <elle/io/Path.hh>
+#include <elle/io/Piece.hh>
 
 #include <common/common.hh>
 
@@ -493,6 +495,9 @@ namespace surface
 
       std::string passport_string;
 
+      elle::io::Path passport_path(lune::Lune::Passport);
+      passport_path.Complete(elle::io::Piece{"%USER%", this->_me._id});
+
       if (force_create || !this->has_device())
         {
           auto res = this->_meta->create_device(name);
@@ -502,8 +507,7 @@ namespace surface
       else
         {
           elle::Passport passport;
-
-          passport.load(elle::io::Path(lune::Lune::Passport));
+          passport.load(passport_path);
 
           ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_meta->update_device(passport.id, name);
@@ -514,7 +518,7 @@ namespace surface
       if (passport.Restore(passport_string) == elle::Status::Error)
         throw Exception(gap_internal_error, "Cannot load the passport");
 
-      passport.store(elle::io::Path(lune::Lune::Passport));
+      passport.store(passport_path);
     }
 
     //- Network management ----------------------------------------------------

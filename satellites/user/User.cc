@@ -129,7 +129,7 @@ namespace satellite
       elle::io::Path        path;
 
       // create the user path.
-      if (path.Create(lune::Lune::User::Root) == elle::Status::Error)
+      if (path.Create(lune::Lune::User) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the user name.

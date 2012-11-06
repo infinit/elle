@@ -13,15 +13,6 @@ namespace lune
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the identity files extension.
-  ///
-  const elle::String            Identity::Extension = ".idy";
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 

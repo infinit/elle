@@ -29,11 +29,6 @@ namespace lune
   {
   public:
     //
-    // constants
-    //
-    static const elle::String           Extension;
-
-    //
     // methods
     //
     elle::Status        Create(const elle::network::Port,
@@ -43,11 +38,8 @@ namespace lune
     /// XXX
     static
     elle::io::Path
-    _path(elle::String const& name);
-    /// XXX
-    static
-    elle::io::Path
-    _path(elle::String const& network,
+    _path(elle::String const& user,
+          elle::String const& network,
           elle::String const& name);
 
     //
@@ -65,29 +57,22 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
-    load(elle::String const& name);
-    void
-    store(elle::String const& name) const;
-    static
-    void
-    erase(elle::String const& name);
-    static
-    elle::Boolean
-    exists(elle::String const& name);
-
-    void
-    load(elle::String const& network,
+    load(elle::String const& user,
+         elle::String const& network,
          elle::String const& name);
     void
-    store(elle::String const& network,
+    store(elle::String const& user,
+          elle::String const& network,
           elle::String const& name) const;
     static
     void
-    erase(elle::String const& network,
+    erase(elle::String const& user,
+          elle::String const& network,
           elle::String const& name);
     static
     elle::Boolean
-    exists(elle::String const& network,
+    exists(elle::String const& user,
+           elle::String const& network,
            elle::String const& name);
 
     //

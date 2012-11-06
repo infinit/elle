@@ -8,15 +8,6 @@ namespace lune
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the dictionary files extension.
-  ///
-  const elle::String            Dictionary::Extension = ".dic";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 

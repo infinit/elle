@@ -150,12 +150,15 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
-  elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-  shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
-  hole::storage::Directory storage(shelter.string());
+  elle::io::Path shelter_path(lune::Lune::Shelter);
+  shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
+                        elle::io::Piece{"%NETWORK%", Infinit::Network});
+  hole::storage::Directory storage(shelter_path.string());
 
+  elle::io::Path passport_path(lune::Lune::Passport);
+  passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
   elle::Passport passport;
-  passport.load(elle::io::Path(lune::Lune::Passport));
+  passport.load(passport_path);
 
   std::unique_ptr<hole::Hole> hole(
     infinit::hole_factory(storage, passport, Infinit::authority()));
@@ -169,7 +172,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   if (std::unique_ptr<hole::implementations::slug::Implementation> slug =
       elle::cast<hole::implementations::slug::Implementation>::runtime(hole))
     {
-      lune::Descriptor descriptor(Infinit::Network);
+      lune::Descriptor descriptor(Infinit::User, Infinit::Network);
       plasma::meta::Client client(common::meta::host(), common::meta::port());
       try
         {

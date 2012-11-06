@@ -22,11 +22,6 @@ namespace lune
   {
   public:
     //
-    // constants
-    //
-    static const elle::String           Extension;
-
-    //
     // methods
     //
   private:

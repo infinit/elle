@@ -443,7 +443,7 @@ namespace horizon
       return (-EPERM);
 
     // FIXME: do not re-parse the descriptor every time.
-    lune::Descriptor descriptor(Infinit::Network);
+    lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
     switch (descriptor.data().policy())
       {
@@ -1070,7 +1070,7 @@ namespace horizon
     Ward ward_link(link);
 
     // FIXME: do not re-parse the descriptor every time.
-    lune::Descriptor descriptor(Infinit::Network);
+    lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
     switch (descriptor.data().policy())
       {
@@ -1234,7 +1234,7 @@ namespace horizon
 
 
     // FIXME: do not re-parse the descriptor every time.
-    lune::Descriptor descriptor(Infinit::Network);
+    lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
     switch (descriptor.data().policy())
       {
