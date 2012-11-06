@@ -19,6 +19,8 @@
 		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */; };
 		BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
+		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; };
+		BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1BE3791644181E004810F9 /* IATextFieldCell.m */; };
 		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
 		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
 		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
@@ -93,6 +95,8 @@
 		BD1A1C35163947E000186C48 /* FinderWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FinderWindow.xib; sourceTree = "<group>"; };
 		BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindowController.h; sourceTree = "<group>"; };
 		BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindowController.m; sourceTree = "<group>"; };
+		BD1BE3781644181E004810F9 /* IATextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IATextFieldCell.h; sourceTree = "<group>"; };
+		BD1BE3791644181E004810F9 /* IATextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IATextFieldCell.m; sourceTree = "<group>"; };
 		BD840966163EFC16004C9C97 /* gap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../../../gap/gap.h; sourceTree = "<group>"; };
 		BD840968163EFC3F004C9C97 /* IAGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGapState.h; sourceTree = "<group>"; };
 		BD840969163EFC3F004C9C97 /* IAGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGapState.m; sourceTree = "<group>"; };
@@ -198,6 +202,7 @@
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
+				BD1A1C28163946A500186C48 /* Supporting Files */,
 				BD840966163EFC16004C9C97 /* gap.h */,
 				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
 				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
@@ -216,7 +221,8 @@
 				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
 				BD8409D11641A247004C9C97 /* IARegisterView.h */,
 				BD8409D21641A247004C9C97 /* IARegisterView.m */,
-				BD1A1C28163946A500186C48 /* Supporting Files */,
+				BD1BE3781644181E004810F9 /* IATextFieldCell.h */,
+				BD1BE3791644181E004810F9 /* IATextFieldCell.m */,
 			);
 			path = FinderWindow;
 			sourceTree = "<group>";
@@ -247,6 +253,7 @@
 				BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */,
 				BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */,
 				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
+				BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +370,7 @@
 				BD8409AB16412CE3004C9C97 /* IAMainViewController.m in Sources */,
 				BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */,
 				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
+				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

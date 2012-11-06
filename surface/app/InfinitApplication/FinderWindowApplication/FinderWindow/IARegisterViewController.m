@@ -16,6 +16,7 @@
 
 @property(retain) IBOutlet NSSecureTextFieldCell* password;
 @property(retain) IBOutlet NSSecureTextFieldCell* password_confirm;
+@property(retain) IBOutlet NSSecureTextFieldCell* activation_code;
 
 @property(retain) IBOutlet NSTextField* error_message;
 
@@ -45,15 +46,18 @@
                         withFullname:[self.fullname stringValue]
                          andPassword:[self.password stringValue]
                        andDeviceName:@"TODO"
-                     performSelector:@selector(onRegister)
+                   andActivationCode:[self.activation_code stringValue]
+                     performSelector:@selector(onRegister:)
                             onObject:self];
 }
 
-- (void) onRegister:(NSNotification*)notification
+- (void) onRegister:(IAGapOperationResult*)result
 {
-    if ([[notification object] success])
+    if ([result success])
         NSLog(@"Successfully registered !");
     else
         NSLog(@"Couldn't register :(");
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_LOGIN_OPERATION
+                                                        object:result];
 }
 @end
