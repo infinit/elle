@@ -52,8 +52,6 @@ namespace elle
         static const Natural32          Length;
       };
 
-      static const String               Extension;
-
       //
       // constructors & destructors
       //

@@ -45,18 +45,6 @@ namespace elle
     ///
     ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = nullptr;
 
-    /// this defines a null key pair.
-    KeyPair const& KeyPair::null()
-    {
-      static KeyPair res;
-      return res;
-    }
-
-    ///
-    /// this string defines the key pair files extension.
-    ///
-    const String                KeyPair::Extension = ".pair";
-
     /*---------------.
     | Static Methods |
     `---------------*/
@@ -83,6 +71,14 @@ namespace elle
 
       // Release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
+    }
+
+    KeyPair const&
+    KeyPair::null()
+    {
+      static KeyPair kp; // XXX[to re-work so as to have a null type]
+
+      return (kp);
     }
 
     KeyPair
