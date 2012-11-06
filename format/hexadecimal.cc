@@ -41,6 +41,15 @@ namespace elle
 #define HEX2VAL(c)                                                            \
 (c >= '0' && c <= '9' ? c - '0' : (c >= 'a' && c <= 'f' ? c - 'a' + 10 : -1)) \
   /**/
+
+      elle::Buffer
+      decode(std::string const& hexadecimal_string)
+      {
+        elle::Buffer buffer;
+        decode(hexadecimal_string, buffer);
+        return (buffer);
+      }
+
       void
       decode(std::string const& hexadecimal_string,
              elle::Buffer& binary_data)
