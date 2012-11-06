@@ -29,6 +29,7 @@ namespace etoile
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
       this->rights.permissions = nucleus::neutron::permissions::none;
+      this->rights.record = nullptr;
     }
 
     ///
@@ -44,6 +45,7 @@ namespace etoile
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Object::RoleUnknown;
       this->rights.permissions = nucleus::neutron::permissions::none;
+      this->rights.record = nullptr;
     }
 
     ///
@@ -53,6 +55,7 @@ namespace etoile
     {
       delete this->object;
       delete this->access;
+      delete this->rights.record;
       delete this->author;
     }
 
@@ -117,8 +120,11 @@ namespace etoile
         escape("unable to dump the key");
 
       // dump the record.
-      if (this->rights.record.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the record");
+      if (this->rights.record != nullptr)
+        {
+          if (this->rights.record->Dump(margin + 4) == elle::Status::Error)
+            escape("unable to dump the record");
+        }
 
       // dump the author.
       if (this->author != nullptr)

@@ -125,8 +125,8 @@ namespace satellite
       Transfer::rpcs->accesslookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       throw std::runtime_error("the subject does not have the permission");
 

@@ -1,5 +1,5 @@
 #include <elle/cryptography/cryptography.hh>
-#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/random.hh>
 #include <elle/cryptography/KeyPair.hh>
 
 #include <elle/log.hh>
@@ -32,7 +32,7 @@ namespace elle
       ::SSLeay_add_all_algorithms();
 
       // Initialize the random and keypair classes.
-      Random::initialize();
+      random::initialize();
       KeyPair::initialize();
 
       // Set the module has initialized.
@@ -48,7 +48,7 @@ namespace elle
 
       // Clean the keypair and random classes.
       KeyPair::clean();
-      Random::clean();
+      random::clean();
 
       // Free the current threads error queue.
       ::ERR_remove_state(0);

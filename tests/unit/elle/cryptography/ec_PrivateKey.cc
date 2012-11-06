@@ -21,17 +21,12 @@ void test_encrypt()
 
   elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
 
-  std::cout << "bim\n";
-
   show_assert(pair.K.Encrypt(my_secret_text, code));
 
   std::cout << "encrypted size: " << code.region.size << "\n";
 
-    {
-      std::string res;
-      show_assert(pair.k.Decrypt(code, res));
-    }
-
+  std::string res;
+  show_assert(pair.k.Decrypt(code, res));
 }
 
 int main()

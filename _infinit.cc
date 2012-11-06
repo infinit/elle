@@ -26,7 +26,7 @@
 
 #include <HoleFactory.hh>
 
-ELLE_LOG_COMPONENT("infinit.8infinit");
+ELLE_LOG_COMPONENT("infinit");
 
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])

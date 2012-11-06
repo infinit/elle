@@ -4,7 +4,6 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/Random.hh>
 #include <elle/cryptography/PublicKey.hh>
 
 #include <elle/idiom/Open.hh>

@@ -3,7 +3,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/Random.hh>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus

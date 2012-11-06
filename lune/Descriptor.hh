@@ -121,24 +121,25 @@ namespace lune
     public elle::serialize::DynamicFormat<Descriptor>,
     private boost::noncopyable
   {
-    //
-    // forward declarations
-    //
+    /*---------------------.
+    | Forward Declarations |
+    `---------------------*/
+  private:
     struct Meta;
     struct Data;
 
-    //
-    // constants
-    //
+    /*----------.
+    | Constants |
+    `----------*/
   public:
     static const elle::String           Extension;
 
     static const elle::Boolean          History;
     static const elle::Natural32        Extent;
 
-    //
-    // construction
-    //
+    /*-------------.
+    | Construction |
+    `-------------*/
   public:
     explicit
     Descriptor(elle::String const& network);
@@ -157,9 +158,9 @@ namespace lune
 
     ELLE_SERIALIZE_CONSTRUCT(Descriptor) {}
 
-    //
-    // methods
-    //
+    /*--------.
+    | Methods |
+    `--------*/
   public:
     /// XXX
     void
@@ -179,9 +180,9 @@ namespace lune
     elle::io::Path
     _path(elle::String const& network);
 
-    //
-    // interfaces
-    //
+    /*-----------.
+    | Interfaces |
+    `-----------*/
   public:
     // dumpable
     elle::Status
@@ -204,9 +205,9 @@ namespace lune
     elle::Boolean
     exists(elle::String const& network);
 
-    //
-    // attributes
-    //
+    /*-----------.
+    | Structures |
+    `-----------*/
   private:
     struct Meta:
       private boost::noncopyable
@@ -297,7 +298,7 @@ namespace lune
       elle::Natural32 _extent;
 
       elle::cryptography::Signature _signature;
-    } _meta;
+    };
 
     struct Data:
       private boost::noncopyable
@@ -420,11 +421,18 @@ namespace lune
       } _formats;
 
       elle::cryptography::Signature _signature;
-    } _data;
+    };
+
+    /*-----------.
+    | Attributes |
+    `-----------*/
+  private:
+    ELLE_ATTRIBUTE(Meta, meta);
+    ELLE_ATTRIBUTE(Data, data);
   };
 
 }
 
-#include <lune/Descriptor.hxx>
+# include <lune/Descriptor.hxx>
 
 #endif

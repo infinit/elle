@@ -1,4 +1,5 @@
 simple_test(print "" "tests done." "")
+simple_test(operator "" "tests done." "")
 simple_test(log "" "tests done." "")
 
 add_subdirectory(cryptography)

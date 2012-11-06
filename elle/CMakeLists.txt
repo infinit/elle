@@ -49,12 +49,13 @@ add_library(elle ${LINK_METHOD}
   cryptography/Cipher.cc
   cryptography/Code.cc
   cryptography/cryptography.cc
-  cryptography/Digest.cc
   cryptography/KeyPair.cc
-  cryptography/OneWay.cc
+  cryptography/Input.cc
+  cryptography/oneway.cc
+  cryptography/Output.cc
   cryptography/PrivateKey.cc
   cryptography/PublicKey.cc
-  cryptography/Random.cc
+  cryptography/random.cc
   cryptography/SecretKey.cc
   cryptography/Seed.cc
   cryptography/Signature.cc

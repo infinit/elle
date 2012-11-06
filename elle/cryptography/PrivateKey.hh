@@ -8,6 +8,7 @@
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Plain.hh>
 # include <elle/cryptography/Signature.hh>
+#include <elle/cryptography/oneway.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -33,6 +34,15 @@ namespace elle
     class PrivateKey:
       public radix::Object
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static oneway::Algorithm const oneway;
+      };
+
     public:
       //
       // constants

@@ -1,21 +1,14 @@
 #ifndef ELLE_CRYPTOGRAPHY_CLEAR_HH
 # define ELLE_CRYPTOGRAPHY_CLEAR_HH
 
-#include <elle/cryptography/Plain.hh>
+# include <elle/cryptography/Output.hh>
 
 namespace elle
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents a decoded text, both through symmetric and
-    /// asymmetric cryptosystems.
-    ///
-    /// this type is logically equivalent to a plain text.
-    ///
-    typedef Plain       Clear;
-
+    /// XXX
+    typedef Output Clear;
   }
 }
 

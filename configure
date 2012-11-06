@@ -20,6 +20,7 @@ LINUX32=OFF
 LINUX64=OFF
 WIN32=OFF
 MACOSX64=OFF
+HORIZON_SWITCH=""
 
 [ -z "${CC}" ] && CC=gcc
 [ -z "${CXX}" ] && CXX=g++
@@ -39,6 +40,7 @@ function usage()
   --linux64             enable linux 64bit build
   --macosx64            enable macosx 64bit build
   --win32               enable windows 32bit build
+  --disable-horizon     disable infinit
 "
     exit 0
 }
@@ -91,8 +93,11 @@ do
             WIN32=ON
             ;;
         --prefix=*)
-        PREFIX="${1/--prefix=/}"
-        ;;
+            PREFIX="${1/--prefix=/}"
+            ;;
+        --disable-horizon)
+            HORIZON_SWITCH="-DDISABLE_HORIZON=1"
+            ;;
 	-h|--help|help)
 	    usage
 	    ;;
@@ -160,6 +165,7 @@ function gen_build_dir()
         -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
         -DCMAKE_COLOR_MAKEFILE=$COLOR \
         -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+        "${HORIZON_SWITCH}" \
         "$CMAKE_GENERATOR" "$ROOTDIR"
 
 )

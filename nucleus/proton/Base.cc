@@ -2,14 +2,18 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/OneWay.hh>
-
 #include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    elle::cryptography::oneway::Algorithm const Base::Algorithms::oneway(
+      elle::cryptography::oneway::Algorithm::sha256);
 
     /*-------------.
     | Construction |
@@ -20,12 +24,9 @@ namespace nucleus
     }
 
     Base::Base(MutableBlock const& block):
-      _revision(block.revision())
+      _revision(block.revision()),
+      _digest(elle::cryptography::oneway::hash(block, Base::Algorithms::oneway))
     {
-      // compute the block's digest.
-      if (elle::cryptography::OneWay::Hash(block, this->_digest)
-          == elle::Status::Error)
-        throw Exception("unable to hash the mutable block");
     }
 
     /*--------.

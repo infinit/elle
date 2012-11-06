@@ -6,6 +6,7 @@
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/oneway.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
@@ -30,6 +31,15 @@ namespace nucleus
     class Base:
       public elle::Printable
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const elle::cryptography::oneway::Algorithm oneway;
+      };
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -52,7 +62,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Base const& other) const;
       ELLE_OPERATOR_NEQ(Base);
-      ELLE_OPERATOR_ASSIGNMENT(Base);
+      ELLE_OPERATOR_ASSIGNMENT(Base); // XXX
 
       /*-----------.
       | Interfaces |

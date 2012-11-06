@@ -61,20 +61,20 @@ namespace satellite
   void
   display(nucleus::neutron::Record const& record)
   {
-    switch (record.subject.type())
+    switch (record.subject().type())
       {
         case nucleus::neutron::Subject::TypeUser:
         {
           elle::io::Unique unique;
           // Convert the public key into a human-kind-of-readable string.
-          if (record.subject.user().Save(unique) == elle::Status::Error)
+          if (record.subject().user().Save(unique) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the public key's unique");
           std::cout << "User"
                     << unique
                     << " "
                     << std::dec
-                    << static_cast<elle::Natural32>(record.permissions)
+                    << static_cast<elle::Natural32>(record.permissions())
                     << std::endl;
           break;
         }
@@ -82,7 +82,7 @@ namespace satellite
         {
           elle::io::Unique unique;
           // Convert the group's address into a human-kind-of-readable string.
-          if (record.subject.group().Save(unique) == elle::Status::Error)
+          if (record.subject().group().Save(unique) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the address' unique");
 
@@ -90,7 +90,7 @@ namespace satellite
                     << " "
                     << unique
                     << " "
-                    << std::dec << static_cast<elle::Natural32>(record.permissions) << std::endl;
+                    << std::dec << static_cast<elle::Natural32>(record.permissions()) << std::endl;
 
           break;
         }

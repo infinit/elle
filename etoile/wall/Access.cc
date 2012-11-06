@@ -46,15 +46,15 @@ namespace etoile
         if (scope->Use(context) == elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to retrieve the context");
-        nucleus::neutron::Record const* res(nullptr);
-        if (automaton::Access::Lookup(*context, subject, res) ==
+        nucleus::neutron::Record const* record(nullptr);
+        if (automaton::Access::Lookup(*context, subject, record) ==
             elle::Status::Error)
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to lookup the record");
-        if (res)
-          return *res;
+        if (record)
+          return *record;
         else
-          return nucleus::neutron::Record::Null;
+          return nucleus::neutron::Record::null();
       }
     }
 

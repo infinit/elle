@@ -94,7 +94,9 @@ namespace etoile
         nucleus::neutron::Object::Role role;
         nucleus::neutron::Permissions permissions;
         elle::cryptography::SecretKey key;
-        nucleus::neutron::Record record;
+
+        // XXX[use a shared_ptr<> instead. cf: automaton::Access::lookup()]
+        nucleus::neutron::Record* record;
       } rights;
       nucleus::neutron::Author* author;
     };

@@ -7,11 +7,9 @@ namespace elle
   /// cryptographic operations.
   namespace cryptography
   {
-
     /*----------.
     | Functions |
     `----------*/
-
     /// Manually initializes the cryptographic module.
     ///
     /// !WARNING! Do not use unless you know exactly what you're doing.
@@ -26,7 +24,6 @@ namespace elle
     /// can be called whenever one needs the cryptography to be set up.
     void
     require();
-
   }
 }
 

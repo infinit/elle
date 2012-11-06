@@ -38,7 +38,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Location const& other) const;
       ELLE_OPERATOR_NEQ(Location);
-      ELLE_OPERATOR_ASSIGNMENT(Location);
+      ELLE_OPERATOR_ASSIGNMENT(Location); // XXX
 
       /*-----------.
       | Interfaces |

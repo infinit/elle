@@ -5,6 +5,8 @@
 
 # include <elle/radix/Object.hh>
 
+# include <elle/standalone/Region.hh>
+
 # include <elle/cryptography/fwd.hh>
 
 # include <elle/serialize/Polymorphic.hh>
@@ -60,15 +62,33 @@ namespace elle
       Status            Generate(const Natural32);
 
       Status
-        Encrypt(elle::WeakBuffer const& in, Cipher& out) const;
-      template<typename T>
-        Status Encrypt(T const& in, Cipher& out) const;
-
+      Encrypt(WeakBuffer const& in,
+              Cipher& out) const;
+      template <typename T>
+      Status Encrypt(T const& in, Cipher& out) const;
 
       Status
-        Decrypt(Cipher const& in, elle::Buffer& out) const;
+      Decrypt(Cipher const& in,
+              Buffer& out) const;
       template<typename T>
-        Status Decrypt(Cipher const& in, T& out) const;
+      Status Decrypt(Cipher const& in, T& out) const;
+      /* XXX
+      /// Return an encrypted version of the given plain text.
+      Cipher
+      encrypt(Plain const& plain) const;
+      /// Return an encrypted version of the given serializable value.
+      template <typename T>
+      Cipher
+      encrypt(T&& value) const;
+      /// Return a decrypted version of the given cipher text.
+      Clear
+      decrypt(Cipher const& cipher) const;
+      /// Return a decrypted serializable value of the given cipher text.
+      template <typename T>
+      T
+      decrypt(Cipher const& in, T& out) const; // XXX forward?
+      */
+
       template<typename T>
         Status Decrypt(Cipher const& in,
                        elle::serialize::Polymorphic<T> const& out) const

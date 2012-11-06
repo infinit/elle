@@ -1,6 +1,5 @@
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Code.hh>
@@ -13,6 +12,12 @@ namespace elle
 {
   namespace cryptography
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    oneway::Algorithm const PublicKey::Algorithms::oneway(
+      oneway::Algorithm::sha256);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -272,22 +277,30 @@ namespace elle
     Status PublicKey::Verify(const Signature&                 signature,
                              elle::WeakBuffer const& buffer) const
     {
-      Digest            digest;
-
+      // XXX[remove Plain(buffer) in favor of plain which should be the argument]
       // compute the plain's digest.
-      if (OneWay::Hash(buffer, digest) == Status::Error)
-        escape("unable to hash the plain");
+      Digest digest(oneway::hash(buffer, PublicKey::Algorithms::oneway));
 
       // verify.
-      if (::EVP_PKEY_verify(
-            this->_contexts.verify,
-            reinterpret_cast<const unsigned char*>(signature.region.contents),
-            signature.region.size,
-            reinterpret_cast<const unsigned char*>(digest.region.contents),
-            digest.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+      int result =
+        ::EVP_PKEY_verify(
+          this->_contexts.verify,
+          reinterpret_cast<const unsigned char*>(signature.region.contents),
+          signature.region.size,
+          reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
+          digest.buffer().size());
 
-      return Status::Ok;
+      switch (result)
+        {
+        case 1:
+          return elle::Status::Ok;
+        case 0:
+          return elle::Status::Error;
+        default:
+          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        }
+
+      elle::unreachable();
     }
 
     Status PublicKey::Decrypt(Code const& in, elle::Buffer& out) const

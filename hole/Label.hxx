@@ -1,38 +1,20 @@
 #ifndef HOLE_LABEL_HXX
 # define HOLE_LABEL_HXX
 
-# include <elle/cryptography/Digest.hh>
-# include <elle/cryptography/OneWay.hh>
-
 # include <elle/idiom/Open.hh>
 
 namespace hole
 {
 
-//
-// ---------- templates -------------------------------------------------------
-//
+  /*-------------.
+  | Construction |
+  `-------------*/
 
-  ///
-  /// create the label based on an object by serializing it before
-  /// hashing it.
-  ///
   template <typename T>
-  elle::Status          Label::Create(const T&                  parameter)
+  Label::Label(T const& element):
+    _digest(elle::cryptography::oneway::hash(element,
+                                             Label::Algorithms::oneway))
   {
-    // release the previous digest.
-    if (this->digest != nullptr)
-      delete this->digest;
-
-    // allocate the digest object.
-    this->digest = new elle::cryptography::Digest;
-
-    // compute the digest based on the parameters including the family.
-    if (elle::cryptography::OneWay::Hash(parameter,
-                           *this->digest) == elle::Status::Error)
-      escape("unable to hash the given parameter(s)");
-
-    return elle::Status::Ok;
   }
 
 }
@@ -55,7 +37,7 @@ ELLE_SERIALIZE_SIMPLE(hole::Label,
 {
   enforce(version == 0);
 
-  archive & elle::serialize::pointer(value.digest);
+  archive & value._digest;
 }
 
 #endif

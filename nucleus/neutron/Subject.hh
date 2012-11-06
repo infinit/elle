@@ -103,7 +103,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Subject const& other) const;
       ELLE_OPERATOR_NEQ(Subject);
-      ELLE_OPERATOR_ASSIGNMENT(Subject);
+      ELLE_OPERATOR_ASSIGNMENT(Subject); // XXX
 
       //
       // interfaces
