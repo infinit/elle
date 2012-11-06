@@ -6,9 +6,12 @@ import json
 import traceback
 import urllib
 
+import error
 from meta import conf
 from meta import database
 from meta import notification
+from meta import error
+from meta import regexp
 
 class Page(object):
     """
@@ -18,6 +21,8 @@ class Page(object):
     __session__ = None #set by the application
 
     __notifier = None
+
+    _validators = {}
 
     def __init__(self):
         self._input = None
@@ -56,6 +61,16 @@ class Page(object):
             self._input = web.input()
         return self._input
 
+    def validate(self):
+        for k, v in self._validators.items():
+            if not k in self.data:
+                return {error.BAD_REQUEST, "Field '%s' is mandatory" % k}
+            else:
+                error_code = v(self.data[k])
+                if error_code:
+                    return {error_code}
+        return {}
+
     def logout(self):
         self.session.kill()
 
@@ -74,12 +89,20 @@ class Page(object):
     def registerUser(self, **kwargs):
         user = database.users().save(kwargs)
         return user
+
+    def connected(self, user_id):
+        return False
+
     def forbidden(self, msg):
         raise web.HTTPError("403 {}".format(msg))
 
     def requireLoggedIn(self):
         if not self.user:
             self.forbidden("Authentication required.")
+
+    def requireLoggedIn(self):
+        if not self.user:
+            raise web.Forbidden()
 
     def hashPassword(self, password):
         seasoned = password + conf.SALT
@@ -95,12 +118,13 @@ class Page(object):
         d.update(data)
         self.notifier.send_notify(d)
 
-
-    def error(self, s, i = 666):
+    def error(self, err=error.UNKNOWN, msg=""):
+        if not msg and err in error.error_details:
+            msg = error.error_details[err]
         return json.dumps({
             'success': False,
-            'error_code': i,
-            'error_details': str(s),
+            'error_code': err,
+            'error_details': str(msg),
         })
 
     def success(self, obj={}):
@@ -108,7 +132,6 @@ class Page(object):
         d = {'success': True}
         d.update(obj)
         return json.dumps(d, default=str)
-
 
     _data = None
     @property

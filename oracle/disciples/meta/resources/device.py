@@ -8,6 +8,9 @@ import metalib
 
 from meta import conf, database
 from meta.page import Page
+from meta import error
+from meta import regexp
+
 
 class All(Page):
     """
@@ -62,15 +65,21 @@ class Create(Page):
     """
     __pattern__ = "/device/create"
 
+    _validators = {
+        'name': regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)
+    }
+
     def POST(self):
         self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         device = self.data
-        name = device.get('name', '').strip()
-        if not name:
-            return self.error("You have to provide a valid device name")
 
         to_save = {
-            'name': name,
+            'name': device['name'].strip(),
             'owner': self.user['_id'],
         }
 
@@ -107,21 +116,28 @@ class Update(Page):
 
     __pattern__ = "/device/update"
 
+    _validators = {
+        'name': regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID),
+        '_id': regexp.Validator(regexp.NetworkID, error.DEVICE_ID_NOT_VALID),
+    }
+
     def POST(self):
         self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         device = self.data
-        assert '_id' in device
+
         id_ = database.ObjectId(device['_id'].strip())
         if not id_ in self.user['devices']:
-            self.forbidden("This network does not belong to you")
+            self.forbidden("This network does not belong to you.")
+
         to_save = database.devices().find_one({
             '_id': database.ObjectId(id_)
         })
-        if 'name' in device:
-            name = device['name'].strip()
-            if not name:
-                return self.error("You have to provide a valid device name")
-            to_save['name'] = name
+        to_save['name'] = name
 
         id_ = database.devices().save(to_save)
         return self.success({
@@ -142,18 +158,25 @@ class Delete(Page):
 
     __pattern__ = "/device/delete"
 
+    _validators = {
+        '_id': regexp.Validator(regexp.NotNull, error.DEVICE_ID_NOT_VALID),
+    }
+
     def DELETE(self):
         self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         _id = database.ObjectId(self.data['_id'])
         try:
             devices = self.user['devices']
             idx = devices.index(_id)
             devices.pop(idx)
         except:
-            return json.dumps({
-                'success': False,
-                'error': "The device '%s' was not found" % (_id),
-            })
+            return self.error(error.DEVICE_NOT_FOUND, "The device '%s' was not found" % (_id))
+
         database.users().save(self.user)
         for network_id in self.user['networks']:
             network = database.networks.find_one(network_id)
@@ -172,4 +195,3 @@ class Delete(Page):
         return self.success({
             'deleted_device_id': id_,
         })
-

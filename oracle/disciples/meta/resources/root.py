@@ -34,5 +34,5 @@ class Debug(Page):
         if self.notifier is not None:
             self.notifier.send_notify(msg)
         else:
-            return self.error("notifier is not ready")
+            return self.error(error.UNKNOWN, "Notifier is not ready.")
         return self.success({})
