@@ -11,7 +11,8 @@ include_directories(${Uri_SOURCE_DIR}/include)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package( Boost 1.51.0 REQUIRED unit_test_framework system regex filesystem )
+find_package(Boost 1.51.0 REQUIRED unit_test_framework)
+#find_package(GTest)
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 

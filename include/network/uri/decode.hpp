@@ -8,7 +8,7 @@
 #ifndef NETWORK_URI_DECODE_INC
 #define NETWORK_URI_DECODE_INC
 
-#include <boost/iterator/iterator_traits.hpp>
+#include <iterator>
 #include <cassert>
 
 namespace network {
@@ -55,7 +55,7 @@ namespace network {
   OutputIterator decode(const InputIterator &in_begin,
 			const InputIterator &in_end,
 			const OutputIterator &out_begin) {
-    typedef typename boost::iterator_value<InputIterator>::type value_type;
+    typedef typename std::iterator_traits<InputIterator>::value_type value_type;
 
     InputIterator it = in_begin;
     OutputIterator out = out_begin;

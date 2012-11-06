@@ -11,7 +11,6 @@
 
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
-#include <boost/range/algorithm/equal.hpp>
 #include <iterator>
 #include <algorithm>
 #include <functional>
@@ -144,18 +143,6 @@ namespace network {
       return *this;
     }
 
-    uri &operator = (const std::string &uri) {
-      uri_ = string_type(std::begin(uri), std::end(uri));
-      parse();
-      return *this;
-    }
-
-    uri &operator = (const std::wstring &uri) {
-      uri_ = string_type(std::begin(uri), std::end(uri));
-      parse();
-      return *this;
-    }
-
     ~uri() {
 
     }
@@ -240,7 +227,7 @@ namespace network {
     }
 
     bool is_absolute() const {
-      return !boost::empty(scheme());
+      return !scheme().empty();
     }
 
     bool is_opaque() const {

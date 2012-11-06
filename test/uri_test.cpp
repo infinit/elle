@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(basic_uri_value_semantics_test) {
   network::uri assigned;
   assigned = original;
   BOOST_CHECK(original == assigned);
-  assigned = "http://www.example.com/";
+  assigned = network::uri("http://www.example.com/");
   BOOST_CHECK(original != assigned);
   network::uri copy(assigned);
   BOOST_CHECK(copy == assigned);

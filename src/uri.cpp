@@ -10,7 +10,6 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
-#include <network/uri/normalize.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <map>
 
