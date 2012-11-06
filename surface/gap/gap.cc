@@ -12,6 +12,7 @@
 #include "gap.h"
 #include "State.hh"
 
+#include <vector>
 #include <string.h>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
@@ -139,7 +140,7 @@ extern "C"
 
     gap_Status
     gap_invite_user(gap_State* state,
-                    const char* email)
+                    char const* email)
     {
       __TO_CPP(state)->invite_user(email);
 
@@ -147,23 +148,35 @@ extern "C"
     }
 
     gap_Status
-    gap_send_file_to_new_user(gap_State* state,
-                              const char* email,
-                              const char* path)
+    gap_send_files(gap_State* state,
+                   char const* recipient_id,
+                   char const* const* files)
     {
-      __TO_CPP(state)->send_file_to_new_user(email,
-                                             path);
+      std::vector<std::string> v;
+
+      while(*files != nullptr)
+        {
+          v.push_back(*files);
+          ++files;
+        }
+
+      __TO_CPP(state)->send_files(recipient_id,
+                                  v);
 
       return gap_ok;
     }
 
     gap_Status
     gap_send_file(gap_State* state,
-                  const char* recipient_id,
-                  const char* path)
+                  char const* recipient_id,
+                  char const* path)
     {
-      __TO_CPP(state)->send_file(recipient_id,
-                                 path);
+      std::vector<std::string> v;
+
+      v.push_back(path);
+
+      __TO_CPP(state)->send_files(recipient_id,
+                                  v);
 
       return gap_ok;
     }
@@ -223,8 +236,8 @@ extern "C"
                             char const* fullname,
                             char const* email,
                             char const* password,
-                                 char const* device_name,
-                                 char const* activation_code)
+                            char const* device_name,
+                            char const* activation_code)
     {
       assert(fullname != nullptr);
       assert(email != nullptr);
@@ -236,7 +249,7 @@ extern "C"
 
       if (ret == gap_ok && device_name != nullptr)
         {
-          __WRAP_CPP(state, update_device, device_name);
+          __WRAP_CPP(state, update_device, device_name, true);
         }
       return ret;
     }

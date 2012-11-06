@@ -38,34 +38,39 @@ state.OnMessage(Message)
 
 def main():
   #register: fullname, email, hashed_password, device_name, activation_code
-  state.register("", "", "", "", "")
+  # state.register("", "", "", "", "")
 
-  state.register("", "test@infinit.io", "", "pretty name", "bitebite")
+  # state.register("", "test@infinit.io", "", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "")
+  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
 
-  state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+  #state.register("Testing Program", "", "MEGABIET", "pretty name", "bitebite")
 
+  state.login("test@infinit.io", "MEGABIET")
 
+  state.connect()
 
-  # state.login("test@infinit.io", "MEGABIET")
+  files = ["/home/dimrok/test/main.cpp", "/home/dimrok/test/main2.cpp", "/home/dimrok/test/main3.cpp"]
 
-  # state.connect()
+  print(dir(files))
 
-  # state.set_device_name("Bite")
+  #state.send_file("developers@infinit.io", "/home/dimrok/test/proctologie.pdf")
+  state.send_files("antony.mechin@gmail.com", files)
 
   # str = "FistParty%s" % math.floor(random.random()*234567890);
   # state.create_network(str)
+
+  # state.set_device_name("pretty name")
 
   # state.launch_watchdog()
 

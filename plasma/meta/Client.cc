@@ -282,22 +282,25 @@ namespace plasma
     }
 
     SendFileResponse
-    Client::send_file(std::string const& recipient_id,
+    Client::send_file(std::string const& recipient_id_or_email,
                       std::string const& file_name,
+                      size_t count,
                       size_t size,
-                      bool is_dir
-)
+                      bool is_dir,
+                      std::string const& network_id
+      )
     {
       json::Dictionary request{std::map<std::string, std::string>
         {
-          {"recipient_id", recipient_id},
+          {"id_or_email", recipient_id_or_email},
           {"file_name", file_name},
+          {"network_id", network_id},
         }};
       request["file_size"] = size;
       request["is_dir"] = is_dir;
-      request["notification_id"] = 7;
+      request["file_count"] = count;
 
-      auto res = this->_client.post<SendFileResponse>("/user/share", request);
+      auto res = this->_client.post<SendFileResponse>("/user/sendfile", request);
 
       return res;
     }

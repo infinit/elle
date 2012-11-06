@@ -44,9 +44,8 @@ class State:
             'OnFileTransfer',
             'OnFileTransferStatus',
             'OnMessage',
-            'send_file',
+            'send_files',
             'invite_user',
-            'invite_user_and_send_file',
             'send_message',
         ]
 

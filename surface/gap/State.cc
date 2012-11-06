@@ -350,24 +350,24 @@ namespace surface
     }
 
     void
-    State::send_file_to_new_user(std::string const& recipient_email,
-                                 std::string const& file_path)
+    State::send_files(std::string const& recipient_id_or_email,
+                      std::vector<std::string> const& files)
     {
-      std::string recipient_id = this->invite_user(recipient_email);
+      if (files.empty())
+            throw Exception(gap_no_file,
+                            "no files to send");
 
-      this->send_file(recipient_id,
-                      file_path);
-    }
+      int size = 0;
+      for (auto const& path : files)
+        {
+          if (!fs::exists(path))
+            throw Exception(gap_file_not_found,
+                            "file doesn't exist.");
 
-    void
-    State::send_file(std::string const& recipient_id,
-                     std::string const& file_path)
-    {
-      if (!fs::exists(file_path))
-        return;
+          size += get_size(path);
+        }
 
-      int size = get_size(file_path);
-      std::string name = fs::path(file_path).filename().string();
+      std::string filename = fs::path(files[0]).filename().string();
 
       // Build timestamp.
       elle::utility::Time time;
@@ -381,24 +381,22 @@ namespace surface
       std::string network_name =
         this->_me._id +
         + " - "
-        + recipient_id
-        + " - "
-        + name
+        + recipient_id_or_email
         + " - "
         + oss.str();
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
-      // std::string network_id = this->create_network(network_name);
+      std::string network_id = this->create_network(network_name);
 
-      // this->refresh_networks();
+      //this->refresh_networks();
 
-      // this->network_add_user(network_id, recipient_id);
-
-      // this->_meta->send_file(recipient_id,
-      //                        name,
-      //                        size,
-      //                        fs::is_directory(file_path));
+      this->_meta->send_file(recipient_id_or_email,
+                             filename,
+                             files.size(),
+                             size,
+                             fs::is_directory(filename),
+                             network_id);
 
     }
 

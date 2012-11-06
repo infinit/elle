@@ -16,6 +16,8 @@ extern "C" {
       gap_not_logged_in = -5,
       gap_api_error = -1000,
       gap_api_error_not_log_in = -1001,
+      gap_file_not_found = -2000,
+      gap_no_file = 2001,
     } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
@@ -144,23 +146,24 @@ extern "C" {
     gap_poll(gap_State* state);
 
     gap_Status
+    gap_send_files(gap_State* state,
+                  char const* recipient_id,
+                  char const* const* files);
+
+    gap_Status
     gap_send_file(gap_State* state,
-                  const char* recipient_id,
-                  const char* path);
+                  char const* recipient_id,
+                  char const* path);
+
 
     gap_Status
     gap_invite_user(gap_State* state,
-                    const char* email);
-
-    gap_Status
-    gap_send_file_to_new_user(gap_State* state,
-                              const char* email,
-                              const char* file_path);
+                    char const* email);
 
     gap_Status
     gap_message(gap_State* state,
-                const char* recipient_id,
-                const char* message);
+                char const* recipient_id,
+                char const* message);
 
     /// - Device --------------------------------------------------------------
     /// Returns the local device status.

@@ -36,6 +36,33 @@ _hash_password(gap_State* state, std::string email, std::string password)
   return res;
 }
 
+static
+gap_Status
+_send_files(gap_State* state,
+            std::string const& recipient,
+            boost::python::list const& files)
+{
+  boost::python::ssize_t len = boost::python::len(files);
+  char const** list = (char const**) calloc(sizeof(char*), (len + 1));
+
+  if (list == nullptr)
+    throw std::bad_alloc();
+
+  for (int i = 0; i < len; ++i)
+    {
+      list[i] = boost::python::extract<char const*>(files[i]);
+    }
+
+  gap_Status res = gap_send_files(state,
+                                  recipient.c_str(),
+                                  list);
+
+  free(list);
+
+  return res;
+}
+
+
 namespace
 {
   template<typename T>
@@ -92,9 +119,8 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("register", &gap_register);
 
   py::def("invite_user", &gap_invite_user);
-  py::def("invite_user_and_send_file", &gap_send_file_to_new_user);
   py::def("send_message", &gap_message);
-  py::def("send_file", &gap_send_file);
+  py::def("send_files", &_send_files);
   py::def("connect", &gap_trophonius_connect);
   py::def("ask_notif", &gap_meta_ask_notif);
 

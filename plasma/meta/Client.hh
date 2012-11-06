@@ -169,10 +169,12 @@ namespace plasma
       invite_user(std::string const& email);
 
       SendFileResponse
-      send_file(std::string const& recipient_id,
+      send_file(std::string const& recipient_id_or_email,
                 std::string const& file_name,
+                size_t count,
                 size_t size,
-                bool is_dir = false);
+                bool is_dir,
+                std::string const& network_id);
 
       MessageResponse
       send_message(std::string const& recipient_id,

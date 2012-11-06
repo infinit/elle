@@ -3,12 +3,14 @@
 
 # include <string>
 # include <map>
+# include <vector>
 
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
 
 # include <plasma/meta/Client.hh>
 # include <plasma/trophonius/Client.hh>
+
 
 # include "gap.h"
 
@@ -117,11 +119,8 @@ namespace surface
       invite_user(std::string const& email);
 
       void
-      send_file_to_new_user(std::string const& recipient_email,
-                            std::string const& file_path);
-      void
-      send_file(std::string const& recipient_id,
-                std::string const& file_path);
+      send_files(std::string const& recipient_id_or_email,
+                 std::vector<std::string> const& files);
 
     private:
       User _me;
