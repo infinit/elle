@@ -9,6 +9,9 @@ import metalib
 import meta.mail
 from meta.page import Page
 from meta import database, conf
+from meta import error
+from meta import regexp
+
 
 class _Page(Page):
     """Common tools for network calls."""
@@ -125,7 +128,17 @@ class AddUser(_Page):
 
     __pattern__ = "/network/add_user"
 
+    _validators = {
+        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
+        'user_id': regexp.Validator(regexp.ID, error.USER_ID_NOT_VALID),
+    }
+
     def POST(self):
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         to_add_user_id = database.ObjectId(self.data['user_id'])
         network = self.network(self.data['_id'])
         if network['owner'] != self.user['_id']:
@@ -133,7 +146,7 @@ class AddUser(_Page):
                                 "not belong to you")
         #XXX users should invited instead of added
         if to_add_user_id in network['users']:
-            return self.error("This user is already in the network")
+            return self.error(error.ALREADY_LOGGED_IN)
         to_add_user = database.byId(database.users(), to_add_user_id)
         if '@' in to_add_user['email']:
             infos = {
@@ -244,13 +257,21 @@ class Update(_Page):
             }
     """
 
+    _validators = {
+        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)
+    }
+
     __pattern__ = "/network/update"
 
     def POST(self):
         self.requireLoggedIn()
         for k in ['devices', 'users']:
             if k in self.data:
-                return self.error("key %s is deprecated" % k)
+                return self.error(error.DEPRECATED, "Key %s is deprecated." % k)
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
 
         _id = database.ObjectId(self.data['_id'])
         to_save = self.network(_id)
@@ -260,7 +281,7 @@ class Update(_Page):
             try:
                 self._check_name(name, _id)
             except Exception, e:
-                return self.error(str(e))
+                return self.error(error.UNKNOWN, str(e))
             to_save['name'] = name
 
         if 'root_block' in self.data and self.data['root_block'] and \
@@ -270,7 +291,7 @@ class Update(_Page):
            'group_block' in self.data and self.data['group_block'] and \
            'group_address' in self.data and self.data['group_address']:
             if to_save['root_block'] is not None:
-                return self.error("This network has already a root block")
+                return self.error(error.ROOT_BLOCK_ALREADY_EXIST)
 
             try:
                 root_block = self.data['root_block']
@@ -291,7 +312,7 @@ class Update(_Page):
                     self.user['public_key']
                 )
                 if not is_valid:
-                    return self.error("The root block was not properly signed")
+                    return self.error(error.ROOT_BLOCK_BADLY_SIGNED)
 
                 to_save['root_block'] = root_block
                 to_save['root_address'] = root_address
@@ -313,7 +334,7 @@ class Update(_Page):
                 print("Generated descriptor !")
             except Exception, err:
                 traceback.print_exc()
-                return self.error("Unexpected error: " + str(err))
+                return self.error(error.UNKNOWN, "Unexpected error: " + str(err))
 
         _id = database.networks().save(to_save)
         return self.success({
@@ -335,17 +356,27 @@ class AddDevice(_Page):
     """
     __pattern__ = '/network/add_device'
 
+    _validators = {
+        'id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
+        'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
+    }
+
     def POST(self):
         # XXX What are security check requirement ?
         self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
         network = database.networks().find_one(network_id)
         if not network:
-            return self.error("Network not found.")
+            return self.error(error.NETWORK_NOT_FOUND)
         device = database.devices().find_one(device_id)
         if not device:
-            return self.error("Device not found.")
+            return self.error(error.DEVICE_NOT_FOUND)
         if str(device_id) not in network['nodes']:
             network['nodes'][str(device_id)] = {
                     "local": None,
@@ -376,19 +407,29 @@ class ConnectDevice(_Page):
     """
     __pattern__ = '/network/connect_device'
 
+    _validators = {
+        'id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
+        'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
+    }
+
     def POST(self):
         self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
         network = database.networks().find_one(network_id)
         if not network:
-            return self.error("Network not found.")
+            return self.error(error.NETWORK_NOT_FOUND)
         device = database.devices().find_one(device_id)
         if not device:
-            return self.error("Device not found.")
+            return self.error(error.DEVICE_NOT_FOUND)
         node = network['nodes'].get(str(device_id))
         if node is None:
-            return self.error("Cannot find the device in this network")
+            return self.error(error.DEVICE_NOT_IN_NETWORK)
         local_address = self.data.get('local')
         if local_address is not None:
             node['local'] = (local_address[0], int(local_address[1]))
@@ -422,18 +463,26 @@ class Create(_Page):
 
     __pattern__ = "/network/create"
 
+    _validators = {
+        'name': regexp.Validator(regexp.NotNull, error.DEVICE_NOT_VALID),
+    }
+
     def POST(self):
-        if '_id' in self.data:
-            return self.error("An id cannot be specified while creating a self.data")
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
         name = self.data.get('name', '').strip()
         try:
             self._check_name(name)
         except Exception, e:
-            return self.error(str(e))
+            return self.error(error.UNKNOWN, str(e))
 
         for k in ['devices', 'users']:
             if k in self.data:
-                return self.error("The key %s is deprecated" % k)
+                return self.error(error.DEPRECATED, "The key %s is deprecated" % k)
+
         users =[]
         if self.user['_id'] not in users:
             assert isinstance(self.user['_id'], database.ObjectId)
@@ -475,6 +524,10 @@ class Delete(_Page):
 
     __pattern__ = "/network/delete"
 
+    _validators = {
+        '_id': regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID)
+    }
+
     def DELETE(self):
         self.requireLoggedIn()
 
@@ -484,7 +537,7 @@ class Delete(_Page):
             idx = networks.index(_id)
             networks.pop(idx)
         except:
-            return self.error("The network '%s' was not found" % str(_id))
+            return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
         database.users().save(self.user)
         database.networks().find_and_modify({
             '_id': _id,
@@ -493,4 +546,3 @@ class Delete(_Page):
         return  self.success({
             'deleted_network_id': _id,
         })
-

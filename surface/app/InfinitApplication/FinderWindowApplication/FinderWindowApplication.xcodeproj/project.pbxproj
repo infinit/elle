@@ -21,7 +21,6 @@
 		BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
 		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; };
 		BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1BE3791644181E004810F9 /* IATextFieldCell.m */; };
-		BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */ = {isa = PBXBuildFile; fileRef = BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */; };
 		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
 		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
 		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
@@ -35,10 +34,6 @@
 		BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */; };
 		BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409D11641A247004C9C97 /* IARegisterView.h */; };
 		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
-		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; };
-		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
-		BDB63FD01648163B008FCDAB /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
-		BDB63FD216481FCE008FCDAB /* Logo-big.png in Resources */ = {isa = PBXBuildFile; fileRef = BDB63FD116481FCE008FCDAB /* Logo-big.png */; };
 		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
 		BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
@@ -102,7 +97,6 @@
 		BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindowController.m; sourceTree = "<group>"; };
 		BD1BE3781644181E004810F9 /* IATextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IATextFieldCell.h; sourceTree = "<group>"; };
 		BD1BE3791644181E004810F9 /* IATextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IATextFieldCell.m; sourceTree = "<group>"; };
-		BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Logo-Complet-bichromie.png"; sourceTree = "<group>"; };
 		BD840966163EFC16004C9C97 /* gap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../../../gap/gap.h; sourceTree = "<group>"; };
 		BD840968163EFC3F004C9C97 /* IAGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGapState.h; sourceTree = "<group>"; };
 		BD840969163EFC3F004C9C97 /* IAGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGapState.m; sourceTree = "<group>"; };
@@ -115,11 +109,6 @@
 		BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterViewController.m; sourceTree = "<group>"; };
 		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
 		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
-		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
-		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
-		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
-		BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAUserSearchBar.m; sourceTree = "<group>"; };
-		BDB63FD116481FCE008FCDAB /* Logo-big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Logo-big.png"; sourceTree = "<group>"; };
 		BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindow.h; sourceTree = "<group>"; };
 		BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindow.m; sourceTree = "<group>"; };
 		BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IALoginViewController.h; sourceTree = "<group>"; };
@@ -153,6 +142,7 @@
 			children = (
 				BD84096D16401131004C9C97 /* libgap.dylib */,
 				BD1A1C031639469100186C48 /* FinderWindowApplication */,
+				BD1A1C27163946A500186C48 /* FinderWindow */,
 				BD1A1BFC1639469100186C48 /* Frameworks */,
 				BD1A1BFA1639469000186C48 /* Products */,
 			);
@@ -193,7 +183,6 @@
 				BD1A1C101639469100186C48 /* IAAppDelegate.m */,
 				BD1A1C121639469100186C48 /* MainMenu.xib */,
 				BD1A1C041639469100186C48 /* Supporting Files */,
-				BD1A1C27163946A500186C48 /* FinderWindow */,
 			);
 			path = FinderWindowApplication;
 			sourceTree = "<group>";
@@ -213,18 +202,29 @@
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
-				BDB63FC91647D425008FCDAB /* Window */,
-				BDB63FC61647D389008FCDAB /* Register */,
-				BDB63FC81647D3F2008FCDAB /* Resources */,
-				BDB63FC71647D3D9008FCDAB /* Login */,
 				BD1A1C28163946A500186C48 /* Supporting Files */,
-				BDB63FCA1647D456008FCDAB /* Gap */,
-				BDB63FCC1647D4AE008FCDAB /* Common */,
+				BD840966163EFC16004C9C97 /* gap.h */,
+				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
+				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
 				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
-				BDB63FCD1647D4D0008FCDAB /* MainView */,
+				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
+				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
+				BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */,
+				BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */,
+				BD840968163EFC3F004C9C97 /* IAGapState.h */,
+				BD840969163EFC3F004C9C97 /* IAGapState.m */,
+				BD8409A316412C2B004C9C97 /* IAMainView.h */,
+				BD8409A416412C2B004C9C97 /* IAMainView.m */,
+				BD8409A816412CE3004C9C97 /* IAMainViewController.h */,
+				BD8409A916412CE3004C9C97 /* IAMainViewController.m */,
+				BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */,
+				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
+				BD8409D11641A247004C9C97 /* IARegisterView.h */,
+				BD8409D21641A247004C9C97 /* IARegisterView.m */,
+				BD1BE3781644181E004810F9 /* IATextFieldCell.h */,
+				BD1BE3791644181E004810F9 /* IATextFieldCell.m */,
 			);
-			name = FinderWindow;
-			path = ../FinderWindow;
+			path = FinderWindow;
 			sourceTree = "<group>";
 		};
 		BD1A1C28163946A500186C48 /* Supporting Files */ = {
@@ -235,80 +235,6 @@
 				BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		BDB63FC61647D389008FCDAB /* Register */ = {
-			isa = PBXGroup;
-			children = (
-				BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */,
-				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
-				BD8409D11641A247004C9C97 /* IARegisterView.h */,
-				BD8409D21641A247004C9C97 /* IARegisterView.m */,
-			);
-			name = Register;
-			sourceTree = "<group>";
-		};
-		BDB63FC71647D3D9008FCDAB /* Login */ = {
-			isa = PBXGroup;
-			children = (
-				BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */,
-				BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */,
-			);
-			name = Login;
-			sourceTree = "<group>";
-		};
-		BDB63FC81647D3F2008FCDAB /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				BDB63FD116481FCE008FCDAB /* Logo-big.png */,
-				BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		BDB63FC91647D425008FCDAB /* Window */ = {
-			isa = PBXGroup;
-			children = (
-				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
-				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
-				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
-				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
-			);
-			name = Window;
-			sourceTree = "<group>";
-		};
-		BDB63FCA1647D456008FCDAB /* Gap */ = {
-			isa = PBXGroup;
-			children = (
-				BD840966163EFC16004C9C97 /* gap.h */,
-				BD840968163EFC3F004C9C97 /* IAGapState.h */,
-				BD840969163EFC3F004C9C97 /* IAGapState.m */,
-			);
-			name = Gap;
-			sourceTree = "<group>";
-		};
-		BDB63FCC1647D4AE008FCDAB /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				BD1BE3781644181E004810F9 /* IATextFieldCell.h */,
-				BD1BE3791644181E004810F9 /* IATextFieldCell.m */,
-			);
-			name = Common;
-			sourceTree = "<group>";
-		};
-		BDB63FCD1647D4D0008FCDAB /* MainView */ = {
-			isa = PBXGroup;
-			children = (
-				BD8409A316412C2B004C9C97 /* IAMainView.h */,
-				BD8409A416412C2B004C9C97 /* IAMainView.m */,
-				BD8409A816412CE3004C9C97 /* IAMainViewController.h */,
-				BD8409A916412CE3004C9C97 /* IAMainViewController.m */,
-				BDB63FC11647D14C008FCDAB /* IADropFileView.h */,
-				BDB63FC21647D14C008FCDAB /* IADropFileView.m */,
-				BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */,
-				BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */,
-			);
-			name = MainView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -328,7 +254,6 @@
 				BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */,
 				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
 				BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */,
-				BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,7 +334,6 @@
 				BD1A1C081639469100186C48 /* InfoPlist.strings in Resources */,
 				BD1A1C0E1639469100186C48 /* Credits.rtf in Resources */,
 				BD1A1C141639469100186C48 /* MainMenu.xib in Resources */,
-				BDB63FD216481FCE008FCDAB /* Logo-big.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +343,6 @@
 			files = (
 				BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */,
 				BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */,
-				BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,7 +355,6 @@
 			files = (
 				BD1A1C0A1639469100186C48 /* main.m in Sources */,
 				BD1A1C111639469100186C48 /* IAAppDelegate.m in Sources */,
-				BDB63FD01648163B008FCDAB /* IAUserSearchBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,7 +371,6 @@
 				BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */,
 				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
 				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
-				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

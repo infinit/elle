@@ -292,31 +292,6 @@ static void on_user_status(gap_UserStatusNotification const* n);
     } performSelector:selector onObject:object];
 }
 
-- (void)               sendFiles:(NSArray*)files
-                          toUser:(NSString*)user
-                 performSelector:(SEL)selector
-                        onObject:(id)object
-{
-//    __weak id this = self;
-    [self _addOperation:^(void) {
-        gap_Status res;
-        
-        char** carray = malloc(sizeof(char*) * ([files count] + 1));
-        size_t i = 0;
-        for (id file in files)
-            carray[i++] = strdup([file UTF8String]);
-        carray[i] = NULL;
-        
-//        res = gap_send_files(self.state, carray);
-        
-        for (i = 0; i < [files count]; i++)
-            free(carray[i]);
-        free(carray);
-        
-        return res;
-    } performSelector:selector onObject:object];
-}
-
 // Wrap any operation in a block and execute it in the mail thread
 -(void) _addOperation:(gap_operation_t)operation
       performSelector:(SEL)selector

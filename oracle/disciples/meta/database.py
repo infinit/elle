@@ -67,10 +67,16 @@ def invitations(conn=None):
         _invitations = database(conn)['invitations']
     return _invitations
 
+_transactions = None
+def transactions(conn=None):
+    global _transactions
+    if _transactions is None:
+        _transactions = database(conn)['transactions']
+    return _transactions
+
 # functions
 def byId(collection, _id):
     """
     Get an object from collection `collection' with its id `_id'
     """
     return collection.find_one({'_id': ObjectId(_id)})
-
