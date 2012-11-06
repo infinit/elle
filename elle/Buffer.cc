@@ -5,7 +5,6 @@
 #include <elle/log.hh>
 
 #include <elle/io/Dumpable.hh>
-#include <elle/format/hexadecimal.hh>
 
 #include <iomanip>
 #include <iostream>
@@ -168,19 +167,6 @@ namespace elle
       }
   }
 
-  /*----------.
-  | Printable |
-  `----------*/
-
-  void
-  Buffer::print(std::ostream& stream) const
-  {
-    stream <<
-      format::hexadecimal::encode(
-        reinterpret_cast<const char*>(this->_contents),
-        this->_size);
-  }
-
   size_t
   Buffer::_next_size(size_t size)
   {
@@ -339,15 +325,6 @@ namespace elle
     if (this->_size != other.size())
       return false;
     return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
-  }
-
-  void
-  WeakBuffer::print(std::ostream& stream) const
-  {
-    stream <<
-      format::hexadecimal::encode(
-        reinterpret_cast<const char*>(this->_contents),
-        this->_size);
   }
 
   ///////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
-# include <elle/Printable.hh>
 
 # include <elle/serialize/fwd.hh>
 
@@ -28,8 +27,7 @@ namespace elle
   /// Note that this class owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the data
-  class Buffer:
-    public Printable
+  class Buffer
   {
     friend class serialize::Serializer<Buffer>;
   public:
@@ -120,15 +118,6 @@ namespace elle
     ELLE_OPERATOR_GTE(WeakBuffer);
     ELLE_OPERATOR_NEQ(WeakBuffer);
 
-    /*-----------.
-    | Interfaces |
-    `-----------*/
-  public:
-    // printable
-    virtual
-    void
-    print(std::ostream& stream) const;
-
   private:
     static size_t _next_size(size_t);
   };
@@ -141,8 +130,7 @@ namespace elle
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
   ///
-  class WeakBuffer:
-    public Printable
+  class WeakBuffer
   {
   private:
     Byte*     _contents;
@@ -199,15 +187,6 @@ namespace elle
     ELLE_OPERATOR_GT(Buffer);
     ELLE_OPERATOR_GTE(Buffer);
     ELLE_OPERATOR_NEQ(Buffer);
-
-    /*-----------.
-    | Interfaces |
-    `-----------*/
-  public:
-    // printable
-    virtual
-    void
-    print(std::ostream& stream) const;
   };
 
 }

@@ -1,5 +1,7 @@
 #include <elle/cryptography/Input.hh>
 
+#include <elle/format/hexadecimal.hh>
+
 namespace elle
 {
   namespace cryptography
@@ -85,7 +87,10 @@ namespace elle
     void
     Input::print(std::ostream& stream) const
     {
-      stream << this->_buffer;
+      stream <<
+        format::hexadecimal::encode(
+          reinterpret_cast<const char*>(this->_buffer.contents()),
+          this->_buffer.size());
     }
   }
 }
