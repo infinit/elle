@@ -22,6 +22,7 @@
 		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; };
 		BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1BE3791644181E004810F9 /* IATextFieldCell.m */; };
 		BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */ = {isa = PBXBuildFile; fileRef = BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */; };
+		BD2602D616494ADA00010150 /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
 		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
 		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
 		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
@@ -440,6 +441,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD2602D616494ADA00010150 /* IAUserSearchBar.m in Sources */,
 				BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */,
 				BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */,
 				BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */,

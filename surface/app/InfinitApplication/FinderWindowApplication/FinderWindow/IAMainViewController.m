@@ -46,6 +46,15 @@
 {
     _locked = true;
     [self refresh];
+    [[IAGapState instance] sendFiles:self.drop_box.pending_files
+                              toUser:[self.search_bar getUser]
+                     performSelector:@selector(_onFileSent:)
+                            onObject:self];
+}
+
+- (void) _onFileSent:(IAGapOperationResult*)result
+{
+    NSLog(@"FILE SENT: %d", result.success);
 }
 
 - (void)refresh

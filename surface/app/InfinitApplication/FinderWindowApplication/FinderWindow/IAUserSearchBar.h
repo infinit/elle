@@ -10,7 +10,8 @@
 
 @interface IAUserSearchBar : NSTextField
 
-
+- (NSString*)getUser;
 - (BOOL)isValid;
+
 
 @end

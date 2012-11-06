@@ -130,7 +130,7 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     syslog(LOG_NOTICE, "Loading injector");
     
     
-    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
+    //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneForCell:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForKind:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForZone:);
@@ -286,11 +286,11 @@ struct TFENode
     // function details here
     NSLog(@"Hello Infinit !!!!!");
 }
-
+/*
 - (id)_hook_zoneList:(int)arg1
 {
     id initial_list = [self _hook_zoneList:arg1];
-    if (arg1 != 3 /*FAVORITES*/)
+    if (arg1 != 3) //FAVORITES
         return initial_list;
     
     NSString* path = [Test getDrivePath];
@@ -349,7 +349,7 @@ struct TFENode
 ////            
 ////            id new_fbe_node = [[CLS(NSNavFBENode) alloc] initWithPath:@""];
 //            //[new_node performSelector:@selector(setOriginalNode:) withObject:new_cell];
-///*            SEL sel = @selector(initTextCell:);
+// *           SEL sel = @selector(initTextCell:);
 //            id new_cell = [NSClassFromString(@"TSidebarItemCell") alloc];
 //            NSInvocation* inv = [NSInvocation invocationWithMethodSignature:[new_cell methodSignatureForSelector:sel]];
 //            [inv setSelector:sel];
@@ -362,14 +362,14 @@ struct TFENode
 ////            [inv setArgument:&i atIndex:3];
 //            [inv invoke];
 //            [new_cell performSelector:@selector(setTitle:) withObject:@"CELL TITLE"];
-//            [new_cell performSelector:@selector(setStringValue:) withObject:@"CELL STRING VALUE"];*/
+//            [new_cell performSelector:@selector(setStringValue:) withObject:@"CELL STRING VALUE"];* //
 //            //syslog(LOG_NOTICE, "New cell: %s", CSTR(new_cell));
 //        }
 
-    
+
     return [self _hook_zoneList:arg1];
 }
-
+*/
 - (int)_hook_zoneForCell:(id)arg1
 {
     int res = [self _hook_zoneForCell:arg1];
@@ -417,7 +417,8 @@ struct TFENode
                 id img = [self image];
                 if ([img respondsToSelector:@selector(initWithSourceImage:)])
                 {
-                    [img initWithSourceImage:[Test getSidebarImage]];
+                    [img performSelector:@selector(initWithSourceImage:)
+                              withObject:[Test getSidebarImage]];
                 }
                 else if ([self respondsToSelector:@selector(setImage:)])
                 {
@@ -442,11 +443,24 @@ struct TFENode
     [self _initializeInfinitWindow];
     if ([self _isInfinitWindow])
     {
+        syslog(LOG_NOTICE, "IT IS AN INFINIT WINDOW");
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderFront:self];
+    }
+    else
+    {
+        syslog(LOG_NOTICE, "IT IS AN NOT INFINIT WINDOW");
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderOut:self];
+    }
+   /* if ([self _isInfinitWindow])
+    {
         [[[WindowLoader retreiveInfinitWindowFor:[self window]] windowController] showWindow:self];
         [[WindowLoader retreiveInfinitWindowFor:[self window]] orderFront:self];
     }
     else
+    {
+        [[[WindowLoader retreiveInfinitWindowFor:[self window]] windowController] hide:self];
         [[WindowLoader retreiveInfinitWindowFor:[self window]] orderOut:self];
+    }*/
 }
 
 - (BOOL)_isInfinitWindow
@@ -454,12 +468,22 @@ struct TFENode
     id view_controller = [self performSelector:@selector(browserViewController)];
     if (view_controller != nil)
     {
+
         TFENode* target = (TFENode*)[view_controller performSelector:@selector(target)];
+
         if (target != nil)
         {
-            NSString* path = [[CLS(NSNavFBENode) _nodeWithFBENode:target->opaque_node_ref] performSelector:@selector(path)];
+                    syslog(LOG_NOTICE, "PIF");
+            NSString* path =
+                [[[CLS(NSNavFBENode) alloc] _initWithFBENode:target->opaque_node_ref]
+                              performSelector:@selector(path)];
+                    syslog(LOG_NOTICE, "PAF");
             if ([path isEqualToString:[Test getDrivePath]])
+            {
+                       syslog(LOG_NOTICE, "YES");
                 return YES;
+            }
+                                   syslog(LOG_NOTICE, "NO");
         }
         else
             syslog(LOG_ERR, "Couldn't retreive the view controller target");
@@ -472,8 +496,8 @@ struct TFENode
 - (void)_initializeInfinitWindow
 {
     //[[self window] setTitle:@"MEGA TITLE DE OUF"];
-    NSWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
-    
+    IAFinderWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
+
     [window setFrame:[self getInfinitWindowsFrameFor:window]
              display:YES
              animate:NO];
@@ -487,10 +511,11 @@ struct TFENode
 
 
 - (void)receiveUpdateFrameNotification:(NSNotification *) notification {
-    IAFinderWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
+    IAFinderWindow* window = [WindowLoader retreiveInfinitWindowFor:[self window]];
     if (window != nil) {
         [window setFrame:[self getInfinitWindowsFrameFor:window]
-                 display:YES];
+                 display:[self _isInfinitWindow]];
+
     }
 }
 //
@@ -501,9 +526,9 @@ struct TFENode
 
 
 - (NSRect)getInfinitWindowsFrameFor:(IAFinderWindow*)arg1 {
-    id browserWindow = [self browserWindow];
-    id browserViewContainer = [self browserViewContainer];
-    id browserViewController = [self browserViewController];
+    id browserWindow = [self performSelector:@selector(browserWindow)];
+    id browserViewContainer = [self performSelector:@selector(browserViewContainer)];
+    id browserViewController = [self performSelector:@selector(browserViewController)];
     id browserView = [browserViewController view];
     NSRect windowFrame = [browserWindow frame];
     NSRect browserViewContainerFrame = [browserViewContainer frame];
@@ -543,7 +568,7 @@ struct TFENode
         {
             unsigned long long int selected_menu_node_index = [bbb firstIndex];
             TFENode selected_menu_node = [controller _hook_nodeAtIndex:selected_menu_node_index];
-            NSLog([[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:selected_menu_node.opaque_node_ref] path]);
+//            NSLog([[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:selected_menu_node.opaque_node_ref] path]);
         }
         [self insertItem:[NSMenuItem separatorItem] atIndex:2];
         NSMenuItem *infItem = [self insertItemWithTitle:@"Infinit" action:nil keyEquivalent:@"" atIndex:3];

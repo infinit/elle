@@ -14,6 +14,7 @@
 
 @property(retain) IBOutlet IAMainViewController* main_controller;
 @property(retain) IBOutlet NSTextField* label;
+@property(readonly) NSArray* pending_files;
 
 - (BOOL) hasPendingFiles;
 

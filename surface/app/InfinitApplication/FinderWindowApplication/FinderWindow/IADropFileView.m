@@ -9,9 +9,9 @@
 #import "IADropFileView.h"
 
 @implementation IADropFileView
-{
-    NSArray* _pending_files;
-}
+
+
+@synthesize pending_files = _pending_files;
 
 - (id)initWithFrame:(NSRect)frame
 {
