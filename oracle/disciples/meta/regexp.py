@@ -6,7 +6,7 @@ Handle = r'^.{3,50}$'
 Password = r'^.{64}$'
 Device = r'^.{3,50}$'
 ID = r'^[a-zA-Z0-9]{24,40}$'
-DeviceID = r'^[a-zA-Z0-9]{24, 40}$'
+DeviceID = r'^[a-zA-Z0-9]{24,40}$'
 NetworkID = r'^[a-zA-Z0-9]{24,40}$'
 NotNull = r'^.+$'
 
