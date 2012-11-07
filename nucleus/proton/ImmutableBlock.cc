@@ -25,7 +25,7 @@ namespace nucleus
         Network const& network,
         Family const family,
         neutron::Component const component,
-        elle::cryptography::PublicKey const& creator_K):
+        cryptography::PublicKey const& creator_K):
       Block(network, family, component, creator_K)
     {
     }

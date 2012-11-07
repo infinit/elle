@@ -31,7 +31,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
                           version)
 {
   enforce(version == 0);
-  enforce(value._signature != elle::cryptography::Signature::Null);
+  enforce(value._signature != cryptography::Signature::Null);
 
   archive << base_class<nucleus::proton::ImprintBlock>(value);
 

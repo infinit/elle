@@ -1,8 +1,11 @@
 #include "metalib.hh"
 
-#include <elle/cryptography/random.hh>
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
+
+#include <cryptography/random.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <elle/Passport.hh>
 #include <elle/Authority.hh>
@@ -41,7 +44,7 @@ static elle::Passport create_passport(elle::String const& id,
   // create the passport.
   //
   elle::Buffer buffer(
-    elle::cryptography::random::generate<elle::Buffer>(512));
+    cryptography::random::generate<elle::Buffer>(512));
   // XXX
   elle::standalone::Region region;
   if (region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)

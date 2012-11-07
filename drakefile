@@ -197,6 +197,53 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   comet_lib = drake.cxx.DynLib('lib/comet', comet_sources,
                                cxx_toolkit, cxx_config)
 
+  # Cryptography
+  cryptography_sources = drake.nodes(
+    'cryptography/Cipher.cc',
+    'cryptography/Cipher.hh',
+    'cryptography/Cipher.hxx',
+    'cryptography/Clear.hh',
+    'cryptography/Code.cc',
+    'cryptography/Code.hh',
+    'cryptography/Code.hxx',
+    'cryptography/Digest.hh',
+    'cryptography/Input.cc',
+    'cryptography/Input.hh',
+    'cryptography/Input.hxx',
+    'cryptography/KeyPair.cc',
+    'cryptography/KeyPair.hh',
+    'cryptography/KeyPair.hxx',
+    'cryptography/LargeSerializer.hxx',
+    'cryptography/Output.cc',
+    'cryptography/Output.hh',
+    'cryptography/Output.hxx',
+    'cryptography/Plain.hh',
+    'cryptography/PrivateKey.cc',
+    'cryptography/PrivateKey.hh',
+    'cryptography/PrivateKey.hxx',
+    'cryptography/PublicKey.cc',
+    'cryptography/PublicKey.hh',
+    'cryptography/PublicKey.hxx',
+    'cryptography/Seed.cc',
+    'cryptography/Seed.hh',
+    'cryptography/Seed.hxx',
+    'cryptography/Signature.cc',
+    'cryptography/Signature.hh',
+    'cryptography/Signature.hxx',
+    'cryptography/all.hh',
+    'cryptography/cryptography.cc',
+    'cryptography/cryptography.hh',
+    'cryptography/fwd.hh',
+    'cryptography/oneway.cc',
+    'cryptography/oneway.hh',
+    'cryptography/oneway.hxx',
+    'cryptography/random.cc',
+    'cryptography/random.hh',
+    'cryptography/random.hxx',
+    )
+  cryptography_lib = drake.cxx.DynLib('lib/cryptography', cryptography_sources,
+                                      cxx_toolkit, cxx_config)
+
   # Protocol
   protocol_sources = drake.nodes(
     'protocol/ChanneledStream.hh',
@@ -335,7 +382,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   for test in ['slug']:
     drake.cxx.Executable(hole_tests_root / test,
                          drake.nodes(hole_tests_root / ('%s.cc' % test)) +
-                         [reactor.lib_dynamic, elle.lib_dynamic,
+                         [reactor.lib_dynamic, elle.lib_dynamic, cryptography_lib
                           hole_lib, comet_lib, nucleus_lib, protocol_lib],
                          cxx_toolkit, cxx_config + boost.config_test())
 
@@ -524,6 +571,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
     lune_lib,
     nucleus_lib,
     plasma_lib,
+    cryptography_lib,
     protocol_lib,
     reactor.lib_dynamic,
     elle.lib_dynamic,
@@ -592,6 +640,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   #       elle.lib_dynamic,
   #       etoile_lib,
   #       reactor.lib_dynamic,
+  #       cryptography_lib,
   #       protocol_lib,
   #       lune_lib,
   #       nucleus_lib,

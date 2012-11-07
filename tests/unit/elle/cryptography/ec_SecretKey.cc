@@ -1,7 +1,9 @@
-#include <iostream>
+#include <cryptography/SecretKey.hh>
+#include <cryptography/Cipher.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
-#include <elle/cryptography/SecretKey.hh>
-#include <elle/cryptography/Cipher.hh>
+#include <iostream>
 
 #define ASSERT(test) \
   if (!(test)) \
@@ -65,11 +67,11 @@ ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
 
 int main()
 {
-  elle::cryptography::SecretKey secret_key;
+  cryptography::SecretKey secret_key;
 
   ASSERT(secret_key.Generate() == elle::Status::Ok);
 
-  elle::cryptography::Cipher cipher;
+  cryptography::Cipher cipher;
 
   std::string const secret_string =
     "Nobody should read this, it's only here for testing purposes."
@@ -155,7 +157,7 @@ int main()
 
     {
       A a{42.0, "hey ho", 12.2f};
-      elle::cryptography::Cipher cipher;
+      cryptography::Cipher cipher;
       ASSERT(secret_key.Encrypt(a, cipher) == elle::Status::Ok);
 
       A res;
@@ -170,7 +172,7 @@ int main()
       impl.impl = "pif";
       Virtual& virt = impl;
 
-      elle::cryptography::Cipher c1, c2, c3, c4;
+      cryptography::Cipher c1, c2, c3, c4;
       ASSERT(secret_key.Encrypt(impl, c1) == elle::Status::Ok);
       ASSERT(secret_key.Encrypt(impl, c2) == elle::Status::Ok);
       ASSERT(secret_key.Encrypt(virt, c3) == elle::Status::Ok);

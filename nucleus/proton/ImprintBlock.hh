@@ -1,8 +1,11 @@
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
 # define NUCLEUS_PROTON_IMPRINTBLOCK_HH
 
-# include <elle/cryptography/PublicKey.hh>
 # include <elle/serialize/construct.hh>
+
+# include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
@@ -45,7 +48,7 @@ namespace nucleus
 
       ImprintBlock(Network const& network,
                    neutron::Component const component,
-                   elle::cryptography::PublicKey const& creator_K);
+                   cryptography::PublicKey const& creator_K);
       ~ImprintBlock();
 
       /*--------.
@@ -85,7 +88,7 @@ namespace nucleus
       /// must be used to sign the block's content. Note that the signature
       /// is not embeded in this class. Instead the higher-level classes
       /// include the signature, or several ones should it be necessary.
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, owner_K);
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, owner_K);
       /// This subject is generated on-demand in order to ease the management
       /// of the block owner's identity. The attribute is therefore never
       /// serialized.

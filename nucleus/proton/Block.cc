@@ -1,5 +1,5 @@
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/random.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/random.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -15,8 +15,8 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    elle::cryptography::oneway::Algorithm const Block::Algorithms::oneway(
-      elle::cryptography::oneway::Algorithm::sha256);
+    cryptography::oneway::Algorithm const Block::Algorithms::oneway(
+      cryptography::oneway::Algorithm::sha256);
 
     /*-------------.
     | Construction |
@@ -31,13 +31,13 @@ namespace nucleus
     Block::Block(Network const network,
                  Family const family,
                  neutron::Component const component,
-                 elle::cryptography::PublicKey const& creator_K):
+                 cryptography::PublicKey const& creator_K):
       _network(network),
       _family(family),
       _component(component),
-      _creator(elle::cryptography::oneway::hash(creator_K,
+      _creator(cryptography::oneway::hash(creator_K,
                                                 Block::Algorithms::oneway)),
-      _salt(elle::cryptography::random::generate<elle::Natural64>()),
+      _salt(cryptography::random::generate<elle::Natural64>()),
       _state(StateClean)
     {
       // XXX[to improve and put in the list above]

@@ -232,6 +232,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(common)
+add_subdirectory(cryptography)
 add_subdirectory(nucleus)
 add_subdirectory(protocol)
 add_subdirectory(etoile)
@@ -272,6 +273,7 @@ set(INFINIT_LIBRARIES
   protocol
   infinit
   hole
+  cryptography
   elle
   comet
 

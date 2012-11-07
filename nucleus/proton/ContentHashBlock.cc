@@ -22,7 +22,7 @@ namespace nucleus
     ContentHashBlock::ContentHashBlock(
         Network const& network,
         neutron::Component const component,
-        elle::cryptography::PublicKey const& creator_K):
+        cryptography::PublicKey const& creator_K):
       ImmutableBlock(network, Family::content_hash_block, component, creator_K)
     {
     }

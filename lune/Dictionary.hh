@@ -1,7 +1,12 @@
-#ifndef  LUNE_DICTIONARY_HH
+#ifndef LUNE_DICTIONARY_HH
 # define LUNE_DICTIONARY_HH
 
 # include <elle/concept/Fileable.hh>
+
+# include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/Address.hh>
 
 # include <lune/Map.hh>
@@ -57,7 +62,7 @@ namespace lune
     //
     // attributes
     //
-    Map<elle::cryptography::PublicKey>        users;
+    Map<cryptography::PublicKey>        users;
     Map<nucleus::proton::Address> groups;
   };
 

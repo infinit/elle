@@ -1,13 +1,16 @@
-#include <iostream>
-
-#include <elle/cryptography/KeyPair.hh>
 #include <elle/Buffer.hh>
 #include <elle/serialize/Serializer.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 
 #include <tests/unit/unit.hh>
+
+#include <iostream>
 
 #define CHECK(call)                                                     \
   if (call != elle::Status::Ok) { assert(false); } else
@@ -21,7 +24,7 @@ namespace test
     {
       nucleus::proton::Network network("test");
 
-      elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
+      cryptography::KeyPair kp(cryptography::KeyPair::generate());
 
       test::ImprintBlock blk(network,
                              nucleus::neutron::ComponentObject,

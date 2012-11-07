@@ -4,8 +4,11 @@
 # include <elle/Printable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/construct.hh>
-# include <elle/cryptography/Digest.hh>
-# include <elle/cryptography/oneway.hh>
+
+# include <cryptography/Digest.hh>
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/Network.hh>
@@ -45,7 +48,7 @@ namespace nucleus
     public:
       struct Algorithms
       {
-        static const elle::cryptography::oneway::Algorithm oneway;
+        static const cryptography::oneway::Algorithm oneway;
       };
 
       /*---------------.
@@ -149,7 +152,7 @@ namespace nucleus
         Valid(Network const& network,
               Family const& family,
               neutron::Component const& component,
-              elle::cryptography::Digest const& digest);
+              cryptography::Digest const& digest);
 
       public:
         // serializable
@@ -160,7 +163,7 @@ namespace nucleus
         ELLE_ATTRIBUTE_R(Network, network);
         ELLE_ATTRIBUTE_R(Family, family);
         ELLE_ATTRIBUTE_R(neutron::Component, component);
-        ELLE_ATTRIBUTE_R(elle::cryptography::Digest, digest);
+        ELLE_ATTRIBUTE_R(cryptography::Digest, digest);
       };
 
       /*-----------.

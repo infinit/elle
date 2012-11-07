@@ -2,9 +2,15 @@
 # define ETOILE_AUTOMATON_ACCESS_HH
 
 # include <elle/types.hh>
-# include <elle/cryptography/fwd.hh>
+
+# include <cryptography/fwd.hh>
+
 # include <nucleus/neutron/fwd.hh>
+
 # include <etoile/gear/fwd.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace etoile
 {
@@ -39,7 +45,7 @@ namespace etoile
                                        const nucleus::neutron::Subject&);
 
       static elle::Status       Upgrade(gear::Object&,
-                                        elle::cryptography::SecretKey const&);
+                                        cryptography::SecretKey const&);
       static elle::Status       Downgrade(gear::Object&);
 
       static elle::Status       Destroy(gear::Object&);

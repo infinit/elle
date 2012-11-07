@@ -3,12 +3,16 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
-# include <elle/cryptography/PublicKey.hh>
+
+# include <cryptography/PublicKey.hh>
 
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
 
 # include <elle/idiom/Open.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace etoile
 {
@@ -57,9 +61,9 @@ namespace etoile
       } timestamps;
 
       nucleus::neutron::Size size;
-      elle::cryptography::PublicKey manager;
+      cryptography::PublicKey manager;
       nucleus::proton::Revision revision;
-      elle::cryptography::PublicKey pass_K;
+      cryptography::PublicKey pass_K;
     };
 
   }

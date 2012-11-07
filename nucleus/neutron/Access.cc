@@ -4,7 +4,8 @@
 #include <nucleus/neutron/Subject.hh>
 
 #include <elle/Buffer.hh>
-#include <elle/cryptography/Digest.hh>
+
+#include <cryptography/Digest.hh>
 
 namespace nucleus
 {
@@ -14,8 +15,8 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    elle::cryptography::oneway::Algorithm const Access::Algorithms::oneway(
-      elle::cryptography::oneway::Algorithm::sha256);
+    cryptography::oneway::Algorithm const Access::Algorithms::oneway(
+      cryptography::oneway::Algorithm::sha256);
 
 //
 // ---------- constants -------------------------------------------------------
@@ -33,7 +34,7 @@ namespace nucleus
     }
 
     Access::Access(proton::Network const& network,
-                   elle::cryptography::PublicKey const& creator_K):
+                   cryptography::PublicKey const& creator_K):
       proton::ContentHashBlock(network, ComponentAccess, creator_K)
     {
     }
@@ -226,7 +227,7 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    elle::cryptography::Digest
+    cryptography::Digest
     Access::fingerprint() const
     {
       elle::Buffer buffer;
@@ -235,9 +236,9 @@ namespace nucleus
         buffer.writer() << record->subject()
                         << record->permissions();
 
-      elle::cryptography::Digest digest{
-        elle::cryptography::oneway::hash(
-          elle::cryptography::Plain{elle::WeakBuffer{buffer}},
+      cryptography::Digest digest{
+        cryptography::oneway::hash(
+          cryptography::Plain{elle::WeakBuffer{buffer}},
           Access::Algorithms::oneway)};
 
       return (digest);

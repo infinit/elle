@@ -1,7 +1,9 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HH
 # define NUCLEUS_PROTON_CONTENTS_HH
 
-# include <elle/cryptography/fwd.hh>
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -52,7 +54,7 @@ namespace nucleus
       //
       Contents(); // XXX[to deserialize]
       Contents(Network const& network,
-               elle::cryptography::PublicKey const& creator_K);
+               cryptography::PublicKey const& creator_K);
       ~Contents();
 
       //
@@ -60,8 +62,8 @@ namespace nucleus
       //
       elle::Status      Create();
 
-      elle::Status Encrypt(elle::cryptography::SecretKey const& key);
-      elle::Status Decrypt(elle::cryptography::SecretKey const& key);
+      elle::Status Encrypt(cryptography::SecretKey const& key);
+      elle::Status Decrypt(cryptography::SecretKey const& key);
 
       //
       // interfaces
@@ -82,7 +84,7 @@ namespace nucleus
       //
       T*                content;
 
-      elle::cryptography::Cipher*     cipher;
+      cryptography::Cipher*     cipher;
     };
 
   }

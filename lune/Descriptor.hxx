@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/cryptography/Signature.hh>
+# include <cryptography/Signature.hh>
 # include <nucleus/proton/Address.hxx>
 # include <hole/Model.hh>
 

@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/cryptography/PublicKey.hh>
+# include <cryptography/PublicKey.hh>
 # include <nucleus/proton/Address.hh>
 # include <lune/Map.hh>
 

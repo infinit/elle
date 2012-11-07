@@ -3,8 +3,11 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
-# include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/Signature.hh>
+
+# include <cryptography/PublicKey.hh>
+# include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
@@ -46,15 +49,15 @@ namespace nucleus
       OwnerKeyBlock(); // XXX[to deserialize]
       OwnerKeyBlock(Network const& network,
                     neutron::Component component,
-                    elle::cryptography::PublicKey const& creator_K);
+                    cryptography::PublicKey const& creator_K);
       ~OwnerKeyBlock();
     private:
       /// Initializes the instance based on the key pair generated for
       /// the block.
       OwnerKeyBlock(Network const& network,
                     neutron::Component component,
-                    elle::cryptography::PublicKey const& creator_K,
-                    elle::cryptography::KeyPair const& block_pair);
+                    cryptography::PublicKey const& creator_K,
+                    cryptography::KeyPair const& block_pair);
 
       //
       // methods
@@ -89,9 +92,9 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE(elle::cryptography::PublicKey, block_K);
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, owner_K);
-      ELLE_ATTRIBUTE(elle::cryptography::Signature, owner_signature);
+      ELLE_ATTRIBUTE(cryptography::PublicKey, block_K);
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, owner_K);
+      ELLE_ATTRIBUTE(cryptography::Signature, owner_signature);
       ELLE_ATTRIBUTE(neutron::Subject*, owner_subject);
     };
 
