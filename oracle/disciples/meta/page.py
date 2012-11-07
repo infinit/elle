@@ -100,10 +100,6 @@ class Page(object):
         if not self.user:
             self.forbidden("Authentication required.")
 
-    def requireLoggedIn(self):
-        if not self.user:
-            raise web.Forbidden()
-
     def hashPassword(self, password):
         seasoned = password + conf.SALT
         seasoned = seasoned.encode('utf-8')
