@@ -60,9 +60,7 @@ namespace package
        * Every block of logically related operations must be commented so
        * as to explain what is being done.
        */
-      //
       // Comment describing the following operations.
-      //
 
       /*
        * Note that the identation is always composed of two characters
