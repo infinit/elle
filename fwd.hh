@@ -4,7 +4,6 @@
 # include <elle/concept/fwd.hh>
 # include <elle/concurrency/fwd.hh>
 # include <elle/container/fwd.hh>
-# include <elle/cryptography/fwd.hh>
 # include <elle/format/fwd.hh>
 # include <elle/io/fwd.hh>
 # include <elle/network/fwd.hh>
