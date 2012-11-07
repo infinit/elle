@@ -82,10 +82,6 @@ else()
 	set(BUILD_TYPE_CHANGED FALSE)
 endif()
 
-if(${BUILD_TYPE} STREQUAL "DEBUG")
-    set(INFINIT_DEBUG)
-endif()
-
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # - Compiler ------------------------------------------------------------------
