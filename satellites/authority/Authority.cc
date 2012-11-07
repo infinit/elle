@@ -1,11 +1,13 @@
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/KeyPair.hh>
 #include <elle/concurrency/Program.hh>
-
 #include <elle/io/Console.hh>
 #include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/serialize/TupleSerializer.hxx>
+
+#include <cryptography/PublicKey.hh>
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <satellites/authority/Authority.hh>
 
@@ -37,7 +39,7 @@ namespace satellite
       escape("unable to read the input");
 
     // Generate the authority key pair.
-    elle::cryptography::KeyPair pair(Authority::Length);
+    cryptography::KeyPair pair(Authority::Length);
 
     // Create the authority with the generated key pair.
     elle::Authority authority(pair);

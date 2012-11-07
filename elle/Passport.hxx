@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/cryptography/Signature.hh>
+# include <cryptography/Signature.hh>
 # include <hole/Label.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::Passport,

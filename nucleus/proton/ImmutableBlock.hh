@@ -3,6 +3,10 @@
 
 # include <elle/types.hh>
 
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Family.hh>
@@ -30,7 +34,7 @@ namespace nucleus
       ImmutableBlock(Network const& network,
                      Family const family,
                      neutron::Component const component,
-                     elle::cryptography::PublicKey const& creator_K);
+                     cryptography::PublicKey const& creator_K);
 
     /*----------.
     | Printable |

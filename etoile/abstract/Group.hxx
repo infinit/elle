@@ -1,10 +1,9 @@
 #ifndef ETOILE_ABSTRACT_GROUP_HXX
 # define ETOILE_ABSTRACT_GROUP_HXX
 
-# include <cassert>
-
-# include <elle/cryptography/PublicKey.hh>
 # include <elle/utility/Time.hh>
+
+# include <cryptography/PublicKey.hh>
 
 ELLE_SERIALIZE_SIMPLE(etoile::abstract::Group,
                       archive,

@@ -4,11 +4,13 @@
 # include <elle/Authority.hh>
 # include <elle/Version.hh>
 # include <elle/serialize/fwd.hh>
-# include <elle/cryptography/Signature.hh>
-# include <elle/idiom/Open.hh>
 # include <elle/serialize/Format.hh>
 # include <elle/serialize/DynamicFormat.hh>
 # include <elle/serialize/construct.hh>
+
+# include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <lune/fwd.hh>
 
@@ -143,7 +145,7 @@ namespace lune
     Descriptor(elle::String const& user,
                elle::String const& network);
     Descriptor(elle::String const& id,
-               elle::cryptography::PublicKey const& administrator_K,
+               cryptography::PublicKey const& administrator_K,
                hole::Model const& model,
                nucleus::proton::Address const& root,
                nucleus::neutron::Group::Identity const& everybody,
@@ -163,7 +165,7 @@ namespace lune
   public:
     /// XXX
     void
-    seal(elle::cryptography::PrivateKey const& administrator_k);
+    seal(cryptography::PrivateKey const& administrator_k);
     /// XXX
     void
     validate(elle::Authority const& authority) const;
@@ -224,7 +226,7 @@ namespace lune
     public:
       Meta(); // XXX[deserializatio instead]
       Meta(elle::String const& id,
-           elle::cryptography::PublicKey const& administrator_K,
+           cryptography::PublicKey const& administrator_K,
            hole::Model const& model,
            nucleus::proton::Address const& root,
            nucleus::neutron::Group::Identity const& everybody,
@@ -247,7 +249,7 @@ namespace lune
       void
       id(elle::String const& id);
       /// XXX
-      elle::cryptography::PublicKey const&
+      cryptography::PublicKey const&
       administrator_K() const;
       /// XXX
       hole::Model const&
@@ -288,7 +290,7 @@ namespace lune
       //
     private:
       elle::String _id;
-      elle::cryptography::PublicKey _administrator_K;
+      cryptography::PublicKey _administrator_K;
       hole::Model _model;
       nucleus::proton::Address _root;
 
@@ -301,7 +303,7 @@ namespace lune
       elle::Boolean _history;
       elle::Natural32 _extent;
 
-      elle::cryptography::Signature _signature;
+      cryptography::Signature _signature;
     };
 
     struct Data:
@@ -324,10 +326,10 @@ namespace lune
     public:
       /// XXX
       void
-      seal(elle::cryptography::PrivateKey const& administrator_k);
+      seal(cryptography::PrivateKey const& administrator_k);
       /// XXX
       void
-      validate(elle::cryptography::PublicKey const& administrator_K) const;
+      validate(cryptography::PublicKey const& administrator_K) const;
       /// XXX
       elle::String const&
       name() const;
@@ -424,7 +426,7 @@ namespace lune
         elle::serialize::Format descriptor;
       } _formats;
 
-      elle::cryptography::Signature _signature;
+      cryptography::Signature _signature;
     };
 
     /*-----------.

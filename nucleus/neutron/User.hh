@@ -1,7 +1,9 @@
 #ifndef NUCLEUS_NEUTRON_USER_HH
 # define NUCLEUS_NEUTRON_USER_HH
 
-#include <elle/cryptography/PublicKey.hh>
+#include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace nucleus
 {
@@ -18,7 +20,7 @@ namespace nucleus
       // types
       //
     public:
-      typedef elle::cryptography::PublicKey Identity;
+      typedef cryptography::PublicKey Identity;
     };
 
   }

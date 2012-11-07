@@ -1,4 +1,9 @@
 #include <elle/Authority.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 
@@ -69,7 +74,7 @@ struct Authority: elle::Authority
   Authority()
   {
 
-    elle::cryptography::KeyPair pair;
+    cryptography::KeyPair pair;
     if (pair.Generate() == elle::Status::Error)
       throw std::runtime_error("unable to generate the key pair");
     this->Create(pair);
@@ -86,7 +91,7 @@ struct Identity:
            std::string const& login,
            std::string const& password)
   {
-    elle::cryptography::KeyPair pair;
+    cryptography::KeyPair pair;
     if (pair.Generate() == elle::Status::Error)
       throw std::runtime_error("unable to generate the key pair");
 

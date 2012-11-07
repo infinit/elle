@@ -2,12 +2,15 @@
 
 #include <Infinit.hh>
 
-#include <elle/cryptography/random.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+
+#include <cryptography/random.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <etoile/Etoile.hh>
 
@@ -66,9 +69,9 @@ namespace satellite
       elle::Natural32 const buffer_size = 512;
 
       elle::String id(
-        elle::cryptography::random::generate<elle::String>(id_length));
+        cryptography::random::generate<elle::String>(id_length));
       elle::Buffer buffer(
-        elle::cryptography::random::generate<elle::Buffer>(buffer_size));
+        cryptography::random::generate<elle::Buffer>(buffer_size));
 
       // create a label.
       hole::Label label(buffer);

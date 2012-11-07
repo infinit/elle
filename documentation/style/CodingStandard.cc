@@ -49,7 +49,7 @@ namespace package
        * and taking an argument whose name is named 'buffer' and of type
        * WeakBuffer.
        *
-       *   elle::cryptography::Plain plain(elle::WeakBuffer(buffer));
+       *   cryptography::Plain plain(elle::WeakBuffer(buffer));
        *
        * Using braces makes it easy for the compiler to distinguish object
        * construction (classes and structures) from function calls.

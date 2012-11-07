@@ -1,7 +1,7 @@
 #include <nucleus/proton/Stamp.hh>
 
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 
 #include <Infinit.hh>
 
@@ -30,7 +30,7 @@ namespace nucleus
     ///
     /// this method seals the stamp with the oracle's private key.
     ///
-    elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
+    elle::Status        Stamp::Seal(cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
       this->signature = k.sign(elle::serialize::make_tuple(this->master, this->slave));

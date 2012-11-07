@@ -12,8 +12,8 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    elle::cryptography::oneway::Algorithm const Address::Algorithms::oneway(
-      elle::cryptography::oneway::Algorithm::sha256);
+    cryptography::oneway::Algorithm const Address::Algorithms::oneway(
+      cryptography::oneway::Algorithm::sha256);
 
     /*---------------.
     | Static Methods |
@@ -93,7 +93,7 @@ namespace nucleus
     Address::Valid::Valid(Network const& network,
                           Family const& family,
                           neutron::Component const& component,
-                          elle::cryptography::Digest const& digest):
+                          cryptography::Digest const& digest):
       _network(network),
       _family(family),
       _component(component),

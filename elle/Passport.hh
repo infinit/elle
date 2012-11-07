@@ -5,7 +5,12 @@
 # include <elle/Authority.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
-# include <elle/cryptography/Signature.hh>
+
+# include <cryptography/Signature.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <hole/Label.hh>
 
 # include <elle/idiom/Open.hh>
@@ -56,7 +61,7 @@ namespace elle
     // XXX[temporary: mongodb id]
     elle::String        id;
 
-    elle::cryptography::Signature     signature;
+    cryptography::Signature     signature;
   };
 
 }

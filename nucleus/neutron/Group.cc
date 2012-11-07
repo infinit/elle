@@ -2,8 +2,8 @@
 #include <nucleus/neutron/Fellow.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/KeyPair.hh>
+#include <cryptography/PrivateKey.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -31,7 +31,7 @@ namespace nucleus
     }
 
     Group::Group(proton::Network const& network,
-                 elle::cryptography::PublicKey const& manager_K,
+                 cryptography::PublicKey const& manager_K,
                  elle::String const& description):
       ImprintBlock::ImprintBlock(network, ComponentGroup, manager_K),
 
@@ -42,8 +42,8 @@ namespace nucleus
       /* XXX[this is a hack which consists in generating a unique pass
              which will not evolve over time. */
       {
-        elle::cryptography::KeyPair pass(
-          elle::cryptography::KeyPair::generate());
+        cryptography::KeyPair pass(
+          cryptography::KeyPair::generate());
 
         Token token(pass.K, this->manager_subject().user());
         this->upgrade(proton::Address::null(), pass.K, token);
@@ -61,7 +61,7 @@ namespace nucleus
 
     void
     Group::upgrade(proton::Address const& ensemble,
-                   elle::cryptography::PublicKey const& pass_K,
+                   cryptography::PublicKey const& pass_K,
                    Token const& manager_token)
     {
       this->_pass_K = pass_K;
@@ -87,7 +87,7 @@ namespace nucleus
     }
 
     void
-    Group::seal(elle::cryptography::PrivateKey const& owner_k)
+    Group::seal(cryptography::PrivateKey const& owner_k)
     {
       switch (this->state())
         {
@@ -121,7 +121,7 @@ namespace nucleus
       this->state(proton::StateConsistent);
     }
 
-    elle::cryptography::PublicKey const&
+    cryptography::PublicKey const&
     Group::manager_K() const
     {
       return (this->owner_K());

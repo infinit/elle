@@ -1,6 +1,11 @@
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
 # define ETOILE_AUTOMATON_CONTENTS_HXX
 
+# include <cryptography/SecretKey.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/State.hh>
@@ -115,7 +120,7 @@ namespace etoile
     {
       ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
 
-      elle::cryptography::SecretKey   key;
+      cryptography::SecretKey   key;
       nucleus::neutron::Size     size;
 
       ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);

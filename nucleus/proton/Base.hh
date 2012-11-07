@@ -5,8 +5,11 @@
 # include <elle/operator.hh>
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
-# include <elle/cryptography/Digest.hh>
-# include <elle/cryptography/oneway.hh>
+
+# include <cryptography/Digest.hh>
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
@@ -37,7 +40,7 @@ namespace nucleus
     public:
       struct Algorithms
       {
-        static const elle::cryptography::oneway::Algorithm oneway;
+        static const cryptography::oneway::Algorithm oneway;
       };
 
       /*-------------.
@@ -83,7 +86,7 @@ namespace nucleus
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Revision, revision);
-      ELLE_ATTRIBUTE_R(elle::cryptography::Digest, digest);
+      ELLE_ATTRIBUTE_R(cryptography::Digest, digest);
     };
 
   }

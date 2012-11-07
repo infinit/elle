@@ -1,10 +1,10 @@
 #ifndef NUCLEUS_NEUTRON_TOKEN_HXX
 # define NUCLEUS_NEUTRON_TOKEN_HXX
 
-# include <elle/cryptography/PrivateKey.hh>
-# include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/SecretKey.hh>
-# include <elle/cryptography/Code.hh>
+# include <cryptography/PrivateKey.hh>
+# include <cryptography/PublicKey.hh>
+# include <cryptography/SecretKey.hh>
+# include <cryptography/Code.hh>
 
 # include <nucleus/Exception.hh>
 
@@ -21,11 +21,11 @@ namespace nucleus
 
     template <typename T>
     Token::Token(T const& secret,
-                 elle::cryptography::PublicKey const& K):
+                 cryptography::PublicKey const& K):
       _type(Type::valid),
       _valid(nullptr)
     {
-      elle::cryptography::Code code;
+      cryptography::Code code;
 
       // Encrypt the given secret with the given public key.
       if (K.Encrypt(secret, code) == elle::Status::Error)
@@ -42,7 +42,7 @@ namespace nucleus
 
     template <typename T>
     T
-    Token::extract(elle::cryptography::PrivateKey const& k) const
+    Token::extract(cryptography::PrivateKey const& k) const
     {
       T secret;
 

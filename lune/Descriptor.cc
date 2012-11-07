@@ -7,7 +7,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/concurrency/Scheduler.hh>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 #include <elle/os/path.hh>
 #include <elle/log.hh>
 
@@ -51,7 +51,7 @@ namespace lune
   }
 
   Descriptor::Descriptor(elle::String const& id,
-                         elle::cryptography::PublicKey const& administrator_K,
+                         cryptography::PublicKey const& administrator_K,
                          hole::Model const& model,
                          nucleus::proton::Address const& root,
                          nucleus::neutron::Group::Identity const& everybody,
@@ -69,7 +69,7 @@ namespace lune
   }
 
   void
-  Descriptor::seal(elle::cryptography::PrivateKey const& administrator_k)
+  Descriptor::seal(cryptography::PrivateKey const& administrator_k)
   {
     this->_data.seal(administrator_k);
   }
@@ -157,7 +157,7 @@ namespace lune
   }
 
   Descriptor::Meta::Meta(elle::String const& id,
-                         elle::cryptography::PublicKey const& administrator_K,
+                         cryptography::PublicKey const& administrator_K,
                          hole::Model const& model,
                          nucleus::proton::Address const& root,
                          nucleus::neutron::Group::Identity const& everybody,
@@ -221,7 +221,7 @@ namespace lune
     this->_id = id;
   }
 
-  elle::cryptography::PublicKey const&
+  cryptography::PublicKey const&
   Descriptor::Meta::administrator_K() const
   {
     return (this->_administrator_K);
@@ -343,7 +343,7 @@ namespace lune
   }
 
   void
-  Descriptor::Data::seal(elle::cryptography::PrivateKey const& administrator_k)
+  Descriptor::Data::seal(cryptography::PrivateKey const& administrator_k)
   {
     this->_signature =
       administrator_k.sign(
@@ -375,7 +375,7 @@ namespace lune
 
   void
   Descriptor::Data::validate(
-    elle::cryptography::PublicKey const& administrator_K) const
+    cryptography::PublicKey const& administrator_K) const
   {
     if (administrator_K.Verify(
           this->_signature,

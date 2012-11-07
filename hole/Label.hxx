@@ -12,7 +12,7 @@ namespace hole
 
   template <typename T>
   Label::Label(T const& element):
-    _digest(elle::cryptography::oneway::hash(element,
+    _digest(cryptography::oneway::hash(element,
                                              Label::Algorithms::oneway))
   {
   }
@@ -28,7 +28,7 @@ namespace hole
 # include <elle/idiom/Open.hh>
 
 # include <elle/serialize/Pointer.hh>
-# include <elle/cryptography/Digest.hh>
+# include <cryptography/Digest.hh>
 
 ELLE_SERIALIZE_SIMPLE(hole::Label,
                       archive,

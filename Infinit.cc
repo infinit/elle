@@ -1,5 +1,6 @@
-#include <elle/cryptography/PublicKey.hh>
 #include <elle/utility/Time.hh>
+
+#include <cryptography/PublicKey.hh>
 
 #include <Infinit.hh>
 
@@ -40,11 +41,14 @@ const elle::String              Infinit::Copyright(
                                   "Copyright (c) 2012 "
                                   "infinit.io All rights reserved.");
 
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 static
 elle::Authority
 _authority()
 {
-  elle::cryptography::PublicKey K;
+  cryptography::PublicKey K;
 
   assert(!Infinit::Key.empty());
   if (K.Restore(Infinit::Key) == elle::Status::Error)

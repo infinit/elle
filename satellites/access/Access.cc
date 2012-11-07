@@ -5,6 +5,10 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 
+#include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <reactor/network/tcp-socket.hh>
 
 #include <protocol/Serializer.hh>
@@ -427,7 +431,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string                           res;
 
                 // retrieve the identity which is supposed to
@@ -511,7 +515,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string res;
 
                 // retrieve the identity which is supposed to
@@ -590,7 +594,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string res;
 
                 // retrieve the identity which is supposed to

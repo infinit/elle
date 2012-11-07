@@ -2,9 +2,9 @@
 #include <elle/Authority.hh>
 #include <lune/Lune.hh>
 
-#include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/Cipher.hh>
-#include <elle/cryptography/SecretKey.hh>
+#include <cryptography/KeyPair.hh>
+#include <cryptography/Cipher.hh>
+#include <cryptography/SecretKey.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/serialize/TupleSerializer.hxx>
@@ -20,7 +20,7 @@ namespace lune
   /// default constructor.
   ///
   Identity::Identity():
-    pair(elle::cryptography::KeyPair::null()),
+    pair(cryptography::KeyPair::null()),
     cipher(nullptr)
   {
   }
@@ -44,7 +44,7 @@ namespace lune
   ///
   elle::Status          Identity::Create(elle::String const&    id,
                                          const elle::String&    name,
-                                         elle::cryptography::KeyPair const&   pair)
+                                         cryptography::KeyPair const&   pair)
   {
     // One does not simply ...
     assert(pair.k.key() != nullptr);
@@ -65,14 +65,14 @@ namespace lune
   ///
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    elle::cryptography::SecretKey     key;
+    cryptography::SecretKey     key;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
     // allocate the cipher.
-    this->cipher = new elle::cryptography::Cipher;
+    this->cipher = new cryptography::Cipher;
 
     // encrypt the authority.
     if (key.Encrypt(this->pair,
@@ -87,7 +87,7 @@ namespace lune
   ///
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    elle::cryptography::SecretKey     key;
+    cryptography::SecretKey     key;
 
     // check the cipher.
     if (this->cipher == nullptr)

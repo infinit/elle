@@ -12,8 +12,8 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    elle::cryptography::oneway::Algorithm const Base::Algorithms::oneway(
-      elle::cryptography::oneway::Algorithm::sha256);
+    cryptography::oneway::Algorithm const Base::Algorithms::oneway(
+      cryptography::oneway::Algorithm::sha256);
 
     /*-------------.
     | Construction |
@@ -25,7 +25,7 @@ namespace nucleus
 
     Base::Base(MutableBlock const& block):
       _revision(block.revision()),
-      _digest(elle::cryptography::oneway::hash(block, Base::Algorithms::oneway))
+      _digest(cryptography::oneway::hash(block, Base::Algorithms::oneway))
     {
     }
 

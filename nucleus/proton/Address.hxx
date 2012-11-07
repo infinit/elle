@@ -25,7 +25,7 @@ namespace nucleus
       _valid(new Address::Valid(network,
                                 family,
                                 component,
-                                elle::cryptography::oneway::hash(
+                                cryptography::oneway::hash(
                                   elle::serialize::make_tuple(
                                     network,
                                     family,
@@ -42,7 +42,7 @@ namespace nucleus
 // ---------- serialize -------------------------------------------------------
 //
 
-# include <elle/cryptography/Digest.hh>
+# include <cryptography/Digest.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
                       archive,

@@ -2,11 +2,14 @@
 # define HOLE_LABEL_HH
 
 # include <elle/types.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Digest.hh>
-# include <elle/cryptography/oneway.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/io/Dumpable.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/Digest.hh>
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace hole
 {
@@ -32,7 +35,7 @@ namespace hole
   public:
     struct Algorithms
     {
-      static const elle::cryptography::oneway::Algorithm oneway;
+      static const cryptography::oneway::Algorithm oneway;
     };
 
     /*-------------.
@@ -71,7 +74,7 @@ namespace hole
     | Attributes |
     `-----------*/
   private:
-    ELLE_ATTRIBUTE(elle::cryptography::Digest, digest);
+    ELLE_ATTRIBUTE(cryptography::Digest, digest);
   };
 
 }

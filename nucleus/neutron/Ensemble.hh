@@ -3,7 +3,10 @@
 
 # include <elle/types.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/cryptography/fwd.hh>
+
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -41,7 +44,7 @@ namespace nucleus
     public:
       Ensemble(); // XXX[to deserialize]
       Ensemble(proton::Network const& network,
-               elle::cryptography::PublicKey const& creator_K);
+               cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -74,7 +77,7 @@ namespace nucleus
       /// Updates the tokens of the ensemble's fellows with the given
       /// pass private key.
       void
-      update(elle::cryptography::PrivateKey const& pass_k);
+      update(cryptography::PrivateKey const& pass_k);
       /// Removes the given subject from the ensemble.
       void
       remove(Subject const& subject);

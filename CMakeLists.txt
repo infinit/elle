@@ -227,11 +227,14 @@ set(QT_DONT_USE_QTGUI true)
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
+# XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(common)
+add_subdirectory(cryptography)
 add_subdirectory(nucleus)
 add_subdirectory(protocol)
 add_subdirectory(etoile)
@@ -272,6 +275,7 @@ set(INFINIT_LIBRARIES
   protocol
   infinit
   hole
+  cryptography
   elle
   comet
 
