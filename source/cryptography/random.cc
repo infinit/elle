@@ -47,7 +47,8 @@ namespace infinit
           /// Enable for instance tests to override the random data source,
           /// so as to use /dev/urandom and avoid /dev/random enthropy
           /// starvation.
-          if ((source = getenv("ELLE_RANDOM_SOURCE")) == nullptr)
+          if ((source =
+               ::getenv("INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE")) == nullptr)
             source = "/dev/random";
 
           if ((fd = ::open(source, O_RDONLY)) == -1)
@@ -66,7 +67,7 @@ namespace infinit
         }
 #elif defined(INFINIT_WINDOWS)
         {
-          HCRYPTPROV        h_provider = 0;
+          HCRYPTPROV h_provider = 0;
 
           if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
                                       CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
