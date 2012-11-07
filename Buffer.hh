@@ -142,11 +142,12 @@ namespace elle
       , _size(size)
     {}
 
-    explicit
     WeakBuffer(Buffer const& buffer)
       : _contents(buffer.mutable_contents())
       , _size(buffer.size())
     {}
+
+    WeakBuffer(Buffer&&) = delete;
 
     WeakBuffer(WeakBuffer const& other)
       : _contents(other._contents)
@@ -156,7 +157,10 @@ namespace elle
     WeakBuffer(WeakBuffer&& other)
       : _contents(other._contents)
       , _size(other._size)
-    {}
+    {
+      other._contents = nullptr;
+      other._size = 0;
+    }
 
     size_t        size() const              { return this->_size; }
     Byte const*   contents() const          { return this->_contents; }
