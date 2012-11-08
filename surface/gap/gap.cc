@@ -133,18 +133,14 @@ extern "C"
     gap_meta_ask_notif(gap_State* state,
                        int i)
     {
-      __TO_CPP(state)->ask_notif(i);
-
-      return gap_ok;
+      __WRAP_CPP(state, ask_notif, i);
     }
 
     gap_Status
     gap_invite_user(gap_State* state,
                     char const* email)
     {
-      __TO_CPP(state)->invite_user(email);
-
-      return gap_ok;
+      __WRAP_CPP(state, invite_user, email);
     }
 
     gap_Status
@@ -152,18 +148,25 @@ extern "C"
                    char const* recipient_id,
                    char const* const* files)
     {
-      std::vector<std::string> v;
-
-      while(*files != nullptr)
+      assert(state != nullptr);
+      assert(recipient_id != nullptr);
+      assert(files != nullptr);
+      gap_Status ret = gap_ok;
+      try
         {
-          v.push_back(*files);
-          ++files;
+          std::vector<std::string> v;
+
+          while (*files != nullptr)
+            {
+              v.push_back(*files);
+              ++files;
+            }
+
+          __TO_CPP(state)->send_files(recipient_id, v);
         }
+      CATCH_ALL(send_files)
 
-      __TO_CPP(state)->send_files(recipient_id,
-                                  v);
-
-      return gap_ok;
+      return ret;
     }
 
     gap_Status
@@ -171,14 +174,20 @@ extern "C"
                   char const* recipient_id,
                   char const* path)
     {
-      std::vector<std::string> v;
+      assert(state != nullptr);
+      assert(recipient_id != nullptr);
+      assert(path != nullptr);
+      gap_Status ret = gap_ok;
+      try
+        {
+          std::vector<std::string> v;
+          v.push_back(path);
 
-      v.push_back(path);
+          __TO_CPP(state)->send_files(recipient_id, v);
+        }
+      CATCH_ALL(send_file)
 
-      __TO_CPP(state)->send_files(recipient_id,
-                                  v);
-
-      return gap_ok;
+      return ret;
     }
 
     gap_Status
@@ -186,9 +195,9 @@ extern "C"
                 const char* recipient_id,
                 const char* message)
     {
-      __TO_CPP(state)->send_message(recipient_id, message);
-
-      return gap_ok;
+      assert(recipient_id != nullptr);
+      assert(message != nullptr);
+      __WRAP_CPP(state, send_message, recipient_id, message);
     }
 
     /// - Authentication ------------------------------------------------------
