@@ -18,20 +18,20 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
 void test()
 {
-  cryptography::KeyPair owner(cryptography::KeyPair::generate());
+  cryptography::KeyPair owner(cryptography::KeyPair::generate(1024));
 
   nucleus::proton::Network network("test");
 
   nucleus::neutron::Group group(network, owner.K, "everybody");
 
-  cryptography::KeyPair pass(cryptography::KeyPair::generate());
+  cryptography::KeyPair pass(cryptography::KeyPair::generate(2048));
 
   nucleus::neutron::Ensemble ensemble(network, owner.K);
 
   ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
       {
-        cryptography::KeyPair kp(cryptography::KeyPair::generate());
+        cryptography::KeyPair kp(cryptography::KeyPair::generate(1024));
 
         nucleus::neutron::Subject subject(kp.K);
 

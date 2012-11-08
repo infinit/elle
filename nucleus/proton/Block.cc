@@ -15,7 +15,7 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    cryptography::oneway::Algorithm const Block::Algorithms::oneway(
+    cryptography::oneway::Algorithm const Block::Constants::oneway_algorithm(
       cryptography::oneway::Algorithm::sha256);
 
     /*-------------.
@@ -36,7 +36,7 @@ namespace nucleus
       _family(family),
       _component(component),
       _creator(cryptography::oneway::hash(creator_K,
-                                                Block::Algorithms::oneway)),
+                                          Block::Constants::oneway_algorithm)),
       _salt(cryptography::random::generate<elle::Natural64>()),
       _state(StateClean)
     {

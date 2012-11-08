@@ -4,14 +4,10 @@
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
+#include <elle/assert.hh>
 #include <elle/idiom/Open.hh>
 
 #include <iostream>
-
-#define show_assert(expr)                                                     \
-  do {                                                                        \
-    if (expr != elle::Status::Ok) { assert(false && #expr);}                  \
-  } while (false)                                                             \
 
 void test_encrypt()
 {
@@ -21,14 +17,14 @@ void test_encrypt()
 
   cryptography::Code code;
 
-  cryptography::KeyPair pair(cryptography::KeyPair::generate());
+  cryptography::KeyPair pair(cryptography::KeyPair::generate(1024));
 
-  show_assert(pair.K.Encrypt(my_secret_text, code));
+  ELLE_ASSERT(pair.K.Encrypt(my_secret_text, code) == elle::Status::Ok);
 
-  std::cout << "encrypted size: " << code.region.size << "\n";
+  std::cout << "encrypted size: " << code.buffer().size() << "\n";
 
   std::string res;
-  show_assert(pair.k.Decrypt(code, res));
+  ELLE_ASSERT(pair.k.Decrypt(code, res) == elle::Status::Ok);
 }
 
 int main()

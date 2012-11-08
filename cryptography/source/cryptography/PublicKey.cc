@@ -16,7 +16,7 @@ namespace infinit
     | Constants |
     `----------*/
 
-    oneway::Algorithm const PublicKey::Algorithms::oneway(
+    oneway::Algorithm const PublicKey::Constants::oneway_algorithm(
       oneway::Algorithm::sha256);
 
 //
@@ -184,8 +184,7 @@ namespace infinit
                                Code&                            code) const
     {
       SecretKey         secret;
-
-      Code              key;
+      Code              key; // XXX[allocate later]
       Cipher            data;
 
       // (i)
@@ -205,17 +204,12 @@ namespace infinit
       {
         // XXX secret_buf should be filled with zeros at the end
         elle::Buffer secret_buf;
-        size_t                size;
+        size_t size;
 
-        try
-          {
-            secret_buf.writer() << secret;
-            assert(secret_buf.size() > 0);
-          }
-        catch (std::runtime_error const& err)
-          {
-            escape("Cannot serialize the secret key: %s", err.what());
-          }
+        // XXX
+        secret_buf.writer() << secret;
+
+        assert(secret_buf.size() > 0);
 
         assert(this->_contexts.encrypt != nullptr);
 
@@ -230,45 +224,26 @@ namespace infinit
 
         // allocate memory so the key can receive the upcoming
         // encrypted portion.
-        if (key.region.Prepare(size) == elle::Status::Error)
-          escape("unable to prepare the key");
+        key.buffer().size(size);
 
         // actually encrypt the secret key's archive, storing the encrypted
         // portion directly into the key object, without any re-copy.
         if (::EVP_PKEY_encrypt(
               this->_contexts.encrypt,
-              reinterpret_cast<unsigned char*>(key.region.contents),
+              reinterpret_cast<unsigned char*>(key.buffer().mutable_contents()),
               &size,
               reinterpret_cast<const unsigned char*>(secret_buf.contents()),
               secret_buf.size()) <= 0)
           escape("key has size %lu, data has size %lu: %s", size, secret_buf.size(), ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
-        key.region.size = size;
+        key.buffer().size(size);
       }
 
       // (iv)
       {
-        elle::Buffer result_buf;
-
-        try
-          {
-            result_buf.writer() << key << data;
-          }
-        catch (std::exception const& err)
-          {
-            escape(
-              "unable to serialize the asymetrically-encrypted secret key "
-              "and the symetrically-encrypted data: %s",
-              err.what()
-                   );
-          }
-
-        // XXX this copy is not needed
-        // duplicate the archive's content.
-        if (code.region.Duplicate(result_buf.contents(),
-                                  result_buf.size()) == elle::Status::Error)
-          escape("unable to duplicate the archive's content");
+        // XXX
+        code.buffer().writer() << key << data;
       }
 
       return elle::Status::Ok;
@@ -279,7 +254,8 @@ namespace infinit
     {
       // XXX[remove Plain(buffer) in favor of plain which should be the argument]
       // compute the plain's digest.
-      Digest digest(oneway::hash(buffer, PublicKey::Algorithms::oneway));
+      Digest digest(oneway::hash(buffer,
+                                 PublicKey::Constants::oneway_algorithm));
 
       // verify.
       int result =
@@ -311,19 +287,7 @@ namespace infinit
       Cipher            data;
 
       // (i)
-      try
-        {
-          elle::WeakBuffer input_buffer(in.region.contents, in.region.size);
-          input_buffer.reader() >> key >> data;
-        }
-      catch (std::exception const& err)
-        {
-          escape(
-            "unable to extract the asymetrically-encrypted secret key "
-            "and the symetrically-encrypted data: %s",
-            err.what()
-          );
-        }
+      in.buffer().reader() >> key >> data;
 
       // (ii)
       {
@@ -334,22 +298,11 @@ namespace infinit
               this->_contexts.decrypt,
               nullptr,
               &size,
-              reinterpret_cast<const unsigned char*>(key.region.contents),
-              key.region.size) <= 0)
+              reinterpret_cast<const unsigned char*>(key.buffer().contents()),
+              key.buffer().size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        elle::Buffer buf;
-
-        try
-          {
-            buf.size(size);
-          }
-        catch (std::exception const& err)
-          {
-            escape("unable to allocate the required memory: %s", err.what());
-          }
-
-        auto buf_pair = buf.release();
+        elle::Buffer buffer(size);
 
         // perform the decrypt operation.
         //
@@ -358,23 +311,17 @@ namespace infinit
         // function is used here.
         if (::EVP_PKEY_verify_recover(
               this->_contexts.decrypt,
-              reinterpret_cast<unsigned char*>(buf_pair.first.get()),
+              reinterpret_cast<unsigned char*>(buffer.mutable_contents()),
               &size,
-              reinterpret_cast<const unsigned char*>(key.region.contents),
-              key.region.size) <= 0)
+              reinterpret_cast<const unsigned char*>(key.buffer().contents()),
+              key.buffer().size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        buf_pair.second = size;
+        // XXX
+        buffer.size(size);
 
-
-        try
-          {
-            elle::Buffer(std::move(buf_pair)).reader() >> secret;
-          }
-        catch (std::exception const& err)
-          {
-            escape("couldn't decode the object: %s", err.what());
-          }
+        // XXX
+        buffer.reader() >> secret;
       }
 
       // (iii)

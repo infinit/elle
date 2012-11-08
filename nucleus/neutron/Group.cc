@@ -12,11 +12,17 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    /*------------------.
+    | Static Attributes |
+    `------------------*/
 
-    const Component Group::component = ComponentGroup;
+    Component const Group::component{ComponentGroup};
+
+    /*----------.
+    | Constants |
+    `----------*/
+
+    elle::Natural32 const Group::Constants::keypair_length{1024};
 
 //
 // ---------- construction ----------------------------------------------------
@@ -43,7 +49,7 @@ namespace nucleus
              which will not evolve over time. */
       {
         cryptography::KeyPair pass(
-          cryptography::KeyPair::generate());
+          cryptography::KeyPair::generate(Group::Constants::keypair_length));
 
         Token token(pass.K, this->manager_subject().user());
         this->upgrade(proton::Address::null(), pass.K, token);

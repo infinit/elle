@@ -42,6 +42,15 @@ namespace nucleus
     class OwnerKeyBlock:
       public MutableBlock
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Constants
+      {
+        static elle::Natural32 const keypair_length;
+      };
+
       //
       // construction
       //

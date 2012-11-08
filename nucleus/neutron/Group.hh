@@ -57,11 +57,20 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Group>,
       public elle::concept::MakeUniquable<Group>
     {
-      //
-      // constants
-      //
+      /*------------------.
+      | Static Attributes |
+      `------------------*/
     public:
-      static const Component component;
+      static Component const component;
+
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Constants
+      {
+        static elle::Natural32 const keypair_length;
+      };
 
       //
       // types

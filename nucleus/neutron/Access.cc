@@ -15,7 +15,7 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    cryptography::oneway::Algorithm const Access::Algorithms::oneway(
+    cryptography::oneway::Algorithm const Access::Constants::oneway_algorithm(
       cryptography::oneway::Algorithm::sha256);
 
 //
@@ -239,7 +239,7 @@ namespace nucleus
       cryptography::Digest digest{
         cryptography::oneway::hash(
           cryptography::Plain{elle::WeakBuffer{buffer}},
-          Access::Algorithms::oneway)};
+          Access::Constants::oneway_algorithm)};
 
       return (digest);
     }

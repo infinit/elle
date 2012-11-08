@@ -10,6 +10,12 @@ namespace nucleus
   namespace proton
   {
 
+    /*----------.
+    | Constants |
+    `----------*/
+
+    elle::Natural32 const OwnerKeyBlock::Constants::keypair_length{1024};
+
 //
 // ---------- construction ----------------------------------------------------
 //
@@ -26,7 +32,8 @@ namespace nucleus
         neutron::Component const component,
         cryptography::PublicKey const& creator_K):
       OwnerKeyBlock(network, component, creator_K,
-                    cryptography::KeyPair::generate())
+                    cryptography::KeyPair::generate(
+                      OwnerKeyBlock::Constants::keypair_length))
     {
     }
 

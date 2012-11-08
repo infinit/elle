@@ -67,11 +67,11 @@ namespace satellite
           elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
-    // generate a key pair.
-    cryptography::KeyPair pair(cryptography::KeyPair::generate());
-
     // create the identity.
-    if (identity.Create(id, name, pair) == elle::Status::Error)
+    if (identity.Create(
+          id,
+          name,
+          cryptography::KeyPair::generate(1024)) == elle::Status::Error) // XXX[1024 -> to Identity]
       escape("unable to create the identity");
 
     // encrypt the identity.

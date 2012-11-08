@@ -12,7 +12,7 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    cryptography::oneway::Algorithm const Address::Algorithms::oneway(
+    cryptography::oneway::Algorithm const Address::Constants::oneway_algorithm(
       cryptography::oneway::Algorithm::sha256);
 
     /*---------------.

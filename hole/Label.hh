@@ -33,9 +33,9 @@ namespace hole
     | Constants |
     `----------*/
   public:
-    struct Algorithms
+    struct Constants
     {
-      static const cryptography::oneway::Algorithm oneway;
+      static cryptography::oneway::Algorithm const oneway_algorithm;
     };
 
     /*-------------.

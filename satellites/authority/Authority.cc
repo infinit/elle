@@ -38,11 +38,9 @@ namespace satellite
           elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
-    // Generate the authority key pair.
-    cryptography::KeyPair pair(Authority::Length);
-
     // Create the authority with the generated key pair.
-    elle::Authority authority(pair);
+    elle::Authority authority{
+      cryptography::KeyPair::generate(Authority::Length)};
 
     // Encrypt the authority.
     if (authority.Encrypt(pass) == elle::Status::Error)

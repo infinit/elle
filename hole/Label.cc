@@ -6,7 +6,7 @@ namespace hole
   | Constants |
   `----------*/
 
-  cryptography::oneway::Algorithm const Label::Algorithms::oneway(
+  cryptography::oneway::Algorithm const Label::Constants::oneway_algorithm(
     cryptography::oneway::Algorithm::sha256);
 
   /*-------------.

@@ -32,7 +32,7 @@ static lune::Identity create_identity(elle::String const& id,
                                       elle::String const& login,
                                       elle::String const& password)
 {
-  cryptography::KeyPair pair(cryptography::KeyPair::generate());
+  cryptography::KeyPair pair(cryptography::KeyPair::generate(1024)); // XXX[to Identity]
   elle::io::Path                    authority_path;
   lune::Identity                    identity;
 

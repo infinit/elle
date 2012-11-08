@@ -26,6 +26,9 @@ namespace elle
   class Authority:
     public elle::concept::MakeFileable<Authority>
   {
+    /*-------------.
+    | Enumerations |
+    `-------------*/
   public:
     enum Type
       {

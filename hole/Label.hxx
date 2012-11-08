@@ -13,7 +13,7 @@ namespace hole
   template <typename T>
   Label::Label(T const& element):
     _digest(cryptography::oneway::hash(element,
-                                             Label::Algorithms::oneway))
+                                       Label::Constants::oneway_algorithm))
   {
   }
 

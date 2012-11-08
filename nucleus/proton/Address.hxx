@@ -31,7 +31,7 @@ namespace nucleus
                                     family,
                                     component,
                                     parameters...),
-                                  Address::Algorithms::oneway)))
+                                  Address::Constants::oneway_algorithm)))
     {
     }
 
