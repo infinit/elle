@@ -76,26 +76,6 @@ namespace network {
     }
     return out;
   }
-
-  template <
-    class SinglePassRange,
-    class OutputIterator
-    >
-  inline
-  OutputIterator decode(const SinglePassRange &range,
-			const OutputIterator &out) {
-    return decode(std::begin(range), std::end(range), out);
-  }
-
-  template <
-    class String
-    >
-  inline
-  String decoded(const String &input) {
-    String decoded;
-    decode(input, std::back_inserter(decoded));
-    return std::move(decoded);
-  }
 } // namespace network
 
 #endif // NETWORK_URI_DECODE_INC

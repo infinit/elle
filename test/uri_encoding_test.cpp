@@ -4,27 +4,32 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#define BOOST_TEST_MODULE URI encoding test
-#include <boost/test/unit_test.hpp>
+#include <gtest/gtest.h>
 #include <network/uri/encode.hpp>
 #include <network/uri/decode.hpp>
 #include <iterator>
 
 
-BOOST_AUTO_TEST_CASE(encoding_test) {
+TEST(uri_encoding_test, encode_user_info_iterator_test) {
   const std::string unencoded(" !\"#$%&\'()*");
-  const std::string encoded("%20%21%22%23%24%25%26%27%28%29%2A");
 
   std::string instance;
-  network::encode(unencoded, std::back_inserter(instance));
-  BOOST_CHECK_EQUAL(instance, encoded);
+  network::encode_user_info(std::begin(unencoded), std::end(unencoded),
+			    std::back_inserter(instance));
+  ASSERT_EQ(instance, "%20%21%22%23%24%25%26%27%28%29%2A");
 }
 
-BOOST_AUTO_TEST_CASE(decoding_test) {
+
+TEST(uri_encoding_test, encode_user_info_test) {
   const std::string unencoded(" !\"#$%&\'()*");
-  const std::string encoded("%20%21%22%23%24%25%26%27%28%29%2A");
-
-  std::string instance;
-  network::decode(encoded, std::back_inserter(instance));
-  BOOST_CHECK_EQUAL(instance, unencoded);
+  ASSERT_EQ(network::encode_user_info(unencoded), "%20%21%22%23%24%25%26%27%28%29%2A");
 }
+
+//TEST(uri_encoding_test, decoding_test) {
+//  const std::string unencoded(" !\"#$%&\'()*");
+//  const std::string encoded("%20%21%22%23%24%25%26%27%28%29%2A");
+//
+//  std::string instance;
+//  network::decode(encoded, std::back_inserter(instance));
+//  ASSERT_EQ(instance, unencoded);
+//}

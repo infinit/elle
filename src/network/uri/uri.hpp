@@ -251,6 +251,12 @@ namespace network {
       return absolute();
     }
 
+    uri normalize() const;
+
+    uri relativize(const uri &other) const;
+
+    uri resolve(const uri &other) const;
+
     void append(const string_type &data) {
       uri_.append(data);
       parse();

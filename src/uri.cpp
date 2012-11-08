@@ -258,6 +258,18 @@ namespace network {
     }
   } // namespace detail
 
+  uri uri::normalize() const {
+    return *this;
+  }
+
+  uri uri::relativize(const uri &other) const {
+    return *this;
+  }
+
+  uri uri::resolve(const uri &other) const {
+    return *this;
+  }
+
   bool operator == (const uri &lhs, const uri &rhs) {
 
     // if both URIs are empty, then we should define them as equal even though they're still invalid.

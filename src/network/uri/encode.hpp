@@ -41,7 +41,6 @@ namespace network {
       return CharT();
     }
 
-
     template <
       typename CharT,
       class OutputIterator
@@ -128,6 +127,71 @@ namespace network {
   } // namespace detail
 
   template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_user_info(InputIterator first,
+				   InputIterator last,
+				   OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out);
+      ++it;
+    }
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_host(InputIterator first,
+			      InputIterator last,
+			      OutputIterator out) {
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_port(InputIterator first,
+			      InputIterator last,
+			      OutputIterator out) {
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_path(InputIterator first,
+			      InputIterator last,
+			      OutputIterator out) {
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_query(InputIterator first,
+			       InputIterator last,
+			       OutputIterator out) {
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+   OutputIterator encode_fragment(InputIterator first,
+				  InputIterator last,
+				  OutputIterator out) {
+    return out;
+  }
+
+  template <
     class InputIterator,
     class OutputIterator
     >
@@ -145,25 +209,13 @@ namespace network {
     return out;
   }
 
-  template <
-    class SinglePassRange,
-    class OutputIterator
-    >
-  inline
-  OutputIterator encode(const SinglePassRange &range,
-			const OutputIterator &out) {
-    return encode(std::begin(range), std::end(range), out);
-  }
-
-  template <
-    class String
-    >
-  inline
-  String encoded(const String &input) {
-    String encoded;
-    encode(input, std::back_inserter(encoded));
-    return std::move(encoded);
-  }
+   template <class String>
+   String encode_user_info(const String &user_info) {
+     String encoded;
+     encode_user_info(std::begin(user_info), std::end(user_info),
+		      std::back_inserter(encoded));
+     return std::move(encoded);
+   }
 } // namespace network
 
 #endif // NETWORK_URI_ENCODE_INC

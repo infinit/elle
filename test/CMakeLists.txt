@@ -9,7 +9,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 set(
   TESTS
   uri_test
-  #uri_encoding_test
+  uri_encoding_test
   #uri_builder_test
   )
 foreach (test ${TESTS})
