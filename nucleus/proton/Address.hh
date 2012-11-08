@@ -80,7 +80,10 @@ namespace nucleus
       `-------------*/
     public:
       Address(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(Address) {}
+      ELLE_SERIALIZE_CONSTRUCT(Address)
+      {
+        _valid = nullptr;
+      }
       template <typename... T>
       Address(Network const& network,
               const Family&,
