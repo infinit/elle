@@ -1,6 +1,4 @@
 add_library(cryptography
-  source/cryptography/Cipher.cc
-  source/cryptography/Code.cc
   source/cryptography/cryptography.cc
   source/cryptography/KeyPair.cc
   source/cryptography/Input.cc

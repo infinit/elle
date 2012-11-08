@@ -22,7 +22,7 @@ namespace infinit
     | Constants |
     `----------*/
 
-    oneway::Algorithm const PrivateKey::Algorithms::oneway(
+    oneway::Algorithm const PrivateKey::Constants::oneway_algorithm(
       oneway::Algorithm::sha256);
 
 //
@@ -231,21 +231,11 @@ namespace infinit
       Cipher            data;
 
       // (i)
-      try
-        {
-          elle::WeakBuffer(
-            in.region.contents,
-            in.region.size
-          ).reader() >> key >> data;
-        }
-      catch (std::runtime_error const& err)
-        {
-          escape(
-            "unable to extract the asymetrically-encrypted secret key "
-            "and the symetrically-encrypted data: %s",
-            err.what()
-          );
-        }
+      {
+        in.buffer().reader() >> key >> data;
+
+        // XXX[is it normal that it is different from two >>]
+      }
 
       // (ii)
       {
@@ -256,8 +246,8 @@ namespace infinit
               this->_contexts.decrypt,
               nullptr,
               &size,
-              key.region.contents,
-              key.region.size) <= 0)
+              key.buffer().contents(),
+              key.buffer().size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         elle::Buffer buf(size);
@@ -267,21 +257,15 @@ namespace infinit
               this->_contexts.decrypt,
               buf.mutable_contents(),
               &size,
-              key.region.contents,
-              key.region.size) <= 0)
+              key.buffer().contents(),
+              key.buffer().size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-        try
-          {
-            buf.reader() >> secret;
-          }
-        catch (std::exception const& err)
-          {
-            escape(
-              "unable to extract the secret key from the archive: %s",
-              err.what()
-            );
-          }
+        // set the size.
+        buf.size(size);
+
+        // XXX
+        buf.reader() >> secret;
       }
 
       // (iii)
@@ -302,7 +286,8 @@ namespace infinit
 
       // XXX[remove Plain(buffer) in favor of plain which should be the argument]
       // Compute the plain's digest.
-      Digest digest(oneway::hash(buffer, PrivateKey::Algorithms::oneway));
+      Digest digest(oneway::hash(buffer,
+                                 PrivateKey::Constants::oneway_algorithm));
 
       // Retrieve information on the size of the output signature.
       if (::EVP_PKEY_sign(
@@ -338,8 +323,8 @@ namespace infinit
                                Code&                            out) const
     {
       SecretKey         secret;
-      Code              key;
       Cipher            data;
+      Code key; // XXX[allocate later]
 
       // (i)
       {
@@ -357,31 +342,24 @@ namespace infinit
 
       // (iii)
       {
-        size_t                  size;
-        elle::Buffer   buf;
+        size_t size;
+        elle::Buffer buffer;
 
-        try
-          {
-            buf.writer() << secret;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot serialize secret key: %s", err.what());
-          }
+        // XXX
+        buffer.writer() << secret;
 
         // compute the size of the archived symmetric key.
         if (::EVP_PKEY_sign(
               this->_contexts.encrypt,
               nullptr,
               &size,
-              buf.contents(),
-              buf.size()) <= 0)
+              buffer.contents(),
+              buffer.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // allocate memory so the key can receive the upcoming
         // encrypted portion.
-        if (key.region.Prepare(size) == elle::Status::Error)
-          escape("unable to prepare the key");
+        key.buffer().size(size);
 
         // actually encrypt the secret key's archive, storing the encrypted
         // portion directly into the key object, without any re-copy.
@@ -390,39 +368,20 @@ namespace infinit
         // the operation is equivalent to a signature.
         if (::EVP_PKEY_sign(
               this->_contexts.encrypt,
-              key.region.contents,
+              key.buffer().mutable_contents(),
               &size,
-              buf.contents(),
-              buf.size()) <= 0)
+              buffer.contents(),
+              buffer.size()) <= 0)
           escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
         // set the key size.
-        key.region.size = size;
+        key.buffer().size(size);
       }
 
       // (iv)
       {
-        elle::Buffer buf;
-
-        try
-          {
-            buf.writer() << key << data;
-          }
-        catch (std::exception const& err)
-          {
-            escape(
-              "unable to serialize the asymetrically-encrypted secret key "
-              "and the symetrically-encrypted data: %s",
-              err.what()
-                   );
-
-          }
-
-        // duplicate the archive's content.
-        // XXX this copy is not necessary
-        if (out.region.Duplicate(buf.contents(),
-                                 buf.size()) == elle::Status::Error)
-          escape("unable to duplicate the archive's content");
+        // XXX
+        out.buffer().writer() << key << data;
       }
 
       return elle::Status::Ok;

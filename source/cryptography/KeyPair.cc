@@ -6,18 +6,17 @@
 #include <cryptography/cryptography.hh>
 
 #include <elle/types.hh>
+#include <elle/assert.hh>
 #include <elle/Exception.hh>
 
 #include <comet/Comet.hh>
 
 #include <elle/log.hh>
 
-#include <elle/idiom/Close.hh>
-# include <openssl/engine.h>
-# include <openssl/err.h>
-# include <openssl/evp.h>
-# include <fcntl.h>
-#include <elle/idiom/Open.hh>
+#include <openssl/engine.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <fcntl.h>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.KeyPair");
 
@@ -25,20 +24,11 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*------------------.
+    | Static Attributes |
+    `------------------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the default key pair length.
-    ///
-    const elle::Natural32             KeyPair::Default::Length = 1024;
-
-    ///
-    /// the default value for the key generation context.
-    ///
-    ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = nullptr;
+    ::EVP_PKEY_CTX* KeyPair::Contexts::generate = nullptr;
 
     /*---------------.
     | Static Methods |
@@ -50,13 +40,17 @@ namespace infinit
       ELLE_TRACE("initializing the keypair contexts");
 
       // Create the context for the RSA algorithm.
-      if ((KeyPair::Contexts::Generate =
+      if ((KeyPair::Contexts::generate =
            ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
-        throw elle::Exception("unable to create the context"); // XXX[err string]
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Initialise the context for key generation.
-      if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
-        throw elle::Exception("unable to initialise the generation context"); // XXX[err string]
+      if (::EVP_PKEY_keygen_init(KeyPair::Contexts::generate) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      ELLE_TRACE("keypair contexts initialized");
     }
 
     void
@@ -65,21 +59,41 @@ namespace infinit
       ELLE_TRACE("cleaning the keypair contexts");
 
       // Release the generation context.
-      ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
-    }
+      ::EVP_PKEY_CTX_free(KeyPair::Contexts::generate);
 
-    KeyPair const&
-    KeyPair::null()
-    {
-      static KeyPair kp; // XXX[to re-work so as to have a null type]
-
-      return (kp);
+      ELLE_TRACE("keypair contexts cleaned");
     }
 
     KeyPair
-    KeyPair::generate(elle::Natural32 const length)
+    KeyPair::generate(elle::Natural32 const length) // XXX[add algorithm argument]
     {
-      return (KeyPair(length));
+      // XXX[lambda? macro-function? template-class?]
+      struct Scope
+      {
+        ::EVP_PKEY* key;
+
+        Scope() : key(nullptr) {}
+        ~Scope() { ::EVP_PKEY_free(this->key); }
+      } scope;
+
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      // Set the key length in the keypair generation context.
+      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::generate,
+                                             length) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Generate the EVP key.
+      if (::EVP_PKEY_keygen(KeyPair::Contexts::generate, &scope.key) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      ELLE_ASSERT(scope.key != nullptr);
+
+      // Instanciate a keypair based on the EVP_PKEY and return it.
+      return (KeyPair(std::move(std::unique_ptr< ::EVP_PKEY >(scope.key))));
     }
 
 //
@@ -92,44 +106,26 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(elle::Natural32 const length)
+    KeyPair::KeyPair(std::unique_ptr< ::EVP_PKEY >&& key)
+    // XXX[construct K and k]
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
 
-      // XXX[to improve so as to call the K/k constructors]
-
-      struct Scope
-      {
-        ::EVP_PKEY* key;
-
-        Scope() : key(nullptr) {}
-        ~Scope() { ::EVP_PKEY_free(this->key); }
-      } scope;
-
-      // set the key length.
-      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
-                                             length) <= 0)
-        escape("unable to set the RSA key length %u: %s",
-               length, ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // generate the EVP key.
-      if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &scope.key) <= 0)
-        escape("unable to generate the key");
-
-      assert(scope.key != nullptr);
-
       // create the actual public key according to the EVP structure.
-      if (this->K.Create(scope.key) == elle::Status::Error)
+      if (this->K.Create(key.get()) == elle::Status::Error)
         escape("unable to create the public key");
 
       assert(this->K.key() != nullptr);
 
       // create the actual private key according to the EVP structure.
-      if (this->k.Create(scope.key) == elle::Status::Error)
+      if (this->k.Create(key.get()) == elle::Status::Error)
         escape("unable to create the private key");
 
       assert(this->k.key() != nullptr);
+
+      // XXX
+      key.release();
     }
 
 //
@@ -232,5 +228,14 @@ namespace infinit
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    KeyPair::print(std::ostream& stream) const
+    {
+      stream << "XXX";
+    }
   }
 }

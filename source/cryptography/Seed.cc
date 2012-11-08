@@ -60,6 +60,7 @@ namespace infinit
     elle::Status              Seed::Rotate(const PrivateKey&          k,
                                      Seed&                      seed) const
     {
+      /* XXX
       Code              code;
 
       // encrypt the seed object with the given private key.
@@ -74,6 +75,7 @@ namespace infinit
       if (seed.region.Acquire(code.region.contents,
                               code.region.size) == elle::Status::Error)
         escape("unable to acquire the region");
+      */
 
       return elle::Status::Ok;
     }
@@ -84,6 +86,7 @@ namespace infinit
     elle::Status              Seed::Derive(const PublicKey&           K,
                                      Seed&                      seed) const
     {
+      /* XXX
       Code              code;
       elle::standalone::Region chunk;
 
@@ -99,7 +102,7 @@ namespace infinit
       // decrypt the code with the given public key.
       if (K.Decrypt(code, seed) == elle::Status::Error)
         escape("unable to 'decrypt' the seed");
-
+      */
       return elle::Status::Ok;
     }
 

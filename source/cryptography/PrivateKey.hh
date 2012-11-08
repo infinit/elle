@@ -38,9 +38,9 @@ namespace infinit
       | Constants |
       `----------*/
     public:
-      struct Algorithms
+      struct Constants
       {
-        static oneway::Algorithm const oneway;
+        static oneway::Algorithm const oneway_algorithm;
       };
 
     public:
@@ -135,7 +135,7 @@ namespace infinit
       //
       // attributes
       //
-    private:
+    public: // XXX
       ::EVP_PKEY*       _key;
       struct
       {

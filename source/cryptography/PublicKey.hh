@@ -40,9 +40,9 @@ namespace infinit
       | Constants |
       `----------*/
     public:
-      struct Algorithms
+      struct Constants
       {
-        static const oneway::Algorithm oneway;
+        static const oneway::Algorithm oneway_algorithm;
       };
 
     public:

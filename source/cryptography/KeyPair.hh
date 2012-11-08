@@ -2,31 +2,37 @@
 # define INFINIT_CRYPTOGRAPHY_KEYPAIR_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
+# include <elle/serialize/fwd.hh>
 
-# include <elle/radix/Object.hh>
-
-# include <cryptography/fwd.hh>
 # include <cryptography/PublicKey.hh>
 # include <cryptography/PrivateKey.hh>
-
-# include <elle/idiom/Open.hh>
 
 namespace infinit
 {
   namespace cryptography
   {
-    /// This class represents a cryptographic key pair _i.e_ a pair of public
-    /// and private keys.
+    /// Represent a cryptographic key pair _i.e_ a pair of public and
+    /// private keys.
     ///
-    /// A public key is noted with a capital 'K' while a private key is noted
-    /// with a lower-case 'k'.
-    class KeyPair
-      : public elle::serialize::SerializableMixin<KeyPair>
+    /// Note that the public key is always written as a capital 'K'
+    /// while a private key is noted with a lower-case 'k'.
+    class KeyPair:
+      public elle::Printable,
+      public elle::io::Dumpable
     {
+      /*------------------.
+      | Static Attributes |
+      `------------------*/
     public:
-      //
-      // static methods
-      //
+      struct Contexts
+      {
+        static ::EVP_PKEY_CTX* generate;
+      };
+
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
       /// Initialize the keypair contexts.
       static
@@ -37,28 +43,18 @@ namespace infinit
       void
       clean();
       /// Return a brand new, freshly generated key pair of the
-      /// given length, or default one if not provided.
+      /// given length.
       static
       KeyPair
-      generate(elle::Natural32 const length = Default::Length);
-      // XXX[to remove if possible]
-      static KeyPair const& null();
+      generate(elle::Natural32 const length);
 
-      //
-      // constants
-      //
-      struct                            Default
-      {
-        static const elle::Natural32          Length;
-      };
-
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      KeyPair(elle::Natural32 length);
-    private:
       KeyPair();
+    private:
+      KeyPair(std::unique_ptr< ::EVP_PKEY >&& key);
 
       //
       // methods
@@ -67,31 +63,34 @@ namespace infinit
       elle::Status            Rotate(const Seed&,
                                KeyPair&) const;
 
-      //
-      // interfaces
-      //
-
+      // XXX
       // object
       elle::Boolean           operator ==(const KeyPair&) const;
 
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // dumpable
-      elle::Status            Dump(const elle::Natural32 = 0) const;
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes
       //
       PublicKey         K;
       PrivateKey        k;
-
-      struct                    Contexts
-      {
-        static ::EVP_PKEY_CTX*  Generate;
-      };
     };
 
   }
 }
 
-#include <cryptography/KeyPair.hxx>
+# include <cryptography/KeyPair.hxx>
 
 #endif
