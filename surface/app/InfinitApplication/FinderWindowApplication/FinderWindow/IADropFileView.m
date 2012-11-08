@@ -147,14 +147,28 @@
     NSPasteboard* pboard = [sender draggingPasteboard];
     NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
     _pending_files = [[NSSet setWithArray:[_pending_files arrayByAddingObjectsFromArray:files]] allObjects];
-    [self.label setStringValue:[NSString stringWithFormat:@"%ld files", [_pending_files count]]];
+    [self _refresh];
     [[self main_controller] refresh];
     return TRUE;
+}
+
+- (void)_refresh
+{
+    if ([_pending_files count])
+        [self.label setStringValue:[NSString stringWithFormat:@"%ld files", [_pending_files count]]];
+    else
+        [self.label setStringValue:@"Drop here"];
 }
 
 - (BOOL) hasPendingFiles
 {
     return [_pending_files count] > 0;
+}
+
+- (void) reset
+{
+    _pending_files = [[NSArray alloc] init];
+    [self _refresh];
 }
 
 @end

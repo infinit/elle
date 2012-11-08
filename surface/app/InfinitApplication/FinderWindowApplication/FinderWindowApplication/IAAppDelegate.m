@@ -7,12 +7,14 @@
 //
 
 #import "IAAppDelegate.h"
+#import "IAStatusItem.h"
 #import <FinderWindow/IAFinderWindowController.h>
 
 @implementation IAAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+
     self.window_controller = [[IAFinderWindowController alloc] initFromNib];
 
     NSPoint p;
@@ -20,6 +22,11 @@
     p.y = 200;
     [[self.window_controller window] setFrameOrigin:p];
     [self.window_controller showWindow:self];
+
+}
+-(void) awakeFromNib
+{
+    [IAStatusItem load];
 }
 
 @end

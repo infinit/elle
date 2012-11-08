@@ -54,7 +54,9 @@
 
 - (void) _onFileSent:(IAGapOperationResult*)result
 {
-    NSLog(@"FILE SENT: %d", result.success);
+    [self.drop_box reset];
+    _locked = false;
+    [self refresh];
 }
 
 - (void)refresh

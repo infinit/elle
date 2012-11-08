@@ -17,5 +17,6 @@
 @property(readonly) NSArray* pending_files;
 
 - (BOOL) hasPendingFiles;
+- (void) reset;
 
 @end

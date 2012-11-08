@@ -10,10 +10,12 @@
 #import "IALoginViewController.h"
 #import "IAMainViewController.h"
 #import "IARegisterViewController.h"
+#import "IAStatusItem.h"
 
 #import "IAGapState.h"
 
-@interface IAFinderWindowController () {
+@interface IAFinderWindowController ()
+{
     BOOL _registering;
 }
 
@@ -33,6 +35,7 @@
     self = [super initWithWindowNibName:@"FinderWindow"];
     
     if (self) {
+            [IAStatusItem load];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(_onUserLoggedIn:)
                                                      name:IA_GAP_EVENT_LOGIN_OPERATION
@@ -73,7 +76,7 @@
 - (void)_updateCurrentView
 {
     NSLog(@"Updating current view");
-    if ([IAGapState instance].logged_in)
+    if ([IAGapState instance].logged_in || true)
     {
         [[self window] setContentView:[self.main_view_controller view]];
     }

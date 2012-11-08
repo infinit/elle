@@ -195,6 +195,8 @@ static void on_user_status(gap_UserStatusNotification const* n);
         return;
     NSLog(@"Do poll");
     gap_Status ret = gap_poll(_state);
+    if (ret != gap_ok)
+        NSLog(@"Warning: gap_poll failed");
     [self addOperation:[[TimerOperation alloc] initWithInterval:1
                                                 performSelector:@selector(_poll)
                                                        onObject:self]];
@@ -212,6 +214,32 @@ static void on_user_status(gap_UserStatusNotification const* n);
             [self _poll];
         }
     }
+}
+
+//- Files ------------------------------------------------------------------------------------
+
+- (void)               sendFiles:(NSArray*)files
+                          toUser:(NSString*)user
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+    [self _addOperation:^gap_Status(void) {
+        if (![files count])
+        {
+            return gap_error;
+        }
+        char const** cfiles = calloc([files count] + 1, sizeof(char*));
+        if (cfiles == NULL)
+            return gap_error; //XXX specialized error
+        int i = 0;
+        for (id file in files)
+        {
+            cfiles[i++] = [file UTF8String];
+        }
+        gap_Status res = gap_send_files(self.state, [user UTF8String], cfiles);
+        free(cfiles);
+        return res;
+    } performSelector:selector onObject:object];
 }
 
 //- User -------------------------------------------------------------------------------------
