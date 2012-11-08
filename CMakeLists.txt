@@ -7,7 +7,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Uri)
 
-include_directories(${Uri_SOURCE_DIR}/include)
+include_directories(${Uri_SOURCE_DIR}/src ${Uri_SOURCE_DIR}/deps)
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 

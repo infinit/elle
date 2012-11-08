@@ -9,12 +9,12 @@
 #ifndef NETWORK_URI_INC
 #define NETWORK_URI_INC
 
-#include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <iterator>
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
+#include <cstring>
 
 
 namespace network {
@@ -29,6 +29,17 @@ namespace network {
       std::hash<T> hasher;
       seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
     }
+
+    inline
+    std::string translate(const std::string &source) {
+      return source;
+    }
+
+    inline
+    std::string translate(const std::wstring &source) {
+      return std::string(std::begin(source), std::end(source));
+    }
+
   } // namespace detail
 
   class uri_syntax_error : public std::runtime_error {
@@ -114,21 +125,19 @@ namespace network {
 
     }
 
-    uri(const std::string &uri)
-      : uri_(std::begin(uri), std::end(uri)) {
-      parse();
-    }
-
-    uri(const std::wstring &uri)
-      : uri_(std::begin(uri), std::end(uri)) {
+    template <
+      class InputIter
+      >
+    uri(const InputIter &first, const InputIter &last)
+      : uri_(first, last) {
       parse();
     }
 
     template <
-      class FwdIter
+      class Source
       >
-    uri(const FwdIter &first, const FwdIter &last)
-      : uri_(first, last) {
+    uri(const Source &uri)
+      : uri_(detail::translate(uri)) {
       parse();
     }
 
@@ -137,14 +146,14 @@ namespace network {
       parse();
     }
 
+    ~uri() {
+
+    }
+
     uri &operator = (const uri &other) {
       uri_ = other.uri_;
       parse();
       return *this;
-    }
-
-    ~uri() {
-
     }
 
     void swap(uri &other) {
@@ -222,16 +231,24 @@ namespace network {
       return std::wstring(std::begin(uri_), std::end(uri_));
     }
 
+    std::u16string u16string() const {
+      return std::u16string(std::begin(uri_), std::end(uri_));
+    }
+
+    std::u32string u32string() const {
+      return std::u32string(std::begin(uri_), std::end(uri_));
+    }
+
     bool empty() const {
       return uri_.empty();
     }
 
-    bool is_absolute() const {
+    bool absolute() const {
       return !scheme().empty();
     }
 
-    bool is_opaque() const {
-      return is_absolute();
+    bool opaque() const {
+      return absolute();
     }
 
     void append(const string_type &data) {
@@ -240,9 +257,9 @@ namespace network {
     }
 
     template <
-      class FwdIter
+      class InputIter
       >
-    void append(const FwdIter &first, const FwdIter &last) {
+    void append(const InputIter &first, const InputIter &last) {
       uri_.append(first, last);
       parse();
     }
@@ -298,16 +315,6 @@ namespace network {
 
   inline
   bool operator == (const uri::string_type &lhs, const uri &rhs) {
-    return uri(lhs) == rhs;
-  }
-
-  inline
-  bool operator == (const uri &lhs, const uri::value_type *rhs) {
-    return lhs == uri(rhs);
-  }
-
-  inline
-  bool operator == (const uri::value_type *lhs, const uri &rhs) {
     return uri(lhs) == rhs;
   }
 

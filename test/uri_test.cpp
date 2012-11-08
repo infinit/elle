@@ -14,21 +14,25 @@
 #include <set>
 #include <cstring>
 
+TEST(uri_test, invalid_uri) {
+  ASSERT_THROW(network::uri("I am not a valid URI."), network::uri_syntax_error);
+}
 
-namespace network {
-  namespace test {
-    // A couple of helper functions to make the tests easier to read.
-    template <class Rng1, class Rng2>
-    bool equal(const Rng1 &rng1, const Rng2 &rng2) {
-      return std::equal(std::begin(rng1), std::end(rng1), std::begin(rng2));
-    }
+TEST(uri_test, construct_uri_from_char_array) {
+  ASSERT_NO_THROW(network::uri("http://www.example.com/"));
+}
 
-    std::pair<const char *, const char *> as_literal(const char *rng) {
-      return std::make_pair(rng, rng + std::strlen(rng));
-    }
-  } // namespace test
-} // namespace network
+TEST(uri_test, construct_uri_from_wchar_t_array) {
+  ASSERT_NO_THROW(network::uri(L"http://www.example.com/"));
+}
 
+TEST(uri_test, construct_uri_from_string) {
+  ASSERT_NO_THROW(network::uri(std::string("http://www.example.com/")));
+}
+
+TEST(uri_test, construct_uri_from_wstring) {
+  ASSERT_NO_THROW(network::uri(std::wstring(L"http://www.example.com/")));
+}
 
 TEST(uri_test, basic_uri_scheme_test) {
   network::uri instance("http://www.example.com/");
@@ -69,18 +73,18 @@ TEST(uri_test, basic_uri_value_semantics_test) {
   network::uri original;
   network::uri assigned;
   assigned = original;
-  ASSERT_TRUE(original == assigned);
+  ASSERT_EQ(original, assigned);
   assigned = network::uri("http://www.example.com/");
-  ASSERT_TRUE(original != assigned);
+  ASSERT_NE(original, assigned);
   network::uri copy(assigned);
-  ASSERT_TRUE(copy == assigned);
+  ASSERT_EQ(copy, assigned);
 }
 
 TEST(uri_test, basic_uri_range_scheme_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.scheme());
   ASSERT_TRUE(instance.begin() == boost::begin(instance.scheme()));
-  ASSERT_TRUE(network::test::equal(instance.scheme(), network::test::as_literal("http")));
+  ASSERT_EQ(instance.scheme().string(), "http");
 }
 
 TEST(uri_test, basic_uri_range_user_info_test) {
@@ -93,7 +97,7 @@ TEST(uri_test, basic_uri_range_user_info_test) {
 TEST(uri_test, basic_uri_range_host_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.host());
-  ASSERT_TRUE(network::test::equal(instance.host(), network::test::as_literal("www.example.com")));
+  ASSERT_EQ(instance.host().string(), "www.example.com");
 }
 
 TEST(uri_test, basic_uri_range_port_test) {
@@ -106,7 +110,7 @@ TEST(uri_test, basic_uri_range_port_test) {
 TEST(uri_test, basic_uri_range_path_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.path());
-  ASSERT_TRUE(network::test::equal(instance.path(), network::test::as_literal("/")));
+  ASSERT_EQ(instance.path().string(), "/");
   ASSERT_TRUE(instance.end() == boost::end(instance.path()));
 }
 
@@ -163,43 +167,43 @@ TEST(uri_test, full_uri_range_scheme_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.scheme());
   ASSERT_TRUE(instance.begin() == boost::begin(instance.scheme()));
-  ASSERT_TRUE(network::test::equal(instance.scheme(), network::test::as_literal("http")));
+  ASSERT_EQ(instance.scheme().string(), "http");
 }
 
 TEST(uri_test, full_uri_range_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.user_info());
-  ASSERT_TRUE(network::test::equal(instance.user_info(), network::test::as_literal("user:password")));
+  ASSERT_EQ(instance.user_info().string(), "user:password");
 }
 
 TEST(uri_test, full_uri_range_host_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.host());
-  ASSERT_TRUE(network::test::equal(instance.host(), network::test::as_literal("www.example.com")));
+  ASSERT_EQ(instance.host().string(), "www.example.com");
 }
 
 TEST(uri_test, full_uri_range_port_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.port());
-  ASSERT_TRUE(network::test::equal(instance.port(), network::test::as_literal("80")));
+  ASSERT_EQ(instance.port().string(), "80");
 }
 
 TEST(uri_test, full_uri_range_path_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.path());
-  ASSERT_TRUE(network::test::equal(instance.path(), network::test::as_literal("/path")));
+  ASSERT_EQ(instance.path().string(), "/path");
 }
 
 TEST(uri_test, full_uri_range_query_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.query());
-  ASSERT_TRUE(network::test::equal(instance.query(), network::test::as_literal("query")));
+  ASSERT_EQ(instance.query().string(), "query");
 }
 
 TEST(uri_test, full_uri_range_fragment_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.fragment());
-  ASSERT_TRUE(network::test::equal(instance.fragment(), network::test::as_literal("fragment")));
+  ASSERT_EQ(instance.fragment().string(), "fragment");
   ASSERT_TRUE(instance.end() == boost::end(instance.fragment()));
 }
 
@@ -410,30 +414,6 @@ TEST(uri_test, equality_test) {
   ASSERT_EQ(uri_1, uri_2);
 }
 
-TEST(uri_test, equality_test_1) {
-  network::uri uri_1("http://www.example.com/");
-  std::string uri_2("http://www.example.com/");
-  ASSERT_EQ(uri_1, uri_2);
-}
-
-TEST(uri_test, equality_test_2) {
-  std::string uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/");
-  ASSERT_EQ(uri_1, uri_2);
-}
-
-//TEST(uri_test, equality_test_3) {
-//  network::uri uri_1("http://www.example.com/");
-//  std::string uri_2("http://www.example.com/");
-//  ASSERT_TRUE(uri_1 == uri_2.c_str());
-//}
-
-//TEST(uri_test, equality_test_4) {
-//  std::string uri_1("http://www.example.com/");
-//  network::uri uri_2("http://www.example.com/");
-//  ASSERT_TRUE(uri_1.c_str() == uri_2);
-//}
-
 TEST(uri_test, equality_test_reordered_query) {
   network::uri uri_1("http://www.example.com/?a=1&b=2");
   network::uri uri_2("http://www.example.com/?b=2&a=1");
@@ -523,65 +503,23 @@ TEST(uri_test, less_than_test) {
   network::uri uri_1("http://www.example.com/");
   network::uri uri_2("http://www.example.org/");
   ASSERT_LT(uri_1, uri_2);
-  //ASSERT_TRUE(uri_1 < uri_2);
 }
 
-//TEST(uri_test, username_test) {
-//  network::uri instance("ftp://john.doe@ftp.example.com/");
-//  ASSERT_EQ(network::username(instance), "john.doe");
-//}
-//
-//TEST(uri_test, password_test) {
-//  network::uri instance("ftp://john.doe:password@ftp.example.com/");
-//  ASSERT_EQ(network::password(instance), "password");
-//}
+TEST(uri_test, authority_test) {
+  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  ASSERT_EQ(instance.authority().string(), "user:password@www.example.com:80");
+}
 
-//TEST(uri_test, hierarchical_part_test) {
-//  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-//  ASSERT_EQ(network::hierarchical_part(instance), "user:password@www.example.com:80/path");
-//}
-
-//TEST(uri_test, partial_hierarchical_part_test) {
-//  network::uri instance("http://www.example.com?query#fragment");
-//  ASSERT_EQ(network::hierarchical_part(instance), "www.example.com");
-//}
-
-//TEST(uri_test, authority_test) {
-//  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-//  ASSERT_EQ(network::authority(instance), "user:password@www.example.com:80");
-//}
-//
-//TEST(uri_test, partial_authority_test) {
-//  network::uri instance("http://www.example.com/path?query#fragment");
-//  ASSERT_EQ(network::authority(instance), "www.example.com");
-//}
-//
-//TEST(uri_test, http_query_map_test) {
-//  network::uri instance("http://user:password@www.example.com:80/path?query=something#fragment");
-//
-//  std::map<std::string, std::string> queries;
-//  network::query_map(instance, queries);
-//  BOOST_REQUIRE_EQUAL(queries.size(), std::size_t(1));
-//  ASSERT_EQ(queries.begin()->first, "query");
-//  ASSERT_EQ(queries.begin()->second, "something");
-//}
-//
-//TEST(uri_test, xmpp_query_map_test) {
-//  network::uri instance("xmpp:example-node@example.com?message;subject=Hello%20World");
-//
-//  std::map<std::string, std::string> queries;
-//  network::query_map(instance, queries);
-//  BOOST_REQUIRE_EQUAL(queries.size(), std::size_t(2));
-//  ASSERT_EQ(queries.begin()->first, "message");
-//  ASSERT_EQ(queries.begin()->second, "");
-//  ASSERT_EQ((++queries.begin())->first, "subject");
-//  ASSERT_EQ((++queries.begin())->second, "Hello%20World");
-//}
+TEST(uri_test, partial_authority_test) {
+  network::uri instance("http://www.example.com/path?query#fragment");
+  ASSERT_EQ(instance.authority().string(), "www.example.com");
+}
 
 TEST(uri_test, range_test) {
   const std::string url("http://www.example.com/");
   network::uri instance(url);
-  ASSERT_TRUE(network::test::equal(instance, url));
+  ASSERT_TRUE(std::equal(std::begin(instance), std::end(instance),
+			 std::begin(url)));
 }
 
 TEST(uri_test, issue_67_test) {
@@ -589,7 +527,7 @@ TEST(uri_test, issue_67_test) {
   const std::string site_name("http://www.google.com");
   network::uri bar0;
   network::uri bar1 = site_name;
-  //ASSERT_TRUE_NO_THROW(bar0 = site_name);
+  ASSERT_NO_THROW(bar0 = site_name);
 }
 
 TEST(uri_test, issue_104_test) {

@@ -29,7 +29,7 @@ namespace network {
 
     // remove single dot segments
     remove_erase_if(path_segments, [] (const uri::string_type &s) {
-	return equal(s, boost::as_literal("."));
+	return equal(s, as_literal("."));
       });
 
     // remove double dot segments
@@ -37,7 +37,7 @@ namespace network {
     auto depth = 0;
     for_each(path_segments, [&normalized_segments, &depth] (const uri::string_type &s) {
 	assert(depth >= 0);
-	if (equal(s, boost::as_literal(".."))) {
+	if (equal(s, as_literal(".."))) {
 	  normalized_segments.pop_back();
 	}
 	else {
