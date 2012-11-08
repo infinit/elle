@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
+#include <system_error>
 #include <cstring>
 
 
@@ -296,6 +297,14 @@ namespace network {
 				     std::begin(uri_));
     }
     uri_parts_.update();
+  }
+
+  template <
+    class Source
+    >
+  inline
+  uri make_uri(const Source &source, std::error_code &ec) {
+    return uri();
   }
 
   inline

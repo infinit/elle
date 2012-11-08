@@ -14,8 +14,14 @@
 #include <set>
 #include <cstring>
 
-TEST(uri_test, invalid_uri) {
+TEST(uri_test, construct_invalid_uri) {
   ASSERT_THROW(network::uri("I am not a valid URI."), network::uri_syntax_error);
+}
+
+TEST(uri_test, make_invalid_uri) {
+  std::error_code ec;
+  network::uri uri = network::make_uri("I am not a valid URI.", ec);
+  ASSERT_TRUE(ec);
 }
 
 TEST(uri_test, construct_uri_from_char_array) {
