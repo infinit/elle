@@ -118,7 +118,6 @@ namespace infinit
       unsigned char     iv[EVP_MAX_IV_LENGTH];
       unsigned char     salt[PKCS5_SALT_LEN];
       elle::Natural32         capacity;
-      int               size;
 
       // generate a salt.
       ::RAND_pseudo_bytes(salt, sizeof (salt));
@@ -156,45 +155,48 @@ namespace infinit
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the cipher.
-      if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
-                                1 +
-                                sizeof (salt) +
-                                in.size() +
-                                capacity) == elle::Status::Error)
-        escape("unable to reserve memory for the cipher");
+      cipher.buffer().size(sizeof (SecretKey::Magic) -
+                           1 +
+                           sizeof (salt) +
+                           in.size() +
+                           capacity);
 
       // push the magic string directly into the cipher.
-      ::memcpy(cipher.region.contents,
+      ::memcpy(cipher.buffer().mutable_contents(),
                SecretKey::Magic,
                sizeof (SecretKey::Magic) - 1);
 
       // push the salt directly into the cipher.
-      ::memcpy(cipher.region.contents + sizeof (SecretKey::Magic) - 1,
+      ::memcpy(cipher.buffer().mutable_contents() +
+               sizeof (SecretKey::Magic) - 1,
                salt,
                sizeof (salt));
 
       // initialise the cipher's size.
-      cipher.region.size = sizeof (SecretKey::Magic) - 1 + sizeof (salt);
+      int size_header(sizeof (SecretKey::Magic) - 1 + sizeof (salt));
+
+      int size_update(0);
 
       // cipher the plain text.
       if (::EVP_EncryptUpdate(&scope.context,
-                              cipher.region.contents + cipher.region.size,
-                              &size,
+                              cipher.buffer().mutable_contents() +
+                              size_header,
+                              &size_update,
                               in.contents(),
                               in.size()) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // update the cipher size.
-      cipher.region.size += size;
+      int size_finalize(0);
 
       // finialise the ciphering process.
       if (::EVP_EncryptFinal_ex(&scope.context,
-                                cipher.region.contents + cipher.region.size,
-                                &size) == 0)
+                                cipher.buffer().mutable_contents() +
+                                size_header + size_update,
+                                &size_finalize) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the cipher size.
-      cipher.region.size += size;
+      cipher.buffer().size(size_header + size_update + size_finalize);
 
       return elle::Status::Ok;
     }
@@ -212,13 +214,13 @@ namespace infinit
 
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,
-                   cipher.region.contents,
+                   cipher.buffer().contents(),
                    sizeof (SecretKey::Magic) - 1) != 0)
         escape("this encrypted information was produced without any salt");
 
       // copy the salt for the sack of clarity.
       ::memcpy(salt,
-               cipher.region.contents + sizeof (Magic) - 1,
+               cipher.buffer().contents() + sizeof (Magic) - 1,
                sizeof (salt));
 
       size_t bytes_to_key = ::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
@@ -252,7 +254,7 @@ namespace infinit
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the out buffer.
-      out.size(cipher.region.size -
+      out.size(cipher.buffer().size() -
                (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
                capacity);
 
@@ -261,10 +263,10 @@ namespace infinit
       if (::EVP_DecryptUpdate(&scope.context,
                               out.mutable_contents(),
                               &size_update,
-                              cipher.region.contents +
+                              cipher.buffer().contents() +
                               sizeof (SecretKey::Magic) - 1 +
                               sizeof (salt),
-                              cipher.region.size -
+                              cipher.buffer(.size() -
                               (sizeof (SecretKey::Magic) - 1 +
                                sizeof (salt))) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));

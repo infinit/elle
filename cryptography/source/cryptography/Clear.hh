@@ -7,7 +7,8 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// XXX
+    /// Represent a decrypted text, both trought symmetric and asymmetric
+    /// cryptosystems.
     typedef Output Clear;
   }
 }

@@ -5,8 +5,6 @@ namespace infinit
 {
   namespace cryptography
   {
-    class Cipher;
-    class Code;
     class KeyPair;
     class Input;
     class Output;
@@ -18,6 +16,8 @@ namespace infinit
   }
 }
 
+# include <cryptography/Code.hh>
+# include <cryptography/Cipher.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/Digest.hh>
 # include <cryptography/Plain.hh>

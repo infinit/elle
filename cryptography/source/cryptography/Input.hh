@@ -1,15 +1,14 @@
 #ifndef INFINIT_CRYPTOGRAPHY_INPUT_HH
 # define INFINIT_CRYPTOGRAPHY_INPUT_HH
 
+# include <cryptography/fwd.hh>
+
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
-
 # include <elle/io/Dumpable.hh>
-
-# include <cryptography/fwd.hh>
 
 # include <elle/serialize/fwd.hh>
 
@@ -17,7 +16,9 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// XXX
+    /// Represent an input for an cryptographic operation. This class
+    /// can be constructed from a weak buffer which is basically a wrapper
+    /// around a memory address and size.
     class Input:
       public elle::io::Dumpable,
       public elle::Printable
@@ -41,7 +42,7 @@ namespace infinit
       ELLE_OPERATOR_NEQ(Input);
       ELLE_OPERATOR_GT(Input);
       ELLE_OPERATOR_GTE(Input);
-      ELLE_OPERATOR_ASSIGNMENT(Input); // XXX
+      ELLE_OPERATOR_NO_ASSIGNMENT(Input);
 
       elle::Boolean
       operator ==(Output const& other) const;
