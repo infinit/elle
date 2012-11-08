@@ -12,6 +12,18 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <Foundation/NSConnection.h>
 
+#ifdef DEBUG_WITHOUT_FINDER
+# import "IAFinderWindowController.h"
+#endif
+
+@interface IAAppDelegate ()
+
+#ifdef DEBUG_WITHOUT_FINDER
+@property (retain) IAFinderWindowController* _window_controller;
+#endif
+
+@end
+
 @implementation IAAppDelegate
 
 - (void)awakeFromNib
@@ -48,6 +60,17 @@
             exit(EXIT_FAILURE);
         }
     }
+#ifdef DEBUG_WITHOUT_FINDER
+    self._window_controller = [[IAFinderWindowController alloc] initFromNib];
+    
+    NSPoint p;
+    p.x = 400;
+    p.y = 200;
+    [[self._window_controller window] setFrameOrigin:p];
+    [self._window_controller showWindow:self];
+#else
+    [self doInject:self];
+#endif
 }
 
 - (IBAction)doInject:(id)sender
