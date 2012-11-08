@@ -224,7 +224,7 @@ void InfinitNetwork::_prepare_directory()
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()},
-                        elle::io::Piece{"%NETWORK%", this->_description_id});
+                        elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
   hole::storage::Directory storage(shelter_path.string());
   LOG("Built directory storage of %s", this->_description._id);
