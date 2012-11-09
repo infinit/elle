@@ -175,14 +175,22 @@ static void on_user_status(gap_UserStatusNotification const* n);
 
 -(id) init
 {
+    gap_State* state = gap_new();
+    if (state == nil)
+    {
+        NSLog(@"ERROR: Cannot initialize gap");
+        return nil;
+    }
+
     self = [super init];
     
     if (!self)
+    {
+        gap_free(state);
         return nil;
+    }
     
-    _state = gap_new();
-    if (_state == NULL)
-        [NSException raise:@"bad_alloc" format:@"Cannot create a new gap state"];
+    _state = state;
     _logged_in = FALSE;
     _polling = FALSE;
     return self;

@@ -143,6 +143,9 @@
 		BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mach_inject_bundle_stub.xcodeproj; path = mach_inject_bundle_stub/mach_inject_bundle_stub.xcodeproj; sourceTree = "<group>"; };
 		BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderPlugin.xcodeproj; path = io.infinit.FinderPlugin/FinderPlugin.xcodeproj; sourceTree = "<group>"; };
 		BD8C3F77164BE00100BED07C /* IAFinderWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAFinderWindowController.h; path = ../FinderWindowApplication/FinderWindow/IAFinderWindowController.h; sourceTree = "<group>"; };
+		BD91959D164C0860009FCC0F /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = IAStatusBarController.h; path = ../FinderWindowApplication/FinderWindow/IAStatusBarController.h; sourceTree = "<group>"; };
+		BD9195A3164D2E7C009FCC0F /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = IANotificationPanel.h; path = ../FinderWindowApplication/FinderWindow/IANotificationPanel.h; sourceTree = "<group>"; };
+		BD9195A8164D4BE5009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = IANotificationPanelController.h; path = ../FinderWindowApplication/FinderWindow/IANotificationPanelController.h; sourceTree = "<group>"; };
 		BDBAEE15163E7D78001B2FD1 /* libgap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgap.dylib; path = ../../../build/macosx64/surface/gap/libgap.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -217,6 +220,9 @@
 		BD28AA04162ED79A004F1697 /* InfinitApplication */ = {
 			isa = PBXGroup;
 			children = (
+				BD9195A8164D4BE5009FCC0F /* IANotificationPanelController.h */,
+				BD9195A3164D2E7C009FCC0F /* IANotificationPanel.h */,
+				BD91959D164C0860009FCC0F /* IAStatusBarController.h */,
 				BD8C3F77164BE00100BED07C /* IAFinderWindowController.h */,
 				BD28AA10162ED79A004F1697 /* IAAppDelegate.h */,
 				BD28AA11162ED79A004F1697 /* IAAppDelegate.m */,

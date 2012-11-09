@@ -30,6 +30,14 @@
 		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
 		BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD8C3F6B164AC5B600BED07C /* active_status_icon.png */; };
 		BD8C3F76164BC8F700BED07C /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
+		BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919595164C062D009FCC0F /* IAStatusBarController.h */; };
+		BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD919596164C062D009FCC0F /* IAStatusBarController.m */; };
+		BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919599164C0667009FCC0F /* IAStatusItemView.h */; };
+		BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD91959A164C0667009FCC0F /* IAStatusItemView.m */; };
+		BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = BD91959F164D2E67009FCC0F /* IANotificationPanel.h */; };
+		BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */; };
+		BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */; };
+		BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */; };
 		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; };
 		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
 		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -79,6 +87,14 @@
 		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
 		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
 		BD8C3F6B164AC5B600BED07C /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
+		BD919595164C062D009FCC0F /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusBarController.h; sourceTree = "<group>"; };
+		BD919596164C062D009FCC0F /* IAStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusBarController.m; sourceTree = "<group>"; };
+		BD919599164C0667009FCC0F /* IAStatusItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusItemView.h; sourceTree = "<group>"; };
+		BD91959A164C0667009FCC0F /* IAStatusItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusItemView.m; sourceTree = "<group>"; };
+		BD91959F164D2E67009FCC0F /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanel.h; sourceTree = "<group>"; };
+		BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanel.m; sourceTree = "<group>"; };
+		BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanelController.h; sourceTree = "<group>"; };
+		BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanelController.m; sourceTree = "<group>"; };
 		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
 		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
 		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
@@ -143,6 +159,8 @@
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
+				BD91959E164D2E30009FCC0F /* NotificationPanel */,
+				BD919593164C05F9009FCC0F /* StatusBar */,
 				BDB63FC91647D425008FCDAB /* Window */,
 				BDB63FC61647D389008FCDAB /* Register */,
 				BDB63FC81647D3F2008FCDAB /* Resources */,
@@ -164,6 +182,28 @@
 				BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BD919593164C05F9009FCC0F /* StatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				BD919595164C062D009FCC0F /* IAStatusBarController.h */,
+				BD919596164C062D009FCC0F /* IAStatusBarController.m */,
+				BD919599164C0667009FCC0F /* IAStatusItemView.h */,
+				BD91959A164C0667009FCC0F /* IAStatusItemView.m */,
+			);
+			name = StatusBar;
+			sourceTree = "<group>";
+		};
+		BD91959E164D2E30009FCC0F /* NotificationPanel */ = {
+			isa = PBXGroup;
+			children = (
+				BD91959F164D2E67009FCC0F /* IANotificationPanel.h */,
+				BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */,
+				BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */,
+				BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */,
+			);
+			name = NotificationPanel;
 			sourceTree = "<group>";
 		};
 		BDB63FC61647D389008FCDAB /* Register */ = {
@@ -259,6 +299,10 @@
 				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
 				BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */,
 				BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */,
+				BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */,
+				BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */,
+				BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */,
+				BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +385,10 @@
 				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
 				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
 				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
+				BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */,
+				BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */,
+				BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */,
+				BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

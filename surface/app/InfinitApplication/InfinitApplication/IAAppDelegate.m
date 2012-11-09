@@ -12,9 +12,17 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <Foundation/NSConnection.h>
 
+#import "IAStatusBarController.h"
+#import "IANotificationPanelController.h"
+
 #ifdef DEBUG_WITHOUT_FINDER
 # import "IAFinderWindowController.h"
 #endif
+
+
+// Unique identifier (No other pointer has the same address).
+// Used to subscribe to the modification of the "hasActivePanel" value.
+static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActivePanelContext";
 
 @interface IAAppDelegate ()
 
@@ -22,16 +30,25 @@
 @property (retain) IAFinderWindowController* _window_controller;
 #endif
 
+@property (retain) IAStatusBarController* _status_bar_controller;
+@property (retain) IBOutlet IANotificationPanelController* _notification_panel_controller;
+
 @end
 
 @implementation IAAppDelegate
 
 - (void)awakeFromNib
 {
-    NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
-    self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
-    [self.status_item setMenu:self.status_menu];
-    [self setDefaultStatus];
+    self._status_bar_controller = [[IAStatusBarController alloc] init];
+    [self.notification_panel setStatusBarController:self._status_bar_controller];
+    [self._notification_panel_controller addObserver:self
+                                          forKeyPath:@"visibility"
+                                             options:0
+                                             context:_context_for_active_panel_event_unique_identifier];
+    //NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
+    //self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
+   // [self.status_item setMenu:self.status_menu];
+  //  [self setDefaultStatus];
     self.drive_path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/Infinit"];
     
     NSFileManager* file_manager = [NSFileManager defaultManager];
@@ -72,6 +89,26 @@
     [self doInject:self];
 #endif
 }
+
+
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context
+{
+    NSLog(@"value changed for key path = %@", keyPath);
+    if (context == _context_for_active_panel_event_unique_identifier) {
+//        self._status_bar_controller.hasActiveIcon = self.panelController.hasActivePanel;
+    }
+    else {
+        [super observeValueForKeyPath:keyPath
+                             ofObject:object
+                               change:change
+                              context:context];
+    }
+}
+
 
 - (IBAction)doInject:(id)sender
 {
