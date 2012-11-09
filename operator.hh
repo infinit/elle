@@ -6,7 +6,10 @@
 /// Make it even easier than the following macro-functions to define
 /// comparison operators. In order to provide the six operators (==,
 /// !=, <, <=, > and >=), one must only manually write the operators
-/// < and == before calling this macro-function in the global namespace:
+/// < and == before calling this macro-function in the global namespace.
+///
+/// Note that the <utility> must ABSOLUTELY be included prior to calling
+/// this macro-function.
 # define ELLE_OPERATOR_RELATIONALS()                                    \
   using namespace std::rel_ops;
 
