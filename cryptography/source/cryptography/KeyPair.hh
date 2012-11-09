@@ -54,7 +54,7 @@ namespace infinit
     public:
       KeyPair();
     private:
-      KeyPair(std::unique_ptr< ::EVP_PKEY >&& key);
+      KeyPair(::EVP_PKEY* key);
 
       //
       // methods
