@@ -93,7 +93,7 @@ namespace infinit
       ELLE_ASSERT(scope.key != nullptr);
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
-      return (KeyPair(std::move(std::unique_ptr< ::EVP_PKEY >(scope.key))));
+      return (KeyPair(scope.key));
     }
 
 //
@@ -106,26 +106,23 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(std::unique_ptr< ::EVP_PKEY >&& key)
+    KeyPair::KeyPair(::EVP_PKEY* key)
     // XXX[construct K and k]
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
 
       // create the actual public key according to the EVP structure.
-      if (this->K.Create(key.get()) == elle::Status::Error)
+      if (this->K.Create(key) == elle::Status::Error)
         escape("unable to create the public key");
 
       assert(this->K.key() != nullptr);
 
       // create the actual private key according to the EVP structure.
-      if (this->k.Create(key.get()) == elle::Status::Error)
+      if (this->k.Create(key) == elle::Status::Error)
         escape("unable to create the private key");
 
       assert(this->k.key() != nullptr);
-
-      // XXX
-      key.release();
     }
 
 //
