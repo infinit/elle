@@ -101,7 +101,9 @@ class Trophonius(basic.LineReceiver):
 		}
 		"""
 		try:
-			js_ent(session={"token": js_req["token"]})
+                        js_req = json.loads(line)
+                        cl = pythia.Client(session={"token": js_req["token"]})
+
 			res = cl.get('/self')
 			# The authentication succeeded
 
