@@ -90,7 +90,10 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 #endif
 }
 
-
+-(IBAction)toggleNotificationPanel:(id)sender
+{
+    [self._notification_panel_controller toggleVisibility];
+}
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
@@ -98,7 +101,9 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
                        context:(void*)context
 {
     NSLog(@"value changed for key path = %@", keyPath);
-    if (context == _context_for_active_panel_event_unique_identifier) {
+    if (context == _context_for_active_panel_event_unique_identifier)
+    {
+        [self._status_bar_controller setIconHighlight:[self._notification_panel_controller visibility]];
 //        self._status_bar_controller.hasActiveIcon = self.panelController.hasActivePanel;
     }
     else {

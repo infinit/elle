@@ -27,6 +27,10 @@
     [self makeKeyAndOrderFront:nil];
 }
 
+- (void)hide
+{
+    [self orderOut:nil];
+}
 
 - (NSRect)statusRectForWindow:(NSWindow *)window
 {

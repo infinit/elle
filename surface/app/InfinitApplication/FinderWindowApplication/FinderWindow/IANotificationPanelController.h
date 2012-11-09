@@ -10,8 +10,8 @@
 
 @interface IANotificationPanelController : NSWindowController//<NSWindowDelegate>
 
+- (void)toggleVisibility;
 - (void)setVisibility:(BOOL)visibility;
-
 - (BOOL)visibility;
 
 @end

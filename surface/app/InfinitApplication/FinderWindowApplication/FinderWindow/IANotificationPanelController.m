@@ -25,6 +25,11 @@
     return _visibility;
 }
 
+- (void)toggleVisibility
+{
+    [self setVisibility:![self visibility]];
+}
+
 - (void)setVisibility:(BOOL)visibility
 {
     _visibility = visibility;

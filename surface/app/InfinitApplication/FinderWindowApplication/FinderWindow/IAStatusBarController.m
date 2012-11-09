@@ -39,6 +39,11 @@
     return self;
 }
 
+- (void)setIconHighlight:(bool)highlight
+{
+    [_status_item setHighlightMode:highlight];
+}
+
 - (IAStatusItemView*)getStatusItemView
 {
     return _status_item_view;

@@ -42,8 +42,9 @@
 
 - (void)mouseDown:(NSEvent*)event
 {
-    _highlighted = !_highlighted;
-    [self setNeedsDisplay:YES];
+    [NSApp sendAction:@selector(toggleNotificationPanel:) to:nil from:self];
+//    _highlighted = !_highlighted;
+//    [self setNeedsDisplay:YES];
 }
 
 - (void)setHighlighted:(BOOL)newFlag

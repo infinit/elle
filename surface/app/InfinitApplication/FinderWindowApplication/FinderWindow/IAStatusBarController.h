@@ -12,5 +12,6 @@
 @interface IAStatusBarController : NSObject
 
 - (IAStatusItemView*)getStatusItemView;
+- (void)setIconHighlight:(bool)highlight;
 
 @end
