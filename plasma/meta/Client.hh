@@ -82,6 +82,10 @@ namespace plasma
       std::list<std::string>   users;
     };
 
+    struct AnswerTransactionResponse : plasma::Response
+    {
+    };
+
     struct CreateNetworkResponse : plasma::Response
     {
       std::string             created_network_id;
@@ -147,7 +151,10 @@ namespace plasma
       register_(std::string const& email,
                 std::string const& fullname,
                 std::string const& password,
-                std::string const& activation_code);
+                std::string const& activation_code,
+                std::string const& picture_name = "",
+                std::string const& picture_data = ""
+      );
 
       UserResponse
       user(std::string const& id);
@@ -175,6 +182,10 @@ namespace plasma
                 size_t size,
                 bool is_dir,
                 std::string const& network_id);
+
+      AnswerTransactionResponse
+      answer_transaction(std::string const& transaction_id,
+                         int status);
 
       MessageResponse
       send_message(std::string const& recipient_id,

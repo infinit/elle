@@ -12,7 +12,7 @@
 #include "gap.h"
 #include "State.hh"
 
-#include <vector>
+#include <unordered_set>
 #include <string.h>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
@@ -151,18 +151,21 @@ extern "C"
       assert(state != nullptr);
       assert(recipient_id != nullptr);
       assert(files != nullptr);
+
       gap_Status ret = gap_ok;
+
       try
         {
-          std::vector<std::string> v;
+          std::unordered_set<std::string> s;
 
-          while (*files != nullptr)
-            {
-              v.push_back(*files);
-              ++files;
-            }
+          while(*files != nullptr)
+          {
+            s.insert(*files);
+            ++files;
+          }
 
-          __TO_CPP(state)->send_files(recipient_id, v);
+          __TO_CPP(state)->send_files(recipient_id,
+                                      s);
         }
       CATCH_ALL(send_files)
 
@@ -170,22 +173,13 @@ extern "C"
     }
 
     gap_Status
-    gap_send_file(gap_State* state,
-                  char const* recipient_id,
-                  char const* path)
+    gap_answer_transaction(gap_State* state,
+                           char const* transaction_id,
+                           int status)
     {
-      assert(state != nullptr);
-      assert(recipient_id != nullptr);
-      assert(path != nullptr);
-      gap_Status ret = gap_ok;
-      try
-        {
-          std::vector<std::string> v;
-          v.push_back(path);
+      assert(transaction_id != nullptr);
 
-          __TO_CPP(state)->send_files(recipient_id, v);
-        }
-      CATCH_ALL(send_file)
+      __WRAP_CPP_RET(state, answer_transaction, transaction_id, status);
 
       return ret;
     }

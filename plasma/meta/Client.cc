@@ -87,6 +87,12 @@ SERIALIZE_RESPONSE(plasma::meta::SendFileResponse, ar, res)
   (void) res;
 }
 
+SERIALIZE_RESPONSE(plasma::meta::AnswerTransactionResponse, ar, res)
+{
+  (void) ar;
+  (void) res;
+}
+
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
 {
   (void) ar;
@@ -207,13 +213,17 @@ namespace plasma
     Client::register_(std::string const& email,
                       std::string const& fullname,
                       std::string const& password,
-                      std::string const& activation_code)
+                      std::string const& activation_code,
+                      std::string const& picture_name,
+                      std::string const& picture_data)
     {
       json::Dictionary request{std::map<std::string, std::string>{
         {"email", email},
         {"fullname", fullname},
         {"password", password},
         {"activation_code", activation_code},
+        {"picture_name", picture_name},
+        {"picture_data", picture_data},
       }};
       return this->_client.post<RegisterResponse>("/user/register", request);
     }
@@ -301,6 +311,21 @@ namespace plasma
       request["file_count"] = count;
 
       auto res = this->_client.post<SendFileResponse>("/user/sendfile", request);
+
+      return res;
+    }
+
+    AnswerTransactionResponse
+    Client::answer_transaction(std::string const& transaction_id,
+                               int status)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+        }};
+      request["status"] = status;
+
+      auto res = this->_client.post<AnswerTransactionResponse>("/user/transaction", request);
 
       return res;
     }

@@ -3,7 +3,7 @@
 
 # include <string>
 # include <map>
-# include <vector>
+# include <unordered_set>
 
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
@@ -120,7 +120,11 @@ namespace surface
 
       void
       send_files(std::string const& recipient_id_or_email,
-                 std::vector<std::string> const& files);
+                 std::unordered_set<std::string> const& files);
+
+      void
+      answer_transaction(std::string const& transaction_id,
+                         int status);
 
     private:
       User _me;
