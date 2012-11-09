@@ -77,7 +77,7 @@ class Application(object):
 		self.ssl_cert_path = os.path.join(cert_dir, TROPHONIUS_SSL_CERT)
 		open(self.ssl_cert_path, "wt").write(
 				crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-		open(self.ssl_key_path, "wt").write(
+		open(self.ssl_key_path, "wt").wxrite(
 				crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
 
 	def run(self):
@@ -87,6 +87,7 @@ class Application(object):
 		notifier.startReading()
 		notifier.watch(filepath.FilePath("./trophonius/"), callbacks=[mod_reload])
 		log.startLogging(self.logfile)
+
 		factory = trophonius.TrophoFactory(self)
 		meta_factory = trophonius.MetaTrophoFactory(self)
 		reactor.listenTCP(self.port, factory)
@@ -100,5 +101,3 @@ def mod_reload(self, filepath, mask):
 		if not __name__.endswith(mod_name):
 			log.msg("Reloading {}".format(mod_name))
 			reload(globals()[mod_name])
-
-

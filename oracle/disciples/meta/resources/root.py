@@ -32,7 +32,7 @@ class Debug(Page):
     def POST(self):
         msg = self.data
         if self.notifier is not None:
-            self.notifier.send_notify(msg)
+            self.notifier.send_notification(msg)
         else:
             return self.error(error.UNKNOWN, "Notifier is not ready.")
         return self.success({})
