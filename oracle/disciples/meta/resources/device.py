@@ -137,7 +137,7 @@ class Update(Page):
         to_save = database.devices().find_one({
             '_id': database.ObjectId(id_)
         })
-        to_save['name'] = name
+        to_save['name'] = device['name']
 
         id_ = database.devices().save(to_save)
         return self.success({

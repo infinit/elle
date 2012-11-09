@@ -72,9 +72,10 @@ namespace plasma
     {
       ELLE_TRACE("Handling new file transfer request.");
 
-      notification->transaction_id = dic["transaction_id"].as_integer();
+      std::string temp = dic["transaction_id"].as_string();
+      notification->transaction_id = temp.c_str();
 
-      std::string temp = dic["sender_id"].as_string();
+      temp = dic["sender_id"].as_string();
       notification->sender_id = temp.c_str();
 
       temp = dic["file_name"].as_string();
@@ -92,9 +93,10 @@ namespace plasma
     {
       ELLE_TRACE("Handling file transfer status update.");
 
-      notification->transaction_id = dic["transaction_id"].as_integer();
+      std::string temp = dic["network_id"].as_string();
+      notification->network_id = temp.c_str();
 
-      notification->status = dic["transaction_status"].as_integer();
+      notification->status = dic["status"].as_integer();
 
       this->callback(notification.get());
     }

@@ -18,6 +18,35 @@ extern "C" {
       gap_api_error_not_log_in = -1001,
       gap_file_not_found = -2000,
       gap_no_file = 2001,
+      gap_wrong_passport = 3001,
+      gap_bad_request = -9,
+      gap_already_logged_in = -10,
+      gap_email_not_valid = -500,
+      gap_handle_not_valid = -501,
+      gap_device_not_valid = -502,
+      gap_password_not_valid = -503,
+      gap_user_id_not_valid = -504,
+      gap_network_id_not_valid = -505,
+      gap_device_id_not_valid = -506,
+      gap_field_is_empty = -507,
+      gap_activation_code_not_valid = -508,
+      gap_deprecated = -888,
+      gap_email_already_registred = -10003,
+      gap_handle_already_registred = -10005,
+      gap_device_already_registred = -10008,
+      gap_activation_code_doesnt_exist = -10009,
+      gap_email_password_dont_match = -10101,
+      gap_unknown_user = -10201,
+      gap_user_already_in_network = -20001,
+      gap_network_not_found = -20002,
+      gap_device_not_found = -20003,
+      gap_device_not_in_network = -20004,
+      gap_root_block_already_exist = -20005,
+      gap_root_block_badly_signed = -20006,
+      gap_user_already_invited = -30001,
+      gap_user_already_in_infinit = -30002,
+      gap_file_name_empty = -40000,
+      gap_unknown = -666666,
     } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
@@ -27,9 +56,7 @@ extern "C" {
 
     /// Create a new state.
     /// Returns NULL on failure.
-    gap_State* gap_new();
-
-    /// Release a state.
+    gap_State* gap_new();    /// Release a state.
     void gap_free(gap_State* state);
 
     /// Enable debug messages.
@@ -110,7 +137,7 @@ extern "C" {
     {
       const char* sender_id;
       const char* file_name;
-      int transaction_id;
+      const char* transaction_id;
       int file_size;
       int is_directory;
     } gap_FileTransferRequestNotification;
@@ -120,7 +147,7 @@ extern "C" {
     typedef struct
     {
       const char* sender_id;
-      int transaction_id;
+      const char* network_id;
       int status;
     } gap_FileTransferStatusNotification;
 
@@ -151,10 +178,9 @@ extern "C" {
                   char const* const* files);
 
     gap_Status
-    gap_send_file(gap_State* state,
-                  char const* recipient_id,
-                  char const* path);
-
+    gap_answer_transaction(gap_State* state,
+                           char const* transaction_id,
+                           int status);
 
     gap_Status
     gap_invite_user(gap_State* state,

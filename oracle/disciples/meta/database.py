@@ -74,6 +74,13 @@ def transactions(conn=None):
         _transactions = database(conn)['transactions']
     return _transactions
 
+_notifications = None
+def notifications(conn=None):
+    global _notifications
+    if _notifications is None:
+        _notifications = database(conn)['notifications']
+    return _notifications
+
 # functions
 def byId(collection, _id):
     """

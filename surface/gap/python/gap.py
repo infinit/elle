@@ -45,6 +45,7 @@ class State:
             'OnFileTransferStatus',
             'OnMessage',
             'send_files',
+            'answer_transaction',
             'invite_user',
             'send_message',
         ]
@@ -70,6 +71,10 @@ class State:
             return False
 
     @property
+    def Status(self):
+        return _gap.Status
+
+    @property
     def has_device(self):
         try:
             return self._call('device_status') == _gap.gap_ok
@@ -79,8 +84,6 @@ class State:
     def _call(self, method, *args):
         res = getattr(_gap, method)(self._state, *args)
         if isinstance(res, _gap.Status) and res != _gap.gap_ok:
-            print("isinstance: ", isinstance(res, _gap.Status))
-            print("gap ok: ", res != _gap.gap_ok)
             raise Exception(
                 "Error while calling %s: %s " % (method, str(res))
             )

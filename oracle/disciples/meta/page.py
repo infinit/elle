@@ -80,6 +80,8 @@ class Page(object):
             'password': self.hashPassword(password)
         })
         if user:
+            user['connected'] = True
+            database.users().save(user)
             self._user = user
             self.session._user_id = user['_id']
             return True
@@ -87,11 +89,17 @@ class Page(object):
             return False
 
     def registerUser(self, **kwargs):
+        kwargs['connected'] = False
         user = database.users().save(kwargs)
         return user
 
-    def connected(self, user_id):
-        return False
+    @staticmethod
+    def connected(user_id):
+        assert isinstance(user_id, database.ObjectId)
+        user = database.users().find_one(user_id)
+        if not user:
+            raise Exception("This user doesn't exist")
+        return user['connected']
 
     def forbidden(self, msg):
         raise web.HTTPError("403 {}".format(msg))
@@ -105,14 +113,19 @@ class Page(object):
         seasoned = seasoned.encode('utf-8')
         return hashlib.md5(seasoned).hexdigest()
 
-    def notifySwaggers(self, data):
-        swgs = self.user["swaggers"]
+    def notifySwaggers(self, data, bAll = False):
+        swgs = list(self.user["swaggers"])
+        # if not bAll, notify only the connected ones.
+        if not bAll:
+            for s in swgs:
+                if not connected(s):
+                    swgs.remove(s)
         d = {
-                "recipient_id" : list(swgs),
+                "recipient_id" : swgs,
                 "sender_id" : self.user["_id"],
             }
         d.update(data)
-        self.notifier.send_notify(d)
+        self.notifier.notify_some(swgs, d)
 
     def error(self, err=error.UNKNOWN, msg=""):
         if not msg and err in error.error_details:

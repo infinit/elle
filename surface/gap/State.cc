@@ -351,7 +351,7 @@ namespace surface
 
     void
     State::send_files(std::string const& recipient_id_or_email,
-                      std::vector<std::string> const& files)
+                      std::unordered_set<std::string> const& files)
     {
       if (files.empty())
             throw Exception(gap_no_file,
@@ -367,7 +367,7 @@ namespace surface
           size += get_size(path);
         }
 
-      std::string filename = fs::path(files[0]).filename().string();
+      std::string filename = fs::path(*(files.cbegin())).filename().string();
 
       // Build timestamp.
       elle::utility::Time time;
@@ -401,6 +401,14 @@ namespace surface
     }
 
     void
+    State::answer_transaction(std::string const& transaction_id,
+                              int status)
+    {
+      this->_meta->answer_transaction(transaction_id,
+                                      status);
+    }
+
+    void
     State::send_message(std::string const& recipient_id,
                         std::string const& message)
     {
@@ -420,6 +428,7 @@ namespace surface
       try { this->logout(); } catch (elle::HTTPException const&) {}
 
       this->_meta->register_(email, fullname, password, activation_code);
+
       ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
       this->login(email, password);
     }
@@ -510,7 +519,7 @@ namespace surface
 
       elle::Passport passport;
       if (passport.Restore(passport_string) == elle::Status::Error)
-        throw Exception(gap_internal_error, "Cannot load the passport");
+        throw Exception(gap_wrong_passport, "Cannot load the passport");
 
       passport.store(elle::io::Path(lune::Lune::Passport));
     }
