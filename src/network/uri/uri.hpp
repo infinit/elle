@@ -59,7 +59,7 @@ namespace network {
 
   class uri {
 
-    friend class builder;
+    friend class uri_builder;
 
   public:
 
@@ -113,7 +113,15 @@ namespace network {
       }
 
       std::wstring wstring() const {
-        return std::wstring(first_, last_);
+	return std::wstring(first_, last_);
+      }
+
+      std::u16string u16string() const {
+	return std::u16string(first_, last_);
+      }
+
+      std::u32string u32string() const {
+	return std::u32string(first_, last_);
       }
 
     private:
@@ -258,19 +266,6 @@ namespace network {
 
     uri resolve(const uri &other) const;
 
-    void append(const string_type &data) {
-      uri_.append(data);
-      parse();
-    }
-
-    template <
-      class InputIter
-      >
-    void append(const InputIter &first, const InputIter &last) {
-      uri_.append(first, last);
-      parse();
-    }
-
   private:
 
     void parse();
@@ -313,8 +308,7 @@ namespace network {
   }
 
   inline
-  std::size_t hash_value(const uri &uri_)
-  {
+  std::size_t hash_value(const uri &uri_) {
     std::size_t seed = 0;
     std::for_each(std::begin(uri_), std::end(uri_),
                   [&seed] (uri::value_type c) { detail::hash_combine(seed, c); });
