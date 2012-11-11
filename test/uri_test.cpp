@@ -6,8 +6,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <gtest/gtest.h>
-#include <network/uri/uri.hpp>
-#include <network/uri/uri_io.hpp>
+#include <network/uri.hpp>
 #include <algorithm>
 #include <memory>
 #include <map>
@@ -385,14 +384,6 @@ TEST(uri_test, tel_test) {
   ASSERT_EQ(instance.path().string(), "+1-816-555-1212");
 }
 
-//TEST(uri_test, encoded_uri_test) {
-//  network::uri instance("http://www.example.com/Path%20With%20%28Some%29%20Encoded%20Characters%21");
-//  ASSERT_EQ(instance.scheme().string(), "http");
-//  ASSERT_EQ(instance.host().string(), "www.example.com");
-//  ASSERT_EQ(instance.path().string(), "/Path%20With%20%28Some%29%20Encoded%20Characters%21");
-//  ASSERT_EQ(network::decoded_path(instance), "/Path With (Some) Encoded Characters!");
-//}
-
 TEST(uri_test, copy_constructor_test) {
   network::uri instance("http://www.example.com/");
   network::uri copy = instance;
@@ -528,13 +519,14 @@ TEST(uri_test, range_test) {
 			 std::begin(url)));
 }
 
-TEST(uri_test, issue_67_test) {
-  // https://github.com/cpp-netlib/cpp-netlib/issues/67
-  const std::string site_name("http://www.google.com");
-  network::uri bar0;
-  network::uri bar1 = site_name;
-  ASSERT_NO_THROW(bar0 = site_name);
-}
+// No longer valid if network::uri constructor is explicit.
+//TEST(uri_test, issue_67_test) {
+//  // https://github.com/cpp-netlib/cpp-netlib/issues/67
+//  const std::string site_name("http://www.google.com");
+//  network::uri bar0;
+//  network::uri bar1 = site_name;
+//  ASSERT_NO_THROW(bar0 = site_name);
+//}
 
 TEST(uri_test, issue_104_test) {
   // https://github.com/cpp-netlib/cpp-netlib/issues/104

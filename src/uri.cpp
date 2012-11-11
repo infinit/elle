@@ -11,6 +11,8 @@
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <algorithm>
+#include <functional>
 #include <map>
 
 BOOST_FUSION_ADAPT_TPL_STRUCT
@@ -258,6 +260,166 @@ namespace network {
     }
   } // namespace detail
 
+  uri::part_range::part_range() {
+
+  }
+
+  uri::part_range::part_range(const_iterator first, const_iterator last)
+    : first_(first), last_(last) {
+
+  }
+
+  uri::part_range::const_iterator uri::part_range::begin() const {
+    return first_;
+  }
+
+  uri::part_range::const_iterator uri::part_range::end() const {
+    return last_;
+  }
+
+  bool uri::part_range::empty() const {
+    return (first_ == last_);
+  }
+
+  uri::part_range::operator unspecified_bool_type () const {
+    return !empty()? &part_range::empty : nullptr;
+  }
+
+  uri::part_range::string_type uri::part_range::native() const {
+    return string_type(first_, last_);
+  }
+
+  std::string uri::part_range::string() const {
+    return std::string(first_, last_);
+  }
+
+  std::wstring uri::part_range::wstring() const {
+    return std::wstring(first_, last_);
+  }
+
+  std::u16string uri::part_range::u16string() const {
+    return std::u16string(first_, last_);
+  }
+
+  std::u32string uri::part_range::u32string() const {
+    return std::u32string(first_, last_);
+  }
+
+  uri::uri() {
+
+  }
+
+  uri::uri(const uri &other)
+    : uri_(other.uri_) {
+    parse();
+  }
+
+  uri::~uri() {
+
+  }
+
+  uri &uri::operator = (uri other) {
+    swap(other);
+    parse();
+    return *this;
+  }
+
+  void uri::swap(uri &other) {
+    std::swap(uri_, other.uri_);
+    std::swap(uri_parts_, other.uri_parts_);
+  }
+
+  uri::const_iterator uri::begin() const {
+    return uri_.begin();
+  }
+
+  uri::const_iterator uri::end() const {
+    return uri_.end();
+  }
+
+  uri::part_range uri::scheme() const {
+    return part_range(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
+  }
+
+  uri::part_range uri::user_info() const {
+    return uri_parts_.hier_part.user_info?
+      part_range(std::begin(uri_parts_.hier_part.user_info.get()),
+		 std::end(uri_parts_.hier_part.user_info.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::host() const {
+    return uri_parts_.hier_part.host?
+      part_range(std::begin(uri_parts_.hier_part.host.get()),
+		 std::end(uri_parts_.hier_part.host.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::port() const {
+    return uri_parts_.hier_part.port?
+      part_range(std::begin(uri_parts_.hier_part.port.get()),
+		 std::end(uri_parts_.hier_part.port.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::path() const {
+    return uri_parts_.hier_part.path?
+      part_range(std::begin(uri_parts_.hier_part.path.get()),
+		 std::end(uri_parts_.hier_part.path.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::query() const {
+    return uri_parts_.query ?
+      part_range(std::begin(uri_parts_.query.get()),
+		 std::end(uri_parts_.query.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::fragment() const {
+    return uri_parts_.fragment?
+      part_range(std::begin(uri_parts_.fragment.get()),
+		 std::end(uri_parts_.fragment.get()))
+      : part_range();
+  }
+
+  uri::part_range uri::authority() const {
+    return part_range(user_info().begin(), port().end());
+  }
+
+
+  uri::string_type uri::native() const {
+    return uri_;
+  }
+
+  std::string uri::string() const {
+    return std::string(std::begin(uri_), std::end(uri_));
+  }
+
+  std::wstring uri::wstring() const {
+    return std::wstring(std::begin(uri_), std::end(uri_));
+  }
+
+  std::u16string uri::u16string() const {
+    return std::u16string(std::begin(uri_), std::end(uri_));
+  }
+
+  std::u32string uri::u32string() const {
+    return std::u32string(std::begin(uri_), std::end(uri_));
+  }
+
+  bool uri::empty() const {
+    return uri_.empty();
+  }
+
+  bool uri::absolute() const {
+    return !scheme().empty();
+  }
+
+  bool uri::opaque() const {
+    return absolute();
+  }
+
   uri uri::normalize() const {
     return *this;
   }
@@ -268,6 +430,44 @@ namespace network {
 
   uri uri::resolve(const uri &other) const {
     return *this;
+  }
+
+  void uri::parse() {
+    if (uri_.empty()) {
+      return;
+    }
+
+    const_iterator first(std::begin(uri_)), last(std::end(uri_));
+    bool is_valid = detail::parse(first, last, uri_parts_);
+    if (!is_valid) {
+      throw uri_syntax_error("Unable to parse URI string.");
+    }
+
+    if (!uri_parts_.scheme) {
+      uri_parts_.scheme = part_range(std::begin(uri_),
+				     std::begin(uri_));
+    }
+    uri_parts_.update();
+  }
+
+  void swap(uri &lhs, uri &rhs) {
+    lhs.swap(rhs);
+  }
+
+  namespace {
+    template <class T>
+    inline
+    void hash_combine(std::size_t& seed, const T& v) {
+      std::hash<T> hasher;
+      seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    }
+  } // namespace
+
+  std::size_t hash_value(const uri &uri_) {
+    std::size_t seed = 0;
+    std::for_each(std::begin(uri_), std::end(uri_),
+                  [&seed] (uri::value_type c) { hash_combine(seed, c); });
+    return seed;
   }
 
   bool operator == (const uri &lhs, const uri &rhs) {
@@ -324,5 +524,9 @@ namespace network {
     }
 
     return equal;
+  }
+
+  bool operator < (const uri &lhs, const uri &rhs) {
+    return lhs.normalize().native() < rhs.normalize().native();
   }
 } // namespace network

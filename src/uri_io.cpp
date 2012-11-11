@@ -4,22 +4,25 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 #include <network/uri/uri_io.hpp>
-#include <network/uri/uri.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <istream>
+#include <ostream>
 #include <iterator>
 
 
 namespace network {
   std::ostream &operator << (std::ostream &os, const uri &uri_) {
-    return os << uri_.string();
+    //return os << uri_.string();
+    return os;
   }
 
   std::wostream &operator << (std::wostream &os, const uri &uri_) {
-    return os << uri_.wstring();
+    //return os << uri_.wstring();
+    return os;
   }
 
   std::ostream &operator << (std::ostream &os, const uri::part_range &part) {
-    boost::copy(part, std::ostream_iterator<uri::value_type>(os));
+    //boost::copy(part, std::ostream_iterator<uri::value_type>(os));
     return os;
   }
 
