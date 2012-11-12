@@ -137,7 +137,7 @@ extern "C" {
     // Login/Logout/AFK/... Notification
     typedef struct
     {
-      const char* sender_id;
+      const char* user_id;
       int status;
     } gap_UserStatusNotification;
 
