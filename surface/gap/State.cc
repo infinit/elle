@@ -454,13 +454,13 @@ namespace surface
                                8,
                                plasma::trophonius::Client::UserStatusHandler)
 
-    _REGISTER_CALLBACK_HANDLER(gap_FileTransferRequestNotification,
+    _REGISTER_CALLBACK_HANDLER(gap_TransactionNotification,
                                7,
-                               plasma::trophonius::Client::FileTransferRequestHandler)
+                               plasma::trophonius::Client::TransactionHandler)
 
-    _REGISTER_CALLBACK_HANDLER(gap_FileTransferStatusNotification,
+    _REGISTER_CALLBACK_HANDLER(gap_TransactionStatusNotification,
                                11,
-                               plasma::trophonius::Client::FileTransferStatusHandler)
+                               plasma::trophonius::Client::TransactionStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
                                217,

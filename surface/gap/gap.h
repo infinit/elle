@@ -151,35 +151,41 @@ extern "C" {
     // File transfer recieved callback.
     typedef struct
     {
-      const char* sender_id;
-      const char* file_name;
-      const char* transaction_id;
-      int file_size;
+      const char* first_filename;
+      int files_count;
+      int total_size;
       int is_directory;
+      const char* network_id;
+      const char* sender_id;
+      const char* sender_fullname;
+      const char* transaction_id;
       int is_new;
-    } gap_FileTransferRequestNotification;
+    } gap_TransactionNotification;
 
-    typedef void (*gap_file_transfer_request_callback_t)(gap_FileTransferRequestNotification const*);
+    typedef void (*gap_transaction_callback_t)(gap_TransactionNotification const*);
 
     gap_Status
-    gap_file_transfer_request_callback(gap_State* state,
-                                       gap_file_transfer_request_callback_t cb);
+    gap_transaction_callback(gap_State* state,
+                             gap_transaction_callback_t cb);
 
     ////////////////////////////////
     // File transfer status callback.
     typedef struct
     {
-      const char* sender_id;
+      const char* transaction_id;
       const char* network_id;
-      int is_new;
+      const char* sender_device_id;
+      const char* recipient_device_id;
+      const char* recipient_device_name;
       int status;
-    } gap_FileTransferStatusNotification;
+      int is_new;
+    } gap_TransactionStatusNotification;
 
-    typedef void (*gap_file_transfer_status_callback_t)(gap_FileTransferStatusNotification const*);
+    typedef void (*gap_transaction_status_callback_t)(gap_TransactionStatusNotification const*);
 
     gap_Status
-    gap_file_transfer_status_callback(gap_State* state,
-                                      gap_file_transfer_status_callback_t cb);
+    gap_transaction_status_callback(gap_State* state,
+                                    gap_transaction_status_callback_t cb);
 
     ////////////////////////////////
     // Chat message.

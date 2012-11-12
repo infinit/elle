@@ -89,10 +89,10 @@ namespace plasma
       _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus);
 
       // Generate: FileTransferRequestHandler and FileTransferRequestNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferRequest);
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Transaction);
 
       // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus);
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(TransactionStatus);
 
       // Generate: MessageHandler and MessageNotification.
       _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message);

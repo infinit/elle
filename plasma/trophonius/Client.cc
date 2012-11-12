@@ -72,22 +72,30 @@ namespace plasma
     ////////////////////////////////
     // FileTransferHandler.
     void
-    Client::FileTransferRequestHandler::_call(json::Dictionary const& dic,
-                                              std::unique_ptr<Notification>&& notification,
-                                              bool _new)
+    Client::TransactionHandler::_call(json::Dictionary const& dic,
+                                      std::unique_ptr<Notification>&& notification,
+                                      bool _new)
     {
       ELLE_TRACE("Handling new file transfer request.");
 
       std::string temp = dic["transaction_id"].as_string();
       notification->transaction_id = temp.c_str();
 
+      temp = dic["first_filename"].as_string();
+      notification->first_filename = temp.c_str();
+
+      notification->files_count = dic["files_count"].as_integer();
+      notification->total_size = dic["total_size"].as_integer();
+      notification->is_directory = dic["is_directory"].as_integer();
+
+      temp = dic["network_id"].as_string();
+      notification->network_id = temp.c_str();
+
       temp = dic["sender_id"].as_string();
       notification->sender_id = temp.c_str();
 
-      temp = dic["file_name"].as_string();
-      notification->file_name = temp.c_str();
-
-      notification->file_size = dic["file_size"].as_integer();
+      temp = dic["sender_fullname"].as_string();
+      notification->sender_fullname = temp.c_str();
 
       notification->is_new = _new;
 
@@ -97,14 +105,26 @@ namespace plasma
     ////////////////////////////////
     // FileTransferStatusHandler.
     void
-    Client::FileTransferStatusHandler::_call(json::Dictionary const& dic,
-                                             std::unique_ptr<Notification>&& notification,
-                                             bool _new)
+    Client::TransactionStatusHandler::_call(json::Dictionary const& dic,
+                                            std::unique_ptr<Notification>&& notification,
+                                            bool _new)
     {
       ELLE_TRACE("Handling file transfer status update.");
 
-      std::string temp = dic["network_id"].as_string();
+      std::string temp = dic["transaction_id"].as_string();
+      notification->transaction_id = temp.c_str();
+
+      temp = dic["network_id"].as_string();
       notification->network_id = temp.c_str();
+
+      temp = dic["sender_device_id"].as_string();
+      notification->sender_device_id = temp.c_str();
+
+      temp = dic["recipient_device_id"].as_string();
+      notification->recipient_device_id = temp.c_str();
+
+      temp = dic["recipient_device_name"].as_string();
+      notification->recipient_device_name = temp.c_str();
 
       notification->status = dic["status"].as_integer();
 

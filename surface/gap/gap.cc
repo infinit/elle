@@ -617,29 +617,29 @@ extern "C"
     }
 
     gap_Status
-    gap_file_transfer_request_callback(gap_State* state,
-                               gap_file_transfer_request_callback_t cb)
+    gap_transaction_request_callback(gap_State* state,
+                                     gap_transaction_callback_t cb)
     {
       gap_Status ret = gap_ok;
       try
         {
-          __TO_CPP(state)->attach_callback<gap_FileTransferRequestNotification>(cb);
+          __TO_CPP(state)->attach_callback<gap_TransactionNotification>(cb);
         }
-      CATCH_ALL(file_transfer_request_callback);
+      CATCH_ALL(transaction_callback);
 
       return ret;
     }
 
     gap_Status
-    gap_file_transfer_status_callback(gap_State* state,
-                                      gap_file_transfer_status_callback_t cb)
+    gap_transaction_status_callback(gap_State* state,
+                                      gap_transaction_status_callback_t cb)
     {
       gap_Status ret = gap_ok;
       try
         {
-          __TO_CPP(state)->attach_callback<gap_FileTransferStatusNotification>(cb);
+          __TO_CPP(state)->attach_callback<gap_TransactionStatusNotification>(cb);
         }
-      CATCH_ALL(file_transfer_status_callback);
+      CATCH_ALL(transaction_status_callback);
 
       return ret;
     }
