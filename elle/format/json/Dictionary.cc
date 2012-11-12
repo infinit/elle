@@ -18,6 +18,18 @@ namespace elle
         _map{value}
       {}
 
+      Dictionary::Dictionary(Dictionary const& d):
+        _map{}
+      {
+        this->update(d);
+      }
+
+      Dictionary& Dictionary::operator =(Dictionary const& d)
+      {
+        this->update(d);
+        return *this;
+      }
+
       Dictionary::~Dictionary()
       {
         for (auto& pair : _map)

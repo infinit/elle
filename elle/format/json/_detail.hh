@@ -214,7 +214,11 @@ namespace elle
                   , typename StaticIf<
                       IsStringMap<T>::value
                     , Dictionary
-                    , void
+                    , typename StaticIf<
+                        std::is_base_of<Object, T>::value && !std::is_same<T, Object>::value
+                      , T
+                      , void
+                      >::type
                     >::type
                   >::type
                 >::type
