@@ -54,15 +54,12 @@ namespace plasma
     void
     Client::UserStatusHandler::_call(json::Dictionary const& dic,
                                      std::unique_ptr<Notification>&& notification,
-                                     bool _new)
+                                     bool /* _new: This notification is 'instant' */)
     {
       ELLE_TRACE("Handling user status modification.");
 
-      // This notification is 'instant'.
-      (void) _new;
-
-      std::string temp = dic["sender_id"].as_string();
-      notification->sender_id = temp.c_str();
+      std::string temp = dic["user_id"].as_string();
+      notification->user_id = temp.c_str();
 
       notification->status = dic["status"].as_integer();
 
