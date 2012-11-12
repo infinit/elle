@@ -11,12 +11,21 @@ def BiteFunc(bite:'Bite'):
     print("Notification bite reçue", bite.debug)
 
 def FileTransfer(transfer):
-    print("User:", transfer.sender_id, "sent you:", transfer.file_name, "[", transfer.file_size, "]")
-    answer = int(input("\nAccept incomming file ?\n> "))
-    state.answer_transaction(transfer.transaction_id, answer)
+    if transfer.new :
+        print("==== [New]")
+    else:
+        print("==== [Old]")
+    print("File from :", transfer.sender_id)
+
+    if transfer.new :
+        state.answer_transaction(transfer.transaction_id, True)
 
 def FileTransferStatus(ts:'FileTransferStatus'):
-    print("Transaction ", ts.network_id, "- status:", ts.status)
+    if ts.new:
+        print("==== [New]")
+    else:
+        print("==== [Old]")
+    print('File status : %s' % ts.status and "Accepted" or "Refused")
 
 def Message(message):
     print(message.sender_id, ":", message.message)
@@ -48,10 +57,17 @@ state.OnMessage(Message)
 
 #register: fullname, email, hashed_password, device_name, activation_code
 def __register(name, mail):
-    state.register(name, mail, "MEGABIET", "pretty name", "bitebite")
-
+    if mail == "a@a.aa":
+        state.register(name, mail, "mdptmp", "pretty name", "bitebite")
+    else:
+        state.register(name, mail, "MEGABIET", "pretty name", "bitebite")
 def __login(mail):
-    state.login(mail, "MEGABIET")
+    if mail == "a@a.aa":
+        print("as aaaa")
+        state.login(mail, "mdptmp")
+    else:
+        state.login(mail, "MEGABIET")
+
 
 def __connect():
     state.connect()
@@ -68,14 +84,91 @@ def __launch_watchdog():
     state.set_device_name("pretty name")
     state.launch_watchdog()
 
+def __pullNotifs():
+    state.get_notifications(10)
+
 def main():
+    bad_fullname = ""
+    good_fullname = "MrDick"
+
+    bad_email = "abc@bi"
+    good_email = "a@a.aa"# % math.floor(random.random()*234567890)
+
+    password = "mdptmp"
+
+    state.scratch_db()
+
     try:
-        m = input('\n[i]nfinit or [g]mail?\n> ')
+      state.register(bad_fullname, good_email, password, "device", "bitebite")
+    except Exception as e:
+      print("Bad fullname")
+
+    try:
+      state.register(good_fullname, bad_email, password, "device", "bitebite")
+    except Exception  as e:
+      print ("Bad mail")
+
+    state.login(good_email, password)
+#    state.register(good_fullname, good_email, password, "device", "bitebite")
+
+    state.set_device_name("device")
+
+    __connect();
+
+    state.logout()
+
+    state.login(good_email, password)
+
+    state.set_device_name("device")
+
+    __connect();
+
+    print('\n\nPulling notifs')
+    __pullNotifs()
+
+    try :
+        polling = PollThread()
+        polling.start()
+
+        # Send file to me.
+        print('Send file to myself')
+        __send_file(good_email)
+
+        # Sleep 1sec to wait for transaction
+        time.sleep(3)
+
+        print('\n\nPulling notifs')
+        __pullNotifs()
+
+        time.sleep(3)
+
+        # Read notif and reset process.
+        state.notifications_red()
+        time.sleep(3)
+
+        # Send file to me.
+        print('Send a new file')
+        __send_file(good_email)
+
+        # Sleep 1sec to wait for transaction
+        time.sleep(3)
+
+        print('\n\nPulling notifs')
+        __pullNotifs()
+
+
+    except KeyboardInterrupt as e:
+        polling.stop()
+
+
+def main2():
+    try:
+        m = input('\n[i]nfinit or [g]mail?\n> ')
 
         if (m != 'i') and (m != 'g'):
             return
 
-        r = (input('\n[r]egister or [l]ogin?\n> '))
+        r = (input('\n[r]egister or [l]ogin?\n> '))
 
         if (r != 'r') and (r != 'l'):
             return
@@ -84,11 +177,11 @@ def main():
         q.start()
 
         if m == 'i':
-            mail = "antony.mechin@infinit.io"
+            mail = "a@a.aa"
             recipient = "antony.mechin@gmail.com"
         elif m == 'g':
             mail = "antony.mechin@gmail.com"
-            recipient = "antony.mechin@infinit.io"
+            recipient = "a@a.aa"
 
         if r == 'r':
             __register("Testing Program", mail)
@@ -99,19 +192,23 @@ def main():
 
         __connect()
 
+        state.notifications_red()
+        __send_file(mail)
+
+        if input('\npull nofis? y/N\n> ') == 'y':
+            __pullNotifs()
+
         # state.answer_transaction('bite', 1)
         # state.answer_transaction('bite', 0)
 
-
-        if input('\nwatchdog? y/N\n> ') == 'y':
+        if input('\nwatchdog? y/N\n> ') == 'y':
             __launch_watchdog()
 
-        if input('\nsend_file? y/N\n> ') == 'y':
+        if input('\nsend_file? y/N\n> ') == 'y':
             __send_file(recipient)
 
         time.sleep(100000)
-        input('break infinit wait? y/N\n> ')
-
+        input('break infinit wait? y/N\n> ')
         q.stop()
     except KeyboardInterrupt:
         q.stop()

@@ -45,9 +45,13 @@ class State:
             'OnFileTransferStatus',
             'OnMessage',
             'send_files',
-            'answer_transaction',
+            'update_transaction',
+            'start_transaction',
             'invite_user',
+            'scratch_db',
             'send_message',
+            'get_notifications',
+            'notifications_red',
         ]
 
         def make_method(m):
@@ -98,10 +102,6 @@ class State:
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         self._call('register', fullname, email, pw_hash, dev_name, activation_code)
-
-    def ask_notif(self, id):
-        self._call('ask_notif', id)
-
 
 if __name__ == "__main__":
     import doctest

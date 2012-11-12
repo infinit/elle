@@ -129,12 +129,29 @@ extern "C"
       return gap_ok;
     }
 
+
     gap_Status
-    gap_meta_ask_notif(gap_State* state,
-                       int i)
+    gap_meta_pull_notification(gap_State* state,
+                               int limit)
     {
-      __WRAP_CPP(state, ask_notif, i);
+      __WRAP_CPP(state, pull_notifications, limit);
     }
+
+    gap_Status
+    gap_meta_notifications_red(gap_State* state)
+    {
+      __WRAP_CPP(state, notifications_red);
+    }
+
+
+    gap_Status
+    gap_debug(gap_State* state)
+    {
+      __WRAP_CPP(state, scratch_db);
+
+      return gap_ok;
+    }
+
 
     gap_Status
     gap_invite_user(gap_State* state,
@@ -173,13 +190,32 @@ extern "C"
     }
 
     gap_Status
-    gap_answer_transaction(gap_State* state,
+    gap_update_transaction(gap_State* state,
                            char const* transaction_id,
-                           int status)
+                           int status,
+                           char const* network_id)
+    {
+      assert(transaction_id != nullptr);
+      assert(network_id != nullptr);
+
+      __WRAP_CPP_RET(state,
+                     update_transaction,
+                     transaction_id,
+                     status,
+                     network_id);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_start_transaction(gap_State* state,
+                          char const* transaction_id)
     {
       assert(transaction_id != nullptr);
 
-      __WRAP_CPP_RET(state, answer_transaction, transaction_id, status);
+      __WRAP_CPP_RET(state,
+                     start_transaction,
+                     transaction_id);
 
       return ret;
     }
@@ -250,7 +286,7 @@ extern "C"
       __WRAP_CPP_RET(state, register_, fullname, email,
                      password, activation_code);
 
-      if (ret == gap_ok && device_name != nullptr)
+     if (ret == gap_ok && device_name != nullptr)
         {
           __WRAP_CPP(state, update_device, device_name, true);
         }
@@ -410,7 +446,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(id);
-          return user.fullname.c_str();
+          return user.fullname;
         }
       CATCH_ALL(user_fullname);
 
@@ -426,7 +462,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(id);
-          return user.email.c_str();
+          return user.email;
         }
       CATCH_ALL(user_email);
 
@@ -442,7 +478,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(email);
-          return user._id.c_str();
+          return user._id;
         }
       CATCH_ALL(user_by_email);
 
@@ -576,6 +612,48 @@ extern "C"
           __TO_CPP(state)->attach_callback<gap_UserStatusNotification>(cb);
         }
       CATCH_ALL(user_status_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_file_transfer_request_callback(gap_State* state,
+                               gap_file_transfer_request_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_FileTransferRequestNotification>(cb);
+        }
+      CATCH_ALL(file_transfer_request_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_file_transfer_status_callback(gap_State* state,
+                                      gap_file_transfer_status_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_FileTransferStatusNotification>(cb);
+        }
+      CATCH_ALL(file_transfer_status_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_message_callback(gap_State* state,
+                         gap_message_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_MessageNotification>(cb);
+        }
+      CATCH_ALL(message_callback);
 
       return ret;
     }

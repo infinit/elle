@@ -150,9 +150,12 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("invite_user", &gap_invite_user);
   py::def("send_message", &gap_message);
   py::def("send_files", &_send_files);
-  py::def("answer_transaction", &gap_answer_transaction);
+  py::def("update_transaction", &gap_update_transaction);
+  py::def("start_transaction", &gap_start_transaction);
   py::def("connect", &gap_trophonius_connect);
-  py::def("ask_notif", &gap_meta_ask_notif);
+  py::def("get_notifications", &gap_meta_pull_notification);
+  py::def("notifications_red", &gap_meta_notifications_red);
+  py::def("scratch_db", &gap_debug);
 
   py::def("poll", &gap_poll);
 
@@ -162,7 +165,8 @@ BOOST_PYTHON_MODULE(_gap)
   // User status.
   py::class_<gap_UserStatusNotification, boost::noncopyable>("UserStatus", py::no_init)
     .def_readonly("sender_id", &gap_UserStatusNotification::sender_id)
-    .def_readonly("status", &gap_UserStatusNotification::status);
+    .def_readonly("status", &gap_UserStatusNotification::status)
+  ;
   py::def(
     "OnBite",
     &_gap_set_callback<gap_BiteNotification>
@@ -174,7 +178,9 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("sender_id", &gap_FileTransferRequestNotification::sender_id)
     .def_readonly("transaction_id", &gap_FileTransferRequestNotification::transaction_id)
     .def_readonly("file_name", &gap_FileTransferRequestNotification::file_name)
-    .def_readonly("file_size", &gap_FileTransferRequestNotification::file_size);
+    .def_readonly("file_size", &gap_FileTransferRequestNotification::file_size)
+    .def_readonly("new", &gap_FileTransferRequestNotification::is_new)
+  ;
   py::def(
     "OnFileTransfer",
     &_gap_set_callback<gap_FileTransferRequestNotification>
@@ -184,7 +190,9 @@ BOOST_PYTHON_MODULE(_gap)
   // File transfer status.
   py::class_<gap_FileTransferStatusNotification, boost::noncopyable>("FileTransferStatus", py::no_init)
     .def_readonly("network_id", &gap_FileTransferStatusNotification::network_id)
-    .def_readonly("status", &gap_FileTransferStatusNotification::status);
+    .def_readonly("status", &gap_FileTransferStatusNotification::status)
+    .def_readonly("new", &gap_FileTransferStatusNotification::is_new)
+  ;
 
   py::def(
     "OnFileTransferStatus",
@@ -195,7 +203,9 @@ BOOST_PYTHON_MODULE(_gap)
   // Message.
   py::class_<gap_MessageNotification, boost::noncopyable>("Message", py::no_init)
     .def_readonly("sender_id", &gap_MessageNotification::sender_id)
-    .def_readonly("message", &gap_MessageNotification::message);
+    .def_readonly("message", &gap_MessageNotification::message)
+    .def_readonly("new", &gap_MessageNotification::is_new)
+  ;
 
   py::def(
     "OnMessage",
@@ -204,7 +214,9 @@ BOOST_PYTHON_MODULE(_gap)
 
 
   py::class_<gap_BiteNotification, boost::noncopyable>("Bite", py::no_init)
-    .def_readonly("debug", &gap_BiteNotification::debug);
+    .def_readonly("debug", &gap_BiteNotification::debug)
+    .def_readonly("new", &gap_BiteNotification::is_new)
+  ;
   py::def(
     "OnBite",
     &_gap_set_callback<gap_BiteNotification>
@@ -229,6 +241,13 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("network_add_user", &gap_network_add_user);
 
   //- Users -------------------------------------------------------------------
+
+  py::class_<gap_User, boost::noncopyable>("User")
+    .def_readonly("_id", &gap_User::_id)
+    .def_readonly("fullname", &gap_User::fullname)
+    .def_readonly("email", &gap_User::email)
+    .def_readonly("public_key", &gap_User::public_key)
+  ;
 
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());

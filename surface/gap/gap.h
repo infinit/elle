@@ -49,6 +49,14 @@ extern "C" {
       gap_unknown = -666666,
     } gap_Status;
 
+    typedef struct
+    {
+      char const* _id;
+      char const* fullname;
+      char const* email;
+      char const* public_key;
+    } gap_User;
+
     /// gap_State is an opaque structure used in every calls.
     typedef void gap_State;
 
@@ -62,15 +70,21 @@ extern "C" {
     /// Enable debug messages.
     void gap_enable_debug(gap_State* state);
 
+    /// Scratch db
+    gap_Status gap_debug(gap_State* state);
+
     /// - Services status -----------------------------------------------------
 
     /// Check if meta is alive.
     gap_Status gap_meta_status(gap_State* state);
 
-    /// Debug func: Tell meta to send us a notification from trophonius.
+    /// Debug func: Pull notifications.
     gap_Status
-    gap_meta_ask_notif(gap_State*,
-                       int i);
+    gap_meta_pull_notification(gap_State*,
+                               int limit);
+
+    gap_Status
+    gap_meta_notifications_red(gap_State*);
 
     /// - Authentication & registration ---------------------------------------
 
@@ -117,6 +131,8 @@ extern "C" {
       gap_notification_message,
     } gap_Notification;
 
+
+  // XXX: inherite is_new ?
     ////////////////////////////////
     // Login/Logout/AFK/... Notification
     typedef struct
@@ -140,7 +156,14 @@ extern "C" {
       const char* transaction_id;
       int file_size;
       int is_directory;
+      int is_new;
     } gap_FileTransferRequestNotification;
+
+    typedef void (*gap_file_transfer_request_callback_t)(gap_FileTransferRequestNotification const*);
+
+    gap_Status
+    gap_file_transfer_request_callback(gap_State* state,
+                                       gap_file_transfer_request_callback_t cb);
 
     ////////////////////////////////
     // File transfer status callback.
@@ -148,8 +171,15 @@ extern "C" {
     {
       const char* sender_id;
       const char* network_id;
+      int is_new;
       int status;
     } gap_FileTransferStatusNotification;
+
+    typedef void (*gap_file_transfer_status_callback_t)(gap_FileTransferStatusNotification const*);
+
+    gap_Status
+    gap_file_transfer_status_callback(gap_State* state,
+                                      gap_file_transfer_status_callback_t cb);
 
     ////////////////////////////////
     // Chat message.
@@ -159,13 +189,21 @@ extern "C" {
       /* FIXME: remove that shit */
       const char* recipient_id;
       const char* message;
+      int is_new;
     } gap_MessageNotification;
+
+    typedef void (*gap_message_callback_t)(gap_MessageNotification const*);
+
+    gap_Status
+    gap_message_callback(gap_State* state,
+                           gap_message_callback_t cb);
 
     ////////////////////////////////
     // Bite callback.
     typedef struct
     {
       char const* debug;
+      int is_new;
     } gap_BiteNotification;
 
     // Poll
@@ -178,9 +216,14 @@ extern "C" {
                   char const* const* files);
 
     gap_Status
-    gap_answer_transaction(gap_State* state,
+    gap_update_transaction(gap_State* state,
                            char const* transaction_id,
-                           int status);
+                           int status,
+                           char const* network_id);
+
+    gap_Status
+    gap_start_transaction(gap_State* state,
+                          char const* transaction_id);
 
     gap_Status
     gap_invite_user(gap_State* state,
@@ -248,6 +291,9 @@ extern "C" {
     /// Free the search users result.
     void gap_search_users_free(char** users);
 
+
+  //void free_user(gap_User*)
+
     /// - Watchdog ------------------------------------------------------------
 
     /// Launch the watchdog binary.
@@ -283,7 +329,6 @@ extern "C" {
                           char const* absolute_path);
 
     void gap_file_users_free(char** users);
-
 
     /// Retrieve file permissions for a user. Returns -1 in case of errors.
     // XXX exec permission does not work

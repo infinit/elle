@@ -53,14 +53,19 @@ namespace plasma
     // User status: Login/Logout/AFK/...
     void
     Client::UserStatusHandler::_call(json::Dictionary const& dic,
-                                     std::unique_ptr<Notification>&& notification)
+                                     std::unique_ptr<Notification>&& notification,
+                                     bool _new)
     {
       ELLE_TRACE("Handling user status modification.");
+
+      // This notification is 'instant'.
+      (void) _new;
 
       std::string temp = dic["sender_id"].as_string();
       notification->sender_id = temp.c_str();
 
       notification->status = dic["status"].as_integer();
+
       this->callback(notification.get());
     }
 
@@ -68,7 +73,8 @@ namespace plasma
     // FileTransferHandler.
     void
     Client::FileTransferRequestHandler::_call(json::Dictionary const& dic,
-                                              std::unique_ptr<Notification>&& notification)
+                                              std::unique_ptr<Notification>&& notification,
+                                              bool _new)
     {
       ELLE_TRACE("Handling new file transfer request.");
 
@@ -82,6 +88,9 @@ namespace plasma
       notification->file_name = temp.c_str();
 
       notification->file_size = dic["file_size"].as_integer();
+
+      notification->is_new = _new;
+
       this->callback(notification.get());
     }
 
@@ -89,7 +98,8 @@ namespace plasma
     // FileTransferStatusHandler.
     void
     Client::FileTransferStatusHandler::_call(json::Dictionary const& dic,
-                                             std::unique_ptr<Notification>&& notification)
+                                             std::unique_ptr<Notification>&& notification,
+                                             bool _new)
     {
       ELLE_TRACE("Handling file transfer status update.");
 
@@ -98,6 +108,8 @@ namespace plasma
 
       notification->status = dic["status"].as_integer();
 
+      notification->is_new = _new;
+
       this->callback(notification.get());
     }
 
@@ -105,7 +117,8 @@ namespace plasma
     // Message.
     void
     Client::MessageHandler::_call(json::Dictionary const& dic,
-                                  std::unique_ptr<Notification>&& notification)
+                                  std::unique_ptr<Notification>&& notification,
+                                  bool _new)
     {
       ELLE_TRACE("Handling new message.");
 
@@ -114,6 +127,8 @@ namespace plasma
 
       temp = dic["message"].as_string();
       notification->message = temp.c_str();
+
+      notification->is_new = _new;
 
       // Use callback function.
       this->callback(notification.get());
@@ -124,10 +139,13 @@ namespace plasma
     // BiteHandler.
     void
     Client::BiteHandler::_call(json::Dictionary const& dic,
-                               std::unique_ptr<Notification>&& notification)
+                               std::unique_ptr<Notification>&& notification,
+                               bool _new)
     {
       std::string temp = dic["debug"].as_string();
       notification->debug = temp.c_str();
+
+      notification->is_new = _new;
 
       // Use callback function.
       this->callback(notification.get());
