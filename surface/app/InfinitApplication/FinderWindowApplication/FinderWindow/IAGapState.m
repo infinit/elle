@@ -217,6 +217,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
     {
         if (!_polling && _logged_in)
         {
+            gap_user_status_callback(_state, &on_user_status);
             _polling = TRUE;
             NSLog(@"Start polling");
             [self _poll];
@@ -343,7 +344,101 @@ static void on_user_status(gap_UserStatusNotification const* n);
 
 @end
 
+#define SET_CSTR(__name)                                                    \
+    self.__name = [[NSString alloc] initWithUTF8String:n->__name];          \
+/**/
+
+@implementation IAUserStatusNotification
+
+@synthesize user_id;
+@synthesize status;
+
+- (id) init:(gap_UserStatusNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {
+        SET_CSTR(user_id);
+        self.status = n->status;
+    }
+    return self;
+}
+
+@end
+
+@implementation IATransactionNotification
+@synthesize first_filename;
+@synthesize files_count;
+@synthesize total_size;
+@synthesize is_directory;
+@synthesize network_id;
+@synthesize sender_id;
+@synthesize sender_fullname;
+@synthesize transaction_id;
+
+- (id) init:(gap_TransactionNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {        
+        SET_CSTR(first_filename);
+        self.files_count = n->files_count;
+        self.total_size = n->total_size;
+        self.is_directory = n->is_directory;
+        SET_CSTR(network_id);
+        SET_CSTR(sender_id);
+        SET_CSTR(sender_fullname);
+        SET_CSTR(transaction_id);
+    }
+    return self;
+}
+
+@end
+
+@implementation IATransactionStatusNotification
+@synthesize transaction_id;
+@synthesize network_id;
+@synthesize sender_device_id;
+@synthesize recipient_device_id;
+@synthesize recipient_device_name;
+@synthesize status;
+
+- (id) init:(gap_TransactionStatusNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {
+        SET_CSTR(transaction_id);
+        SET_CSTR(network_id);
+        SET_CSTR(sender_device_id);
+        SET_CSTR(recipient_device_id);
+        SET_CSTR(recipient_device_name);
+        self.status = n->status;
+    }
+    return self;
+}
+
+@end
+
+
 static void on_user_status(gap_UserStatusNotification const* n)
 {
-    NSLog(@"CDSJKFADSJKL");
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_USER_STATUS_NOTIFICATION
+                                                        object:[[IAUserStatusNotification alloc] init:n]];
+}
+
+static void on_transaction(gap_TransactionNotification const* n)
+{
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_NOTIFICATION
+                                                        object:[[IATransactionNotification alloc] init:n]];
+}
+
+
+static void on_transaction_status(gap_TransactionStatusNotification const* n)
+{
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
+                                                        object:[[IATransactionStatusNotification alloc] init:n]];
 }

@@ -7,11 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "IANotificationSource.h"
 
 @interface IANotificationPanelController : NSWindowController//<NSWindowDelegate>
 
 - (void)toggleVisibility;
 - (void)setVisibility:(BOOL)visibility;
 - (BOOL)visibility;
+
+@property (assign) IBOutlet IANotificationSource* source;
 
 @end

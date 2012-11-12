@@ -8,7 +8,42 @@
 
 #import <Foundation/Foundation.h>
 
-#define IA_GAP_EVENT_LOGIN_OPERATION @"IA_GAP_EVENT_LOGIN_OPERATION"
+#define IA_GAP_EVENT_LOGIN_OPERATION                    @"IA_GAP_EVENT_LOGIN_OPERATION"
+#define IA_GAP_EVENT_USER_STATUS_NOTIFICATION           @"IA_GAP_EVENT_USER_STATUS_NOTIFICATION"
+#define IA_GAP_EVENT_TRANSACTION_NOTIFICATION           @"IA_GAP_EVENT_TRANSACTION_NOTIFICATION"
+#define IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION    @"IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION"
+
+@interface IAUserStatusNotification : NSObject
+
+@property (retain) NSString*    user_id;
+@property NSInteger             status;
+
+@end
+
+@interface IATransactionNotification : NSObject
+
+@property (retain) NSString*    first_filename;
+@property NSUInteger            files_count;
+@property NSUInteger            total_size;
+@property BOOL                  is_directory;
+
+@property (retain) NSString*    network_id;
+@property (retain) NSString*    sender_id;
+@property (retain) NSString*    sender_fullname;
+@property (retain) NSString*    transaction_id;
+
+@end
+
+@interface IATransactionStatusNotification : NSObject
+
+@property (retain) NSString*    transaction_id;
+@property (retain) NSString*    network_id;
+@property (retain) NSString*    sender_device_id;
+@property (retain) NSString*    recipient_device_id;
+@property (retain) NSString*    recipient_device_name;
+@property NSInteger             status;
+
+@end
 
 /**
  * @brief An operation return value

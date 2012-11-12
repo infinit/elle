@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */ = {isa = PBXBuildFile; fileRef = BD08503A16513E1C00C54359 /* IANotificationSource.h */; };
+		BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */ = {isa = PBXBuildFile; fileRef = BD08503B16513E1C00C54359 /* IANotificationSource.m */; };
 		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
 		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
 		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
@@ -60,6 +62,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BD08503A16513E1C00C54359 /* IANotificationSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationSource.h; sourceTree = "<group>"; };
+		BD08503B16513E1C00C54359 /* IANotificationSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationSource.m; sourceTree = "<group>"; };
 		BD1A1BFD1639469100186C48 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD1A1C001639469100186C48 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BD1A1C011639469100186C48 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -202,6 +206,8 @@
 				BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */,
 				BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */,
 				BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */,
+				BD08503A16513E1C00C54359 /* IANotificationSource.h */,
+				BD08503B16513E1C00C54359 /* IANotificationSource.m */,
 			);
 			name = NotificationPanel;
 			sourceTree = "<group>";
@@ -303,6 +309,7 @@
 				BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */,
 				BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */,
 				BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */,
+				BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +396,7 @@
 				BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */,
 				BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */,
 				BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */,
+				BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

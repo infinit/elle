@@ -17,7 +17,9 @@
 
 - (void)awakeFromNib
 {
-    NSLog(@"YEAH I'm there");
+//    NSLog(@"YEAH I'm there: %@", self.source);
+//    for (int i=0; i < 200; ++i)
+//        [self.source addNotification:[[NSString alloc] initWithFormat:@"ROW %d", i]];
 }
 
 - (BOOL)visibility
