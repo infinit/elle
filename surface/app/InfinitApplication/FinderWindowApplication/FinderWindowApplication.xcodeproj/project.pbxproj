@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */ = {isa = PBXBuildFile; fileRef = BD08503A16513E1C00C54359 /* IANotificationSource.h */; };
-		BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */ = {isa = PBXBuildFile; fileRef = BD08503B16513E1C00C54359 /* IANotificationSource.m */; };
 		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
 		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
 		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
@@ -40,6 +38,8 @@
 		BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */; };
 		BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */; };
 		BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */; };
+		BDB12DE716529D3200FE84B9 /* IANotificationListDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */; };
+		BDB12DE816529D3200FE84B9 /* IANotificationListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */; };
 		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; };
 		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
 		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -62,8 +62,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BD08503A16513E1C00C54359 /* IANotificationSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationSource.h; sourceTree = "<group>"; };
-		BD08503B16513E1C00C54359 /* IANotificationSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationSource.m; sourceTree = "<group>"; };
 		BD1A1BFD1639469100186C48 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD1A1C001639469100186C48 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BD1A1C011639469100186C48 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -99,6 +97,8 @@
 		BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanel.m; sourceTree = "<group>"; };
 		BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanelController.h; sourceTree = "<group>"; };
 		BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanelController.m; sourceTree = "<group>"; };
+		BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationListDelegate.h; sourceTree = "<group>"; };
+		BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationListDelegate.m; sourceTree = "<group>"; };
 		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
 		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
 		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
@@ -206,8 +206,8 @@
 				BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */,
 				BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */,
 				BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */,
-				BD08503A16513E1C00C54359 /* IANotificationSource.h */,
-				BD08503B16513E1C00C54359 /* IANotificationSource.m */,
+				BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */,
+				BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */,
 			);
 			name = NotificationPanel;
 			sourceTree = "<group>";
@@ -309,7 +309,7 @@
 				BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */,
 				BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */,
 				BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */,
-				BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */,
+				BDB12DE716529D3200FE84B9 /* IANotificationListDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,7 +396,7 @@
 				BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */,
 				BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */,
 				BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */,
-				BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */,
+				BDB12DE816529D3200FE84B9 /* IANotificationListDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
