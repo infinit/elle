@@ -143,6 +143,8 @@ typedef int(^gap_operation_t)(void);
 
 
 static void on_user_status(gap_UserStatusNotification const* n);
+static void on_transaction(gap_TransactionNotification const* n);
+static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 
 @interface IAGapState ()
@@ -217,10 +219,15 @@ static void on_user_status(gap_UserStatusNotification const* n);
     {
         if (!_polling && _logged_in)
         {
-            gap_user_status_callback(_state, &on_user_status);
-            _polling = TRUE;
-            NSLog(@"Start polling");
-            [self _poll];
+            if ((gap_user_status_callback(self.state, &on_user_status) == gap_ok) &&
+                (gap_transaction_callback(self.state, &on_transaction) == gap_ok) &&
+                (gap_transaction_status_callback(self.state, &on_transaction_status) == gap_ok))
+            {
+                _polling = TRUE;
+                [self _poll];
+            }
+            else
+                NSLog(@"WARNING: Cannot start polling");
         }
     }
 }
@@ -280,7 +287,8 @@ static void on_user_status(gap_UserStatusNotification const* n);
             NSLog(@"Cannot login !");
         
         if (res == gap_ok)
-            res = gap_user_status_callback(self.state, &on_user_status);
+        {
+        }
         else
             NSLog(@"Cannot connect to tropho");
         
@@ -290,7 +298,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
             [this _startPolling];
         }
         else
-            NSLog(@"Cannot register callback");
+            NSLog(@"Cannot register callbacks");
         
         return res;
     } performSelector:selector onObject:object];
