@@ -64,10 +64,15 @@ class Trophonius(basic.LineReceiver):
 
                 print("Disconnect user: id=%s" % self.id)
 
+                status = False
+                try:
+                        status = self.factory.clients.remove(self);
+                except Exception as e:
+                        log.msg('self.factory.clients.remove(self) failed')
                 pythia.Admin().post('/user/disconnected', {
                     'user_id': self.id,
                     'user_token': self.token,
-                    'full': self.factory.clients.remove(self),
+                    'full': status,
                 })
 
 	def _send_res(self, res, msg=""):
@@ -75,13 +80,14 @@ class Trophonius(basic.LineReceiver):
 			self.sendLine(json.dumps(res))
 		elif isinstance(res, int):
 			s = {}
+                        s["notification_id"] = -666
 			s["response_code"] = res
 			if msg:
 				s["response_details"] = "{}: {}".format(response_matrix[res], msg)
 			else:
 				s["response_details"] = "{}".format(response_matrix[res])
 			message = json.dumps(s)
-			self.sendLine(message)
+			self.sendLine("{}\ǹ".format(message))
 
 	def handle_CHAT(self, line):
 		"""
@@ -161,7 +167,10 @@ class MetaTropho(basic.LineReceiver):
 		try:
 			for rec_id in recipients:
 				for c in self.factory.clients[rec_id]:
-					c.sendLine(line)
+                                        msg = "{}".format(line)
+                                        print("line: '{}'".format(msg))
+					c.sendLine(msg)
+                                        print("lined")
 		except KeyError as ke:
 			log.err("Handled exception {}: {} unknow id".format(
                                         ke.__class__.__name__,
@@ -170,13 +179,14 @@ class MetaTropho(basic.LineReceiver):
 
 	def make_switch(self, line):
 		try:
-			recipients_ids = ""
+			recipients_ids = []
 			js_req = json.loads(line)
 			_recipient = js_req["recipient_id"]
 			if isinstance(_recipient, list):
 				recipients_ids = _recipient
 			elif isinstance(_recipient, str) or isinstance(_recipient, unicode):
 				recipients_ids = [_recipient]
+                        print(recipients_ids)
 			self.enqueue(line, recipients_ids)
 		except ValueError as ve:
 			log.err("Handled exception {}: {}".format(
