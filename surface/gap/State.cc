@@ -404,7 +404,7 @@ namespace surface
                                       size,
                                       fs::is_directory(first_filename),
                                       network_id,
-                                      this->_device_name);
+                                      this->_device_id);
     }
 
     void
