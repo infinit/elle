@@ -29,8 +29,8 @@ namespace elle
 
   Authority::Authority(cryptography::KeyPair const& pair):
     type(Authority::TypePair),
-    K(pair.K),
-    k(new cryptography::PrivateKey(pair.k)),
+    K(pair.K()),
+    k(new cryptography::PrivateKey(pair.k())),
     cipher(nullptr)
   {}
 
