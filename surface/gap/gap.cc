@@ -192,17 +192,14 @@ extern "C"
     gap_Status
     gap_update_transaction(gap_State* state,
                            char const* transaction_id,
-                           int status,
-                           char const* network_id)
+                           int status)
     {
       assert(transaction_id != nullptr);
-      assert(network_id != nullptr);
 
       __WRAP_CPP_RET(state,
                      update_transaction,
                      transaction_id,
-                     status,
-                     network_id);
+                     status);
 
       return ret;
     }
