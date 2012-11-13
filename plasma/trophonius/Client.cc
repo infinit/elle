@@ -200,6 +200,8 @@ namespace plasma
         {
           try
             {
+              ELLE_TRACE("Recieved stream from trophonius.");
+
               // Bind stream to response.
               std::istream is(&(_impl->response));
               // Don't skip whitespaces in the stream.
@@ -279,6 +281,7 @@ namespace plasma
 
       if (!_notifications.empty())
         {
+          ELLE_TRACE("Pop notification dictionnary to be handle.");
           // Fill dictionary.
           ret.reset(_notifications.front());
           _notifications.pop();

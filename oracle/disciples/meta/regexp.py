@@ -30,6 +30,7 @@ class Validator:
 EmailValidator = Validator(Email, error.EMAIL_NOT_VALID)
 PasswordValidator = Validator(Password, error.PASSWORD_NOT_VALID)
 HandleValidator = Validator(Handle, error.HANDLE_NOT_VALID)
+DeviceIDValidator = Validator(DeviceID, error.DEVICE_NOT_VALID)
 NonEmptyValidator = Validator(NotNull, error.FIELD_IS_EMPTY)
 FilenameValidator = Validator(NotNull, error.FILE_NAME_EMPTY)
 NetworkValidator = Validator(NetworkID, error.NETWORK_ID_NOT_VALID)

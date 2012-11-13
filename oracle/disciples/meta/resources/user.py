@@ -1,9 +1,11 @@
+
 # -*- encoding: utf-8 -*-
 
 import json
 import web
 
 from meta.page import Page
+from meta import notifier
 from meta import conf, database
 from meta import error
 from meta import regexp
@@ -148,151 +150,6 @@ class Invite(Page):
         hash_.update(mail.encode('utf8') + str(time.time()))
         return hash_.hexdigest()
 
-class SendFile(Page):
-    """
-    Send a file to a specific user.
-    If you pass an email and the user is not registred in infinit,
-    create a 'ghost' in the database, waiting for him to register.
-
-    POST {
-              'id_or_email': "email@pif.net", #required
-              'file_name': "The file name", #required
-              'network_id': "The network name", #required
-              'file_size': 42 (ko) #optionnal
-              'file_count': 32     #default 1
-         }
-         -> {
-                'succes': True or False
-            }
-    """
-    __pattern__ = "/user/sendfile"
-
-    _validators = {
-        'id_or_email': regexp.NonEmptyValidator,
-        'file_name': regexp.FilenameValidator,
-        'network_id': regexp.NetworkValidator,
-    }
-
-    def POST(self):
-        self.requireLoggedIn()
-
-        status = self.validate()
-        if status:
-            return self.error(*status)
-
-        id_or_email = self.data['id_or_email'].strip()
-        file_name = self.data['file_name'].strip()
-        network_id = self.data['network_id'].strip()
-        file_count = int(('file_count' in self.data and self.data['file_count'] or 1))
-        file_size = int(('file_size' in self.data and self.data['file_size'] or -1))
-        invitee_id = 0
-        invitee_email = ""
-        new_user = False
-        invitee = 0
-
-        # Determine if user sent a mail or an id.
-        if re.match(regexp.Email, id_or_email):
-            invitee_email = id_or_email
-            # Check is user is in database.
-            invitee = database.users().find_one({'email': id_or_email})
-            # if the user doesn't exist, create a ghost and invite.
-            if not invitee:
-                new_user = True
-                invitee_id = database.users().save({})
-                self.registerUser(
-                    _id = invitee_id,
-                    email = invitee_email,
-                    register_status = 'ghost',
-                    notifications = [],
-                    accounts=[{'type':'email', 'id':invitee_email}]
-                )
-            else:
-                invitee_id = invitee['_id']
-        elif not re.match(regexp.ID, id_or_email):
-            return self.error(error.USER_ID_NOT_VALID)
-
-        _id = self.user['_id']
-
-        req = {'recipient': invitee_id,
-               'sender': _id,
-               'network_id': network_id}
-
-        if not database.transactions().find_one(req):
-            transaction_id = database.transactions().insert(req)
-
-        sent = file_name + (file_count == 1 and "" or " and %i other files" % (file_count - 1))
-
-        if not self.connected(invitee_id):
-            if not invitee_email:
-                invitee_email = database.users().find_one({'_id': id_or_email})['email']
-            inviter_mail = self.user['email']
-
-            subject = USER_INVITATION_SUBJECT % {
-                'inviter_mail': inviter_mail,
-            }
-
-            content = (new_user and USER_INVITATION_CONTENT or USER_NEW_FILE_CONTENT) % {
-                'inviter_mail': inviter_mail,
-                'file_name': sent,
-            }
-
-            meta.mail.send(invitee_email, subject, content)
-
-        self.notifier.notify_one(invitee_id,{
-            'notification_id' : 7,
-            'sender_id' : _id,
-            'file_size': file_size,
-            'file_count': file_count,
-            'transaction_id' : transaction_id,
-            'file_name': sent,
-        })
-
-        return self.success({'transaction_id': transaction_id})
-
-class AnswerTransaction(Page):
-    """
-    Use to accept or deny a file transfer
-    POST {
-           'transaction_id' : the id on base of the transaction.
-           'answer': True
-         }
-         -> {
-                 'network_id': the network id or empty string if refused.
-            }
-    """
-    __pattern__ = "/user/transaction"
-
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-    }
-
-    def POST(self):
-        self.requireLoggedIn()
-
-        status = self.validate()
-        if status:
-            return self.error(*status)
-
-        transaction =  database.transactions().find_one(
-            database.ObjectId(self.data['transaction_id'].strip()))
-
-        if not transaction:
-            self.error(error.UNKNOWN, "This transaction doesn't exists.")
-
-        self.notifier.notify_one(transaction['sender'],{
-            '_id': 11,
-            'network_id': transaction['network_id'],
-            'status': int(self.data['status']),
-        })
-
-        database.transactions().remove(transaction)
-        res = {'network_id': self.data['status'] and transaction['network_id']
-                                                 or "",
-        }
-
-        return self.success({
-                res,
-        })
 
 class Self(Page):
     """
@@ -466,7 +323,6 @@ class Login(Page):
         loggin_info = self.data
 
         if self.authenticate(loggin_info['email'], loggin_info['password']):
-            self.notifySwaggers({"notification_id" : 8, "status" : 1})
             return self.success({
                 "_id" : self.user["_id"],
                 'token': self.session.session_id,
@@ -498,17 +354,17 @@ class Disconnection(Page):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:
             return self.error(error.UNKNOWN, "You're not admin")
 
+        if not self._user:
+            return self.error(error.UNKNOWN)
+
         _id = self.data['user_id']
         token = self.data['user_token']
 
         del self.session.store[token]
 
-        user = database.users().find_one(database.ObjectId(_id))
+        self._user['connected'] = bool(self.data['full'])
 
-        database.users().update(
-            {'_id': database.ObjectId(_id)},
-            {'connected': bool(self.data['full'])},
-        )
+        database.users().save(self._user)
 
         return self.success()
 
@@ -527,5 +383,10 @@ class Logout(Page):
             return self.error(error.NOT_LOGGED_IN)
 
         self.logout()
-        self.notifySwaggers({"notification_id": 8, "status" : 2})
+        self.notifySwaggers(
+            notifier.USER_STATUS,
+            {
+                "status" : 2,
+            }
+        )
         return self.success()

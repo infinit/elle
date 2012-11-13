@@ -85,6 +85,11 @@ namespace plasma
       std::string updated_transaction_id;
     };
 
+    struct StopTransactionResponse : plasma::Response
+    {
+      std::string deleted_transaction_id;
+    };
+
     struct NetworksResponse : plasma::Response
     {
       std::list<std::string> networks;
@@ -212,6 +217,9 @@ namespace plasma
 
       StartTransactionResponse
       start_transaction(std::string const& transaction_id);
+
+      StopTransactionResponse
+      stop_transaction(std::string const& transaction_id);
 
       MessageResponse
       send_message(std::string const& recipient_id,

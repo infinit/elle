@@ -126,10 +126,13 @@ namespace surface
 
       void
       update_transaction(std::string const& transaction_id,
-                         int status);
+                         gap_TransactionStatus status);
 
       void
       start_transaction(std::string const& transaction_id);
+
+      void
+      stop_transaction(std::string const& transaction_id);
 
     private:
       gap_User _me;

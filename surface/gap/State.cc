@@ -411,14 +411,14 @@ namespace surface
 
     void
     State::update_transaction(std::string const& transaction_id,
-                              int status)
+                              gap_TransactionStatus status)
     {
       ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
       this->_meta->update_transaction(transaction_id,
-                                        status,
-                                        this->_device_id,
-                                        this->_device_name);
+                                      status,
+                                      this->_device_id,
+                                      this->_device_name);
     }
 
     void
@@ -427,6 +427,14 @@ namespace surface
       ELLE_DEBUG("Start transaction '%s'", transaction_id);
 
       this->_meta->start_transaction(transaction_id);
+    }
+
+    void
+    State::stop_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Stop transaction '%s'", transaction_id);
+
+      this->_meta->stop_transaction(transaction_id);
     }
 
     void
@@ -474,7 +482,6 @@ namespace surface
                                0,
                                plasma::trophonius::Client::BiteHandler)
 
-
     template<typename T>
     void
     State::attach_callback(std::function<void(T const*)> callback)
@@ -491,6 +498,7 @@ namespace surface
       if(!dict_ptr)
         return false;
 
+      ELLE_DEBUG("Dictionnary polled.");
       json::Dictionary const& dict = *dict_ptr;
 
       return this->_handle_dictionnary(dict);
@@ -499,15 +507,27 @@ namespace surface
     bool
     State::_handle_dictionnary(json::Dictionary const& dict, bool _new)
     {
+      ELLE_DEBUG("Dictionnary '%s'.", dict.repr());
+
       if(!dict.contains("notification_id"))
-        return false;
+        {
+          ELLE_WARN("Dictionnary doesn't contains 'notification_id' field.");
+          return false;
+        }
 
       int notification_id = dict["notification_id"].as_integer();
+
+      // Connexion established.
+      if (notification_id == -666)
+        return false;
 
       auto handler = _notification_handler.find(notification_id);
 
       if (handler == _notification_handler.end())
-        return false;
+        {
+          ELLE_WARN("Handler missing for notification '%u'", notification_id);
+          return false;
+        }
 
       (handler->second)->call(dict, _new);
 

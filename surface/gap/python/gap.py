@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 import _gap
+from collections import namedtuple
+import sys
 
 """gap library binding module
 
@@ -54,6 +56,11 @@ class State:
             'notifications_red',
         ]
 
+        directly_exported_enums = [
+            'Status',
+            'TransactionStatus',
+        ]
+
         def make_method(m):
             method = lambda *args: (
                 self._call(m, *args)
@@ -64,30 +71,35 @@ class State:
         for method in directly_exported_methods:
             setattr(self, method, make_method(method))
 
+        # transforms gap_EnumName_value to EnumName.value
+        for enum in directly_exported_enums:
+            to_remove = len('gap_') + len(enum) + 1
+            l_mbrs = [i[to_remove:] for i in dir(getattr(_gap, enum)) if i.startswith('gap_')]
+            l_vals = [getattr(_gap, "gap_"+enum+"_"+m) for m in l_mbrs]
+            T = namedtuple(enum, " ".join(l_mbrs))
+            t = T(*l_vals)
+            setattr(self, enum, t)
+
     def __del__(self):
         _gap.free(self._state)
 
     @property
     def meta_status(self):
         try:
-            return self._call('meta_status') == _gap.gap_ok
+            return self._call('meta_status') == self.Status.ok
         except:
             return False
 
     @property
-    def Status(self):
-        return _gap.Status
-
-    @property
     def has_device(self):
         try:
-            return self._call('device_status') == _gap.gap_ok
+            return self._call('device_status') == self.Status.ok
         except:
             return False
 
     def _call(self, method, *args):
         res = getattr(_gap, method)(self._state, *args)
-        if isinstance(res, _gap.Status) and res != _gap.gap_ok:
+        if isinstance(res, _gap.Status) and res != self.Status.ok:
             raise Exception(
                 "Error while calling %s: %s " % (method, str(res))
             )

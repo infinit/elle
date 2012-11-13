@@ -9,7 +9,7 @@ import urllib
 import error
 from meta import conf
 from meta import database
-from meta import notification
+from meta import notifier
 from meta import error
 from meta import regexp
 
@@ -48,7 +48,7 @@ class Page(object):
     def notifier(self):
         if self.__notifier is None:
             try:
-                self.__notifier = notification.TrophoniusNotify()
+                self.__notifier = notifier.TrophoniusNotify()
                 self.__notifier.open()
             except Exception as e:
                 print(e)
@@ -84,6 +84,12 @@ class Page(object):
             database.users().save(user)
             self._user = user
             self.session._user_id = user['_id']
+            self.notifySwaggers(
+                notifier.USER_STATUS,
+                {
+                    'status': 1,
+                }
+            )
             return True
         else:
             return False
@@ -113,7 +119,7 @@ class Page(object):
         seasoned = seasoned.encode('utf-8')
         return hashlib.md5(seasoned).hexdigest()
 
-    def notifySwaggers(self, data, bAll = False):
+    def notifySwaggers(self, notification_id, data, bAll = False):
         swgs = list(self.user["swaggers"])
         # if not bAll, notify only the connected ones.
         if not bAll:
@@ -121,11 +127,12 @@ class Page(object):
                 if not connected(s):
                     swgs.remove(s)
         d = {
-                "recipient_id" : swgs,
                 "sender_id" : self.user["_id"],
             }
         d.update(data)
-        self.notifier.notify_some(swgs, d)
+        self.notifier.notify_some(notification_id,
+                                  swgs,
+                                  d)
 
     def error(self, err=error.UNKNOWN, msg=""):
         if not msg and err in error.error_details:

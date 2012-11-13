@@ -8,10 +8,12 @@ from meta.resources import root
 from meta.resources import user
 from meta.resources import device
 from meta.resources import network
+from meta.resources import transaction
+from meta.resources import notification
 
 from meta.page import Page
 
-_modules = [root, user, device, network,]
+_modules = [root, user, device, network, transaction, notification]
 
 ALL = []
 

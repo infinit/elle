@@ -4,46 +4,59 @@ import datetime
 import random
 import math
 import threading
+import re
+
 
 state = gap.State()
+
+def introspect(obj):
+    for attr in dir(obj):
+        if not re.match('^__', attr):
+            print("%s = %s" % (attr, getattr(obj, attr)))
 
 def BiteFunc(bite:'Bite'):
     print("Notification bite reçue", bite.debug)
 
-def FileTransfer(transfer):
-    if transfer.new :
-        print("==== [New]")
-    else:
-        print("==== [Old]")
-    print("File from :", transfer.sender_id)
+def TransactionHandler(t):
+    print("\n\n=== Transaction")
+    introspect(t)
+    print("\n=== Accepted")
+    if t.new :
+        state.update_transaction(t.transaction_id, state.TransactionStatus.accepted)
 
-    if transfer.new :
-        state.answer_transaction(transfer.transaction_id, True)
+def TransactionStatusHandler(ts:'FileTransferStatus'):
+    print("TransactionStatusHandler :", ts.status)
 
-def FileTransferStatus(ts:'FileTransferStatus'):
-    if ts.new:
-        print("==== [New]")
-    else:
-        print("==== [Old]")
-    print('File status : %s' % ts.status and "Accepted" or "Refused")
+    if ts.status == state.TransactionStatus.none or ts.status == state.TransactionStatus.pending :
+        print(">>Do nothing")
+
+    elif ts.status == state.TransactionStatus.accepted:
+        print('[Accepted on', ts.recipient_device_name, "]")
+        print(">>Invite user to network, start copying, giving rights, ...")
+
+        state.start_transaction(ts.transaction_id)
+
+    elif ts.status == state.TransactionStatus.rejected:
+        print(">>The transaction has been canceled, destroy network, delete files...")
+
+    elif ts.status == state.TransactionStatus.finished:
+        print(">>The transaction is finished.")
+
+def TransactionStart(t):
+    print("\n\n=== Transaction Start")
+    introspect(t)
 
 def Message(message):
     print(message.sender_id, ":", message.message)
 
 class PollThread (threading.Thread):
-    now = datetime.datetime.now()
-    count = 0
     bite = False
 
     def run (self) :
         self.bite = False
         while True:
-            time.sleep(0.05)
-            self.count += (datetime.datetime.now() - self.now).microseconds
-            if self.count > 1000000:
-                state.poll()
-                self.count -= 1000000
-            self.now = datetime.datetime.now()
+            time.sleep(1)
+            state.poll()
             if self.bite == True:
                 return
 
@@ -51,23 +64,15 @@ class PollThread (threading.Thread):
         self.bite = True
 
 state.OnBite(BiteFunc)
-state.OnFileTransfer(FileTransfer)
-state.OnFileTransferStatus(FileTransferStatus)
+state.OnTransaction(TransactionHandler)
+state.OnTransactionStatus(TransactionStatusHandler)
 state.OnMessage(Message)
 
 #register: fullname, email, hashed_password, device_name, activation_code
 def __register(name, mail):
-    if mail == "a@a.aa":
-        state.register(name, mail, "mdptmp", "pretty name", "bitebite")
-    else:
-        state.register(name, mail, "MEGABIET", "pretty name", "bitebite")
+    state.register(name, mail, "mdptmp", "pretty name", "bitebite")
 def __login(mail):
-    if mail == "a@a.aa":
-        print("as aaaa")
-        state.login(mail, "mdptmp")
-    else:
-        state.login(mail, "MEGABIET")
-
+    state.login(mail, "mdptmp")
 
 def __connect():
     state.connect()
@@ -92,7 +97,7 @@ def main():
     good_fullname = "MrDick"
 
     bad_email = "abc@bi"
-    good_email = "a@a.aa"# % math.floor(random.random()*234567890)
+    good_email = "%s@a.aa" % math.floor(random.random()*234567890)
 
     password = "mdptmp"
 
@@ -108,12 +113,12 @@ def main():
     except Exception  as e:
       print ("Bad mail")
 
-    state.login(good_email, password)
-#    state.register(good_fullname, good_email, password, "device", "bitebite")
+#    state.login(good_email, password)
+    state.register(good_fullname, good_email, password, "device", "bitebite")
 
     state.set_device_name("device")
 
-    __connect();
+#    __connect();
 
     state.logout()
 
@@ -121,24 +126,29 @@ def main():
 
     state.set_device_name("device")
 
-    __connect();
-
-    print('\n\nPulling notifs')
-    __pullNotifs()
-
     try :
+        __connect();
         polling = PollThread()
         polling.start()
 
         # Send file to me.
         print('Send file to myself')
         __send_file(good_email)
+        time.sleep(10)
+        print('Send file to myself')
+        __send_file(good_email)
+        time.sleep(10)
+        print('Send file to myself')
+        __send_file(good_email)
+        time.sleep(10)
+        print('Send file to myself')
+        __send_file(good_email)
 
         # Sleep 1sec to wait for transaction
-        time.sleep(3)
+        time.sleep(5)
 
-        print('\n\nPulling notifs')
-        __pullNotifs()
+#        print('\n\nPulling notifs')
+#        __pullNotifs()
 
         time.sleep(3)
 
@@ -153,9 +163,10 @@ def main():
         # Sleep 1sec to wait for transaction
         time.sleep(3)
 
-        print('\n\nPulling notifs')
-        __pullNotifs()
+#        print('\n\nPulling notifs')
+#        __pullNotifs()
 
+        polling.stop()
 
     except KeyboardInterrupt as e:
         polling.stop()
