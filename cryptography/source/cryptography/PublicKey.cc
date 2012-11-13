@@ -5,6 +5,7 @@
 #include <cryptography/Code.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
+#include <cryptography/bn.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -128,8 +129,8 @@ namespace infinit
 
       // create, initialize and configure---by setting the padding---the
       // encrypt context.
-      this->_contexts.encrypt = ::EVP_PKEY_CTX_new(this->_key, nullptr);
-      if (this->_contexts.encrypt == nullptr)
+      if ((this->_contexts.encrypt =
+           ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       if (::EVP_PKEY_encrypt_init(this->_contexts.encrypt) <= 0)
@@ -144,8 +145,8 @@ namespace infinit
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // create and initialize the verify context.
-      this->_contexts.verify = EVP_PKEY_CTX_new(this->_key, nullptr);
-      if (this->_contexts.verify == nullptr)
+      if ((this->_contexts.verify =
+           ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       if (::EVP_PKEY_verify_init(this->_contexts.verify) <= 0)
@@ -160,8 +161,8 @@ namespace infinit
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // create and initialize the decrypt context.
-      this->_contexts.decrypt = ::EVP_PKEY_CTX_new(this->_key, nullptr);
-      if (this->_contexts.decrypt == nullptr)
+      if ((this->_contexts.decrypt =
+           ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       if (::EVP_PKEY_verify_recover_init(this->_contexts.decrypt) <= 0)

@@ -7,7 +7,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// XXX
+    /// Represent a plain text for cryptographic operations.
     typedef Input Plain;
   }
 }
