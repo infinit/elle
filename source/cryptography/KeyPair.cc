@@ -4,6 +4,7 @@
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>
+#include <cryptography/finally.hh>
 
 #include <elle/types.hh>
 #include <elle/assert.hh>
@@ -67,15 +68,6 @@ namespace infinit
     KeyPair
     KeyPair::generate(elle::Natural32 const length) // XXX[add algorithm argument]
     {
-      // XXX[lambda? macro-function? template-class?]
-      struct Scope
-      {
-        ::EVP_PKEY* key;
-
-        Scope() : key(nullptr) {}
-        ~Scope() { ::EVP_PKEY_free(this->key); }
-      } scope;
-
       // Make sure the cryptographic system is set up.
       cryptography::require();
 
@@ -85,20 +77,26 @@ namespace infinit
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
+      ::EVP_PKEY* key{nullptr};
+
       // Generate the EVP key.
-      if (::EVP_PKEY_keygen(KeyPair::Contexts::generate, &scope.key) <= 0)
+      if (::EVP_PKEY_keygen(KeyPair::Contexts::generate, &key) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      ELLE_ASSERT(scope.key != nullptr);
+      ELLE_ASSERT(key != nullptr);
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
-      return (KeyPair(scope.key));
+      CRYPTOGRAPHY_FINALLY_FREE_EVP_PKEY(key);
+      KeyPair pair(key);
+      CRYPTOGRAPHY_FINALLY_ABORT(key);
+
+      return (pair);
     }
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     KeyPair::KeyPair()
     {
@@ -106,29 +104,38 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(::EVP_PKEY* key)
-    // XXX[construct K and k]
+    KeyPair::KeyPair(PublicKey const& K,
+                     PrivateKey const& k):
+      _K(K),
+      _k(k)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
-
-      // create the actual public key according to the EVP structure.
-      if (this->K.Create(key) == elle::Status::Error)
-        escape("unable to create the public key");
-
-      assert(this->K.key() != nullptr);
-
-      // create the actual private key according to the EVP structure.
-      if (this->k.Create(key) == elle::Status::Error)
-        escape("unable to create the private key");
-
-      assert(this->k.key() != nullptr);
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    KeyPair::KeyPair(KeyPair const& pair):
+      _K(pair._K),
+      _k(pair._k)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
 
+    KeyPair::KeyPair(::EVP_PKEY const* key):
+      _k(key)
+    {
+      if (this->_K.Create(key) == elle::Status::Error) // XXX
+        throw elle::Exception("XXX");
+
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    /* XXX
     ///
     /// this method rotates a key pair based on a given seed.
     ///
@@ -137,7 +144,7 @@ namespace infinit
     /// for more information, please refer to PrivateKey::Derive().
     ///
     elle::Status              KeyPair::Rotate(const Seed&             seed,
-                                        KeyPair&                kp) const
+                                        KeyPair&                pair) const
     {
       struct Scope
       {
@@ -158,7 +165,7 @@ namespace infinit
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
-                            ::BN_num_bits(this->K.key()->pkey.rsa->n),
+                            ::BN_num_bits(this->_K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
@@ -171,55 +178,47 @@ namespace infinit
       scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
-      if (kp.K.Create(scope.key) == elle::Status::Error)
+      if (pair._K.Create(scope.key) == elle::Status::Error)
         escape("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
-      if (kp.k.Create(scope.key) == elle::Status::Error)
+      if (pair.k.Create(scope.key) == elle::Status::Error)
         escape("unable to create the private key");
 
       return elle::Status::Ok;
     }
+    */
 
-//
-// ---------- object ----------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
-    ///
-    /// this method check if two keypairs match.
-    ///
-    elle::Boolean             KeyPair::operator==(const KeyPair&      element) const
+    elle::Boolean
+    KeyPair::operator ==(KeyPair const& other) const
     {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
+      if (this == &other)
+        return (true);
 
-      // compare the internal keys.
-      if ((this->K != element.K) || (this->k != element.k))
-        return false;
-
-      return true;
+      return ((this->_K == other._K) && (this->_k == other._k));
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    ///
-    /// this method dumps the keypair internals.
-    ///
-    elle::Status              KeyPair::Dump(const elle::Natural32           margin) const
+    elle::Status
+    KeyPair::Dump(const elle::Natural32           margin) const
     {
       elle::String            alignment(margin, ' ');
 
       std::cout << alignment << "[KeyPair]" << std::endl;
 
       // dump the public key.
-      if (this->K.Dump(margin + 2) == elle::Status::Error)
+      if (this->_K.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the public key");
 
       // dump the private key.
-      if (this->k.Dump(margin + 2) == elle::Status::Error)
+      if (this->_k.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the public key");
 
       return elle::Status::Ok;

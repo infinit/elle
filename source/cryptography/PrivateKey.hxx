@@ -1,34 +1,30 @@
 #ifndef INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HXX
 # define INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HXX
 
-# include <elle/Buffer.hh>
+# include <cryptography/finally.hh>
+# include <cryptography/bn.hh>
 
-# include <elle/idiom/Open.hh>
+# include <elle/Buffer.hh>
+# include <elle/idiom/Open.hh> // XXX
+
+# include <openssl/rsa.h>
 
 namespace infinit
 {
   namespace cryptography
   {
 
-    template<typename T> elle::Status
-      PrivateKey::Decrypt(Code const& in, T& out) const
-      {
-        elle::Buffer out_buffer;
+    template <typename T>
+    T
+    PrivateKey::decrypt(Code const& code) const
+    {
+      Clear clear{this->decrypt(code)};
+      T value;
 
-        if (this->Decrypt(in, out_buffer) == elle::Status::Error)
-          escape("Cannot decrypt code");
+      clear.buffer().reader() >> value;
 
-        try
-          {
-            out_buffer.reader() >> out;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot decrypt the object: %s", err.what());
-          }
-
-        return elle::Status::Ok;
-      }
+      return (value);
+    }
 
     template<typename T>  elle::Status
       PrivateKey::Encrypt(T const& in, Code& out) const
@@ -88,16 +84,16 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::PrivateKey,
 {
   enforce(version == 0);
 
-  enforce(value.key() != nullptr);
+  enforce(value._key != nullptr);
 
-  archive << *value.key()->pkey.rsa->n;
-  archive << *value.key()->pkey.rsa->e;
-  archive << *value.key()->pkey.rsa->d;
-  archive << *value.key()->pkey.rsa->p;
-  archive << *value.key()->pkey.rsa->q;
-  archive << *value.key()->pkey.rsa->dmp1;
-  archive << *value.key()->pkey.rsa->dmq1;
-  archive << *value.key()->pkey.rsa->iqmp;
+  archive << *value._key->pkey.rsa->n;
+  archive << *value._key->pkey.rsa->e;
+  archive << *value._key->pkey.rsa->d;
+  archive << *value._key->pkey.rsa->p;
+  archive << *value._key->pkey.rsa->q;
+  archive << *value._key->pkey.rsa->dmp1;
+  archive << *value._key->pkey.rsa->dmq1;
+  archive << *value._key->pkey.rsa->iqmp;
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
@@ -106,79 +102,46 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
                           version)
 {
   enforce(version == 0);
-  struct ScopeGuard
-    {
-      bool              track;
-      elle::Large*            n;
-      elle::Large*            e;
-      elle::Large*            d;
-      elle::Large*            p;
-      elle::Large*            q;
-      elle::Large*            dmp1;
-      elle::Large*            dmq1;
-      elle::Large*            iqmp;
-      ScopeGuard()
-        : track(true)
-        , n(::BN_new())
-        , e(::BN_new())
-        , d(::BN_new())
-        , p(::BN_new())
-        , q(::BN_new())
-        , dmp1(::BN_new())
-        , dmq1(::BN_new())
-        , iqmp(::BN_new())
-      {
-        if (!n || !e || !d || !p || !q || !dmp1 || !dmq1 || !iqmp)
-          throw std::bad_alloc();
-      }
 
-      ~ScopeGuard()
-      {
-        if (!this->track)
-          return;
-        ::BN_clear_free(n);
-        ::BN_clear_free(e);
-        ::BN_clear_free(d);
-        ::BN_clear_free(p);
-        ::BN_clear_free(q);
-        ::BN_clear_free(dmp1);
-        ::BN_clear_free(dmq1);
-        ::BN_clear_free(iqmp);
-      }
-    } guard;
+  ::BIGNUM *n = ::BN_new();
+  ::BIGNUM *e = ::BN_new();
+  ::BIGNUM *d = ::BN_new();
+  ::BIGNUM *p = ::BN_new();
+  ::BIGNUM *q = ::BN_new();
+  ::BIGNUM *dmp1 = ::BN_new();
+  ::BIGNUM *dmq1 = ::BN_new();
+  ::BIGNUM *iqmp = ::BN_new();
 
-  archive >> *guard.n
-          >> *guard.e
-          >> *guard.d
-          >> *guard.p
-          >> *guard.q
-          >> *guard.dmp1
-          >> *guard.dmq1
-          >> *guard.iqmp
-    ;
+  CRYPTOGRAPHY_FINALLY_FREE_BN(n);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(e);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(d);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(p);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(q);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(dmp1);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(dmq1);
+  CRYPTOGRAPHY_FINALLY_FREE_BN(iqmp);
 
-  // XXX because the private key is not always cleaned
-  // TODO redesign cryptography classes !
-  value.~PrivateKey();
-  new (&value) infinit::cryptography::PrivateKey();
+  archive >> *n
+          >> *e
+          >> *d
+          >> *p
+          >> *q
+          >> *dmp1
+          >> *dmq1
+          >> *iqmp;
 
-  enforce(value.key() == nullptr);
+  CRYPTOGRAPHY_FINALLY_ABORT(n);
+  CRYPTOGRAPHY_FINALLY_ABORT(e);
+  CRYPTOGRAPHY_FINALLY_ABORT(d);
+  CRYPTOGRAPHY_FINALLY_ABORT(p);
+  CRYPTOGRAPHY_FINALLY_ABORT(q);
+  CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
+  CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
+  CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
 
-  auto res = value.Create(
-      guard.n,
-      guard.e,
-      guard.d,
-      guard.p,
-      guard.q,
-      guard.dmp1,
-      guard.dmq1,
-      guard.iqmp
-  );
+  value._construct(n, e, d, p, q, dmp1, dmq1, iqmp);
 
-  if (res == elle::Status::Error)
-    throw std::runtime_error("Could not create the private key !");
-
-  guard.track = false;
+  ELLE_ASSERT(value._key != nullptr);
 }
 
 #endif

@@ -4,9 +4,13 @@
 # include <elle/types.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/operator.hh>
 
 # include <cryptography/PublicKey.hh>
 # include <cryptography/PrivateKey.hh>
+
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace infinit
 {
@@ -53,19 +57,18 @@ namespace infinit
       `-------------*/
     public:
       KeyPair();
+      KeyPair(PublicKey const& K,
+              PrivateKey const& k);
+      KeyPair(KeyPair const& pair);
     private:
-      KeyPair(::EVP_PKEY* key);
+      KeyPair(::EVP_PKEY const* key);
 
-      //
-      // methods
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
-      elle::Status            Rotate(const Seed&,
-                               KeyPair&) const;
-
-      // XXX
-      // object
-      elle::Boolean           operator ==(const KeyPair&) const;
+      elle::Boolean
+      operator ==(KeyPair const& other) const;
 
       /*-----------.
       | Interfaces |
@@ -81,11 +84,12 @@ namespace infinit
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
-      PublicKey         K;
-      PrivateKey        k;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(PublicKey, K);
+      ELLE_ATTRIBUTE_R(PrivateKey, k);
     };
 
   }
