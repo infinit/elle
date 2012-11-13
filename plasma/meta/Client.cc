@@ -8,6 +8,8 @@
 
 #include <elle/idiom/Close.hh>
 
+ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
+
 // - API responses serializers ------------------------------------------------
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \
@@ -99,6 +101,11 @@ SERIALIZE_RESPONSE(plasma::meta::UpdateTransactionResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::StartTransactionResponse, ar, res)
 {
   ar & named("updated_transaction_id", res.updated_transaction_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::StopTransactionResponse, ar, res)
+{
+  ar & named("deleted_transaction_id", res.deleted_transaction_id);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
@@ -363,6 +370,19 @@ namespace plasma
         }};
 
       auto res = this->_client.post<StartTransactionResponse>("/transaction/start", request);
+
+      return res;
+    }
+
+    StopTransactionResponse
+    Client::stop_transaction(std::string const& transaction_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+        }};
+
+      auto res = this->_client.post<StopTransactionResponse>("/transaction/stop", request);
 
       return res;
     }
