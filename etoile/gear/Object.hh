@@ -2,7 +2,10 @@
 # define ETOILE_GEAR_OBJECT_HH
 
 # include <elle/types.hh>
-# include <elle/cryptography/SecretKey.hh>
+
+# include <cryptography/SecretKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -93,8 +96,10 @@ namespace etoile
       {
         nucleus::neutron::Object::Role role;
         nucleus::neutron::Permissions permissions;
-        elle::cryptography::SecretKey key;
-        nucleus::neutron::Record record;
+        cryptography::SecretKey key;
+
+        // XXX[use a shared_ptr<> instead. cf: automaton::Access::lookup()]
+        nucleus::neutron::Record* record;
       } rights;
       nucleus::neutron::Author* author;
     };

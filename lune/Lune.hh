@@ -30,38 +30,20 @@ namespace lune
     //
     // static attributes
     //
-    static elle::io::Pattern        Home;
-
-    static elle::io::Pattern        Authority;
-    static elle::io::Pattern        Passport;
-
-    static elle::io::Pattern        Configuration;
-
-    static elle::io::Pattern      Phrase;
-
-    static elle::io::Pattern        Users;
-
-    struct                      User
-    {
-      static elle::io::Pattern      Root;
-      static elle::io::Pattern      Identity;
-      static elle::io::Pattern      Dictionary;
-    };
-
-    static elle::io::Pattern        Networks;
-
-    struct                      Network
-    {
-      static elle::io::Pattern      Root;
-      static elle::io::Pattern      Descriptor;
-      static elle::io::Pattern      Set;
-      static elle::io::Pattern      Phrase;
-
-      struct                    Shelter
-      {
-        static elle::io::Pattern    Root;
-      };
-    };
+    static elle::io::Pattern Home;
+    static elle::io::Pattern Authority;
+    static elle::io::Pattern Users;
+    static elle::io::Pattern User;
+    static elle::io::Pattern Identity;
+    static elle::io::Pattern Dictionary;
+    static elle::io::Pattern Passport;
+    static elle::io::Pattern Configuration;
+    static elle::io::Pattern Networks;
+    static elle::io::Pattern Network;
+    static elle::io::Pattern Descriptor;
+    static elle::io::Pattern Phrase;
+    static elle::io::Pattern Set;
+    static elle::io::Pattern Shelter;
   };
 
 }

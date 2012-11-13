@@ -3,9 +3,12 @@
 #include <Infinit.hh>
 
 #include <elle/utility/Parser.hh>
-#include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Unique.hh>
 #include <elle/concurrency/Program.hh>
+
+#include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <lune/Lune.hh>
 #include <lune/Dictionary.hh>
@@ -57,7 +60,7 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::cryptography::PublicKey       K;
+          cryptography::PublicKey       K;
 
           // restore the public key from the identifier.
           if (K.Restore(identifier) == elle::Status::Error)
@@ -190,14 +193,14 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          lune::Map<elle::cryptography::PublicKey>::Scoutor scoutor;
+          lune::Map<cryptography::PublicKey>::Scoutor scoutor;
 
           // go through the user dictionary.
           for (scoutor = dictionary.users.container.begin();
                scoutor != dictionary.users.container.end();
                scoutor++)
             {
-              lune::Map<elle::cryptography::PublicKey>::Entry* entry = *scoutor;
+              lune::Map<cryptography::PublicKey>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
                         // XXX << entry->value
@@ -268,7 +271,7 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::cryptography::PublicKey*      K;
+          cryptography::PublicKey*      K;
           elle::io::Unique          unique;
 
           // retrieve the entry.

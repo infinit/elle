@@ -20,12 +20,11 @@ namespace infinit
                elle::Passport const& passport,
                elle::Authority const& authority)
   {
-    lune::Descriptor descriptor(Infinit::Network);
+    lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
     lune::Set set;
-    if (lune::Set::exists(Infinit::Network) == true)
-      set.load(Infinit::Network);
-
+    if (lune::Set::exists(Infinit::User, Infinit::Network) == true)
+      set.load(Infinit::User, Infinit::Network);
 
     switch (descriptor.meta().model().type)
       {

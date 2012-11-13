@@ -1,8 +1,8 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HXX
 # define NUCLEUS_PROTON_CONTENTS_HXX
 
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/SecretKey.hh>
+# include <cryptography/Cipher.hh>
+# include <cryptography/SecretKey.hh>
 
 # include <nucleus/neutron/Data.hh>
 # include <nucleus/neutron/Catalog.hh>
@@ -66,7 +66,7 @@ namespace nucleus
 
     template <typename T>
     Contents<T>::Contents(Network const& network,
-                          elle::cryptography::PublicKey const& creator_K):
+                          cryptography::PublicKey const& creator_K):
       proton::ContentHashBlock(network, ContentsMap<T>::Component, creator_K),
 
       content(nullptr),
@@ -114,7 +114,7 @@ namespace nucleus
     /// and encrypts the archive.
     ///
     template <typename T>
-    elle::Status Contents<T>::Encrypt(elle::cryptography::SecretKey const& key)
+    elle::Status Contents<T>::Encrypt(cryptography::SecretKey const& key)
     {
       // if there is no block, this operation cannot be performed.
       if (this->content == nullptr)
@@ -125,7 +125,7 @@ namespace nucleus
       this->cipher = nullptr;
 
       // allocate a new cipher.
-      this->cipher = new elle::cryptography::Cipher;
+      this->cipher = new cryptography::Cipher;
 
       // encrypt the archive with the given secret key.
       if (key.Encrypt(*this->content, *cipher) == elle::Status::Error)
@@ -139,7 +139,7 @@ namespace nucleus
     /// given key, creating a new block.
     ///
     template <typename T>
-    elle::Status Contents<T>::Decrypt(elle::cryptography::SecretKey const& key)
+    elle::Status Contents<T>::Decrypt(cryptography::SecretKey const& key)
     {
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == nullptr)

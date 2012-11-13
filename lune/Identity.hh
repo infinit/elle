@@ -3,11 +3,14 @@
 
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/KeyPair.hh>
-# include <elle/cryptography/Signature.hh>
 # include <elle/fwd.hh>
 # include <elle/radix/Object.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/KeyPair.hh>
+# include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <lune/fwd.hh>
 
@@ -29,8 +32,6 @@ namespace lune
     public elle::concept::MakeUniquable<Identity>
   {
   public:
-    static const elle::String           Extension;
-
     //
     // enumerations
     //
@@ -51,7 +52,7 @@ namespace lune
     //
     elle::Status        Create(elle::String const&,
                                const elle::String&,
-                               elle::cryptography::KeyPair const&);
+                               cryptography::KeyPair const&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
@@ -98,10 +99,10 @@ namespace lune
     elle::String        _id;
   public: // XXX
     elle::String                      name;
-    elle::cryptography::KeyPair       pair;
-    elle::cryptography::Signature     signature;
+    cryptography::KeyPair       pair;
+    cryptography::Signature     signature;
 
-    elle::cryptography::Cipher*       cipher;
+    cryptography::Cipher*       cipher;
 
     ELLE_SERIALIZE_FRIEND_FOR(Identity);
   };

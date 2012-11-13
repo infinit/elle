@@ -85,7 +85,7 @@ namespace satellite
   {
     // Load the phrase.
     lune::Phrase phrase;
-    phrase.load(Infinit::Network, "portal");
+    phrase.load(Infinit::User, Infinit::Network, "portal");
 
     // Connect to the server.
     Transfer::socket =
@@ -125,8 +125,8 @@ namespace satellite
       Transfer::rpcs->accesslookup(directory, agent::Agent::Subject));
 
     // Check the record.
-    if ((record == nucleus::neutron::Record::Null) ||
-        ((record.permissions & nucleus::neutron::permissions::write) !=
+    if ((record == nucleus::neutron::Record::null()) ||
+        ((record.permissions() & nucleus::neutron::permissions::write) !=
          nucleus::neutron::permissions::write))
       throw std::runtime_error("the subject does not have the permission");
 
@@ -842,7 +842,8 @@ namespace satellite
       operation = Transfer::OperationTo;
 
     // FIXME: do not re-parse the descriptor every time.
-    Transfer::descriptor = new lune::Descriptor(Infinit::Network);
+    Transfer::descriptor =
+      new lune::Descriptor(Infinit::User, Infinit::Network);
 
     elle::String path;
 

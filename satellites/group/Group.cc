@@ -121,7 +121,7 @@ namespace satellite
     lune::Phrase phrase;
 
     // Load the phrase.
-    phrase.load(Infinit::Network, "portal");
+    phrase.load(Infinit::User, Infinit::Network, "portal");
 
     Group::socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
@@ -237,9 +237,6 @@ namespace satellite
   elle::Status          Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
   {
-    // FIXME: do not re-parse the descriptor every time.
-    lune::Descriptor descriptor(Infinit::Network);
-
     Group::Operation   operation;
 
     // XXX Infinit::Parser is not deleted in case of errors
@@ -426,13 +423,18 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
-    // Instanciate a Storage
-    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
-    hole::storage::Directory storage(shelter.string());
+    // FIXME: do not re-parse the descriptor every time.
+    lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
+    // Instanciate a Storage
+    elle::io::Path shelter_path(lune::Lune::Shelter);
+    shelter_path.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
+    hole::storage::Directory storage(shelter_path.string());
+
+    elle::io::Path passport_path(lune::Lune::Passport);
+    passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
     elle::Passport passport;
-    passport.load(elle::io::Path(lune::Lune::Passport));
+    passport.load(passport_path);
 
     std::unique_ptr<hole::Hole> hole(
       infinit::hole_factory(storage, passport, Infinit::authority()));

@@ -11,6 +11,7 @@
 #include <elle/io/Console.hh>
 #include <elle/io/Directory.hh>
 #include <elle/io/Piece.hh>
+#include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
@@ -122,9 +123,10 @@ namespace satellite
                                   identity.pair.K,
                                   "everybody");
 
-    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-    shelter.Complete(elle::io::Piece("%NETWORK%", name));
-    hole::storage::Directory storage(shelter.string());
+    elle::io::Path shelter_path(lune::Lune::Shelter);
+    shelter_path.Complete(elle::io::Piece{"%USER%", administrator},
+                          elle::io::Piece{"%NETWORK%", name});
+    hole::storage::Directory storage(shelter_path.string());
 
     group.seal(identity.pair.k);
 
@@ -143,7 +145,6 @@ namespace satellite
         {
           // Create an access block and add the 'everybody' group
           // to it.
-          nucleus::neutron::Record* record = new nucleus::neutron::Record;
           nucleus::neutron::Subject subject;
           nucleus::neutron::Permissions permissions;
 
@@ -182,11 +183,8 @@ namespace satellite
 
           // Note that a null token is provided because the root directory
           // contains no data.
-          if (record->Update(
-                subject,
-                permissions,
-                nucleus::neutron::Token::null()) == elle::Status::Error)
-            escape("unable to update the record");
+          nucleus::neutron::Record* record =
+            new nucleus::neutron::Record(subject, permissions);
 
           if (access.Add(record) == elle::Status::Error)
             escape("unable to add the record to the access");
@@ -255,18 +253,18 @@ namespace satellite
   ///
   /// this method destroys an existing network.
   ///
-  elle::Status          Network::Destroy(const elle::String&    name)
+  elle::Status          Network::Destroy(const elle::String& administrator,
+                                         const elle::String&    name)
   {
     //
     // remove the descriptor.
     //
     {
-      lune::Descriptor  descriptor(name);
       elle::io::Path        path;
 
       // does the network exist.
-      if (lune::Descriptor::exists(name) == true)
-        lune::Descriptor::erase(name);
+      if (lune::Descriptor::exists(administrator, name) == true)
+        lune::Descriptor::erase(administrator, name);
     }
 
     //
@@ -276,11 +274,12 @@ namespace satellite
       elle::io::Path        path;
 
       // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Root) == elle::Status::Error)
+      if (path.Create(lune::Lune::Shelter) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%USER%", administrator),
+                        elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // if the shelter exists, clear it and remove it.
@@ -303,11 +302,12 @@ namespace satellite
       elle::io::Path        path;
 
       // create the network path.
-      if (path.Create(lune::Lune::Network::Root) == elle::Status::Error)
+      if (path.Create(lune::Lune::Network) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%USER%", administrator),
+                        elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // clear the network directory content.
@@ -325,38 +325,26 @@ namespace satellite
   ///
   /// this method retrieves and displays information on the given network.
   ///
-  elle::Status          Network::Information(const elle::String& name)
+  elle::Status          Network::Information(const elle::String& administrator,
+                                             const elle::String& name)
   {
-    lune::Descriptor    descriptor(name);
-
     //
     // test the arguments.
     //
     {
       // does the network exist.
-      if (lune::Descriptor::exists(name) == false)
+      if (lune::Descriptor::exists(administrator, name) == false)
         escape("this network does not seem to exist");
     }
 
-    //
-    // retrieve the descriptor.
-    //
-    {
-      // load the descriptor.
-      descriptor.load(name);
+    lune::Descriptor descriptor(administrator, name);
 
-      // validate the descriptor.
-      descriptor.validate(Infinit::authority());
-    }
+    // validate the descriptor.
+    descriptor.validate(Infinit::authority());
 
-    //
-    // display information.
-    //
-    {
-      // dump the descriptor.
-      if (descriptor.Dump() == elle::Status::Error)
-        escape("unable to dump the descriptor");
-    }
+    // dump the descriptor.
+    if (descriptor.Dump() == elle::Status::Error)
+      escape("unable to dump the descriptor");
 
     return elle::Status::Ok;
   }
@@ -469,6 +457,18 @@ namespace satellite
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
+    if (Infinit::Parser->Example(
+          "-c -n test -m slug -a fistouille") == elle::Status::Error)
+      escape("unable to register the example");
+
+    if (Infinit::Parser->Example(
+          "-x -n test -a fistouille") == elle::Status::Error)
+      escape("unable to register the example");
+
+    if (Infinit::Parser->Example(
+          "-d -n test -a fistouille") == elle::Status::Error)
+      escape("unable to register the example");
+
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
@@ -556,14 +556,20 @@ namespace satellite
         }
       case Network::OperationDestroy:
         {
+          elle::String          administrator;
           elle::String          name;
+
+          // retrieve the administrator.
+          if (Infinit::Parser->Value("Administrator",
+                                     administrator) == elle::Status::Error)
+            escape("unable to retrieve the administrator value");
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // destroy the network.
-          if (Network::Destroy(name) == elle::Status::Error)
+          if (Network::Destroy(administrator, name) == elle::Status::Error)
             escape("unable to destroy the network");
 
           // display a message.
@@ -574,14 +580,20 @@ namespace satellite
         }
       case Network::OperationInformation:
         {
+          elle::String          administrator;
           elle::String          name;
+
+          // retrieve the administrator.
+          if (Infinit::Parser->Value("Administrator",
+                                     administrator) == elle::Status::Error)
+            escape("unable to retrieve the administrator value");
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // get information on the network.
-          if (Network::Information(name) == elle::Status::Error)
+          if (Network::Information(administrator, name) == elle::Status::Error)
             escape("unable to retrieve information on the network");
 
           break;

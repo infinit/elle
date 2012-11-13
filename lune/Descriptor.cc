@@ -7,7 +7,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/concurrency/Scheduler.hh>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 #include <elle/os/path.hh>
 #include <elle/log.hh>
 
@@ -22,11 +22,6 @@ namespace lune
 {
 
   ELLE_LOG_COMPONENT("infinit.lune.Descriptor");
-
-  ///
-  /// this string defines the descriptor files extension.
-  ///
-  const elle::String            Descriptor::Extension = ".dsc";
 
   ///
   /// this constant defines whether or not the history functionality
@@ -44,18 +39,19 @@ namespace lune
 // ---------- descriptor ------------------------------------------------------
 //
 
-  Descriptor::Descriptor(elle::String const& network)
+  Descriptor::Descriptor(elle::String const& user,
+                         elle::String const& network)
   {
     ELLE_TRACE("Creating descriptor of network %s in %s",
-               network, this->_path(network));
-    if (Descriptor::exists(network) == false)
+               network, this->_path(user, network));
+    if (Descriptor::exists(user, network) == false)
       throw elle::Exception("this network does not seem to exist");
-    this->load(this->_path(network));
+    this->load(this->_path(user, network));
     this->validate(Infinit::authority());
   }
 
   Descriptor::Descriptor(elle::String const& id,
-                         elle::cryptography::PublicKey const& administrator_K,
+                         cryptography::PublicKey const& administrator_K,
                          hole::Model const& model,
                          nucleus::proton::Address const& root,
                          nucleus::neutron::Group::Identity const& everybody,
@@ -73,7 +69,7 @@ namespace lune
   }
 
   void
-  Descriptor::seal(elle::cryptography::PrivateKey const& administrator_k)
+  Descriptor::seal(cryptography::PrivateKey const& administrator_k)
   {
     this->_data.seal(administrator_k);
   }
@@ -98,9 +94,11 @@ namespace lune
   }
 
   elle::io::Path
-  Descriptor::_path(elle::String const& network)
+  Descriptor::_path(elle::String const& user,
+                    elle::String const& network)
   {
-    return (elle::io::Path(Lune::Network::Descriptor,
+    return (elle::io::Path(Lune::Descriptor,
+                           elle::io::Piece("%USER%", user),
                            elle::io::Piece("%NETWORK%", network)));
   }
 
@@ -121,29 +119,32 @@ namespace lune
   }
 
   void
-  Descriptor::load(elle::String const& network)
+  Descriptor::load(elle::String const& user,
+                   elle::String const& network)
   {
-    this->load(Descriptor::_path(network));
+    this->load(Descriptor::_path(user, network));
   }
 
   void
-  Descriptor::store(elle::String const& network) const
+  Descriptor::store(elle::String const& user,
+                    elle::String const& network) const
   {
-    this->store(Descriptor::_path(network));
+    this->store(Descriptor::_path(user, network));
   }
 
   void
-  Descriptor::erase(elle::String const& network)
+  Descriptor::erase(elle::String const& user,
+                    elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Descriptor::_path(network));
+    elle::concept::Fileable<>::erase(Descriptor::_path(user, network));
   }
 
   elle::Boolean
-  Descriptor::exists(elle::String const& network)
+  Descriptor::exists(elle::String const& user,
+                     elle::String const& network)
   {
     return elle::os::path::exists(
-        Descriptor::_path(network).string()
-    );
+      Descriptor::_path(user, network).string());
   }
 
 //
@@ -156,7 +157,7 @@ namespace lune
   }
 
   Descriptor::Meta::Meta(elle::String const& id,
-                         elle::cryptography::PublicKey const& administrator_K,
+                         cryptography::PublicKey const& administrator_K,
                          hole::Model const& model,
                          nucleus::proton::Address const& root,
                          nucleus::neutron::Group::Identity const& everybody,
@@ -220,7 +221,7 @@ namespace lune
     this->_id = id;
   }
 
-  elle::cryptography::PublicKey const&
+  cryptography::PublicKey const&
   Descriptor::Meta::administrator_K() const
   {
     return (this->_administrator_K);
@@ -342,7 +343,7 @@ namespace lune
   }
 
   void
-  Descriptor::Data::seal(elle::cryptography::PrivateKey const& administrator_k)
+  Descriptor::Data::seal(cryptography::PrivateKey const& administrator_k)
   {
     this->_signature =
       administrator_k.sign(
@@ -374,7 +375,7 @@ namespace lune
 
   void
   Descriptor::Data::validate(
-    elle::cryptography::PublicKey const& administrator_K) const
+    cryptography::PublicKey const& administrator_K) const
   {
     if (administrator_K.Verify(
           this->_signature,

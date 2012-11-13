@@ -6,9 +6,9 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Author.hh>
 
-#include <elle/cryptography/Digest.hh>
+#include <cryptography/Digest.hh>
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -57,7 +57,7 @@ namespace nucleus
     /// part by setting the owner as the author.
     ///
     Object::Object(proton::Network const& network,
-                   elle::cryptography::PublicKey const& owner_K,
+                   cryptography::PublicKey const& owner_K,
                    Genre const genre):
       proton::ImprintBlock(network, ComponentObject, owner_K),
 
@@ -187,11 +187,10 @@ namespace nucleus
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
-      if (this->_meta.owner.record->Update(
-            this->owner_subject(),
-            this->_meta.owner.permissions,
-            this->_meta.owner.token) == elle::Status::Error)
-        escape("unable to create the owner access record");
+      delete this->_meta.owner.record;
+      this->_meta.owner.record = new Record(this->owner_subject(),
+                                            this->_meta.owner.permissions,
+                                            this->_meta.owner.token);
 
       // set the the block as dirty.
       this->state(proton::StateDirty);
@@ -202,7 +201,7 @@ namespace nucleus
     ///
     /// this method seals the data and meta data by signing them.
     ///
-    elle::Status        Object::Seal(elle::cryptography::PrivateKey const&    k,
+    elle::Status        Object::Seal(cryptography::PrivateKey const&    k,
                                      Access const* access)
     {
       // re-sign the data if required.
@@ -244,7 +243,6 @@ namespace nucleus
               // access records is computed which is then included in
               // the meta signature.
               //
-              elle::cryptography::Digest      fingerprint;
 
               // test if there is an access block.
               if (access == nullptr)
@@ -253,8 +251,7 @@ namespace nucleus
 
               // compute the fingerprint of the access (subject, permissions)
               // tuples.
-              if (access->Fingerprint(fingerprint) == elle::Status::Error)
-                escape("unable to compute the access block fingerprint");
+              cryptography::Digest fingerprint(access->fingerprint());
 
               // sign the meta data, making sure to include the access
               // fingerprint.
@@ -424,7 +421,7 @@ namespace nucleus
       /// (v) verifies the data signature and (vi) verify that the mutable
       /// block's general revision number matches the object's revisions.
 
-      elle::cryptography::PublicKey author;
+      cryptography::PublicKey author;
 
       // (i)
       {
@@ -436,8 +433,6 @@ namespace nucleus
       {
         if (this->_meta.access != proton::Address::null())
           {
-            elle::cryptography::Digest        fingerprint;
-
             // test if there is an access block.
             if (access == nullptr)
               throw Exception("the Validate() method must take the object's "
@@ -445,8 +440,7 @@ namespace nucleus
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
-            if (access->Fingerprint(fingerprint) == elle::Status::Error)
-              throw Exception("unable to compute the access block fingerprint");
+            cryptography::Digest fingerprint(access->fingerprint());
 
             // verify the meta part, including the access fingerprint.
             if (this->owner_K().Verify(
@@ -523,20 +517,20 @@ namespace nucleus
                 throw Exception("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
-              if ((record->permissions & permissions::write) !=
+              if ((record->permissions() & permissions::write) !=
                   permissions::write)
                 throw Exception("the object's author does not seem to have had "
                                 "the permission to modify this object");
 
               // check that the subject is indeed a user.
-              if (record->subject.type() != Subject::TypeUser)
+              if (record->subject().type() != Subject::TypeUser)
                 throw Exception("the author references an access record which "
                                 "is not related to a user");
 
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = record->subject.user();
+              author = record->subject().user();
 
               break;
             }

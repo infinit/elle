@@ -18,8 +18,6 @@ namespace lune
     //
     // constants
     //
-    static const elle::String                   Extension;
-
     struct                                      Default
     {
       struct                                    Etoile
@@ -85,7 +83,7 @@ namespace lune
     /// XXX
     static
     elle::io::Path
-    _path();
+    _path(elle::String const& user);
 
     //
     // interfaces
@@ -104,15 +102,15 @@ namespace lune
     using Settings::exists;
 
     void
-    load();
+    load(elle::String const& user);
     void
-    store() const;
+    store(elle::String const& user) const;
     static
     void
-    erase();
+    erase(elle::String const& user);
     static
     elle::Boolean
-    exists();
+    exists(elle::String const& user);
 
     //
     // attributes

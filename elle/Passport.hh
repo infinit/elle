@@ -3,10 +3,14 @@
 
 # include <lune/fwd.hh>
 # include <elle/Authority.hh>
-# include <elle/radix/Object.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
-# include <elle/cryptography/Signature.hh>
+
+# include <cryptography/Signature.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <hole/Label.hh>
 
 # include <elle/idiom/Open.hh>
@@ -21,17 +25,21 @@ namespace elle
   /// block's replica for instance.
   ///
   class Passport:
-    public elle::radix::Object,
     public elle::concept::MakeFileable<Passport>,
     public elle::concept::MakeUniquable<Passport>
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
+  public:
+    Passport(); // XXX[to deserialize]
+    Passport(hole::Label const& label,
+             elle::String const& id);
+
   public:
     //
     // methods
     //
-    elle::Status        Create(const hole::Label& label,
-                               const elle::String& id);
-
     elle::Status        Seal(elle::Authority const&);
     elle::Status        Validate(elle::Authority const&) const;
 
@@ -39,8 +47,6 @@ namespace elle
     // interfaces
     //
   public:
-    declare(Passport);
-
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
@@ -55,7 +61,7 @@ namespace elle
     // XXX[temporary: mongodb id]
     elle::String        id;
 
-    elle::cryptography::Signature     signature;
+    cryptography::Signature     signature;
   };
 
 }

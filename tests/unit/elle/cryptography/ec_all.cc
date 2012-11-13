@@ -1,31 +1,33 @@
-#include <iostream>
-
 #include <elle/types.hh>
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/Random.hh>
-#include <elle/cryptography/SecretKey.hh>
-#include <elle/cryptography/Cipher.hh>
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Signature.hh>
+#include <elle/Buffer.hh>
 
-#include <elle/idiom/Open.hh>
+#include <cryptography/PrivateKey.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/KeyPair.hh>
+#include <cryptography/random.hh>
+#include <cryptography/SecretKey.hh>
+#include <cryptography/Cipher.hh>
+#include <cryptography/Plain.hh>
+#include <cryptography/Code.hh>
+#include <cryptography/Clear.hh>
+#include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
+#include <iostream>
 
 #define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 void test_encryption()
 {
-  elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(2048));
-  elle::cryptography::PublicKey K;
-  elle::cryptography::PrivateKey k;
-  elle::cryptography::Code code;
-  elle::cryptography::Clear clear;
+  cryptography::KeyPair kp{cryptography::KeyPair::generate(2048)};
+  cryptography::PublicKey K;
+  cryptography::PrivateKey k;
+  cryptography::Code code;
+  cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
@@ -39,14 +41,14 @@ void test_encryption()
 
 void test_noitpyrcne()
 {
-  elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(4096));
-  elle::cryptography::PublicKey K;
-  elle::cryptography::PrivateKey k;
-  elle::cryptography::Code code;
-  elle::cryptography::Clear clear;
+  cryptography::KeyPair kp{cryptography::KeyPair::generate(4096)};
+  cryptography::PublicKey K;
+  cryptography::PrivateKey k;
+  cryptography::Code code;
+  cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
@@ -60,13 +62,13 @@ void test_noitpyrcne()
 
 void test_signature()
 {
-  elle::cryptography::Plain plain;
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate(1024));
-  elle::cryptography::PublicKey K;
-  elle::cryptography::PrivateKey k;
-  elle::cryptography::Signature signature;
+  cryptography::KeyPair kp{cryptography::KeyPair::generate(1024)};
+  cryptography::PublicKey K;
+  cryptography::PrivateKey k;
+  cryptography::Signature signature;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   K = kp.K;
   k = kp.k;
@@ -78,12 +80,12 @@ void test_signature()
 
 void test_cipher()
 {
-  elle::cryptography::Plain plain;
-  elle::cryptography::SecretKey secret;
-  elle::cryptography::Cipher cipher;
-  elle::cryptography::Clear clear;
+  cryptography::SecretKey secret;
+  cryptography::Cipher cipher;
+  cryptography::Clear clear;
 
-  CHECK(elle::cryptography::Random::Generate(plain, 512));
+  elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
   CHECK(secret.Generate(256));
 
@@ -107,7 +109,7 @@ void test_rotation()
                 PublicKey       K;
 
                 // generate the initial seed.
-                if (seed.Generate() == Status::Error)
+                if (seed.generate() == Status::Error)
                   escape("unable to generate the seed");
 
                 // rotate the key pair once in order to be truly random
@@ -116,7 +118,7 @@ void test_rotation()
                   escape("unable to rotate the initial key pair");
 
                 // generate a random number of rotations to apply.
-                rotations = Random::Generate(Test::MinimumKeyRotations,
+                rotations = random::generate(Test::MinimumKeyRotations,
                                              Test::MaximumKeyRotations);
 
                 // assign the current seed and key pair.

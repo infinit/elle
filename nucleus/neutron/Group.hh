@@ -3,9 +3,12 @@
 
 # include <elle/types.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/Signature.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/PublicKey.hh>
+# include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Address.hh>
@@ -99,7 +102,7 @@ namespace nucleus
       ELLE_SERIALIZE_CONSTRUCT(Group, ImprintBlock)
       {}
       Group(proton::Network const& network,
-            elle::cryptography::PublicKey const& manager_K,
+            cryptography::PublicKey const& manager_K,
             elle::String const& description);
       ~Group();
 
@@ -112,7 +115,7 @@ namespace nucleus
       /// pass with the given one.
       void
       upgrade(proton::Address const& ensemble,
-              elle::cryptography::PublicKey const& pass_K,
+              cryptography::PublicKey const& pass_K,
               Token const& manager_token);
       /// Indicates that the group no longer references an Ensemble
       /// block. The pass is therefore no longer used.
@@ -121,9 +124,9 @@ namespace nucleus
       /// Seals the block by signing its content with the given manager's
       /// private key.
       void
-      seal(elle::cryptography::PrivateKey const& manager_k);
+      seal(cryptography::PrivateKey const& manager_k);
       /// Returns the public key of the group manager.
-      elle::cryptography::PublicKey const&
+      cryptography::PublicKey const&
       manager_K() const;
       /// Returns the subject associated with the group manager.
       Subject const&
@@ -153,12 +156,12 @@ namespace nucleus
       //
     private:
       ELLE_ATTRIBUTE_R(elle::String, description);
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, pass_K);
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, pass_K);
       ELLE_ATTRIBUTE_RW(Size, size);
       ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
       ELLE_ATTRIBUTE_R(proton::Address, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
-      ELLE_ATTRIBUTE(elle::cryptography::Signature, signature);
+      ELLE_ATTRIBUTE(cryptography::Signature, signature);
       // XXX[not serialized]
       ELLE_ATTRIBUTE(Fellow*, manager_fellow);
     };

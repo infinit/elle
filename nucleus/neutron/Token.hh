@@ -5,8 +5,11 @@
 # include <elle/operator.hh>
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Code.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/Code.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace nucleus
 {
@@ -46,7 +49,7 @@ namespace nucleus
       Token();
       template <typename T>
       Token(T const& secret,
-            elle::cryptography::PublicKey const& K);
+            cryptography::PublicKey const& K);
       Token(Token const& other);
       ~Token();
     private:
@@ -60,7 +63,7 @@ namespace nucleus
       /// the code with the given private key which only the user has.
       template <typename T>
       T
-      extract(elle::cryptography::PrivateKey const& k) const;
+      extract(cryptography::PrivateKey const& k) const;
 
       /*----------.
       | Operators |
@@ -69,7 +72,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Token const& other) const;
       ELLE_OPERATOR_NEQ(Token);
-      ELLE_OPERATOR_ASSIGNMENT(Token);
+      ELLE_OPERATOR_ASSIGNMENT(Token); // XXX
 
       /*-----------.
       | Interfaces |
@@ -94,7 +97,7 @@ namespace nucleus
         // construction
       public:
         Valid();
-        Valid(elle::cryptography::Code const& code);
+        Valid(cryptography::Code const& code);
 
       public:
         // serializable
@@ -102,7 +105,7 @@ namespace nucleus
 
         // attributes
       private:
-        ELLE_ATTRIBUTE_R(elle::cryptography::Code, code);
+        ELLE_ATTRIBUTE_R(cryptography::Code, code);
       };
 
       /*-----------.

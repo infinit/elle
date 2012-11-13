@@ -1,9 +1,6 @@
 #ifndef NUCLEUS_PROTON_FWD_HH
 # define NUCLEUS_PROTON_FWD_HH
 
-# include <nucleus/proton/Family.hh>
-# include <nucleus/proton/State.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -30,5 +27,8 @@ namespace nucleus
 
   }
 }
+
+# include <nucleus/proton/Family.hh>
+# include <nucleus/proton/State.hh>
 
 #endif

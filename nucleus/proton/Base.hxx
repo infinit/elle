@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_BASE_HXX
 
 # include <elle/serialize/Serializer.hh>
-# include <elle/cryptography/Digest.hh>
+# include <cryptography/Digest.hh>
 # include <nucleus/proton/Revision.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,

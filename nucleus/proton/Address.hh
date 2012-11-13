@@ -1,10 +1,14 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
 # define NUCLEUS_PROTON_ADDRESS_HH
 
-# include <elle/cryptography/Digest.hh>
+# include <elle/Printable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/construct.hh>
-# include <elle/Printable.hh>
+
+# include <cryptography/Digest.hh>
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/Network.hh>
@@ -38,6 +42,15 @@ namespace nucleus
       public elle::Printable,
       public elle::concept::MakeUniquable<Address>
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const cryptography::oneway::Algorithm oneway;
+      };
+
       /*---------------.
       | Static Methods |
       `---------------*/
@@ -111,7 +124,7 @@ namespace nucleus
       ELLE_OPERATOR_NEQ(Address);
       ELLE_OPERATOR_GT(Address);
       ELLE_OPERATOR_GTE(Address);
-      ELLE_OPERATOR_ASSIGNMENT(Address);
+      ELLE_OPERATOR_ASSIGNMENT(Address); // XXX
 
       /*-----------.
       | Interfaces |
@@ -139,8 +152,7 @@ namespace nucleus
         Valid(Network const& network,
               Family const& family,
               neutron::Component const& component,
-              elle::cryptography::Digest* digest);
-        ~Valid();
+              cryptography::Digest const& digest);
 
       public:
         // serializable
@@ -151,8 +163,7 @@ namespace nucleus
         ELLE_ATTRIBUTE_R(Network, network);
         ELLE_ATTRIBUTE_R(Family, family);
         ELLE_ATTRIBUTE_R(neutron::Component, component);
-        // XXX[_R only later for this attribute]
-        ELLE_ATTRIBUTE_RW(elle::cryptography::Digest*, digest);
+        ELLE_ATTRIBUTE_R(cryptography::Digest, digest);
       };
 
       /*-----------.

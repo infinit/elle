@@ -32,6 +32,12 @@ namespace etoile
     ///
     class Portal
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      static elle::Natural32 const pass_length = 128;
+
     public:
       //
       // types

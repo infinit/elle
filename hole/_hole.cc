@@ -12,8 +12,9 @@
 #include <hole/Hole.hh>
 #include <hole/storage/Directory.hh>
 
-#include <horizon/Horizon.hh>
-
+#ifdef INFINIT_HORIZON
+# include <horizon/Horizon.hh>
+#endif
 #include <HoleFactory.hh>
 
 namespace hole
@@ -94,17 +95,22 @@ namespace hole
       }
 
     // initialize the Hole library.
-    elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-    shelter.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
-    hole::storage::Directory storage(shelter.string());
+    elle::io::Path shelter_path(lune::Lune::Shelter);
+    shelter_path.Complete(elle::io::Piece("%USERK%", Infinit::User),
+                          elle::io::Piece("%NETWORK%", Infinit::Network));
+    hole::storage::Directory storage(shelter_path.string());
 
+    elle::io::Path passport_path(lune::Lune::Passport);
+    passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
     elle::Passport passport;
-    passport.load(elle::io::Path(lune::Lune::Passport));
+    passport.load(passport_path);
 
     std::unique_ptr<hole::Hole> hole(
       infinit::hole_factory(storage, passport, Infinit::authority()));
     etoile::depot::hole(hole.get());
+#ifdef INFINIT_HORIZON
     horizon::hole(hole.get());
+#endif
     hole->join();
 
     // launch the program.

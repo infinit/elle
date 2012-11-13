@@ -52,14 +52,16 @@ add_definitions(-DBOOST_PP_VARIADICS)
 
 # - Components configuration --------------------------------------------------
 
-add_definitions(-DINFINIT_HORIZON)
-
 message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
 # - Build type ----------------------------------------------------------------
 #
 # Handle cmake build type changes and set BUILD_TYPE_CHANGED when appropriate.
 #
+
+if(NOT DISABLE_HORIZON)
+   add_definitions(-DINFINIT_HORIZON)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "Build type" FORCE)
@@ -78,10 +80,6 @@ if(BUILD_TYPE AND NOT(BUILD_TYPE STREQUAL CMAKE_BUILD_TYPE))
 else()
 	set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 	set(BUILD_TYPE_CHANGED FALSE)
-endif()
-
-if(${BUILD_TYPE} STREQUAL "DEBUG")
-    set(INFINIT_DEBUG)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -207,7 +205,7 @@ add_custom_command(
 # - Dependencies --------------------------------------------------------------
 
 ## Loading boost
-set(Boost_USE_STATIC_LIBS ON) # XXX[required for boost_filesystem to work :(]
+set(Boost_USE_STATIC_LIBS ${USE_STATIC_LIBS})
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost
@@ -225,17 +223,24 @@ set(QT_DONT_USE_QTGUI true)
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
+# XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(common)
+add_subdirectory(cryptography)
 add_subdirectory(nucleus)
 add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
-add_subdirectory(horizon)
+if(NOT DISABLE_HORIZON)
+  add_subdirectory(horizon)
+  # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
+  set(HORIZON_LIB horizon ${INFINIT_PLATFORM_NO_ARCH} horizon)
+endif()
 add_subdirectory(hole)
 
 add_library(infinit ${LINK_METHOD}
@@ -256,9 +261,7 @@ set(INFINIT_LIBRARIES
 
   hole
   nucleus
-  horizon
-  ${INFINIT_PLATFORM_NO_ARCH}
-  horizon  # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
+  ${HORIZON_LIB}
   etoile
   nucleus # circular dependency with etoile
 
@@ -268,6 +271,7 @@ set(INFINIT_LIBRARIES
   protocol
   infinit
   hole
+  cryptography
   elle
   comet
 

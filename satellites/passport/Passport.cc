@@ -2,10 +2,15 @@
 
 #include <Infinit.hh>
 
-#include <elle/cryptography/Random.hh>
 #include <elle/io/Console.hh>
+#include <elle/io/Path.hh>
+#include <elle/io/Piece.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+
+#include <cryptography/random.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <etoile/Etoile.hh>
 
@@ -24,10 +29,8 @@ namespace satellite
   ///
   /// this method creates a new passport.
   ///
-  elle::Status          Passport::Create()
+  elle::Status          Passport::Create(elle::String const& user)
   {
-    elle::Passport      passport;
-
     //
     // test the arguments.
     //
@@ -62,32 +65,29 @@ namespace satellite
     // create the passport.
     //
     {
-      hole::Label               label;
-      elle::standalone::Region              region;
-      elle::String              id;
+      elle::Natural32 const id_length = 128;
+      elle::Natural32 const buffer_size = 512;
 
-      // generate a random string.
-      if (elle::cryptography::Random::Generate(id) == elle::Status::Error)
-        escape("unable to generate a random string");
-
-      // generate a random region.
-      if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
-        escape("unable to generate a random region");
+      elle::String id(
+        cryptography::random::generate<elle::String>(id_length));
+      elle::Buffer buffer(
+        cryptography::random::generate<elle::Buffer>(buffer_size));
 
       // create a label.
-      if (label.Create(region) == elle::Status::Error)
-        escape("unable to create a label");
+      hole::Label label(buffer);
 
       // create the passport.
-      if (passport.Create(label, id) == elle::Status::Error)
-        escape("unable to create the passport");
+      elle::Passport passport(label, id);
 
       // seal the passport.
       if (passport.Seal(authority) == elle::Status::Error)
         escape("unable to seal the passport");
 
+      elle::io::Path passport_path(lune::Lune::Passport);
+      passport_path.Complete(elle::io::Piece{"%USER%", user});
+
       // store the passport.
-      passport.store(elle::io::Path(lune::Lune::Passport));
+      passport.store(passport_path);
     }
 
     return elle::Status::Ok;
@@ -96,13 +96,14 @@ namespace satellite
   ///
   /// this method destroys the existing passport.
   ///
-  elle::Status          Passport::Destroy()
+  elle::Status          Passport::Destroy(elle::String const& user)
   {
-    elle::Passport      passport;
+    elle::io::Path passport_path(lune::Lune::Passport);
+    passport_path.Complete(elle::io::Piece{"%USER%", user});
 
     // does the passport exist.
-    if (elle::Passport::exists(elle::io::Path(lune::Lune::Passport)) == true)
-      elle::Passport::erase(elle::io::Path(lune::Lune::Passport));
+    if (elle::Passport::exists(passport_path) == true)
+      elle::Passport::erase(passport_path);
 
     return elle::Status::Ok;
   }
@@ -110,25 +111,28 @@ namespace satellite
   ///
   /// this method retrieves and displays information on the passport.
   ///
-  elle::Status          Passport::Information()
+  elle::Status          Passport::Information(elle::String const& user)
   {
-    elle::Passport      passport;
+    elle::io::Path passport_path(lune::Lune::Passport);
+    passport_path.Complete(elle::io::Piece{"%USER%", user});
 
     //
     // test the arguments.
     //
     {
       // does the passport exist.
-      if (elle::Passport::exists(elle::io::Path(lune::Lune::Passport)) == false)
+      if (elle::Passport::exists(passport_path) == false)
         escape("this passport does not seem to exist");
     }
+
+    elle::Passport      passport;
 
     //
     // retrieve the passport.
     //
     {
       // load the passport.
-      passport.load(elle::io::Path(lune::Lune::Passport));
+      passport.load(passport_path);
 
       // validate the passport.
       if (passport.Validate(Infinit::authority()) == elle::Status::Error)
@@ -223,9 +227,28 @@ namespace satellite
           elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
+    // register the option.
+    if (Infinit::Parser->Register(
+          "User",
+          'u',
+          "user",
+          "specifies the name of the user",
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
+      escape("unable to register the option");
+
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
+
+    // retrieve the user name.
+    if (Infinit::Parser->Value("User",
+                               Infinit::User) == elle::Status::Error)
+      {
+        // display the usage.
+        Infinit::Parser->Usage();
+
+        escape("unable to retrieve the user name");
+      }
 
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::Status::True)
@@ -267,7 +290,7 @@ namespace satellite
       case Passport::OperationCreate:
         {
           // create the passport.
-          if (Passport::Create() == elle::Status::Error)
+          if (Passport::Create(Infinit::User) == elle::Status::Error)
             escape("unable to create the passport");
 
           // display a message.
@@ -279,7 +302,7 @@ namespace satellite
       case Passport::OperationDestroy:
         {
           // destroy the passport.
-          if (Passport::Destroy() == elle::Status::Error)
+          if (Passport::Destroy(Infinit::User) == elle::Status::Error)
             escape("unable to destroy the passport");
 
           // display a message.
@@ -291,7 +314,7 @@ namespace satellite
       case Passport::OperationInformation:
         {
           // get information on the passport.
-          if (Passport::Information() == elle::Status::Error)
+          if (Passport::Information(Infinit::User) == elle::Status::Error)
             escape("unable to retrieve information on the passport");
 
           break;

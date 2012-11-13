@@ -4,9 +4,9 @@
 # include <cassert>
 
 # include <elle/serialize/Pointer.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/Signature.hh>
-# include <elle/cryptography/KeyPair.hh>
+# include <cryptography/Cipher.hh>
+# include <cryptography/Signature.hh>
+# include <cryptography/KeyPair.hh>
 
 ELLE_SERIALIZE_SIMPLE(lune::Identity,
                       archive,

@@ -1,14 +1,16 @@
-#include <iostream>
-
 #include <elle/print.hh>
-#include <elle/cryptography/KeyPair.hh>
+#include <elle/idiom/Open.hh>
+#include <elle/log.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 #include <nucleus/neutron/Fellow.hh>
 
-#include <elle/idiom/Open.hh>
-#include <elle/log.hh>
+#include <iostream>
 
 #define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
@@ -16,26 +18,27 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
 void test()
 {
-  elle::cryptography::KeyPair owner(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair owner(cryptography::KeyPair::generate());
 
   nucleus::proton::Network network("test");
 
   nucleus::neutron::Group group(network, owner.K, "everybody");
 
-  elle::cryptography::KeyPair pass(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair pass(cryptography::KeyPair::generate());
 
   nucleus::neutron::Ensemble ensemble(network, owner.K);
 
   ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
       {
-        elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
+        cryptography::KeyPair kp(cryptography::KeyPair::generate());
 
         nucleus::neutron::Subject subject(kp.K);
 
         ensemble.add(
           std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-            new nucleus::neutron::Fellow(subject))));
+                      new nucleus::neutron::Fellow(
+                        subject, nucleus::neutron::Token::null()))));
 
         assert(group.state() == nucleus::proton::StateDirty);
       }

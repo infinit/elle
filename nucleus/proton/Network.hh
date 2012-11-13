@@ -34,7 +34,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Network const& other) const;
       ELLE_OPERATOR_NEQ(Network);
-      ELLE_OPERATOR_ASSIGNMENT(Network);
+      ELLE_OPERATOR_ASSIGNMENT(Network); // XXX
 
       //
       // interfaces

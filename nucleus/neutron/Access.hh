@@ -5,6 +5,10 @@
 # include <elle/operator.hh>
 # include <elle/serialize/Serializable.hh>
 
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/ContentHashBlock.hh>
 
 # include <nucleus/neutron/fwd.hh>
@@ -24,6 +28,15 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Access>,
       public elle::concept::MakeUniquable<Access>
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const cryptography::oneway::Algorithm oneway;
+      };
+
       //
       // constants
       //
@@ -38,7 +51,7 @@ namespace nucleus
       ELLE_SERIALIZE_CONSTRUCT(Access, ContentHashBlock)
       {}
       Access(proton::Network const& network,
-             elle::cryptography::PublicKey const& creator_K);
+             cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -60,7 +73,7 @@ namespace nucleus
       Update(Subject const& subject,
              Permissions permissions,
              T const& secret,
-             elle::cryptography::PublicKey const& K);
+             cryptography::PublicKey const& K);
       /// XXX
       elle::Status
       Update(Subject const& subject,
@@ -71,7 +84,11 @@ namespace nucleus
                                 Range<Record>&) const;
       elle::Status      Remove(const Subject&);
       elle::Status      Capacity(Size&) const;
-      elle::Status      Fingerprint(elle::cryptography::Digest&) const;
+
+      /// Computes a fingerprint of the (subject, permissions) tuples
+      /// composing the access block.
+      cryptography::Digest
+      fingerprint() const;
 
       //
       // operators

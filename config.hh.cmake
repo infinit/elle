@@ -11,6 +11,4 @@
 #  define HAVE_STATFS
 # endif
 
-#cmakedefine INFINIT_DEBUG
-
 #endif

@@ -46,19 +46,6 @@ add_library(elle ${LINK_METHOD}
   concurrency/Program.cc
   concurrency/Scheduler.cc
 
-  cryptography/Cipher.cc
-  cryptography/Code.cc
-  cryptography/cryptography.cc
-  cryptography/Digest.cc
-  cryptography/KeyPair.cc
-  cryptography/OneWay.cc
-  cryptography/PrivateKey.cc
-  cryptography/PublicKey.cc
-  cryptography/Random.cc
-  cryptography/SecretKey.cc
-  cryptography/Seed.cc
-  cryptography/Signature.cc
-
   network/Host.cc
   network/Interface.cc
   network/Locus.cc

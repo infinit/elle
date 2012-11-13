@@ -4,6 +4,10 @@
 # include <elle/types.hh>
 # include <elle/Printable.hh>
 
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImmutableBlock.hh>
 # include <nucleus/neutron/Component.hh>
@@ -31,7 +35,7 @@ namespace nucleus
       ELLE_SERIALIZE_CONSTRUCT(ContentHashBlock, ImmutableBlock) {}
       ContentHashBlock(Network const& network,
                        neutron::Component const component,
-                       elle::cryptography::PublicKey const& creator_K);
+                       cryptography::PublicKey const& creator_K);
 
       /*-----------.
       | Interfaces |

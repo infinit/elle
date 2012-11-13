@@ -71,7 +71,7 @@
 /*--------.
 | Macros |
 `--------*/
-# define MODULE_STRINGIFY(_variable_)                                   \
+# define PACKAGE_MODULE_STRINGIFY(_variable_)                           \
   #_variable_
 
 /*
@@ -101,13 +101,11 @@ namespace package
 // ---------- CodingStandard --------------------------------------------------
 //
 
-    ///
     /// The general documentation about the class purpose should be provided
     /// here.
     ///
     /// Note that every class must be named following the upper CamelCase
     /// naming convention i.e starting with an uppercase letter.
-    ///
     class CodingStandard:
       /*
        * Every class deriving others must end with a colon while the derived
@@ -226,6 +224,13 @@ namespace package
       `-------------*/
     public:
       CodingStandard();
+      /*
+       * Note that explicit constructors must be used as much as possible,
+       * especially for the one-argument constructors in order to prevent
+       * unfortunate behaviours.
+       */
+      explicit
+      CodingStandard(elle::Natural32 size);
       ~CodingStandard();
 
       /*

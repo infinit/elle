@@ -2,6 +2,9 @@
 
 #include <elle/utility/Settings.hh>
 
+#include <elle/io/Path.hh>
+#include <elle/io/Piece.hh>
+
 #include <lune/Lune.hh>
 
 namespace lune
@@ -10,11 +13,6 @@ namespace lune
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-  ///
-  /// this string defines the configuration files extension.
-  ///
-  const elle::String    Configuration::Extension = ".conf";
 
   ///
   /// etoile-specific configuration values.
@@ -179,9 +177,10 @@ namespace lune
   }
 
   elle::io::Path
-  Configuration::_path()
+  Configuration::_path(elle::String const& user)
   {
-    return (elle::io::Path(Lune::Configuration));
+    return (elle::io::Path(Lune::Configuration,
+                           elle::io::Piece("%USER%", user)));
   }
 
 //
@@ -212,27 +211,27 @@ namespace lune
 //
 
   void
-  Configuration::load()
+  Configuration::load(elle::String const& user)
   {
-    this->load(Configuration::_path());
+    this->load(Configuration::_path(user));
   }
 
   void
-  Configuration::store() const
+  Configuration::store(elle::String const& user) const
   {
-    this->store(Configuration::_path());
+    this->store(Configuration::_path(user));
   }
 
   void
-  Configuration::erase()
+  Configuration::erase(elle::String const& user)
   {
-    elle::concept::Fileable<>::erase(Configuration::_path());
+    elle::concept::Fileable<>::erase(Configuration::_path(user));
   }
 
   elle::Boolean
-  Configuration::exists()
+  Configuration::exists(elle::String const& user)
   {
-    return (elle::concept::Fileable<>::exists(Configuration::_path()));
+    return (elle::concept::Fileable<>::exists(Configuration::_path(user)));
   }
 
 }

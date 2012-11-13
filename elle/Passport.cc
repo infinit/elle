@@ -2,31 +2,33 @@
 
 #include <elle/io/File.hh>
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/cryptography/PrivateKey.hh>
-
 #include <elle/Passport.hh>
 #include <lune/Lune.hh>
 #include <elle/Authority.hh>
 
+#include <cryptography/PrivateKey.hh>
+
 namespace elle
 {
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+
+  Passport::Passport()
+  {
+  }
+
+  Passport::Passport(hole::Label const& label,
+                     elle::String const& id):
+    label(label),
+    id(id)
+  {
+  }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-  ///
-  /// this method creates a passport.
-  ///
-  elle::Status          Passport::Create(const hole::Label&     label,
-                                         const elle::String&    id)
-  {
-    // set the attributes.
-    this->label = label;
-    this->id = id;
-
-    return elle::Status::Ok;
-  }
 
   ///
   /// this method seals the passport with the authority.
@@ -56,15 +58,6 @@ namespace elle
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Passport, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

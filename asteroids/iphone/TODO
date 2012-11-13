@@ -1,0 +1,42 @@
+What has been done :
+- API interactions
+    * Register
+    * Login with remember user option
+    * Get networks names
+    * errors
+- File explorer
+- File read
+- File add (with custom naming)
+    * Folder
+    * Choose from photo roll
+    * Take picture with camera (.jpg)
+    * Download file with copy/paste of the url (percentage growing when DLing)
+- iCloud backup disabled
+- Custom swipe to reveal menu
+    * Email file
+    * Delete file
+- Options menu is ready (only logout button for now)
+- Notification system (used only for "No network connection")
+- Header pull to refresh
+- Search files
+- Edit menu when long pressing a cell (navigate and select files then) :
+    * Move
+    * Copy (both in currently viewed directory)
+- When user changes, local files are deleted (warning and confirm)
+
+
+What needs to be done :
+- Full Connection / Deconnection detection (when trying to get files for example)
+- Get files from other infinit nodes
+- Implement pin/unpin (= delete from ios local files but not from network)
+- Invite people to join networks using iOS contacts address book
+- Localization (FR, Chinese, Klingon, ...)
+- Make some of the PNG hi-res for retina display (like swipe to reveal buttons for ex)
+- Fill network info window
+
+What is worth thinking :
+- Footer pull to load more is disabled (the idea was to list files by 100 batch but that may not be a critical need)
+- Sort/Filter
+- Download percentage (maybe not clear enough ?)
+- Photo flow (take mutliple pictures without being asked for file names)
+- Add Options ?

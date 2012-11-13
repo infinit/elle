@@ -1,12 +1,13 @@
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/Cipher.hh>
-#include <elle/cryptography/SecretKey.hh>
+#include <elle/Authority.hh>
+
 #include <elle/serialize/TupleSerializer.hxx>
 #include <elle/io/File.hh>
 
-#include <elle/Authority.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/PrivateKey.hh>
+#include <cryptography/KeyPair.hh>
+#include <cryptography/Cipher.hh>
+#include <cryptography/SecretKey.hh>
 
 namespace elle
 {
@@ -26,14 +27,14 @@ namespace elle
       this->cipher = new cryptography::Cipher(*from.cipher);
   }
 
-  Authority::Authority(elle::cryptography::KeyPair const& pair):
+  Authority::Authority(cryptography::KeyPair const& pair):
     type(Authority::TypePair),
     K(pair.K),
-    k(new elle::cryptography::PrivateKey(pair.k)),
+    k(new cryptography::PrivateKey(pair.k)),
     cipher(nullptr)
   {}
 
-  Authority::Authority(elle::cryptography::PublicKey const& K):
+  Authority::Authority(cryptography::PublicKey const& K):
     type(Authority::TypePublic),
     K(K),
     k(0),
@@ -66,7 +67,7 @@ namespace elle
   ///
   elle::Status          Authority::Encrypt(const elle::String&          pass)
   {
-    elle::cryptography::SecretKey     key;
+    cryptography::SecretKey     key;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::Status::Error)
@@ -76,7 +77,7 @@ namespace elle
     this->cipher = nullptr;
 
     // allocate the cipher.
-    this->cipher = new elle::cryptography::Cipher;
+    this->cipher = new cryptography::Cipher;
 
     // encrypt depending on the type.
     switch (this->type)
@@ -84,8 +85,8 @@ namespace elle
       case Authority::TypePair:
         {
           std::tuple<
-            elle::cryptography::PublicKey const&,
-            elle::cryptography::PrivateKey const&
+            cryptography::PublicKey const&,
+            cryptography::PrivateKey const&
           >                                     res{this->K, *this->k};
           if (key.Encrypt(res, *this->cipher) == elle::Status::Error)
             escape("unable to encrypt the authority");
@@ -115,7 +116,7 @@ namespace elle
   ///
   elle::Status          Authority::Decrypt(const elle::String&          pass)
   {
-    elle::cryptography::SecretKey     key;
+    cryptography::SecretKey     key;
 
     // check the cipher.
     if (this->cipher == nullptr)
@@ -131,12 +132,12 @@ namespace elle
       case Authority::TypePair:
         {
           // allocate the private key.
-          this->k = new elle::cryptography::PrivateKey;
+          this->k = new cryptography::PrivateKey;
 
           // decrypt the authority.
           std::tuple<
-            elle::cryptography::PublicKey&,
-            elle::cryptography::PrivateKey&
+            cryptography::PublicKey&,
+            cryptography::PrivateKey&
           >                                     res{this->K, *this->k};
 
           if (key.Decrypt(*this->cipher, res) == elle::Status::Error)

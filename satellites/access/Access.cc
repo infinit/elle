@@ -5,6 +5,10 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 
+#include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <reactor/network/tcp-socket.hh>
 
 #include <protocol/Serializer.hh>
@@ -61,20 +65,20 @@ namespace satellite
   void
   display(nucleus::neutron::Record const& record)
   {
-    switch (record.subject.type())
+    switch (record.subject().type())
       {
         case nucleus::neutron::Subject::TypeUser:
         {
           elle::io::Unique unique;
           // Convert the public key into a human-kind-of-readable string.
-          if (record.subject.user().Save(unique) == elle::Status::Error)
+          if (record.subject().user().Save(unique) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the public key's unique");
           std::cout << "User"
                     << unique
                     << " "
                     << std::dec
-                    << static_cast<elle::Natural32>(record.permissions)
+                    << static_cast<elle::Natural32>(record.permissions())
                     << std::endl;
           break;
         }
@@ -82,7 +86,7 @@ namespace satellite
         {
           elle::io::Unique unique;
           // Convert the group's address into a human-kind-of-readable string.
-          if (record.subject.group().Save(unique) == elle::Status::Error)
+          if (record.subject().group().Save(unique) == elle::Status::Error)
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the address' unique");
 
@@ -90,7 +94,7 @@ namespace satellite
                     << " "
                     << unique
                     << " "
-                    << std::dec << static_cast<elle::Natural32>(record.permissions) << std::endl;
+                    << std::dec << static_cast<elle::Natural32>(record.permissions()) << std::endl;
 
           break;
         }
@@ -106,7 +110,7 @@ namespace satellite
   {
     // Load the phrase.
     lune::Phrase        phrase;
-    phrase.load(Infinit::Network, "portal");
+    phrase.load(Infinit::User, Infinit::Network, "portal");
 
     // Connect to the server.
     Access::socket =
@@ -427,7 +431,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string                           res;
 
                 // retrieve the identity which is supposed to
@@ -511,7 +515,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string res;
 
                 // retrieve the identity which is supposed to
@@ -590,7 +594,7 @@ namespace satellite
             {
             case nucleus::neutron::Subject::TypeUser:
               {
-                elle::cryptography::PublicKey         K;
+                cryptography::PublicKey         K;
                 std::string res;
 
                 // retrieve the identity which is supposed to

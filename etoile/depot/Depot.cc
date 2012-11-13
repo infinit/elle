@@ -51,7 +51,7 @@ namespace etoile
     elle::Status        Depot::Origin(nucleus::proton::Address& address)
     {
       // FIXME: do not re-parse the descriptor every time.
-      lune::Descriptor descriptor(Infinit::Network);
+      lune::Descriptor descriptor(Infinit::User, Infinit::Network);
       address = descriptor.meta().root();
       return elle::Status::Ok;
     }

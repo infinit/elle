@@ -41,15 +41,26 @@ namespace package
        */
       CodingStandard* coding_standard = nullptr;
 
-      coding_standard = new CodingStandard;
+      /*
+       * Note that braces {} should be used for object construction because
+       * the standard is ambiguous in some cases with parentheses, as shown
+       * below. The following example does not compile because the compiler
+       * thinks a inner function named 'plain' is defined, returning a Plain
+       * and taking an argument whose name is named 'buffer' and of type
+       * WeakBuffer.
+       *
+       *   cryptography::Plain plain(elle::WeakBuffer(buffer));
+       *
+       * Using braces makes it easy for the compiler to distinguish object
+       * construction (classes and structures) from function calls.
+       */
+      coding_standard = new CodingStandard{1, 5};
 
       /*
        * Every block of logically related operations must be commented so
        * as to explain what is being done.
        */
-      //
       // Comment describing the following operations.
-      //
 
       /*
        * Note that the identation is always composed of two characters

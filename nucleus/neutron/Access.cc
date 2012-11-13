@@ -4,13 +4,19 @@
 #include <nucleus/neutron/Subject.hh>
 
 #include <elle/Buffer.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/idiom/Open.hh>
+
+#include <cryptography/Digest.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
+    /*----------.
+    | Constants |
+    `----------*/
+
+    cryptography::oneway::Algorithm const Access::Algorithms::oneway(
+      cryptography::oneway::Algorithm::sha256);
 
 //
 // ---------- constants -------------------------------------------------------
@@ -28,7 +34,7 @@ namespace nucleus
     }
 
     Access::Access(proton::Network const& network,
-                   elle::cryptography::PublicKey const& creator_K):
+                   cryptography::PublicKey const& creator_K):
       proton::ContentHashBlock(network, ComponentAccess, creator_K)
     {
     }
@@ -103,7 +109,7 @@ namespace nucleus
           Record*       record = *scoutor;
 
           // if found, stop.
-          if (record->subject == subject)
+          if (record->subject() == subject)
             return elle::Status::Ok;
         }
 
@@ -151,8 +157,8 @@ namespace nucleus
       if (this->Lookup(subject, record) == elle::Status::Error)
         escape("unable to retrieve the subject's record");
 
-      record->permissions = permissions;
-      record->token = token;
+      record->permissions(permissions);
+      record->token(token);
 
       // set the block as dirty.
       this->state(proton::StateDirty);
@@ -221,33 +227,21 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method computes a hash of the (subject, permissions) tuples
-    /// composing the access object.
-    ///
-    /// this is required by the object class for access control purposes.
-    ///
-    elle::Status Access::Fingerprint(elle::cryptography::Digest& digest) const
+    cryptography::Digest
+    Access::fingerprint() const
     {
       elle::Buffer buffer;
 
-      try
-        {
-          auto it = this->_range.container.begin(),
-               end = this->_range.container.end();
-          for (; it != end; ++it)
-              buffer.writer() << (*it)->subject
-                              << (*it)->permissions;
-        }
-      catch (std::exception const& err)
-        {
-          escape("Couldn't serialize a record: %s", err.what());
-        }
+      for (auto record: this->_range)
+        buffer.writer() << record->subject()
+                        << record->permissions();
 
-      if (elle::cryptography::OneWay::Hash(buffer, digest) == elle::Status::Error)
-        escape("unable to hash the set of archived tuples");
+      cryptography::Digest digest{
+        cryptography::oneway::hash(
+          cryptography::Plain{elle::WeakBuffer{buffer}},
+          Access::Algorithms::oneway)};
 
-      return elle::Status::Ok;
+      return (digest);
     }
 
 //

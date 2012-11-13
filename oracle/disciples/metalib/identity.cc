@@ -1,8 +1,11 @@
 #include "metalib.hh"
 
-#include <elle/cryptography/KeyPair.hh>
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <lune/Identity.hh>
 #include <elle/Authority.hh>
@@ -29,7 +32,7 @@ static lune::Identity create_identity(elle::String const& id,
                                       elle::String const& login,
                                       elle::String const& password)
 {
-  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair pair(cryptography::KeyPair::generate());
   elle::io::Path                    authority_path;
   lune::Identity                    identity;
 

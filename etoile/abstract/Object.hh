@@ -3,7 +3,8 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
-# include <elle/cryptography/PublicKey.hh>
+
+# include <cryptography/PublicKey.hh>
 
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -12,6 +13,9 @@
 # include <nucleus/neutron/Permissions.hh>
 
 # include <elle/idiom/Open.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace etoile
 {
@@ -62,8 +66,8 @@ namespace etoile
 
       struct
       {
-        elle::cryptography::PublicKey owner;
-        elle::cryptography::PublicKey author;
+        cryptography::PublicKey owner;
+        cryptography::PublicKey author;
       } keys;
 
       struct

@@ -2,13 +2,17 @@
 # define NUCLEUS_PROTON_BLOCK_HH
 
 # include <elle/attribute.hh>
-# include <elle/concept/Fileable.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Digest.hh>
 # include <elle/Printable.hh>
+# include <elle/concept/Fileable.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/Serializable.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/Digest.hh>
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
@@ -46,6 +50,15 @@ namespace nucleus
       public elle::Printable,
       private boost::noncopyable
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      struct Algorithms
+      {
+        static const cryptography::oneway::Algorithm oneway;
+      };
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -56,7 +69,7 @@ namespace nucleus
       Block(Network const network,
             Family const family,
             neutron::Component const component,
-            elle::cryptography::PublicKey const& creator_K);
+            cryptography::PublicKey const& creator_K);
 
       /*--------.
       | Methods |
@@ -107,7 +120,7 @@ namespace nucleus
       /// Note however, that just enough information is kept. In this
       /// case, the creator's public key is not kept. Instead, only a
       /// hash is serialized since enough to proceed to an authentication.
-      ELLE_ATTRIBUTE(elle::cryptography::Digest, creator);
+      ELLE_ATTRIBUTE(cryptography::Digest, creator);
       /// The block creation timestamp. This timestamp is especially
       /// useful to distinguish two block created by the same creator.
       ELLE_ATTRIBUTE_R(elle::utility::Time, creation_timestamp);

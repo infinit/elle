@@ -4,7 +4,10 @@
 
 #include <elle/attribute.hh>
 #include <elle/cast.hh>
-#include <elle/cryptography/KeyPair.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <hole/implementations/slug/Implementation.hh>
 #include <hole/storage/Directory.hh>
@@ -49,7 +52,7 @@ static std::vector<elle::network::Locus> members()
   return res;
 }
 
-elle::cryptography::KeyPair keys(elle::cryptography::KeyPair::generate());
+cryptography::KeyPair keys(cryptography::KeyPair::generate());
 elle::Authority authority(keys);
 elle::Passport passport;
 
@@ -81,8 +84,8 @@ test()
 
   nucleus::proton::Network network("namespace");
 
-  elle::cryptography::KeyPair user_keys(
-    elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair user_keys(
+    cryptography::KeyPair::generate());
 
   nucleus::neutron::Object block(network, user_keys.K,
                                  nucleus::neutron::Genre::file);
@@ -90,8 +93,8 @@ test()
                nucleus::proton::Address::null(),
                42,
                nucleus::proton::Address::null(),
-               nucleus::neutron::Token::Null);
-  block.Seal(user_keys.k);
+               nucleus::neutron::Token::null());
+  block.Seal(user_keys.k, nullptr);
 
   auto address = block.bind();
   s1.push(address, block);
@@ -117,12 +120,12 @@ test_separate_missing()
 
   nucleus::proton::Network network("namespace");
 
-  elle::cryptography::KeyPair user_keys(
-    elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair user_keys(
+    cryptography::KeyPair::generate());
 
   nucleus::neutron::Object block(network, user_keys.K,
                                  nucleus::neutron::Genre::file);
-  block.Seal(user_keys.k);
+  block.Seal(user_keys.k, nullptr);
 
   auto address = block.bind();
   s1.push(address, block);

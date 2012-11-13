@@ -12,15 +12,6 @@ namespace lune
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the phrase files extension.
-  ///
-  const elle::String            Phrase::Extension = ".phr";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -37,17 +28,12 @@ namespace lune
   }
 
   elle::io::Path
-  Phrase::_path(elle::String const& name)
-  {
-    return (elle::io::Path(Lune::Phrase,
-                           elle::io::Piece("%NAME%", name)));
-  }
-
-  elle::io::Path
-  Phrase::_path(elle::String const& network,
+  Phrase::_path(elle::String const& user,
+                elle::String const& network,
                 elle::String const& name)
   {
-    return (elle::io::Path(Lune::Network::Phrase,
+    return (elle::io::Path(Lune::Phrase,
+                           elle::io::Piece("%USER%", user),
                            elle::io::Piece("%NETWORK%", network),
                            elle::io::Piece("%NAME%", name)));
   }
@@ -104,55 +90,36 @@ namespace lune
 //
 
   void
-  Phrase::load(elle::String const& name)
-  {
-    this->load(Phrase::_path(name));
-  }
-
-  void
-  Phrase::store(elle::String const& name) const
-  {
-    this->store(Phrase::_path(name));
-  }
-
-  void
-  Phrase::erase(elle::String const& name)
-  {
-    elle::concept::Fileable<>::erase(Phrase::_path(name));
-  }
-
-  elle::Boolean
-  Phrase::exists(elle::String const& name)
-  {
-    return (elle::concept::Fileable<>::exists(Phrase::_path(name)));
-  }
-
-  void
-  Phrase::load(elle::String const& network,
+  Phrase::load(elle::String const& user,
+               elle::String const&network,
                elle::String const& name)
   {
-    this->load(Phrase::_path(network, name));
+    this->load(Phrase::_path(user, network, name));
   }
 
   void
-  Phrase::store(elle::String const& network,
+  Phrase::store(elle::String const& user,
+                elle::String const& network,
                 elle::String const& name) const
   {
-    this->store(Phrase::_path(network, name));
+    this->store(Phrase::_path(user, network, name));
   }
 
   void
-  Phrase::erase(elle::String const& network,
+  Phrase::erase(elle::String const& user,
+                elle::String const& network,
                 elle::String const& name)
   {
-    elle::concept::Fileable<>::erase(Phrase::_path(network, name));
+    elle::concept::Fileable<>::erase(Phrase::_path(user, network, name));
   }
 
   elle::Boolean
-  Phrase::exists(elle::String const& network,
+  Phrase::exists(elle::String const& user,
+                 elle::String const& network,
                  elle::String const& name)
   {
-    return (elle::concept::Fileable<>::exists(Phrase::_path(network, name)));
+    return (elle::concept::Fileable<>::exists(
+      Phrase::_path(user, network, name)));
   }
 
 }

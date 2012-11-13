@@ -1,0 +1,728 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9501F77115C28E33000895FE /* link-add.png in Resources */ = {isa = PBXBuildFile; fileRef = 9501F77015C28E33000895FE /* link-add.png */; };
+		9501F77915C294D3000895FE /* SignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9501F77715C294D3000895FE /* SignUpViewController.m */; };
+		9501F77A15C294D3000895FE /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501F77815C294D3000895FE /* SignUpViewController.xib */; };
+		9505B239157661B2005181A3 /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 9505B238157661B2005181A3 /* delete.png */; };
+		950D123715F603F30080AB8B /* DriveInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950D123515F603F30080AB8B /* DriveInfoViewController.m */; };
+		950D123815F603F30080AB8B /* DriveInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 950D123615F603F30080AB8B /* DriveInfoViewController.xib */; };
+		95166DBD1589097300200397 /* infinit-low.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DBC1589097300200397 /* infinit-low.png */; };
+		95166DBF158909F200200397 /* infinit-high.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DBE158909F200200397 /* infinit-high.png */; };
+		95166DC115890CCB00200397 /* infinit-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DC015890CCB00200397 /* infinit-background.png */; };
+		95166DC815891F6D00200397 /* navigationbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DC715891F6D00200397 /* navigationbar-back.png */; };
+		95166DCC1589241900200397 /* rightsidebar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DCB1589241900200397 /* rightsidebar-back.png */; };
+		95166DCE1589379000200397 /* camera-roll-add.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DCD1589379000200397 /* camera-roll-add.png */; };
+		95166DD01589419900200397 /* textfield-back.png in Resources */ = {isa = PBXBuildFile; fileRef = 95166DCF1589419900200397 /* textfield-back.png */; };
+		9518FCB8156F7AFA00B37081 /* infinit_refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9518FCB7156F7AFA00B37081 /* infinit_refresh.png */; };
+		951DA66A1577C02600A8D933 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 951DA6691577C02600A8D933 /* folder.png */; };
+		9525E5BB15CA7CDC00B796AA /* signup-label.png in Resources */ = {isa = PBXBuildFile; fileRef = 9525E5BA15CA7CDC00B796AA /* signup-label.png */; };
+		9525E5BF15CA8F3500B796AA /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 9525E5BE15CA8F3500B796AA /* settings.png */; };
+		9525E5CB15CAB70000B796AA /* striped-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 9525E5CA15CAB70000B796AA /* striped-background.png */; };
+		9525E5CD15CACD6100B796AA /* red-button.png in Resources */ = {isa = PBXBuildFile; fileRef = 9525E5CC15CACD6100B796AA /* red-button.png */; };
+		952894D315587E3B0054E527 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 952894D115587E3B0054E527 /* SettingsViewController.m */; };
+		952894D415587E3B0054E527 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 952894D215587E3B0054E527 /* SettingsViewController.xib */; };
+		95345B4A15186D9F0015FFD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95345B4915186D9F0015FFD4 /* UIKit.framework */; };
+		95345B4C15186D9F0015FFD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95345B4B15186D9F0015FFD4 /* Foundation.framework */; };
+		95345B4E15186D9F0015FFD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95345B4D15186D9F0015FFD4 /* CoreGraphics.framework */; };
+		95345B5415186D9F0015FFD4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95345B5215186D9F0015FFD4 /* InfoPlist.strings */; };
+		95345B5615186D9F0015FFD4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 95345B5515186D9F0015FFD4 /* main.m */; };
+		95345B5A15186D9F0015FFD4 /* InfinitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 95345B5915186D9F0015FFD4 /* InfinitAppDelegate.m */; };
+		95345B5D15186D9F0015FFD4 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95345B5B15186D9F0015FFD4 /* MainWindow.xib */; };
+		95345B6015186D9F0015FFD4 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95345B5F15186D9F0015FFD4 /* RootViewController.m */; };
+		95345B6315186D9F0015FFD4 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95345B6115186D9F0015FFD4 /* RootViewController.xib */; };
+		95345B6D151870450015FFD4 /* InfinitData.m in Sources */ = {isa = PBXBuildFile; fileRef = 95345B6C151870450015FFD4 /* InfinitData.m */; };
+		953886AD15A717C500C9CD9A /* pin-up.png in Resources */ = {isa = PBXBuildFile; fileRef = 953886AC15A717C500C9CD9A /* pin-up.png */; };
+		954339791580F15E005D9976 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 954339781580F15E005D9976 /* plus.png */; };
+		954883CD161C33F3000E25BB /* TopNotifViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 954883CC161C33F3000E25BB /* TopNotifViewController.m */; };
+		954DCFF3156D20E400F172E0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 954DCFF2156D20E400F172E0 /* QuartzCore.framework */; };
+		954DCFFB156D21B900F172E0 /* ZKRevealingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 954DCFFA156D21B900F172E0 /* ZKRevealingTableViewCell.m */; };
+		955C3C6715C4A2CE008818CA /* back-button.png in Resources */ = {isa = PBXBuildFile; fileRef = 955C3C6615C4A2CE008818CA /* back-button.png */; };
+		9561925915C2979D005F5E10 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 9561925815C2979D005F5E10 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		9563B472151CBA4D007E57CB /* InfinitFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 9563B471151CBA4D007E57CB /* InfinitFile.m */; };
+		956B138F15540D9D005334E3 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 956B138D15540D9D005334E3 /* LoginViewController.m */; };
+		956B139015540D9D005334E3 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 956B138E15540D9D005334E3 /* LoginViewController.xib */; };
+		9571ECC815E4DA7E0061E703 /* grey-button.png in Resources */ = {isa = PBXBuildFile; fileRef = 9571ECC715E4DA7E0061E703 /* grey-button.png */; };
+		9591A87B158632B500196D6C /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9591A87A158632B500196D6C /* MessageUI.framework */; };
+		9591A87F1586353A00196D6C /* mail.png in Resources */ = {isa = PBXBuildFile; fileRef = 9591A87E1586353A00196D6C /* mail.png */; };
+		95BC47FB16022BCD0088BFEE /* NetworkErrorFooter.png in Resources */ = {isa = PBXBuildFile; fileRef = 95BC47FA16022BCD0088BFEE /* NetworkErrorFooter.png */; };
+		95C43A3215B8065900C30A84 /* checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C43A3015B8065900C30A84 /* checked.png */; };
+		95C43A3315B8065900C30A84 /* unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C43A3115B8065900C30A84 /* unchecked.png */; };
+		95C5D91D15C696EC00788E75 /* InnerShadowBack-disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C5D91C15C696EC00788E75 /* InnerShadowBack-disabled.png */; };
+		95C5D92215C69F4000788E75 /* NetworkError.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C5D92115C69F4000788E75 /* NetworkError.png */; };
+		95C5D92415C6BB0600788E75 /* DoubleShadowBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C5D92315C6BB0600788E75 /* DoubleShadowBack.png */; };
+		95CADA071580AE7900D48349 /* camera-single-add.png in Resources */ = {isa = PBXBuildFile; fileRef = 95CADA061580AE7900D48349 /* camera-single-add.png */; };
+		95E1F1B115C2D592001B31DA /* gain-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 95E1F1B015C2D592001B31DA /* gain-background.png */; };
+		95E1F1B415C2ED86001B31DA /* InnerShadowBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 95E1F1B315C2ED86001B31DA /* InnerShadowBack.png */; };
+		95E6E9E5156E7F190085A8EC /* PullRefreshTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95E6E9E4156E7F190085A8EC /* PullRefreshTableViewController.m */; };
+		95E879A915777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.m in Sources */ = {isa = PBXBuildFile; fileRef = 95E879A615777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.m */; };
+		95E879AA15777CC00082DA94 /* UIViewController+JTRevealSidebarV2.m in Sources */ = {isa = PBXBuildFile; fileRef = 95E879A815777CC00082DA94 /* UIViewController+JTRevealSidebarV2.m */; };
+		95E879AF1577870E0082DA94 /* RightSidebarDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 95E879AE1577870E0082DA94 /* RightSidebarDataSource.m */; };
+		95E879B11577AA4D0082DA94 /* folder-add.png in Resources */ = {isa = PBXBuildFile; fileRef = 95E879B01577AA4D0082DA94 /* folder-add.png */; };
+		95F24EED15E2515B009B04E2 /* InfinitUInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95F24EEC15E2515B009B04E2 /* InfinitUInfo.plist */; };
+		95F8170715628D4900F9E498 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F8170515628D4900F9E498 /* PlayViewController.m */; };
+		95F8170815628D4900F9E498 /* PlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95F8170615628D4900F9E498 /* PlayViewController.xib */; };
+		95F8170A156292D300F9E498 /* play.html in Resources */ = {isa = PBXBuildFile; fileRef = 95F81709156292D300F9E498 /* play.html */; };
+		95F9A56A15E28618009C4EC7 /* drive-folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 95F9A56915E28617009C4EC7 /* drive-folder.png */; };
+		95F9EE6215E5192B0098E80D /* InfinitDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F9EE6115E5192B0098E80D /* InfinitDevices.m */; };
+		95F9EE6615E543A60098E80D /* InfinitNetworks.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F9EE6515E543A60098E80D /* InfinitNetworks.m */; };
+		95FE241E160C6DE900CA7477 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE241D160C6DE900CA7477 /* Default.png */; };
+		95FE2420160C6E3C00CA7477 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE241F160C6E3C00CA7477 /* Default@2x.png */; };
+		95FE2422160C6E8300CA7477 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2421160C6E8300CA7477 /* Default-568h@2x.png */; };
+		95FE2435160C9B3500CA7477 /* logo-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2433160C9B3500CA7477 /* logo-title.png */; };
+		95FE243A160C9BFE00CA7477 /* logo-title@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2439160C9BFE00CA7477 /* logo-title@2x.png */; };
+		95FE244A160CA36A00CA7477 /* tableview-background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2447160CA36A00CA7477 /* tableview-background@2x.png */; };
+		95FE244B160CA36A00CA7477 /* tableview-background-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2448160CA36A00CA7477 /* tableview-background-568h@2x.png */; };
+		95FE244C160CA36A00CA7477 /* tableview-background.png in Resources */ = {isa = PBXBuildFile; fileRef = 95FE2449160CA36A00CA7477 /* tableview-background.png */; };
+		95FEF50415CADEE900111C93 /* InfinitCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 95FEF50315CADEE900111C93 /* InfinitCrypto.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9501F77015C28E33000895FE /* link-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "link-add.png"; sourceTree = "<group>"; };
+		9501F77615C294D3000895FE /* SignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpViewController.h; sourceTree = "<group>"; };
+		9501F77715C294D3000895FE /* SignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpViewController.m; sourceTree = "<group>"; };
+		9501F77815C294D3000895FE /* SignUpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
+		9505B238157661B2005181A3 /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete.png; sourceTree = "<group>"; };
+		950D123415F603F30080AB8B /* DriveInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriveInfoViewController.h; sourceTree = "<group>"; };
+		950D123515F603F30080AB8B /* DriveInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DriveInfoViewController.m; sourceTree = "<group>"; };
+		950D123615F603F30080AB8B /* DriveInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DriveInfoViewController.xib; sourceTree = "<group>"; };
+		95166DBC1589097300200397 /* infinit-low.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "infinit-low.png"; path = "../infinit-low.png"; sourceTree = "<group>"; };
+		95166DBE158909F200200397 /* infinit-high.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "infinit-high.png"; path = "../infinit-high.png"; sourceTree = "<group>"; };
+		95166DC015890CCB00200397 /* infinit-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "infinit-background.png"; sourceTree = "<group>"; };
+		95166DC715891F6D00200397 /* navigationbar-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationbar-back.png"; sourceTree = "<group>"; };
+		95166DCB1589241900200397 /* rightsidebar-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rightsidebar-back.png"; sourceTree = "<group>"; };
+		95166DCD1589379000200397 /* camera-roll-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera-roll-add.png"; sourceTree = "<group>"; };
+		95166DCF1589419900200397 /* textfield-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield-back.png"; sourceTree = "<group>"; };
+		9518FCB7156F7AFA00B37081 /* infinit_refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = infinit_refresh.png; sourceTree = "<group>"; };
+		951DA6691577C02600A8D933 /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
+		9525E5BA15CA7CDC00B796AA /* signup-label.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signup-label.png"; sourceTree = "<group>"; };
+		9525E5BE15CA8F3500B796AA /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
+		9525E5CA15CAB70000B796AA /* striped-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "striped-background.png"; sourceTree = "<group>"; };
+		9525E5CC15CACD6100B796AA /* red-button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "red-button.png"; sourceTree = "<group>"; };
+		952894D015587E3B0054E527 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		952894D115587E3B0054E527 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		952894D215587E3B0054E527 /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		95345B4515186D9F0015FFD4 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		95345B4915186D9F0015FFD4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		95345B4B15186D9F0015FFD4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		95345B4D15186D9F0015FFD4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		95345B5115186D9F0015FFD4 /* Infinit-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
+		95345B5315186D9F0015FFD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		95345B5515186D9F0015FFD4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		95345B5715186D9F0015FFD4 /* Infinit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Infinit-Prefix.pch"; sourceTree = "<group>"; };
+		95345B5815186D9F0015FFD4 /* InfinitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfinitAppDelegate.h; sourceTree = "<group>"; };
+		95345B5915186D9F0015FFD4 /* InfinitAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfinitAppDelegate.m; sourceTree = "<group>"; };
+		95345B5C15186D9F0015FFD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		95345B5E15186D9F0015FFD4 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		95345B5F15186D9F0015FFD4 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		95345B6215186D9F0015FFD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
+		95345B6B151870450015FFD4 /* InfinitData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitData.h; sourceTree = "<group>"; };
+		95345B6C151870450015FFD4 /* InfinitData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitData.m; sourceTree = "<group>"; };
+		953886AC15A717C500C9CD9A /* pin-up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pin-up.png"; sourceTree = "<group>"; };
+		954339781580F15E005D9976 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
+		954883CB161C33F3000E25BB /* TopNotifViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopNotifViewController.h; sourceTree = "<group>"; };
+		954883CC161C33F3000E25BB /* TopNotifViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopNotifViewController.m; sourceTree = "<group>"; };
+		954DCFF2156D20E400F172E0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		954DCFF9156D21B900F172E0 /* ZKRevealingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZKRevealingTableViewCell.h; sourceTree = "<group>"; };
+		954DCFFA156D21B900F172E0 /* ZKRevealingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZKRevealingTableViewCell.m; sourceTree = "<group>"; };
+		955C3C6615C4A2CE008818CA /* back-button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-button.png"; sourceTree = "<group>"; };
+		9561925715C2979D005F5E10 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		9561925815C2979D005F5E10 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		9563B470151CBA4D007E57CB /* InfinitFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitFile.h; sourceTree = "<group>"; };
+		9563B471151CBA4D007E57CB /* InfinitFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitFile.m; sourceTree = "<group>"; };
+		956B138C15540D9D005334E3 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		956B138D15540D9D005334E3 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		956B138E15540D9D005334E3 /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
+		9571ECC715E4DA7E0061E703 /* grey-button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grey-button.png"; sourceTree = "<group>"; };
+		9591A87A158632B500196D6C /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		9591A87E1586353A00196D6C /* mail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mail.png; sourceTree = "<group>"; };
+		95B4B13916281C2500E906D0 /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		95BC47FA16022BCD0088BFEE /* NetworkErrorFooter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NetworkErrorFooter.png; sourceTree = "<group>"; };
+		95C43A3015B8065900C30A84 /* checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checked.png; sourceTree = "<group>"; };
+		95C43A3115B8065900C30A84 /* unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unchecked.png; sourceTree = "<group>"; };
+		95C5D91C15C696EC00788E75 /* InnerShadowBack-disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "InnerShadowBack-disabled.png"; sourceTree = "<group>"; };
+		95C5D92115C69F4000788E75 /* NetworkError.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NetworkError.png; sourceTree = "<group>"; };
+		95C5D92315C6BB0600788E75 /* DoubleShadowBack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DoubleShadowBack.png; sourceTree = "<group>"; };
+		95CADA061580AE7900D48349 /* camera-single-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera-single-add.png"; sourceTree = "<group>"; };
+		95E1F1B015C2D592001B31DA /* gain-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gain-background.png"; sourceTree = "<group>"; };
+		95E1F1B315C2ED86001B31DA /* InnerShadowBack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = InnerShadowBack.png; sourceTree = "<group>"; };
+		95E6E9E3156E7F190085A8EC /* PullRefreshTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullRefreshTableViewController.h; sourceTree = "<group>"; };
+		95E6E9E4156E7F190085A8EC /* PullRefreshTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullRefreshTableViewController.m; sourceTree = "<group>"; };
+		95E879A415777CC00082DA94 /* JTRevealSidebarV2Delegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JTRevealSidebarV2Delegate.h; sourceTree = "<group>"; };
+		95E879A515777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationItem+JTRevealSidebarV2.h"; sourceTree = "<group>"; };
+		95E879A615777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationItem+JTRevealSidebarV2.m"; sourceTree = "<group>"; };
+		95E879A715777CC00082DA94 /* UIViewController+JTRevealSidebarV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+JTRevealSidebarV2.h"; sourceTree = "<group>"; };
+		95E879A815777CC00082DA94 /* UIViewController+JTRevealSidebarV2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+JTRevealSidebarV2.m"; sourceTree = "<group>"; };
+		95E879AD1577870E0082DA94 /* RightSidebarDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RightSidebarDataSource.h; sourceTree = "<group>"; };
+		95E879AE1577870E0082DA94 /* RightSidebarDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RightSidebarDataSource.m; sourceTree = "<group>"; };
+		95E879B01577AA4D0082DA94 /* folder-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "folder-add.png"; sourceTree = "<group>"; };
+		95F24EEC15E2515B009B04E2 /* InfinitUInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfinitUInfo.plist; sourceTree = "<group>"; };
+		95F8170415628D4900F9E498 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
+		95F8170515628D4900F9E498 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
+		95F8170615628D4900F9E498 /* PlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayViewController.xib; sourceTree = "<group>"; };
+		95F81709156292D300F9E498 /* play.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = play.html; sourceTree = "<group>"; };
+		95F9A56915E28617009C4EC7 /* drive-folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "drive-folder.png"; sourceTree = "<group>"; };
+		95F9EE6015E5192B0098E80D /* InfinitDevices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitDevices.h; sourceTree = "<group>"; };
+		95F9EE6115E5192B0098E80D /* InfinitDevices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitDevices.m; sourceTree = "<group>"; };
+		95F9EE6415E543A60098E80D /* InfinitNetworks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitNetworks.h; sourceTree = "<group>"; };
+		95F9EE6515E543A60098E80D /* InfinitNetworks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitNetworks.m; sourceTree = "<group>"; };
+		95FE241D160C6DE900CA7477 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		95FE241F160C6E3C00CA7477 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		95FE2421160C6E8300CA7477 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		95FE2433160C9B3500CA7477 /* logo-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo-title.png"; sourceTree = "<group>"; };
+		95FE2439160C9BFE00CA7477 /* logo-title@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo-title@2x.png"; sourceTree = "<group>"; };
+		95FE2447160CA36A00CA7477 /* tableview-background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tableview-background@2x.png"; sourceTree = "<group>"; };
+		95FE2448160CA36A00CA7477 /* tableview-background-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tableview-background-568h@2x.png"; sourceTree = "<group>"; };
+		95FE2449160CA36A00CA7477 /* tableview-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tableview-background.png"; sourceTree = "<group>"; };
+		95FEF50215CADEE900111C93 /* InfinitCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfinitCrypto.h; sourceTree = "<group>"; };
+		95FEF50315CADEE900111C93 /* InfinitCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfinitCrypto.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		95345B4215186D9E0015FFD4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9591A87B158632B500196D6C /* MessageUI.framework in Frameworks */,
+				954DCFF3156D20E400F172E0 /* QuartzCore.framework in Frameworks */,
+				95345B4A15186D9F0015FFD4 /* UIKit.framework in Frameworks */,
+				95345B4C15186D9F0015FFD4 /* Foundation.framework in Frameworks */,
+				95345B4E15186D9F0015FFD4 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9501F77215C293C1000895FE /* SignUpView */ = {
+			isa = PBXGroup;
+			children = (
+				9501F77815C294D3000895FE /* SignUpViewController.xib */,
+				9501F77615C294D3000895FE /* SignUpViewController.h */,
+				9501F77715C294D3000895FE /* SignUpViewController.m */,
+			);
+			name = SignUpView;
+			sourceTree = "<group>";
+		};
+		950D123215F603A60080AB8B /* DriveInfoView */ = {
+			isa = PBXGroup;
+			children = (
+				950D123615F603F30080AB8B /* DriveInfoViewController.xib */,
+				950D123415F603F30080AB8B /* DriveInfoViewController.h */,
+				950D123515F603F30080AB8B /* DriveInfoViewController.m */,
+			);
+			name = DriveInfoView;
+			sourceTree = "<group>";
+		};
+		95166DC215890F9E00200397 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				95BC47FA16022BCD0088BFEE /* NetworkErrorFooter.png */,
+				9571ECC715E4DA7E0061E703 /* grey-button.png */,
+				9525E5CC15CACD6100B796AA /* red-button.png */,
+				9525E5BE15CA8F3500B796AA /* settings.png */,
+				95C5D92315C6BB0600788E75 /* DoubleShadowBack.png */,
+				95C5D92115C69F4000788E75 /* NetworkError.png */,
+				9525E5BA15CA7CDC00B796AA /* signup-label.png */,
+				9525E5CA15CAB70000B796AA /* striped-background.png */,
+				95C5D91C15C696EC00788E75 /* InnerShadowBack-disabled.png */,
+				95F9A56915E28617009C4EC7 /* drive-folder.png */,
+				95FE2433160C9B3500CA7477 /* logo-title.png */,
+				95E1F1B015C2D592001B31DA /* gain-background.png */,
+				95E1F1B315C2ED86001B31DA /* InnerShadowBack.png */,
+				95C43A3015B8065900C30A84 /* checked.png */,
+				95C43A3115B8065900C30A84 /* unchecked.png */,
+				953886AC15A717C500C9CD9A /* pin-up.png */,
+				95166DCF1589419900200397 /* textfield-back.png */,
+				95166DCD1589379000200397 /* camera-roll-add.png */,
+				95166DC015890CCB00200397 /* infinit-background.png */,
+				95FE2447160CA36A00CA7477 /* tableview-background@2x.png */,
+				95FE2448160CA36A00CA7477 /* tableview-background-568h@2x.png */,
+				95FE2449160CA36A00CA7477 /* tableview-background.png */,
+				9501F77015C28E33000895FE /* link-add.png */,
+				95166DCB1589241900200397 /* rightsidebar-back.png */,
+				95FE2439160C9BFE00CA7477 /* logo-title@2x.png */,
+				95166DBE158909F200200397 /* infinit-high.png */,
+				95166DBC1589097300200397 /* infinit-low.png */,
+				95166DC715891F6D00200397 /* navigationbar-back.png */,
+				9591A87E1586353A00196D6C /* mail.png */,
+				954339781580F15E005D9976 /* plus.png */,
+				95CADA061580AE7900D48349 /* camera-single-add.png */,
+				951DA6691577C02600A8D933 /* folder.png */,
+				955C3C6615C4A2CE008818CA /* back-button.png */,
+				95E879B01577AA4D0082DA94 /* folder-add.png */,
+				9505B238157661B2005181A3 /* delete.png */,
+				9518FCB7156F7AFA00B37081 /* infinit_refresh.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		952894CC15587D980054E527 /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				95345B5B15186D9F0015FFD4 /* MainWindow.xib */,
+				95345B5815186D9F0015FFD4 /* InfinitAppDelegate.h */,
+				95345B5915186D9F0015FFD4 /* InfinitAppDelegate.m */,
+			);
+			name = MainWindow;
+			sourceTree = "<group>";
+		};
+		952894CE15587DAA0054E527 /* RootView */ = {
+			isa = PBXGroup;
+			children = (
+				95345B6115186D9F0015FFD4 /* RootViewController.xib */,
+				95345B5E15186D9F0015FFD4 /* RootViewController.h */,
+				95345B5F15186D9F0015FFD4 /* RootViewController.m */,
+				95E6E9E3156E7F190085A8EC /* PullRefreshTableViewController.h */,
+				95E6E9E4156E7F190085A8EC /* PullRefreshTableViewController.m */,
+			);
+			name = RootView;
+			sourceTree = "<group>";
+		};
+		952894CF15587DD70054E527 /* SettingsView */ = {
+			isa = PBXGroup;
+			children = (
+				952894D215587E3B0054E527 /* SettingsViewController.xib */,
+				952894D015587E3B0054E527 /* SettingsViewController.h */,
+				952894D115587E3B0054E527 /* SettingsViewController.m */,
+			);
+			name = SettingsView;
+			sourceTree = "<group>";
+		};
+		95345B3A15186D9E0015FFD4 = {
+			isa = PBXGroup;
+			children = (
+				95B4B13916281C2500E906D0 /* TODO */,
+				95FE2421160C6E8300CA7477 /* Default-568h@2x.png */,
+				95FE241F160C6E3C00CA7477 /* Default@2x.png */,
+				95FE241D160C6DE900CA7477 /* Default.png */,
+				95345B4F15186D9F0015FFD4 /* Infinit */,
+				95345B4815186D9F0015FFD4 /* Frameworks */,
+				95345B4615186D9F0015FFD4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		95345B4615186D9F0015FFD4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				95345B4515186D9F0015FFD4 /* Infinit.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		95345B4815186D9F0015FFD4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9591A87A158632B500196D6C /* MessageUI.framework */,
+				954DCFF2156D20E400F172E0 /* QuartzCore.framework */,
+				95345B4915186D9F0015FFD4 /* UIKit.framework */,
+				95345B4B15186D9F0015FFD4 /* Foundation.framework */,
+				95345B4D15186D9F0015FFD4 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		95345B4F15186D9F0015FFD4 /* Infinit */ = {
+			isa = PBXGroup;
+			children = (
+				95F8170C156297A000F9E498 /* Ressources */,
+				95345B6A15186F6E0015FFD4 /* Model */,
+				954883C6161C334E000E25BB /* TopNotifView */,
+				952894CC15587D980054E527 /* MainWindow */,
+				952894CE15587DAA0054E527 /* RootView */,
+				950D123215F603A60080AB8B /* DriveInfoView */,
+				95345B6915186EC10015FFD4 /* LoginView */,
+				9501F77215C293C1000895FE /* SignUpView */,
+				952894CF15587DD70054E527 /* SettingsView */,
+				9561925615C29778005F5E10 /* JsonKit */,
+				95FEF50615CADEF600111C93 /* InfinitCrypto */,
+				95F816FF15628C8200F9E498 /* PlayView */,
+				95E879A215777CAD0082DA94 /* JTRevealSideBar */,
+				95345B5015186D9F0015FFD4 /* Supporting Files */,
+			);
+			path = Infinit;
+			sourceTree = "<group>";
+		};
+		95345B5015186D9F0015FFD4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				95345B5115186D9F0015FFD4 /* Infinit-Info.plist */,
+				95345B5215186D9F0015FFD4 /* InfoPlist.strings */,
+				95345B5515186D9F0015FFD4 /* main.m */,
+				95345B5715186D9F0015FFD4 /* Infinit-Prefix.pch */,
+				95F24EEC15E2515B009B04E2 /* InfinitUInfo.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		95345B6915186EC10015FFD4 /* LoginView */ = {
+			isa = PBXGroup;
+			children = (
+				956B138E15540D9D005334E3 /* LoginViewController.xib */,
+				956B138C15540D9D005334E3 /* LoginViewController.h */,
+				956B138D15540D9D005334E3 /* LoginViewController.m */,
+			);
+			name = LoginView;
+			sourceTree = "<group>";
+		};
+		95345B6A15186F6E0015FFD4 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				95345B6B151870450015FFD4 /* InfinitData.h */,
+				95345B6C151870450015FFD4 /* InfinitData.m */,
+				9563B470151CBA4D007E57CB /* InfinitFile.h */,
+				9563B471151CBA4D007E57CB /* InfinitFile.m */,
+				95F9EE6015E5192B0098E80D /* InfinitDevices.h */,
+				95F9EE6115E5192B0098E80D /* InfinitDevices.m */,
+				95F9EE6415E543A60098E80D /* InfinitNetworks.h */,
+				95F9EE6515E543A60098E80D /* InfinitNetworks.m */,
+				954DCFF9156D21B900F172E0 /* ZKRevealingTableViewCell.h */,
+				954DCFFA156D21B900F172E0 /* ZKRevealingTableViewCell.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		954883C6161C334E000E25BB /* TopNotifView */ = {
+			isa = PBXGroup;
+			children = (
+				954883CB161C33F3000E25BB /* TopNotifViewController.h */,
+				954883CC161C33F3000E25BB /* TopNotifViewController.m */,
+			);
+			name = TopNotifView;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		9561925615C29778005F5E10 /* JsonKit */ = {
+			isa = PBXGroup;
+			children = (
+				9561925715C2979D005F5E10 /* JSONKit.h */,
+				9561925815C2979D005F5E10 /* JSONKit.m */,
+			);
+			name = JsonKit;
+			sourceTree = "<group>";
+		};
+		95E879A215777CAD0082DA94 /* JTRevealSideBar */ = {
+			isa = PBXGroup;
+			children = (
+				95E879A415777CC00082DA94 /* JTRevealSidebarV2Delegate.h */,
+				95E879A515777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.h */,
+				95E879A615777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.m */,
+				95E879A715777CC00082DA94 /* UIViewController+JTRevealSidebarV2.h */,
+				95E879A815777CC00082DA94 /* UIViewController+JTRevealSidebarV2.m */,
+				95E879AD1577870E0082DA94 /* RightSidebarDataSource.h */,
+				95E879AE1577870E0082DA94 /* RightSidebarDataSource.m */,
+			);
+			name = JTRevealSideBar;
+			sourceTree = "<group>";
+		};
+		95F816FF15628C8200F9E498 /* PlayView */ = {
+			isa = PBXGroup;
+			children = (
+				95F8170615628D4900F9E498 /* PlayViewController.xib */,
+				95F8170415628D4900F9E498 /* PlayViewController.h */,
+				95F8170515628D4900F9E498 /* PlayViewController.m */,
+			);
+			name = PlayView;
+			sourceTree = "<group>";
+		};
+		95F8170C156297A000F9E498 /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				95166DC215890F9E00200397 /* Images */,
+				95F81709156292D300F9E498 /* play.html */,
+			);
+			name = Ressources;
+			sourceTree = "<group>";
+		};
+		95FEF50615CADEF600111C93 /* InfinitCrypto */ = {
+			isa = PBXGroup;
+			children = (
+				95FEF50215CADEE900111C93 /* InfinitCrypto.h */,
+				95FEF50315CADEE900111C93 /* InfinitCrypto.m */,
+			);
+			name = InfinitCrypto;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		95345B4415186D9E0015FFD4 /* Infinit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 95345B6615186D9F0015FFD4 /* Build configuration list for PBXNativeTarget "Infinit" */;
+			buildPhases = (
+				95345B4115186D9E0015FFD4 /* Sources */,
+				95345B4215186D9E0015FFD4 /* Frameworks */,
+				95345B4315186D9E0015FFD4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Infinit;
+			productName = Infinit;
+			productReference = 95345B4515186D9F0015FFD4 /* Infinit.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		95345B3C15186D9E0015FFD4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = infinit.io;
+			};
+			buildConfigurationList = 95345B3F15186D9E0015FFD4 /* Build configuration list for PBXProject "Infinit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 95345B3A15186D9E0015FFD4;
+			productRefGroup = 95345B4615186D9F0015FFD4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				95345B4415186D9E0015FFD4 /* Infinit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		95345B4315186D9E0015FFD4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95345B5415186D9F0015FFD4 /* InfoPlist.strings in Resources */,
+				95345B5D15186D9F0015FFD4 /* MainWindow.xib in Resources */,
+				95345B6315186D9F0015FFD4 /* RootViewController.xib in Resources */,
+				956B139015540D9D005334E3 /* LoginViewController.xib in Resources */,
+				952894D415587E3B0054E527 /* SettingsViewController.xib in Resources */,
+				95F8170815628D4900F9E498 /* PlayViewController.xib in Resources */,
+				95F8170A156292D300F9E498 /* play.html in Resources */,
+				9518FCB8156F7AFA00B37081 /* infinit_refresh.png in Resources */,
+				9505B239157661B2005181A3 /* delete.png in Resources */,
+				95E879B11577AA4D0082DA94 /* folder-add.png in Resources */,
+				951DA66A1577C02600A8D933 /* folder.png in Resources */,
+				95CADA071580AE7900D48349 /* camera-single-add.png in Resources */,
+				954339791580F15E005D9976 /* plus.png in Resources */,
+				9591A87F1586353A00196D6C /* mail.png in Resources */,
+				95166DBD1589097300200397 /* infinit-low.png in Resources */,
+				95166DBF158909F200200397 /* infinit-high.png in Resources */,
+				95166DC115890CCB00200397 /* infinit-background.png in Resources */,
+				95166DC815891F6D00200397 /* navigationbar-back.png in Resources */,
+				95166DCC1589241900200397 /* rightsidebar-back.png in Resources */,
+				95166DCE1589379000200397 /* camera-roll-add.png in Resources */,
+				95166DD01589419900200397 /* textfield-back.png in Resources */,
+				953886AD15A717C500C9CD9A /* pin-up.png in Resources */,
+				95C43A3215B8065900C30A84 /* checked.png in Resources */,
+				95C43A3315B8065900C30A84 /* unchecked.png in Resources */,
+				9501F77115C28E33000895FE /* link-add.png in Resources */,
+				9501F77A15C294D3000895FE /* SignUpViewController.xib in Resources */,
+				95E1F1B115C2D592001B31DA /* gain-background.png in Resources */,
+				95E1F1B415C2ED86001B31DA /* InnerShadowBack.png in Resources */,
+				955C3C6715C4A2CE008818CA /* back-button.png in Resources */,
+				95C5D91D15C696EC00788E75 /* InnerShadowBack-disabled.png in Resources */,
+				95C5D92215C69F4000788E75 /* NetworkError.png in Resources */,
+				95C5D92415C6BB0600788E75 /* DoubleShadowBack.png in Resources */,
+				9525E5BB15CA7CDC00B796AA /* signup-label.png in Resources */,
+				9525E5BF15CA8F3500B796AA /* settings.png in Resources */,
+				9525E5CB15CAB70000B796AA /* striped-background.png in Resources */,
+				9525E5CD15CACD6100B796AA /* red-button.png in Resources */,
+				95F24EED15E2515B009B04E2 /* InfinitUInfo.plist in Resources */,
+				95F9A56A15E28618009C4EC7 /* drive-folder.png in Resources */,
+				9571ECC815E4DA7E0061E703 /* grey-button.png in Resources */,
+				950D123815F603F30080AB8B /* DriveInfoViewController.xib in Resources */,
+				95BC47FB16022BCD0088BFEE /* NetworkErrorFooter.png in Resources */,
+				95FE241E160C6DE900CA7477 /* Default.png in Resources */,
+				95FE2420160C6E3C00CA7477 /* Default@2x.png in Resources */,
+				95FE2422160C6E8300CA7477 /* Default-568h@2x.png in Resources */,
+				95FE2435160C9B3500CA7477 /* logo-title.png in Resources */,
+				95FE243A160C9BFE00CA7477 /* logo-title@2x.png in Resources */,
+				95FE244A160CA36A00CA7477 /* tableview-background@2x.png in Resources */,
+				95FE244B160CA36A00CA7477 /* tableview-background-568h@2x.png in Resources */,
+				95FE244C160CA36A00CA7477 /* tableview-background.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		95345B4115186D9E0015FFD4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95345B5615186D9F0015FFD4 /* main.m in Sources */,
+				95345B5A15186D9F0015FFD4 /* InfinitAppDelegate.m in Sources */,
+				95345B6015186D9F0015FFD4 /* RootViewController.m in Sources */,
+				95345B6D151870450015FFD4 /* InfinitData.m in Sources */,
+				9563B472151CBA4D007E57CB /* InfinitFile.m in Sources */,
+				956B138F15540D9D005334E3 /* LoginViewController.m in Sources */,
+				952894D315587E3B0054E527 /* SettingsViewController.m in Sources */,
+				95F8170715628D4900F9E498 /* PlayViewController.m in Sources */,
+				954DCFFB156D21B900F172E0 /* ZKRevealingTableViewCell.m in Sources */,
+				95E6E9E5156E7F190085A8EC /* PullRefreshTableViewController.m in Sources */,
+				95E879A915777CC00082DA94 /* UINavigationItem+JTRevealSidebarV2.m in Sources */,
+				95E879AA15777CC00082DA94 /* UIViewController+JTRevealSidebarV2.m in Sources */,
+				95E879AF1577870E0082DA94 /* RightSidebarDataSource.m in Sources */,
+				9501F77915C294D3000895FE /* SignUpViewController.m in Sources */,
+				9561925915C2979D005F5E10 /* JSONKit.m in Sources */,
+				95FEF50415CADEE900111C93 /* InfinitCrypto.m in Sources */,
+				95F9EE6215E5192B0098E80D /* InfinitDevices.m in Sources */,
+				95F9EE6615E543A60098E80D /* InfinitNetworks.m in Sources */,
+				950D123715F603F30080AB8B /* DriveInfoViewController.m in Sources */,
+				954883CD161C33F3000E25BB /* TopNotifViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		95345B5215186D9F0015FFD4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				95345B5315186D9F0015FFD4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		95345B5B15186D9F0015FFD4 /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				95345B5C15186D9F0015FFD4 /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		95345B6115186D9F0015FFD4 /* RootViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				95345B6215186D9F0015FFD4 /* en */,
+			);
+			name = RootViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		95345B6415186D9F0015FFD4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		95345B6515186D9F0015FFD4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		95345B6715186D9F0015FFD4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Infinit/Infinit-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Infinit/Infinit-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Infinit\"",
+				);
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = Infinit;
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		95345B6815186D9F0015FFD4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Infinit/Infinit-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Infinit/Infinit-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Infinit\"",
+				);
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = Infinit;
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		95345B3F15186D9E0015FFD4 /* Build configuration list for PBXProject "Infinit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				95345B6415186D9F0015FFD4 /* Debug */,
+				95345B6515186D9F0015FFD4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		95345B6615186D9F0015FFD4 /* Build configuration list for PBXNativeTarget "Infinit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				95345B6715186D9F0015FFD4 /* Debug */,
+				95345B6815186D9F0015FFD4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 95345B3C15186D9E0015FFD4 /* Project object */;
+}

@@ -19,7 +19,7 @@ namespace nucleus
     Access::Update(Subject const& subject,
                    Permissions permissions,
                    T const& secret,
-                   elle::cryptography::PublicKey const& K)
+                   cryptography::PublicKey const& K)
     {
       // XXX[remove try/catch later]
       try

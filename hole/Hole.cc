@@ -1,5 +1,8 @@
-#include <elle/cryptography/Cipher.hh>
 #include <elle/log.hh>
+
+#include <cryptography/Cipher.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <hole/Hole.hh>
 

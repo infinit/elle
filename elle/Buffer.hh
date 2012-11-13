@@ -1,10 +1,12 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
-# include <memory>
+# include <elle/types.hh>
+# include <elle/operator.hh>
 
 # include <elle/serialize/fwd.hh>
-# include <elle/types.hh>
+
+# include <memory>
 
 namespace elle
 {
@@ -93,13 +95,28 @@ namespace elle
     InputBufferArchive
     reader() const;
 
+    // XXX[to remove in the future, if we use DumpArchives]
     void
     dump(const Natural32 shift = 0) const;
 
     bool
     operator <(Buffer const& other) const;
     bool
+    operator <=(Buffer const& other) const;
+    bool
     operator ==(Buffer const& other) const;
+    ELLE_OPERATOR_GT(Buffer);
+    ELLE_OPERATOR_GTE(Buffer);
+    ELLE_OPERATOR_NEQ(Buffer);
+    bool
+    operator <(WeakBuffer const& other) const;
+    bool
+    operator <=(WeakBuffer const& other) const;
+    bool
+    operator ==(WeakBuffer const& other) const;
+    ELLE_OPERATOR_GT(WeakBuffer);
+    ELLE_OPERATOR_GTE(WeakBuffer);
+    ELLE_OPERATOR_NEQ(WeakBuffer);
 
   private:
     static size_t _next_size(size_t);
@@ -130,15 +147,20 @@ namespace elle
       , _size(buffer.size())
     {}
 
-    WeakBuffer(WeakBuffer const& buffer)
-      : _contents(buffer.mutable_contents())
-      , _size(buffer.size())
+    WeakBuffer(Buffer&&) = delete;
+
+    WeakBuffer(WeakBuffer const& other)
+      : _contents(other._contents)
+      , _size(other._size)
     {}
 
     WeakBuffer(WeakBuffer&& other)
       : _contents(other._contents)
       , _size(other._size)
-    {}
+    {
+      other._contents = nullptr;
+      other._size = 0;
+    }
 
     size_t        size() const              { return this->_size; }
     Byte const*   contents() const          { return this->_contents; }
@@ -146,6 +168,29 @@ namespace elle
 
     InputBufferArchive
     reader() const;
+
+    // XXX[to remove in the future, if we use DumpArchives]
+    void
+    dump(const Natural32 shift = 0) const;
+
+    bool
+    operator <(WeakBuffer const& other) const;
+    bool
+    operator <=(WeakBuffer const& other) const;
+    bool
+    operator ==(WeakBuffer const& other) const;
+    ELLE_OPERATOR_GT(WeakBuffer);
+    ELLE_OPERATOR_GTE(WeakBuffer);
+    ELLE_OPERATOR_NEQ(WeakBuffer);
+    bool
+    operator <(Buffer const& other) const;
+    bool
+    operator <=(Buffer const& other) const;
+    bool
+    operator ==(Buffer const& other) const;
+    ELLE_OPERATOR_GT(Buffer);
+    ELLE_OPERATOR_GTE(Buffer);
+    ELLE_OPERATOR_NEQ(Buffer);
   };
 
 }

@@ -53,13 +53,11 @@ namespace package
     generate_something_specific(Natural32 const ohoh,
                                 T& bla)
     {
-      //
       // One can comment some parts of the code. However, these comments
       // do not need to be exposed to the developer using the class.
       //
       // Therefore, one can notice that this comment is not intended to
       // be extracted by Doxygen.
-      //
     }
 
   }

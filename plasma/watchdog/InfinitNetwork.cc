@@ -162,8 +162,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   nucleus::neutron::Access access(network, identity.pair.K);
   if (access.Add(new nucleus::neutron::Record{
         subject,
-        permissions,
-        nucleus::neutron::Token::null()
+        permissions
         }) == elle::Status::Error)
     throw std::runtime_error("unable to add the record to the access");
 
@@ -223,10 +222,11 @@ void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
 
-  elle::io::Path shelter(lune::Lune::Network::Shelter::Root);
-  shelter.Complete(elle::io::Piece("%NETWORK%", this->_description._id));
-  ELLE_DEBUG("Shelter path == %s", shelter.string());
-  hole::storage::Directory storage(shelter.string());
+  elle::io::Path shelter_path(lune::Lune::Shelter);
+  shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()},
+                        elle::io::Piece{"%NETWORK%", this->_description_id});
+  ELLE_DEBUG("Shelter path == %s", shelter_path.string());
+  hole::storage::Directory storage(shelter_path.string());
   LOG("Built directory storage of %s", this->_description._id);
 
   assert(this->_description.root_block.size());

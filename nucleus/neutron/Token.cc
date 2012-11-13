@@ -1,9 +1,9 @@
 #include <nucleus/neutron/Token.hh>
 
-#include <elle/cryptography/SecretKey.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/SecretKey.hh>
+#include <cryptography/Code.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/PrivateKey.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -38,7 +38,7 @@ namespace nucleus
       _valid(nullptr)
     {
       if (other._valid != nullptr)
-        this->_valid = new Token::Valid(other._valid->code());
+        this->_valid = new Valid(other._valid->code());
     }
 
     Token::Token(Type const type):
@@ -72,7 +72,7 @@ namespace nucleus
     {
     }
 
-    Token::Valid::Valid(elle::cryptography::Code const& code):
+    Token::Valid::Valid(cryptography::Code const& code):
       _code(code)
     {
     }

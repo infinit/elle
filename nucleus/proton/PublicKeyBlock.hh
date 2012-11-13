@@ -2,7 +2,10 @@
 # define NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
 
 # include <elle/types.hh>
-# include <elle/cryptography/PublicKey.hh>
+
+# include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
@@ -35,8 +38,8 @@ namespace nucleus
       PublicKeyBlock(); // XXX[to deserialize]
       PublicKeyBlock(Network const& network,
                      neutron::Component const component,
-                     elle::cryptography::PublicKey const& creator_K,
-                     elle::cryptography::PublicKey const& block_K);
+                     cryptography::PublicKey const& creator_K,
+                     cryptography::PublicKey const& block_K);
 
       //
       // interfaces
@@ -63,7 +66,7 @@ namespace nucleus
       // attributes
       //
     public:
-      ELLE_ATTRIBUTE_R(elle::cryptography::PublicKey, block_K);
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, block_K);
     };
 
   }
