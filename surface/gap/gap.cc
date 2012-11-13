@@ -617,7 +617,7 @@ extern "C"
     }
 
     gap_Status
-    gap_transaction_request_callback(gap_State* state,
+    gap_transaction_callback(gap_State* state,
                                      gap_transaction_callback_t cb)
     {
       gap_Status ret = gap_ok;
