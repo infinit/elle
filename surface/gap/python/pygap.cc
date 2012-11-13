@@ -164,7 +164,7 @@ BOOST_PYTHON_MODULE(_gap)
   ////////////////////////////////
   // User status.
   py::class_<gap_UserStatusNotification, boost::noncopyable>("UserStatus", py::no_init)
-    .def_readonly("sender_id", &gap_UserStatusNotification::sender_id)
+    .def_readonly("user_id", &gap_UserStatusNotification::user_id)
     .def_readonly("status", &gap_UserStatusNotification::status)
   ;
   py::def(
