@@ -80,7 +80,7 @@ extern "C" {
 
     /// Debug func: Pull notifications.
     gap_Status
-    gap_meta_pull_notification(gap_State*,
+    gap_meta_pull_notification(gap_State* state,
                                int limit);
 
     gap_Status
