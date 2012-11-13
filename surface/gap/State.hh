@@ -126,8 +126,7 @@ namespace surface
 
       void
       update_transaction(std::string const& transaction_id,
-                         int status,
-                         std::string const& network_id);
+                         int status);
 
       void
       start_transaction(std::string const& transaction_id);

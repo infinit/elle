@@ -224,8 +224,8 @@ extern "C" {
     gap_Status
     gap_update_transaction(gap_State* state,
                            char const* transaction_id,
-                           int status,
-                           char const* network_id);
+                           int status);
+
 
     gap_Status
     gap_start_transaction(gap_State* state,

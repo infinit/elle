@@ -409,15 +409,14 @@ namespace surface
 
     void
     State::update_transaction(std::string const& transaction_id,
-                              int status,
-                              std::string const& network_id)
+                              int status)
     {
       ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
       this->_meta->update_transaction(transaction_id,
                                         status,
                                         this->_device_id,
-                                        network_id);
+                                        this->_device_name);
     }
 
     void
@@ -542,6 +541,7 @@ namespace surface
 
           ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_meta->update_device(passport.id, name);
+          this->_device_id = res.updated_device_id;
           passport_string = res.passport;
         }
 
