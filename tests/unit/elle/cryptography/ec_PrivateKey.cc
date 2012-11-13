@@ -19,12 +19,11 @@ void test_encrypt()
 
   cryptography::KeyPair pair(cryptography::KeyPair::generate(1024));
 
-  ELLE_ASSERT(pair.K.Encrypt(my_secret_text, code) == elle::Status::Ok);
+  ELLE_ASSERT(pair.K().Encrypt(my_secret_text, code) == elle::Status::Ok);
 
   std::cout << "encrypted size: " << code.buffer().size() << "\n";
 
-  std::string res;
-  ELLE_ASSERT(pair.k.Decrypt(code, res) == elle::Status::Ok);
+  std::string res{pair.k().decrypt<std::string>(code)};
 }
 
 int main()

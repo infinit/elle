@@ -24,7 +24,7 @@ namespace etoile
     {
       context.object =
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
-                                     agent::Agent::Identity.pair.K,
+                                     agent::Agent::Identity.pair.K(),
                                      nucleus::neutron::Genre::link);
 
       nucleus::proton::Address address(context.object->bind());

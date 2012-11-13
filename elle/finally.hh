@@ -2,24 +2,13 @@
 # define ELLE_FINALLY_HH
 
 # include <functional>
-
-# include <stdlib.h>
+# include <cstdlib>
 
 # include <boost/preprocessor/cat.hpp>
 
-/// Make it easy to bind a function with its arguments to the final action.
-# define ELLE_FINALLY_FUNCTION(_name_, _function_, ...)                 \
-  elle::Finally _name_(std::bind(_function_, ##__VA_ARGS__));
-
 /// Make it extremely simple to call free on a pointer when leaving a scope.
 # define ELLE_FINALLY_FREE(_name_, _pointer_)                           \
-  ELLE_FINALLY_FUNCTION(_name_, ::free, _pointer_);
-
-/// Make it simple to bind a lambda function to the final action.
-# define ELLE_FINALLY_LAMBDA(_name_, _lambda_)                          \
-  auto BOOST_PP_CAT(_elle_finally_lambda_, __LINE__) = _lambda_;        \
-  ELLE_FINALLY_FUNCTION(_name_,                                         \
-                        BOOST_PP_CAT(_elle_finally_lambda_, __LINE__));
+  elle::Finally _name_(std::bind(::free, _pointer_));
 
 namespace elle
 {
@@ -40,7 +29,6 @@ namespace elle
 
     ~Finally()
     {
-      // Is the action still valid.
       if (this->_action)
         this->_action();
     }

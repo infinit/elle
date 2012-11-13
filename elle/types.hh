@@ -1,4 +1,4 @@
-#ifndef  ELLE_TYPES_HH
+#ifndef ELLE_TYPES_HH
 # define ELLE_TYPES_HH
 
 # include <cstdint>
@@ -6,7 +6,7 @@
 # include <string>
 # include <typeinfo>
 
-# include <openssl/bn.h>
+# include <openssl/bn.h> // XXX[to remove]
 
 // XXX demangle + types check for the following macros
 
@@ -32,7 +32,7 @@ namespace elle
     typedef uint32_t                      Natural32;
     typedef uint64_t                      Natural64;
 
-    typedef ::BIGNUM                      Large;
+  typedef ::BIGNUM                      Large; // XXX[to remove]
 
     typedef void                          Void;
     typedef bool                          Bool;
@@ -98,7 +98,5 @@ namespace elle
           return s == Status::True;
       }
 }
-
-std::ostream& operator <<(std::ostream& out, elle::Large const& value);
 
 #endif

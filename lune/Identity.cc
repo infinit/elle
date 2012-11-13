@@ -46,15 +46,15 @@ namespace lune
                                          cryptography::KeyPair const&   pair)
   {
     // One does not simply ...
-    assert(pair.k.key() != nullptr);
-    assert(pair.K.key() != nullptr);
+    assert(pair.k().key() != nullptr);
+    assert(pair.K().key() != nullptr);
 
     this->_id = id;
     this->name = name;
     this->pair = pair;
 
-    assert(this->pair.k.key() != nullptr);
-    assert(this->pair.K.key() != nullptr);
+    assert(this->pair.k().key() != nullptr);
+    assert(this->pair.K().key() != nullptr);
 
     return elle::Status::Ok;
   }
@@ -152,10 +152,11 @@ namespace lune
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
-    if (authority.K.Verify(this->signature,
-                           elle::serialize::make_tuple(this->_id,
-                                                       this->name,
-                                                       *this->cipher)) == elle::Status::Error)
+    if (authority.K.Verify(
+          this->signature,
+          elle::serialize::make_tuple(this->_id,
+                                      this->name,
+                                      *this->cipher)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;

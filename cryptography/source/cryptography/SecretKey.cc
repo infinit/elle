@@ -132,6 +132,7 @@ namespace infinit
                                              iv);
       // generate the key and IV based on the salt and password.
       // XXX the test was bytes_to_key != sizeof(key)
+      // XXX[test EVP_BytesToKey rather than using a local variable]
       if (bytes_to_key > sizeof (key))
         escape("the generated key's size does not match the one expected");
 
@@ -266,7 +267,7 @@ namespace infinit
                               cipher.buffer().contents() +
                               sizeof (SecretKey::Magic) - 1 +
                               sizeof (salt),
-                              cipher.buffer(.size() -
+                              cipher.buffer().size() -
                               (sizeof (SecretKey::Magic) - 1 +
                                sizeof (salt))) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));

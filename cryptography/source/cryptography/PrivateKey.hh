@@ -2,37 +2,28 @@
 # define INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HH
 
 # include <cryptography/fwd.hh>
-# include <cryptography/Plain.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/io/Dumpable.hh>
-# include <elle/radix/Object.hh>
+# include <elle/serialize/fwd.hh>
 
-#include <elle/idiom/Close.hh>
-# include <openssl/rsa.h>
-# include <openssl/engine.h>
 # include <openssl/bn.h>
-# include <openssl/crypto.h>
-# include <openssl/err.h>
 # include <openssl/evp.h>
-#include <elle/idiom/Open.hh>
+
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace infinit
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents a private key based on the RSA cryptosystem.
-    ///
-    /// note that the cryptographic methods are set as virtual because
-    /// some classes may wish to override it, as it is the case in the
-    /// Etoile's agent.
-    ///
+    /// Represent a private key in a given cryptosystem, RSA for instance.
     class PrivateKey:
-      public elle::radix::Object
+      public elle::io::Dumpable,
+      public elle::Printable
     {
       /*----------.
       | Constants |
@@ -43,46 +34,59 @@ namespace infinit
         static oneway::Algorithm const oneway_algorithm;
       };
 
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      //
-      // constants
-      //
-      static const PrivateKey           Null;
-
-      //
-      // constructors & destructors
-      //
-      PrivateKey();
-      PrivateKey(const PrivateKey&);
+      PrivateKey(); // XXX[deserialize]
+      PrivateKey(::EVP_PKEY const* key);
+      PrivateKey(PrivateKey const& other);
+      // XXX[move?]
       ~PrivateKey();
+    private:
+      PrivateKey(::BIGNUM* n,
+                 ::BIGNUM* e,
+                 ::BIGNUM* d,
+                 ::BIGNUM* p,
+                 ::BIGNUM* q,
+                 ::BIGNUM* dmp1,
+                 ::BIGNUM* dmq1,
+                 ::BIGNUM* iqmp);
 
-      //
-      // methods
-      //
-      elle::Status            Create(const ::EVP_PKEY*);
-      elle::Status            Create(elle::Large*,
-                               elle::Large*,
-                               elle::Large*,
-                               elle::Large*,
-                               elle::Large*,
-                               elle::Large*,
-                               elle::Large*,
-                               elle::Large*);
-
+      /*--------.
+      | Methods |
+      `--------*/
+    private:
+      /// Construct the object based on big numbers.
+      ///
+      /// Note that when called, the number are already allocated for the
+      /// purpose of the object construction. In other words, the ownership
+      /// is transferred to the private key being constructed. Thus, it is
+      /// the responsibility of the private key being constructed to release
+      /// memory should an error occur, i.e not the caller's
+      void
+      _construct(::BIGNUM* n,
+                 ::BIGNUM* e,
+                 ::BIGNUM* d,
+                 ::BIGNUM* p,
+                 ::BIGNUM* q,
+                 ::BIGNUM* dmp1,
+                 ::BIGNUM* dmq1,
+                 ::BIGNUM* iqmp);
     public:
+      /// Decrypt a code and returns the original clear text.
       ///
-      /// this method decrypts a code which should actually be
-      /// an archive containing both a secret key and some data.
+      /// Note that the code is, in practice, an archive containing both
+      /// a temporarily-generated secret key and the plain text encrypted
+      /// with the secret key.
       ///
-      /// this method starts by (i) extracting the key and data
-      /// in their encrypted forms (ii) decrypt the symmetric key
-      /// with the private key and (iii) decipher the data with the
-      /// symmetric key.
-      ///
-      elle::Status
-      Decrypt(Code const& in, elle::Buffer& out) const;
-      template<typename T> elle::Status
-      Decrypt(Code const& in, T& out) const;
+      Clear
+      decrypt(Code const& code) const;
+      /// Decrypt a code and returns the given type, assuming the given type
+      /// can be extracted from the clear, which should then be an archive.
+      template <typename T>
+      T
+      decrypt(Code const& code) const;
 
     public:
       ///
@@ -121,16 +125,25 @@ namespace infinit
       elle::Status
       Derive(const Seed& seed, PublicKey& key) const;
 
-      //
-      // interfaces
-      //
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      elle::Boolean
+      operator ==(PrivateKey const& other) const;
+      ELLE_OPERATOR_ASSIGNMENT(PrivateKey); // XXX
 
-      // object
-      declare(PrivateKey);
-      elle::Boolean           operator==(const PrivateKey&) const;
-
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // dumpable
       elle::Status            Dump(const elle::Natural32 = 0) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
+      // printable
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes
@@ -145,7 +158,7 @@ namespace infinit
       }                 _contexts;
 
     public:
-      ::EVP_PKEY const* key() const { return this->_key; }
+      ::EVP_PKEY const* key() const { return this->_key; } // XXX
     };
 
   }

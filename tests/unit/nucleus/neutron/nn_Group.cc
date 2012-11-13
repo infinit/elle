@@ -22,18 +22,18 @@ void test()
 
   nucleus::proton::Network network("test");
 
-  nucleus::neutron::Group group(network, owner.K, "everybody");
+  nucleus::neutron::Group group(network, owner.K(), "everybody");
 
   cryptography::KeyPair pass(cryptography::KeyPair::generate(2048));
 
-  nucleus::neutron::Ensemble ensemble(network, owner.K);
+  nucleus::neutron::Ensemble ensemble(network, owner.K());
 
   ELLE_TRACE("Add subjects in the ensemble")
     for (int i = 0; i < 5; i++)
       {
         cryptography::KeyPair kp(cryptography::KeyPair::generate(1024));
 
-        nucleus::neutron::Subject subject(kp.K);
+        nucleus::neutron::Subject subject(kp.K());
 
         ensemble.add(
           std::move(std::unique_ptr<nucleus::neutron::Fellow>(
@@ -45,7 +45,7 @@ void test()
 
   ELLE_TRACE("Update the ensemble with the private pass")
     {
-      ensemble.update(pass.k);
+      ensemble.update(pass.k());
     }
 
   ELLE_TRACE("Bind the ensemble block");
@@ -53,16 +53,16 @@ void test()
 
   ELLE_TRACE("Upgrade the group")
     {
-      nucleus::neutron::Token manager_token(pass.k, group.manager_K());
+      nucleus::neutron::Token manager_token(pass.k(), group.manager_K());
 
-      group.upgrade(ensemble_address, pass.K, manager_token);
+      group.upgrade(ensemble_address, pass.K(), manager_token);
 
       assert(group.state() == nucleus::proton::StateDirty);
     }
 
   ELLE_TRACE("Seal the group")
     {
-      group.seal(owner.k);
+      group.seal(owner.k());
 
       assert(group.state() == nucleus::proton::StateConsistent);
     }

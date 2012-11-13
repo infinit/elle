@@ -28,7 +28,7 @@ namespace test
 
       test::ImprintBlock blk(network,
                              nucleus::neutron::ComponentObject,
-                             kp.K);
+                             kp.K());
 
       nucleus::proton::Address addr(blk.bind());
 

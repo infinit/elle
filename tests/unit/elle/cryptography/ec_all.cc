@@ -24,17 +24,16 @@ void test_encryption()
   cryptography::PublicKey K;
   cryptography::PrivateKey k;
   cryptography::Code code;
-  cryptography::Clear clear;
 
   elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
-  K = kp.K;
-  k = kp.k;
+  K = kp.K();
+  k = kp.k();
 
   CHECK(K.Encrypt(plain, code));
 
-  CHECK(k.Decrypt(code, clear));
+  cryptography::Clear clear{k.decrypt<cryptography::Clear>(code)};
 
   assert(plain == clear);
 }
@@ -50,8 +49,8 @@ void test_noitpyrcne()
   elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
-  K = kp.K;
-  k = kp.k;
+  K = kp.K();
+  k = kp.k();
 
   CHECK(k.Encrypt(plain, code));
 
@@ -70,8 +69,8 @@ void test_signature()
   elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
-  K = kp.K;
-  k = kp.k;
+  K = kp.K();
+  k = kp.k();
 
   signature = k.sign(plain);
 

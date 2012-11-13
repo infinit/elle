@@ -44,13 +44,10 @@ namespace nucleus
     T
     Token::extract(cryptography::PrivateKey const& k) const
     {
-      T secret;
-
       ELLE_ASSERT(this->_valid != nullptr);
 
       // Decrypt the code, revealing the secret information.
-      if (k.Decrypt(this->_valid->code(), secret) == elle::Status::Error)
-        escape("unable to decrypt the token");
+      T secret{k.decrypt<T>(this->_valid->code())};
 
       return (secret);
     }

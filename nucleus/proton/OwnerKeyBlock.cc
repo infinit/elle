@@ -44,9 +44,9 @@ namespace nucleus
         cryptography::KeyPair const& block_pair):
       MutableBlock(network, Family::owner_key_block, component, creator_K),
 
-      _block_K(block_pair.K),
+      _block_K(block_pair.K()),
       _owner_K(creator_K),
-      _owner_signature(block_pair.k.sign(this->_owner_K)),
+      _owner_signature(block_pair.k().sign(this->_owner_K)),
       _owner_subject(nullptr)
     {
     }

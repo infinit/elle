@@ -155,7 +155,7 @@ namespace etoile
 
               // seal the object alone with the access block.
               if (context.object->Seal(
-                    agent::Agent::Identity.pair.k,
+                    agent::Agent::Identity.pair.k(),
                     context.access) == elle::Status::Error)
                 escape("unable to seal the object");
             }
@@ -163,7 +163,7 @@ namespace etoile
             {
               // seal the object alone i.e without passing an access block.
               if (context.object->Seal(
-                    agent::Agent::Identity.pair.k,
+                    agent::Agent::Identity.pair.k(),
                     nullptr) == elle::Status::Error)
                 escape("unable to seal the object");
             }

@@ -19,10 +19,9 @@ namespace elle
     { static bool const value = StoreFormat<T>::value; };
 
     template<typename T> struct StoreFormat<T*>
-    { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
+    { static_assert(!std::is_same<T,T>::value, "Should not happen !"); };
 
   }
 }
 
 #endif
-

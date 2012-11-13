@@ -18,7 +18,9 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// XXX
+    /// Represent an output of a cryptographic operation. Note that one
+    /// can retrieve the buffer embedded in this class so as to use it
+    /// outside of the cryptography library.
     class Output:
       public elle::io::Dumpable,
       public elle::Printable,

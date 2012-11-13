@@ -103,7 +103,7 @@ namespace agent
     //
     {
       // create the subject.
-      if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::Status::Error)
+      if (Agent::Subject.Create(Agent::Identity.pair.K()) == elle::Status::Error)
         escape("unable to create the user's subject");
     }
 

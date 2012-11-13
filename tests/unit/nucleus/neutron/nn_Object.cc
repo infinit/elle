@@ -18,10 +18,10 @@ int main()
 
   nucleus::proton::Network network("name");
   nucleus::neutron::Object blk(network,
-                               kp.K,
+                               kp.K(),
                                nucleus::neutron::Genre::directory);
 
-  CHECK(blk.Seal(kp.k, nullptr));
+  CHECK(blk.Seal(kp.k(), nullptr));
 
   nucleus::proton::Address addr(blk.bind());
 

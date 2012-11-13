@@ -71,7 +71,7 @@ namespace etoile
               context.rights.key =
                 context.object->owner_token().
                   extract<cryptography::SecretKey>(
-                    agent::Agent::Identity.pair.k);
+                    agent::Agent::Identity.pair.k());
             }
 
           // set the record for ease purpose.
@@ -128,7 +128,7 @@ namespace etoile
                   context.rights.key =
                     context.rights.record->token()->
                       extract<cryptography::SecretKey>(
-                        agent::Agent::Identity.pair.k);
+                        agent::Agent::Identity.pair.k());
                 }
             }
           else
@@ -208,7 +208,7 @@ namespace etoile
                                   // manager's fellow.
                                   pass_k =
                                     token.extract<cryptography::PrivateKey>(
-                                      agent::Agent::Identity.pair.k);
+                                      agent::Agent::Identity.pair.k());
                                 }
                               catch (std::exception const& e)
                                 {
@@ -300,7 +300,7 @@ namespace etoile
                                       // from the fellow.
                                       pass_k =
                                         token.extract<cryptography::PrivateKey>(
-                                          agent::Agent::Identity.pair.k);
+                                          agent::Agent::Identity.pair.k());
 
                                       // With the private pass, one can decrypt
                                       // the access token associated with the

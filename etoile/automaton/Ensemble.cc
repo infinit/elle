@@ -58,7 +58,7 @@ namespace etoile
 
           context.ensemble =
             new nucleus::neutron::Ensemble(nucleus::proton::Network(Infinit::Network),
-                                           agent::Agent::Identity.pair.K);
+                                           agent::Agent::Identity.pair.K());
         }
 
       assert(context.ensemble);
@@ -163,7 +163,8 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
 
-          cryptography::KeyPair pass;
+          // XXX[use finally, from cryptography]
+          cryptography::KeyPair* pass(nullptr);
 
           // XXX: restore history handling
           // does the network support the history?
@@ -192,10 +193,9 @@ namespace etoile
             nucleus::neutron::Token token(context.group->manager_token());
             cryptography::PrivateKey k(
               token.extract<cryptography::PrivateKey>(
-                agent::Agent::Identity.pair.k));
+                agent::Agent::Identity.pair.k()));
 
-            pass.K = context.group->pass_K();
-            pass.k = k;
+            pass = new cryptography::KeyPair(context.group->pass_K(), k);
           }
           // XXX
 
@@ -205,7 +205,7 @@ namespace etoile
           // XXX[remove try/catch]
           try
             {
-              context.ensemble->update(pass.k);
+              context.ensemble->update(pass->k());
             }
           catch (...)
             {
@@ -231,15 +231,17 @@ namespace etoile
 
               // Regenerate the group manager's token.
               nucleus::neutron::Token manager_token(
-                pass.K,
+                pass->K(),
                 context.group->manager_subject().user());
 
-              context.group->upgrade(address, pass.K, manager_token);
+              context.group->upgrade(address, pass->K(), manager_token);
             }
           catch (...)
             {
               escape("unable to upgrade the group");
             }
+
+          delete pass;
         }
 
       return elle::Status::Ok;

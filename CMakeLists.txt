@@ -271,11 +271,11 @@ set(INFINIT_LIBRARIES
   protocol
   infinit
   hole
-  cryptography
   elle
   comet
 
   fuse
+  cryptography
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]

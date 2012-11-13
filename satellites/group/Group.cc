@@ -45,6 +45,7 @@ namespace satellite
   etoile::portal::RPC* Group::rpcs = nullptr;
 
   /// Ward helper to make sure groups are discarded on errors.
+  /// XXX[use finally!]
   class Ward
   {
   public:

@@ -4,7 +4,6 @@
 #include <elle/Exception.hh>
 
 #include <utility>
-
 ELLE_OPERATOR_RELATIONALS();
 
 namespace test

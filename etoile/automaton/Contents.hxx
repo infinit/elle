@@ -74,7 +74,7 @@ namespace etoile
           context.contents =
             new nucleus::proton::Contents<typename T::C>(
               nucleus::proton::Network(Infinit::Network), // FIXME ?
-              agent::Agent::Identity.pair.K);
+              agent::Agent::Identity.pair.K());
 
           // otherwise, create an empty contents.
           if (context.contents->Create() == elle::Status::Error)

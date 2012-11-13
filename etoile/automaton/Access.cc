@@ -69,7 +69,7 @@ namespace etoile
 
           context.access =
             new nucleus::neutron::Access(nucleus::proton::Network(Infinit::Network),
-                                         agent::Agent::Identity.pair.K);
+                                         agent::Agent::Identity.pair.K());
         }
 
       return elle::Status::Ok;

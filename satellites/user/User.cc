@@ -195,7 +195,7 @@ namespace satellite
       escape("unable to dump the identity");
 
     // retrieve the user's public key unique.
-    if (identity.pair.K.Save(unique) == elle::Status::Error)
+    if (identity.pair.K().Save(unique) == elle::Status::Error)
       escape("unable to save the public key's unique");
 
     // display the unique.

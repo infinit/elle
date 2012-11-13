@@ -131,6 +131,7 @@ namespace infinit
     public:
       // object
       declare(PublicKey);
+      // XXX ELLE_OPERATOR_ASSIGNMENT(PrivateKey); // XXX
       elle::Boolean           operator==(const PublicKey&) const;
 
       // dumpable
