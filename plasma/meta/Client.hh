@@ -197,7 +197,7 @@ namespace plasma
 
       CreateTransactionResponse
       create_transaction(std::string const& recipient_id_or_email,
-                         std::string const& file_name,
+                         std::string const& first_filename,
                          size_t count,
                          size_t size,
                          bool is_dir,
@@ -208,7 +208,7 @@ namespace plasma
       update_transaction(std::string const& transaction_id,
                          int status,
                          std::string const& device_id,
-                         std::string const& network_id = "");
+                         std::string const& device_name);
 
       StartTransactionResponse
       start_transaction(std::string const& transaction_id);

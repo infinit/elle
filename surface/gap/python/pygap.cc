@@ -174,29 +174,37 @@ BOOST_PYTHON_MODULE(_gap)
 
   ////////////////////////////////
   // File transfer request.
-  py::class_<gap_FileTransferRequestNotification, boost::noncopyable>("FileTransferRequest", py::no_init)
-    .def_readonly("sender_id", &gap_FileTransferRequestNotification::sender_id)
-    .def_readonly("transaction_id", &gap_FileTransferRequestNotification::transaction_id)
-    .def_readonly("file_name", &gap_FileTransferRequestNotification::file_name)
-    .def_readonly("file_size", &gap_FileTransferRequestNotification::file_size)
-    .def_readonly("new", &gap_FileTransferRequestNotification::is_new)
+  py::class_<gap_TransactionNotification, boost::noncopyable>("Transaction", py::no_init)
+    .def_readonly("first_filename", &gap_TransactionNotification::first_filename)
+    .def_readonly("files_count", &gap_TransactionNotification::files_count)
+    .def_readonly("total_size", &gap_TransactionNotification::total_size)
+    .def_readonly("is_directory", &gap_TransactionNotification::is_directory)
+    .def_readonly("network_id", &gap_TransactionNotification::network_id)
+    .def_readonly("sender_id", &gap_TransactionNotification::sender_id)
+    .def_readonly("sender_fullname", &gap_TransactionNotification::sender_fullname)
+    .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
+    .def_readonly("new", &gap_TransactionNotification::is_new)
   ;
   py::def(
-    "OnFileTransfer",
-    &_gap_set_callback<gap_FileTransferRequestNotification>
+    "OnTransaction",
+    &_gap_set_callback<gap_TransactionNotification>
   );
 
   ////////////////////////////////
   // File transfer status.
-  py::class_<gap_FileTransferStatusNotification, boost::noncopyable>("FileTransferStatus", py::no_init)
-    .def_readonly("network_id", &gap_FileTransferStatusNotification::network_id)
-    .def_readonly("status", &gap_FileTransferStatusNotification::status)
-    .def_readonly("new", &gap_FileTransferStatusNotification::is_new)
+  py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransactionStatus", py::no_init)
+    .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
+    .def_readonly("network_id", &gap_TransactionStatusNotification::network_id)
+    .def_readonly("sender_device_id", &gap_TransactionStatusNotification::sender_device_id)
+    .def_readonly("recipient_device_name", &gap_TransactionStatusNotification::recipient_device_id)
+    .def_readonly("recipient_device_id", &gap_TransactionStatusNotification::recipient_device_name)
+    .def_readonly("status", &gap_TransactionStatusNotification::status)
+    .def_readonly("new", &gap_TransactionStatusNotification::is_new)
   ;
 
   py::def(
-    "OnFileTransferStatus",
-    &_gap_set_callback<gap_FileTransferStatusNotification>
+    "OnTransactionStatus",
+    &_gap_set_callback<gap_TransactionStatusNotification>
   );
 
   ////////////////////////////////

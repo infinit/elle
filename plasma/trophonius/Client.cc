@@ -83,7 +83,7 @@ namespace plasma
 
       notification->files_count = dic["files_count"].as_integer();
       notification->total_size = dic["total_size"].as_integer();
-      notification->is_directory = dic["is_directory"].as_integer();
+      notification->is_directory = dic["is_directory"].as_bool();
 
       temp = dic["network_id"].as_string();
       notification->network_id = temp.c_str();

@@ -357,6 +357,8 @@ namespace surface
     State::send_files(std::string const& recipient_id_or_email,
                       std::unordered_set<std::string> const& files)
     {
+      ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
+
       if (files.empty())
             throw Exception(gap_no_file,
                             "no files to send");
@@ -371,7 +373,9 @@ namespace surface
           size += get_size(path);
         }
 
-      std::string filename = fs::path(*(files.cbegin())).filename().string();
+      std::string first_filename = fs::path(*(files.cbegin())).filename().string();
+
+      ELLE_DEBUG("First filename '%s'.", first_filename);
 
       // Build timestamp.
       elle::utility::Time time;
@@ -382,10 +386,9 @@ namespace surface
       oss << time.nanoseconds;
 
       // FIXME: How to compute network name ?
+      /// XXX: Something fucked my id.
       std::string network_name =
-        std::string(this->_me._id) +
-        + " - "
-        + std::string(recipient_id_or_email)
+        std::string(recipient_id_or_email)
         + " - "
         + oss.str();
 
@@ -396,12 +399,12 @@ namespace surface
       //this->refresh_networks();
 
       this->_meta->create_transaction(recipient_id_or_email,
-                                      filename,
+                                      first_filename,
                                       files.size(),
                                       size,
-                                      fs::is_directory(filename),
+                                      fs::is_directory(first_filename),
                                       network_id,
-                                      this->_device_id);
+                                      this->_device_name);
     }
 
     void
@@ -523,6 +526,7 @@ namespace surface
 
       std::string passport_string;
 
+      this->_device_name = name;
       if (force_create || !this->has_device())
         {
           auto res = this->_meta->create_device(name);

@@ -135,6 +135,7 @@ namespace surface
     private:
       gap_User _me;
       std::string _device_id;
+      std::string _device_name;
 
     ///
     /// Launch and stop infinit instances.

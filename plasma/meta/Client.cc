@@ -309,7 +309,7 @@ namespace plasma
 
     CreateTransactionResponse
     Client::create_transaction(std::string const& recipient_id_or_email,
-                               std::string const& file_name,
+                               std::string const& first_filename,
                                size_t count,
                                size_t size,
                                bool is_dir,
@@ -318,14 +318,14 @@ namespace plasma
     {
       json::Dictionary request{std::map<std::string, std::string>
         {
-          {"id_or_email", recipient_id_or_email},
-          {"file_name", file_name},
-          {"network_id", network_id},
+          {"recipient_id_or_email", recipient_id_or_email},
+          {"first_filename", first_filename},
           {"device_id", device_id},
+          {"network_id", network_id},
         }};
-      request["file_size"] = size;
-      request["is_dir"] = is_dir;
-      request["file_count"] = count;
+      request["total_size"] = size;
+      request["is_directory"] = is_dir;
+      request["files_count"] = count;
 
       auto res = this->_client.post<CreateTransactionResponse>("/transaction/create", request);
 
@@ -336,15 +336,20 @@ namespace plasma
     Client::update_transaction(std::string const& transaction_id,
                                int status,
                                std::string const& device_id,
-                               std::string const& network_id)
+                               std::string const& device_name)
     {
       json::Dictionary request{std::map<std::string, std::string>
         {
           {"transaction_id", transaction_id},
           {"device_id", device_id},
-          {"network_id", network_id},
+          {"device_name", device_name},
         }};
       request["status"] = status;
+
+      ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%ui'",
+                 transaction_id,
+                 device_name,
+                 status);
 
       auto res = this->_client.post<UpdateTransactionResponse>("/transaction/update", request);
 
