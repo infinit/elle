@@ -8,8 +8,6 @@
 
 #include <elle/idiom/Close.hh>
 
-ELLE_LOG_COMPONENT("Infinit.plasma.meta.Client");
-
 // - API responses serializers ------------------------------------------------
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \

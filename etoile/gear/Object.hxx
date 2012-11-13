@@ -1,10 +1,9 @@
 #ifndef ETOILE_GEAR_OBJECT_HXX
 # define ETOILE_GEAR_OBJECT_HXX
 
-# include <cassert>
-
-# include <elle/cryptography/SecretKey.hh>
 # include <elle/serialize/Pointer.hh>
+
+# include <cryptography/SecretKey.hh>
 
 # include <nucleus/neutron/Author.hh>
 # include <nucleus/neutron/Object.hh>

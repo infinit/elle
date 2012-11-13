@@ -66,7 +66,7 @@ namespace satellite
   {
     // Load the phrase.
     lune::Phrase        phrase;
-    phrase.load(Infinit::Network, "portal");
+    phrase.load(Infinit::User, Infinit::Network, "portal");
 
     // Connect to the server.
     Progress::socket =

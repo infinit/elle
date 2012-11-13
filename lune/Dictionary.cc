@@ -8,22 +8,13 @@ namespace lune
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the dictionary files extension.
-  ///
-  const elle::String            Dictionary::Extension = ".dic";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
   elle::io::Path
   Dictionary::_path(elle::String const& user)
   {
-    return (elle::io::Path(Lune::User::Dictionary,
+    return (elle::io::Path(Lune::Dictionary,
                            elle::io::Piece("%USER%", user)));
   }
 

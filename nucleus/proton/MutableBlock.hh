@@ -1,15 +1,19 @@
 #ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
 # define NUCLEUS_PROTON_MUTABLEBLOCK_HH
 
+# include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
+
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Base.hh>
 # include <nucleus/neutron/Component.hh>
-
-# include <elle/Printable.hh>
-# include <elle/serialize/construct.hh>
 
 namespace nucleus
 {
@@ -52,7 +56,7 @@ namespace nucleus
       MutableBlock(Network const network,
                    Family const family,
                    neutron::Component const component,
-                   elle::cryptography::PublicKey const& creator_K);
+                   cryptography::PublicKey const& creator_K);
 
       //
       // methods

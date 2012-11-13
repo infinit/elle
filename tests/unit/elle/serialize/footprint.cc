@@ -1,13 +1,16 @@
+#include <elle/serialize/footprint.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 
-#include <elle/serialize/footprint.hh>
-#include <elle/cryptography/KeyPair.hh>
-
 int main()
 {
-  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair pair(cryptography::KeyPair::generate());
 
   elle::Natural32 size = elle::serialize::footprint(pair);
 

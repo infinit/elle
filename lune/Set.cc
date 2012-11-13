@@ -11,15 +11,6 @@ namespace lune
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this string defines the set files extension.
-  ///
-  const elle::String            Set::Extension = ".set";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -57,9 +48,11 @@ namespace lune
   }
 
   elle::io::Path
-  Set::_path(elle::String const& network)
+  Set::_path(elle::String const& user,
+             elle::String const& network)
   {
-    return (elle::io::Path(Lune::Network::Set,
+    return (elle::io::Path(Lune::Set,
+                           elle::io::Piece("%USER%", user),
                            elle::io::Piece("%NETWORK%", network)));
   }
 
@@ -101,14 +94,15 @@ namespace lune
 //
 
   void
-  Set::load(elle::String const& network)
+  Set::load(elle::String const& user,
+            elle::String const& network)
   {
     elle::standalone::Region region;
     std::istringstream stream;
     elle::String element;
 
     // read the file's content.
-    if (elle::io::File::Read(Set::_path(network), region) == elle::Status::Error)
+    if (elle::io::File::Read(Set::_path(user, network), region) == elle::Status::Error)
       throw std::runtime_error("unable to read the file's content");
 
     // set up the stream.
@@ -135,9 +129,10 @@ namespace lune
   }
 
   void
-  Set::store(elle::String const& network) const
+  Set::store(elle::String const& user,
+             elle::String const& network) const
   {
-    elle::io::Path path(Set::_path(network));
+    elle::io::Path path(Set::_path(user, network));
     std::ofstream out(path.string());
 
     if (!out.good())
@@ -159,15 +154,17 @@ namespace lune
   }
 
   void
-  Set::erase(elle::String const& network)
+  Set::erase(elle::String const& user,
+             elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Set::_path(network));
+    elle::concept::Fileable<>::erase(Set::_path(user, network));
   }
 
   elle::Boolean
-  Set::exists(elle::String const& network)
+  Set::exists(elle::String const& user,
+              elle::String const& network)
   {
-    return (elle::concept::Fileable<>::exists(Set::_path(network)));
+    return (elle::concept::Fileable<>::exists(Set::_path(user, network)));
   }
 
 }

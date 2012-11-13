@@ -1,7 +1,7 @@
 #include <nucleus/neutron/Ensemble.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 #include <elle/log.hh>
 
 #include <elle/idiom/Open.hh>
@@ -29,7 +29,7 @@ namespace nucleus
     }
 
     Ensemble::Ensemble(proton::Network const& network,
-                       elle::cryptography::PublicKey const& creator_K):
+                       cryptography::PublicKey const& creator_K):
       proton::ContentHashBlock(network, ComponentEnsemble, creator_K)
     {
     }
@@ -171,7 +171,7 @@ namespace nucleus
     }
 
     void
-    Ensemble::update(elle::cryptography::PrivateKey const& pass_k)
+    Ensemble::update(cryptography::PrivateKey const& pass_k)
     {
       Ensemble::Iterator iterator;
 

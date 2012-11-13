@@ -2,11 +2,11 @@
 
 #include <elle/io/File.hh>
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/cryptography/PrivateKey.hh>
-
 #include <elle/Passport.hh>
 #include <lune/Lune.hh>
 #include <elle/Authority.hh>
+
+#include <cryptography/PrivateKey.hh>
 
 namespace elle
 {

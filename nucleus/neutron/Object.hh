@@ -6,6 +6,10 @@
 # include <elle/serialize/Serializable.hh>
 # include <elle/serialize/construct.hh>
 
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Revision.hh>
@@ -77,7 +81,7 @@ namespace nucleus
       //
     public:
       Object(proton::Network const& network,
-             elle::cryptography::PublicKey const& owner_K,
+             cryptography::PublicKey const& owner_K,
              Genre const genre);
 
       Object(); // XXX[use deserialize constructor]
@@ -103,7 +107,7 @@ namespace nucleus
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
-      elle::Status      Seal(elle::cryptography::PrivateKey const&,
+      elle::Status      Seal(cryptography::PrivateKey const&,
                              Access const* access);
 
       /// Returns the address of the referenced Access block.
@@ -202,7 +206,7 @@ namespace nucleus
         proton::Address access;
 
         proton::Revision revision;
-        elle::cryptography::Signature signature;
+        cryptography::Signature signature;
 
         proton::State state;
       } _meta;
@@ -217,7 +221,7 @@ namespace nucleus
         elle::utility::Time modification_timestamp;
 
         proton::Revision revision;
-        elle::cryptography::Signature signature;
+        cryptography::Signature signature;
 
         proton::State state;
       } _data;

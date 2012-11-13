@@ -1,0 +1,15 @@
+add_library(cryptography
+  source/cryptography/Cipher.cc
+  source/cryptography/Code.cc
+  source/cryptography/cryptography.cc
+  source/cryptography/KeyPair.cc
+  source/cryptography/Input.cc
+  source/cryptography/oneway.cc
+  source/cryptography/Output.cc
+  source/cryptography/PrivateKey.cc
+  source/cryptography/PublicKey.cc
+  source/cryptography/random.cc
+  source/cryptography/SecretKey.cc
+  source/cryptography/Seed.cc
+  source/cryptography/Signature.cc
+)

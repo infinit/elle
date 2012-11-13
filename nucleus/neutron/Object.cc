@@ -6,9 +6,9 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Author.hh>
 
-#include <elle/cryptography/Digest.hh>
+#include <cryptography/Digest.hh>
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/cryptography/PrivateKey.hh>
+#include <cryptography/PrivateKey.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -57,7 +57,7 @@ namespace nucleus
     /// part by setting the owner as the author.
     ///
     Object::Object(proton::Network const& network,
-                   elle::cryptography::PublicKey const& owner_K,
+                   cryptography::PublicKey const& owner_K,
                    Genre const genre):
       proton::ImprintBlock(network, ComponentObject, owner_K),
 
@@ -201,7 +201,7 @@ namespace nucleus
     ///
     /// this method seals the data and meta data by signing them.
     ///
-    elle::Status        Object::Seal(elle::cryptography::PrivateKey const&    k,
+    elle::Status        Object::Seal(cryptography::PrivateKey const&    k,
                                      Access const* access)
     {
       // re-sign the data if required.
@@ -251,7 +251,7 @@ namespace nucleus
 
               // compute the fingerprint of the access (subject, permissions)
               // tuples.
-              elle::cryptography::Digest fingerprint(access->fingerprint());
+              cryptography::Digest fingerprint(access->fingerprint());
 
               // sign the meta data, making sure to include the access
               // fingerprint.
@@ -421,7 +421,7 @@ namespace nucleus
       /// (v) verifies the data signature and (vi) verify that the mutable
       /// block's general revision number matches the object's revisions.
 
-      elle::cryptography::PublicKey author;
+      cryptography::PublicKey author;
 
       // (i)
       {
@@ -440,7 +440,7 @@ namespace nucleus
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
-            elle::cryptography::Digest fingerprint(access->fingerprint());
+            cryptography::Digest fingerprint(access->fingerprint());
 
             // verify the meta part, including the access fingerprint.
             if (this->owner_K().Verify(

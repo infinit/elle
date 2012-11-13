@@ -1,12 +1,16 @@
 #ifndef  ELLE_AUTHORITY_HH
 # define ELLE_AUTHORITY_HH
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/PublicKey.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 
 # include <elle/idiom/Open.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/PublicKey.hh>
+
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace elle
 {
@@ -35,9 +39,9 @@ namespace elle
   `-------------*/
   public:
     /// Create an authority based on the given key pair.
-    Authority(elle::cryptography::KeyPair const&);
+    Authority(cryptography::KeyPair const&);
     /// Create an authority based on the given public key only.
-    Authority(elle::cryptography::PublicKey const&);
+    Authority(cryptography::PublicKey const&);
     /// Create a copy of an Authority.
     Authority(Authority const& from);
     /// Deserialize an Authority.
@@ -72,10 +76,10 @@ namespace elle
     //
     Type                type;
 
-    elle::cryptography::PublicKey     K;
-    elle::cryptography::PrivateKey*   k;
+    cryptography::PublicKey     K;
+    cryptography::PrivateKey*   k;
 
-    elle::cryptography::Cipher*       cipher;
+    cryptography::Cipher*       cipher;
   };
 
 }

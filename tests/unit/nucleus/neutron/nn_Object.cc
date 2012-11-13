@@ -1,17 +1,20 @@
-#include <iostream>
-
 #include <elle/print.hh>
-#include <elle/cryptography/KeyPair.hh>
 #include <elle/Buffer.hh>
+
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
+
+#include <iostream>
 
 #define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 int main()
 {
-  elle::cryptography::KeyPair kp(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair kp(cryptography::KeyPair::generate());
 
   nucleus::proton::Network network("name");
   nucleus::neutron::Object blk(network,

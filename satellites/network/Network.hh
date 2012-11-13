@@ -43,8 +43,10 @@ namespace satellite
                                        hole::Openness const& openness,
                                        horizon::Policy const& policy,
                                        const elle::String&);
-    static elle::Status         Destroy(const elle::String&);
-    static elle::Status         Information(const elle::String&);
+    static elle::Status         Destroy(const elle::String&,
+                                        const elle::String&);
+    static elle::Status         Information(const elle::String&,
+                                            const elle::String&);
   };
 
 }

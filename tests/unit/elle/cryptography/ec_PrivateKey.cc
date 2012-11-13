@@ -1,10 +1,12 @@
-#include <iostream>
-
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/KeyPair.hh>
+#include <cryptography/PrivateKey.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <elle/idiom/Open.hh>
+
+#include <iostream>
 
 #define show_assert(expr)                                                     \
   do {                                                                        \
@@ -17,9 +19,9 @@ void test_encrypt()
     "This is a very secret text. my gmail password is 'bite'"
   ;
 
-  elle::cryptography::Code code;
+  cryptography::Code code;
 
-  elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
+  cryptography::KeyPair pair(cryptography::KeyPair::generate());
 
   show_assert(pair.K.Encrypt(my_secret_text, code));
 

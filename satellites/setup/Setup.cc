@@ -19,7 +19,6 @@ namespace satellite
   elle::Status          Setup::Initialize()
   {
     elle::io::Path          path;
-    lune::Configuration configuration;
 
     //
     // initialize the infinit path.
@@ -44,22 +43,6 @@ namespace satellite
         }
     }
 
-    //
-    // create the configuration file.
-    //
-    {
-      // pull the default parameters.
-      if (configuration.Pull() == elle::Status::Error)
-        escape("unable to pull the configuration parameters");
-
-      // push the current parameters.
-      if (configuration.Push() == elle::Status::Error)
-        escape("unable to pus the parameters");
-
-      // store the configuration.
-      configuration.store();
-    }
-
     return elle::Status::Ok;
   }
 
@@ -69,17 +52,6 @@ namespace satellite
   elle::Status          Setup::Clean()
   {
     elle::io::Path          path;
-
-    //
-    // remove the configuration, if necessary.
-    //
-    {
-      lune::Configuration       configuration;
-
-      // if the configuration exists...
-      if (lune::Configuration::exists() == true)
-        lune::Configuration::erase();
-    }
 
     //
     // reinitialize the infinit directory.

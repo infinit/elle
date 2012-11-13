@@ -3,7 +3,7 @@
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Address.hh>
 
-#include <elle/cryptography/KeyPair.hh>
+#include <cryptography/KeyPair.hh>
 
 namespace nucleus
 {
@@ -24,17 +24,17 @@ namespace nucleus
     OwnerKeyBlock::OwnerKeyBlock(
         Network const& network,
         neutron::Component const component,
-        elle::cryptography::PublicKey const& creator_K):
+        cryptography::PublicKey const& creator_K):
       OwnerKeyBlock(network, component, creator_K,
-                    elle::cryptography::KeyPair::generate())
+                    cryptography::KeyPair::generate())
     {
     }
 
     OwnerKeyBlock::OwnerKeyBlock(
         Network const& network,
         neutron::Component const component,
-        elle::cryptography::PublicKey const& creator_K,
-        elle::cryptography::KeyPair const& block_pair):
+        cryptography::PublicKey const& creator_K,
+        cryptography::KeyPair const& block_pair):
       MutableBlock(network, Family::owner_key_block, component, creator_K),
 
       _block_K(block_pair.K),

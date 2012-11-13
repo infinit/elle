@@ -2,11 +2,14 @@
 # define NUCLEUS_PROTON_HH
 
 # include <elle/Authority.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Signature.hh>
 # include <elle/types.hh>
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
+
+# include <cryptography/fwd.hh>
+# include <cryptography/Signature.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/Location.hh>
 
@@ -43,7 +46,7 @@ namespace nucleus
       elle::Status      Create(const Location&,
                                const Location&);
 
-      elle::Status      Seal(elle::cryptography::PrivateKey const&);
+      elle::Status      Seal(cryptography::PrivateKey const&);
       elle::Status
       Validate(elle::Authority const& authority);
 
@@ -75,7 +78,7 @@ namespace nucleus
       Location          master;
       Location          slave;
 
-      elle::cryptography::Signature   signature;
+      cryptography::Signature   signature;
     };
 
   }

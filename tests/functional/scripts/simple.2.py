@@ -34,13 +34,15 @@ DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
         * Un mec qui sait pas faire un plat c’est carrément un bolosse !
           (réclame télévisuelle pour un contrat de téléphonie mobile)
 """
+import sysconfig
+print(sysconfig.get_config_var('VERSION'))
 
 with open(p1, 'w') as f:
-    f.encoding = "utf8"
+    print("File encoding:", f.encoding)
     f.write(DATA)
 
 with open(p1, 'r') as f:
-    s = f.read().decode("utf8")
+    s = f.read()
     print(s, file=sys.stderr)
     assert s == DATA
 

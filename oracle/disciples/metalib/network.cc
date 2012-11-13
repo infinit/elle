@@ -1,11 +1,14 @@
 #include "metalib.hh"
 
-#include "elle/cryptography/KeyPair.hh"
-#include "elle/io/Path.hh"
+#include <elle/io/Path.hh>
 #include <elle/types.hh>
-#include "elle/io/Unique.hh"
+#include <elle/io/Unique.hh>
 
-#include "hole/Model.hh"
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
+#include <hole/Model.hh>
 
 #include <lune/Identity.hh>
 #include <elle/Authority.hh>
@@ -169,7 +172,7 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
                                elle::io::Unique const& group_address_,
                                elle::io::Unique const& public_key)
 {
-  elle::cryptography::PublicKey       K;
+  cryptography::PublicKey       K;
 
   if (K.Restore(public_key) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore public key");

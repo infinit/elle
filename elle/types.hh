@@ -47,7 +47,6 @@ namespace elle
     enum class Null { Nil };
     extern Null const none;
 
-    std::ostream& operator <<(std::ostream& out, elle::Large const& value);
     std::ostream& operator <<(std::ostream& out, elle::Null);
 
     typedef unsigned int                  Size;
@@ -99,5 +98,7 @@ namespace elle
           return s == Status::True;
       }
 }
+
+std::ostream& operator <<(std::ostream& out, elle::Large const& value);
 
 #endif

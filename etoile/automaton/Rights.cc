@@ -13,6 +13,11 @@
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
+#include <cryptography/SecretKey.hh>
+#include <cryptography/PrivateKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <agent/Agent.hh>
 
 #include <elle/log.hh>
@@ -65,7 +70,7 @@ namespace etoile
               // extract the secret key from the token.
               context.rights.key =
                 context.object->owner_token().
-                  extract<elle::cryptography::SecretKey>(
+                  extract<cryptography::SecretKey>(
                     agent::Agent::Identity.pair.k);
             }
 
@@ -122,7 +127,7 @@ namespace etoile
                   // extract the secret key from the token.
                   context.rights.key =
                     context.rights.record->token()->
-                      extract<elle::cryptography::SecretKey>(
+                      extract<cryptography::SecretKey>(
                         agent::Agent::Identity.pair.k);
                 }
             }
@@ -187,7 +192,7 @@ namespace etoile
                           // a token be present though.
                           if (context.rights.record->token() != nullptr)
                             {
-                              elle::cryptography::PrivateKey pass_k;
+                              cryptography::PrivateKey pass_k;
 
                               ELLE_TRACE("the access token is present");
 
@@ -202,7 +207,7 @@ namespace etoile
                                   // First, extract the private pass from the
                                   // manager's fellow.
                                   pass_k =
-                                    token.extract<elle::cryptography::PrivateKey>(
+                                    token.extract<cryptography::PrivateKey>(
                                       agent::Agent::Identity.pair.k);
                                 }
                               catch (std::exception const& e)
@@ -215,7 +220,7 @@ namespace etoile
                               // With the private pass, one can decrypt the
                               // access token associated with the group.
                               context.rights.key =
-                                context.rights.record->token()->extract<elle::cryptography::SecretKey>(
+                                context.rights.record->token()->extract<cryptography::SecretKey>(
                                   pass_k);
                             }
                           else
@@ -283,7 +288,7 @@ namespace etoile
                                   // content, should a token be present though.
                                   if (context.rights.record->token() != nullptr)
                                     {
-                                      elle::cryptography::PrivateKey pass_k;
+                                      cryptography::PrivateKey pass_k;
 
                                       ELLE_TRACE("the access token is present");
 
@@ -294,14 +299,14 @@ namespace etoile
                                       // First, extract the private pass
                                       // from the fellow.
                                       pass_k =
-                                        token.extract<elle::cryptography::PrivateKey>(
+                                        token.extract<cryptography::PrivateKey>(
                                           agent::Agent::Identity.pair.k);
 
                                       // With the private pass, one can decrypt
                                       // the access token associated with the
                                       // group.
                                       context.rights.key =
-                                        context.rights.record->token()->extract<elle::cryptography::SecretKey>(pass_k);
+                                        context.rights.record->token()->extract<cryptography::SecretKey>(pass_k);
                                     }
                                   else
                                     {

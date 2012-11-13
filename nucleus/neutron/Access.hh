@@ -4,7 +4,10 @@
 # include <elle/types.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/cryptography/oneway.hh>
+
+# include <cryptography/oneway.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/proton/ContentHashBlock.hh>
 
@@ -31,7 +34,7 @@ namespace nucleus
     public:
       struct Algorithms
       {
-        static const elle::cryptography::oneway::Algorithm oneway;
+        static const cryptography::oneway::Algorithm oneway;
       };
 
       //
@@ -48,7 +51,7 @@ namespace nucleus
       ELLE_SERIALIZE_CONSTRUCT(Access, ContentHashBlock)
       {}
       Access(proton::Network const& network,
-             elle::cryptography::PublicKey const& creator_K);
+             cryptography::PublicKey const& creator_K);
 
       //
       // methods
@@ -70,7 +73,7 @@ namespace nucleus
       Update(Subject const& subject,
              Permissions permissions,
              T const& secret,
-             elle::cryptography::PublicKey const& K);
+             cryptography::PublicKey const& K);
       /// XXX
       elle::Status
       Update(Subject const& subject,
@@ -84,7 +87,7 @@ namespace nucleus
 
       /// Computes a fingerprint of the (subject, permissions) tuples
       /// composing the access block.
-      elle::cryptography::Digest
+      cryptography::Digest
       fingerprint() const;
 
       //

@@ -7,10 +7,14 @@
 #include <nucleus/proton/State.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
-#include <elle/cryptography/KeyPair.hh>
 #include <elle/log.hh>
 
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 #include <hole/Hole.hh>
+
 #include <agent/Agent.hh>
 
 ELLE_LOG_COMPONENT("infinit.etoile.automaton.Ensemble");
@@ -159,7 +163,7 @@ namespace etoile
 
           ELLE_TRACE_SCOPE("the ensemble contains fellows: update and bind the ensemble");
 
-          elle::cryptography::KeyPair pass(elle::cryptography::KeyPair::null());
+          cryptography::KeyPair pass(cryptography::KeyPair::null());
 
           // XXX: restore history handling
           // does the network support the history?
@@ -186,8 +190,8 @@ namespace etoile
           // XXX
           {
             nucleus::neutron::Token token(context.group->manager_token());
-            elle::cryptography::PrivateKey k(
-              token.extract<elle::cryptography::PrivateKey>(
+            cryptography::PrivateKey k(
+              token.extract<cryptography::PrivateKey>(
                 agent::Agent::Identity.pair.k));
 
             pass.K = context.group->pass_K();

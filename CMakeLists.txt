@@ -82,10 +82,6 @@ else()
 	set(BUILD_TYPE_CHANGED FALSE)
 endif()
 
-if(${BUILD_TYPE} STREQUAL "DEBUG")
-    set(INFINIT_DEBUG)
-endif()
-
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # - Compiler ------------------------------------------------------------------
@@ -227,11 +223,14 @@ set(QT_DONT_USE_QTGUI true)
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
+# XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(common)
+add_subdirectory(cryptography)
 add_subdirectory(nucleus)
 add_subdirectory(protocol)
 add_subdirectory(etoile)
@@ -264,14 +263,17 @@ set(INFINIT_LIBRARIES
   nucleus
   ${HORIZON_LIB}
   etoile
-  nucleus # circular dependency with etoile
 
   metal
   agent
+
+  nucleus # circular dependency with etoile
   common
   protocol
   infinit
   hole
+  cryptography
+  lune
   elle
   comet
 
@@ -281,9 +283,6 @@ set(INFINIT_LIBRARIES
   ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
   readline
   pthread
-
-  nucleus
-  elle
 )
 
 OPTION(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)

@@ -590,7 +590,7 @@ namespace etoile
     ///
     elle::Status        Access::Upgrade(
                           gear::Object&                         context,
-                          elle::cryptography::SecretKey const&                key)
+                          cryptography::SecretKey const&                key)
     {
       ELLE_TRACE_FUNCTION(context, key);
 

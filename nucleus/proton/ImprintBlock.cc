@@ -4,7 +4,7 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/cryptography/PublicKey.hh>
+#include <cryptography/PublicKey.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -28,7 +28,7 @@ namespace nucleus
 
     ImprintBlock::ImprintBlock(Network const& network,
                                neutron::Component const component,
-                               elle::cryptography::PublicKey const& creator_K):
+                               cryptography::PublicKey const& creator_K):
       MutableBlock(network, Family::imprint_block, component, creator_K),
 
       _owner_K(creator_K),

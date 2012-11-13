@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       authority
-//
-// license       infinit
-//
-// author        julien quintard   [sat mar 27 08:37:14 2010]
-//
-
 #ifndef AUTHORITY_AUTHORITY_HH
 #define AUTHORITY_AUTHORITY_HH
 

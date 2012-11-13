@@ -6,12 +6,15 @@
 
 #include <etoile/Etoile.hh>
 
-#include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+
+#include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 #include <lune/Identity.hh>
 #include <elle/Authority.hh>
@@ -65,7 +68,7 @@ namespace satellite
       escape("unable to read the input");
 
     // generate a key pair.
-    elle::cryptography::KeyPair pair(elle::cryptography::KeyPair::generate());
+    cryptography::KeyPair pair(cryptography::KeyPair::generate());
 
     // create the identity.
     if (identity.Create(id, name, pair) == elle::Status::Error)
@@ -129,7 +132,7 @@ namespace satellite
       elle::io::Path        path;
 
       // create the user path.
-      if (path.Create(lune::Lune::User::Root) == elle::Status::Error)
+      if (path.Create(lune::Lune::User) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the user name.
@@ -156,7 +159,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     lune::Identity      identity;
-    elle::cryptography::PublicKey     K;
+    cryptography::PublicKey     K;
     elle::io::Unique        unique;
 
     // check the argument.

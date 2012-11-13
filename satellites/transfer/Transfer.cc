@@ -85,7 +85,7 @@ namespace satellite
   {
     // Load the phrase.
     lune::Phrase phrase;
-    phrase.load(Infinit::Network, "portal");
+    phrase.load(Infinit::User, Infinit::Network, "portal");
 
     // Connect to the server.
     Transfer::socket =
@@ -842,7 +842,8 @@ namespace satellite
       operation = Transfer::OperationTo;
 
     // FIXME: do not re-parse the descriptor every time.
-    Transfer::descriptor = new lune::Descriptor(Infinit::Network);
+    Transfer::descriptor =
+      new lune::Descriptor(Infinit::User, Infinit::Network);
 
     elle::String path;
 
