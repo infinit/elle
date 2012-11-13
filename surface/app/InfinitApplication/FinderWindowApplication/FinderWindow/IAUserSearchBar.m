@@ -32,6 +32,11 @@
 //    // Drawing code here.
 //}
 
+- (NSString*)getUser
+{
+    return [self stringValue];
+}
+
 - (void)textDidChange:(NSNotification *)aNotification
 {
     [self.main_controller refresh];

@@ -8,80 +8,218 @@ import threading
 state = gap.State()
 
 def BiteFunc(bite:'Bite'):
-  print("Notification bite reçue", bite.debug)
+    print("Notification bite reçue", bite.debug)
 
 def FileTransfer(transfer):
-  print("User:", transfer.sender_id, "sent you:", transfer.file_name, "[", transfer.file_size, "]")
+    if transfer.new :
+        print("==== [New]")
+    else:
+        print("==== [Old]")
+    print("File from :", transfer.sender_id)
+
+    if transfer.new :
+        state.answer_transaction(transfer.transaction_id, True)
 
 def FileTransferStatus(ts:'FileTransferStatus'):
-  print("Transaction ", ts.transaction_id, "- status:", ts.status)
+    if ts.new:
+        print("==== [New]")
+    else:
+        print("==== [Old]")
+    print('File status : %s' % ts.status and "Accepted" or "Refused")
 
 def Message(message):
-  print(message.sender_id, ":", message.message)
+    print(message.sender_id, ":", message.message)
 
 class PollThread (threading.Thread):
-  now = datetime.datetime.now()
-  count = 0
-  def run (self) :
-    while True:
-      time.sleep(0.05)
-      self.count += (datetime.datetime.now() - self.now).microseconds
-      if self.count > 1000000:
-        state.poll()
-        self.count -= 1000000
-      self.now = datetime.datetime.now()
+    now = datetime.datetime.now()
+    count = 0
+    bite = False
+
+    def run (self) :
+        self.bite = False
+        while True:
+            time.sleep(0.05)
+            self.count += (datetime.datetime.now() - self.now).microseconds
+            if self.count > 1000000:
+                state.poll()
+                self.count -= 1000000
+            self.now = datetime.datetime.now()
+            if self.bite == True:
+                return
+
+    def stop(self):
+        self.bite = True
 
 state.OnBite(BiteFunc)
 state.OnFileTransfer(FileTransfer)
 state.OnFileTransferStatus(FileTransferStatus)
 state.OnMessage(Message)
 
+#register: fullname, email, hashed_password, device_name, activation_code
+def __register(name, mail):
+    if mail == "a@a.aa":
+        state.register(name, mail, "mdptmp", "pretty name", "bitebite")
+    else:
+        state.register(name, mail, "MEGABIET", "pretty name", "bitebite")
+def __login(mail):
+    if mail == "a@a.aa":
+        print("as aaaa")
+        state.login(mail, "mdptmp")
+    else:
+        state.login(mail, "MEGABIET")
+
+
+def __connect():
+    state.connect()
+
+def __send_file(mail):
+    files = ["/home/dimrok/test/main.cpp", "/home/dimrok/test/main2.cpp", "/home/dimrok/test/main3.cpp"]
+    state.send_files(mail, files)
+
+def __create_network():
+    str = "FistParty%s" % math.floor(random.random()*234567890);
+    state.create_network(str)
+
+def __launch_watchdog():
+    state.set_device_name("pretty name")
+    state.launch_watchdog()
+
+def __pullNotifs():
+    state.get_notifications(10)
+
 def main():
-  #register: fullname, email, hashed_password, device_name, activation_code
-  # state.register("", "", "", "", "")
+    bad_fullname = ""
+    good_fullname = "MrDick"
 
-  # state.register("", "test@infinit.io", "", "pretty name", "bitebite")
+    bad_email = "abc@bi"
+    good_email = "a@a.aa"# % math.floor(random.random()*234567890)
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    password = "mdptmp"
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    state.scratch_db()
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    try:
+      state.register(bad_fullname, good_email, password, "device", "bitebite")
+    except Exception as e:
+      print("Bad fullname")
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    try:
+      state.register(good_fullname, bad_email, password, "device", "bitebite")
+    except Exception  as e:
+      print ("Bad mail")
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    state.login(good_email, password)
+#    state.register(good_fullname, good_email, password, "device", "bitebite")
 
-  # state.register("Testing Program", "test@infinit.io", "MEGABIET", "pretty name", "bitebite")
+    state.set_device_name("device")
 
-  #state.register("Testing Program", "", "MEGABIET", "pretty name", "bitebite")
+    __connect();
 
-  state.login("test@infinit.io", "MEGABIET")
+    state.logout()
 
-  state.connect()
+    state.login(good_email, password)
 
-  files = ["/home/dimrok/test/main.cpp", "/home/dimrok/test/main2.cpp", "/home/dimrok/test/main3.cpp"]
+    state.set_device_name("device")
 
-  print(dir(files))
+    __connect();
 
-  #state.send_file("developers@infinit.io", "/home/dimrok/test/proctologie.pdf")
-  state.send_files("antony.mechin@gmail.com", files)
+    print('\n\nPulling notifs')
+    __pullNotifs()
 
-  # str = "FistParty%s" % math.floor(random.random()*234567890);
-  # state.create_network(str)
+    try :
+        polling = PollThread()
+        polling.start()
 
-  # state.set_device_name("pretty name")
+        # Send file to me.
+        print('Send file to myself')
+        __send_file(good_email)
 
-  # state.launch_watchdog()
+        # Sleep 1sec to wait for transaction
+        time.sleep(3)
 
-#  PollThread().start()
+        print('\n\nPulling notifs')
+        __pullNotifs()
+
+        time.sleep(3)
+
+        # Read notif and reset process.
+        state.notifications_red()
+        time.sleep(3)
+
+        # Send file to me.
+        print('Send a new file')
+        __send_file(good_email)
+
+        # Sleep 1sec to wait for transaction
+        time.sleep(3)
+
+        print('\n\nPulling notifs')
+        __pullNotifs()
+
+
+    except KeyboardInterrupt as e:
+        polling.stop()
+
+
+def main2():
+    try:
+        m = input('\n[i]nfinit or [g]mail?\n> ')
+
+        if (m != 'i') and (m != 'g'):
+            return
+
+        r = (input('\n[r]egister or [l]ogin?\n> '))
+
+        if (r != 'r') and (r != 'l'):
+            return
+
+        q = PollThread()
+        q.start()
+
+        if m == 'i':
+            mail = "a@a.aa"
+            recipient = "antony.mechin@gmail.com"
+        elif m == 'g':
+            mail = "antony.mechin@gmail.com"
+            recipient = "a@a.aa"
+
+        if r == 'r':
+            __register("Testing Program", mail)
+        elif r == 'l':
+            __login(mail)
+
+        state.set_device_name("castor")
+
+        __connect()
+
+        state.notifications_red()
+        __send_file(mail)
+
+        if input('\npull nofis? y/N\n> ') == 'y':
+            __pullNotifs()
+
+        # state.answer_transaction('bite', 1)
+        # state.answer_transaction('bite', 0)
+
+        if input('\nwatchdog? y/N\n> ') == 'y':
+            __launch_watchdog()
+
+        if input('\nsend_file? y/N\n> ') == 'y':
+            __send_file(recipient)
+
+        time.sleep(100000)
+        input('break infinit wait? y/N\n> ')
+        q.stop()
+    except KeyboardInterrupt:
+        q.stop()
+
 
 print(">>>>>>Launching apply")
 main()
 
 # finally:
-#   print("<<<<<<Closing watchdog")
-#   state.stop_watchdog()
+#     print("<<<<<<Closing watchdog")
+#     state.stop_watchdog()
 
 ##########################################
 
@@ -96,13 +234,13 @@ main()
 # # count2 = 0
 
 # # while True:
-# #   time.sleep(0.05)
-# #   count1 += (datetime.datetime.now() - now).microseconds
-# #   count2 += (datetime.datetime.now() - now).microseconds
-# #   if count1 > 50000:
-# #     state.poll()
-# #     count1 -= 50000
-# #   if count2 > 2000000:
-# #     state.ask_notif(math.floor(random.random() * 3))
-# #     count2 -= 2000000
-# #   now = datetime.datetime.now()
+# #     time.sleep(0.05)
+# #     count1 += (datetime.datetime.now() - now).microseconds
+# #     count2 += (datetime.datetime.now() - now).microseconds
+# #     if count1 > 50000:
+# #         state.poll()
+# #         count1 -= 50000
+# #     if count2 > 2000000:
+# #         state.ask_notif(math.floor(random.random() * 3))
+# #         count2 -= 2000000
+# #     now = datetime.datetime.now()

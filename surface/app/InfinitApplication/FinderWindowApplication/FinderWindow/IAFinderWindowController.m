@@ -13,7 +13,8 @@
 
 #import "IAGapState.h"
 
-@interface IAFinderWindowController () {
+@interface IAFinderWindowController ()
+{
     BOOL _registering;
 }
 

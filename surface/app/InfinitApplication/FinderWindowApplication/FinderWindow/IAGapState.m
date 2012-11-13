@@ -143,6 +143,8 @@ typedef int(^gap_operation_t)(void);
 
 
 static void on_user_status(gap_UserStatusNotification const* n);
+static void on_transaction(gap_TransactionNotification const* n);
+static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 
 @interface IAGapState ()
@@ -175,14 +177,22 @@ static void on_user_status(gap_UserStatusNotification const* n);
 
 -(id) init
 {
+    gap_State* state = gap_new();
+    if (state == nil)
+    {
+        NSLog(@"ERROR: Cannot initialize gap");
+        return nil;
+    }
+
     self = [super init];
     
     if (!self)
+    {
+        gap_free(state);
         return nil;
+    }
     
-    _state = gap_new();
-    if (_state == NULL)
-        [NSException raise:@"bad_alloc" format:@"Cannot create a new gap state"];
+    _state = state;
     _logged_in = FALSE;
     _polling = FALSE;
     return self;
@@ -195,6 +205,8 @@ static void on_user_status(gap_UserStatusNotification const* n);
         return;
     NSLog(@"Do poll");
     gap_Status ret = gap_poll(_state);
+    if (ret != gap_ok)
+        NSLog(@"Warning: gap_poll failed");
     [self addOperation:[[TimerOperation alloc] initWithInterval:1
                                                 performSelector:@selector(_poll)
                                                        onObject:self]];
@@ -207,11 +219,43 @@ static void on_user_status(gap_UserStatusNotification const* n);
     {
         if (!_polling && _logged_in)
         {
-            _polling = TRUE;
-            NSLog(@"Start polling");
-            [self _poll];
+            if ((gap_user_status_callback(self.state, &on_user_status) == gap_ok) &&
+                (gap_transaction_callback(self.state, &on_transaction) == gap_ok) &&
+                (gap_transaction_status_callback(self.state, &on_transaction_status) == gap_ok))
+            {
+                _polling = TRUE;
+                [self _poll];
+            }
+            else
+                NSLog(@"WARNING: Cannot start polling");
         }
     }
+}
+
+//- Files ------------------------------------------------------------------------------------
+
+- (void)               sendFiles:(NSArray*)files
+                          toUser:(NSString*)user
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+    [self _addOperation:^gap_Status(void) {
+        if (![files count])
+        {
+            return gap_error;
+        }
+        char const** cfiles = calloc([files count] + 1, sizeof(char*));
+        if (cfiles == NULL)
+            return gap_error; //XXX specialized error
+        int i = 0;
+        for (id file in files)
+        {
+            cfiles[i++] = [file UTF8String];
+        }
+        gap_Status res = gap_send_files(self.state, [user UTF8String], cfiles);
+        free(cfiles);
+        return res;
+    } performSelector:selector onObject:object];
 }
 
 //- User -------------------------------------------------------------------------------------
@@ -243,7 +287,8 @@ static void on_user_status(gap_UserStatusNotification const* n);
             NSLog(@"Cannot login !");
         
         if (res == gap_ok)
-            res = gap_user_status_callback(self.state, &on_user_status);
+        {
+        }
         else
             NSLog(@"Cannot connect to tropho");
         
@@ -253,7 +298,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
             [this _startPolling];
         }
         else
-            NSLog(@"Cannot register callback");
+            NSLog(@"Cannot register callbacks");
         
         return res;
     } performSelector:selector onObject:object];
@@ -307,7 +352,101 @@ static void on_user_status(gap_UserStatusNotification const* n);
 
 @end
 
+#define SET_CSTR(__name)                                                    \
+    self.__name = [[NSString alloc] initWithUTF8String:n->__name];          \
+/**/
+
+@implementation IAUserStatusNotification
+
+@synthesize user_id;
+@synthesize status;
+
+- (id) init:(gap_UserStatusNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {
+        SET_CSTR(user_id);
+        self.status = n->status;
+    }
+    return self;
+}
+
+@end
+
+@implementation IATransactionNotification
+@synthesize first_filename;
+@synthesize files_count;
+@synthesize total_size;
+@synthesize is_directory;
+@synthesize network_id;
+@synthesize sender_id;
+@synthesize sender_fullname;
+@synthesize transaction_id;
+
+- (id) init:(gap_TransactionNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {        
+        SET_CSTR(first_filename);
+        self.files_count = n->files_count;
+        self.total_size = n->total_size;
+        self.is_directory = n->is_directory;
+        SET_CSTR(network_id);
+        SET_CSTR(sender_id);
+        SET_CSTR(sender_fullname);
+        SET_CSTR(transaction_id);
+    }
+    return self;
+}
+
+@end
+
+@implementation IATransactionStatusNotification
+@synthesize transaction_id;
+@synthesize network_id;
+@synthesize sender_device_id;
+@synthesize recipient_device_id;
+@synthesize recipient_device_name;
+@synthesize status;
+
+- (id) init:(gap_TransactionStatusNotification const*)n
+{
+    self = [super init];
+    if (self)
+    {
+        SET_CSTR(transaction_id);
+        SET_CSTR(network_id);
+        SET_CSTR(sender_device_id);
+        SET_CSTR(recipient_device_id);
+        SET_CSTR(recipient_device_name);
+        self.status = n->status;
+    }
+    return self;
+}
+
+@end
+
+
 static void on_user_status(gap_UserStatusNotification const* n)
 {
-    NSLog(@"CDSJKFADSJKL");
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_USER_STATUS_NOTIFICATION
+                                                        object:[[IAUserStatusNotification alloc] init:n]];
+}
+
+static void on_transaction(gap_TransactionNotification const* n)
+{
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_NOTIFICATION
+                                                        object:[[IATransactionNotification alloc] init:n]];
+}
+
+
+static void on_transaction_status(gap_TransactionStatusNotification const* n)
+{
+    assert(n != NULL);
+    [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
+                                                        object:[[IATransactionStatusNotification alloc] init:n]];
 }

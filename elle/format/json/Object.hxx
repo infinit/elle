@@ -14,10 +14,14 @@ namespace elle
       void
       Object::load(T& out) const
       {
-        static_assert(
-            !std::is_base_of<T, Object>::value,
-            "Cannot load into a json object"
-        );
+        // XXX Was not designed to load a json object into json object.
+        //     Check if everything is still working as expected.
+        //     see: SelectJSONType
+
+        // static_assert(
+        //     !std::is_base_of<Object, T>::value,
+        //     "Cannot load into a json object"
+        // );
         typedef typename detail::SelectJSONType<T>::type SelfType;
         out = dynamic_cast<SelfType const&>(*this);
       }

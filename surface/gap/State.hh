@@ -3,7 +3,7 @@
 
 # include <string>
 # include <map>
-# include <vector>
+# include <unordered_set>
 
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
@@ -25,14 +25,6 @@ namespace surface
       std::string                 absolute_path;
       std::string                 relative_path;
       std::map<std::string, int>  accesses;
-    };
-
-    struct User
-    {
-      std::string _id;
-      std::string fullname;
-      std::string email;
-      std::string public_key;
     };
 
     typedef ::plasma::meta::NetworkResponse Network;
@@ -63,11 +55,15 @@ namespace surface
       State();
       ~State();
 
+    public:
+      void
+      scratch_db();
+
     ///
     /// Login & register
     ///
     private:
-      std::map<std::string, User*> _users;
+      std::map<std::string, gap_User*> _users;
     public:
       /// Login to meta.
       void
@@ -92,15 +88,18 @@ namespace surface
                 std::string const& activation_code);
 
       /// Retrieve a user by id or with its email.
-      User const&
+      gap_User const&
       user(std::string const& id);
 
+      gap_User const&
+      get_me();
+
       /// Retrieve a user by its public key.
-      User const&
+      gap_User const&
       user_from_public_key(std::string const& public_key);
 
       // Search users
-      std::map<std::string, User const*>
+      std::map<std::string, gap_User const*>
       search_users(std::string const& text);
 
       /// Connect to trophonius
@@ -113,17 +112,29 @@ namespace surface
                    std::string const& message);
 
       void
-      ask_notif(int i);
+      pull_notifications(int limit);
+
+      void
+      notifications_red();
 
       std::string
       invite_user(std::string const& email);
 
       void
       send_files(std::string const& recipient_id_or_email,
-                 std::vector<std::string> const& files);
+                 std::unordered_set<std::string> const& files);
+
+      void
+      update_transaction(std::string const& transaction_id,
+                         int status);
+
+      void
+      start_transaction(std::string const& transaction_id);
 
     private:
-      User _me;
+      gap_User _me;
+      std::string _device_id;
+      std::string _device_name;
 
     ///
     /// Launch and stop infinit instances.
@@ -232,7 +243,12 @@ namespace surface
       bool
       poll();
 
-     private:
+    private:
+      bool
+      _handle_dictionnary(elle::format::json::Dictionary const& dict,
+                          bool _new = true);
+
+    private:
       // Retrieve the current watchdog id.
       std::string
       _watchdog_id() const;

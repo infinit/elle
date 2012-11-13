@@ -12,7 +12,7 @@
 #include "gap.h"
 #include "State.hh"
 
-#include <vector>
+#include <unordered_set>
 #include <string.h>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
@@ -129,22 +129,35 @@ extern "C"
       return gap_ok;
     }
 
+
     gap_Status
-    gap_meta_ask_notif(gap_State* state,
-                       int i)
+    gap_meta_pull_notification(gap_State* state,
+                               int limit)
     {
-      __TO_CPP(state)->ask_notif(i);
+      __WRAP_CPP(state, pull_notifications, limit);
+    }
+
+    gap_Status
+    gap_meta_notifications_red(gap_State* state)
+    {
+      __WRAP_CPP(state, notifications_red);
+    }
+
+
+    gap_Status
+    gap_debug(gap_State* state)
+    {
+      __WRAP_CPP(state, scratch_db);
 
       return gap_ok;
     }
+
 
     gap_Status
     gap_invite_user(gap_State* state,
                     char const* email)
     {
-      __TO_CPP(state)->invite_user(email);
-
-      return gap_ok;
+      __WRAP_CPP(state, invite_user, email);
     }
 
     gap_Status
@@ -152,33 +165,56 @@ extern "C"
                    char const* recipient_id,
                    char const* const* files)
     {
-      std::vector<std::string> v;
+      assert(state != nullptr);
+      assert(recipient_id != nullptr);
+      assert(files != nullptr);
 
-      while(*files != nullptr)
+      gap_Status ret = gap_ok;
+
+      try
         {
-          v.push_back(*files);
-          ++files;
+          std::unordered_set<std::string> s;
+
+          while(*files != nullptr)
+          {
+            s.insert(*files);
+            ++files;
+          }
+
+          __TO_CPP(state)->send_files(recipient_id,
+                                      s);
         }
+      CATCH_ALL(send_files)
 
-      __TO_CPP(state)->send_files(recipient_id,
-                                  v);
-
-      return gap_ok;
+      return ret;
     }
 
     gap_Status
-    gap_send_file(gap_State* state,
-                  char const* recipient_id,
-                  char const* path)
+    gap_update_transaction(gap_State* state,
+                           char const* transaction_id,
+                           int status)
     {
-      std::vector<std::string> v;
+      assert(transaction_id != nullptr);
 
-      v.push_back(path);
+      __WRAP_CPP_RET(state,
+                     update_transaction,
+                     transaction_id,
+                     status);
 
-      __TO_CPP(state)->send_files(recipient_id,
-                                  v);
+      return ret;
+    }
 
-      return gap_ok;
+    gap_Status
+    gap_start_transaction(gap_State* state,
+                          char const* transaction_id)
+    {
+      assert(transaction_id != nullptr);
+
+      __WRAP_CPP_RET(state,
+                     start_transaction,
+                     transaction_id);
+
+      return ret;
     }
 
     gap_Status
@@ -186,9 +222,9 @@ extern "C"
                 const char* recipient_id,
                 const char* message)
     {
-      __TO_CPP(state)->send_message(recipient_id, message);
-
-      return gap_ok;
+      assert(recipient_id != nullptr);
+      assert(message != nullptr);
+      __WRAP_CPP(state, send_message, recipient_id, message);
     }
 
     /// - Authentication ------------------------------------------------------
@@ -247,7 +283,7 @@ extern "C"
       __WRAP_CPP_RET(state, register_, fullname, email,
                      password, activation_code);
 
-      if (ret == gap_ok && device_name != nullptr)
+     if (ret == gap_ok && device_name != nullptr)
         {
           __WRAP_CPP(state, update_device, device_name, true);
         }
@@ -407,7 +443,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(id);
-          return user.fullname.c_str();
+          return user.fullname;
         }
       CATCH_ALL(user_fullname);
 
@@ -423,7 +459,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(id);
-          return user.email.c_str();
+          return user.email;
         }
       CATCH_ALL(user_email);
 
@@ -439,7 +475,7 @@ extern "C"
       try
         {
           auto const& user = __TO_CPP(state)->user(email);
-          return user._id.c_str();
+          return user._id;
         }
       CATCH_ALL(user_by_email);
 
@@ -573,6 +609,48 @@ extern "C"
           __TO_CPP(state)->attach_callback<gap_UserStatusNotification>(cb);
         }
       CATCH_ALL(user_status_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_transaction_callback(gap_State* state,
+                                     gap_transaction_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_TransactionNotification>(cb);
+        }
+      CATCH_ALL(transaction_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_transaction_status_callback(gap_State* state,
+                                      gap_transaction_status_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_TransactionStatusNotification>(cb);
+        }
+      CATCH_ALL(transaction_status_callback);
+
+      return ret;
+    }
+
+    gap_Status
+    gap_message_callback(gap_State* state,
+                         gap_message_callback_t cb)
+    {
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->attach_callback<gap_MessageNotification>(cb);
+        }
+      CATCH_ALL(message_callback);
 
       return ret;
     }

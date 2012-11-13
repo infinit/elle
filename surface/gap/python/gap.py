@@ -41,12 +41,17 @@ class State:
             'connect',
             'poll',
             'OnBite',
-            'OnFileTransfer',
-            'OnFileTransferStatus',
+            'OnTransaction',
+            'OnTransactionStatus',
             'OnMessage',
             'send_files',
+            'update_transaction',
+            'start_transaction',
             'invite_user',
+            'scratch_db',
             'send_message',
+            'get_notifications',
+            'notifications_red',
         ]
 
         def make_method(m):
@@ -70,6 +75,10 @@ class State:
             return False
 
     @property
+    def Status(self):
+        return _gap.Status
+
+    @property
     def has_device(self):
         try:
             return self._call('device_status') == _gap.gap_ok
@@ -79,8 +88,6 @@ class State:
     def _call(self, method, *args):
         res = getattr(_gap, method)(self._state, *args)
         if isinstance(res, _gap.Status) and res != _gap.gap_ok:
-            print("isinstance: ", isinstance(res, _gap.Status))
-            print("gap ok: ", res != _gap.gap_ok)
             raise Exception(
                 "Error while calling %s: %s " % (method, str(res))
             )
@@ -95,10 +102,6 @@ class State:
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         self._call('register', fullname, email, pw_hash, dev_name, activation_code)
-
-    def ask_notif(self, id):
-        self._call('ask_notif', id)
-
 
 if __name__ == "__main__":
     import doctest

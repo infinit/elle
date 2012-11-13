@@ -99,6 +99,35 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_api_error", gap_api_error)
     .value("gap_no_device_error", gap_no_device_error)
     .value("gap_not_logged_in", gap_not_logged_in)
+    .value("gap_bad_request", gap_bad_request)
+    .value("gap_already_logged_in", gap_already_logged_in)
+    .value("gap_not_logged_in", gap_not_logged_in)
+    .value("gap_email_not_valid", gap_email_not_valid)
+    .value("gap_handle_not_valid", gap_handle_not_valid)
+    .value("gap_device_not_valid", gap_device_not_valid)
+    .value("gap_password_not_valid", gap_password_not_valid)
+    .value("gap_user_id_not_valid", gap_user_id_not_valid)
+    .value("gap_network_id_not_valid", gap_network_id_not_valid)
+    .value("gap_device_id_not_valid", gap_device_id_not_valid)
+    .value("gap_field_is_empty", gap_field_is_empty)
+    .value("gap_activation_code_not_valid", gap_activation_code_not_valid)
+    .value("gap_deprecated", gap_deprecated)
+    .value("gap_email_already_registred", gap_email_already_registred)
+    .value("gap_handle_already_registred", gap_handle_already_registred)
+    .value("gap_device_already_registred", gap_device_already_registred)
+    .value("gap_activation_code_doesnt_exist", gap_activation_code_doesnt_exist)
+    .value("gap_email_password_dont_match", gap_email_password_dont_match)
+    .value("gap_unknown_user", gap_unknown_user)
+    .value("gap_user_already_in_network", gap_user_already_in_network)
+    .value("gap_network_not_found", gap_network_not_found)
+    .value("gap_device_not_found", gap_device_not_found)
+    .value("gap_device_not_in_network", gap_device_not_in_network)
+    .value("gap_root_block_already_exist", gap_root_block_already_exist)
+    .value("gap_root_block_badly_signed", gap_root_block_badly_signed)
+    .value("gap_user_already_invited", gap_user_already_invited)
+    .value("gap_user_already_in_infinit", gap_user_already_in_infinit)
+    .value("gap_file_name_empty", gap_file_name_empty)
+    .value("gap_unknown", gap_unknown)
     .export_values()
   ;
 
@@ -121,8 +150,12 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("invite_user", &gap_invite_user);
   py::def("send_message", &gap_message);
   py::def("send_files", &_send_files);
+  py::def("update_transaction", &gap_update_transaction);
+  py::def("start_transaction", &gap_start_transaction);
   py::def("connect", &gap_trophonius_connect);
-  py::def("ask_notif", &gap_meta_ask_notif);
+  py::def("get_notifications", &gap_meta_pull_notification);
+  py::def("notifications_red", &gap_meta_notifications_red);
+  py::def("scratch_db", &gap_debug);
 
   py::def("poll", &gap_poll);
 
@@ -131,8 +164,9 @@ BOOST_PYTHON_MODULE(_gap)
   ////////////////////////////////
   // User status.
   py::class_<gap_UserStatusNotification, boost::noncopyable>("UserStatus", py::no_init)
-    .def_readonly("sender_id", &gap_UserStatusNotification::sender_id)
-    .def_readonly("status", &gap_UserStatusNotification::status);
+    .def_readonly("user_id", &gap_UserStatusNotification::user_id)
+    .def_readonly("status", &gap_UserStatusNotification::status)
+  ;
   py::def(
     "OnBite",
     &_gap_set_callback<gap_BiteNotification>
@@ -140,32 +174,46 @@ BOOST_PYTHON_MODULE(_gap)
 
   ////////////////////////////////
   // File transfer request.
-  py::class_<gap_FileTransferRequestNotification, boost::noncopyable>("FileTransferRequest", py::no_init)
-    .def_readonly("sender_id", &gap_FileTransferRequestNotification::sender_id)
-    .def_readonly("transaction_id", &gap_FileTransferRequestNotification::transaction_id)
-    .def_readonly("file_name", &gap_FileTransferRequestNotification::file_name)
-    .def_readonly("file_size", &gap_FileTransferRequestNotification::file_size);
+  py::class_<gap_TransactionNotification, boost::noncopyable>("Transaction", py::no_init)
+    .def_readonly("first_filename", &gap_TransactionNotification::first_filename)
+    .def_readonly("files_count", &gap_TransactionNotification::files_count)
+    .def_readonly("total_size", &gap_TransactionNotification::total_size)
+    .def_readonly("is_directory", &gap_TransactionNotification::is_directory)
+    .def_readonly("network_id", &gap_TransactionNotification::network_id)
+    .def_readonly("sender_id", &gap_TransactionNotification::sender_id)
+    .def_readonly("sender_fullname", &gap_TransactionNotification::sender_fullname)
+    .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
+    .def_readonly("new", &gap_TransactionNotification::is_new)
+  ;
   py::def(
-    "OnFileTransfer",
-    &_gap_set_callback<gap_FileTransferRequestNotification>
+    "OnTransaction",
+    &_gap_set_callback<gap_TransactionNotification>
   );
 
   ////////////////////////////////
   // File transfer status.
-  py::class_<gap_FileTransferStatusNotification, boost::noncopyable>("FileTransferStatus", py::no_init)
-    .def_readonly("transaction_id", &gap_FileTransferStatusNotification::transaction_id)
-    .def_readonly("status", &gap_FileTransferStatusNotification::status);
+  py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransactionStatus", py::no_init)
+    .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
+    .def_readonly("network_id", &gap_TransactionStatusNotification::network_id)
+    .def_readonly("sender_device_id", &gap_TransactionStatusNotification::sender_device_id)
+    .def_readonly("recipient_device_name", &gap_TransactionStatusNotification::recipient_device_id)
+    .def_readonly("recipient_device_id", &gap_TransactionStatusNotification::recipient_device_name)
+    .def_readonly("status", &gap_TransactionStatusNotification::status)
+    .def_readonly("new", &gap_TransactionStatusNotification::is_new)
+  ;
 
   py::def(
-    "OnFileTransferStatus",
-    &_gap_set_callback<gap_FileTransferStatusNotification>
+    "OnTransactionStatus",
+    &_gap_set_callback<gap_TransactionStatusNotification>
   );
 
   ////////////////////////////////
   // Message.
   py::class_<gap_MessageNotification, boost::noncopyable>("Message", py::no_init)
     .def_readonly("sender_id", &gap_MessageNotification::sender_id)
-    .def_readonly("message", &gap_MessageNotification::message);
+    .def_readonly("message", &gap_MessageNotification::message)
+    .def_readonly("new", &gap_MessageNotification::is_new)
+  ;
 
   py::def(
     "OnMessage",
@@ -174,7 +222,9 @@ BOOST_PYTHON_MODULE(_gap)
 
 
   py::class_<gap_BiteNotification, boost::noncopyable>("Bite", py::no_init)
-    .def_readonly("debug", &gap_BiteNotification::debug);
+    .def_readonly("debug", &gap_BiteNotification::debug)
+    .def_readonly("new", &gap_BiteNotification::is_new)
+  ;
   py::def(
     "OnBite",
     &_gap_set_callback<gap_BiteNotification>
@@ -199,6 +249,13 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("network_add_user", &gap_network_add_user);
 
   //- Users -------------------------------------------------------------------
+
+  py::class_<gap_User, boost::noncopyable>("User")
+    .def_readonly("_id", &gap_User::_id)
+    .def_readonly("fullname", &gap_User::fullname)
+    .def_readonly("email", &gap_User::email)
+    .def_readonly("public_key", &gap_User::public_key)
+  ;
 
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());

@@ -357,7 +357,7 @@ class AddDevice(_Page):
     __pattern__ = '/network/add_device'
 
     _validators = {
-        'id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
+        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
         'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
     }
 
@@ -468,6 +468,7 @@ class Create(_Page):
     }
 
     def POST(self):
+        self.requireLoggedIn()
 
         status = self.validate()
         if status:

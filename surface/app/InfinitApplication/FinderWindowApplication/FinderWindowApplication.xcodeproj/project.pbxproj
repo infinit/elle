@@ -7,20 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD1A1BFE1639469100186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
-		BD1A1C081639469100186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C061639469100186C48 /* InfoPlist.strings */; };
-		BD1A1C0A1639469100186C48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C091639469100186C48 /* main.m */; };
-		BD1A1C0E1639469100186C48 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C0C1639469100186C48 /* Credits.rtf */; };
-		BD1A1C111639469100186C48 /* IAAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C101639469100186C48 /* IAAppDelegate.m */; };
-		BD1A1C141639469100186C48 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C121639469100186C48 /* MainMenu.xib */; };
+		BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */ = {isa = PBXBuildFile; fileRef = BD08503A16513E1C00C54359 /* IANotificationSource.h */; };
+		BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */ = {isa = PBXBuildFile; fileRef = BD08503B16513E1C00C54359 /* IANotificationSource.m */; };
 		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
 		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
 		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
 		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */; };
-		BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
 		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; };
 		BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1BE3791644181E004810F9 /* IATextFieldCell.m */; };
+		BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */ = {isa = PBXBuildFile; fileRef = BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */; };
 		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
 		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
 		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
@@ -34,34 +30,25 @@
 		BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */; };
 		BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409D11641A247004C9C97 /* IARegisterView.h */; };
 		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
+		BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD8C3F6B164AC5B600BED07C /* active_status_icon.png */; };
+		BD8C3F76164BC8F700BED07C /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
+		BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919595164C062D009FCC0F /* IAStatusBarController.h */; };
+		BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD919596164C062D009FCC0F /* IAStatusBarController.m */; };
+		BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919599164C0667009FCC0F /* IAStatusItemView.h */; };
+		BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD91959A164C0667009FCC0F /* IAStatusItemView.m */; };
+		BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = BD91959F164D2E67009FCC0F /* IANotificationPanel.h */; };
+		BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */; };
+		BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */; };
+		BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */; };
+		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; };
+		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
 		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
-		BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C25163946A500186C48 /* FinderWindow.framework */; };
 		BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		BD1A1C371639488700186C48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD1A1BF01639469000186C48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BD1A1C24163946A500186C48;
-			remoteInfo = FinderWindow;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		BD1A1C391639488C00186C48 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				BD1A1C3F16394D2400186C48 /* FinderWindow.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BD84096C1640110D004C9C97 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -75,19 +62,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BD1A1BF91639469000186C48 /* FinderWindowApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinderWindowApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD08503A16513E1C00C54359 /* IANotificationSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationSource.h; sourceTree = "<group>"; };
+		BD08503B16513E1C00C54359 /* IANotificationSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationSource.m; sourceTree = "<group>"; };
 		BD1A1BFD1639469100186C48 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD1A1C001639469100186C48 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BD1A1C011639469100186C48 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BD1A1C021639469100186C48 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		BD1A1C051639469100186C48 /* FinderWindowApplication-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderWindowApplication-Info.plist"; sourceTree = "<group>"; };
-		BD1A1C071639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		BD1A1C091639469100186C48 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		BD1A1C0B1639469100186C48 /* FinderWindowApplication-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderWindowApplication-Prefix.pch"; sourceTree = "<group>"; };
-		BD1A1C0D1639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		BD1A1C0F1639469100186C48 /* IAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAppDelegate.h; sourceTree = "<group>"; };
-		BD1A1C101639469100186C48 /* IAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAAppDelegate.m; sourceTree = "<group>"; };
-		BD1A1C131639469100186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		BD1A1C25163946A500186C48 /* FinderWindow.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FinderWindow.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD1A1C29163946A500186C48 /* FinderWindow-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderWindow-Info.plist"; sourceTree = "<group>"; };
 		BD1A1C2B163946A500186C48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -97,6 +77,7 @@
 		BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindowController.m; sourceTree = "<group>"; };
 		BD1BE3781644181E004810F9 /* IATextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IATextFieldCell.h; sourceTree = "<group>"; };
 		BD1BE3791644181E004810F9 /* IATextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IATextFieldCell.m; sourceTree = "<group>"; };
+		BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Logo-Complet-bichromie.png"; sourceTree = "<group>"; };
 		BD840966163EFC16004C9C97 /* gap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../../../gap/gap.h; sourceTree = "<group>"; };
 		BD840968163EFC3F004C9C97 /* IAGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGapState.h; sourceTree = "<group>"; };
 		BD840969163EFC3F004C9C97 /* IAGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGapState.m; sourceTree = "<group>"; };
@@ -109,6 +90,20 @@
 		BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterViewController.m; sourceTree = "<group>"; };
 		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
 		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
+		BD8C3F6B164AC5B600BED07C /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
+		BD919595164C062D009FCC0F /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusBarController.h; sourceTree = "<group>"; };
+		BD919596164C062D009FCC0F /* IAStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusBarController.m; sourceTree = "<group>"; };
+		BD919599164C0667009FCC0F /* IAStatusItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusItemView.h; sourceTree = "<group>"; };
+		BD91959A164C0667009FCC0F /* IAStatusItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusItemView.m; sourceTree = "<group>"; };
+		BD91959F164D2E67009FCC0F /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanel.h; sourceTree = "<group>"; };
+		BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanel.m; sourceTree = "<group>"; };
+		BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanelController.h; sourceTree = "<group>"; };
+		BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanelController.m; sourceTree = "<group>"; };
+		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
+		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
+		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
+		BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAUserSearchBar.m; sourceTree = "<group>"; };
+		BDB63FD116481FCE008FCDAB /* Logo-big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Logo-big.png"; sourceTree = "<group>"; };
 		BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAFinderWindow.h; sourceTree = "<group>"; };
 		BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindow.m; sourceTree = "<group>"; };
 		BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IALoginViewController.h; sourceTree = "<group>"; };
@@ -116,15 +111,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BD1A1BF61639469000186C48 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD1A1BFE1639469100186C48 /* Cocoa.framework in Frameworks */,
-				BDBAEE13163AD284001B2FD1 /* FinderWindow.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BD1A1C21163946A500186C48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -141,7 +127,6 @@
 			isa = PBXGroup;
 			children = (
 				BD84096D16401131004C9C97 /* libgap.dylib */,
-				BD1A1C031639469100186C48 /* FinderWindowApplication */,
 				BD1A1C27163946A500186C48 /* FinderWindow */,
 				BD1A1BFC1639469100186C48 /* Frameworks */,
 				BD1A1BFA1639469000186C48 /* Products */,
@@ -151,7 +136,6 @@
 		BD1A1BFA1639469000186C48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BD1A1BF91639469000186C48 /* FinderWindowApplication.app */,
 				BD1A1C25163946A500186C48 /* FinderWindow.framework */,
 			);
 			name = Products;
@@ -176,53 +160,20 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		BD1A1C031639469100186C48 /* FinderWindowApplication */ = {
-			isa = PBXGroup;
-			children = (
-				BD1A1C0F1639469100186C48 /* IAAppDelegate.h */,
-				BD1A1C101639469100186C48 /* IAAppDelegate.m */,
-				BD1A1C121639469100186C48 /* MainMenu.xib */,
-				BD1A1C041639469100186C48 /* Supporting Files */,
-			);
-			path = FinderWindowApplication;
-			sourceTree = "<group>";
-		};
-		BD1A1C041639469100186C48 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				BD1A1C051639469100186C48 /* FinderWindowApplication-Info.plist */,
-				BD1A1C061639469100186C48 /* InfoPlist.strings */,
-				BD1A1C091639469100186C48 /* main.m */,
-				BD1A1C0B1639469100186C48 /* FinderWindowApplication-Prefix.pch */,
-				BD1A1C0C1639469100186C48 /* Credits.rtf */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
+				BD91959E164D2E30009FCC0F /* NotificationPanel */,
+				BD919593164C05F9009FCC0F /* StatusBar */,
+				BDB63FC91647D425008FCDAB /* Window */,
+				BDB63FC61647D389008FCDAB /* Register */,
+				BDB63FC81647D3F2008FCDAB /* Resources */,
+				BDB63FC71647D3D9008FCDAB /* Login */,
 				BD1A1C28163946A500186C48 /* Supporting Files */,
-				BD840966163EFC16004C9C97 /* gap.h */,
-				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
-				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
+				BDB63FCA1647D456008FCDAB /* Gap */,
+				BDB63FCC1647D4AE008FCDAB /* Common */,
 				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
-				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
-				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
-				BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */,
-				BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */,
-				BD840968163EFC3F004C9C97 /* IAGapState.h */,
-				BD840969163EFC3F004C9C97 /* IAGapState.m */,
-				BD8409A316412C2B004C9C97 /* IAMainView.h */,
-				BD8409A416412C2B004C9C97 /* IAMainView.m */,
-				BD8409A816412CE3004C9C97 /* IAMainViewController.h */,
-				BD8409A916412CE3004C9C97 /* IAMainViewController.m */,
-				BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */,
-				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
-				BD8409D11641A247004C9C97 /* IARegisterView.h */,
-				BD8409D21641A247004C9C97 /* IARegisterView.m */,
-				BD1BE3781644181E004810F9 /* IATextFieldCell.h */,
-				BD1BE3791644181E004810F9 /* IATextFieldCell.m */,
+				BDB63FCD1647D4D0008FCDAB /* MainView */,
 			);
 			path = FinderWindow;
 			sourceTree = "<group>";
@@ -235,6 +186,105 @@
 				BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BD919593164C05F9009FCC0F /* StatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				BD919595164C062D009FCC0F /* IAStatusBarController.h */,
+				BD919596164C062D009FCC0F /* IAStatusBarController.m */,
+				BD919599164C0667009FCC0F /* IAStatusItemView.h */,
+				BD91959A164C0667009FCC0F /* IAStatusItemView.m */,
+			);
+			name = StatusBar;
+			sourceTree = "<group>";
+		};
+		BD91959E164D2E30009FCC0F /* NotificationPanel */ = {
+			isa = PBXGroup;
+			children = (
+				BD91959F164D2E67009FCC0F /* IANotificationPanel.h */,
+				BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */,
+				BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */,
+				BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */,
+				BD08503A16513E1C00C54359 /* IANotificationSource.h */,
+				BD08503B16513E1C00C54359 /* IANotificationSource.m */,
+			);
+			name = NotificationPanel;
+			sourceTree = "<group>";
+		};
+		BDB63FC61647D389008FCDAB /* Register */ = {
+			isa = PBXGroup;
+			children = (
+				BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */,
+				BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */,
+				BD8409D11641A247004C9C97 /* IARegisterView.h */,
+				BD8409D21641A247004C9C97 /* IARegisterView.m */,
+			);
+			name = Register;
+			sourceTree = "<group>";
+		};
+		BDB63FC71647D3D9008FCDAB /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */,
+				BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */,
+			);
+			name = Login;
+			sourceTree = "<group>";
+		};
+		BDB63FC81647D3F2008FCDAB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BD8C3F6B164AC5B600BED07C /* active_status_icon.png */,
+				BDB63FD116481FCE008FCDAB /* Logo-big.png */,
+				BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		BDB63FC91647D425008FCDAB /* Window */ = {
+			isa = PBXGroup;
+			children = (
+				BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */,
+				BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */,
+				BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */,
+				BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */,
+			);
+			name = Window;
+			sourceTree = "<group>";
+		};
+		BDB63FCA1647D456008FCDAB /* Gap */ = {
+			isa = PBXGroup;
+			children = (
+				BD840966163EFC16004C9C97 /* gap.h */,
+				BD840968163EFC3F004C9C97 /* IAGapState.h */,
+				BD840969163EFC3F004C9C97 /* IAGapState.m */,
+			);
+			name = Gap;
+			sourceTree = "<group>";
+		};
+		BDB63FCC1647D4AE008FCDAB /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				BD1BE3781644181E004810F9 /* IATextFieldCell.h */,
+				BD1BE3791644181E004810F9 /* IATextFieldCell.m */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
+		BDB63FCD1647D4D0008FCDAB /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				BD8409A316412C2B004C9C97 /* IAMainView.h */,
+				BD8409A416412C2B004C9C97 /* IAMainView.m */,
+				BD8409A816412CE3004C9C97 /* IAMainViewController.h */,
+				BD8409A916412CE3004C9C97 /* IAMainViewController.m */,
+				BDB63FC11647D14C008FCDAB /* IADropFileView.h */,
+				BDB63FC21647D14C008FCDAB /* IADropFileView.m */,
+				BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */,
+				BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */,
+			);
+			name = MainView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -254,31 +304,18 @@
 				BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */,
 				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
 				BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */,
+				BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */,
+				BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */,
+				BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */,
+				BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */,
+				BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */,
+				BD08503C16513E1C00C54359 /* IANotificationSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		BD1A1BF81639469000186C48 /* FinderWindowApplication */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BD1A1C171639469100186C48 /* Build configuration list for PBXNativeTarget "FinderWindowApplication" */;
-			buildPhases = (
-				BD1A1BF51639469000186C48 /* Sources */,
-				BD1A1BF61639469000186C48 /* Frameworks */,
-				BD1A1BF71639469000186C48 /* Resources */,
-				BD1A1C391639488C00186C48 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				BD1A1C381639488700186C48 /* PBXTargetDependency */,
-			);
-			name = FinderWindowApplication;
-			productName = FinderWindowApplication;
-			productReference = BD1A1BF91639469000186C48 /* FinderWindowApplication.app */;
-			productType = "com.apple.product-type.application";
-		};
 		BD1A1C24163946A500186C48 /* FinderWindow */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BD1A1C31163946A600186C48 /* Build configuration list for PBXNativeTarget "FinderWindow" */;
@@ -320,48 +357,31 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BD1A1BF81639469000186C48 /* FinderWindowApplication */,
 				BD1A1C24163946A500186C48 /* FinderWindow */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BD1A1BF71639469000186C48 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD1A1C081639469100186C48 /* InfoPlist.strings in Resources */,
-				BD1A1C0E1639469100186C48 /* Credits.rtf in Resources */,
-				BD1A1C141639469100186C48 /* MainMenu.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BD1A1C23163946A500186C48 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */,
 				BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */,
 				BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */,
+				BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BD1A1BF51639469000186C48 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD1A1C0A1639469100186C48 /* main.m in Sources */,
-				BD1A1C111639469100186C48 /* IAAppDelegate.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BD1A1C20163946A500186C48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8C3F76164BC8F700BED07C /* IAUserSearchBar.m in Sources */,
 				BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */,
 				BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */,
 				BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */,
@@ -371,45 +391,18 @@
 				BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */,
 				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
 				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
+				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
+				BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */,
+				BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */,
+				BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */,
+				BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */,
+				BD08503D16513E1C00C54359 /* IANotificationSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		BD1A1C381639488700186C48 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = BD1A1C24163946A500186C48 /* FinderWindow */;
-			targetProxy = BD1A1C371639488700186C48 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXVariantGroup section */
-		BD1A1C061639469100186C48 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				BD1A1C071639469100186C48 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		BD1A1C0C1639469100186C48 /* Credits.rtf */ = {
-			isa = PBXVariantGroup;
-			children = (
-				BD1A1C0D1639469100186C48 /* en */,
-			);
-			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		BD1A1C121639469100186C48 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				BD1A1C131639469100186C48 /* en */,
-			);
-			name = MainMenu.xib;
-			path = FinderWindowApplication;
-			sourceTree = SOURCE_ROOT;
-		};
 		BD1A1C2A163946A500186C48 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -474,30 +467,6 @@
 			};
 			name = Release;
 		};
-		BD1A1C181639469100186C48 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "FinderWindowApplication/FinderWindowApplication-Prefix.pch";
-				INFOPLIST_FILE = "FinderWindowApplication/FinderWindowApplication-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		BD1A1C191639469100186C48 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "FinderWindowApplication/FinderWindowApplication-Prefix.pch";
-				INFOPLIST_FILE = "FinderWindowApplication/FinderWindowApplication-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
 		BD1A1C32163946A600186C48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -546,15 +515,6 @@
 			buildConfigurations = (
 				BD1A1C151639469100186C48 /* Debug */,
 				BD1A1C161639469100186C48 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		BD1A1C171639469100186C48 /* Build configuration list for PBXNativeTarget "FinderWindowApplication" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BD1A1C181639469100186C48 /* Debug */,
-				BD1A1C191639469100186C48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

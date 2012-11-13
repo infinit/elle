@@ -51,6 +51,14 @@
         syslog(LOG_ERR, "Couldn't find the finder");
         return;
     }
+    kill(process_id, SIGTERM);
+        sleep(1);
+    while ((process_id = [IPCInterface _getFinderPid]) == -1)
+    {
+        sleep(1);
+    }
+    sleep(1);
+
 	syslog(LOG_NOTICE, "injecting bundle %s into finder pid %d", [source_bundle_path UTF8String], process_id);
 	
 	mach_error_t err = mach_inject_bundle_pid([source_bundle_path fileSystemRepresentation],

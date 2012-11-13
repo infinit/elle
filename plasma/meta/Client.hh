@@ -18,6 +18,13 @@ namespace plasma
 {
   namespace meta
   {
+    namespace json = elle::format::json;
+
+    /////////////////////////
+    struct DebugResponse : Response
+    {
+    };
+
     struct LoginResponse : plasma::Response
     {
       std::string  token;
@@ -33,7 +40,13 @@ namespace plasma
     struct RegisterResponse : plasma::Response
     {};
 
-    struct AskNotificationResponse : plasma::Response
+    struct PullNotificationResponse : plasma::Response
+    {
+      std::list<json::Dictionary> notifs;
+      std::list<json::Dictionary> old_notifs;
+    };
+
+    struct RedNotificationResponse : plasma::Response
     {};
 
     struct MessageResponse : plasma::Response
@@ -57,8 +70,19 @@ namespace plasma
       std::list<std::string> users;
     };
 
-    struct SendFileResponse : plasma::Response
+    struct CreateTransactionResponse : plasma::Response
     {
+      std::string created_transaction_id;
+    };
+
+    struct UpdateTransactionResponse : plasma::Response
+    {
+      std::string updated_transaction_id;
+    };
+
+    struct StartTransactionResponse : plasma::Response
+    {
+      std::string updated_transaction_id;
     };
 
     struct NetworksResponse : plasma::Response
@@ -114,7 +138,6 @@ namespace plasma
       std::string             passport;
     };
 
-
     /// Callbacks for API calls.
     typedef std::function<void(LoginResponse const&)> LoginCallback;
     typedef std::function<void(RegisterResponse const&)> RegisterCallback;
@@ -125,8 +148,6 @@ namespace plasma
     typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
     typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
-    namespace json = elle::format::json;
-
     class Client
     {
     public:
@@ -136,6 +157,9 @@ namespace plasma
       ~Client();
 
     public:
+      DebugResponse
+      debug();
+
       LoginResponse
       login(std::string const& email,
             std::string const& password);
@@ -147,7 +171,10 @@ namespace plasma
       register_(std::string const& email,
                 std::string const& fullname,
                 std::string const& password,
-                std::string const& activation_code);
+                std::string const& activation_code,
+                std::string const& picture_name = "",
+                std::string const& picture_data = ""
+      );
 
       UserResponse
       user(std::string const& id);
@@ -168,22 +195,34 @@ namespace plasma
       InviteUserResponse
       invite_user(std::string const& email);
 
-      SendFileResponse
-      send_file(std::string const& recipient_id_or_email,
-                std::string const& file_name,
-                size_t count,
-                size_t size,
-                bool is_dir,
-                std::string const& network_id);
+      CreateTransactionResponse
+      create_transaction(std::string const& recipient_id_or_email,
+                         std::string const& first_filename,
+                         size_t count,
+                         size_t size,
+                         bool is_dir,
+                         std::string const& network_id,
+                         std::string const& device_id);
+
+      UpdateTransactionResponse
+      update_transaction(std::string const& transaction_id,
+                         int status,
+                         std::string const& device_id,
+                         std::string const& device_name);
+
+      StartTransactionResponse
+      start_transaction(std::string const& transaction_id);
 
       MessageResponse
       send_message(std::string const& recipient_id,
                    std::string const& sender_id, // DEBUG.
                    std::string const& message);
 
-      // DEBUG
-      AskNotificationResponse
-      debug_ask_notif(json::Dictionary const& dic);
+      PullNotificationResponse
+      pull_notifications(int limit);
+
+      RedNotificationResponse
+      notification_red();
 
       NetworkResponse
       network(std::string const& _id);
