@@ -14,3 +14,4 @@ config.mk
 dependencies/environment.sh
 releases/
 work/
+.drake

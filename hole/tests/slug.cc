@@ -52,7 +52,7 @@ static std::vector<elle::network::Locus> members()
   return res;
 }
 
-cryptography::KeyPair keys(cryptography::KeyPair::generate());
+cryptography::KeyPair keys(cryptography::KeyPair::generate(1024));
 elle::Authority authority(keys);
 elle::Passport passport;
 
@@ -85,16 +85,16 @@ test()
   nucleus::proton::Network network("namespace");
 
   cryptography::KeyPair user_keys(
-    cryptography::KeyPair::generate());
+    cryptography::KeyPair::generate(1024));
 
-  nucleus::neutron::Object block(network, user_keys.K,
+  nucleus::neutron::Object block(network, user_keys.K(),
                                  nucleus::neutron::Genre::file);
   block.Update(nucleus::neutron::Author(),
                nucleus::proton::Address::null(),
                42,
                nucleus::proton::Address::null(),
                nucleus::neutron::Token::null());
-  block.Seal(user_keys.k, nullptr);
+  block.Seal(user_keys.k(), nullptr);
 
   auto address = block.bind();
   s1.push(address, block);
@@ -121,11 +121,11 @@ test_separate_missing()
   nucleus::proton::Network network("namespace");
 
   cryptography::KeyPair user_keys(
-    cryptography::KeyPair::generate());
+    cryptography::KeyPair::generate(1024));
 
-  nucleus::neutron::Object block(network, user_keys.K,
+  nucleus::neutron::Object block(network, user_keys.K(),
                                  nucleus::neutron::Genre::file);
-  block.Seal(user_keys.k, nullptr);
+  block.Seal(user_keys.k(), nullptr);
 
   auto address = block.bind();
   s1.push(address, block);

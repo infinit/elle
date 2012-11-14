@@ -22,6 +22,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   cxx_config.lib('crypto')
   # Includes
   cxx_config.add_local_include_path('.')
+  cxx_config.add_system_include_path('cryptography/source')
   cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
   cxx_config += reactor.config
@@ -31,6 +32,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   if enable_horizon:
     cxx_config.define('_FILE_OFFSET_BITS', 64) # FIXME: only needed for horizon
     cxx_config.define('INFINIT_HORIZON')
+  cxx_config.define('BOOST_PP_VARIADICS')
 
   # Lune
   lune_sources = drake.nodes(
@@ -199,47 +201,48 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
 
   # Cryptography
   cryptography_sources = drake.nodes(
-    'cryptography/Cipher.cc',
-    'cryptography/Cipher.hh',
-    'cryptography/Cipher.hxx',
-    'cryptography/Clear.hh',
-    'cryptography/Code.cc',
-    'cryptography/Code.hh',
-    'cryptography/Code.hxx',
-    'cryptography/Digest.hh',
-    'cryptography/Input.cc',
-    'cryptography/Input.hh',
-    'cryptography/Input.hxx',
-    'cryptography/KeyPair.cc',
-    'cryptography/KeyPair.hh',
-    'cryptography/KeyPair.hxx',
-    'cryptography/LargeSerializer.hxx',
-    'cryptography/Output.cc',
-    'cryptography/Output.hh',
-    'cryptography/Output.hxx',
-    'cryptography/Plain.hh',
-    'cryptography/PrivateKey.cc',
-    'cryptography/PrivateKey.hh',
-    'cryptography/PrivateKey.hxx',
-    'cryptography/PublicKey.cc',
-    'cryptography/PublicKey.hh',
-    'cryptography/PublicKey.hxx',
-    'cryptography/Seed.cc',
-    'cryptography/Seed.hh',
-    'cryptography/Seed.hxx',
-    'cryptography/Signature.cc',
-    'cryptography/Signature.hh',
-    'cryptography/Signature.hxx',
-    'cryptography/all.hh',
-    'cryptography/cryptography.cc',
-    'cryptography/cryptography.hh',
-    'cryptography/fwd.hh',
-    'cryptography/oneway.cc',
-    'cryptography/oneway.hh',
-    'cryptography/oneway.hxx',
-    'cryptography/random.cc',
-    'cryptography/random.hh',
-    'cryptography/random.hxx',
+    'cryptography/source/cryptography/Cipher.hh',
+    'cryptography/source/cryptography/Clear.hh',
+    'cryptography/source/cryptography/Code.hh',
+    'cryptography/source/cryptography/Digest.hh',
+    'cryptography/source/cryptography/Input.cc',
+    'cryptography/source/cryptography/Input.hh',
+    'cryptography/source/cryptography/Input.hxx',
+    'cryptography/source/cryptography/KeyPair.cc',
+    'cryptography/source/cryptography/KeyPair.hh',
+    'cryptography/source/cryptography/KeyPair.hxx',
+    'cryptography/source/cryptography/LargeSerializer.hxx',
+    'cryptography/source/cryptography/Output.cc',
+    'cryptography/source/cryptography/Output.hh',
+    'cryptography/source/cryptography/Output.hxx',
+    'cryptography/source/cryptography/Plain.hh',
+    'cryptography/source/cryptography/PrivateKey.cc',
+    'cryptography/source/cryptography/PrivateKey.hh',
+    'cryptography/source/cryptography/PrivateKey.hxx',
+    'cryptography/source/cryptography/PublicKey.cc',
+    'cryptography/source/cryptography/PublicKey.hh',
+    'cryptography/source/cryptography/PublicKey.hxx',
+    'cryptography/source/cryptography/SecretKey.cc',
+    'cryptography/source/cryptography/SecretKey.hh',
+    'cryptography/source/cryptography/SecretKey.hxx',
+    'cryptography/source/cryptography/Seed.cc',
+    'cryptography/source/cryptography/Seed.hh',
+    'cryptography/source/cryptography/Seed.hxx',
+    'cryptography/source/cryptography/Signature.cc',
+    'cryptography/source/cryptography/Signature.hh',
+    'cryptography/source/cryptography/Signature.hxx',
+    'cryptography/source/cryptography/all.hh',
+    'cryptography/source/cryptography/bn.cc',
+    'cryptography/source/cryptography/bn.hh',
+    'cryptography/source/cryptography/cryptography.cc',
+    'cryptography/source/cryptography/cryptography.hh',
+    'cryptography/source/cryptography/fwd.hh',
+    'cryptography/source/cryptography/oneway.cc',
+    'cryptography/source/cryptography/oneway.hh',
+    'cryptography/source/cryptography/oneway.hxx',
+    'cryptography/source/cryptography/random.cc',
+    'cryptography/source/cryptography/random.hh',
+    'cryptography/source/cryptography/random.hxx',
     )
   cryptography_lib = drake.cxx.DynLib('lib/cryptography', cryptography_sources,
                                       cxx_toolkit, cxx_config)
@@ -382,7 +385,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   for test in ['slug']:
     drake.cxx.Executable(hole_tests_root / test,
                          drake.nodes(hole_tests_root / ('%s.cc' % test)) +
-                         [reactor.lib_dynamic, elle.lib_dynamic, cryptography_lib
+                         [reactor.lib_dynamic, elle.lib_dynamic, cryptography_lib,
                           hole_lib, comet_lib, nucleus_lib, protocol_lib],
                          cxx_toolkit, cxx_config + boost.config_test())
 
