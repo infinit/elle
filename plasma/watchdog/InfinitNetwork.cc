@@ -147,8 +147,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("Couldn't restore the identity.");
 
   //- group -------------------------------------------------------------------
-  nucleus::neutron::Group group(network, identity.pair.K, "everybody");
-  group.seal(identity.pair.k);
+  nucleus::neutron::Group group(network, identity.pair.K(), "everybody");
+  group.seal(identity.pair.k());
 
   //- group address -----------------------------------------------------------
   nucleus::proton::Address      group_address(group.bind());
@@ -159,7 +159,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("unable to create the group subject");
 
   //- access-------------------------------------------------------------------
-  nucleus::neutron::Access access(network, identity.pair.K);
+  nucleus::neutron::Access access(network, identity.pair.K());
   if (access.Add(new nucleus::neutron::Record{
         subject,
         permissions
@@ -171,7 +171,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   //- directory ---------------------------------------------------------------
   nucleus::neutron::Object      directory(network,
-                                          identity.pair.K,
+                                          identity.pair.K(),
                                           genreDirectory);
 
   if (directory.Update(directory.author(),
@@ -181,7 +181,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
                        directory.owner_token()) == e)
     throw std::runtime_error("unable to update the directory");
 
-  if (directory.Seal(identity.pair.k, &access) == e)
+  if (directory.Seal(identity.pair.k(), &access) == e)
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------
