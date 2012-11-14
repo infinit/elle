@@ -25,8 +25,6 @@ class _Page(Page):
             raise web.NotFound("Couldn't find any network with this id")
         if network['owner'] != self.user['_id'] and \
            self.user['_id'] not in network['users']:
-            print self.user
-            print network
             raise web.Forbidden("This network does not belong to you")
         return network
 
