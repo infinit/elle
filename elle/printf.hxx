@@ -32,12 +32,12 @@ namespace elle
       template<typename T>
       static
       void
-      feed_it(boost::format& fmt, T&& value, int,
+      feed_it(boost::format& fmt, T&& bvalue, int,
               Helper<sizeof(
                 static_cast<boost::format&>(*((boost::format* const)0)) %
                 static_cast<T const&>(*((T const* const)0)) )>* = 0)
       {
-        fmt % std::forward<T>(value);
+        fmt % std::forward<T>(bvalue);
       }
 
       // This is the fallback method using a classic stringstream, and
