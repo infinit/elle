@@ -7,13 +7,17 @@
 # include <elle/types.hh>
 
 /// Throw if the condition is unmet.
-# define ELLE_ASSERT(_condition_)                                       \
+# if defined(DEBUG) || !defined(NDEBUG)
+#  define ELLE_ASSERT(_condition_)                                      \
   do                                                                    \
     {                                                                   \
       if (!(_condition_))                                               \
         throw elle::Exception("assertion failed (%s) at %s:%s",         \
                               #_condition_, __FILE__, __LINE__);        \
     } while (0)
+# else
+#  define ELLE_ASSERT(_condition_)
+# endif
 
 namespace elle
 {
