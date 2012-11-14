@@ -35,7 +35,7 @@ namespace elle
   T
   HttpClient::post(std::string const& url, elle::format::json::Object const& req)
   {
-    ELLE_LOG_COMPONENT("infinit.elle.HttpClient");
+    ELLE_LOG_COMPONENT("elle.HttpClient");
 
     std::stringstream res;
 
@@ -73,7 +73,7 @@ namespace elle
   T
   HttpClient::get(std::string const& url)
   {
-    ELLE_LOG_COMPONENT("infinit.elle.HttpClient");
+    ELLE_LOG_COMPONENT("elle.HttpClient");
     std::stringstream res;
 
 // http request
