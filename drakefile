@@ -216,6 +216,9 @@ def configure(cxx_toolkit, cxx_config):
     'utility/Unicode.hh',
     'utility/Utility.hh',
     'utility/fwd.hh',
+    'HttpClient.cc',
+    'HttpClient.hh',
+    'HttpClient.hxx',
    )
 
   lib_static = drake.cxx.StaticLib('elle', sources, cxx_toolkit, cxx_config)
