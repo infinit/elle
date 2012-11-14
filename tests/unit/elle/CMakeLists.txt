@@ -3,6 +3,7 @@ simple_test(operator "" "tests done." "")
 simple_test(log "" "tests done." "")
 simple_test(finally "" "tests done.\nlambda" "")
 
+add_subdirectory(nat)
 add_subdirectory(cryptography)
 add_subdirectory(format)
 add_subdirectory(network)

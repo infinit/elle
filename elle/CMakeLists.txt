@@ -28,6 +28,8 @@ add_library(elle ${LINK_METHOD}
 
   standalone/Region.cc
 
+  nat/Nat.cc
+
   radix/Meta.cc
   radix/Object.cc
   radix/Trace.cc
