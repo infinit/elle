@@ -12,7 +12,7 @@
 # include <boost/format.hpp>
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("Infinit.Hole.Remote.Machine");
+ELLE_LOG_COMPONENT("infinit.hole.remote.Machine");
 
 namespace hole
 {

@@ -10,14 +10,14 @@
 
 #include <elle/log.hh>
 
+ELLE_LOG_COMPONENT("infinit.hole.local.Machine");
+
 namespace hole
 {
   namespace implementations
   {
     namespace local
     {
-
-      ELLE_LOG_COMPONENT("hole.implementation.local.Machine");
 
       Machine::Machine(hole::Hole& hole)
         : _hole(hole)

@@ -19,7 +19,7 @@ namespace elle
       Status Uniquable<Archive>::Save(elle::io::Unique& out) const
       {
         std::ostringstream ss;
-        ELLE_LOG_COMPONENT("elle.concept");
+        ELLE_LOG_COMPONENT("elle.concept.Uniquable");
         try
           {
             ELLE_TRACE_SCOPE("Save %p of type %s to a Unique string",
@@ -45,7 +45,7 @@ namespace elle
         std::istringstream ss(in);
         try
           {
-            ELLE_LOG_COMPONENT("elle.concept");
+            ELLE_LOG_COMPONENT("elle.concept.Uniquable");
             ELLE_TRACE_SCOPE("Load %p of type %s from a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
@@ -67,4 +67,3 @@ namespace elle
 # include <elle/idiom/Close.hh>
 
 #endif
-
