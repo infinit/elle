@@ -8,6 +8,12 @@
 #include <elle/os/path.hh>
 #include <elle/print.hh>
 #include <elle/system/platform.hh>
+#include <elle/io/Path.hh>
+#include <elle/io/Piece.hh>
+
+#include <lune/Lune.hh>
+
+#include <elle/assert.hh>
 
 #include <elle/idiom/Close.hh>
 
@@ -284,22 +290,44 @@ namespace common
 
   //- scheduled for deletion --------------------------------------------------
 
+  static
   std::string const&
-  passport_path()
+  _passport_path(std::string const& user)
   {
-    static std::string const path = elle::os::path::join(infinit::home(),
-                                                         "infinit.ppt");
+    ELLE_ASSERT(!lune::Lune::Passport.string.empty());
+
+    elle::io::Path passport_path(lune::Lune::Passport);
+    passport_path.Complete(elle::io::Piece{"%USER%", user});
+
+    return passport_path.string();
+  }
+
+  std::string const&
+  passport_path(std::string const& user)
+  {
+    static std::string const path = _passport_path(user);
+
     return path;
   }
 
   namespace watchdog
   {
+    static
+    std::string const&
+    _identity_path(std::string const& user)
+    {
+      ELLE_ASSERT(!lune::Lune::Identity.string.empty());
+
+      elle::io::Path identity_path(lune::Lune::Identity);
+      identity_path.Complete(elle::io::Piece{"%USER%", user});
+
+      return identity_path.string();
+    }
 
     std::string const&
-    identity_path()
+    identity_path(std::string const& user)
     {
-      static std::string const path = elle::os::path::join(infinit::home(),
-                                                           "identity.wtg");
+      static std::string const path = _identity_path(user);
       return path;
     }
 

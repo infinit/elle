@@ -81,7 +81,7 @@ void ClientActions::_on_run(Connection&,
       this->_manager.identity(identity);
       this->_manager.user(user);
 
-      std::ofstream identity_infos{common::watchdog::identity_path()};
+      std::ofstream identity_infos{common::watchdog::identity_path(user.toStdString())};
 
       if (!identity_infos.good())
         {

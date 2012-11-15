@@ -113,6 +113,30 @@ extern "C"
       }
   }
 
+  gap_State* gap_new_with_token(char const* token)
+
+{    static bool initialized = false;
+    if (!initialized)
+      {
+        initialized = true;
+        if (lune::Lune::Initialize() == elle::Status::Error)
+          {
+            ELLE_ERR("Cannot initialize root components");
+            return nullptr;
+          }
+      }
+
+    try
+      {
+        return __TO_C(new surface::gap::State(token));
+      }
+    catch (std::exception const& err)
+      {
+        ELLE_ERR("Cannot initialize gap state: %s", err.what());
+        return nullptr;
+      }
+  }
+
   void gap_free(gap_State* state)
   {
     delete __TO_CPP(state);
@@ -205,33 +229,6 @@ extern "C"
                    status);
 
     return ret;
-  }
-
-  gap_Status
-  gap_start_transaction(gap_State* state,
-                        char const* transaction_id)
-  {
-    assert(transaction_id != nullptr);
-
-    __WRAP_CPP_RET(state,
-                   start_transaction,
-                   transaction_id);
-
-    return ret;
-  }
-
-  gap_Status
-  gap_stop_transaction(gap_State* state,
-                       char const* transaction_id)
-  {
-    assert(transaction_id != nullptr);
-
-    __WRAP_CPP_RET(state,
-                   start_transaction,
-                   transaction_id);
-
-    return ret;
-
   }
 
   gap_Status
@@ -450,6 +447,24 @@ extern "C"
     __WRAP_CPP(state, network_add_user, network_id, user_id);
   }
 
+
+  /// - Self ----------------------------------------------------------------
+  char const*
+  gap_user_token(gap_State* state)
+  {
+    assert(state != nullptr);
+    gap_Status ret;
+    try
+      {
+        auto token = __TO_CPP(state)->get_token();
+        return token.c_str();
+      }
+    CATCH_ALL(user_token);
+
+    (void) ret;
+    return nullptr;
+  }
+
   /// - User ----------------------------------------------------------------
 
   char const* gap_user_fullname(gap_State* state, char const* id)
@@ -460,7 +475,7 @@ extern "C"
     try
       {
         auto const& user = __TO_CPP(state)->user(id);
-        return user.fullname;
+        return user.fullname.c_str();
       }
     CATCH_ALL(user_fullname);
 
@@ -476,7 +491,7 @@ extern "C"
     try
       {
         auto const& user = __TO_CPP(state)->user(id);
-        return user.email;
+        return user.email.c_str();
       }
     CATCH_ALL(user_email);
 
@@ -492,7 +507,7 @@ extern "C"
     try
       {
         auto const& user = __TO_CPP(state)->user(email);
-        return user._id;
+        return user._id.c_str();
       }
     CATCH_ALL(user_by_email);
 
@@ -623,7 +638,9 @@ extern "C"
     gap_Status ret = gap_ok;
     try
       {
-        __TO_CPP(state)->attach_callback<gap_UserStatusNotification>(cb);
+        __TO_CPP(state)->attach_callback(
+          std::function<void (gap_UserStatusNotification const*)>(cb)
+        );
       }
     CATCH_ALL(user_status_callback);
 
@@ -637,7 +654,9 @@ extern "C"
     gap_Status ret = gap_ok;
     try
       {
-        __TO_CPP(state)->attach_callback<gap_TransactionNotification>(cb);
+        __TO_CPP(state)->attach_callback(
+          std::function<void (gap_TransactionNotification const*)>(cb)
+        );
       }
     CATCH_ALL(transaction_callback);
 
@@ -651,7 +670,9 @@ extern "C"
     gap_Status ret = gap_ok;
     try
       {
-        __TO_CPP(state)->attach_callback<gap_TransactionStatusNotification>(cb);
+        __TO_CPP(state)->attach_callback(
+          std::function<void (gap_TransactionStatusNotification const*)>(cb)
+        );
       }
     CATCH_ALL(transaction_status_callback);
 
@@ -665,7 +686,9 @@ extern "C"
     gap_Status ret = gap_ok;
     try
       {
-        __TO_CPP(state)->attach_callback<gap_MessageNotification>(cb);
+        __TO_CPP(state)->attach_callback(
+          std::function<void (gap_MessageNotification const*)>(cb)
+        );
       }
     CATCH_ALL(message_callback);
 

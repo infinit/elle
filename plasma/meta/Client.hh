@@ -13,6 +13,7 @@
 # include <plasma/plasma.hh>
 
 # include <elle/HttpClient.hxx>
+# include <surface/gap/gap.h>
 
 namespace plasma
 {
@@ -69,6 +70,29 @@ namespace plasma
     {
       std::list<std::string> users;
     };
+
+    struct TransactionsResponse : plasma::Response
+    {
+      std::list<std::string> transactions;
+    };
+
+    struct TransactionResponse : plasma::Response
+    {
+      std::string           transaction_id;
+      std::string           first_filename;
+      int                   files_count;
+      int                   total_size;
+      bool                  is_directory;
+      std::string           network_id;
+      std::string           sender_id;
+      std::string           sender_fullname;
+      std::string           sender_device_id;
+      std::string           recipient_id;
+      std::string           recipient_fullname;
+      std::string           recipient_device_id;
+      int                   status;
+    };
+
 
     struct CreateTransactionResponse : plasma::Response
     {
@@ -199,6 +223,12 @@ namespace plasma
 
       InviteUserResponse
       invite_user(std::string const& email);
+
+      TransactionResponse
+      transaction(std::string const& _id);
+
+      TransactionsResponse
+      transactions();
 
       CreateTransactionResponse
       create_transaction(std::string const& recipient_id_or_email,

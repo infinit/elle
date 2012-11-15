@@ -222,6 +222,8 @@ void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
 
+  return;
+
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
@@ -300,9 +302,11 @@ void InfinitNetwork::_prepare_directory()
 void InfinitNetwork::_register_device()
 {
   LOG("Check if the device is registered for this network.");
-  elle::Passport passport;
+  elle::io::Path passport_path(lune::Lune::Passport);
+  passport_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()});
 
-  passport.load(elle::io::Path(lune::Lune::Passport));
+  elle::Passport passport;
+  passport.load(passport_path);
 
   this->_manager.meta().network_add_device(
     this->_description._id,
