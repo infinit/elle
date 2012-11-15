@@ -32,7 +32,7 @@ endif()
 
 
 if (MSVC)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS -D_VARIADIC_MAX=10)
 endif(MSVC)
 if (WIN32)
   add_definitions(-D_WIN32_WINNT=0x0501)

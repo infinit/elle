@@ -13,42 +13,28 @@
 namespace network {
   class uri_builder {
 
+    uri_builder(const uri_builder &); // = delete;
+    uri_builder &operator = (const uri_builder &); // = delete;
+
   public:
 
     typedef uri::string_type string_type;
 
-    uri_builder() {
+    uri_builder(); // = default;
+    ~uri_builder(); // = default;
 
-    }
-
-    ~uri_builder() {
-
-    }
-
-    uri_builder(const uri_builder &);
-    uri_builder &operator = (const uri_builder &);
-
-    uri_builder &scheme(const string_type &scheme) {
-      //uri_.uri_.append(scheme);
-      //if (opaque_schemes::exists(scheme)) {
-      //	uri_.uri_.append(":");
-      //}
-      //else {
-      //	uri_.uri_.append("://");
-      //}
-      //uri_.parse();
+    template <typename Source>
+    uri_builder &scheme(const Source &scheme) {
       return *this;
     }
 
-    uri_builder &host(const string_type &host) {
-      //uri_.uri_.append(host);
-      //uri_.parse();
+    template <typename Source>
+    uri_builder &host(const Source &host) {
       return *this;
     }
 
-    uri_builder &path(const string_type &path) {
-      //uri_.uri_.append(path);
-      //uri_.parse();
+    template <typename Source>
+    uri_builder &path(const Source &path) {
       return *this;
     }
 
@@ -56,7 +42,7 @@ namespace network {
 
   private:
 
-    uri::string_type scheme_, user_name, host_, port_, path_, query_, fragment_;
+    string_type scheme_, user_name, host_, port_, path_, query_, fragment_;
 
   };
 } // namespace network

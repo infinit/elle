@@ -8,6 +8,15 @@
 
 
 namespace network {
+
+  uri_builder::uri_builder() {
+
+  }
+
+  uri_builder::~uri_builder() {
+
+  }
+
   network::uri uri_builder::uri() const {
     return network::uri();
   }

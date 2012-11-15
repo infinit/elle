@@ -318,8 +318,8 @@ namespace network {
 
   }
 
-  uri &uri::operator = (uri other) {
-    swap(other);
+  uri &uri::operator = (const uri &other) {
+    uri_ = other.uri_;
     parse();
     return *this;
   }
@@ -470,9 +470,9 @@ namespace network {
     return seed;
   }
 
-  bool operator == (const uri &lhs, const uri &rhs) {
-
-    // if both URIs are empty, then we should define them as equal even though they're still invalid.
+  bool compare(const uri &lhs, const uri &rhs, uri_comparison_level level) {
+    // if both URIs are empty, then we should define them as equal
+    // even though they're still invalid.
     if (lhs.empty() && rhs.empty()) {
       return true;
     }
@@ -524,6 +524,10 @@ namespace network {
     }
 
     return equal;
+  }
+
+  bool operator == (const uri &lhs, const uri &rhs) {
+    return compare(lhs, rhs, path_segment_normalization);
   }
 
   bool operator < (const uri &lhs, const uri &rhs) {

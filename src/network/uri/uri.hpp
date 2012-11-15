@@ -120,7 +120,7 @@ namespace network {
 
     ~uri();
 
-    uri &operator = (uri other);
+    uri &operator = (const uri &other);
 
     void swap(uri &other);
 
@@ -179,13 +179,22 @@ namespace network {
     class Source
     >
   inline
-  uri make_uri(const Source &source, std::error_code &ec) {
+  uri make_uri(const Source &source, std::error_code &ec) { // noexcept {
     return uri();
   }
 
   void swap(uri &lhs, uri &rhs);
 
   std::size_t hash_value(const uri &uri_);
+
+  enum uri_comparison_level {
+    string_comparison,
+    case_normalization,
+    percent_encoding_normalization,
+    path_segment_normalization,
+  };
+
+  bool compare(const uri &lhs, const uri &rhs, uri_comparison_level level);
 
   bool operator == (const uri &lhs, const uri &rhs);
 
