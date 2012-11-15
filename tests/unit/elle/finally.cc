@@ -7,7 +7,8 @@
 int main()
 {
   void* ptr1 = malloc(10);
-  ELLE_FINALLY_FREE(guard1, ptr1);
+
+  ELLE_FINALLY_FREE(ptr1);
 
   elle::Finally guard2([] () { std::cout << "lambda" << std::endl; });
 
