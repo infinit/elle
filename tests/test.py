@@ -24,7 +24,7 @@ assert os.system('src/drake/threadpool-test.py') == 0
 assert os.system('src/drake/sched-test.py') == 0
 
 os.chdir('_build')
-assert os.system('./drake-build.py //check') == 0
+assert os.system('./drake //check') == 0
 
 assert(doctest.testmod(sched)[0] == 0)
 assert(doctest.testmod(drake)[0] == 0)
