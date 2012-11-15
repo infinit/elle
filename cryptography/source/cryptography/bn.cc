@@ -18,7 +18,7 @@ operator <<(std::ostream& stream,
     throw elle::Exception("%s",
                           ::ERR_error_string(ERR_get_error(), nullptr));
 
-  CRYPTOGRAPHY_FINALLY_FREE(hexadecimal);
+  CRYPTOGRAPHY_FINALLY_FREE_OPENSSL(hexadecimal);
 
   // Display the string, depending on its length.
   if (::strlen(hexadecimal) < length)
