@@ -112,8 +112,9 @@ namespace hole
       elle::io::Path path(this->path(address));
 
       // Create an empty block.
-      nucleus::proton::ImmutableBlock* block;
-      nucleus::factory().Build(address.component(), block);
+      nucleus::proton::ImmutableBlock* block{
+        nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
+          address.component())};
 
       // Open an input stream.
       std::ifstream in(path.string(),
@@ -131,14 +132,15 @@ namespace hole
 
     std::unique_ptr<nucleus::proton::Block>
     Directory::_load(nucleus::proton::Address const& address,
-         nucleus::proton::Revision const& revision) const
+                     nucleus::proton::Revision const& revision) const
     {
       // Get block path.
       elle::io::Path path(this->path(address, revision));
 
       // Create an empty block.
-      nucleus::proton::MutableBlock* block;
-      nucleus::factory().Build(address.component(), block);
+      nucleus::proton::MutableBlock* block{
+        nucleus::factory().allocate<nucleus::proton::MutableBlock>(
+          address.component())};
 
       // Open an input stream.
       std::ifstream in(path.string(),

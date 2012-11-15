@@ -54,7 +54,6 @@ add_library(elle ${LINK_METHOD}
   os/path.cc
 
   utility/Duration.cc
-  utility/Factory.cc
   # XXX utility/HTTP.cc
   utility/Parser.cc
   utility/Settings.cc

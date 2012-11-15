@@ -9,6 +9,7 @@
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
+#include <elle/assert.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.nucleus");
@@ -21,50 +22,36 @@ namespace nucleus
   `----------*/
 
   static
-  elle::utility::Factory const*
+  elle::utility::Factory<neutron::Component> const*
   _setup()
   {
-    elle::utility::Factory* factory = new elle::utility::Factory;
+    elle::utility::Factory<neutron::Component>* factory =
+      new elle::utility::Factory<neutron::Component>;
 
     ELLE_TRACE("setting up the nucleus factory");
 
-    if (factory->Register< neutron::Object >
-        (neutron::ComponentObject) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< proton::Contents<neutron::Data> >
-        (neutron::ComponentData) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< proton::Contents<neutron::Catalog> >
-        (neutron::ComponentCatalog) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< proton::Contents<neutron::Reference> >
-        (neutron::ComponentReference) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< neutron::Access >
-        (neutron::ComponentAccess) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< neutron::Group >
-        (neutron::ComponentGroup) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
-
-    if (factory->Register< neutron::Ensemble >
-        (neutron::ComponentEnsemble) == elle::Status::Error)
-      throw Exception("unable to register the factory product");
+    factory->record<neutron::Object>(neutron::ComponentObject);
+    factory->record<proton::Contents<neutron::Data>>(
+      neutron::ComponentData);
+    factory->record<proton::Contents<neutron::Catalog>>(
+      neutron::ComponentCatalog);
+    factory->record<proton::Contents<neutron::Reference>>(
+      neutron::ComponentReference);
+    // XXX factory->record<proton::Contents>(
+    //       neutron::ComponentContents); // XXX[should be in neutron?]
+    factory->record<neutron::Access>(neutron::ComponentAccess);
+    factory->record<neutron::Group>(neutron::ComponentGroup);
+    factory->record<neutron::Ensemble>(neutron::ComponentEnsemble);
 
     return (factory);
   }
 
-  elle::utility::Factory const&
+  elle::utility::Factory<neutron::Component> const&
   factory()
   {
-    static elle::utility::Factory const* factory = _setup();
+    static elle::utility::Factory<neutron::Component> const* factory = _setup();
 
-    assert(factory != nullptr);
+    ELLE_ASSERT(factory != nullptr);
 
     return (*factory);
   }

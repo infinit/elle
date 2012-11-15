@@ -2,131 +2,116 @@
 # define ELLE_UTILITY_FACTORY_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/io/Dumpable.hh>
 
-# include <elle/radix/Object.hh>
-# include <elle/radix/Entity.hh>
+# include <map>
 
-# include <elle/utility/Product.hh>
-
-# include <elle/idiom/Close.hh>
-#  include <map>
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
 
 namespace elle
 {
   namespace utility
   {
-
-    ///
-    /// a factory provides a way for generating instance of given classes
-    /// depending on a product identifier. for instance the identifier 23
+    /// A factory provides a way for generating instance of given classes
+    /// depending on a product number. For instance the product 23
     /// would be associated with the type PublicKey so that calling the
-    /// factory's Build() method with 23 would return a PublicKey object
+    /// factory's allocate() method with 23 would return a PublicKey object
     /// freshly allocated.
     ///
-    /// this class thus holds the mappings between identifiers and the
+    /// This class thus holds the mappings between products and the
     /// functionoids capable of generating types.
-    ///
+    template <typename P>
     class Factory:
-      public radix::Object
+      public elle::io::Dumpable,
+      private boost::noncopyable
     {
+      /*--------.
+      | Classes |
+      `--------*/
     public:
-      //
-      // classes
-      //
-
-      ///
-      /// this class is the base class for factory functionoids.
-      ///
+      /// This class is the base class for factory functionoids.
       class Functionoid:
-        public radix::Entity
+        private boost::noncopyable
       {
       public:
-        //
-        // constructors & destructors
-        //
-        virtual ~Functionoid()
+        virtual
+        ~Functionoid()
         {
         }
 
-        //
-        // methods
-        //
-
-        ///
-        /// this method must be redefined in every sub-class.
-        ///
-        /// note that using a template method would have been better but
-        /// since template methods cannot be virtual, the argument is assumed
-        /// to be a derived entity.
-        ///
-        virtual Status  Allocate(void*&) const = 0;
+      public:
+        virtual
+        void*
+        allocate() const = 0;
       };
 
-      ///
-      /// this functionoid contains a method for generating a void object
+      /// This functionoid contains a method for generating a void object
       /// of the given type.
-      ///
       template <typename T>
       class Generatoid:
         public Functionoid
       {
       public:
-        //
-        // constructors & destructors
-        //
-        Generatoid(const Product&);
+        Generatoid(P const&);
 
-        //
-        // methods
-        //
-        Status          Allocate(void*&) const;
+      public:
+        void*
+        allocate() const;
 
-        //
-        // attributes
-        //
-        Product         identifier;
+      private:
+        ELLE_ATTRIBUTE(P const, product);
       };
 
-      //
-      // types
-      //
-      typedef std::map<const Product, Functionoid*>     Container;
-      typedef Container::iterator                       Iterator;
-      typedef Container::const_iterator                 Scoutor;
+      /*------.
+      | Types |
+      `------*/
+    public:
+      typedef std::map<P const, Functionoid*> Container;
+      typedef typename Container::iterator Iterator;
+      typedef typename Container::const_iterator Scoutor;
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
       ~Factory();
 
-      //
-      // methods
-      //
+      /*---------.
+      |  Methods |
+      `---------*/
+    public:
+      /// Create a mapping between the given product number and its type.
       template <typename T>
-      Status            Register(const Product&);
-      template <typename U>
-      Status            Build(const Product&,
-                              U*&) const;
+      void
+      record(P const&);
+      /// Return a freshly allocated object of the type associated with the
+      /// product number.
+      ///
+      /// XXX[to remove when load constructors will be used: instead add an
+      ///     archive attribute to this method]]
+      template <typename T>
+      T*
+      allocate(P const&) const;
 
-      Status            Clear();
-
-      //
-      // interfaces
-      //
-
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // dumpable
-      Status            Dump(const Natural32 = 0) const;
+      Status
+      Dump(const Natural32 = 0) const;
 
-      //
-      // attributes
-      //
-      Container         container;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(Container, container);
     };
 
   }
 }
 
-#include <elle/utility/Factory.hxx>
+# include <elle/utility/Factory.hxx>
 
 #endif

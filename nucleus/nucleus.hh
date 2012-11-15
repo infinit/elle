@@ -1,6 +1,8 @@
 #ifndef NUCLEUS_NUCLEUS_HH
 # define NUCLEUS_NUCLEUS_HH
 
+# include <nucleus/neutron/Component.hh>
+
 # include <elle/types.hh>
 # include <elle/utility/Factory.hh>
 
@@ -18,7 +20,7 @@ namespace nucleus
   `----------*/
 
   /// Returns the factory capable of building nucleus class instances.
-  elle::utility::Factory const&
+  elle::utility::Factory<neutron::Component> const&
   factory();
 
 }
