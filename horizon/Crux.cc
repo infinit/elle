@@ -16,9 +16,9 @@
 #include <horizon/Crib.hh>
 #include <horizon/Crux.hh>
 #include <horizon/Handle.hh>
-#include <horizon/Ward.hh>
 #include <horizon/Policy.hh>
 #include <horizon/Horizon.hh>
+#include <horizon/finally.hh>
 
 #include <lune/Descriptor.hh>
 
@@ -71,7 +71,7 @@ namespace horizon
     ELLE_DEBUG("load the object")
       identifier = etoile::wall::Object::load(chemin);
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Create a local handle.
     Handle handle(Handle::OperationGetattr, identifier);
@@ -88,7 +88,7 @@ namespace horizon
     // Discard the object.
     etoile::wall::Object::discard(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (0);
   }
@@ -412,7 +412,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    Ward ward_directory(directory);
+    HORIZON_FINALLY_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -427,7 +427,7 @@ namespace horizon
     // Create the subdirectory.
     etoile::gear::Identifier subdirectory(etoile::wall::Directory::create());
 
-    Ward ward_subdirectory(subdirectory);
+    HORIZON_FINALLY_DISCARD(subdirectory);
 
     // Compute the permissions.
     if (mode & S_IRUSR)
@@ -484,12 +484,12 @@ namespace horizon
     // Store the subdirectory.
     etoile::wall::Directory::store(subdirectory);
 
-    ward_subdirectory.release();
+    HORIZON_FINALLY_ABORT(subdirectory);
 
     // Store the directory.
     etoile::wall::Directory::store(directory);
 
-    ward_directory.release();
+    HORIZON_FINALLY_ABORT(directory);
 
     return (0);
   }
@@ -512,7 +512,7 @@ namespace horizon
     etoile::gear::Identifier directory(
       etoile::wall::Directory::load(chemin_parent));
 
-    Ward ward_directory(directory);
+    HORIZON_FINALLY_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -531,7 +531,7 @@ namespace horizon
     etoile::gear::Identifier subdirectory(
       etoile::wall::Directory::load(chemin_child));
 
-    Ward ward_subdirectory(subdirectory);
+    HORIZON_FINALLY_DISCARD(subdirectory);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -553,13 +553,13 @@ namespace horizon
     // Store the directory.
     etoile::wall::Directory::store(directory);
 
-    ward_directory.release();
+    HORIZON_FINALLY_ABORT(directory);
 
     // Destroy the subdirectory.
     if (etoile::wall::Directory::Destroy(subdirectory) == elle::Status::Error)
       return (-EPERM);
 
-    ward_subdirectory.release();
+    HORIZON_FINALLY_ABORT(subdirectory);
 
     return (0);
   }
@@ -586,7 +586,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Retrieve the user's permissions on the object.
     nucleus::neutron::Record record(
@@ -661,7 +661,7 @@ namespace horizon
     // Discard the object.
     etoile::wall::Object::discard(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (0);
 
@@ -717,7 +717,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -797,7 +797,7 @@ namespace horizon
     // Store the object.
     etoile::wall::Object::store(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (0);
   }
@@ -837,7 +837,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -859,7 +859,7 @@ namespace horizon
     // Store the object.
     etoile::wall::Object::store(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (0);
   }
@@ -882,7 +882,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Get the attribute.
     nucleus::neutron::Trait trait(
@@ -891,7 +891,7 @@ namespace horizon
     // Discard the object.
     etoile::wall::Object::discard(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     // Test if a trait has been found.
     if (trait == nucleus::neutron::Trait::null())
@@ -931,7 +931,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Fetch the attributes.
     nucleus::neutron::Range<nucleus::neutron::Trait> range(
@@ -949,7 +949,7 @@ namespace horizon
         // accessed.
         etoile::wall::Object::discard(identifier);
 
-        ward.release();
+        HORIZON_FINALLY_ABORT(identifier);
 
         return (size);
       }
@@ -973,7 +973,7 @@ namespace horizon
         // accessed.
         etoile::wall::Object::discard(identifier);
 
-        ward.release();
+        HORIZON_FINALLY_ABORT(identifier);
 
         return (offset);
       }
@@ -995,7 +995,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -1018,9 +1018,9 @@ namespace horizon
     // Store the object.
     etoile::wall::Object::store(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
-    return 0;
+    return (0);
   }
 #endif
 
@@ -1052,7 +1052,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    Ward ward_directory(directory);
+    HORIZON_FINALLY_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1067,7 +1067,7 @@ namespace horizon
     // Create a link.
     etoile::gear::Identifier link(etoile::wall::Link::create());
 
-    Ward ward_link(link);
+    HORIZON_FINALLY_DISCARD(link);
 
     // FIXME: do not re-parse the descriptor every time.
     lune::Descriptor descriptor(Infinit::User, Infinit::Network);
@@ -1119,12 +1119,12 @@ namespace horizon
     // Store the link.
     etoile::wall::Link::store(link);
 
-    ward_link.release();
+    HORIZON_FINALLY_ABORT(link);
 
     // Store the modified directory.
     etoile::wall::Directory::store(directory);
 
-    ward_directory.release();
+    HORIZON_FINALLY_ABORT(directory);
 
     return (0);
   }
@@ -1148,7 +1148,7 @@ namespace horizon
     if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
       return (-ENOENT);
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1167,7 +1167,7 @@ namespace horizon
     if (etoile::wall::Link::Discard(identifier) == elle::Status::Error)
       return (-EPERM);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     // Copy as much as possible of the target into the output
     // buffer.
@@ -1199,7 +1199,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    Ward ward_directory(directory);
+    HORIZON_FINALLY_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1214,7 +1214,7 @@ namespace horizon
     // Create the file.
     etoile::gear::Identifier file(etoile::wall::File::create());
 
-    Ward ward_file(file);
+    HORIZON_FINALLY_DISCARD(file);
 
     // Set default permissions: read and write.
     permissions =
@@ -1282,12 +1282,12 @@ namespace horizon
     // now.
     etoile::wall::File::store(file);
 
-    ward_file.release();
+    HORIZON_FINALLY_ABORT(file);
 
     // Store the directory.
     etoile::wall::Directory::store(directory);
 
-    ward_directory.release();
+    HORIZON_FINALLY_ABORT(directory);
 
     // Resolve the path.
     chemin = etoile::wall::Path::resolve(etoile::path::Way(path));
@@ -1446,7 +1446,7 @@ namespace horizon
     // Load the file.
     etoile::gear::Identifier identifier(etoile::wall::File::load(chemin));
 
-    Ward ward(identifier);
+    HORIZON_FINALLY_DISCARD(identifier);
 
     // Create a local handle.
     Handle                    handle(Handle::OperationTruncate,
@@ -1462,7 +1462,7 @@ namespace horizon
     // Store the file.
     etoile::wall::File::store(identifier);
 
-    ward.release();
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (result);
   }
@@ -1588,7 +1588,7 @@ namespace horizon
         etoile::gear::Identifier directory(
           etoile::wall::Directory::load(chemin));
 
-        Ward ward_directory(directory);
+        HORIZON_FINALLY_DISCARD(directory);
 
         ELLE_TRACE("retrieve the subject's permissions on the object");
         nucleus::neutron::Record record(
@@ -1630,7 +1630,7 @@ namespace horizon
         ELLE_TRACE("store the directory")
           etoile::wall::Directory::store(directory);
 
-        ward_directory.release();
+        HORIZON_FINALLY_ABORT(directory);
       }
     else
       {
@@ -1650,7 +1650,7 @@ namespace horizon
         // do not need to know to perform this operation.
         identifier_object = etoile::wall::Object::load(chemin);
 
-        Ward ward_object(identifier_object);
+        HORIZON_FINALLY_DISCARD(identifier_object);
 
         // Resolve the path.
         chemin = etoile::wall::Path::resolve(to);
@@ -1659,7 +1659,7 @@ namespace horizon
         etoile::gear::Identifier identifier_to(
           etoile::wall::Directory::load(chemin));
 
-        Ward ward_to(identifier_to);
+        HORIZON_FINALLY_DISCARD(identifier_to);
 
         // Retrieve the subject's permissions on the object.
         nucleus::neutron::Record record_to(
@@ -1678,7 +1678,7 @@ namespace horizon
         etoile::gear::Identifier identifier_from(
           etoile::wall::Directory::load(chemin));
 
-        Ward ward_from(identifier_from);
+        HORIZON_FINALLY_DISCARD(identifier_from);
 
         // Retrieve the subject's permissions on the object.
         nucleus::neutron::Record record_from(
@@ -1724,17 +1724,17 @@ namespace horizon
         // Store the _to_ directory.
         etoile::wall::Directory::store(identifier_to);
 
-        ward_to.release();
+        HORIZON_FINALLY_ABORT(identifier_to);
 
         // Store the _from_ directory.
         etoile::wall::Directory::store(identifier_from);
 
-        ward_from.release();
+        HORIZON_FINALLY_ABORT(identifier_from);
 
         // Store the object.
         etoile::wall::Object::store(identifier_object);
 
-        ward_object.release();
+        HORIZON_FINALLY_ABORT(identifier_object);
       }
 
     // Rename the path associated with the handle in the
@@ -1766,7 +1766,7 @@ namespace horizon
     etoile::gear::Identifier identifier_child(
       etoile::wall::Object::load(chemin_child));
 
-    Ward ward_child(identifier_child);
+    HORIZON_FINALLY_DISCARD(identifier_child);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -1787,7 +1787,7 @@ namespace horizon
     etoile::gear::Identifier identifier_parent(
       etoile::wall::Directory::load(chemin_parent));
 
-    Ward ward_parent(identifier_parent);
+    HORIZON_FINALLY_DISCARD(identifier_parent);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1808,19 +1808,19 @@ namespace horizon
           if (etoile::wall::File::Destroy(identifier_child) == elle::Status::Error)
             return (-EPERM);
 
-          ward_child.release();
+          HORIZON_FINALLY_ABORT(identifier_child);
 
           break;
         }
       case nucleus::neutron::Genre::directory:
         {
-          ward_child.release();
+          HORIZON_FINALLY_ABORT(identifier_child);
 
           return (-EPERM);
         }
       case nucleus::neutron::Genre::link:
         {
-          ward_child.release();
+          HORIZON_FINALLY_ABORT(identifier_child);
 
           // Destroy the link.
           if (etoile::wall::Link::Destroy(identifier_child) == elle::Status::Error)
@@ -1838,7 +1838,7 @@ namespace horizon
     // Store the directory.
     etoile::wall::Directory::store(identifier_parent);
 
-    ward_parent.release();
+    HORIZON_FINALLY_ABORT(identifier_parent);
 
     return (0);
   }

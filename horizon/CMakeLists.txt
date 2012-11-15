@@ -5,7 +5,6 @@ add_library(horizon
   Crux.cc
   Handle.cc
   Horizon.cc
-  Ward.cc
 )
 
 add_subdirectory(${INFINIT_PLATFORM_NO_ARCH})
