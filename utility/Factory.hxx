@@ -2,93 +2,127 @@
 # define ELLE_UTILITY_FACTORY_HXX
 
 # include <elle/Exception.hh>
-# include <elle/idiom/Open.hh>
+# include <elle/log.hh>
+# include <elle/finally.hh>
 
 namespace elle
 {
   namespace utility
   {
-
 //
 // ---------- generatoid ------------------------------------------------------
 //
 
-    ///
-    /// a default constructor in order to keep the identifier.
-    ///
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    template <typename P>
     template <typename T>
-    Factory::Generatoid<T>::Generatoid(const Product&           identifier):
-      identifier(identifier)
+    Factory<P>::Generatoid<T>::Generatoid(P const& product):
+      _product(product)
     {
     }
 
-    ///
-    /// this method allocates a new object of the type of the functionoid.
-    ///
-    template <typename T>
-    Status      Factory::Generatoid<T>::Allocate(void*& meta) const
-    {
-      // allocate the object.
-      meta = new T;
+    /*--------.
+    | Methods |
+    `--------*/
 
-      return Status::Ok;
+    template <typename P>
+    template <typename T>
+    void*
+    Factory<P>::Generatoid<T>::allocate() const
+    {
+      return (new T);
     }
 
 //
 // ---------- factory ---------------------------------------------------------
 //
 
-    ///
-    /// this method registers a new type associated with a identifier.
-    ///
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    template <typename P>
+    Factory<P>::~Factory()
+    {
+      for (auto scoutor: this->_container)
+        delete scoutor.second;
+
+      this->_container.clear();
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    template <typename P>
     template <typename T>
-    Status      Factory::Register(const Product&                identifier)
+    void
+    Factory<P>::record(P const& product)
     {
-      // check if there is already such an identifier registerd.
-      if (this->container.find(identifier) != this->container.end())
-        escape("unable to register an already registered identifier");
+      ELLE_LOG_COMPONENT("elle.utility.Factory");
+      ELLE_TRACE_METHOD(product);
 
-      // create a generatoid.
-      auto generatoid = new Factory::Generatoid<T>(identifier);
+      // Check if there is already such an product registerd.
+      if (this->_container.find(product) != this->_container.end())
+        throw Exception("unable to register an already registered product");
 
-      // insert the generator in the container.
-      auto result = this->container.insert(
-        std::pair<const Product, Factory::Functionoid*>(identifier, generatoid)
-      );
+      // Create a generatoid.
+      auto generatoid = new Factory<P>::Generatoid<T>(product);
 
-      // check if the insertion was successful.
+      ELLE_FINALLY_DELETE(generatoid);
+
+      // Insert the generator in the container.
+      auto result = this->_container.insert(
+        std::pair<P const, Factory<P>::Functionoid*>(product, generatoid));
+
+      // Check if the insertion was successful.
       if (result.second == false)
-        {
-          delete generatoid;
-          escape("unable to insert the generatoid into the container");
-        }
+        throw Exception("unable to insert the generatoid into the container");
 
-      return Status::Ok;
+      ELLE_FINALLY_ABORT(generatoid);
     }
 
-    ///
-    /// this method, given an identifier, allocates an object of the
-    /// corresponding type.
-    ///
-    template <typename U>
-    Status              Factory::Build(const Product&           identifier,
-                                       U*&                      object) const
+    template <typename P>
+    template <typename T>
+    T*
+    Factory<P>::allocate(P const& product) const
     {
-      Factory::Scoutor  scoutor;
+      ELLE_LOG_COMPONENT("elle.utility.Factory");
+      ELLE_TRACE_METHOD(product);
 
-      // retrieve the associated generator.
-      if ((scoutor = this->container.find(identifier)) ==
-          this->container.end())
-        escape("unable to locate the generatoid for the given identifier");
+      Factory<P>::Scoutor scoutor;
 
-      // allocate an object of the type handled by the generatoid.
-      if (scoutor->second->Allocate(
-            reinterpret_cast<void*&>(object)) == Status::Error)
-        escape("unable to allocate the object");
+      // Retrieve the associated generator.
+      if ((scoutor = this->_container.find(product)) ==
+          this->_container.end())
+        throw Exception("unable to locate the generatoid for the "
+                        "given product");
+
+      // Allocate and return the instance.
+      return (reinterpret_cast<T*>(scoutor->second->allocate()));
+    }
+
+    /*---------.
+    | Dumpable |
+    `---------*/
+
+    template <typename P>
+    Status
+    Factory<P>::Dump(const Natural32 margin) const
+    {
+      String            alignment(margin, ' ');
+
+      std::cout << alignment << "[Factory]" << std::endl;
+
+      for (auto scoutor: this->_container)
+        std::cout << alignment << io::Dumpable::Shift
+                  << scoutor.first << std::endl;
 
       return Status::Ok;
     }
-
   }
 }
 
