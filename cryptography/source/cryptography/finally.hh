@@ -3,8 +3,6 @@
 
 # include <elle/finally.hh>
 
-# include <boost/preprocessor/cat.hpp>
-
 /// Make it so simple to track an EVP_PKEY so it gets freed should an
 /// error occur i.e should we leave the scope.
 # define CRYPTOGRAPHY_FINALLY_FREE_EVP_PKEY(_variable_)                 \
