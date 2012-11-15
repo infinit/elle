@@ -221,6 +221,17 @@ namespace network {
   }
 } // namespace network
 
+namespace std {
+  template <>
+  struct hash<network::uri> {
+
+    std::size_t operator () (const network::uri &uri_) const {
+      return network::hash_value(uri_);
+    }
+
+  };
+} // namespace std
+
 #include <network/uri/uri_builder.hpp>
 
 

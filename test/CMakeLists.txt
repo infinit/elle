@@ -9,8 +9,9 @@ include_directories(${GTEST_INCLUDE_DIRS})
 set(
   TESTS
   uri_test
-  uri_encoding_test
+  uri_comparison_test
   uri_builder_test
+  uri_encoding_test
   )
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
