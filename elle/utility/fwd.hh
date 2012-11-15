@@ -8,10 +8,8 @@ namespace elle
   namespace utility
   {
 
-    class Buffer;
-    class InputBufferStream;
-    class OutputBufferStream;
     class Duration;
+    template <typename T>
     class Factory;
     class Parser;
     class Settings;
@@ -21,5 +19,3 @@ namespace elle
 }
 
 #endif
-
-
