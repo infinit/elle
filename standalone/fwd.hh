@@ -1,4 +1,4 @@
-#ifndef  ELLE_STANDALONE_FWD_HH
+#ifndef ELLE_STANDALONE_FWD_HH
 # define ELLE_STANDALONE_FWD_HH
 
 namespace elle
@@ -12,4 +12,3 @@ namespace elle
 }
 
 #endif
-
