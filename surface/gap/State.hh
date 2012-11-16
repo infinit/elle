@@ -1,8 +1,9 @@
 #ifndef  SURFACE_GAP_STATE_HH
 # define SURFACE_GAP_STATE_HH
 
-# include <string>
+# include <functional>
 # include <map>
+# include <string>
 # include <unordered_set>
 
 # include <boost/filesystem.hpp>
@@ -25,6 +26,14 @@ namespace surface
       std::string                 absolute_path;
       std::string                 relative_path;
       std::map<std::string, int>  accesses;
+    };
+
+    struct User
+    {
+      std::string _id;
+      std::string fullname;
+      std::string email;
+      std::string public_key;
     };
 
     typedef ::plasma::meta::NetworkResponse Network;
@@ -53,6 +62,10 @@ namespace surface
 
     public:
       State();
+      State(std::string const& user);
+      State(std::string const& token,
+            std::string const& identity_file,
+            std::string const& email);
       ~State();
 
     public:
@@ -63,7 +76,7 @@ namespace surface
     /// Login & register
     ///
     private:
-      std::map<std::string, gap_User*> _users;
+      std::map<std::string, User*> _users;
     public:
       /// Login to meta.
       void
@@ -88,18 +101,21 @@ namespace surface
                 std::string const& activation_code);
 
       /// Retrieve a user by id or with its email.
-      gap_User const&
+      User const&
       user(std::string const& id);
 
-      gap_User const&
+      User const&
       get_me();
 
+      std::string const&
+      get_token();
+
       /// Retrieve a user by its public key.
-      gap_User const&
+      User const&
       user_from_public_key(std::string const& public_key);
 
       // Search users
-      std::map<std::string, gap_User const*>
+      std::map<std::string, User const*>
       search_users(std::string const& text);
 
       /// Connect to trophonius
@@ -120,22 +136,44 @@ namespace surface
       std::string
       invite_user(std::string const& email);
 
+
+    private:
+      typedef std::map<std::string, plasma::meta::TransactionResponse*> TransactionsMap;
+      std::unique_ptr<TransactionsMap> _transactions;
+
+    public:
+      /// @brief Pull transactions from serveur.
+      TransactionsMap const&
+      transactions();
+
+      /// @brief Get data from a specific transaction.
+      plasma::meta::TransactionResponse const&
+      transaction(std::string const& transaction_id);
+
+    public:
+      /// @brief Send a file list to a specified user.
+      ///
+      /// Create a network, copy files locally, create transaction.
       void
       send_files(std::string const& recipient_id_or_email,
                  std::unordered_set<std::string> const& files);
 
+      /// @brief Update transaction status.
+      ///
+      /// Used to answer a transaction (accept or deny).
       void
       update_transaction(std::string const& transaction_id,
                          gap_TransactionStatus status);
 
+    private:
       void
-      start_transaction(std::string const& transaction_id);
+      _start_transaction(std::string const& transaction_id);
 
       void
-      stop_transaction(std::string const& transaction_id);
+      _stop_transaction(std::string const& transaction_id);
 
     private:
-      gap_User _me;
+      User _me;
       std::string _device_id;
       std::string _device_name;
 
@@ -235,14 +273,34 @@ namespace surface
 
       /// Trophonius binding.
     private:
-      typedef std::map<int, plasma::trophonius::BasicHandler*> HandlerMap;
-      HandlerMap _notification_handler;
+      typedef std::map<int, std::list<plasma::trophonius::BasicHandler*>> HandlerMap;
+      HandlerMap _notification_handlers;
 
     public:
-      template<typename T>
-      void
-      attach_callback(std::function<void(T const*)> callback);
 
+      void
+      attach_callback(std::function<void(gap_UserStatusNotification const*)> callback);
+
+      void
+      attach_callback(std::function<void(gap_TransactionNotification const*)> callback);
+
+      void
+      attach_callback(std::function<void(gap_TransactionStatusNotification const*)> callback);
+
+      void
+      attach_callback(std::function<void(gap_MessageNotification const*)> callback);
+
+      void
+      attach_callback(std::function<void(gap_BiteNotification const*)> callback);
+
+    private:
+      void
+      _on_notification(gap_TransactionNotification const* n);
+
+      void
+      _on_notification(gap_TransactionStatusNotification const* n);
+
+    public:
       bool
       poll();
 

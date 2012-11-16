@@ -82,7 +82,9 @@ namespace
   {
     assert(state != nullptr);
 
-    reinterpret_cast<surface::gap::State*>(state)->attach_callback<T>(wrap<T>{obj});
+    reinterpret_cast<surface::gap::State*>(state)->attach_callback(
+      std::function<void (T const*)>(wrap<T>{obj})
+    );
   }
 }
 
@@ -165,7 +167,6 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("send_message", &gap_message);
   py::def("send_files", &_send_files);
   py::def("update_transaction", &gap_update_transaction);
-  py::def("start_transaction", &gap_start_transaction);
   py::def("connect", &gap_trophonius_connect);
   py::def("get_notifications", &gap_meta_pull_notification);
   py::def("notifications_red", &gap_meta_notifications_red);
@@ -263,13 +264,6 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("network_add_user", &gap_network_add_user);
 
   //- Users -------------------------------------------------------------------
-
-  py::class_<gap_User, boost::noncopyable>("User")
-    .def_readonly("_id", &gap_User::_id)
-    .def_readonly("fullname", &gap_User::fullname)
-    .def_readonly("email", &gap_User::email)
-    .def_readonly("public_key", &gap_User::public_key)
-  ;
 
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());

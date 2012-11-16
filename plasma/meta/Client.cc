@@ -41,7 +41,7 @@ SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
 {
   ar & named("token", res.token);
   ar & named("fullname", res.fullname);
-  ar & named("email", res.fullname);
+  ar & named("email", res.email);
   ar & named("identity", res.identity);
   ar & named("_id", res._id);
 }
@@ -86,6 +86,28 @@ SERIALIZE_RESPONSE(plasma::meta::UpdateDeviceResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::InviteUserResponse, ar, res)
 {
   ar & named("_id", res._id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
+{
+  ar & named("transaction_id", res.transaction_id);
+  ar & named("first_filename", res.first_filename);
+  ar & named("files_count", res.files_count);
+  ar & named("total_size", res.total_size);
+  ar & named("is_directory", res.is_directory);
+  ar & named("network_id", res.network_id);
+  ar & named("sender_id", res.sender_id);
+  ar & named("sender_fullname", res.sender_fullname);
+  ar & named("sender_device_id", res.sender_device_id);
+  ar & named("recipient_id", res.recipient_id);
+  ar & named("recipient_fullname", res.recipient_fullname);
+  ar & named("recipient_device_id", res.recipient_device_id);
+  ar & named("status", res.status);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::TransactionsResponse, ar, res)
+{
+  ar & named("transactions", res.transactions);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::CreateTransactionResponse, ar, res)
@@ -385,6 +407,18 @@ namespace plasma
       auto res = this->_client.post<StopTransactionResponse>("/transaction/stop", request);
 
       return res;
+    }
+
+    TransactionResponse
+    Client::transaction(std::string const& _id)
+    {
+      return this->_client.get<TransactionResponse>("/transaction/" + _id + "/view");
+    }
+
+    TransactionsResponse
+    Client::transactions()
+    {
+      return this->_client.get<TransactionsResponse>("/transactions");
     }
 
     MessageResponse

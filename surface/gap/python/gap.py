@@ -48,7 +48,6 @@ class State:
             'OnMessage',
             'send_files',
             'update_transaction',
-            'start_transaction',
             'invite_user',
             'scratch_db',
             'send_message',

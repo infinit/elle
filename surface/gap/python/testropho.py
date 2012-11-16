@@ -70,7 +70,7 @@ state.OnMessage(Message)
 
 #register: fullname, email, hashed_password, device_name, activation_code
 def __register(name, mail):
-    state.register(name, mail, "mdptmp", "pretty name", "bitebite")
+    state.register(name, mail, "mdptmp", "device", "bitebite")
 def __login(mail):
     state.login(mail, "mdptmp")
 
@@ -86,7 +86,6 @@ def __create_network():
     state.create_network(str)
 
 def __launch_watchdog():
-    state.set_device_name("pretty name")
     state.launch_watchdog()
 
 def __pullNotifs():
@@ -116,7 +115,7 @@ def main():
 #    state.login(good_email, password)
     state.register(good_fullname, good_email, password, "device", "bitebite")
 
-    state.set_device_name("device")
+    # state.set_device_name("device")
 
 #    __connect();
 
@@ -124,12 +123,18 @@ def main():
 
     state.login(good_email, password)
 
-    state.set_device_name("device")
+#    state.set_device_name("device")
 
     try :
         __connect();
         polling = PollThread()
         polling.start()
+
+        time.sleep(2)
+
+        __launch_watchdog()
+
+        time.sleep(4)
 
         # Send file to me.
         print('Send file to myself')
