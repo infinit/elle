@@ -344,7 +344,7 @@ namespace satellite
     for (auto entry: entries)
       {
         etoile::path::Way _source(source.path +
-                                  entry->name);
+                                  entry->name());
 
         ELLE_TRACE("source %s", _source.path.c_str());
 
