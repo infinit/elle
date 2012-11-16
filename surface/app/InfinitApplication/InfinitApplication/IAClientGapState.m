@@ -45,12 +45,13 @@
 
 + (void) initGapInstanceWithToken:(NSString*)token
 {
-    return [[self _instance] _initGapInstanceWithToken:token];
+    [[self _instance] _initGapInstanceWithToken:token];
 }
 
 - (void) _initGapInstanceWithToken:(NSString*)token
 {
     assert(_instance == nil);
+    _instance = [IAGapState instanceWithToken:token];
 }
 
 + (BOOL) ready

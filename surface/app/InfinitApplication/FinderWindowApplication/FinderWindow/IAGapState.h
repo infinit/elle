@@ -75,6 +75,12 @@
  */
 + (IAGapState*) instanceWithToken:(NSString*)token;
 
+
+/**
+ * @brief Connect to the notification server. 
+ */
+- (void)startPolling;
+
 /**
  * When IA_GAP_SINGLETON is defined, the class is usable as a singleton
  * and provide login/register features.
@@ -118,6 +124,8 @@
                  performSelector:(SEL)selector
                         onObject:(id)object;
 
+#endif
+
 /**
  * @brief Accept transaction.
  */
@@ -125,7 +133,5 @@
                  performSelector:(SEL)selector
                         onObject:(id)object;
 
-
-#endif
 
 @end

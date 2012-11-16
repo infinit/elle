@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define IA_GAP_NO_STANDALONE 1
 #import <FinderWindow/IAGapState.h>
 
 @interface IAClientGapState : NSObject

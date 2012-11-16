@@ -14,7 +14,7 @@
 
 // When defined, the window is shown on its own
 // Otherwise, it is injected into the Finder
-#define DEBUG_WITHOUT_FINDER
+//#define DEBUG_WITHOUT_FINDER
 
 @interface IAAppDelegate : NSObject <NSApplicationDelegate>
 

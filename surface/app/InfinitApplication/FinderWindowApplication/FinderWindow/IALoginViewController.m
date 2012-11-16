@@ -47,7 +47,7 @@
 // Login callback
 -(void) _login_callback:(IAGapOperationResult*)result
 {
-    NSLog(@"Login result: %d", [result error]);
+    NSLog(@"BITE Login result: %d", [result error]);
     
     [self.login_button setHidden:NO];
     [self.login setEnabled:YES];

@@ -19,9 +19,9 @@
     BOOL _registering;
 }
 
-@property (retain) IBOutlet IALoginViewController* login_view_controller;
-@property (retain) IBOutlet IARegisterViewController* register_view_controller;
-@property (retain) IBOutlet IAMainViewController* main_view_controller;
+@property (retain) IBOutlet IALoginViewController*      login_view_controller;
+@property (retain) IBOutlet IARegisterViewController*   register_view_controller;
+@property (retain) IBOutlet IAMainViewController*       main_view_controller;
 
 -(IBAction)switchToRegisterView:(id)sender;
 -(IBAction)switchToLoginView:(id)sender;
@@ -52,6 +52,7 @@
 
 - (void)_onUserLoggedIn:(NSNotification*)notification
 {
+    NSLog(@"ON USER LOGGED IN");
     if ([[notification name] isEqualToString:IA_GAP_EVENT_LOGIN_OPERATION] &&
         [[notification object] success])
     {
@@ -76,7 +77,11 @@
 
 - (void)_updateCurrentView
 {
-    NSLog(@"Updating current view");
+    NSLog(@"BIET Updating current view");
+    if ([IAGapState instance] == nil)
+    {
+        return;
+    }
     if ([IAGapState instance].logged_in)
     {
         [[self window] setContentView:[self.main_view_controller view]];

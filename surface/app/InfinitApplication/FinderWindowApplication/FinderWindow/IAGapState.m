@@ -240,7 +240,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 }
 
 // Start polling trophonius
-- (void)_startPolling
+- (void)startPolling
 {
     @synchronized(self)
     {
@@ -311,15 +311,16 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
               performSelector:(SEL)selector
                      onObject:(id)object
 {
+    NSLog(@"Calling login method");
     __weak id this = self;
     [self _addOperation:^(void) {
+        NSLog(@"Starting LOGIN");
         char* hash_password = gap_hash_password(self.state,
                                                 [login UTF8String],
                                                 [password UTF8String]);
         int res = gap_login(self.state,
                             [login UTF8String],
                             hash_password);
-        NSLog(@"Pass: %s", hash_password);
         gap_hash_free(hash_password);
         if (res == gap_ok)
             res = gap_set_device_name(self.state, [device_name UTF8String]);
@@ -338,11 +339,10 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         if (res == gap_ok)
         {
             self.logged_in = TRUE;
-            [this _startPolling];
         }
         else
             NSLog(@"Cannot register callbacks");
-        
+        NSLog(@"Login process result: %d", res);
         return res;
     } performSelector:selector onObject:object];
 }
@@ -374,7 +374,6 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         if (res == gap_ok)
         {
             self.logged_in = true;
-            [this _startPolling];
         }
         return res;
     } performSelector:selector onObject:object];

@@ -18,6 +18,7 @@
 # import <FinderWindow/IAFinderWindowController.h>
 #endif
 
+#import "IAClientGapState.h"
 #import "IAAppIPCServer.h"
 
 // Unique identifier (No other pointer has the same address).
@@ -100,10 +101,11 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 
 -(IBAction)toggleNotificationPanel:(id)sender
 {
-//    if ([_gap_ipc logged_in])
-//        [self._notification_panel_controller toggleVisibility];
-//    else
-//        NSLog(@"Cannot togle panel: Not Logged in");
+    NSLog(@"YEAHHAA");
+    if ([IAClientGapState ready] && [IAClientGapState gap_instance].logged_in)
+    {
+        [self._notification_panel_controller toggleVisibility];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

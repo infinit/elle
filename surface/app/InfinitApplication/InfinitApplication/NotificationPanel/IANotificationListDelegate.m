@@ -8,6 +8,7 @@
 
 #import "IANotificationListDelegate.h"
 #import "IANotificationCellView.h"
+#import "IAGapState.h"
 
 @interface IANotificationListDelegate ()
 
@@ -155,9 +156,9 @@
     IATransactionNotification* notif = item;
     NSLog(@"accept for view: %@", view);
     [view freeze];
-    [[IAClientGapState gap_instance] acceptTransaction:notif
-                                       performSelector:@selector(_on_accept_done:)
-                                              onObject:self];
+    [[IAGapState instance] acceptTransaction:notif
+                             performSelector:@selector(_on_accept_done:)
+                                    onObject:self];
 }
 
 - (void)_on_accept_done:(IAGapOperationResult*)op
