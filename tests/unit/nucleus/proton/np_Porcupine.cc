@@ -1,9 +1,11 @@
 #include <elle/Elle.hh>
 #include <elle/types.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
-#include <elle/cryptography/Random.hh>
+#include <elle/Exception.hh>
 #include <elle/format/hexadecimal.hh>
+
+#include <cryptography/Digest.hh>
+#include <cryptography/OneWay.hh>
+#include <cryptography/Random.hh>
 
 #include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Porcupine.hh>
@@ -27,8 +29,6 @@
 
 ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
-#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); }
-
 // To define in order to make the checks stronger and so as to
 // detect inconsistencies early on.
 #undef PORCUPINE_THOROUGH_CHECK
@@ -46,12 +46,12 @@ test_porcupine_prepare(elle::Natural32 const n)
 
   for (elle::Natural32 i = 0; i < n; i++)
     {
-      elle::cryptography::Digest digest;
-      CHECK(elle::cryptography::OneWay::Hash(i, digest));
+      cryptography::Digest digest{
+        cryptography::oneway::hash(i, cryptography::oneway::Algorithm::sha1)};
 
-      elle::String string;
-      string = elle::format::hexadecimal::encode((const char*)digest.region.contents,
-                                                 digest.region.size);
+      elle::String string =
+        elle::format::hexadecimal::encode(
+          (const char*)digest.buffer().contents(), digest.buffer().size());
 
       vector[i] = string;
     }
@@ -78,8 +78,9 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 
       catalog.load();
 
-      nucleus::neutron::Entry* entry =
-        new nucleus::neutron::Entry(vector[i], nucleus::proton::Address::Null);
+      nucleus::neutron::Entry* entry{
+        new nucleus::neutron::Entry(vector[i],
+                                    nucleus::proton::Address::null())};
 
       catalog()->insert(entry);
 
@@ -153,7 +154,7 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 
 void
 test_porcupine_seal(nucleus::proton::Porcupine& porcupine,
-                    elle::cryptography::SecretKey& secret)
+                    cryptography::SecretKey& secret)
 {
   ELLE_TRACE_SCOPE("test_porcupine_seal()");
 
@@ -222,54 +223,43 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
 
 nucleus::proton::Porcupine
 test_porcupine_serialize(nucleus::proton::Porcupine& input,
-                         elle::cryptography::SecretKey& secret,
+                         cryptography::SecretKey& secret,
                          std::vector<elle::String>& vector)
 {
   etoile::gear::Transcript transcript;
-  etoile::gear::Transcript::Scoutor scoutor;
   etoile::nest::Nest* nest = static_cast<etoile::nest::Nest*>(&input.nest());
 
   ELLE_TRACE_SCOPE("test_porcupine_serialize()");
 
   nest->record(transcript);
 
-  // go through the transcript's actions.
-  for (scoutor = transcript.container.begin();
-       scoutor != transcript.container.end();
-       scoutor++)
+  for (auto action: transcript)
     {
-      etoile::gear::Action* action = scoutor->second;
-
       // perform the action.
-      switch (action->type)
+      switch (action->type())
         {
-        case etoile::gear::Action::TypePush:
+        case etoile::gear::Action::Type::push:
           {
             // store the block in the depot.
             if (etoile::depot::Depot::Push(
-                  action->address,
-                  *action->block.get()) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "Unable to push the block in the "
-                                       "depot.");
+                  action->address(),
+                  action->block()) == elle::Status::Error)
+              throw elle::Exception("unable to push the block in the depot");
 
             break;
           }
-        case etoile::gear::Action::TypeWipe:
+        case etoile::gear::Action::Type::wipe:
           {
             // wipe the block from the depot.
             if (etoile::depot::Depot::Wipe(
-                  action->address) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "Unable to wipe the block from "
-                                       "the depot");
+                  action->address()) == elle::Status::Error)
+              throw elle::Exception("unable to wipe the block from the depot");
 
             break;
           }
-        case etoile::gear::Action::TypeUnknown:
+        default:
           {
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     "Unknown action type");
+            throw elle::Exception("unknown action type");
           }
         }
     }
@@ -277,10 +267,9 @@ test_porcupine_serialize(nucleus::proton::Porcupine& input,
   nucleus::proton::Porcupine output;
   etoile::nest::Nest* n = new etoile::nest::Nest(input.nest().limits());
   {
-    elle::utility::Buffer buffer;
-    buffer.Writer() << input;
-
-    buffer.Reader() >> output;
+    elle::Buffer buffer;
+    buffer.writer() << input;
+    buffer.reader() >> output;
 
     output.nest(*n);
     output.unseal(secret);
@@ -376,8 +365,8 @@ test_porcupine_catalog()
   stats.Dump();
 #endif
 
-  elle::cryptography::SecretKey secret1;
-  CHECK(secret1.Generate(nucleus::proton::Porcupine::secret_length));
+  cryptography::SecretKey secret1;
+  secret1.Generate(nucleus::proton::Porcupine::secret_length);
 
   test_porcupine_seal(porcupine1, secret1);
 
@@ -389,8 +378,8 @@ test_porcupine_catalog()
 
   test_porcupine_remove(porcupine2, vector, N / 3, N / 3);
 
-  elle::cryptography::SecretKey secret2;
-  CHECK(secret2.Generate(nucleus::proton::Porcupine::secret_length));
+  cryptography::SecretKey secret2;
+  secret2.Generate(nucleus::proton::Porcupine::secret_length);
 
   test_porcupine_seal(porcupine2, secret2);
 
@@ -410,11 +399,9 @@ Main(elle::Natural32 argc,
 
   try
     {
-      CHECK(elle::Elle::Initialize());
-      CHECK(lune::Lune::Initialize());
-      CHECK(nucleus::Nucleus::Initialize());
-      CHECK(etoile::Etoile::Initialize());
-      CHECK(Infinit::Initialize());
+      lune::Lune::Initialize();
+      etoile::Etoile::Initialize();
+      Infinit::Initialize();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
       hole::Hole::Initialize();
@@ -426,29 +413,34 @@ Main(elle::Natural32 argc,
       hole::Hole::Clean();
 #endif
 
-      CHECK(Infinit::Clean());
-      CHECK(etoile::Etoile::Clean());
-      CHECK(nucleus::Nucleus::Clean());
-      CHECK(lune::Lune::Clean());
-      CHECK(elle::Elle::Clean());
+      Infinit::Clean();
+      etoile::Etoile::Clean();
+      lune::Lune::Clean();
 
       std::cout << "tests done.\n";
     }
+  catch (reactor::Exception const& e)
+    {
+      std::cerr << argv[0] << ": fatal error: " << e << std::endl;
+      goto _error;
+    }
   catch (std::exception const& e)
     {
-      // XXX
-      show();
-
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      if (reactor::Exception const* re =
-          dynamic_cast<reactor::Exception const*>(&e))
-        std::cerr << re->backtrace() << std::endl;
-
-      elle::concurrency::scheduler().terminate();
-      return 1;
+      goto _error;
     }
+  catch (...)
+    {
+      std::cerr << argv[0] << ": unknown exception" << std::endl;
+      goto _error;
+    }
+
   elle::concurrency::scheduler().terminate();
-  return 0;
+  return (0);
+
+ _error:
+  elle::concurrency::scheduler().terminate();
+  return (1);
 }
 
 int

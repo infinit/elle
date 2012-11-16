@@ -59,14 +59,16 @@ namespace nucleus
     {
     }
 
-    Porcupine::Porcupine(Network const& network,
-                         cryptography::PublicKey const& agent_K,
+    Porcupine::Porcupine(/* XXX Network const& network,
+                            cryptography::PublicKey const& agent_K,*/
                          Nest& nest):
       _mode(ModeEmpty),
       _height(0),
       _capacity(0),
+      /* XXX
       _network(network),
       _agent_K(agent_K),
+      */
       _nest(&nest),
       _state(StateClean)
     {

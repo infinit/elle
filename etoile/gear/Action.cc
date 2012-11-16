@@ -3,6 +3,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 
+#include <elle/assert.hh>
 #include <elle/idiom/Open.hh>
 
 namespace etoile
@@ -35,7 +36,7 @@ namespace etoile
     nucleus::proton::Block const&
     Action::block() const
     {
-      assert(this->_block != nullptr);
+      ELLE_ASSERT(this->_block != nullptr);
 
       return (*this->_block);
     }

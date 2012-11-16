@@ -26,22 +26,23 @@ namespace etoile
       public elle::Printable,
       private boost::noncopyable
     {
-      //
-      // types
-      //
+      /*------.
+      | Types |
+      `------*/
+    public:
       typedef std::vector<Action*> Container;
-      typedef Container::iterator               Iterator;
-      typedef Container::const_iterator         Scoutor;
+      typedef Container::iterator Iterator;
+      typedef Container::const_iterator Scoutor;
 
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       ~Transcript();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
       /// Records the address/block tuple for insertion in the storage
       /// layer.

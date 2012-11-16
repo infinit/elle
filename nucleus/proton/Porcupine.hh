@@ -89,8 +89,8 @@ namespace nucleus
     /// peut donc depasser extent. Ce qui est important c'est que ca oscille autour
     /// d'extent.
     class Porcupine:
-      public elle::io::Dumpable,
-      public boost::noncopyable
+      public elle::io::Dumpable
+      // XXX private boost::noncopyable
     {
       //
       // constants
@@ -150,8 +150,8 @@ namespace nucleus
       Porcupine(); // XXX[to deserialize]
       /// XXX[here the agent_K represents the current user which will happen to
       ///     be the creator of every new block]
-      Porcupine(Network const& network,
-                cryptography::PublicKey const& agent_K,
+      Porcupine(/* XXX Network const& network,
+                   cryptography::PublicKey const& agent_K,*/
                 Nest& nest);
 
       //
