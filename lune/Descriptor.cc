@@ -126,8 +126,8 @@ namespace lune
   }
 
   void
-  Descriptor::store(elle::String const& user,
-                    elle::String const& network) const
+  Descriptor::store(elle::String const& user_id,
+                    elle::String const& network_id) const
   {
     this->store(Descriptor::_path(user, network));
   }

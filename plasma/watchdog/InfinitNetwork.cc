@@ -222,8 +222,6 @@ void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
 
-  return;
-
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
@@ -258,8 +256,8 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
-  LOG("Storing the descriptor of %s", this->_description._id);
-  descriptor.store(this->_description._id);
+  LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user());
+  descriptor.store(this->_manager.user(), this->_description._id);
 
   nucleus::neutron::Object directory{
     from_string<InputBase64Archive>(_description.root_block)

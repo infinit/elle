@@ -260,6 +260,16 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
     }
 }
 
+- (BOOL) launchWatchdog
+{
+    if (gap_launch_watchdog(_state) != gap_ok)
+    {
+        NSLog(@"Couldn't launch the watchdog");
+        return FALSE;
+    }
+    return TRUE;
+}
+
 //- Files ------------------------------------------------------------------------------------
 
 - (void)               sendFiles:(NSArray*)files

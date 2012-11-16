@@ -66,6 +66,15 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("public_key", res.public_key);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
+{
+  ar & named("_id", res._id);
+  ar & named("fullname", res.fullname);
+  ar & named("email", res.email);
+  ar & named("public_key", res.public_key);
+  ar & named("identity", res.identity);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::UsersResponse, ar, res)
 {
   ar & named("users", res.users);
@@ -222,6 +231,7 @@ namespace plasma
     }
 
     // - API calls ------------------------------------------------------------
+    // XXX add login with token method.
     LoginResponse Client::login(std::string const& email,
                                 std::string const& password)
     {
@@ -277,6 +287,12 @@ namespace plasma
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
       return this->_client.get<UserResponse>("/user/" + id + "/view");
+    }
+
+    SelfResponse
+    Client::self()
+    {
+      return this->_client.get<SelfResponse>("/self");
     }
 
     UserResponse

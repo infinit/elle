@@ -75,13 +75,14 @@ void ClientActions::_on_run(Connection&,
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
   QString user = args["user"].toString();
+  QString user_id = args["user_id"].toString();
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.user(user);
 
-      std::ofstream identity_infos{common::watchdog::identity_path(user.toStdString())};
+      std::ofstream identity_infos{common::watchdog::identity_path(user_id.toStdString())};
 
       if (!identity_infos.good())
         {
@@ -92,6 +93,7 @@ void ClientActions::_on_run(Connection&,
       identity_infos << token.toStdString() << "\n"
                      << identity.toStdString() << "\n"
                      << user.toStdString() << "\n"
+                     << user_id.toStdString() << "\n"
                      ;
 
       if (!identity_infos.good())

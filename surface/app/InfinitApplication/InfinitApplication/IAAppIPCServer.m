@@ -38,7 +38,11 @@
     NSLog(@"Receive user token: %@", token);
     [IAClientGapState initGapInstanceWithToken:token];
     if ([IAClientGapState ready])
+    {
+        [[IAClientGapState gap_instance] launchWatchdog];
         [[IAClientGapState gap_instance] startPolling];
+    }
+    
 }
 
 @end

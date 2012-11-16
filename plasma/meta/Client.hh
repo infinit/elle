@@ -53,12 +53,20 @@ namespace plasma
     struct MessageResponse : plasma::Response
     {};
 
-    struct UserResponse : plasma::Response
+    struct User
     {
       std::string _id;
       std::string fullname;
       std::string email;
       std::string public_key;
+    };
+
+    struct UserResponse : User, plasma::Response
+    {};
+
+    struct SelfResponse : UserResponse
+    {
+      std::string identity;
     };
 
     struct InviteUserResponse : plasma::Response
@@ -179,6 +187,12 @@ namespace plasma
 
     class Client
     {
+    private:
+      elle::HttpClient  _client;
+      std::string       _token;
+      std::string       _identity;
+      std::string       _email;
+
     public:
       Client(std::string const& server,
              uint16_t port,
@@ -207,6 +221,9 @@ namespace plasma
 
       UserResponse
       user(std::string const& id);
+
+      SelfResponse
+      self();
 
       UserResponse
       user_from_public_key(std::string const& public_key);
@@ -309,12 +326,6 @@ namespace plasma
       void identity(std::string const& str);
       std::string const& email() const;
       void email(std::string const& str);
-
-    private:
-      elle::HttpClient _client;
-      std::string _token;
-      std::string _identity;
-      std::string _email;
     };
   }
 }

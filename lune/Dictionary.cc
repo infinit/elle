@@ -1,6 +1,7 @@
 #include <lune/Dictionary.hh>
 #include <lune/Lune.hh>
 
+#include <elle/os/path.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
@@ -12,10 +13,10 @@ namespace lune
 //
 
   elle::io::Path
-  Dictionary::_path(elle::String const& user)
+  Dictionary::_path(elle::String const& user_id)
   {
     return (elle::io::Path(Lune::Dictionary,
-                           elle::io::Piece("%USER%", user)));
+                           elle::io::Piece("%USER%", user_id)));
   }
 
 //
@@ -56,27 +57,27 @@ namespace lune
 //
 
   void
-  Dictionary::load(elle::String const& user)
+  Dictionary::load(elle::String const& user_id)
   {
-    this->load(Dictionary::_path(user));
+    this->load(Dictionary::_path(user_id));
   }
 
   void
-  Dictionary::store(elle::String const& user) const
+  Dictionary::store(elle::String const& user_id) const
   {
-    this->store(Dictionary::_path(user));
+    this->store(Dictionary::_path(user_id));
   }
 
   void
-  Dictionary::erase(elle::String const& user)
+  Dictionary::erase(elle::String const& user_id)
   {
-    elle::concept::Fileable<>::erase(Dictionary::_path(user));
+    elle::concept::Fileable<>::erase(Dictionary::_path(user_id));
   }
 
   elle::Boolean
-  Dictionary::exists(elle::String const& user)
+  Dictionary::exists(elle::String const& user_id)
   {
-    return (elle::concept::Fileable<>::exists(Dictionary::_path(user)));
+    return (elle::os::path::exists(Dictionary::_path(user_id).string()));
   }
 
 }

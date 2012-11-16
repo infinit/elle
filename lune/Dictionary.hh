@@ -33,7 +33,7 @@ namespace lune
     /// XXX
     static
     elle::io::Path
-    _path(elle::String const& user);
+    _path(elle::String const& user_id);
 
     //
     // interfaces
@@ -49,15 +49,15 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
-    load(elle::String const& user);
+    load(elle::String const& user_id);
     void
-    store(elle::String const& user) const;
+    store(elle::String const& user_id) const;
     static
     void
-    erase(elle::String const& user);
+    erase(elle::String const& user_id);
     static
     elle::Boolean
-    exists(elle::String const& user);
+    exists(elle::String const& user_id);
 
     //
     // attributes

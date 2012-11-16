@@ -18,6 +18,10 @@
 
 + (void) sendUserInfos
 {
+    static BOOL sent = false;
+    if (sent)
+        return;
+    sent = true;
     id<IAAppIPCProtocol> proxy = (id<IAAppIPCProtocol>)[
          NSConnection rootProxyForConnectionWithRegisteredName:@"io.infinit.InfinitApplication"
                                                           host:nil

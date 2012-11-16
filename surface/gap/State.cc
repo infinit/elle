@@ -110,31 +110,27 @@ namespace surface
       );
     }
 
-    State::State(std::string const& user):
+    State::State(std::string const& token):
       State{}
     {
-      std::ifstream identity_file{common::watchdog::identity_path(user)};
+   //   std::ifstream identity_file{common::watchdog::identity_path(user)};
 
-      if (identity_file.good())
-        {
-          std::string str;
-          std::getline(identity_file, str);
-          this->_meta->token(str);
-          std::getline(identity_file, str);
-          this->_meta->identity(str);
-          std::getline(identity_file, str);
-          this->_meta->email(str);
-        }
-    }
-
-    State::State(std::string const& token,
-                 std::string const& identity_file,
-                 std::string const& email):
-      State{}
-    {
+   //   if (identity_file.good())
+   //     {
+   //       std::string str;
+   //       std::getline(identity_file, str);
+   //       this->_meta->token(str);
+   //       std::getline(identity_file, str);
+   //       this->_meta->identity(str);
+   //       std::getline(identity_file, str);
+   //       this->_meta->email(str);
+   //     }
       this->_meta->token(token);
-      this->_meta->identity(identity_file);
-      this->_meta->email(email);
+      auto res = this->_meta->self();
+      this->_meta->identity(res.identity);
+      this->_meta->email(res.email);
+      //XXX factorize that shit
+      this->_me = static_cast<User const&>(res);
     }
 
 
@@ -351,12 +347,12 @@ namespace surface
             throw Exception(gap_internal_error,
                             "Cannot save the identity file.");
 
-          identity.store(email);
+          identity.store();
 
           // user.dic
           lune::Dictionary dictionary;
 
-          dictionary.store(email);
+          dictionary.store(res._id);
         }
     }
 
@@ -440,15 +436,8 @@ namespace surface
 
       this->refresh_networks();
 
-      auto networks_status_map = this->networks_status();
-
-      auto found = networks_status_map.find(network_id);
-
-      if (found == networks_status_map.end())
-        {
-          ELLE_WARN("Network has not been created well, aborting file transfer.");
-          return;
-        }
+      // Ensure the network status is available
+      (void) this->network_status(network_id);
 
       this->_meta->create_transaction(recipient_id_or_email,
                                       first_filename,
@@ -629,6 +618,10 @@ namespace surface
     bool
     State::has_device() const
     {
+      assert(this->_me._id.size() > 0 && "not properly initialized");
+      ELLE_DEBUG("Check for '%s' device existence at '%s'",
+                 this->_me._id,
+                 common::passport_path(this->_me._id));
       return fs::exists(common::passport_path(this->_me._id));
     }
 
@@ -829,7 +822,7 @@ namespace surface
     void
     State::launch_watchdog()
     {
-      if (!fs::exists(common::passport_path(this->_me._id)))
+      if (!this->has_device())
         throw Exception(gap_no_device_error,
                         "Cannot start infinit without any local device");
 
@@ -853,11 +846,8 @@ namespace surface
       std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
       ELLE_WARN("Launching binary: %s", watchdog_binary);
-      QProcess p;
-//      p.setProcessChannelMode(QProcess::MergedChannels);
-      p.setStandardOutputFile("/tmp/bite.txt");
-      if (p.execute(watchdog_binary.c_str()) < 0)
-        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+      if (QProcess::execute(watchdog_binary.c_str()) < 0)
+        throw Exception(gap_internal_error, "Cannot start the watchdog");
 
       // Connect to the new watchdog instance
       QLocalSocket conn;
@@ -903,6 +893,7 @@ namespace surface
           args["token"] = this->_meta->token();
           args["identity"] = this->_meta->identity();
           args["user"] = this->_meta->email();
+          args["user_id"] = this->_me._id;
           this->_send_watchdog_cmd("run", &args);
         }
     }

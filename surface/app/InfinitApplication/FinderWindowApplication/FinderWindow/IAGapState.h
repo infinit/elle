@@ -79,7 +79,9 @@
 /**
  * @brief Connect to the notification server. 
  */
-- (void)startPolling;
+- (void) startPolling;
+
+- (BOOL) launchWatchdog;
 
 /**
  * When IA_GAP_SINGLETON is defined, the class is usable as a singleton

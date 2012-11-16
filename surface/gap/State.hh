@@ -28,14 +28,8 @@ namespace surface
       std::map<std::string, int>  accesses;
     };
 
-    struct User
-    {
-      std::string _id;
-      std::string fullname;
-      std::string email;
-      std::string public_key;
-    };
-
+    // Used to represent all users in the state class.
+    typedef ::plasma::meta::User User;
     typedef ::plasma::meta::NetworkResponse Network;
 
     struct NetworkStatus
@@ -62,10 +56,7 @@ namespace surface
 
     public:
       State();
-      State(std::string const& user);
-      State(std::string const& token,
-            std::string const& identity_file,
-            std::string const& email);
+      State(std::string const& token);
       ~State();
 
     public:
@@ -77,6 +68,7 @@ namespace surface
     ///
     private:
       std::map<std::string, User*> _users;
+      User _me;
     public:
       /// Login to meta.
       void
@@ -173,7 +165,6 @@ namespace surface
       _stop_transaction(std::string const& transaction_id);
 
     private:
-      User _me;
       std::string _device_id;
       std::string _device_name;
 
