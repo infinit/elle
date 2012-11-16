@@ -6,7 +6,9 @@
 # include <elle/standalone/Region.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/neutron/fwd.hh>
+# include <nucleus/proton/Value.hh>
+# include <nucleus/proton/Node.hh>
+# include <nucleus/neutron/Offset.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -22,21 +24,36 @@ namespace nucleus
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///
+    /// XXX rewrite
+    ///
     class Data:
+      public proton::Value,
+      public elle::serialize::SerializableMixin<Data>,
       public elle::Printable,
       private boost::noncopyable
     {
+    public:
+      //
+      // types
+      //
+      typedef Offset            K;
+
       //
       // constants
       //
     public:
-      static const Component component = ComponentData;
+      struct Constants
+      {
+        static const proton::Node::Type seam;
+        static const proton::Node::Type quill;
+        static const proton::Node::Type value;
+        static const proton::Node::Type type;
+      };
 
-    public:
       //
       // constructors & destructors
       //
-      Data(proton::Contents<Data>&);
+      Data();
 
       //
       // methods
@@ -64,17 +81,26 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
+      // value
+      elle::Boolean
+      empty() const { return true; } // XXX
+      elle::String
+      mayor() const { return elle::String(); } // XXX
+
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Data);
+
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Data);
+
       //
       // attributes
       //
-      proton::Contents<Data>&           contents;
-
-      elle::standalone::Region                      region;
+      elle::standalone::Region region;
     };
 
   }
 }
 
-#include <nucleus/neutron/Data.hxx>
+# include <nucleus/neutron/Data.hxx>
 
 #endif

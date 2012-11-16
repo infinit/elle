@@ -1,9 +1,20 @@
 #include <nucleus/neutron/Entry.hh>
 
+#include <elle/serialize/footprint.hh>
+
 namespace nucleus
 {
   namespace neutron
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines an unexisting entry.
+    ///
+    const Entry                 Entry::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -12,7 +23,8 @@ namespace nucleus
     ///
     /// empty constructor.
     ///
-    Entry::Entry()
+    Entry::Entry():
+      _footprint(0)
     {
     }
 
@@ -21,9 +33,11 @@ namespace nucleus
     ///
     Entry::Entry(const elle::String&                            name,
                  const proton::Address&                         address):
-      name(name),
-      address(address)
+      _name(name),
+      _address(address),
+      _footprint(0)
     {
+      this->_footprint = elle::serialize::footprint(*this);
     }
 
 //
@@ -33,16 +47,11 @@ namespace nucleus
     elle::Boolean
     Entry::operator ==(Entry const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
         return true;
 
-      // compare the attributes.
-      if ((this->name != other.name) ||
-          (this->address != other.address))
-        return false;
-
-      return true;
+      return ((this->_name == other._name) &&
+              (this->_address == other._address));
     }
 
 //
@@ -60,11 +69,15 @@ namespace nucleus
 
       // dump the name.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
-                << this->name << std::endl;
+                << this->_name << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == elle::Status::Error)
+      if (this->_address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
+
+      // dump the footprint.
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Footprint] " << std::dec << this->_footprint << std::endl;
 
       return elle::Status::Ok;
     }
@@ -77,9 +90,9 @@ namespace nucleus
     Entry::print(std::ostream& stream) const
     {
       stream << "entry{"
-             << this->name
+             << this->_name
              << ", "
-             << this->address
+             << this->_address
              << "}";
     }
 
@@ -90,10 +103,10 @@ namespace nucleus
     ///
     /// this method returns the symbol of an entry i.e the name.
     ///
-    elle::String const&
+    elle::String&
     Entry::symbol()
     {
-      return (this->name);
+      return (this->_name); // XXX[to remove?]
     }
 
   }

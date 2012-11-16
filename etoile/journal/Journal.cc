@@ -3,9 +3,8 @@
 #include <etoile/journal/Journal.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Scope.hh>
-
-#include <nucleus/proton/Transcript.hh>
-#include <nucleus/proton/Action.hh>
+#include <etoile/gear/Transcript.hh>
+#include <etoile/gear/Action.hh>
 
 #include <elle/concurrency/Scheduler.hh>
 
@@ -72,7 +71,7 @@ namespace etoile
             // perform the action.
             switch (action->type())
               {
-              case nucleus::proton::Action::Type::push:
+              case gear::Action::Type::push:
                 {
                   // store the block in the depot.
                   if (depot::Depot::Push(action->address(),
@@ -81,7 +80,7 @@ namespace etoile
 
                   break;
                 }
-              case nucleus::proton::Action::Type::wipe:
+              case gear::Action::Type::wipe:
                 {
                   // Ignore these actions for now.
 
@@ -99,13 +98,13 @@ namespace etoile
             // perform the action.
             switch (action->type())
               {
-              case nucleus::proton::Action::Type::push:
+              case gear::Action::Type::push:
                 {
                   // Ignore these actions as already handled above.
 
                   break;
                 }
-              case nucleus::proton::Action::Type::wipe:
+              case gear::Action::Type::wipe:
                 {
                   // wipe the block from the depot.
                   if (depot::Depot::Wipe(action->address()) == elle::Status::Error)
@@ -132,14 +131,14 @@ namespace etoile
     {
       /* XXX
       BOOST_FOREACH(gear::Scope* scope, Journal::_scopes)
-        BOOST_FOREACH(nucleus::proton::Action* action, scope->context->transcript.container)
+        BOOST_FOREACH(gear::Action* action, scope->context->transcript.container)
           {
             if (address != action->address)
               continue;
 
             if (revision == nucleus::proton::Revision::Any)
               {
-                if (action->type == nucleus::proton::Action::TypeWipe)
+                if (action->type == gear::Action::TypeWipe)
                   {
                     throw std::runtime_error("Block scheduled for deletion");
                   }

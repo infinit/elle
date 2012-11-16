@@ -74,12 +74,14 @@ namespace etoile
 
       assert(context.group != nullptr);
 
+      /* XXX[porcupine]
       // if a block is referenced by the object, mark it as needing removal.
       if (context.group->ensemble() != nucleus::proton::Address::null())
         {
           ELLE_TRACE("record the ensemble block in the transcript")
             context.transcript.wipe(context.group->ensemble());
         }
+      */
 
       return elle::Status::Ok;
     }
@@ -221,8 +223,10 @@ namespace etoile
           // set the content as consistent.
           context.ensemble->state(nucleus::proton::StateConsistent);
 
+          /* XXX[porcupine]
           // mark the block as needing to be stored.
           context.transcript.push(address, context.ensemble);
+          */
 
           // ugrade the group.
           // XXX[remove try/catch]

@@ -1,7 +1,6 @@
 #ifndef  NUCLEUS_NEUTRON_REFERENCE_HXX
 # define NUCLEUS_NEUTRON_REFERENCE_HXX
 
-
 # include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Reference,

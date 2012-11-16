@@ -145,7 +145,7 @@ namespace nucleus
 
     public:
       /*-----------.
-      | structures |
+      | Structures |
       `-----------*/
       struct Valid
       {

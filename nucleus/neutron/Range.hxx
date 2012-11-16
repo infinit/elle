@@ -288,20 +288,6 @@ namespace nucleus
       return false;
     }
 
-    ///
-    /// this method instructs the range to detach the memory management
-    /// from the object so that items do not get deleted once the range
-    /// dies.
-    ///
-    template <typename T>
-    elle::Status        Range<T>::Detach()
-    {
-      // activate the option.
-      this->options = Range<T>::OptionDetach;
-
-      return elle::Status::Ok;
-    }
-
 //
 // ---------- operators -------------------------------------------------------
 //

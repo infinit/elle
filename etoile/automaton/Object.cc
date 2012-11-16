@@ -120,8 +120,10 @@ namespace etoile
       if (Access::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the access");
 
+      /* XXX[porcupine]
       // mark the object as needing to be removed.
       context.transcript.wipe(context.location.address());
+      */
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -168,8 +170,10 @@ namespace etoile
                 escape("unable to seal the object");
             }
 
+          /* XXX[porcupine]
           // mark the block as needing to be stored.
           context.transcript.push(context.location.address(), context.object);
+          */
         }
 
       // set the context's state.

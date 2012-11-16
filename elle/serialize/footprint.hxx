@@ -1,26 +1,24 @@
-#ifndef  ELLE_SERIALIZE_FOOTPRINT_HXX
+#ifndef ELLE_SERIALIZE_FOOTPRINT_HXX
 # define ELLE_SERIALIZE_FOOTPRINT_HXX
 
 # include <elle/assert.hh>
 # include <elle/IOStream.hh>
 
-# include "BinaryArchive.hh"
-
 namespace elle
 {
   namespace serialize
   {
-
     namespace detail
     {
-
       struct CounterStreamBuffer:
         public elle::StreamBuffer
       {
         size_t counter;
         char _buf[512];
 
-        CounterStreamBuffer(): counter(0) {}
+        CounterStreamBuffer():
+          counter(0)
+        {}
 
         virtual
         elle::WeakBuffer
@@ -36,7 +34,7 @@ namespace elle
         elle::WeakBuffer
         read_buffer()
         {
-          ELLE_ASSERT("Should not be called");
+          ELLE_ASSERT("should not be called");
         }
 
         virtual
@@ -46,11 +44,10 @@ namespace elle
           counter += size;
         }
       };
-
     }
 
     template <typename Archive, typename T>
-    size_t
+    FootprintSize
     footprint(T&& value)
     {
       auto streambuf = new detail::CounterStreamBuffer;
@@ -58,7 +55,15 @@ namespace elle
       elle::IOStream out(streambuf);
       Archive{out, std::forward<T>(value)};
       out.flush();
-      return streambuf->counter;
+      return (static_cast<FootprintSize>(streambuf->counter));
+    }
+
+    template <typename T>
+    FootprintSize
+    footprint()
+    {
+      T object;
+      return (footprint(object));
     }
 
   }

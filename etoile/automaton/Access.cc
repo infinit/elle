@@ -478,9 +478,11 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
+      /* XXX[porcupine: now useless]
       // first detach the data from the range.
       if (range.Detach() == elle::Status::Error)
         escape("unable to detach the data from the range");
+      */
 
       // if the index starts with 0, include the owner by creating
       // a record for him.
@@ -820,9 +822,11 @@ namespace etoile
       // if the block is present.
       if (context.object->access() != nucleus::proton::Address::null())
         {
+          /* XXX[porcupine]
           ELLE_TRACE("record the Access block '%s' for removal",
                      context.object->access())
             context.transcript.wipe(context.object->access());
+          */
         }
 
       return elle::Status::Ok;
@@ -943,8 +947,10 @@ namespace etoile
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
+          /* XXX[porcupine]
           ELLE_TRACE("record the Access block '%s' for storing", address)
             context.transcript.push(address, context.access);
+          */
         }
 
       return elle::Status::Ok;

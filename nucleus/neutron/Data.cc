@@ -1,5 +1,5 @@
 #include <nucleus/neutron/Data.hh>
-
+#include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Contents.hh>
 
 namespace nucleus
@@ -8,15 +8,27 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- definitions -----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
-    Data::Data(proton::Contents<Data>&                          contents):
-      contents(contents)
+    const proton::Node::Type Data::Constants::seam =
+      proton::Node::TypeSeamData;
+    const proton::Node::Type Data::Constants::quill =
+      proton::Node::TypeQuillData;
+    const proton::Node::Type Data::Constants::value =
+      proton::Node::TypeValueData;
+    const proton::Node::Type Data::Constants::type =
+      Data::Constants::value;
+
+//
+// ---------- constructor & destructors ---------------------------------------
+//
+
+    Data::Data():
+      Value::Value()
     {
+      this->state(proton::StateDirty); // XXX[est-ce necessaire?]
+      this->footprint(0); // XXX[initial catalog footprint]
     }
 
 //
@@ -28,7 +40,8 @@ namespace nucleus
     ///
     elle::Status        Data::Create()
     {
-      this->contents.state(proton::StateDirty);
+      // set the initial state.
+      this->state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -54,7 +67,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->contents.state(proton::StateDirty);
+      this->state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -64,7 +77,7 @@ namespace nucleus
     ///
     elle::Status        Data::Read(const Offset&                offset,
                                    const Size&                  size,
-                                   elle::standalone::Region&    region) const
+                                   elle::standalone::Region& region) const
     {
       Size              length;
 
@@ -110,7 +123,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->contents.state(proton::StateDirty);
+      this->state(proton::StateDirty);
 
       return elle::Status::Ok;
     }
@@ -118,10 +131,9 @@ namespace nucleus
     ///
     /// this method returns the size of the data.
     ///
-    elle::Status        Data::Capacity(Size&                    size) const
+    elle::Status        Data::Capacity(Size&                    capacity) const
     {
-      // set the size.
-      size = this->region.size;
+      capacity = static_cast<Size>(this->region.size);
 
       return elle::Status::Ok;
     }
@@ -138,6 +150,9 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Data]" << std::endl;
+
+      if (Value::Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the value");
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == elle::Status::Error)

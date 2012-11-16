@@ -1,11 +1,12 @@
-#ifndef NUCLEUS_PROTON_TRANSCRIPT_HH
-# define NUCLEUS_PROTON_TRANSCRIPT_HH
+#ifndef ETOILE_GEAR_TRANSCRIPT_HH
+# define ETOILE_GEAR_TRANSCRIPT_HH
 
 # include <elle/types.hh>
 # include <elle/Printable.hh>
 
-# include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Action.hh>
+# include <etoile/gear/Action.hh>
+
+# include <nucleus/proton/Address.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <vector>
@@ -13,9 +14,9 @@
 
 # include <boost/noncopyable.hpp>
 
-namespace nucleus
+namespace etoile
 {
-  namespace proton
+  namespace gear
   {
 
     /// This class represents a set of actions to be performed on the
@@ -28,10 +29,9 @@ namespace nucleus
       //
       // types
       //
-    public:
       typedef std::vector<Action*> Container;
-      typedef Container::iterator Iterator;
-      typedef Container::const_iterator Scoutor;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // construction
@@ -46,12 +46,12 @@ namespace nucleus
       /// Records the address/block tuple for insertion in the storage
       /// layer.
       void
-      push(Address const& address,
-           Block const* block);
+      push(nucleus::proton::Address const& address,
+           nucleus::proton::Block const* block);
       /// Records the block associated with the given address for removal
       /// from the storage layer.
       void
-      wipe(Address const& address);
+      wipe(nucleus::proton::Address const& address);
 
       //
       // interfaces

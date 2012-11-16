@@ -366,7 +366,7 @@ namespace horizon
         for (auto entry: range)
           {
             // Fill the buffer with filler().
-            if (filler(buffer, entry->name.c_str(), nullptr, next) == 1)
+            if (filler(buffer, entry->name().c_str(), nullptr, next) == 1)
               return (0);
 
             // Compute the offset of the next entry.

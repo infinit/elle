@@ -1,5 +1,19 @@
 #include <etoile/nest/Pod.hh>
 
+#include <etoile/depot/Depot.hh>
+
+#include <nucleus/Nucleus.hh>
+#include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/Placement.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/Handle.hh>
+#include <nucleus/proton/Revision.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.nest.Pod");
+
 namespace etoile
 {
   namespace nest
@@ -23,8 +37,8 @@ namespace etoile
     ///
     /// XXX
     ///
-    Pod::Pod(const nucleus::Placement&                              placement,
-             nucleus::Block*                                        block):
+    Pod::Pod(const nucleus::proton::Placement&                              placement,
+             std::shared_ptr<nucleus::proton::Contents>                        block):
       nature(NatureVolatile),
       state(StateUnloaded),
       placement(placement),
@@ -36,8 +50,8 @@ namespace etoile
     ///
     /// XXX
     ///
-    Pod::Pod(const nucleus::Placement&                              placement,
-             const nucleus::Address&                                address):
+    Pod::Pod(const nucleus::proton::Placement&                              placement,
+             const nucleus::proton::Address&                                address):
       nature(NaturePersistent),
       state(StateUnloaded),
       placement(placement),
@@ -60,15 +74,7 @@ namespace etoile
       block(element.block),
       counter(element.counter)
     {
-    }
-
-    ///
-    /// XXX
-    ///
-    Pod::~Pod()
-    {
-      if (this->block != nullptr)
-        delete this->block;
+      assert(false && "XXX is this necessary?");
     }
 
 //
@@ -78,39 +84,95 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status            Pod::Load(nucleus::Handle&              handle)
+    std::shared_ptr<nucleus::proton::Contents>
+    Pod::load(nucleus::proton::Handle& handle)
     {
+      ELLE_TRACE_SCOPE("load() this(%s) handle(%s) [%s -> %s]",
+                       this, &handle, this->counter, this->counter + 1);
+
+      assert(this->placement == handle.placement());
       assert(this->nature != Pod::NatureOrphan);
 
-      if (this->block != nullptr)
-        handle.block = this->block;
-      else
+      // XXX
+      if (this->nature == Pod::NatureOrphan)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "XXX");
+
+      if (this->block == nullptr)
         {
-          // XXX retrieve from network.
+          /* XXX
+          assert(false);
+
+          // XXX depend on the nature: local or network => probablement en local via placement
+
+          assert(this->address != nucleus::proton::Address::Null);
+
+          nucleus::proton::Contents* block;
+
+          block =
+            nucleus::Nucleus::factory.allocate<nucleus::proton::Contents>(
+              this->address.component);
+
+          // XXX[configure & link]
+
+          // XXX
+          block->Dump();
+
+          std::unique_ptr<nucleus::proton::Contents> guard(block);
+
+          if (depot::Depot::Pull(this->address,
+                                 nucleus::proton::Revision::Last,
+                                 *block) == elle::Status::Error)
+            escape("unable to load the block");
+
+          this->block.reset(block);
+
+          guard.release();
+
+          // XXX switch (nodule/value) -> nest(nest) OR Node virtual method link() + configure()
+          */
         }
 
       this->counter++;
 
       this->state = Pod::StateLoaded;
 
-      return elle::Status::Ok;
+      assert(this->block != nullptr);
+
+      return (this->block);
     }
 
     ///
     /// XXX
     ///
-    elle::Status            Pod::Unload(nucleus::Handle&            handle)
+    void
+    Pod::unload(nucleus::proton::Handle& handle)
     {
-      assert(this->counter > 0);
+      ELLE_TRACE_SCOPE("unload() this(%s) handle(%s) [%s -> %s]",
+                       this, &handle, this->counter, this->counter - 1);
 
-      handle.block = nullptr;
+      assert(this->placement == handle.placement());
+      assert(this->counter > 0);
 
       this->counter--;
 
       if (this->counter == 0)
         this->state = Pod::StateUnloaded;
+    }
 
-      return elle::Status::Ok;
+    ///
+    /// XXX
+    ///
+    void
+    Pod::release()
+    {
+      ELLE_TRACE_SCOPE("release() this(%s)",
+                       this);
+
+      assert(this->counter == 0);
+
+      if (this->block.unique())
+        this->block.reset();
     }
 
 //
@@ -126,9 +188,9 @@ namespace etoile
 // ---------- dumpable --------------------------------------------------------
 //
 
-///
-/// this function dumps an object.
-///
+    ///
+    /// this function dumps an object.
+    ///
     elle::Status            Pod::Dump(elle::Natural32               margin) const
     {
       elle::String          alignment(margin, ' ');
@@ -149,8 +211,9 @@ namespace etoile
 
       if (this->block != nullptr)
         {
-          if (this->block->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the block");
+          // XXX
+          //if (this->block->Dump(margin + 2) == elle::Status::Error)
+          //escape("unable to dump the block");
         }
       else
         {

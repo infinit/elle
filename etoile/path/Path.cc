@@ -154,7 +154,7 @@ namespace etoile
           // set the address; the revision is already set i.e it has
           // been extracted from the slab.
           if (entry != nullptr)
-            address = entry->address;
+            address = entry->address();
 
           // discard the directory.
           wall::Directory::discard(identifier);

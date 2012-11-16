@@ -63,9 +63,11 @@ namespace nucleus
       Range<Trait>::Scoutor     scoutor;
       Index                     i;
 
+      /* XXX[porcupine: now useless]
       // first detach the data from the range.
       if (range.Detach() == elle::Status::Error)
         escape("unable to detach the data from the range");
+      */
 
       // go through the attributes entries.
       for (scoutor = this->range.container.begin(), i = 0;

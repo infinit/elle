@@ -57,7 +57,7 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::proton::Contents<C>* contents;
+      nucleus::proton::Contents* contents;
     };
 
   }

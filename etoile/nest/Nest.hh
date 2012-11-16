@@ -1,12 +1,18 @@
 #ifndef ETOILE_NEST_NEST_HH
 # define ETOILE_NEST_NEST_HH
 
-#include <nucleus/nucleus.hh> // XXX fwd.hh
-#include <XXX/Handle.hh> // XXX fwd.hh
+# include <elle/types.hh>
 
-#include <etoile/nest/Pod.hh>
+# include <etoile/gear/fwd.hh>
+# include <etoile/nest/Pod.hh>
 
-#include <map>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Placement.hh>
+# include <nucleus/proton/Nest.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <map>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -14,56 +20,100 @@ namespace etoile
   {
 
     ///
-    /// XXX
+    /// XXX les adresses gardees (si presentes) sont celles des blocks loaded du network. si un block est cree (orphan) et sealed, il n'aura tjs pas d'adresse ici.
     ///
-    class Nest
+    class Nest:
+      public nucleus::proton::Nest
     {
-    public:
       //
       // types
       //
+    public:
       struct P
       {
-        typedef std::map<const nucleus::Placement, Pod*>        Container;
-        typedef typename Container::iterator                    Iterator;
+        typedef std::map<nucleus::proton::Placement const, Pod*> Container;
+        typedef typename Container::iterator Iterator;
+        typedef typename Container::const_iterator Scoutor;
       };
 
       struct A
       {
-        typedef std::map<const nucleus::Address, Pod*>          Container;
-        typedef typename Container::iterator                    Iterator;
+        typedef std::map<nucleus::proton::Address const, Pod*> Container;
+        typedef typename Container::iterator Iterator;
+        typedef typename Container::const_iterator Scoutor;
       };
 
       //
-      // static methods
+      // constructors & destructors
       //
-      static elle::Status       Exist(const nucleus::Placement&);
-      static elle::Status       Exist(const nucleus::Address&);
-      static elle::Status       Insert(const nucleus::Placement&,
-                                       Pod*);
-      static elle::Status       Insert(const nucleus::Placement&,
-                                       const nucleus::Address&,
-                                       Pod*);
-      static elle::Status       Retrieve(const nucleus::Placement&,
-                                         Pod*&);
-      static elle::Status       Retrieve(const nucleus::Address&,
-                                         Pod*&);
-      static elle::Status       Delete(const nucleus::Placement&);
-      static elle::Status       Delete(const nucleus::Address&);
-
-      static elle::Status       Attach(nucleus::Block*,
-                                       nucleus::Handle&);
-      static elle::Status       Detach(nucleus::Handle&);
-      static elle::Status       Load(nucleus::Handle&);
-      static elle::Status       Unload(nucleus::Handle&);
-
-      static elle::Status       Show(const elle::Natural32 = 0);
+      /// XXX
+      Nest(nucleus::proton::Limits const& limits);
+      /// XXX
+      ~Nest();
 
       //
-      // static attributes
+      // methods
       //
-      static P::Container       Placements;
-      static A::Container       Addresses;
+    public:
+      /// XXX
+      elle::Boolean
+      exists(nucleus::proton::Placement const& placememt) const;
+      /// XXX
+      elle::Boolean
+      exists(nucleus::proton::Address const& address) const;
+      /// XXX
+      void
+      clear();
+      /// XXX
+      void
+      record(gear::Transcript& transcript);
+
+    private:
+      /// XXX
+      void
+      _insert(nucleus::proton::Placement const& placement,
+              Pod* pod);
+      /// XXX
+      void
+      _insert(nucleus::proton::Placement const& placement,
+              nucleus::proton::Address const& address,
+              Pod* pod);
+      /// XXX
+      Pod*
+      _retrieve(nucleus::proton::Placement const& placement) const;
+      /// XXX
+      Pod*
+      _retrieve(nucleus::proton::Address const& address) const;
+      /// XXX
+      void
+      _delete(nucleus::proton::Placement const& placement);
+      /// XXX
+      void
+      _delete(nucleus::proton::Address const& address);
+
+      //
+      // interfaces
+      //
+    public:
+      // dumpable
+      elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      // nest
+      nucleus::proton::Handle const
+      attach(std::unique_ptr<nucleus::proton::Contents>&& block);
+      void
+      detach(nucleus::proton::Handle& handle);
+      std::shared_ptr<nucleus::proton::Contents>
+      load(nucleus::proton::Handle& handle);
+      void
+      unload(nucleus::proton::Handle& handle);
+
+      //
+      // attributes
+      //
+    private:
+      P::Container _placements;
+      A::Container _addresses;
     };
 
   }

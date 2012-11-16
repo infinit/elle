@@ -9,6 +9,7 @@ namespace etoile
   namespace gear
   {
 
+    class Action;
     class Actor;
     class Chronicle;
     class Context;
@@ -20,8 +21,7 @@ namespace etoile
     class Link;
     class Object;
     class Scope;
-    template <typename... T>
-    class Transaction;
+    class Transcript;
 
   }
 }

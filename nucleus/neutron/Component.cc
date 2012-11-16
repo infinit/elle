@@ -27,17 +27,7 @@ namespace nucleus
             stream << "object";
             break;
           }
-        case ComponentData:
-          {
-            stream << "data";
-            break;
-          }
-        case ComponentCatalog:
-          {
-            stream << "catalog";
-            break;
-          }
-        case ComponentReference:
+        case ComponentContents:
           {
             stream << "reference";
             break;
@@ -57,6 +47,17 @@ namespace nucleus
             stream << "ensemble";
             break;
           }
+        case ComponentSeamCatalog:
+          {
+            stream << "seam(catalog)";
+            break;
+          }
+        case ComponentQuillCatalog:
+          {
+            stream << "quill(catalog)";
+            break;
+          }
+          // XXX
         default:
           {
             throw Exception("unknown component: '%s'", component);

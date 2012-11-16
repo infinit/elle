@@ -3,8 +3,6 @@
 #include <elle/serialize/TupleSerializer.hxx>
 #include <cryptography/PrivateKey.hh>
 
-#include <Infinit.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -33,7 +31,8 @@ namespace nucleus
     elle::Status        Stamp::Seal(cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      this->signature = k.sign(elle::serialize::make_tuple(this->master, this->slave));
+      this->signature =
+        k.sign(elle::serialize::make_tuple(this->master, this->slave));
 
       return elle::Status::Ok;
     }

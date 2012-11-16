@@ -3,6 +3,9 @@
 #include <nucleus/Exception.hh>
 
 #include <elle/format/hexadecimal.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.Address");
 
 namespace nucleus
 {
@@ -68,7 +71,13 @@ namespace nucleus
         case Type::some:
           {
             // Nothing to do; this is the right way to construct such special
-            // addresses
+            // addresses.
+
+            // XXX
+            ELLE_WARN("HERE WE SHOULD CONSTRUCT A VALID ADDRESS BASED ON A "
+                      "NETWORK NAME WITHOUT WHICH WE CANNOT PROPERLY COMPUTE "
+                      "THE FOOTPRINT");
+
             break;
           }
         case Type::valid:

@@ -5,30 +5,47 @@ namespace nucleus
 {
   namespace proton
   {
-
-    class Action;
     class Address;
+    template <typename T>
+    class Ambit;
     class Base;
     class Block;
     class ContentHashBlock;
-    template <typename T>
     class Contents;
+    class Handle;
     class History;
     class ImmutableBlock;
     class ImprintBlock;
+    template <typename K>
+    class Inlet;
+    class Limits;
     class Location;
     class MutableBlock;
+    class Nest;
     class Network;
+    class Node;
+    template <typename T>
+    class Nodule;
     class OwnerKeyBlock;
+    class Placement;
+    class Porcupine;
     class PublicKeyBlock;
+    template <typename T>
+    class Quill;
+    template <typename T>
+    class Seam;
+    class Statistics;
     class Stamp;
-    class Transcript;
+    class Value;
     class Revision;
-
   }
 }
 
+# include <nucleus/proton/Capacity.hh>
+# include <nucleus/proton/Extent.hh>
 # include <nucleus/proton/Family.hh>
+# include <nucleus/proton/Footprint.hh>
+# include <nucleus/proton/Height.hh>
 # include <nucleus/proton/State.hh>
 
 #endif

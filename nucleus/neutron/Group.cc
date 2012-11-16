@@ -98,7 +98,7 @@ namespace nucleus
       switch (this->state())
         {
         case proton::StateClean:
-        // XXX[duplicate case for now] case proton::StateConsistent:
+        case proton::StateConsistent:
           {
             // Nothing to do, the group is already valid.
 

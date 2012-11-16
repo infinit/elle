@@ -4,8 +4,7 @@
 # include <elle/types.hh>
 # include <elle/io/Dumpable.hh>
 
-# include <nucleus/proton/Transcript.hh>
-
+# include <etoile/gear/Transcript.hh>
 # include <etoile/gear/Nature.hh>
 # include <etoile/gear/Operation.hh>
 
@@ -72,7 +71,7 @@ namespace etoile
       State                     state;
       Operation                 operation;
 
-      nucleus::proton::Transcript transcript;
+      Transcript transcript;
     };
 
   }

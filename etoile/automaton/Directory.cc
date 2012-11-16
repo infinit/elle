@@ -98,6 +98,7 @@ namespace etoile
       std::unique_ptr<nucleus::neutron::Entry> entry(
         new nucleus::neutron::Entry(name, address));
 
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -123,7 +124,7 @@ namespace etoile
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-
+      */
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -158,6 +159,7 @@ namespace etoile
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -165,17 +167,10 @@ namespace etoile
                "directory");
 
       // look up the entry.
-      try
-        {
-          if (context.contents->content->Lookup(name,
-                                                entry) == elle::Status::Error)
-            escape("unable to find the entry in the directory");
-        }
-      catch (elle::Exception const& e)
-        {
-          // XXX[return normally with a null-pointer trait]
-          entry = nullptr;
-        }
+      if (context.contents->content->Lookup(name,
+                                            entry) == elle::Status::Error)
+        escape("unable to find the entry in the directory");
+      */
 
       return elle::Status::Ok;
     }
@@ -207,7 +202,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -219,7 +214,7 @@ namespace etoile
                                              size,
                                              range) == elle::Status::Error)
         escape("unable to consult the directory");
-
+      */
       return elle::Status::Ok;
     }
 
@@ -248,7 +243,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -272,7 +267,7 @@ namespace etoile
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-
+      */
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -303,7 +298,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -326,7 +321,7 @@ namespace etoile
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-
+      */
       // set the context's state.
       context.state = gear::Context::StateModified;
 

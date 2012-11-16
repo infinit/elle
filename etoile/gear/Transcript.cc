@@ -1,10 +1,10 @@
-#include <nucleus/proton/Transcript.hh>
+#include <etoile/gear/Transcript.hh>
 
 #include <elle/idiom/Open.hh>
 
-namespace nucleus
+namespace etoile
 {
-  namespace proton
+  namespace gear
   {
 
 //
@@ -24,18 +24,17 @@ namespace nucleus
 //
 
     void
-    Transcript::push(Address const& address,
-                     Block const* block)
+    Transcript::push(nucleus::proton::Address const& address,
+                     nucleus::proton::Block const* block)
     {
       this->_container.push_back(new Action(address, block));
     }
 
     void
-    Transcript::wipe(Address const& address)
+    Transcript::wipe(nucleus::proton::Address const& address)
     {
       this->_container.push_back(new Action(address));
     }
-
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -48,10 +47,8 @@ namespace nucleus
       std::cout << alignment << "[Transcript]" << std::endl;
 
       for (auto action: this->_container)
-        {
-          if (action->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the action");
-        }
+        if (action->Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the action");
 
       return elle::Status::Ok;
     }

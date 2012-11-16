@@ -239,9 +239,11 @@ namespace etoile
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
 
+      /* XXX[porcupine: now needless]
       // first detach the data from the range.
       if (range.Detach() == elle::Status::Error)
         escape("unable to detach the data from the range");
+      */
 
       // If the index starts with 0, include the manager by creating
       // a record for him.
@@ -379,8 +381,10 @@ namespace etoile
       if (Ensemble::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the ensemble");
 
+      /* XXX[porcupine]
       // mark the group as needing to be removed.
       context.transcript.wipe(context.location.address());
+      */
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -415,8 +419,10 @@ namespace etoile
 
           context.group->seal(agent::Agent::Identity.pair.k());
 
+          /* XXX[porcupine]
           // mark the block as needing to be stored.
           context.transcript.push(context.location.address(), context.group);
+          */
         }
 
       // set the context's state.

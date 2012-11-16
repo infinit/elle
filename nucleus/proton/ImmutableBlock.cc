@@ -5,8 +5,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <Infinit.hh>
-
 namespace nucleus
 {
   namespace proton

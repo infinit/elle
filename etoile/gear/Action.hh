@@ -1,5 +1,5 @@
-#ifndef NUCLEUS_PROTON_ACTION_HH
-# define NUCLEUS_PROTON_ACTION_HH
+#ifndef ETOILE_GEAR_ACTION_HH
+# define ETOILE_GEAR_ACTION_HH
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -10,9 +10,9 @@
 
 # include <boost/noncopyable.hpp>
 
-namespace nucleus
+namespace etoile
 {
-  namespace proton
+  namespace gear
   {
 
     /// This class defines an action related to a block being either
@@ -35,9 +35,9 @@ namespace nucleus
       | Construction |
       `-------------*/
     public:
-      Action(Address const& address,
-             Block const* block);
-      Action(Address const& address);
+      Action(nucleus::proton::Address const& address,
+             nucleus::proton::Block const* block);
+      Action(nucleus::proton::Address const& address);
 
       /*--------.
       | Methods |
@@ -45,7 +45,7 @@ namespace nucleus
     public:
       /// Returns the block associated with the action. Note that this
       /// method throws if the action is 'wipe'.
-      Block const&
+      nucleus::proton::Block const&
       block() const;
 
       /*-----------.
@@ -65,8 +65,8 @@ namespace nucleus
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Type const, type);
-      ELLE_ATTRIBUTE_R(Address const, address);
-      ELLE_ATTRIBUTE(Block const*, block);
+      ELLE_ATTRIBUTE_R(nucleus::proton::Address const, address);
+      ELLE_ATTRIBUTE(nucleus::proton::Block const*, block);
     };
 
     /*----------.

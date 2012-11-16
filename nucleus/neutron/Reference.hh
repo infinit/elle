@@ -5,6 +5,8 @@
 # include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Value.hh>
+# include <nucleus/proton/Node.hh>
 # include <nucleus/neutron/fwd.hh>
 
 # include <boost/noncopyable.hpp>
@@ -21,28 +23,40 @@ namespace nucleus
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///
+    /// XXX rewrite
+    ///
+    /// XXX no split for references
+    ///
     class Reference:
+      public proton::Value,
+      public elle::serialize::SerializableMixin<Reference>,
       public elle::Printable,
       private boost::noncopyable
     {
+    public:
       //
       // constants
       //
     public:
-      static const Component component = ComponentReference;
+      struct Constants
+      {
+        static const proton::Node::Type seam;
+        static const proton::Node::Type quill;
+        static const proton::Node::Type value;
+        static const proton::Node::Type type;
+      };
 
-    public:
       //
       // constructors & destructors
       //
-      Reference(proton::Contents<Reference>&);
+      Reference();
 
       //
       // methods
       //
       elle::Status      Create();
 
-      elle::Status      Bind(const elle::String&);
+      elle::Status      Target(const elle::String&);
       elle::Status      Resolve(elle::String&) const;
 
       elle::Status      Capacity(Size&) const;
@@ -59,17 +73,26 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
+      // value
+      elle::Boolean
+      empty() const { return true; } // XXX
+      elle::String
+      mayor() const { return elle::String(); } // XXX
+
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Reference);
+
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Reference);
+
       //
       // attributes
       //
-      proton::Contents<Reference>&      contents;
-
-      elle::String                      target;
+      elle::String      target;
     };
 
   }
 }
 
-#include <nucleus/neutron/Reference.hxx>
+# include <nucleus/neutron/Reference.hxx>
 
 #endif

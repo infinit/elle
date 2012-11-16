@@ -19,7 +19,7 @@ namespace nucleus
       {
         StateClean = 0,
         StateDirty,
-        StateConsistent = StateClean
+        StateConsistent
       };
 
   }

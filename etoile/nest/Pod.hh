@@ -1,10 +1,15 @@
 #ifndef ETOILE_NEST_POD_HH
-#define ETOILE_NEST_POD_HH
+# define ETOILE_NEST_POD_HH
 
-#include <elle/types.hh>
-#include <nucleus/nucleus.hh> // XXX fwd.hh
-#include <XXX/Placement.hh> // XXX fwd.hh
-#include <XXX/Handle.hh> // XXX fwd.hh
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
+
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Contents.hh>
+# include <nucleus/proton/Placement.hh>
+# include <nucleus/proton/Address.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -39,19 +44,24 @@ namespace etoile
       // constructors & destructors
       //
       Pod();
-      Pod(const nucleus::Placement&,
-          nucleus::Block*);
-      Pod(const nucleus::Placement&,
-          const nucleus::Address&);
+      Pod(const nucleus::proton::Placement&,
+          std::shared_ptr<nucleus::proton::Contents>);
+      Pod(const nucleus::proton::Placement&,
+          const nucleus::proton::Address&);
       Pod(const Pod&);
-      ~Pod();
 
       //
       // methods
       //
-
-      elle::Status              Load(nucleus::Handle&);
-      elle::Status              Unload(nucleus::Handle&);
+      /// XXX
+      std::shared_ptr<nucleus::proton::Contents>
+      load(nucleus::proton::Handle&);
+      /// XXX
+      void
+      unload(nucleus::proton::Handle&);
+      /// XXX
+      void
+      release();
 
       //
       // interfaces
@@ -66,15 +76,14 @@ namespace etoile
       //
       // attributes
       //
-      Nature                    nature;
-      State                     state;
+      Nature nature;
+      State state;
 
-      nucleus::Placement        placement;
-      nucleus::Address          address;
+      nucleus::proton::Placement placement;
+      nucleus::proton::Address address;
 
-      nucleus::Block*           block;
-
-      elle::Natural32           counter;
+      std::shared_ptr<nucleus::proton::Contents> block;
+      elle::Natural32 counter;
     };
 
   }

@@ -9,6 +9,7 @@ add_library(etoile ${LINK_METHOD}
 
   depot/Depot.cc
 
+  gear/Action.cc
   gear/Actor.cc
   gear/Context.cc
   gear/Directory.cc
@@ -20,6 +21,7 @@ add_library(etoile ${LINK_METHOD}
   gear/Link.cc
   gear/Object.cc
   gear/Scope.cc
+  gear/Transcript.cc
 
   automaton/Access.cc
   automaton/Attributes.cc
@@ -53,8 +55,8 @@ add_library(etoile ${LINK_METHOD}
   shrub/Shrub.cc
   shrub/Riffle.cc
 
-#  nest/Nest.cc
-#  nest/Pod.cc
+  nest/Nest.cc
+  nest/Pod.cc
 
   Etoile.cc
 )

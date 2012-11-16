@@ -149,8 +149,10 @@ namespace nucleus
 
       ELLE_TRACE_SCOPE("consult(%s, %s)", index, size);
 
+      /* XXX
       if (range.Detach() == elle::Status::Error)
         throw Exception("unable to detach the data from the range"); // XXX[to remove in the future]
+      */
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();

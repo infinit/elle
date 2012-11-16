@@ -177,9 +177,11 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
+      /* XXX[porcupine: is now useless]
       // first detach the data from the range.
       if (range.Detach() == elle::Status::Error)
         escape("unable to detach the data from the range");
+      */
 
       // go through the records.
       for (scoutor = this->_range.container.begin(), i = 0;

@@ -59,12 +59,6 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
         break;
       }
     case nucleus::proton::Address::Type::some:
-      {
-        // XXX[to handle for porcupine]
-        elle::abort("invalid address type: some");
-
-        break;
-      }
     case nucleus::proton::Address::Type::valid:
       {
         archive & elle::serialize::alive_pointer(value._valid);

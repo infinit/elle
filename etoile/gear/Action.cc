@@ -1,26 +1,28 @@
-#include <nucleus/proton/Action.hh>
+#include <etoile/gear/Action.hh>
+
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
 
-namespace nucleus
+namespace etoile
 {
-  namespace proton
+  namespace gear
   {
 
     /*-------------.
     | Construction |
     `-------------*/
 
-    Action::Action(Address const& address,
-                   Block const* block):
+    Action::Action(nucleus::proton::Address const& address,
+                   nucleus::proton::Block const* block):
       _type(Action::Type::push),
       _address(address),
       _block(block)
     {
     }
 
-    Action::Action(Address const& address):
+    Action::Action(nucleus::proton::Address const& address):
       _type(Action::Type::wipe),
       _address(address)
     {
@@ -30,7 +32,7 @@ namespace nucleus
     | Methods |
     `--------*/
 
-    Block const&
+    nucleus::proton::Block const&
     Action::block() const
     {
       assert(this->_block != nullptr);

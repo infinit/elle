@@ -39,6 +39,7 @@ namespace etoile
 
       ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
 
+      /* XXX[porcupine]
       // if the contents is already opened, return.
       if (context.contents != nullptr)
         return elle::Status::Ok;
@@ -80,7 +81,7 @@ namespace etoile
           if (context.contents->Create() == elle::Status::Error)
             escape("unable to create the contents");
         }
-
+      */
       assert(context.contents);
 
       return elle::Status::Ok;
@@ -97,6 +98,7 @@ namespace etoile
 
       ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
 
+      /* XXX[porcupine]
       // if a block is referenced by the object, mark it as needing removal.
       if (context.object->contents() != nucleus::proton::Address::null())
         {
@@ -104,6 +106,7 @@ namespace etoile
                      context.object->contents())
             context.transcript.wipe(context.object->contents());
         }
+      */
 
       return elle::Status::Ok;
     }
@@ -129,6 +132,7 @@ namespace etoile
       // first, check if the block has been modified i.e exists and is dirty.
       //
       {
+        /* XXX[porcupine]
         // if there is no loaded contents or accessible content, then there
         // is nothing to do.
         if (!((context.contents != nullptr) &&
@@ -138,13 +142,16 @@ namespace etoile
         // if the contents has not changed, do nothing.
         if (context.contents->state() == nucleus::proton::StateClean)
           return elle::Status::Ok;
+        */
       }
 
       ELLE_TRACE("the Contents block seems to have been modified");
 
+      /* XXX[porcupine]
       // retrieve the contents's size.
       if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
+      */
 
       //
       // at this point, the contents is known to have been modified.
@@ -240,6 +247,7 @@ namespace etoile
           if (key.Generate() == elle::Status::Error) // XXX[should provide a len]
             escape("unable to generate the secret key");
 
+          /* XXX[porcupine]
           // encrypt the contents.
           if (context.contents->Encrypt(key) == elle::Status::Error)
             escape("unable to encrypt the contents");
@@ -258,9 +266,12 @@ namespace etoile
                 context.object->access(),
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
+          */
 
+          /* XXX[porcupine]
           // mark the block as needing to be stored.
           context.transcript.push(address, context.contents);
+          */
 
           //
           // finally, since the data has been re-encrypted, the key must be

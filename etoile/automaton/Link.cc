@@ -86,7 +86,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -109,7 +109,7 @@ namespace etoile
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-
+      */
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -136,7 +136,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -146,7 +146,7 @@ namespace etoile
       // resolve the link.
       if (context.contents->content->Resolve(way.path) == elle::Status::Error)
         escape("unable to resolve the link");
-
+      */
       return elle::Status::Ok;
     }
 

@@ -2,11 +2,10 @@
 # define NUCLEUS_PROTON_CONTENTS_HH
 
 # include <cryptography/fwd.hh>
-// XXX[temporary: for cryptography]
-using namespace infinit;
 
 # include <nucleus/proton/ContentHashBlock.hh>
-# include <nucleus/neutron/fwd.hh>
+# include <nucleus/proton/Node.hh>
+# include <nucleus/proton/Address.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -32,10 +31,15 @@ namespace nucleus
     /// just before being stored in the storage layer since there is no
     /// benefit in encrypting the data for fun.
     ///
-    template <typename T>
+    /// XXX expliquer que contents ca represente un block de donnee chiffree
+    ///     qui peut potentiellement depasser la taille (extent) et qui sera
+    ///     donc split ou merge si trop petit.
+    ///     pour cette raison cette classe contient des methodes communes
+    ///     a beaucoup de sous-classes: Seam, Quill, Catalog etc.
+    ///
     class Contents:
       public proton::ContentHashBlock,
-      public elle::serialize::SerializableMixin<Contents<T>>
+      public elle::serialize::SerializableMixin<Contents>
     {
       //
       // constants
@@ -43,37 +47,66 @@ namespace nucleus
     public:
       static const neutron::Component component;
 
+      //
+      // enumerations
+      //
     public:
-      //
-      // types
-      //
-      typedef T                 C;
+      enum Mode
+        {
+          ModeEncrypted,
+          ModeDecrypted
+        };
 
       //
       // constructors & destructors
       //
+    public:
       Contents(); // XXX[to deserialize]
+      template <typename T>
       Contents(Network const& network,
-               cryptography::PublicKey const& creator_K);
+               cryptography::PublicKey const& creator_K,
+               T*); // XXX[use unique_ptr]
       ~Contents();
+
+      // XXX
+      template <typename T>
+      Contents(T* node): // XXX[TEMPORARY!!! TO ANNIHILATE]
+        proton::ContentHashBlock(),
+
+        _type(T::Constants::type),
+        _node(node),
+        _cipher(nullptr)
+      {
+      }
+      // XXX
 
       //
       // methods
       //
-      elle::Status      Create();
-
-      elle::Status Encrypt(cryptography::SecretKey const& key);
-      elle::Status Decrypt(cryptography::SecretKey const& key);
+    public:
+      /// XXX
+      elle::Status
+      encrypt(cryptography::SecretKey const& key);
+      /// XXX
+      elle::Status
+      decrypt(cryptography::SecretKey const& key);
+      /// XXX
+      Mode
+      mode() const;
+      /// XXX
+      Node*
+      node();
 
       //
       // interfaces
       //
     public:
-      // fileable
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents<T>);
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Contents);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Contents);
       // printable
       virtual
       void
@@ -82,14 +115,15 @@ namespace nucleus
       //
       // attributes
       //
-      T*                content;
-
-      cryptography::Cipher*     cipher;
+    private:
+      Node::Type _type;
+      Node* _node;
+      cryptography::Cipher* _cipher;
     };
 
   }
 }
 
-#include <nucleus/proton/Contents.hxx>
+# include <nucleus/proton/Contents.hxx>
 
 #endif

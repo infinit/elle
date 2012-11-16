@@ -79,8 +79,6 @@ namespace nucleus
       elle::Boolean     Locate(const Symbol&,
                                Iterator&);
 
-      elle::Status      Detach();
-
       //
       // operators
       //
