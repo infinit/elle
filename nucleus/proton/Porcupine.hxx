@@ -31,9 +31,9 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             // In this case, the tree is empty. therefore, adding a value
             // consists in setting the porcupine as containing a single value
@@ -42,9 +42,9 @@ namespace nucleus
 
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             // In this case, the porcupine already contains a value. A
             // hierarchy therefore needs to be created.
@@ -85,16 +85,16 @@ namespace nucleus
 
             this->_root = handle;
             this->_height++;
-            this->_mode = Porcupine::ModeHierarchy;
+            this->_mode = Mode::hierarchy;
 
             // Finally, proceed to the addition of the given key/value
             // tuple considering the porcupine as acting as a tree.
             //
             // Do not break since the code below perform such an operation.
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             // In this case, the porcupine already contains a hierarchy of
             // nodules though perhaps a single one i.e a quill.
@@ -154,15 +154,15 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             return false;
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             try
               {
@@ -180,9 +180,9 @@ namespace nucleus
                 return false;
               }
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             try
               {
@@ -221,20 +221,20 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             this->_create<T>();
 
             //
             // do not break and proceed with the lookup.
             //
-            assert(this->_mode == Porcupine::ModeValue);
+            assert(this->_mode == Porcupine::Mode::value);
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             // XXX verify that the key is valid.
 
@@ -243,11 +243,11 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
             Handle handle;
 
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             // search for the quill responsible for the given key.
             handle = this->_search<T>(k);
@@ -286,20 +286,20 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             this->_create<T>();
 
             //
             // do not break and proceed with the lookup.
             //
-            assert(this->_mode == Porcupine::ModeValue);
+            assert(this->_mode == Porcupine::Mode::value);
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             // verify the validity of the target index.
             if (target >= this->_capacity)
@@ -314,9 +314,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -346,16 +346,16 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             throw Exception("unable to update an empty porcupine");
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             Ambit<T> value(this->nest(), this->_root);
 
@@ -376,9 +376,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -413,16 +413,16 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             throw Exception("unable to remove from an empty porcupine");
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             // XXX verify that the key is valid.
 
@@ -433,7 +433,7 @@ namespace nucleus
             this->_root = Handle::Null;
 
             // set the mode.
-            this->_mode = Porcupine::ModeEmpty;
+            this->_mode = Porcupine::Mode::empty;
 
             // set the capacity and state.
             this->_capacity = 0;
@@ -444,9 +444,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -481,17 +481,17 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_DEBUG_SCOPE("ModeEmpty");
+            ELLE_DEBUG_SCOPE("Mode::empty");
 
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
             Ambit<T> value(this->nest(), this->_root);
 
-            ELLE_DEBUG_SCOPE("ModeValue");
+            ELLE_DEBUG_SCOPE("Mode::value");
 
             // load the value nodule.
             value.load();
@@ -544,9 +544,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_DEBUG_SCOPE("ModeHierarchy");
+            ELLE_DEBUG_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -657,11 +657,11 @@ namespace nucleus
 
           switch (this->_mode)
             {
-            case ModeEmpty:
+            case Mode::empty:
               {
                 break;
               }
-            case ModeValue:
+            case Mode::value:
               {
                 Ambit<T> value(this->nest(), this->_root);
 
@@ -681,7 +681,7 @@ namespace nucleus
 
                 break;
               }
-            case ModeHierarchy:
+            case Mode::hierarchy:
               {
                 Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -738,18 +738,18 @@ namespace nucleus
 
             switch (this->_mode)
               {
-              case ModeEmpty:
+              case Mode::empty:
                 {
-                  ELLE_TRACE_SCOPE("ModeEmpty");
+                  ELLE_TRACE_SCOPE("Mode::empty");
 
                   throw Exception("unable to seal an empty porcupine");
                   break;
                 }
-              case ModeValue:
+              case Mode::value:
                 {
                   Ambit<T> value(this->nest(), this->_root);
 
-                  ELLE_TRACE_SCOPE("ModeValue");
+                  ELLE_TRACE_SCOPE("Mode::value");
 
                   // load the value nodule.
                   value.load();
@@ -773,11 +773,11 @@ namespace nucleus
 
                   break;
                 }
-              case ModeHierarchy:
+              case Mode::hierarchy:
                 {
                   Ambit<Nodule<T>> root(this->nest(), this->_root);
 
-                  ELLE_TRACE_SCOPE("ModeHierarchy");
+                  ELLE_TRACE_SCOPE("Mode::hierarchy");
 
                   // load the root nodule.
                   root.load();
@@ -833,17 +833,17 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
             Ambit<T> value(this->nest(), this->_root);
 
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             value.load();
 
@@ -897,9 +897,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -927,7 +927,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_create()");
 
       // make sure the tree is empty.
-      assert(this->_mode == Porcupine::ModeEmpty);
+      assert(this->_mode == Porcupine::Mode::empty);
       assert(this->_root == Handle::Null);
       assert(this->_height == 0);
 
@@ -948,7 +948,7 @@ namespace nucleus
 
       this->_root = handle;
 
-      this->_mode = Porcupine::ModeValue;
+      this->_mode = Porcupine::Mode::value;
     }
 
     template <typename T>
@@ -960,7 +960,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_create(%s)", &handle);
 
       // make sure the tree is empty.
-      assert(this->_mode == Porcupine::ModeEmpty);
+      assert(this->_mode == Porcupine::Mode::empty);
       assert(this->_root == Handle::Null);
       assert(this->_height == 0);
 
@@ -980,7 +980,7 @@ namespace nucleus
       // only value.
       this->_root = handle;
 
-      this->_mode = Porcupine::ModeValue;
+      this->_mode = Porcupine::Mode::value;
     }
 
     template <typename T>
@@ -993,16 +993,16 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
-            ELLE_TRACE_SCOPE("ModeEmpty");
+            ELLE_TRACE_SCOPE("Mode::empty");
 
             throw Exception("unable to optimize an empty porcupine");
             break;
           }
-        case ModeValue:
+        case Mode::value:
           {
-            ELLE_TRACE_SCOPE("ModeValue");
+            ELLE_TRACE_SCOPE("Mode::value");
 
             Ambit<T> value(this->nest(), this->_root);
 
@@ -1068,7 +1068,7 @@ namespace nucleus
                 this->_height++;
 
                 // set the mode.
-                this->_mode = Porcupine::ModeHierarchy;
+                this->_mode = Porcupine::Mode::hierarchy;
               }
             else if (value()->footprint() <
                      (this->nest().limits().extent() *
@@ -1100,7 +1100,7 @@ namespace nucleus
                     this->_state = StateDirty;
 
                     // set the mode.
-                    this->_mode = Porcupine::ModeEmpty;
+                    this->_mode = Porcupine::Mode::empty;
                   }
                 else
                   value.unload();
@@ -1110,9 +1110,9 @@ namespace nucleus
 
             break;
           }
-        case ModeHierarchy:
+        case Mode::hierarchy:
           {
-            ELLE_TRACE_SCOPE("ModeHierarchy");
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
 
             Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -1310,7 +1310,7 @@ namespace nucleus
 
                         // therefore, set the mode as value now that the
                         // root handle actually references a value.
-                        this->_mode = Porcupine::ModeValue;
+                        this->_mode = Porcupine::Mode::value;
                       }
                     else
                       quill.unload();
@@ -1391,7 +1391,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_search(%s)", k);
 
       // make sure we are operating in tree mode.
-      assert(this->_mode == Porcupine::ModeHierarchy);
+      assert(this->_mode == Porcupine::Mode::hierarchy);
 
       Ambit<Nodule<T>> root(this->nest(), this->_root);
 

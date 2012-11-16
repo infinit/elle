@@ -16,7 +16,8 @@ namespace nucleus
 // ---------- constructors & destructors --------------------------------------
 //
 
-    Handle::Handle()
+    Handle::Handle():
+      _address(Address::null())
     {
     }
 

@@ -27,6 +27,9 @@
 
 #include <Infinit.hh>
 
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
 // To define in order to make the checks stronger and so as to
@@ -63,7 +66,7 @@ void
 test_porcupine_add(nucleus::proton::Porcupine& porcupine,
                    std::vector<elle::String>& vector)
 {
-  ELLE_TRACE_SCOPE("test_porcupine_add()");
+  ELLE_TRACE_FUNCTION(porcupine, vector);
 
   for (elle::Natural32 i = 0; i < vector.size(); i++)
     {
@@ -113,7 +116,7 @@ void
 test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
                       std::vector<elle::String>& vector)
 {
-  ELLE_TRACE_SCOPE("test_porcupine_lookup()");
+  ELLE_TRACE_FUNCTION(porcupine, vector);
 
   for (elle::Natural32 i = 0; i < vector.size(); i++)
     {
@@ -156,7 +159,7 @@ void
 test_porcupine_seal(nucleus::proton::Porcupine& porcupine,
                     cryptography::SecretKey& secret)
 {
-  ELLE_TRACE_SCOPE("test_porcupine_seal()");
+  ELLE_TRACE_FUNCTION(porcupine, secret);
 
   porcupine.seal<nucleus::neutron::Catalog>(secret);
 
@@ -168,7 +171,7 @@ void
 test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
                     std::vector<elle::String>& vector)
 {
-  ELLE_TRACE_SCOPE("test_porcupine_seek()");
+  ELLE_TRACE_FUNCTION(porcupine, vector);
 
   std::vector<elle::String> w(vector.size());
 
@@ -229,7 +232,7 @@ test_porcupine_serialize(nucleus::proton::Porcupine& input,
   etoile::gear::Transcript transcript;
   etoile::nest::Nest* nest = static_cast<etoile::nest::Nest*>(&input.nest());
 
-  ELLE_TRACE_SCOPE("test_porcupine_serialize()");
+  ELLE_TRACE_FUNCTION(input, secret, vector);
 
   nest->record(transcript);
 
@@ -294,7 +297,7 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
                       elle::Natural32 const index,
                       elle::Natural32 const size)
 {
-  ELLE_TRACE_SCOPE("test_porcupine_remove()");
+  ELLE_TRACE_FUNCTION(porcupine, vector, index, size);
 
   for (elle::Natural32 i = index; i < (index + size); i++)
     {
@@ -391,7 +394,7 @@ test_porcupine_catalog()
 }
 
 int
-Main(elle::Natural32 argc,
+Main(elle::Natural32,
      elle::Character* argv[])
 {
   // XXX

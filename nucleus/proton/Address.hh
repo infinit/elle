@@ -92,6 +92,7 @@ namespace nucleus
               const Family&,
               const neutron::Component&,
               const T&...);
+      ELLE_SERIALIZE_CONSTRUCT(Address) {} // XXX
       Address(Address const& other);
       ~Address();
     private:

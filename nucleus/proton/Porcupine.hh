@@ -131,16 +131,15 @@ namespace nucleus
       static const Flags FlagState;
       static const Flags FlagAll;
 
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
-      //
-      // enumerations
-      //
-    private:
-      enum Mode
+      enum class Mode
         {
-          ModeEmpty,
-          ModeValue,
-          ModeHierarchy
+          empty,
+          value,
+          hierarchy
         };
 
       //
@@ -265,7 +264,8 @@ namespace nucleus
       //
       // attributes
       //
-    private:
+      // XXX private:
+    public:
       Mode _mode;
       Height _height;
       Capacity _capacity;
@@ -277,6 +277,13 @@ namespace nucleus
       State _state;
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Porcupine::Mode const mode);
   }
 }
 

@@ -7,7 +7,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*-------------.
     | Enumerations |
     `-------------*/
@@ -28,7 +27,6 @@ namespace nucleus
     std::ostream&
     operator <<(std::ostream& stream,
                 Family const family);
-
   }
 }
 

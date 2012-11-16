@@ -47,32 +47,20 @@ namespace nucleus
     {
     }
 
-    Address::Address(Address const& other):
-      _type(other._type),
-      _valid(nullptr)
-    {
-      if (other._valid != nullptr)
-        {
-          this->_valid =
-            new Valid(
-              other._valid->network(),
-              other._valid->family(),
-              other._valid->component(),
-              other._valid->digest());
-        }
-    }
-
     Address::Address(Type const type):
       _type(type)
     {
       switch (this->_type)
         {
         case Type::null:
-        case Type::some:
           {
             // Nothing to do; this is the right way to construct such special
             // addresses.
 
+            break;
+          }
+        case Type::some:
+          {
             // XXX
             ELLE_WARN("HERE WE SHOULD CONSTRUCT A VALID ADDRESS BASED ON A "
                       "NETWORK NAME WITHOUT WHICH WE CANNOT PROPERLY COMPUTE "
@@ -87,6 +75,21 @@ namespace nucleus
           }
         default:
           throw Exception("unknown address type '%s'", this->_type);
+        }
+    }
+
+    Address::Address(Address const& other):
+      _type(other._type),
+      _valid(nullptr)
+    {
+      if (other._valid != nullptr)
+        {
+          this->_valid =
+            new Valid(
+              other._valid->network(),
+              other._valid->family(),
+              other._valid->component(),
+              other._valid->digest());
         }
     }
 
@@ -242,7 +245,7 @@ namespace nucleus
           }
         case Address::Type::some:
           {
-            std::cout << alignment << "[Address] " << "(undef)" << std::endl;
+            std::cout << alignment << "[Address] " << "(some)" << std::endl;
 
             break;
           }

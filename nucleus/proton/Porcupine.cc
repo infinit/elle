@@ -51,7 +51,7 @@ namespace nucleus
 //
 
     Porcupine::Porcupine():
-      _mode(ModeEmpty),
+      _mode(Mode::empty),
       _height(0),
       _capacity(0),
       _nest(nullptr),
@@ -62,7 +62,7 @@ namespace nucleus
     Porcupine::Porcupine(/* XXX Network const& network,
                             cryptography::PublicKey const& agent_K,*/
                          Nest& nest):
-      _mode(ModeEmpty),
+      _mode(Mode::empty),
       _height(0),
       _capacity(0),
       /* XXX
@@ -81,7 +81,7 @@ namespace nucleus
     elle::Boolean
     Porcupine::empty() const
     {
-      return (this->_mode == ModeEmpty);
+      return (this->_mode == Mode::empty);
     }
 
     void
@@ -142,15 +142,15 @@ namespace nucleus
 
       // dump the mode.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Mode] " << std::dec << this->_mode << std::endl;
+                << "[Mode] " << this->_mode << std::endl;
 
       // dump the height.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Height] " << std::dec << this->_height << std::endl;
+                << "[Height] " << this->_height << std::endl;
 
       // dump the capacity.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Capacity] " << std::dec << this->_capacity << std::endl;
+                << "[Capacity] " << this->_capacity << std::endl;
 
       // dump the root.
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -158,17 +158,21 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case ModeEmpty:
+        case Mode::empty:
           {
             break;
           }
-        case ModeValue:
-        case ModeHierarchy:
+        case Mode::value:
+        case Mode::hierarchy:
           {
             if (this->_root.Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the handle");
 
             break;
+          }
+        default:
+          {
+            throw Exception("unknown mode '%s'", this->_mode);
           }
         }
 
@@ -178,5 +182,38 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Porcupine::Mode const mode)
+    {
+      switch (mode)
+        {
+        case Porcupine::Mode::empty:
+          {
+            stream << "empty";
+            break;
+          }
+        case Porcupine::Mode::value:
+          {
+            stream << "value";
+            break;
+          }
+        case Porcupine::Mode::hierarchy:
+          {
+            stream << "hierarchy";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown mode: '%s'", static_cast<int>(mode));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

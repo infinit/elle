@@ -59,6 +59,11 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
         break;
       }
     case nucleus::proton::Address::Type::some:
+      {
+        ELLE_ASSERT("the address cannot be of type 'some'");
+
+        break;
+      }
     case nucleus::proton::Address::Type::valid:
       {
         archive & elle::serialize::alive_pointer(value._valid);

@@ -13,21 +13,21 @@ namespace nucleus
 {
   namespace proton
   {
-
+    /// Repreent the location of a block being either in main memory, in
+    /// the nest or on the storage layer.
     ///
-    /// XXX
+    /// In term of implementation, the _placement_ is used to reference the
+    /// block in the nest, in which case the block could very well be in
+    /// main memory or on a disk-based cache. Should the block not be loaded
+    /// in the nest, the _address_ indicates the block's address in the storage
+    /// layer. Finally, if the block is actually currently loaded in main
+    /// memory, the _block_ attribute holds its address.
     ///
-    /// XXX placement(version inline), address(version offline) et
-    ///     block(version inline chargee en RAM)
-    ///
-    /// XXX contains everything necessary for loading/storing a block
-    /// XXX i.e placement or address + secret (if necessary
+    /// Note that a _secret_ is also kept which enable one to decrypt the
+    /// referenced block.
     class Handle
     {
-    public:
-      //
-      // constants
-      //
+      // XXX
     public:
       /// XXX
       static Handle const Null;
