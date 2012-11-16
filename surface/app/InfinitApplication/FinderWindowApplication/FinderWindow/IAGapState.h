@@ -67,6 +67,7 @@
 @property BOOL logged_in;
 
 
+@property (readonly, nonatomic) NSString* token;
 
 
 /**

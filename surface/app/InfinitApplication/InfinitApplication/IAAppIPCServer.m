@@ -8,6 +8,7 @@
 
 #import "IAAppDelegate.h"
 #import "IAAppIPCServer.h"
+#import "IAClientGapState.h"
 
 @implementation IAAppIPCServer
 {
@@ -35,6 +36,7 @@
 {
     assert(_app != NULL);
     NSLog(@"Receive user token: %@", token);
+    [IAClientGapState initGapInstanceWithToken:token];
 }
 
 @end

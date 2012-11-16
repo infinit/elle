@@ -436,6 +436,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../build/macosx64/surface/gap\"",
 				);
+				OTHER_CFLAGS = "-DIA_GAP_SINGLETON";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -456,6 +457,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../build/macosx64/surface/gap\"",
 				);
+				OTHER_CFLAGS = "-DIA_GAP_SINGLETON";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};

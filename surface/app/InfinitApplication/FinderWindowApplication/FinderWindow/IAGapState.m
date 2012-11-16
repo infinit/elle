@@ -163,15 +163,44 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 @synthesize state = _state;
 @synthesize logged_in = _logged_in;
 
++ (IAGapState*) instanceWithToken:(NSString*)token
+{
+    return [[IAGapState alloc] initWithToken:token];
+}
+
 + (IAGapState*) instance
 {
     static IAGapState* instance = NULL;
 
     if (instance == NULL)
         instance = [[IAGapState alloc] init];
-    if (instance == NULL)
-        [NSException raise:@"bad_alloc" format:@"Cannot create a new gap state"];
     return instance;
+}
+
+- (id) initWithToken:(NSString*)token
+{
+    gap_State* state = gap_new_with_token([token UTF8String]);
+    if (state == nil)
+    {
+        NSLog(@"ERROR: Cannot initialize gap with token");
+        return nil;
+    }
+    
+    self = [super init];
+    if (self == nil)
+    {
+        gap_free(state);
+        return nil;
+    }
+    _state = state;
+    _logged_in = TRUE;
+    _polling = FALSE;
+    return self;
+}
+
+- (NSString*) token
+{
+    return [[NSString alloc] initWithUTF8String:gap_user_token(_state)];
 }
 
 -(id) init

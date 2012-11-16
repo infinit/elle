@@ -11,6 +11,7 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <Foundation/NSConnection.h>
 
+#import "IAGapState.h"
 #import "../../InfinitApplication/IAAppIPCServer.h"
 
 @implementation IAAppIPCClient
@@ -23,7 +24,7 @@
     ];
     if (proxy == nil)
         NSLog(@"Cannot connect !!");
-    [proxy sendUserToken:@"BIETBIET!"];
+    [proxy sendUserToken:[[IAGapState instance] token]];
 }
 
 @end
