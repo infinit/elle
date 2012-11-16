@@ -18,21 +18,22 @@
 		BD28AA21162EDD4A004F1697 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA20162EDD4A004F1697 /* Security.framework */; };
 		BD28AA23162EDD57004F1697 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD28AA22162EDD57004F1697 /* ServiceManagement.framework */; };
 		BD28AA76162EF049004F1697 /* io.infinit.InfinitDaemon in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */; };
+		BD5953C91655219200B3317E /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD5953C81655219200B3317E /* FinderWindow.framework */; };
+		BD5953F11655389200B3317E /* IAAppIPCServer.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5953F01655389200B3317E /* IAAppIPCServer.m */; };
+		BD59542016553B7F00B3317E /* IANotificationCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59541916553B7F00B3317E /* IANotificationCellView.m */; };
+		BD59542116553B7F00B3317E /* IANotificationListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59541B16553B7F00B3317E /* IANotificationListDelegate.m */; };
+		BD59542216553B7F00B3317E /* IANotificationPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59541D16553B7F00B3317E /* IANotificationPanel.m */; };
+		BD59542316553B7F00B3317E /* IANotificationPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59541F16553B7F00B3317E /* IANotificationPanelController.m */; };
+		BD59542816553BA400B3317E /* IAStatusBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59542516553BA400B3317E /* IAStatusBarController.m */; };
+		BD59542916553BA400B3317E /* IAStatusItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59542716553BA400B3317E /* IAStatusItemView.m */; };
+		BD59542C1655458900B3317E /* IAClientGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59542B1655458900B3317E /* IAClientGapState.m */; };
 		BD7212C516317C2300B2AB22 /* FinderPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD7212A816316A2200B2AB22 /* FinderPlugin.bundle */; };
 		BD7212F71631875C00B2AB22 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD7212F41631874600B2AB22 /* mach_inject_bundle_stub.bundle */; };
-		BD8C3F78164BE09200BED07C /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1C631639616400186C48 /* FinderWindow.framework */; };
 		BDBAEE16163E7D78001B2FD1 /* libgap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBAEE15163E7D78001B2FD1 /* libgap.dylib */; };
 		BDBAEE18163E8C65001B2FD1 /* libgap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDBAEE15163E7D78001B2FD1 /* libgap.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BD1A1C621639616400186C48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BD1A1C25163946A500186C48;
-			remoteInfo = FinderWindow;
-		};
 		BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */;
@@ -47,11 +48,11 @@
 			remoteGlobalIDString = BD28AA36162EDE8A004F1697;
 			remoteInfo = InfinitDaemon;
 		};
-		BD4B49A2163A8F9300EFC714 /* PBXContainerItemProxy */ = {
+		BD5953E91655294B00B3317E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BD1A1C24163946A500186C48;
+			containerPortal = BD1A1C1A1639469100186C48 /* FinderWindow.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BD1A1C25163946A500186C48;
 			remoteInfo = FinderWindow;
 		};
 		BD7212A716316A2200B2AB22 /* PBXContainerItemProxy */ = {
@@ -121,7 +122,7 @@
 /* Begin PBXFileReference section */
 		BD16A099162FF69300587152 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPCInterface.h; path = ../InfinitDaemon/InfinitDaemon/IPCInterface.h; sourceTree = "<group>"; };
 		BD16A09C1630125300587152 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../InfinitDaemon/InfinitDaemon/config.h; sourceTree = "<group>"; };
-		BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderWindowApplication.xcodeproj; path = FinderWindowApplication/FinderWindowApplication.xcodeproj; sourceTree = "<group>"; };
+		BD1A1C1A1639469100186C48 /* FinderWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderWindow.xcodeproj; path = FinderWindowApplication/FinderWindow.xcodeproj; sourceTree = "<group>"; };
 		BD28A9FA162ED79A004F1697 /* InfinitApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfinitApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD28A9FE162ED79A004F1697 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BD28AA01162ED79A004F1697 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -140,13 +141,25 @@
 		BD28AA20162EDD4A004F1697 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		BD28AA22162EDD57004F1697 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InfinitDaemon.xcodeproj; path = InfinitDaemon/InfinitDaemon.xcodeproj; sourceTree = "<group>"; };
+		BD5953C81655219200B3317E /* FinderWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderWindow.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug/FinderWindow.framework"; sourceTree = "<group>"; };
+		BD5953EF1655389200B3317E /* IAAppIPCServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAAppIPCServer.h; sourceTree = "<group>"; };
+		BD5953F01655389200B3317E /* IAAppIPCServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAAppIPCServer.m; sourceTree = "<group>"; };
+		BD59541816553B7F00B3317E /* IANotificationCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationCellView.h; sourceTree = "<group>"; };
+		BD59541916553B7F00B3317E /* IANotificationCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationCellView.m; sourceTree = "<group>"; };
+		BD59541A16553B7F00B3317E /* IANotificationListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationListDelegate.h; sourceTree = "<group>"; };
+		BD59541B16553B7F00B3317E /* IANotificationListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationListDelegate.m; sourceTree = "<group>"; };
+		BD59541C16553B7F00B3317E /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanel.h; sourceTree = "<group>"; };
+		BD59541D16553B7F00B3317E /* IANotificationPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanel.m; sourceTree = "<group>"; };
+		BD59541E16553B7F00B3317E /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanelController.h; sourceTree = "<group>"; };
+		BD59541F16553B7F00B3317E /* IANotificationPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanelController.m; sourceTree = "<group>"; };
+		BD59542416553BA400B3317E /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusBarController.h; sourceTree = "<group>"; };
+		BD59542516553BA400B3317E /* IAStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusBarController.m; sourceTree = "<group>"; };
+		BD59542616553BA400B3317E /* IAStatusItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusItemView.h; sourceTree = "<group>"; };
+		BD59542716553BA400B3317E /* IAStatusItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusItemView.m; sourceTree = "<group>"; };
+		BD59542A1655458900B3317E /* IAClientGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAClientGapState.h; sourceTree = "<group>"; };
+		BD59542B1655458900B3317E /* IAClientGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAClientGapState.m; sourceTree = "<group>"; };
 		BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mach_inject_bundle_stub.xcodeproj; path = mach_inject_bundle_stub/mach_inject_bundle_stub.xcodeproj; sourceTree = "<group>"; };
 		BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FinderPlugin.xcodeproj; path = io.infinit.FinderPlugin/FinderPlugin.xcodeproj; sourceTree = "<group>"; };
-		BD8C3F77164BE00100BED07C /* IAFinderWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAFinderWindowController.h; path = ../FinderWindowApplication/FinderWindow/IAFinderWindowController.h; sourceTree = "<group>"; };
-		BD91959D164C0860009FCC0F /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAStatusBarController.h; path = ../FinderWindowApplication/FinderWindow/IAStatusBarController.h; sourceTree = "<group>"; };
-		BD9195A3164D2E7C009FCC0F /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IANotificationPanel.h; path = ../FinderWindowApplication/FinderWindow/IANotificationPanel.h; sourceTree = "<group>"; };
-		BD9195A8164D4BE5009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IANotificationPanelController.h; path = ../FinderWindowApplication/FinderWindow/IANotificationPanelController.h; sourceTree = "<group>"; };
-		BDB12DEA16529D7900FE84B9 /* IANotificationListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = IANotificationListDelegate.h; path = ../FinderWindowApplication/FinderWindow/IANotificationListDelegate.h; sourceTree = "<group>"; };
 		BDBAEE15163E7D78001B2FD1 /* libgap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgap.dylib; path = ../../../build/macosx64/surface/gap/libgap.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -155,7 +168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD8C3F78164BE09200BED07C /* FinderWindow.framework in Frameworks */,
+				BD5953C91655219200B3317E /* FinderWindow.framework in Frameworks */,
 				BDBAEE16163E7D78001B2FD1 /* libgap.dylib in Frameworks */,
 				BD28AA23162EDD57004F1697 /* ServiceManagement.framework in Frameworks */,
 				BD28AA21162EDD4A004F1697 /* Security.framework in Frameworks */,
@@ -166,18 +179,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BD1A1C1B1639469100186C48 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BD1A1C631639616400186C48 /* FinderWindow.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		BD28A9EF162ED79A004F1697 = {
 			isa = PBXGroup;
 			children = (
-				BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */,
+				BD5953C81655219200B3317E /* FinderWindow.framework */,
+				BD1A1C1A1639469100186C48 /* FinderWindow.xcodeproj */,
 				BD7212EC1631874500B2AB22 /* mach_inject_bundle_stub.xcodeproj */,
 				BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */,
 				BD28AA66162EEF38004F1697 /* InfinitDaemon.xcodeproj */,
@@ -221,16 +227,18 @@
 		BD28AA04162ED79A004F1697 /* InfinitApplication */ = {
 			isa = PBXGroup;
 			children = (
-				BDB12DEA16529D7900FE84B9 /* IANotificationListDelegate.h */,
-				BD9195A8164D4BE5009FCC0F /* IANotificationPanelController.h */,
-				BD9195A3164D2E7C009FCC0F /* IANotificationPanel.h */,
-				BD91959D164C0860009FCC0F /* IAStatusBarController.h */,
-				BD8C3F77164BE00100BED07C /* IAFinderWindowController.h */,
+				BD5953FA165539B700B3317E /* NotificationPanel */,
+				BD5953FF165539B700B3317E /* StatusBar */,
 				BD28AA10162ED79A004F1697 /* IAAppDelegate.h */,
 				BD28AA11162ED79A004F1697 /* IAAppDelegate.m */,
 				BD28AA13162ED79A004F1697 /* MainMenu.xib */,
 				BD16A099162FF69300587152 /* IPCInterface.h */,
+				BD16A09C1630125300587152 /* config.h */,
+				BD5953EF1655389200B3317E /* IAAppIPCServer.h */,
+				BD5953F01655389200B3317E /* IAAppIPCServer.m */,
 				BD28AA05162ED79A004F1697 /* Supporting Files */,
+				BD59542A1655458900B3317E /* IAClientGapState.h */,
+				BD59542B1655458900B3317E /* IAClientGapState.m */,
 			);
 			path = InfinitApplication;
 			sourceTree = "<group>";
@@ -238,7 +246,6 @@
 		BD28AA05162ED79A004F1697 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				BD16A09C1630125300587152 /* config.h */,
 				BD28AA06162ED79A004F1697 /* InfinitApplication-Info.plist */,
 				BD28AA07162ED79A004F1697 /* InfoPlist.strings */,
 				BD28AA0A162ED79A004F1697 /* main.m */,
@@ -263,6 +270,42 @@
 				BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BD5953E61655294B00B3317E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD5953EA1655294B00B3317E /* FinderWindow.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD5953FA165539B700B3317E /* NotificationPanel */ = {
+			isa = PBXGroup;
+			children = (
+				BD59541816553B7F00B3317E /* IANotificationCellView.h */,
+				BD59541916553B7F00B3317E /* IANotificationCellView.m */,
+				BD59541A16553B7F00B3317E /* IANotificationListDelegate.h */,
+				BD59541B16553B7F00B3317E /* IANotificationListDelegate.m */,
+				BD59541C16553B7F00B3317E /* IANotificationPanel.h */,
+				BD59541D16553B7F00B3317E /* IANotificationPanel.m */,
+				BD59541E16553B7F00B3317E /* IANotificationPanelController.h */,
+				BD59541F16553B7F00B3317E /* IANotificationPanelController.m */,
+			);
+			name = NotificationPanel;
+			path = ../FinderWindowApplication/FinderWindow;
+			sourceTree = "<group>";
+		};
+		BD5953FF165539B700B3317E /* StatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				BD59542416553BA400B3317E /* IAStatusBarController.h */,
+				BD59542516553BA400B3317E /* IAStatusBarController.m */,
+				BD59542616553BA400B3317E /* IAStatusItemView.h */,
+				BD59542716553BA400B3317E /* IAStatusItemView.m */,
+			);
+			name = StatusBar;
+			path = ../FinderWindowApplication/FinderWindow;
 			sourceTree = "<group>";
 		};
 		BD7212A416316A2200B2AB22 /* Products */ = {
@@ -298,7 +341,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				BD4B49A3163A8F9300EFC714 /* PBXTargetDependency */,
 				BD7212F61631875300B2AB22 /* PBXTargetDependency */,
 				BD7212C716317C2A00B2AB22 /* PBXTargetDependency */,
 				BD28AA72162EEF68004F1697 /* PBXTargetDependency */,
@@ -334,8 +376,8 @@
 					ProjectRef = BD740F4D1630333C0093157A /* FinderPlugin.xcodeproj */;
 				},
 				{
-					ProductGroup = BD1A1C1B1639469100186C48 /* Products */;
-					ProjectRef = BD1A1C1A1639469100186C48 /* FinderWindowApplication.xcodeproj */;
+					ProductGroup = BD5953E61655294B00B3317E /* Products */;
+					ProjectRef = BD1A1C1A1639469100186C48 /* FinderWindow.xcodeproj */;
 				},
 				{
 					ProductGroup = BD28AA67162EEF38004F1697 /* Products */;
@@ -354,18 +396,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		BD1A1C631639616400186C48 /* FinderWindow.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = FinderWindow.framework;
-			remoteRef = BD1A1C621639616400186C48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		BD28AA6F162EEF39004F1697 /* io.infinit.InfinitDaemon */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = io.infinit.InfinitDaemon;
 			remoteRef = BD28AA6E162EEF39004F1697 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD5953EA1655294B00B3317E /* FinderWindow.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = FinderWindow.framework;
+			remoteRef = BD5953E91655294B00B3317E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD7212A816316A2200B2AB22 /* FinderPlugin.bundle */ = {
@@ -406,6 +448,14 @@
 			files = (
 				BD28AA0B162ED79A004F1697 /* main.m in Sources */,
 				BD28AA12162ED79A004F1697 /* IAAppDelegate.m in Sources */,
+				BD5953F11655389200B3317E /* IAAppIPCServer.m in Sources */,
+				BD59542016553B7F00B3317E /* IANotificationCellView.m in Sources */,
+				BD59542116553B7F00B3317E /* IANotificationListDelegate.m in Sources */,
+				BD59542216553B7F00B3317E /* IANotificationPanel.m in Sources */,
+				BD59542316553B7F00B3317E /* IANotificationPanelController.m in Sources */,
+				BD59542816553BA400B3317E /* IAStatusBarController.m in Sources */,
+				BD59542916553BA400B3317E /* IAStatusItemView.m in Sources */,
+				BD59542C1655458900B3317E /* IAClientGapState.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,11 +466,6 @@
 			isa = PBXTargetDependency;
 			name = InfinitDaemon;
 			targetProxy = BD28AA71162EEF68004F1697 /* PBXContainerItemProxy */;
-		};
-		BD4B49A3163A8F9300EFC714 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FinderWindow;
-			targetProxy = BD4B49A2163A8F9300EFC714 /* PBXContainerItemProxy */;
 		};
 		BD7212C716317C2A00B2AB22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -522,6 +567,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = io.infinit;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "InfinitApplication/InfinitApplication-Prefix.pch";
 				INFOPLIST_FILE = "InfinitApplication/InfinitApplication-Info.plist";
@@ -540,6 +589,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = io.infinit;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "InfinitApplication/InfinitApplication-Prefix.pch";
 				INFOPLIST_FILE = "InfinitApplication/InfinitApplication-Info.plist";

@@ -12,6 +12,7 @@
 
 #import <objc/runtime.h>
 #import <syslog.h>
+#import <launch.h>
 
 #import <FinderWindow/IAFinderWindowController.h>
 #import <FinderWindow/IAFinderWindow.h>
@@ -130,7 +131,7 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     syslog(LOG_NOTICE, "Loading injector");
     
     
-    //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
+    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneList:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneForCell:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForKind:);
     //    SETUP_HOOK_DYNAMIC_METHOD(TSidebarViewController, zoneHeaderForZone:);
@@ -144,11 +145,26 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     
     HOOK_NAV_SETUP(specialNodeOfType:);
     
-
+    NSLog(@"INJECTOR loaded");
     [[WindowLoader instance] initialize];
+   // [self _exposeGapIPC];
 }
 
 
+//+ (void)_exposeGapIPC
+//{
+//    static NSConnection* conn = [NSConnection connectionWithRegisteredName:@"io.infinit.FinderWindow" host:nil];
+//    static IAGapIPC* interface = [[IAGapIPC alloc] init];
+//        NSLog(@"interface: %d", interface.logged_in);
+//    [conn setRootObject:interface];
+//
+//    NSLog(@"Registered Gap interface: %d", interface.logged_in);
+////    int i =0;
+////    while (interface.should_keep_running && [loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]])
+////        NSLog(@"I'm in it : %d", ++i);
+////        ;
+//
+//}
 
 + (BOOL)_exchangeImplementation:(Class)cls ofMethod:(SEL)arg1 withMethod:(SEL)arg2
  {
@@ -286,7 +302,7 @@ struct TFENode
     // function details here
     NSLog(@"Hello Infinit !!!!!");
 }
-/*
+
 - (id)_hook_zoneList:(int)arg1
 {
     id initial_list = [self _hook_zoneList:arg1];
@@ -366,10 +382,9 @@ struct TFENode
 //            //syslog(LOG_NOTICE, "New cell: %s", CSTR(new_cell));
 //        }
 
-
     return [self _hook_zoneList:arg1];
 }
-*/
+
 - (int)_hook_zoneForCell:(id)arg1
 {
     int res = [self _hook_zoneForCell:arg1];

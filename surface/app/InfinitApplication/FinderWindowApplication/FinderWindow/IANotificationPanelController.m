@@ -8,7 +8,8 @@
 
 #import "IANotificationPanelController.h"
 #import "IANotificationPanel.h"
-#import "IAGapState.h"
+#import "IAClientGapState.h"
+#import "IANotificationCellView.h"
 
 @implementation IANotificationPanelController
 {
@@ -33,26 +34,18 @@
 
 - (void)_onTransactionNotification:(NSNotification*)n;
 {
+    assert([[n object] isKindOfClass:[IATransactionNotification class]]);
     IATransactionNotification* notif = [n object];
-    NSString* str = [NSString alloc];
-    if (notif.files_count == 1)
-        str = [str initWithFormat:@"%@ wants to share %@ with you"
-               , notif.sender_fullname
-               , notif.first_filename];
-    else
-        str = [str initWithFormat:@"%@ wants to share %lu files with you (%@, ...)"
-               , notif.sender_fullname
-               , notif.files_count
-               , notif.first_filename];
-    [[self source] addNotification:str];
+    [[self source] addNotification:notif];
     [self.table reloadData];
 }
 
 - (void)_onTransactionStatusNotification:(NSNotification*)n
 {
+    assert([[n object] isKindOfClass:[IATransactionStatusNotification class]]);
     IATransactionStatusNotification* notif = [n object];
-    
-    [[self source] addNotification:notif];
+    [self.source updateTransactionStatus:notif];
+    //[[self source] addNotification:notif];
     [self.table reloadData];
 }
 

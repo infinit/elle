@@ -9,7 +9,7 @@
 #ifndef InfinitDaemon_config_h
 #define InfinitDaemon_config_h
 
-# define INFINIT_DAEMON_VERSION         12
+# define INFINIT_DAEMON_VERSION         13          
 # define INFINIT_DAEMON_LABEL           @"io.infinit.InfinitDaemon"
 
 # define INFINIT_FINDER_PLUGIN_NAME     @"FinderPlugin"

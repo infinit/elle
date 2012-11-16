@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "IAClientGapState.h"
 
 @interface IANotificationListDelegate : NSObject <NSTableViewDelegate/*, NSTableViewDataSource*/>
 
@@ -15,10 +16,8 @@
 // Number of rows.
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view;
 
-// Retrieve row value.
-//- (id)                      tableView:(NSTableView*)table_view
-//            objectValueForTableColumn:(NSTableColumn*)table_column
-//                                  row:(NSInteger)index;
-
+- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif;
+- (IBAction)on_accept:(id)sender;
+- (IBAction)on_reject:(id)sender;
 
 @end

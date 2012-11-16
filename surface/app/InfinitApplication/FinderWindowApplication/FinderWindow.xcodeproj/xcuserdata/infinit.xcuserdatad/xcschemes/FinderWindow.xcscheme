@@ -17,7 +17,7 @@
                BlueprintIdentifier = "BD1A1C24163946A500186C48"
                BuildableName = "FinderWindow.framework"
                BlueprintName = "FinderWindow"
-               ReferencedContainer = "container:FinderWindowApplication.xcodeproj">
+               ReferencedContainer = "container:FinderWindow.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

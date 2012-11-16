@@ -10,7 +10,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "IANotificationPanel.h"
+#import "NotificationPanel/IANotificationPanel.h"
 
 // When defined, the window is shown on its own
 // Otherwise, it is injected into the Finder
@@ -20,13 +20,13 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
-@property (assign) IBOutlet NSMenu* status_menu;
-@property (assign) IBOutlet IANotificationPanel* notification_panel;
+@property (assign) IBOutlet NSMenu*                 status_menu;
+@property (assign) IBOutlet IANotificationPanel*    notification_panel;
 
-@property (retain) NSString* drive_path;
-@property (retain) NSStatusItem* status_item;
-@property (retain) NSImage* status_icon;
-@property (retain) NSImage* default_status_icon;
-@property (retain) IPCInterface* ipc_proxy;
+@property (retain) NSString*        drive_path;
+@property (retain) NSStatusItem*    status_item;
+@property (retain) NSImage*         status_icon;
+@property (retain) NSImage*         default_status_icon;
+@property (retain) IPCInterface*    ipc_proxy;
 
 @end

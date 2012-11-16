@@ -10,41 +10,34 @@
 		BD1A1C26163946A500186C48 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1A1BFD1639469100186C48 /* Cocoa.framework */; };
 		BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C2A163946A500186C48 /* InfoPlist.strings */; };
 		BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = BD1A1C35163947E000186C48 /* FinderWindow.xib */; };
-		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1A1C3B16394BD700186C48 /* IAFinderWindowController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD1A1C3E16394BD700186C48 /* IAFinderWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1A1C3C16394BD700186C48 /* IAFinderWindowController.m */; };
-		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; };
+		BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD1BE3781644181E004810F9 /* IATextFieldCell.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1BE3791644181E004810F9 /* IATextFieldCell.m */; };
 		BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */ = {isa = PBXBuildFile; fileRef = BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */; };
-		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
-		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; };
+		BD59542D16554A9900B3317E /* gap.h in Resources */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; };
+		BD5954301655561300B3317E /* IAAppIPCClient.h in Headers */ = {isa = PBXBuildFile; fileRef = BD59542E1655561300B3317E /* IAAppIPCClient.h */; };
+		BD5954311655561300B3317E /* IAAppIPCClient.m in Sources */ = {isa = PBXBuildFile; fileRef = BD59542F1655561300B3317E /* IAAppIPCClient.m */; };
+		BD840967163EFC16004C9C97 /* gap.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840966163EFC16004C9C97 /* gap.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */ = {isa = PBXBuildFile; fileRef = BD840968163EFC3F004C9C97 /* IAGapState.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD84096B163EFC3F004C9C97 /* IAGapState.m in Sources */ = {isa = PBXBuildFile; fileRef = BD840969163EFC3F004C9C97 /* IAGapState.m */; };
 		BD84096E16401131004C9C97 /* libgap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD84096D16401131004C9C97 /* libgap.dylib */; };
 		BD84096F16401152004C9C97 /* libgap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD84096D16401131004C9C97 /* libgap.dylib */; };
-		BD8409A516412C2B004C9C97 /* IAMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409A316412C2B004C9C97 /* IAMainView.h */; };
+		BD8409A516412C2B004C9C97 /* IAMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409A316412C2B004C9C97 /* IAMainView.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD8409A616412C2B004C9C97 /* IAMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409A416412C2B004C9C97 /* IAMainView.m */; };
-		BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409A816412CE3004C9C97 /* IAMainViewController.h */; };
+		BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409A816412CE3004C9C97 /* IAMainViewController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD8409AB16412CE3004C9C97 /* IAMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409A916412CE3004C9C97 /* IAMainViewController.m */; };
-		BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */; };
+		BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409CC1641A1F1004C9C97 /* IARegisterViewController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD8409CF1641A1F1004C9C97 /* IARegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409CD1641A1F1004C9C97 /* IARegisterViewController.m */; };
-		BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409D11641A247004C9C97 /* IARegisterView.h */; };
+		BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD8409D11641A247004C9C97 /* IARegisterView.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
 		BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD8C3F6B164AC5B600BED07C /* active_status_icon.png */; };
 		BD8C3F76164BC8F700BED07C /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
-		BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919595164C062D009FCC0F /* IAStatusBarController.h */; };
-		BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD919596164C062D009FCC0F /* IAStatusBarController.m */; };
-		BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD919599164C0667009FCC0F /* IAStatusItemView.h */; };
-		BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD91959A164C0667009FCC0F /* IAStatusItemView.m */; };
-		BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = BD91959F164D2E67009FCC0F /* IANotificationPanel.h */; };
-		BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */; };
-		BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */; };
-		BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */; };
-		BDB12DE716529D3200FE84B9 /* IANotificationListDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */; };
-		BDB12DE816529D3200FE84B9 /* IANotificationListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */; };
-		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; };
+		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
-		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEDF7163AB282001B2FD1 /* IAFinderWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
-		BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +69,8 @@
 		BD1BE3781644181E004810F9 /* IATextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IATextFieldCell.h; sourceTree = "<group>"; };
 		BD1BE3791644181E004810F9 /* IATextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IATextFieldCell.m; sourceTree = "<group>"; };
 		BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Logo-Complet-bichromie.png"; sourceTree = "<group>"; };
+		BD59542E1655561300B3317E /* IAAppIPCClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAAppIPCClient.h; sourceTree = "<group>"; };
+		BD59542F1655561300B3317E /* IAAppIPCClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAAppIPCClient.m; sourceTree = "<group>"; };
 		BD840966163EFC16004C9C97 /* gap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gap.h; path = ../../../../gap/gap.h; sourceTree = "<group>"; };
 		BD840968163EFC3F004C9C97 /* IAGapState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGapState.h; sourceTree = "<group>"; };
 		BD840969163EFC3F004C9C97 /* IAGapState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGapState.m; sourceTree = "<group>"; };
@@ -89,16 +84,6 @@
 		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
 		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
 		BD8C3F6B164AC5B600BED07C /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
-		BD919595164C062D009FCC0F /* IAStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusBarController.h; sourceTree = "<group>"; };
-		BD919596164C062D009FCC0F /* IAStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusBarController.m; sourceTree = "<group>"; };
-		BD919599164C0667009FCC0F /* IAStatusItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAStatusItemView.h; sourceTree = "<group>"; };
-		BD91959A164C0667009FCC0F /* IAStatusItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAStatusItemView.m; sourceTree = "<group>"; };
-		BD91959F164D2E67009FCC0F /* IANotificationPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanel.h; sourceTree = "<group>"; };
-		BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanel.m; sourceTree = "<group>"; };
-		BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationPanelController.h; sourceTree = "<group>"; };
-		BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationPanelController.m; sourceTree = "<group>"; };
-		BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IANotificationListDelegate.h; sourceTree = "<group>"; };
-		BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IANotificationListDelegate.m; sourceTree = "<group>"; };
 		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
 		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
 		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
@@ -163,8 +148,6 @@
 		BD1A1C27163946A500186C48 /* FinderWindow */ = {
 			isa = PBXGroup;
 			children = (
-				BD91959E164D2E30009FCC0F /* NotificationPanel */,
-				BD919593164C05F9009FCC0F /* StatusBar */,
 				BDB63FC91647D425008FCDAB /* Window */,
 				BDB63FC61647D389008FCDAB /* Register */,
 				BDB63FC81647D3F2008FCDAB /* Resources */,
@@ -174,6 +157,8 @@
 				BDB63FCC1647D4AE008FCDAB /* Common */,
 				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
 				BDB63FCD1647D4D0008FCDAB /* MainView */,
+				BD59542E1655561300B3317E /* IAAppIPCClient.h */,
+				BD59542F1655561300B3317E /* IAAppIPCClient.m */,
 			);
 			path = FinderWindow;
 			sourceTree = "<group>";
@@ -186,30 +171,6 @@
 				BD1A1C2D163946A500186C48 /* FinderWindow-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		BD919593164C05F9009FCC0F /* StatusBar */ = {
-			isa = PBXGroup;
-			children = (
-				BD919595164C062D009FCC0F /* IAStatusBarController.h */,
-				BD919596164C062D009FCC0F /* IAStatusBarController.m */,
-				BD919599164C0667009FCC0F /* IAStatusItemView.h */,
-				BD91959A164C0667009FCC0F /* IAStatusItemView.m */,
-			);
-			name = StatusBar;
-			sourceTree = "<group>";
-		};
-		BD91959E164D2E30009FCC0F /* NotificationPanel */ = {
-			isa = PBXGroup;
-			children = (
-				BD91959F164D2E67009FCC0F /* IANotificationPanel.h */,
-				BD9195A0164D2E67009FCC0F /* IANotificationPanel.m */,
-				BD9195A4164D4A53009FCC0F /* IANotificationPanelController.h */,
-				BD9195A5164D4A53009FCC0F /* IANotificationPanelController.m */,
-				BDB12DE516529D3200FE84B9 /* IANotificationListDelegate.h */,
-				BDB12DE616529D3200FE84B9 /* IANotificationListDelegate.m */,
-			);
-			name = NotificationPanel;
 			sourceTree = "<group>";
 		};
 		BDB63FC61647D389008FCDAB /* Register */ = {
@@ -296,20 +257,16 @@
 			files = (
 				BD1A1C3D16394BD700186C48 /* IAFinderWindowController.h in Headers */,
 				BDBAEDF9163AB282001B2FD1 /* IAFinderWindow.h in Headers */,
-				BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */,
-				BD840967163EFC16004C9C97 /* gap.h in Headers */,
 				BD84096A163EFC3F004C9C97 /* IAGapState.h in Headers */,
 				BD8409A516412C2B004C9C97 /* IAMainView.h in Headers */,
 				BD8409AA16412CE3004C9C97 /* IAMainViewController.h in Headers */,
 				BD8409CE1641A1F1004C9C97 /* IARegisterViewController.h in Headers */,
 				BD8409D31641A248004C9C97 /* IARegisterView.h in Headers */,
 				BD1BE37A1644181E004810F9 /* IATextFieldCell.h in Headers */,
+				BD840967163EFC16004C9C97 /* gap.h in Headers */,
 				BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */,
-				BD919597164C062E009FCC0F /* IAStatusBarController.h in Headers */,
-				BD91959B164C0667009FCC0F /* IAStatusItemView.h in Headers */,
-				BD9195A1164D2E67009FCC0F /* IANotificationPanel.h in Headers */,
-				BD9195A6164D4A53009FCC0F /* IANotificationPanelController.h in Headers */,
-				BDB12DE716529D3200FE84B9 /* IANotificationListDelegate.h in Headers */,
+				BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */,
+				BD5954301655561300B3317E /* IAAppIPCClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,7 +302,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = infinit;
 			};
-			buildConfigurationList = BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindowApplication" */;
+			buildConfigurationList = BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindow" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -367,6 +324,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD59542D16554A9900B3317E /* gap.h in Resources */,
 				BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */,
 				BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */,
 				BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */,
@@ -392,11 +350,7 @@
 				BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */,
 				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
 				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
-				BD919598164C062E009FCC0F /* IAStatusBarController.m in Sources */,
-				BD91959C164C0667009FCC0F /* IAStatusItemView.m in Sources */,
-				BD9195A2164D2E67009FCC0F /* IANotificationPanel.m in Sources */,
-				BD9195A7164D4A53009FCC0F /* IANotificationPanelController.m in Sources */,
-				BDB12DE816529D3200FE84B9 /* IANotificationListDelegate.m in Sources */,
+				BD5954311655561300B3317E /* IAAppIPCClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,7 +464,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindowApplication" */ = {
+		BD1A1BF31639469000186C48 /* Build configuration list for PBXProject "FinderWindow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BD1A1C151639469100186C48 /* Debug */,

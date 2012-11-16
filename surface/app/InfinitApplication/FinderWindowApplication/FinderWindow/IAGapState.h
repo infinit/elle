@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "gap.h"
+
+
 #define IA_GAP_EVENT_LOGIN_OPERATION                    @"IA_GAP_EVENT_LOGIN_OPERATION"
 #define IA_GAP_EVENT_USER_STATUS_NOTIFICATION           @"IA_GAP_EVENT_USER_STATUS_NOTIFICATION"
 #define IA_GAP_EVENT_TRANSACTION_NOTIFICATION           @"IA_GAP_EVENT_TRANSACTION_NOTIFICATION"
@@ -41,7 +44,7 @@
 @property (retain) NSString*    sender_device_id;
 @property (retain) NSString*    recipient_device_id;
 @property (retain) NSString*    recipient_device_name;
-@property NSInteger             status;
+@property gap_TransactionStatus status;
 
 @end
 
@@ -63,6 +66,21 @@
 
 @property BOOL logged_in;
 
+
+
+
+/**
+ * @brief Returns a new IAGapState instance with a valid token.
+ */
++ (IAGapState*) instanceWithToken:(NSString*)token;
+
+/**
+ * When IA_GAP_SINGLETON is defined, the class is usable as a singleton
+ * and provide login/register features.
+ */
+
+#ifdef IA_GAP_SINGLETON
+
 /** 
  * @brief Returns an IAGapState singleton.
  *
@@ -70,6 +88,7 @@
  * of that class.
  */
 + (IAGapState*) instance;
+
 
 /** 
  * @brief Login into meta.
@@ -97,5 +116,15 @@
                           toUser:(NSString*)user
                  performSelector:(SEL)selector
                         onObject:(id)object;
+
+/**
+ * @brief Accept transaction.
+ */
+- (void)       acceptTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object;
+
+
+#endif
 
 @end

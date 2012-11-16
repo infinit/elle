@@ -17,7 +17,7 @@
                BlueprintIdentifier = "BD1A1BF81639469000186C48"
                BuildableName = "FinderWindowApplication.app"
                BlueprintName = "FinderWindowApplication"
-               ReferencedContainer = "container:FinderWindowApplication.xcodeproj">
+               ReferencedContainer = "container:FinderWindow.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "BD1A1BF81639469000186C48"
             BuildableName = "FinderWindowApplication.app"
             BlueprintName = "FinderWindowApplication"
-            ReferencedContainer = "container:FinderWindowApplication.xcodeproj">
+            ReferencedContainer = "container:FinderWindow.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -54,7 +54,7 @@
             BlueprintIdentifier = "BD1A1BF81639469000186C48"
             BuildableName = "FinderWindowApplication.app"
             BlueprintName = "FinderWindowApplication"
-            ReferencedContainer = "container:FinderWindowApplication.xcodeproj">
+            ReferencedContainer = "container:FinderWindow.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -72,7 +72,7 @@
             BlueprintIdentifier = "BD1A1BF81639469000186C48"
             BuildableName = "FinderWindowApplication.app"
             BlueprintName = "FinderWindowApplication"
-            ReferencedContainer = "container:FinderWindowApplication.xcodeproj">
+            ReferencedContainer = "container:FinderWindow.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

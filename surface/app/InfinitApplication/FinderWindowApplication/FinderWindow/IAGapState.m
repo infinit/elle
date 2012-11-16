@@ -78,7 +78,6 @@
 {
     if (![self isCancelled])
     {
-        NSLog(@"Timer fired !");
         [_object performSelector:_selector];
         [self finish];
     }
@@ -203,7 +202,6 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 {
     if (!_polling || !_logged_in)
         return;
-    NSLog(@"Do poll");
     gap_Status ret = gap_poll(_state);
     if (ret != gap_ok)
         NSLog(@"Warning: gap_poll failed");
@@ -259,6 +257,21 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
     } performSelector:selector onObject:object];
 }
 
+//- Transaction-------------------------------------------------------------------------------
+
+- (void)       acceptTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+    [self _addOperation:^(void) {
+        gap_Status res;
+        res = gap_update_transaction(self.state,
+                                     [notif.transaction_id UTF8String],
+                                     gap_transaction_status_accepted);
+        return res;
+    } performSelector:selector onObject:object];
+}
+
 //- User -------------------------------------------------------------------------------------
 
 
@@ -267,7 +280,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                  withPassword:(NSString*)password
                 andDeviceName:(NSString*)device_name
               performSelector:(SEL)selector
-                     onObject:(id)object;
+                     onObject:(id)object
 {
     __weak id this = self;
     [self _addOperation:^(void) {
@@ -337,6 +350,9 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         return res;
     } performSelector:selector onObject:object];
 }
+
+
+
 
 // Wrap any operation in a block and execute it in the mail thread
 -(void) _addOperation:(gap_operation_t)operation

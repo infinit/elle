@@ -12,13 +12,13 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <Foundation/NSConnection.h>
 
-#import "IAStatusBarController.h"
-#import "IANotificationPanelController.h"
-
+#import "StatusBar/IAStatusBarController.h"
+#import "NotificationPanel/IANotificationPanelController.h"
 #ifdef DEBUG_WITHOUT_FINDER
-# import "IAFinderWindowController.h"
+# import <FinderWindow/IAFinderWindowController.h>
 #endif
 
+#import "IAAppIPCServer.h"
 
 // Unique identifier (No other pointer has the same address).
 // Used to subscribe to the modification of the "hasActivePanel" value.
@@ -36,6 +36,11 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 @end
 
 @implementation IAAppDelegate
+{
+@private
+    IAAppIPCServer* _server;
+    NSConnection* _server_conn;
+}
 
 - (void)awakeFromNib
 {
@@ -45,10 +50,7 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
                                           forKeyPath:@"visibility"
                                              options:0
                                              context:_context_for_active_panel_event_unique_identifier];
-    //NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
-    //self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
-   // [self.status_item setMenu:self.status_menu];
-  //  [self setDefaultStatus];
+
     self.drive_path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/Infinit"];
     
     NSFileManager* file_manager = [NSFileManager defaultManager];
@@ -88,11 +90,20 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 #else
     [self doInject:self];
 #endif
+    _server = [[IAAppIPCServer alloc] initWithAppDelegate:self];
+//    _server_conn = [NSConnection connectionWithRegisteredName:@"io.infinit.InfinitApplication" host:nil];
+    _server_conn = [[NSConnection alloc] init];
+    [_server_conn setRootObject:_server];
+    if (![_server_conn registerName:@"io.infinit.InfinitApplication"])
+        NSLog(@"Cannot register connection!");
 }
 
 -(IBAction)toggleNotificationPanel:(id)sender
 {
-    [self._notification_panel_controller toggleVisibility];
+//    if ([_gap_ipc logged_in])
+//        [self._notification_panel_controller toggleVisibility];
+//    else
+//        NSLog(@"Cannot togle panel: Not Logged in");
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

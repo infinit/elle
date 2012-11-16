@@ -12,6 +12,7 @@
 #import "IARegisterViewController.h"
 
 #import "IAGapState.h"
+#import "IAAppIPCClient.h"
 
 @interface IAFinderWindowController ()
 {
@@ -54,6 +55,8 @@
     if ([[notification name] isEqualToString:IA_GAP_EVENT_LOGIN_OPERATION] &&
         [[notification object] success])
     {
+        NSLog(@"Sending user infos");
+        [IAAppIPCClient sendUserInfos];
         // We actually are connected!
         [self _updateCurrentView];
     }
