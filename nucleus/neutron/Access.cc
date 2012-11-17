@@ -22,7 +22,7 @@ namespace nucleus
 // ---------- constants -------------------------------------------------------
 //
 
-    const Component Access::component = ComponentAccess;
+    const Component Access::_component = ComponentAccess;
 
 //
 // ---------- constructors & destructors --------------------------------------

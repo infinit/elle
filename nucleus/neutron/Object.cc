@@ -21,7 +21,7 @@ namespace nucleus
 // ---------- constants -------------------------------------------------------
 //
 
-    const Component Object::component = ComponentObject;
+    const Component Object::_component = ComponentObject;
 
 //
 // ---------- constructors & destructors --------------------------------------

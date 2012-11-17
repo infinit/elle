@@ -29,7 +29,7 @@ namespace nucleus
           }
         case ComponentContents:
           {
-            stream << "reference";
+            stream << "contents";
             break;
           }
         case ComponentAccess:

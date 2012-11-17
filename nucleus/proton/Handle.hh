@@ -39,18 +39,24 @@ namespace nucleus
       /// XXX
       Handle();
       /// XXX
+      Handle(Placement const& placement,
+             Address const& address);
+      /// XXX
       Handle(Handle const& other);
 
       //
       // methods
       //
     public:
-      /// XXX[transform the handle into a placement-based one]
-      void
-      appoint(Placement const& placement);
       /// XXX
       Placement const&
       placement() const;
+      /// XXX
+      void
+      placement(Placement const& placement) // XXX[to remove]
+      {
+        this->_placement = placement;
+      }
       /// XXX
       Address const&
       address() const;
@@ -89,6 +95,7 @@ namespace nucleus
       // attributes
       //
     private:
+      // XXX[il devrait y avoir un type: memory, nest, storage layer]
       Placement _placement;
       Address _address;
       cryptography::SecretKey _secret;

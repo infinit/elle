@@ -301,8 +301,12 @@ namespace etoile
       // insert the pod.
       this->_insert(pod.get()->placement, pod.get());
 
-      nucleus::proton::Handle handle;
-      handle.appoint(pod.get()->placement);
+      // XXX[a temporary address for the footprint() to be valid]
+      static nucleus::proton::Address some(pod->block->network(),
+                                           pod->block->family(),
+                                           pod->block->component());
+
+      nucleus::proton::Handle handle(pod.get()->placement, some);
 
       // release track.
       pod.release();
@@ -383,7 +387,7 @@ namespace etoile
 
               nucleus::proton::Handle h = this->attach(std::move(contents));
 
-              handle.appoint(h.placement());
+              handle.placement(h.placement()); // XXX[to change]
 
               Pod* pod = this->_retrieve(handle.placement());
 

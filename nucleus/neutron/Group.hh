@@ -61,7 +61,7 @@ namespace nucleus
       | Static Attributes |
       `------------------*/
     public:
-      static Component const component;
+      static Component const _component;
 
       /*----------.
       | Constants |

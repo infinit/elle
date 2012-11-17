@@ -17,7 +17,7 @@ namespace nucleus
 // ---------- constants -------------------------------------------------------
 //
 
-    const Component Ensemble::component = ComponentEnsemble;
+    const Component Ensemble::_component = ComponentEnsemble;
 
 //
 // ---------- construction ----------------------------------------------------

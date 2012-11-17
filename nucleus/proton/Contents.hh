@@ -9,6 +9,11 @@
 
 # include <elle/idiom/Open.hh>
 
+// XXX
+# include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
 namespace nucleus
 {
   namespace proton
@@ -45,7 +50,7 @@ namespace nucleus
       // constants
       //
     public:
-      static const neutron::Component component;
+      static const neutron::Component _component;
 
       //
       // enumerations
@@ -71,7 +76,9 @@ namespace nucleus
       // XXX
       template <typename T>
       Contents(T* node): // XXX[TEMPORARY!!! TO ANNIHILATE]
-        proton::ContentHashBlock(),
+        proton::ContentHashBlock(Network("local"),
+                                 neutron::ComponentContents,
+                                 cryptography::KeyPair::generate(1024).K()),
 
         _type(T::Constants::type),
         _node(node),

@@ -362,7 +362,7 @@ test_porcupine_catalog()
 
   test_porcupine_lookup(porcupine1, vector);
 
-#ifdef PORCUPINE_STATISTCS
+#ifdef PORCUPINE_STATISTICS
   nucleus::proton::Statistics stats =
     porcupine1.statistics<nucleus::neutron::Catalog>();
   stats.Dump();

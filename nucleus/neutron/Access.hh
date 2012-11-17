@@ -41,7 +41,7 @@ namespace nucleus
       // constants
       //
     public:
-      static const Component component;
+      static const Component _component;
 
       //
       // construction

@@ -35,20 +35,12 @@ namespace nucleus
       static const T*                   Trash;
 
       //
-      // enumerations
-      //
-      enum Options
-        {
-          OptionNone = 0,
-
-          OptionDetach
-        };
-
-      //
       // types
       //
       typedef typename T::Symbol Symbol;
 
+      // XXX[use shared_ptr instead]
+      // XXX[should be a vector?]
       typedef std::list<T*> Container;
       typedef typename Container::iterator Iterator;
       typedef typename Container::const_iterator Scoutor;
@@ -57,8 +49,8 @@ namespace nucleus
       // constructors & destructors
       //
       Range();
+      Range(elle::Natural32 const size);
       Range(const Range<T>&);
-      ~Range();
 
       //
       // methods
@@ -107,8 +99,6 @@ namespace nucleus
       //
       // attributes
       //
-      Options           options;
-
       Container         container;
     };
 

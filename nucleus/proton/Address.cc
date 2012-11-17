@@ -5,8 +5,6 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.nucleus.proton.Address");
-
 namespace nucleus
 {
   namespace proton
@@ -30,14 +28,6 @@ namespace nucleus
       return (address);
     }
 
-    Address const&
-    Address::some()
-    {
-      static Address address(Address::Type::some);
-
-      return (address);
-    }
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -48,7 +38,8 @@ namespace nucleus
     }
 
     Address::Address(Type const type):
-      _type(type)
+      _type(type),
+      _valid(nullptr)
     {
       switch (this->_type)
         {
@@ -56,15 +47,6 @@ namespace nucleus
           {
             // Nothing to do; this is the right way to construct such special
             // addresses.
-
-            break;
-          }
-        case Type::some:
-          {
-            // XXX
-            ELLE_WARN("HERE WE SHOULD CONSTRUCT A VALID ADDRESS BASED ON A "
-                      "NETWORK NAME WITHOUT WHICH WE CANNOT PROPERLY COMPUTE "
-                      "THE FOOTPRINT");
 
             break;
           }
@@ -243,12 +225,6 @@ namespace nucleus
 
             break;
           }
-        case Address::Type::some:
-          {
-            std::cout << alignment << "[Address] " << "(some)" << std::endl;
-
-            break;
-          }
         case Address::Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
@@ -293,11 +269,6 @@ namespace nucleus
         case Type::null:
           {
             stream << "address(null)";
-            break;
-          }
-        case Type::some:
-          {
-            stream << "address(some)";
             break;
           }
         case Type::valid:

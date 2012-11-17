@@ -12,17 +12,30 @@ namespace nucleus
 
     const elle::Natural32 Porcupine::secret_length = 256;
 
-//
-/// ---------- static methods --------------------------------------------------
-//
+    /*-----------------.
+    | Static Functions |
+    `-----------------*/
 
+    static
     cryptography::SecretKey
-    Porcupine::secret()
+    _secret()
     {
       cryptography::SecretKey secret;
 
       if (secret.Generate(Porcupine::secret_length) == elle::Status::Error)
         throw Exception("unable to generate the default key");
+
+      return (secret);
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    cryptography::SecretKey
+    Porcupine::secret()
+    {
+      static cryptography::SecretKey secret{_secret()};
 
       return (secret);
     }

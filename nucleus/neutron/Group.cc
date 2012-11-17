@@ -16,7 +16,7 @@ namespace nucleus
     | Static Attributes |
     `------------------*/
 
-    Component const Group::component{ComponentGroup};
+    Component const Group::_component{ComponentGroup};
 
     /*----------.
     | Constants |

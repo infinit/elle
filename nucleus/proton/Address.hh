@@ -59,13 +59,6 @@ namespace nucleus
       static
       Address const&
       null();
-      /// Return a not-yet-used address i.e an address with a irrelevant
-      /// value (for now) but whose state, once serialized, should reflect
-      /// the one of a valid address; the size of the address once serialized
-      /// should be extremely close (or equal) to the one of a valid address.
-      static
-      Address const&
-      some();
 
       /*-------------.
       | Enumerations |
@@ -74,7 +67,6 @@ namespace nucleus
       enum class Type
       {
         null,
-        some,
         valid
       };
 

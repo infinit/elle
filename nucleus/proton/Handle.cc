@@ -21,7 +21,17 @@ namespace nucleus
     {
     }
 
-    /// XXX
+    Handle::Handle(Placement const& placement,
+                   Address const& address):
+      _placement(placement),
+      _address(address),
+      _secret(Porcupine::secret())
+      // XXX[Porcupine::secret() n'est appelle que de la. il pourrait etre
+      //     specifique dans Nest]
+    {
+    }
+
+    /// XXX[needless if it does not do anything special!]
     /// the copy constructor.
     ///
     /// note that the block is not retrieved from the other in order
@@ -37,20 +47,6 @@ namespace nucleus
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    void
-    Handle::appoint(Placement const& placement)
-    {
-      static cryptography::SecretKey secret = Porcupine::secret();
-
-      this->_placement = placement;
-
-      if (this->_address == Address::null())
-        this->_address = Address::some(); // XXX[pass the network name]
-
-      if (this->_secret == cryptography::SecretKey::Null)
-        this->_secret = secret;
-    }
 
     Placement const&
     Handle::placement() const

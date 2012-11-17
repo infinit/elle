@@ -17,8 +17,13 @@ namespace nucleus
     /// default constructor.
     ///
     template <typename T>
-    Range<T>::Range():
-      options(Range<T>::OptionNone)
+    Range<T>::Range()
+    {
+    }
+
+    template <typename T>
+    Range<T>::Range(elle::Natural32 const size):
+      container(size)
     {
     }
 
@@ -26,8 +31,7 @@ namespace nucleus
     /// copy constructor.
     ///
     template <typename T>
-    Range<T>::Range(const Range<T>&                             element):
-      options(element.options)
+    Range<T>::Range(const Range<T>&                             element)
     {
       Range<T>::Scoutor         scoutor;
 
@@ -36,53 +40,9 @@ namespace nucleus
            scoutor != element.container.end();
            scoutor++)
         {
-          T* item = nullptr;
-
-          // copy the item depending on the options.
-          switch (this->options)
-            {
-            case Range<T>::OptionNone:
-              {
-                // in this case, the data must be duplicated.
-                item = new T(**scoutor);
-
-                break;
-              }
-            case Range<T>::OptionDetach:
-              {
-                // in this case, the memory is not handled by this instance,
-                // hence just copy the pointer.
-                item = *scoutor;
-
-                break;
-              }
-            }
-
           // add the item to the container.
-          if (this->Add(item) == elle::Status::Error)
+          if (this->Add(*scoutor) == elle::Status::Error)
             throw Exception("unable to add the item to the container");
-        }
-    }
-
-    ///
-    /// destructor.
-    ///
-    template <typename T>
-    Range<T>::~Range()
-    {
-      Range<T>::Iterator        i;
-
-      // until the range is empty.
-      while (this->container.empty() == false)
-        {
-          T*    item = this->container.front();
-
-          // remove the first element.
-          this->container.pop_front();
-
-          // delete the item, if necessary.
-          if ((this->options & Range<T>::OptionDetach) == 0)
-            delete item;
         }
     }
 
@@ -110,28 +70,10 @@ namespace nucleus
     elle::Status
     Range<T>::Add(Range<T> const& other)
     {
-      if (this->options != other.options)
-        escape("unable to merge ranges with different options");
-
       for (T* item: other.container)
         {
-          switch (this->options)
-            {
-            case Range<T>::OptionNone:
-              {
-                if (this->Add(new T(*item)) == elle::Status::Error)
-                  escape("unable to add the item");
-
-                break;
-              }
-            case Range<T>::OptionDetach:
-              {
-                if (this->Add(item) == elle::Status::Error)
-                  escape("unable to add the item");
-
-                break;
-              }
-            }
+          if (this->Add(item) == elle::Status::Error)
+            escape("unable to add the item");
         }
 
       return elle::Status::Ok;
@@ -335,10 +277,6 @@ namespace nucleus
 
       std::cout << alignment << "[Range] "
                 << std::dec << this->container.size() << std::endl;
-
-      // dump the options.
-      std::cout << alignment << elle::io::Dumpable::Shift << "[Options] "
-                << this->options << std::endl;
 
       // dump every item.
       for (scoutor = this->container.begin();

@@ -16,7 +16,7 @@ namespace nucleus
 // ---------- constants -------------------------------------------------------
 //
 
-    const neutron::Component Contents::component = neutron::ComponentContents;
+    const neutron::Component Contents::_component = neutron::ComponentContents;
 
 //
 // ---------- constructors & destructors --------------------------------------
