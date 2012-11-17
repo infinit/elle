@@ -1,14 +1,14 @@
 #include <sys/stat.h>
 
-#include <elle/concept/Fileable.hh>
 #include <elle/log.hh>
+#include <elle/finally.hh>
+#include <elle/concept/Fileable.hh>
 #include <elle/serialize/Serializable.hh>
 
 #include <hole/storage/Directory.hh>
 
 #include <nucleus/nucleus.hh>
 #include <nucleus/fwd.hh>
-
 
 ELLE_LOG_COMPONENT("infinit.hole.storage.Directory");
 
@@ -116,6 +116,8 @@ namespace hole
         nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
+      ELLE_FINALLY_DELETE(block);
+
       // Open an input stream.
       std::ifstream in(path.string(),
                        std::ios_base::in | std::ios_base::binary);
@@ -126,6 +128,8 @@ namespace hole
           elle::sprintf("Unable to open the file '%s'.", path));
 
       block->deserialize(in);
+
+      ELLE_FINALLY_ABORT(block);
 
       return std::unique_ptr<nucleus::proton::Block>(block);
     }
@@ -142,6 +146,8 @@ namespace hole
         nucleus::factory().allocate<nucleus::proton::MutableBlock>(
           address.component())};
 
+      ELLE_FINALLY_DELETE(block);
+
       // Open an input stream.
       std::ifstream in(path.string(),
                        std::ios_base::in | std::ios_base::binary);
@@ -152,6 +158,8 @@ namespace hole
           elle::sprintf("Unable to open the file '%s'.", path));
 
       block->deserialize(in);
+
+      ELLE_FINALLY_ABORT(block);
 
       return std::unique_ptr<nucleus::proton::Block>(block);
     }
