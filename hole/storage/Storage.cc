@@ -1,4 +1,5 @@
 #include <elle/cast.hh>
+#include <elle/assert.hh>
 
 #include <boost/format.hpp>
 
@@ -88,6 +89,9 @@ namespace hole
     {
       ELLE_TRACE_SCOPE("%s: retrieving block at @'%s' and revision '%s'.",
                        *this, address, revision);
+
+      // Since block history is not supported yet...
+      ELLE_ASSERT(revision == nucleus::proton::Revision::Last);
 
       if (!this->_exist(this->_identifier(address, revision)))
         throw elle::Exception("The block does not seem to exist.");
