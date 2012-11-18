@@ -54,18 +54,22 @@ namespace elle
       Status Restore(elle::io::Unique const& in);
     };
 
-
-    ///
     /// Makes your class Uniquable, but also Serializable for the default
     /// archive type used by uniquable concept. You should only use this when
     /// you know that you are working on the final class.
-    ///
-    template<typename T, __ECU_DEFAULT_ARCHIVE_TPL(Archive)>
-    struct MakeUniquable
-      : serialize::SerializableMixin<T, Archive>
-      , Uniquable<Archive>
+    template <typename T, __ECU_DEFAULT_ARCHIVE_TPL(Archive)>
+    struct UniquableMixin:
+      serialize::SerializableMixin<T, Archive>,
+      Uniquable<Archive>
     {};
 
+    /// This is an alias to UniquableMixin should is often preferred for
+    /// non-polymorphic classes.
+    template <typename T, __ECU_DEFAULT_ARCHIVE_TPL(Archive)>
+    struct MakeUniquable:
+      serialize::SerializableMixin<T, Archive>,
+      Uniquable<Archive>
+    {};
   }
 }
 
