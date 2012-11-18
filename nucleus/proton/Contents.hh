@@ -44,7 +44,8 @@ namespace nucleus
     ///
     class Contents:
       public proton::ContentHashBlock,
-      public elle::serialize::SerializableMixin<Contents>
+      public elle::serialize::SerializableMixin<Contents>,
+      public elle::concept::UniquableMixin<Contents>
     {
       //
       // constants

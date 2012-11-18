@@ -1,12 +1,16 @@
 #ifndef TEST_UNIT_UNIT_HH
 # define TEST_UNIT_UNIT_HH
 
+# include <elle/serialize/Serializable.hh>
+# include <elle/concept/Uniquable.hh>
+
 # define TEST_SERIALIZE_FINALIZE(_namespace_, _type_)                    \
   namespace test                                                        \
   {                                                                     \
     class _type_:                                                       \
       public _namespace_::_type_,                                       \
-      public elle::serialize::SerializableMixin<_type_>                 \
+      public elle::serialize::SerializableMixin<_type_>,                \
+      public elle::concept::UniquableMixin<_type_>                      \
     {                                                                   \
     public:                                                             \
       template <typename... T>                                          \

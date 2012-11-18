@@ -29,8 +29,8 @@ namespace nucleus
     ///
     class Reference:
       public proton::Value,
+      public elle::Printable, // XXX[in the root class? Node?]
       public elle::serialize::SerializableMixin<Reference>,
-      public elle::Printable,
       private boost::noncopyable
     {
     public:

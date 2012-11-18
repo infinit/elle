@@ -22,7 +22,8 @@ namespace nucleus
     /// group, known as the fellows.
     class Ensemble:
       public proton::ContentHashBlock,
-      public elle::serialize::SerializableMixin<Ensemble>
+      public elle::serialize::SerializableMixin<Ensemble>,
+      public elle::concept::UniquableMixin<Ensemble>
     {
       //
       // constants

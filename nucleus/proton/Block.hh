@@ -3,7 +3,7 @@
 
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
-# include <elle/concept/Fileable.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/Serializable.hh>
@@ -46,8 +46,9 @@ namespace nucleus
     /// compute the block address.
     class Block:
       public elle::io::Dumpable,
-      public elle::serialize::Serializable<>,
       public elle::Printable,
+      public elle::serialize::Serializable<>,
+      public elle::concept::Uniquable<>,
       private boost::noncopyable
     {
       /*----------.

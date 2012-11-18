@@ -26,7 +26,7 @@ namespace nucleus
     class Access:
       public proton::ContentHashBlock,
       public elle::serialize::SerializableMixin<Access>,
-      public elle::concept::MakeUniquable<Access>
+      public elle::concept::UniquableMixin<Access>
     {
       /*----------.
       | Constants |
@@ -111,8 +111,6 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Access);
-      // fileable
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Access);
       // iterable
       typename Range<Record>::Scoutor
       begin() const;

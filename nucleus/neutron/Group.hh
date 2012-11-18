@@ -55,7 +55,7 @@ namespace nucleus
     class Group:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Group>,
-      public elle::concept::MakeUniquable<Group>
+      public elle::concept::UniquableMixin<Group>
     {
       /*------------------.
       | Static Attributes |

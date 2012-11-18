@@ -54,7 +54,7 @@ namespace nucleus
     class Object:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Object>,
-      public elle::concept::MakeUniquable<Object>
+      public elle::concept::UniquableMixin<Object>
     {
       //
       // constants

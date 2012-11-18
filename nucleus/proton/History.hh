@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_HISTORY_HH
 # define NUCLEUS_PROTON_HISTORY_HH
 
-# include <elle/concept/Fileable.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
@@ -24,8 +23,6 @@ namespace nucleus
     /// This class contains all the revision numbers associated with
     /// a given mutable block.
     class History:
-      public elle::serialize::SerializableMixin<History>,
-      public elle::concept::Fileable<>,
       public elle::Printable,
       private boost::noncopyable
     {
@@ -70,8 +67,6 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(History);
-      // fileable
-      ELLE_CONCEPT_FILEABLE_METHODS();
 
       /*-----------.
       | Attributes |

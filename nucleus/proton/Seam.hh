@@ -28,7 +28,8 @@ namespace nucleus
     template <typename T>
     class Seam:
       public Nodule<T>,
-      public elle::serialize::SerializableMixin<Seam<T>>
+      public elle::serialize::SerializableMixin<Seam<T>>,
+      public elle::concept::UniquableMixin<Seam<T>>
     {
       //
       // types

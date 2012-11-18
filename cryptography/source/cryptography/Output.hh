@@ -11,9 +11,6 @@
 
 # include <cryptography/fwd.hh>
 
-# include <elle/concept/Uniquable.hh>
-# include <elle/serialize/HexadecimalArchive.hh>
-
 namespace infinit
 {
   namespace cryptography
@@ -23,11 +20,7 @@ namespace infinit
     /// outside of the cryptography library.
     class Output:
       public elle::io::Dumpable,
-      public elle::Printable,
-      public elle::concept::MakeUniquable<
-        Output,
-        elle::serialize::HexadecimalArchive
-      >
+      public elle::Printable
     {
       /*-------------.
       | Construction |

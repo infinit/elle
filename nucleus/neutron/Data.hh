@@ -28,8 +28,8 @@ namespace nucleus
     ///
     class Data:
       public proton::Value,
+      public elle::Printable, // XXX[in the root class? Node?]
       public elle::serialize::SerializableMixin<Data>,
-      public elle::Printable,
       private boost::noncopyable
     {
     public:

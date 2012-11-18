@@ -28,7 +28,8 @@ namespace nucleus
     template <typename T>
     class Quill:
       public Nodule<T>,
-      public elle::serialize::SerializableMixin<Quill<T>>
+      public elle::serialize::SerializableMixin<Quill<T>>,
+      public elle::concept::UniquableMixin<Quill<T>>
     {
       //
       // types
