@@ -25,9 +25,6 @@ int main()
 
   nucleus::proton::Address addr(blk.bind());
 
-  std::string unique;
-  static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
-
   elle::Buffer buf;
   buf.writer() << blk;
 
