@@ -63,7 +63,12 @@
 {
     _visibility = visibility;
     if (visibility)
+    {
+        [NSApp activateIgnoringOtherApps:YES];
+        [[self panel]  makeKeyAndOrderFront:self];
+        [[self panel] setOrderedIndex:0];
         [[self panel] show];
+    }
     else
         [[self panel] hide];
 }
