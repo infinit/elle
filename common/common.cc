@@ -291,7 +291,7 @@ namespace common
   //- scheduled for deletion --------------------------------------------------
 
   static
-  std::string const&
+  std::string
   _passport_path(std::string const& user)
   {
     ELLE_ASSERT(!lune::Lune::Passport.string.empty());
@@ -305,7 +305,7 @@ namespace common
   std::string const&
   passport_path(std::string const& user)
   {
-    static std::string const path = _passport_path(user);
+    static std::string const path(_passport_path(user));
 
     return path;
   }
@@ -313,7 +313,7 @@ namespace common
   namespace watchdog
   {
     static
-    std::string const&
+    std::string
     _identity_path(std::string const& user)
     {
       ELLE_ASSERT(!lune::Lune::Identity.string.empty());
@@ -327,7 +327,7 @@ namespace common
     std::string const&
     identity_path(std::string const& user)
     {
-      static std::string const path = _identity_path(user);
+      static std::string const path(_identity_path(user));
       return path;
     }
 
