@@ -131,7 +131,7 @@ void Manager::refresh_networks()
 {
   this->_network_manager->update_networks();
 }
-
+x
 void Manager::start_refresh_networks()
 {
   this->refresh_networks();

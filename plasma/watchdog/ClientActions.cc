@@ -81,6 +81,7 @@ void ClientActions::_on_run(Connection&,
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.user(user);
+      this->_manager.user_id(user_id);
 
       std::ofstream identity_infos{common::watchdog::identity_path(user_id.toStdString())};
 
@@ -140,6 +141,7 @@ void ClientActions::_on_status(Connection& conn,
                                Client&,
                                QVariantMap const& args)
 {
+  ELLE_DEBUG("Status callback.");
   namespace json = elle::format::json;
 
   CHECK_ID(args);
@@ -151,6 +153,7 @@ void ClientActions::_on_status(Connection& conn,
       network["_id"] = pair.first;
       network["mount_point"] = pair.second->mount_point();
       network["user"] = this->_manager.user();
+      network["user_id"] = this->_manager.user_id();
       networks.push_back(network);
     }
 

@@ -85,7 +85,7 @@ endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # - Compiler ------------------------------------------------------------------
-
+message(STATUS "Compiler is: ${CMAKE_CXX_COMPILER}")
 # XXX[problem with distcc, fuck you very much CMake]
 #if(CMAKE_COMPILER_IS_GNUCXX)
 #	exec_program("${CMAKE_CXX_COMPILER}"

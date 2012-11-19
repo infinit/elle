@@ -53,6 +53,23 @@ namespace surface
 {
   namespace gap
   {
+    void
+    print_transaction(plasma::meta::TransactionResponse const& t)
+    {
+      printf("transaction_id: %s\n", t.transaction_id.c_str());
+      printf("first_filename: %s\n", t.first_filename.c_str());
+      printf("files_count: %l\n", t.files_count);
+      printf("total_size: %l\n", t.total_size);
+      printf("is_directory: %s\n", t.is_directory);
+      printf("network_id: %s\n", t.network_id.c_str());
+      printf("sender_id: %s\n", t.sender_id.c_str());
+      printf("sender_fullname: %s\n", t.sender_fullname.c_str());
+      printf("sender_device_id: %s\n", t.sender_device_id.c_str());
+      printf("recipient_id: %s\n", t.recipient_id.c_str());
+      printf("recipient_fullname: %s\n", t.recipient_fullname.c_str());
+      printf("recipient_device_id: %s\n", t.recipient_device_id.c_str());
+      printf("status: %l\n", t.status);
+    }
 
     namespace fs = boost::filesystem;
     namespace json = elle::format::json;
@@ -209,8 +226,10 @@ namespace surface
       ELLE_DEBUG("Command sent");
 
       if (response == nullptr)
-        return;
-
+        {
+          ELLE_WARN("Watchdog response is empty.");
+          return;
+        }
       if (!conn.waitForReadyRead(2000))
         throw Exception{
             gap_internal_error,
@@ -354,6 +373,11 @@ namespace surface
 
           dictionary.store(res._id);
         }
+
+        // for (auto t : transactions())
+          // transaction(t.first);
+
+        transactions();
     }
 
     void
@@ -433,8 +457,6 @@ namespace surface
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
       std::string network_id = this->create_network(network_name);
-
-      this->refresh_networks();
 
       // Ensure the network status is available
       (void) this->network_status(network_id);
@@ -537,6 +559,11 @@ namespace surface
             new plasma::meta::TransactionResponse{response};
         }
 
+      for (auto const& transaction : *(this->_transactions))
+      {
+        print_transaction(*(transaction.second));
+      }
+
       return *(this->_transactions);
     }
 
@@ -556,12 +583,14 @@ namespace surface
     State::_on_notification(gap_TransactionNotification const* n)
     {
       (void) n;
+      printf("_on_notification(gap_TransactionNotification\n");
     }
 
     void
     State::_on_notification(gap_TransactionStatusNotification const* n)
     {
       (void) n;
+      printf("_on_notification(gap_TransactionStatusNotification\n");
     }
 
 
@@ -640,6 +669,7 @@ namespace surface
 
       if (force_create || !this->has_device())
         {
+          printf("queue\n");
           auto res = this->_meta->create_device(name);
           passport_string = res.passport;
           this->_device_id = res.created_device_id;
@@ -647,6 +677,7 @@ namespace surface
         }
       else
         {
+          ELLE_DEBUG("Loading passport from '%s'.", passport_path);
           elle::Passport passport;
           passport.load(passport_path);
 
