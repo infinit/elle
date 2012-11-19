@@ -6,7 +6,7 @@ import web
 
 import metalib
 
-import meta.mail
+from meta import mail
 from meta.page import Page
 from meta import database, conf
 from meta import error
@@ -68,52 +68,6 @@ class _Page(Page):
             map(lambda d: database.ObjectId(str(d).strip()), ids)
         )))
 
-NETWORK_INVITATION_NEWUSER_SUBJECT = u"%(added_by)s wants you to join the '%(network_name)s' network on Infinit!"
-NETWORK_INVITATION_NEWUSER_CONTENT = u"""
-Hi %(recipient)s,
-
-%(added_by)s has added you to the '%(network_name)s' network on Infinit.
-Infinit is an incredibly powerful tool that lets you create folders with the
-members of your different communities, giving you the ability to easily share
-and access files and folders collaboratively.
-
-You’ll no longer have to worry about storage limits in the cloud, large email
-attachments or downloading files again!
-And best of all, it's completely free :)
-
-Click the link below to download Infinit and access your new network!
-
-Download here: http://infinit.io/download
-
-All the best,
-
---%(space)s
-The Infinit Team
-infinit.io
-""".strip()
-
-NETWORK_INVITATION_SUBJECT = u"%(added_by)s has just added you to the '%(network_name)s' network on Infinit!"
-NETWORK_INVITATION_CONTENT = u"""
-Hi %(recipient)s,
-
-%(added_by)s has added you to the '%(network_name)s' network. Just launch
-Infinit to access it!
-
-Networks are made up of your community’s combined storage space allowing
-everyone to access more content than they can store on their own devices. The
-more space you and your community add to a network, the more files and folders,
-you can all access.
-
-Sharing and accessing files has never been easier! And best of all, it's
-completely free :)
-
-All the best,
-
---%(space)s
-The Infinit Team
-infinit.io
-""".strip()
-
 class AddUser(_Page):
     """
     Add a user in a network
@@ -155,9 +109,9 @@ class AddUser(_Page):
                 'network_name': network['name'],
                 'space': ' ',
             }
-            subject = NETWORK_INVITATION_SUBJECT % infos
-            content = NETWORK_INVITATION_CONTENT % infos
-            meta.mail.send(to_add_user['email'], subject, content)
+            subject = mail.NETWORK_INVITATION_SUBJECT % infos
+            content = mail.NETWORK_INVITATION_CONTENT % infos
+            mail.send(to_add_user['email'], subject, content)
         network['users'].append(to_add_user_id)
         database.networks().save(network)
         to_add_user['networks'].append(network['_id'])

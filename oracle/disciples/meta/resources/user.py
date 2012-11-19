@@ -1,4 +1,3 @@
-
 # -*- encoding: utf-8 -*-
 
 import json
@@ -182,6 +181,33 @@ class Self(Page):
             'identity': self.user['identity'],
             'public_key': self.user['public_key'],
             'accounts': self.user['accounts'],
+        })
+
+class MinimumSelf(Page):
+    """
+    Get self infos
+        GET
+            -> {
+                'fullname': "My Name",
+                'email': "My email",
+                'devices': [device_id1, ...],
+                'networks': [network_id1, ...]
+                'identity': 'identity string',
+                'public_key': 'public_key string',
+                'accounts': [
+                    {'type':'account type', 'id':'unique account identifier'}
+                ]
+            }
+    """
+
+    __pattern__ = "/minimumself"
+
+    def GET(self):
+        if not self.user:
+            return self.error(error.NOT_LOGGED_IN)
+        return self.success({
+            'email': self.user['email'],
+            'identity': self.user['identity'],
         })
 
 class One(Page):
