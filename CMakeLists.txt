@@ -85,7 +85,7 @@ endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # - Compiler ------------------------------------------------------------------
-
+message(STATUS "Compiler is: ${CMAKE_CXX_COMPILER}")
 # XXX[problem with distcc, fuck you very much CMake]
 #if(CMAKE_COMPILER_IS_GNUCXX)
 #	exec_program("${CMAKE_CXX_COMPILER}"
@@ -263,14 +263,17 @@ set(INFINIT_LIBRARIES
   nucleus
   ${HORIZON_LIB}
   etoile
-  nucleus # circular dependency with etoile
 
   metal
   agent
+
+  nucleus # circular dependency with etoile
   common
   protocol
   infinit
   hole
+  cryptography
+  lune
   elle
   comet
 
@@ -281,9 +284,6 @@ set(INFINIT_LIBRARIES
   ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
   readline
   pthread
-
-  nucleus
-  elle
 )
 
 OPTION(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)

@@ -1,6 +1,9 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/File.hh>
 #include <elle/standalone/Region.hh>
+#include <elle/os/path.hh>
+
+#include <common/common.hh>
 
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
@@ -47,13 +50,14 @@ namespace lune
     return elle::Status::Ok;
   }
 
-  elle::io::Path
-  Set::_path(elle::String const& user,
-             elle::String const& network)
+  std::string
+  Set::_path(elle::String const& user_id,
+             elle::String const& network_id)
   {
-    return (elle::io::Path(Lune::Set,
-                           elle::io::Piece("%USER%", user),
-                           elle::io::Piece("%NETWORK%", network)));
+    return elle::os::path::join(
+      common::infinit::network_directory(user_id, network_id),
+      network_id + ".set"
+    );
   }
 
 //

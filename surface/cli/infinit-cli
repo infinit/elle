@@ -14,11 +14,19 @@ import re
 import stat
 import sys
 
+# Poll thread
+import time
+import datetime
+import threading
+
+
 try:
     import readline
 except:
-    import pyreadline as readline
-
+    try:
+        import pyreadline as readline
+    except:
+        print('Warning: you should install python readline package.')
 try:
     import rlcompleter
     if sys.platform == 'darwin':
@@ -264,6 +272,44 @@ class InfinitShell(cmd.Cmd):
         except Exception as e:
             print(e)
 
+    ###########################################################################
+    # .
+    _sendfiles_argument_parser = make_simple_argument_parser(
+        prog = "send_files",
+        description = "Invite a user to exchange a file. If the user doesn't exist, invite him to infinit.",
+        args = [
+            {
+                'flags': 'user',
+                'help': 'email of the user to invite (can also be its id).',
+            },
+        ],
+    )
+
+    def help_send_files(self):
+        self._sendfiles_argument_parser.print_help()
+
+    def do_send_files(self, line):
+        args = self._get_args(self._sendfiles_argument_parser, line)
+        if not args:
+            return
+
+        recipient = args.user
+
+        files = []
+        _file = input("List here the file(s) you want to send.\nFile: ")
+        while _file:
+            files.append(_file)
+            _file = input("File: ")
+
+        if not files:
+            print('No file to send.')
+            return
+
+        try:
+            self._state.send_files(recipient, files)
+        except Exception as e:
+            print(e)
+
     def default(self, line):
         if line == 'EOF':
             print()
@@ -440,10 +486,55 @@ def main():
         print("Authentication required (if you don't have an account, try -r)")
         login(state)
 
+    state.OnFileTransfer(_IncommingFileTransferHandler)
+    state.OnFileTransferStatus(_FileTransferStatusHandler)
+    state.OnMessage(_MessageHandler)
+    thread = PollThread(state)
+    thread.start()
+    state.connect()
     start_shell(state, args)
 
+def _IncommingFileTransferHandler(transfer):
+    username = state.user_fullname(transfer.sender_id)
+    print("_IncommingFileTransferHandler:", username)
+    #state.answer_transaction(transfer.transaction_id, answer)
+
+def _FileTransferStatusHandler(status):
+    print("_FileTransferStatusHandler")
+
+def _MessageHandler(message):
+    print("_MessageHandler")
+
+class PollThread (threading.Thread):
+    now = datetime.datetime.now()
+    count = 0
+    close = False
+
+    def __init__(self, state):
+        super(PollThread, self).__init__()
+        self.state = state
+
+    def run (self):
+        self.bite = False
+        while True:
+            time.sleep(0.05)
+            self.count += (datetime.datetime.now() - self.now).microseconds
+            if self.count > 1000000:
+                self.state.poll()
+                self.count -= 1000000
+            self.now = datetime.datetime.now()
+            if self.close == True:
+                return
+
+    def stop(self):
+        self.close = True
+
 if __name__ == '__main__':
+    thread = 0
     try:
         main()
     except KeyboardInterrupt:
+        if thread:
+            thread.close()
+            time.sleep(0.05)
         pass

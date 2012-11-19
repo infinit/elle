@@ -26,8 +26,8 @@ response_matrix = {
 
 	#  Server error
 	500 : "internal_server" ,
-	666 : "unknown_error" 
-}
+	666 : "unknown_error"
+        }
 
 class InvalidID(Exception):
 
@@ -41,39 +41,53 @@ class InvalidID(Exception):
 class Trophonius(basic.LineReceiver):
 
 	states = ('HELLO',
-			  'CHAT')
+                  'CHAT')
 
 	delimiter = "\n"
 	def __init__(self, factory):
 		self.factory = factory
 		self.state = 'HELLO'
-	
+
 	def __str__(self):
 		if hasattr(self, "id"):
 			return "<{}({})>".format(self.__class__.__name__,
-					"id={}".format(self.id))
+                                                 "id={}".format(self.id))
 		return "<{}()>".format(self.__class__.__name__)
 
 	def connectionMade(self):
 		log.msg("New connection from", self.transport.getPeer())
 
-	def connectionLost(self, reason):
+        def connectionLost(self, reason):
 		log.msg("Connection lost with", self.transport.getPeer(), reason)
-		if self in self.factory.clients:
-			self.factory.clients.remove(self)
+                if not hasattr(self, "id"):
+                        return
+
+                print("Disconnect user: id=%s" % self.id)
+
+                status = False
+                try:
+                        status = self.factory.clients.remove(self);
+                except Exception as e:
+                        log.msg('self.factory.clients.remove(self) failed')
+                pythia.Admin().post('/user/disconnected', {
+                    'user_id': self.id,
+                    'user_token': self.token,
+                    'full': status,
+                })
 
 	def _send_res(self, res, msg=""):
 		if isinstance(res, dict):
 			self.sendLine(json.dumps(res))
 		elif isinstance(res, int):
 			s = {}
+                        s["notification_id"] = -666
 			s["response_code"] = res
 			if msg:
 				s["response_details"] = "{}: {}".format(response_matrix[res], msg)
 			else:
 				s["response_details"] = "{}".format(response_matrix[res])
 			message = json.dumps(s)
-			self.sendLine(message)
+			self.sendLine("{}\ǹ".format(message))
 
 	def handle_CHAT(self, line):
 		"""
@@ -89,12 +103,13 @@ class Trophonius(basic.LineReceiver):
 		This function handle the first message of the client
 		It waits for a json object with:
 		{
-			"token" : <token>
+                "token" : <token>
 		}
 		"""
 		try:
-			js_req = json.loads(line)
-			cl = pythia.Client(session={"token": js_req["token"]})
+                        js_req = json.loads(line)
+                        cl = pythia.Client(session={"token": js_req["token"]})
+
 			res = cl.get('/self')
 			# The authentication succeeded
 
@@ -111,9 +126,9 @@ class Trophonius(basic.LineReceiver):
 			self._send_res(res=200)
 		except (ValueError, KeyError) as ve:
 			log.err("Handled exception {} in state {}: {}".format(
-				ve.__class__.__name__,
-				self.state,
-				ve))
+                                        ve.__class__.__name__,
+                                        self.state,
+                                        ve))
 			self._send_res(res=400, msg=ve.message)
 			self.transport.loseConnection()
 
@@ -130,10 +145,10 @@ class MetaTropho(basic.LineReceiver):
 		self.factory = factory
 
 	def connectionMade(self):
-		log.msg("New connection from", self.transport.getPeer())
+		log.msg("Meta: New connection from", self.transport.getPeer())
 
 	def connectionLost(self, reason):
-		log.msg("Connection lost with", self.transport.getPeer(), reason)
+		log.msg("Meta: Connection lost with", self.transport.getPeer(), reason)
 
 	def _send_res(self, res, msg=""):
 		if isinstance(res, dict):
@@ -152,32 +167,36 @@ class MetaTropho(basic.LineReceiver):
 		try:
 			for rec_id in recipients:
 				for c in self.factory.clients[rec_id]:
-					c.sendLine(line)
+                                        msg = "{}".format(line)
+                                        print("line: '{}'".format(msg))
+					c.sendLine(msg)
+                                        print("lined")
 		except KeyError as ke:
 			log.err("Handled exception {}: {} unknow id".format(
-				ke.__class__.__name__,
-				ke))
+                                        ke.__class__.__name__,
+                                        ke))
 			raise InvalidID(rec_id)
 
 	def make_switch(self, line):
 		try:
-			recipients_ids = ""
+			recipients_ids = []
 			js_req = json.loads(line)
 			_recipient = js_req["recipient_id"]
 			if isinstance(_recipient, list):
 				recipients_ids = _recipient
 			elif isinstance(_recipient, str) or isinstance(_recipient, unicode):
 				recipients_ids = [_recipient]
+                        print(recipients_ids)
 			self.enqueue(line, recipients_ids)
 		except ValueError as ve:
 			log.err("Handled exception {}: {}".format(
-				ve.__class__.__name__,
-				ve))
+                                        ve.__class__.__name__,
+                                        ve))
 			self._send_res(res=400, msg=ve.message)
 		except KeyError as ke:
 			log.err("Handled exception {}: missing key {} in request".format(
-				ke.__class__.__name__,
-				ke))
+                                        ke.__class__.__name__,
+                                        ke))
 			self._send_res(res=400, msg="missing key {} in req".format(ke.message))
 		except InvalidID as ide:
 			self._send_res(res=400, msg="{}".format(str(ide)))
@@ -204,4 +223,3 @@ class MetaTrophoFactory(protocol.Factory):
 
 	def buildProtocol(self, addr):
 		return MetaTropho(self)
-

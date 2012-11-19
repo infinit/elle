@@ -4,6 +4,7 @@ import json
 import web
 
 from meta.page import Page
+from meta import notifier
 from meta import conf, database
 from meta import error
 from meta import regexp
@@ -14,13 +15,6 @@ import re
 
 import metalib
 import pythia
-
-class Share(Page):
-    __pattern__ = "/user/share"
-
-    def POST(self):
-        if self.notifier is not None:
-            self.notifier.send_notify(**self.data)
 
 class Search(Page):
     __pattern__ = "/user/search"
@@ -56,8 +50,8 @@ class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
 
     _validators = {
-        'email': regexp.Validator(regexp.Email, error.EMAIL_NOT_VALID),
-        'fullname': regexp.Validator(regexp.Handle, error.HANDLE_NOT_VALID),
+        'email' : regexp.EmailValidator,
+        'fullname': regexp.HandleValidator,
     }
 
     def POST(self):
@@ -118,59 +112,6 @@ class FromPublicKey(Page):
             'fullname': user['fullname'],
         })
 
-# TODO use mailchimp templates
-
-INVITATION_SUBJECT = "Invitation to test Infinit!"
-INVITATION_CONTENT = """
-Dear Alpha tester,
-
-Welcome to Infinit! You are one of the first individuals to get to try it out!
-
-Remember that the version you will be using is still quite basic and only
-functions in a local network at the moment. It may still have bugs and the
-interface is still not in its public version. For now, file sharing is limited
-to 30 MB and only the network owner can edit the files. Don’t worry though!
-We’ll be updating all of this over the coming weeks.
-
-You can report bugs or simply tell us what you think by sending us an email at
-feedback@infinit.io or by visiting feedback.infinit.io. If you have any
-questions, you can reach us on Skype at infinitdotio.
-
-To get started, download Infinit here: http://infinit.io/download.
-
-Your access code is: %(activation_code)s
-
-If there are other people with whom you would like to use Infinit, please let
-us know by sending an email to community@infinit.io.
-
-Instructions:
-
- * MacOSX (only Mountain Lion):
-    1) Install Infinit and create an account with your access code.
-    2) Create a network.
-    3) Drag and drop other users into your network.
-    4) Drag and drop files into your network giving everyone read-only access
-       to them.
-
- * Linux:
-    1) Register a new account and start the Infinit shell:
-        $ infinit register shell
-    2) Start Infinit instances (in the Infinit shell):
-        infinit-shell$ start
-    3) Create a new network:
-        infinit-shell$ create_network MyNetwork
-    4) You might need to refresh networks with:
-        infinit-shell$ refresh_networks
-    5) Invite a friend to a network:
-        infinit-shell$ invite my@friend.com MyNetwork
-
-All the best,
-
---%(space)s
-The Infinit Team
-http://infinit.io
-""".strip()
-
 class Invite(Page):
     # XXX doc and improve
 
@@ -208,162 +149,6 @@ class Invite(Page):
         hash_.update(mail.encode('utf8') + str(time.time()))
         return hash_.hexdigest()
 
-USER_INVITATION_SUBJECT = "%(inviter_mail)s wants to share a file throught Infinit!"
-USER_NEW_FILE_CONTENT = """
-Dear user,
-
-%(inviter_mail)s wants to share %(file_name)s.
-
---
-The Infinit Team
-http://infinit.io
-""".strip()
-USER_INVITATION_CONTENT = """
-Dear user,
-
-%(inviter_mail)s wants to share %(file_name)s and make you discover Infinit.
-
-XXX
-blabla, not stable, blabla, alpha, blabla, danger, blabla, destroy all your data, blabla.
-
-To get started, download Infinit here: http://infinit.io/download.
-
-IMPORTANT:
-XXX
-blabla, use this email, blabla
-
-If there are other people with whom you would like to use Infinit, please let
-us know by sending an email to community@infinit.io.
-
-Instructions:
-
- * MacOSX (only Mountain Lion):
-    1) Install Infinit and create an account with your access code.
-    2) Roll a d100
-    3) Add 50 cause you are a mac user
-    4) Refer to table below to discover your anus breaking point.
-
-| Result* >>>> Size
------------------------------------------
-| 51 - 55 >>>> IPod shuffle
-| 56 - 60 >>>> IPod nano
-| 61 - 65 >>>> IPod Classic
-| 66 - 75 >>>> IPod Touch | IPhone 1,2,3
-| 76 - 80 >>>> IPhone 4-5
-| 81 - 85 >>>> IPad Mini
-| 86 - 95 >>>> IPad
-| 96 - 105 >>> Mac book mini
-| 106 - 115 >> Mac book 13
-| 116 - 125 >> Mac book 15
-| 126 - 135 >> iMac 21
-| 136 - 145 >> iMac 27
-| 145 - 150 >> eMac
-
-(*) Add 5 for each apple product you already purchased !
-
- * Linux:
-    1) Wait for infinit to be integrated.
-
-All the best,
-
---
-The Infinit Team
-http://infinit.io
-""".strip()
-
-class SendFile(Page):
-    """
-    Invite a new user by sending him a file. Generate a email and create a
-    temporary user.
-        POST {
-            'id_or_email': "email@pif.net", #required
-            'file_name': "The file name", #required
-            'network_id': "The network name", #required
-            'file_size': 42 (ko) #optionnal
-            'file_count': 32     #default 1
-             }
-             ->
-             {
-             }
-    """
-    __pattern__ = "/user/sendfile"
-
-    _validators = {
-        'id_or_email': regexp.Validator(regexp.NotNull, error.FIELD_IS_EMPTY),
-        'file_name': regexp.Validator(regexp.NotNull, error.FILE_NAME_EMPTY),
-        'network_id': regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID),
-    }
-
-    def POST(self):
-        self.requireLoggedIn()
-
-        status = self.validate()
-        if status:
-            return self.error(*status)
-
-        id_or_email = self.data['id_or_email'].strip()
-        file_name = self.data['file_name'].strip()
-        network_id = self.data['network_id'].strip()
-        file_count = ('file_count' in self.data and self.data['file_count'] or 1)
-        invitee_id = 0
-        invitee_email = ""
-        new_user = False
-
-        # Determine if user sent a mail or an id.
-        if re.match(regexp.Email, id_or_email):
-            invitee_email = id_or_email
-            # Check is user is in database.
-            invitee_id = database.users().find_one({'email': id_or_email})
-            # if the user doesn't exist, create a ghost and invite.
-            if not invitee_id:
-                new_user = True
-                invitee_id = database.users().save({})
-                self.registerUser(
-                    _id = invitee_id,
-                    email = id_or_email,
-                    register_status = 'ghost',
-                    accounts=[{'type':'email', 'id':id_or_email}]
-                )
-            else:
-                invitee_id = invitee_id['_id']
-        elif not re.match(regexp.ID, id_or_email):
-            return self.error(error.USER_ID_NOT_VALID)
-
-        _id = self.user['_id']
-
-        if not self.connected(invitee_id):
-            inviter_mail = self.user['email']
-
-            subject = USER_INVITATION_SUBJECT % {
-                'inviter_mail': inviter_mail,
-            }
-
-            sent = file_name + (file_count == 1 and "" or " and %i other files" % (file_count - 1))
-
-            content = (new_user and USER_INVITATION_CONTENT or USER_NEW_FILE_CONTENT) % {
-                'inviter_mail': inviter_mail,
-                'file_name': sent,
-                }
-
-            assert(invitee_email)
-            meta.mail.send(invitee_email, subject, content)
-        else:
-            self.notifySwaggers(
-                {
-                  'notification_id' : 7,
-                  '_id' : invitee_id,
-                  'file_name': sent,
-                }
-            )
-
-        req = {'recipient': invitee_id,
-               'sender': _id,
-               'network_id': network_id}
-
-        if not database.transactions().find_one(req):
-            database.transactions().insert(req)
-
-        return self.success()
 
 class Self(Page):
     """
@@ -396,6 +181,33 @@ class Self(Page):
             'identity': self.user['identity'],
             'public_key': self.user['public_key'],
             'accounts': self.user['accounts'],
+        })
+
+class MinimumSelf(Page):
+    """
+    Get self infos
+        GET
+            -> {
+                'fullname': "My Name",
+                'email': "My email",
+                'devices': [device_id1, ...],
+                'networks': [network_id1, ...]
+                'identity': 'identity string',
+                'public_key': 'public_key string',
+                'accounts': [
+                    {'type':'account type', 'id':'unique account identifier'}
+                ]
+            }
+    """
+
+    __pattern__ = "/minimumself"
+
+    def GET(self):
+        if not self.user:
+            return self.error(error.NOT_LOGGED_IN)
+        return self.success({
+            'email': self.user['email'],
+            'identity': self.user['identity'],
         })
 
 class One(Page):
@@ -438,9 +250,9 @@ class Register(Page):
     __pattern__ = "/user/register"
 
     _validators = {
-        'email': regexp.Validator(regexp.Email, error.EMAIL_NOT_VALID),
-        'fullname': regexp.Validator(regexp.Handle, error.HANDLE_NOT_VALID),
-        'password': regexp.Validator(regexp.Password, error.PASSWORD_NOT_VALID),
+        'email': regexp.EmailValidator,
+        'fullname': regexp.HandleValidator,
+        'password': regexp.PasswordValidator,
     }
 
     def POST(self):
@@ -453,22 +265,22 @@ class Register(Page):
         user = self.data
 
         if database.users().find_one({
-                'accounts': [{ 'type': 'email', 'id':user['email']}],
-                'register_status': 'ok',
-           }):
+            'accounts': [{ 'type': 'email', 'id':user['email']}],
+            'register_status': 'ok',
+        }):
             return self.error(error.EMAIL_ALREADY_REGISTRED)
         elif user['activation_code'] != 'bitebite': # XXX
             invitation = database.invitations().find_one({
-                            'code': user['activation_code'],
-                            'status': 'pending',
-                            })
+                'code': user['activation_code'],
+                'status': 'pending',
+            })
             if not invitation:
                 return self.error(error.ACTIVATION_CODE_DOESNT_EXIST, "'%s' is not a valid activation code." % user['activation_code'])
 
         ghost = database.users().find_one({
-                'accounts': [{ 'type': 'email', 'id':user['email']}],
-                'register_status': 'ghost',
-                })
+            'accounts': [{ 'type': 'email', 'id':user['email']}],
+            'register_status': 'ghost',
+        })
 
         if ghost:
             user["_id"] = ghost['_id']
@@ -494,6 +306,8 @@ class Register(Page):
             pending_swaggers=[],
             networks=[],
             devices=[],
+            notifications = [],
+            old_notifications = [],
             accounts=[
                 {'type':'email', 'id': user['email']}
             ]
@@ -507,21 +321,21 @@ class Login(Page):
     """
     Generate a token for further communication
         POST {
-            "email": "mail !",
-            "password": "password",
-        }
-            -> {
-                'success': True,
-                'token': "generated session token",
-                'fullname': 'full name',
-                'identity': 'Full base64 identity',
-            }
+                  'email': "test@infinit.io",
+                  'password': "hashed_password",
+             }
+             -> {
+                     'success': True,
+                     'token': "generated session token",
+                     'fullname': 'full name',
+                     'identity': 'Full base64 identity',
+                }
     """
     __pattern__ = "/user/login"
 
     _validators = {
-        'email': regexp.Validator(regexp.Email, error.EMAIL_NOT_VALID),
-        'password': regexp.Validator(regexp.Password, error.PASSWORD_NOT_VALID),
+        'email': regexp.EmailValidator,
+        'password': regexp.PasswordValidator,
     }
 
     def POST(self):
@@ -535,7 +349,6 @@ class Login(Page):
         loggin_info = self.data
 
         if self.authenticate(loggin_info['email'], loggin_info['password']):
-            self.notifySwaggers({"notification_id" : 8, "status" : 1})
             return self.success({
                 "_id" : self.user["_id"],
                 'token': self.session.session_id,
@@ -544,6 +357,42 @@ class Login(Page):
                 'identity': self.user['identity'],
             })
         return self.error(error.EMAIL_PASSWORD_DONT_MATCH)
+
+class Disconnection(Page):
+    """
+    POST {
+              'user_id': "the user id".
+              'user_token': 'the user token'
+              'full': no more device for this client connected.
+         }
+         -> {
+                 'success': True
+            }
+    """
+
+    __pattern__ = "/user/disconnected"
+
+    _validators = {
+        'user_id': regexp.UserIDValidator,
+    }
+
+    def POST(self):
+        if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:
+            return self.error(error.UNKNOWN, "You're not admin")
+
+        if not self._user:
+            return self.error(error.UNKNOWN)
+
+        _id = self.data['user_id']
+        token = self.data['user_token']
+
+        del self.session.store[token]
+
+        self._user['connected'] = bool(self.data['full'])
+
+        database.users().save(self._user)
+
+        return self.success()
 
 class Logout(Page):
     """
@@ -558,6 +407,12 @@ class Logout(Page):
     def GET(self):
         if not self.user:
             return self.error(error.NOT_LOGGED_IN)
+
         self.logout()
-        self.notifySwaggers({"notification_id": 8, "status" : 2})
+        self.notifySwaggers(
+            notifier.USER_STATUS,
+            {
+                "status" : 2,
+            }
+        )
         return self.success()

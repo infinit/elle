@@ -5,14 +5,21 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/log.hh>
+#include <elle/os/getenv.hh>
 
 #include "Application.hh"
+
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 static void _initAll();
 
 #define BUF_SIZE 4096
+#define CATCH_OUTPUT_FILE "/tmp/wtg.log"
 
 int     main(int ac, char* av[])
 {
@@ -23,6 +30,16 @@ int     main(int ac, char* av[])
     {
       _initAll();
       ELLE_DEBUG("Starting the watchdog !");
+
+#ifdef CATCH_OUTPUT_FILE
+      ::setenv("ELLE_LOG_COMPONENTS", "*plasma*", 1);
+      ::setenv("ELLE_LOG_LEVEL", "DEBUG", 1);
+
+      if (freopen(CATCH_OUTPUT_FILE, "a+", stderr) == NULL ||
+          freopen(CATCH_OUTPUT_FILE, "a+", stdout) == NULL)
+        fprintf(stderr, "Cannot open /tmp/wtg.txt: %s", strerror(errno));
+#endif
+
       auto res = app.exec();
       return res;
     }

@@ -74,6 +74,21 @@ def transactions(conn=None):
         _transactions = database(conn)['transactions']
     return _transactions
 
+# Collection that keep transaction history.
+_finished_transactions = None
+def finished_transactions(conn=None):
+    global _finished_transactions
+    if _finished_transactions is None:
+        _finished_transactions = database(conn)['finished_transactions']
+    return _finished_transactions
+
+_notifications = None
+def notifications(conn=None):
+    global _notifications
+    if _notifications is None:
+        _notifications = database(conn)['notifications']
+    return _notifications
+
 # functions
 def byId(collection, _id):
     """

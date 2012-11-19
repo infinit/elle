@@ -5,6 +5,7 @@
 #include <cryptography/KeyPair.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/SecretKey.hh>
+#include <elle/os/path.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/serialize/TupleSerializer.hxx>
@@ -41,16 +42,17 @@ namespace lune
   ///
   /// this method creates an identity based on the given key pair.
   ///
-  elle::Status          Identity::Create(elle::String const&    id,
-                                         const elle::String&    name,
-                                         cryptography::KeyPair const&   pair)
+  elle::Status
+  Identity::Create(elle::String const& user_id,
+                   const elle::String& user_name,
+                   cryptography::KeyPair const& pair)
   {
     // One does not simply ...
     assert(pair.k().key() != nullptr);
     assert(pair.K().key() != nullptr);
 
-    this->_id = id;
-    this->name = name;
+    this->_id = user_id;
+    this->name = user_name;
     this->pair = pair;
 
     assert(this->pair.k().key() != nullptr);
@@ -222,27 +224,27 @@ namespace lune
 //
 
   void
-  Identity::load(elle::String const& user)
+  Identity::load(elle::String const& user_id)
   {
-    this->load(Identity::_path(user));
+    this->load(Identity::_path(user_id));
   }
 
   void
-  Identity::store(elle::String const& user) const
+  Identity::store() const
   {
-    this->store(Identity::_path(user));
+    this->store(Identity::_path(this->_id));
   }
 
   void
-  Identity::erase(elle::String const& user)
+  Identity::erase(elle::String const& user_id)
   {
-    elle::concept::Fileable<>::erase(Identity::_path(user));
+    elle::concept::Fileable<>::erase(Identity::_path(user_id));
   }
 
   elle::Boolean
-  Identity::exists(elle::String const& user)
+  Identity::exists(elle::String const& user_id)
   {
-    return (elle::concept::Fileable<>::exists(Identity::_path(user)));
+    return (elle::os::path::exists(Identity::_path(user_id).string()));
   }
 
 }

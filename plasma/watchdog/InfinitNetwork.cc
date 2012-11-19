@@ -51,7 +51,9 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _description(response)
   , _manager(manager)
   , _process()
-  , _network_dir{path::join(common::infinit::home(), "networks", response._id)}
+  , _network_dir{
+      common::infinit::network_directory(_manager.user_id(), response._id)
+    }
   , _mount_point{path::join(_network_dir, "mnt")}
 {
   LOG("Creating new network.");
@@ -139,6 +141,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   auto e              = elle::Status::Error;
   auto genreDirectory = nucleus::neutron::Genre::directory;
 
+  LOG("Create proton network from id '%s'.", id);
   nucleus::proton::Network network(id);
 
   //- identity ----------------------------------------------------------------
@@ -203,7 +206,6 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     elle::io::Unique group_address_;
     group_address.Save(group_address_);
 
-
     this->_on_got_descriptor(this->_manager.meta().update_network(
                                this->_description._id,
                                nullptr,
@@ -223,7 +225,7 @@ void InfinitNetwork::_prepare_directory()
   LOG("Prepare network directory.");
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
-  shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user()},
+  shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
   hole::storage::Directory storage(shelter_path.string());
@@ -256,8 +258,8 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
-  LOG("Storing the descriptor of %s", this->_description._id);
-  descriptor.store(this->_description._id);
+  LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user_id());
+  descriptor.store(this->_manager.user_id(), this->_description._id);
 
   nucleus::neutron::Object directory{
     from_string<InputBase64Archive>(_description.root_block)
@@ -300,9 +302,12 @@ void InfinitNetwork::_prepare_directory()
 void InfinitNetwork::_register_device()
 {
   LOG("Check if the device is registered for this network.");
-  elle::Passport passport;
+  elle::io::Path passport_path(lune::Lune::Passport);
+  LOG("Complete passport path with user '%s'", this->_manager.user_id());
+  passport_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()});
 
-  passport.load(elle::io::Path(lune::Lune::Passport));
+  elle::Passport passport;
+  passport.load(passport_path);
 
   this->_manager.meta().network_add_device(
     this->_description._id,
@@ -315,8 +320,8 @@ void InfinitNetwork::_register_device()
 /// Update the network nodes set when everything is good
 void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& response)
 {
-  LOG("Got network nodes:");
   lune::Set locusSet;
+
   auto it =  response.nodes.begin(),
        end = response.nodes.end();
   for (; it != end; ++it)
@@ -331,10 +336,13 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
         LOG("Cannot add locus '%s' to the set (ignored).", *it);
       }
   }
-  locusSet.store(this->_description._id);
+
+  locusSet.store(
+    this->_manager.user_id(),
+    this->_description._id
+  );
 
   this->_start_process();
-
 }
 void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {
@@ -397,19 +405,21 @@ void InfinitNetwork::_start_process()
       common::infinit::binary_path("8infinit"),
       this->_description._id.c_str(),
       this->_mount_point,
-      this->_manager.user().c_str());
+      this->_manager.user_id().c_str());
 
   QStringList arguments;
   arguments << "-n" << this->_description._id.c_str()
             << "-m" << this->_mount_point.c_str()
-            << "-u" << this->_manager.user().c_str()
+            << "-u" << this->_manager.user_id().c_str()
             ;
 
+  LOG("8infinit arguments created.")
   // XXX[rename into [network-name].log]
   std::string log_out = path::join(this->_network_dir, "out.log").c_str();
   std::string log_err = path::join(this->_network_dir, "err.log").c_str();
   std::string pid_file = path::join(this->_network_dir, "run.pid").c_str();
 
+  LOG("Set out files paths.")
   if (elle::os::path::exists(pid_file))
     {
       pid_t pid = 0;
@@ -465,9 +475,11 @@ void InfinitNetwork::_start_process()
         }
     }
 
+  LOG("Setting output files to process.");
   this->_process.setStandardOutputFile(log_out.c_str());
   this->_process.setStandardErrorFile(log_err.c_str());
 
+  LOG("Run 8infinit.");
   this->_process.start(
       common::infinit::binary_path("8infinit").c_str(),
       arguments

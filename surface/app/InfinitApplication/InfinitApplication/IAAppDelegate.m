@@ -12,14 +12,46 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <Foundation/NSConnection.h>
 
+#import "StatusBar/IAStatusBarController.h"
+#import "NotificationPanel/IANotificationPanelController.h"
+#ifdef DEBUG_WITHOUT_FINDER
+# import <FinderWindow/IAFinderWindowController.h>
+#endif
+
+#import "IAClientGapState.h"
+#import "IAAppIPCServer.h"
+
+// Unique identifier (No other pointer has the same address).
+// Used to subscribe to the modification of the "hasActivePanel" value.
+static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActivePanelContext";
+
+@interface IAAppDelegate ()
+
+#ifdef DEBUG_WITHOUT_FINDER
+@property (retain) IAFinderWindowController* _window_controller;
+#endif
+
+@property (retain) IAStatusBarController* _status_bar_controller;
+@property (retain) IBOutlet IANotificationPanelController* _notification_panel_controller;
+
+@end
+
 @implementation IAAppDelegate
+{
+@private
+    IAAppIPCServer* _server;
+    NSConnection* _server_conn;
+}
 
 - (void)awakeFromNib
 {
-    NSStatusBar* main_status_bar = [NSStatusBar systemStatusBar];
-    self.status_item = [main_status_bar statusItemWithLength:NSVariableStatusItemLength];
-    [self.status_item setMenu:self.status_menu];
-    [self setDefaultStatus];
+    self._status_bar_controller = [[IAStatusBarController alloc] init];
+    [self.notification_panel setStatusBarController:self._status_bar_controller];
+    [self._notification_panel_controller addObserver:self
+                                          forKeyPath:@"visibility"
+                                             options:0
+                                             context:_context_for_active_panel_event_unique_identifier];
+
     self.drive_path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Contents/Infinit"];
     
     NSFileManager* file_manager = [NSFileManager defaultManager];
@@ -48,7 +80,52 @@
             exit(EXIT_FAILURE);
         }
     }
+#ifdef DEBUG_WITHOUT_FINDER
+    self._window_controller = [[IAFinderWindowController alloc] initFromNib];
+    
+    NSPoint p;
+    p.x = 400;
+    p.y = 200;
+    [[self._window_controller window] setFrameOrigin:p];
+    [self._window_controller showWindow:self];
+#else
+    [self doInject:self];
+#endif
+    _server = [[IAAppIPCServer alloc] initWithAppDelegate:self];
+//    _server_conn = [NSConnection connectionWithRegisteredName:@"io.infinit.InfinitApplication" host:nil];
+    _server_conn = [[NSConnection alloc] init];
+    [_server_conn setRootObject:_server];
+    if (![_server_conn registerName:@"io.infinit.InfinitApplication"])
+        NSLog(@"Cannot register connection!");
 }
+
+-(IBAction)toggleNotificationPanel:(id)sender
+{
+    if ([IAClientGapState ready] && [IAClientGapState gap_instance].logged_in)
+    {
+        [self._notification_panel_controller toggleVisibility];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context
+{
+    NSLog(@"value changed for key path = %@", keyPath);
+    if (context == _context_for_active_panel_event_unique_identifier)
+    {
+        [self._status_bar_controller setIconHighlight:[self._notification_panel_controller visibility]];
+//        self._status_bar_controller.hasActiveIcon = self.panelController.hasActivePanel;
+    }
+    else {
+        [super observeValueForKeyPath:keyPath
+                             ofObject:object
+                               change:change
+                              context:context];
+    }
+}
+
 
 - (IBAction)doInject:(id)sender
 {

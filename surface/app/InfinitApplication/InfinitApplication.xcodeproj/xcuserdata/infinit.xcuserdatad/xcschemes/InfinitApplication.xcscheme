@@ -57,6 +57,23 @@
             ReferencedContainer = "container:InfinitApplication.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "ELLE_LOG_COMPONENTS"
+            value = "*"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "INFINIT_BUILD_DIR"
+            value = "/Users/infinit/sandbox/infinit/build/macosx64"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "ELLE_LOG_LEVEL"
+            value = "DEBUG"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

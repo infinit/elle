@@ -8,17 +8,15 @@ import Queue
 class ClientList(object):
 	def __init__(self):
 		self.clients = {}
-		pass
 
 	def add(self, client):
 		if client.id not in self.clients:
-			self.clients[client.id] = []
-		self.clients[client.id].append(client)
-		pass
+			self.clients[client.id] = set()
+		self.clients[client.id].add(client)
 
 	def remove(self, client):
-		self.clients.pop(client.id)
-		pass
+		self.clients[client.id].remove(client)
+                return len(self.clients[client.id])
 
 	def logged_in(self):
 		return self.clients.viewvalues()

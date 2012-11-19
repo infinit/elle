@@ -1,3 +1,4 @@
+
 # -*- encoding: utf-8 -*-
 
 import web
@@ -9,7 +10,7 @@ import urllib
 import error
 from meta import conf
 from meta import database
-from meta import notification
+from meta import notifier
 from meta import error
 from meta import regexp
 
@@ -48,7 +49,7 @@ class Page(object):
     def notifier(self):
         if self.__notifier is None:
             try:
-                self.__notifier = notification.TrophoniusNotify()
+                self.__notifier = notifier.TrophoniusNotify()
                 self.__notifier.open()
             except Exception as e:
                 print(e)
@@ -80,18 +81,32 @@ class Page(object):
             'password': self.hashPassword(password)
         })
         if user:
+            user['connected'] = True
+            database.users().save(user)
             self._user = user
             self.session._user_id = user['_id']
+            self.notifySwaggers(
+                notifier.USER_STATUS,
+                {
+                    'status': 1,
+                }
+            )
             return True
         else:
             return False
 
     def registerUser(self, **kwargs):
+        kwargs['connected'] = False
         user = database.users().save(kwargs)
         return user
 
-    def connected(self, user_id):
-        return False
+    @staticmethod
+    def connected(user_id):
+        assert isinstance(user_id, database.ObjectId)
+        user = database.users().find_one(user_id)
+        if not user:
+            raise Exception("This user doesn't exist")
+        return user['connected']
 
     def forbidden(self, msg):
         raise web.HTTPError("403 {}".format(msg))
@@ -100,23 +115,25 @@ class Page(object):
         if not self.user:
             self.forbidden("Authentication required.")
 
-    def requireLoggedIn(self):
-        if not self.user:
-            raise web.Forbidden()
-
     def hashPassword(self, password):
         seasoned = password + conf.SALT
         seasoned = seasoned.encode('utf-8')
         return hashlib.md5(seasoned).hexdigest()
 
-    def notifySwaggers(self, data):
-        swgs = self.user["swaggers"]
+    def notifySwaggers(self, notification_id, data, bAll = False):
+        swgs = list(self.user["swaggers"])
+        # if not bAll, notify only the connected ones.
+        if not bAll:
+            for s in swgs:
+                if not connected(s):
+                    swgs.remove(s)
         d = {
-                "recipient_id" : list(swgs),
                 "sender_id" : self.user["_id"],
             }
         d.update(data)
-        self.notifier.send_notify(d)
+        self.notifier.notify_some(notification_id,
+                                  swgs,
+                                  d)
 
     def error(self, err=error.UNKNOWN, msg=""):
         if not msg and err in error.error_details:

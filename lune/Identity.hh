@@ -82,23 +82,26 @@ namespace lune
     ELLE_CONCEPT_FILEABLE_METHODS();
 
     void
-    load(elle::String const& user);
+    load(elle::String const& user_id);
+
     void
-    store(elle::String const& user) const;
+    store() const;
+
     static
     void
-    erase(elle::String const& user);
+    erase(elle::String const& user_id);
+
     static
     elle::Boolean
-    exists(elle::String const& user);
+    exists(elle::String const& user_id);
 
     //
     // attributes
     //
   private:
-    elle::String        _id;
+    elle::String                _id;
   public: // XXX
-    elle::String                      name;
+    elle::String                name;
     cryptography::KeyPair       pair;
     cryptography::Signature     signature;
 

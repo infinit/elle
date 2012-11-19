@@ -41,26 +41,35 @@
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
 
-#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                     \
-  template<>                                                                  \
-  void                                                                        \
-  State::attach_callback<data>(std::function<void (data const*)> callback)    \
-  {                                                                           \
-    if(_notification_handler.find(indice) != _notification_handler.end())     \
-      {                                                                       \
-        return;                                                               \
-      }                                                                       \
-  _notification_handler.insert(                                               \
-    std::make_pair(                                                           \
-      indice,                                                                 \
-      new handler(callback)));                                                \
-  }                                                                           \
+#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                      \
+  void                                                                         \
+  State::attach_callback(std::function<void (data const*)> callback)           \
+  {                                                                            \
+    _notification_handlers[indice].push_back(new handler(callback));           \
+  }                                                                            \
 /**/
 
 namespace surface
 {
   namespace gap
   {
+    void
+    print_transaction(plasma::meta::TransactionResponse const& t)
+    {
+      printf("transaction_id: %s\n", t.transaction_id.c_str());
+      printf("first_filename: %s\n", t.first_filename.c_str());
+      printf("files_count: %i\n", t.files_count);
+      printf("total_size: %i\n", t.total_size);
+      printf("is_directory: %i\n", (int)t.is_directory);
+      printf("network_id: %s\n", t.network_id.c_str());
+      printf("sender_id: %s\n", t.sender_id.c_str());
+      printf("sender_fullname: %s\n", t.sender_fullname.c_str());
+      printf("sender_device_id: %s\n", t.sender_device_id.c_str());
+      printf("recipient_id: %s\n", t.recipient_id.c_str());
+      printf("recipient_fullname: %s\n", t.recipient_fullname.c_str());
+      printf("recipient_device_id: %s\n", t.recipient_device_id.c_str());
+      printf("status: %i\n", t.status);
+    }
 
     namespace fs = boost::filesystem;
     namespace json = elle::format::json;
@@ -95,19 +104,52 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
-      std::ifstream identity_file{common::watchdog::identity_path()};
+      this->attach_callback(
+        std::function<void (gap_TransactionNotification const*)>(
+          std::bind(
+            static_cast<void (State::*)(gap_TransactionNotification const*)>(
+              &State::_on_notification),
+            this,
+            std::placeholders::_1
+          )
+        )
+      );
 
-      if (identity_file.good())
-        {
-          std::string str;
-          std::getline(identity_file, str);
-          this->_meta->token(str);
-          std::getline(identity_file, str);
-          this->_meta->identity(str);
-          std::getline(identity_file, str);
-          this->_meta->email(str);
-        }
+      this->attach_callback(
+        std::function<void (gap_TransactionStatusNotification const*)>(
+          std::bind(
+            static_cast<void (State::*)(gap_TransactionStatusNotification const*)>(
+              &State::_on_notification),
+            this,
+            std::placeholders::_1
+          )
+        )
+      );
     }
+
+    State::State(std::string const& token):
+      State{}
+    {
+   //   std::ifstream identity_file{common::watchdog::identity_path(user)};
+
+   //   if (identity_file.good())
+   //     {
+   //       std::string str;
+   //       std::getline(identity_file, str);
+   //       this->_meta->token(str);
+   //       std::getline(identity_file, str);
+   //       this->_meta->identity(str);
+   //       std::getline(identity_file, str);
+   //       this->_meta->email(str);
+   //     }
+      this->_meta->token(token);
+      auto res = this->_meta->self();
+      this->_meta->identity(res.identity);
+      this->_meta->email(res.email);
+      //XXX factorize that shit
+      this->_me = static_cast<User const&>(res);
+    }
+
 
     State::~State()
     {
@@ -120,6 +162,12 @@ namespace surface
 
       delete this->_trophonius;
       this->_trophonius = nullptr;
+    }
+
+    void
+    State::scratch_db()
+    {
+      this->_meta->debug();
     }
 
     void State::refresh_networks()
@@ -178,8 +226,10 @@ namespace surface
       ELLE_DEBUG("Command sent");
 
       if (response == nullptr)
-        return;
-
+        {
+          ELLE_WARN("Watchdog response is empty.");
+          return;
+        }
       if (!conn.waitForReadyRead(2000))
         throw Exception{
             gap_internal_error,
@@ -212,6 +262,18 @@ namespace surface
 
       this->_users[response._id] = user.get();
       return *(user.release());
+    }
+
+    User const&
+    State::get_me()
+    {
+      return this->_me;
+    }
+
+    std::string const&
+    State::get_token()
+    {
+      return this->_meta->token();
     }
 
     User const&
@@ -273,10 +335,15 @@ namespace surface
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
 
-      this->_me._id = res._id;
-      this->_me.fullname = res.fullname;
-      this->_me.email = res.email;
+      this->_me._id = res._id.c_str();
+      this->_me.fullname = res.fullname.c_str();
+      this->_me.email = res.email.c_str();
       this->_me.public_key = "";
+
+      ELLE_DEBUG("id: '%s' - fullname: '%s' - email: '%s'.",
+                 this->_me._id,
+                 this->_me.fullname,
+                 this->_me.email);
 
       std::string identity_clear;
 
@@ -299,13 +366,18 @@ namespace surface
             throw Exception(gap_internal_error,
                             "Cannot save the identity file.");
 
-          identity.store(email);
+          identity.store();
 
           // user.dic
           lune::Dictionary dictionary;
 
-          dictionary.store(email);
+          dictionary.store(res._id);
         }
+
+        // for (auto t : transactions())
+          // transaction(t.first);
+
+        transactions();
     }
 
     void
@@ -315,32 +387,24 @@ namespace surface
     }
 
     void
-    State::ask_notif(int i)
+    State::pull_notifications(int limit)
     {
-      json::Dictionary request;
-      request["recipient_id"] = this->_me._id;
-      request["notification_id"] = i;
+      if (limit < 1)
+        return;
 
-      switch(i)
-        {
-          case 0:
-            request["debug"] = "U mad ?";
-            break;
-          case 1:
-            request["sender_id"] = this->_me._id;
-            request["transaction_id"] = 875456789;
-            request["file_name"] = "[Childporn] Fabien 28/10/1992.png";
-            request["file_size"] = 8294624;
-            break;
-          case 2:
-            request["transaction_id"] = 875456789;
-            request["status"] = 1;
-            break;
-          default:
-            break;
-        }
+      auto res = this->_meta->pull_notifications(limit);
 
-      this->_meta->debug_ask_notif(request);
+      for (auto dict : res.notifs)
+        this->_handle_dictionnary(dict, true);
+
+      for (auto dict : res.old_notifs)
+        this->_handle_dictionnary(dict, false);
+    }
+
+    void
+    State::notifications_red()
+    {
+      this->_meta->notification_red();
     }
 
     std::string
@@ -352,24 +416,28 @@ namespace surface
     }
 
     void
-    State::send_file_to_new_user(std::string const& recipient_email,
-                                 std::string const& file_path)
+    State::send_files(std::string const& recipient_id_or_email,
+                      std::unordered_set<std::string> const& files)
     {
-      std::string recipient_id = this->invite_user(recipient_email);
+      ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
 
-      this->send_file(recipient_id,
-                      file_path);
-    }
+      if (files.empty())
+            throw Exception(gap_no_file,
+                            "no files to send");
 
-    void
-    State::send_file(std::string const& recipient_id,
-                     std::string const& file_path)
-    {
-      if (!fs::exists(file_path))
-        return;
+      int size = 0;
+      for (auto const& path : files)
+        {
+          if (!fs::exists(path))
+            throw Exception(gap_file_not_found,
+                            "file doesn't exist.");
 
-      int size = get_size(file_path);
-      std::string name = fs::path(file_path).filename().string();
+          size += get_size(path);
+        }
+
+      std::string first_filename = fs::path(*(files.cbegin())).filename().string();
+
+      ELLE_DEBUG("First filename '%s'.", first_filename);
 
       // Build timestamp.
       elle::utility::Time time;
@@ -380,28 +448,54 @@ namespace surface
       oss << time.nanoseconds;
 
       // FIXME: How to compute network name ?
+      /// XXX: Something fucked my id.
       std::string network_name =
-        this->_me._id +
-        + " - "
-        + recipient_id
-        + " - "
-        + name
-        + " - "
+        std::string(recipient_id_or_email)
+        + "-"
         + oss.str();
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
-      // std::string network_id = this->create_network(network_name);
+      std::string network_id = this->create_network(network_name);
 
-      // this->refresh_networks();
+      // Ensure the network status is available
+      (void) this->network_status(network_id);
 
-      // this->network_add_user(network_id, recipient_id);
+      this->_meta->create_transaction(recipient_id_or_email,
+                                      first_filename,
+                                      files.size(),
+                                      size,
+                                      fs::is_directory(first_filename),
+                                      network_id,
+                                      this->_device_id);
+    }
 
-      // this->_meta->send_file(recipient_id,
-      //                        name,
-      //                        size,
-      //                        fs::is_directory(file_path));
+    void
+    State::update_transaction(std::string const& transaction_id,
+                              gap_TransactionStatus status)
+    {
+      ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
+      this->_meta->update_transaction(transaction_id,
+                                      status,
+                                      this->_device_id,
+                                      this->_device_name);
+    }
+
+    void
+    State::_start_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Start transaction '%s'", transaction_id);
+
+      this->_meta->start_transaction(transaction_id);
+    }
+
+    void
+    State::_stop_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Stop transaction '%s'", transaction_id);
+
+      this->_meta->stop_transaction(transaction_id);
     }
 
     void
@@ -424,6 +518,7 @@ namespace surface
       try { this->logout(); } catch (elle::HTTPException const&) {}
 
       this->_meta->register_(email, fullname, password, activation_code);
+
       ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
       this->login(email, password);
     }
@@ -432,13 +527,13 @@ namespace surface
                                8,
                                plasma::trophonius::Client::UserStatusHandler)
 
-    _REGISTER_CALLBACK_HANDLER(gap_FileTransferRequestNotification,
+    _REGISTER_CALLBACK_HANDLER(gap_TransactionNotification,
                                7,
-                               plasma::trophonius::Client::FileTransferRequestHandler)
+                               plasma::trophonius::Client::TransactionHandler)
 
-    _REGISTER_CALLBACK_HANDLER(gap_FileTransferStatusNotification,
+    _REGISTER_CALLBACK_HANDLER(gap_TransactionStatusNotification,
                                11,
-                               plasma::trophonius::Client::FileTransferStatusHandler)
+                               plasma::trophonius::Client::TransactionStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
                                217,
@@ -448,14 +543,57 @@ namespace surface
                                0,
                                plasma::trophonius::Client::BiteHandler)
 
-
-    template<typename T>
-    void
-    State::attach_callback(std::function<void(T const*)> callback)
+    State::TransactionsMap const&
+    State::transactions()
     {
-      static_assert(sizeof(T) == 0, "Call of attach_callback should be specialized.");
-      return;
+      if (_transactions != nullptr)
+        return *_transactions;
+
+      _transactions.reset(new TransactionsMap{});
+
+      auto response = this->_meta->transactions();
+      for (auto const& transaction_id: response.transactions)
+        {
+          auto response = this->_meta->transaction(transaction_id);
+          (*this->_transactions)[transaction_id] =
+            new plasma::meta::TransactionResponse{response};
+        }
+
+      for (auto const& transaction : *(this->_transactions))
+      {
+        print_transaction(*(transaction.second));
+      }
+
+      return *(this->_transactions);
     }
+
+    plasma::meta::TransactionResponse const&
+    State::transaction(std::string const& id)
+    {
+      auto it = this->transactions().find(id);
+      if (it == this->transactions().end())
+        throw Exception{
+            gap_error,
+            "Cannot find any transaction for id '" + id + "'"
+        };
+      return *(it->second);
+    }
+
+    void
+    State::_on_notification(gap_TransactionNotification const* n)
+    {
+      (void) n;
+      printf("_on_notification(gap_TransactionNotification\n");
+    }
+
+    void
+    State::_on_notification(gap_TransactionStatusNotification const* n)
+    {
+      (void) n;
+      printf("_on_notification(gap_TransactionStatusNotification\n");
+    }
+
+
 
     bool
     State::poll()
@@ -465,19 +603,43 @@ namespace surface
       if(!dict_ptr)
         return false;
 
+      ELLE_DEBUG("Dictionnary polled.");
       json::Dictionary const& dict = *dict_ptr;
 
+      return this->_handle_dictionnary(dict);
+    }
+
+    bool
+    State::_handle_dictionnary(json::Dictionary const& dict, bool new_)
+    {
+      ELLE_DEBUG("Dictionnary '%s'.", dict.repr());
+
       if(!dict.contains("notification_id"))
-        return false;
+        {
+          ELLE_WARN("Dictionnary doesn't contains 'notification_id' field.");
+          return false;
+        }
 
       int notification_id = dict["notification_id"].as_integer();
 
-      auto handler = _notification_handler.find(notification_id);
-
-      if (handler == _notification_handler.end())
+      // XXX: Value of shit written in hard coded.
+      // Connexion established.
+      if (notification_id == -666)
         return false;
 
-      (handler->second)->call(dict);
+      auto handler_list = _notification_handlers.find(notification_id);
+
+      if (handler_list == _notification_handlers.end())
+        {
+          ELLE_WARN("Handler missing for notification '%u'", notification_id);
+          return false;
+        }
+
+      for (auto& handler : handler_list->second)
+        {
+          ELLE_ASSERT(handler != nullptr);
+          handler->call(dict, new_);
+        }
 
       return true;
     }
@@ -485,38 +647,49 @@ namespace surface
     bool
     State::has_device() const
     {
-      return fs::exists(common::passport_path());
+      assert(this->_me._id.size() > 0 && "not properly initialized");
+      ELLE_DEBUG("Check for '%s' device existence at '%s'",
+                 this->_me._id,
+                 common::passport_path(this->_me._id));
+      return fs::exists(common::passport_path(this->_me._id));
     }
 
     void
     State::update_device(std::string const& name, bool force_create)
     {
-      ELLE_DEBUG("Registering device %s", name);
-
       std::string passport_string;
 
       elle::io::Path passport_path(lune::Lune::Passport);
+
+      ELLE_WARN("ID: '%s'", this->_me._id);
       passport_path.Complete(elle::io::Piece{"%USER%", this->_me._id});
+
+      this->_device_name = name;
+      ELLE_DEBUG("Device to update: '%s'", this->_device_name.c_str());
 
       if (force_create || !this->has_device())
         {
+          printf("queue\n");
           auto res = this->_meta->create_device(name);
           passport_string = res.passport;
-          ELLE_DEBUG("Created device id: %s", res.created_device_id);
+          this->_device_id = res.created_device_id;
+          ELLE_DEBUG("Created device id: %s", this->_device_id.c_str());
         }
       else
         {
+          ELLE_DEBUG("Loading passport from '%s'.", passport_path);
           elle::Passport passport;
           passport.load(passport_path);
 
           ELLE_DEBUG("Passport id: %s", passport.id);
           auto res = this->_meta->update_device(passport.id, name);
+          this->_device_id = res.updated_device_id;
           passport_string = res.passport;
         }
 
       elle::Passport passport;
       if (passport.Restore(passport_string) == elle::Status::Error)
-        throw Exception(gap_internal_error, "Cannot load the passport");
+        throw Exception(gap_wrong_passport, "Cannot load the passport");
 
       passport.store(passport_path);
     }
@@ -529,6 +702,7 @@ namespace surface
       auto response = this->_meta->create_network(name);
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
+      this->refresh_networks(); //XXX not optimal
       return response.created_network_id;
     }
 
@@ -680,7 +854,7 @@ namespace surface
     void
     State::launch_watchdog()
     {
-      if (!fs::exists(common::passport_path()))
+      if (!this->has_device())
         throw Exception(gap_no_device_error,
                         "Cannot start infinit without any local device");
 
@@ -704,9 +878,8 @@ namespace surface
       std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
       ELLE_WARN("Launching binary: %s", watchdog_binary);
-      QProcess p;
-      if (p.execute(watchdog_binary.c_str()) < 0)
-        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+      if (QProcess::execute(watchdog_binary.c_str()) < 0)
+        throw Exception(gap_internal_error, "Cannot start the watchdog");
 
       // Connect to the new watchdog instance
       QLocalSocket conn;
@@ -752,6 +925,7 @@ namespace surface
           args["token"] = this->_meta->token();
           args["identity"] = this->_meta->identity();
           args["user"] = this->_meta->email();
+          args["user_id"] = this->_me._id;
           this->_send_watchdog_cmd("run", &args);
         }
     }

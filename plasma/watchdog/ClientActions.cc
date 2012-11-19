@@ -75,13 +75,15 @@ void ClientActions::_on_run(Connection&,
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
   QString user = args["user"].toString();
+  QString user_id = args["user_id"].toString();
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.user(user);
+      this->_manager.user_id(user_id);
 
-      std::ofstream identity_infos{common::watchdog::identity_path()};
+      std::ofstream identity_infos{common::watchdog::identity_path(user_id.toStdString())};
 
       if (!identity_infos.good())
         {
@@ -92,6 +94,7 @@ void ClientActions::_on_run(Connection&,
       identity_infos << token.toStdString() << "\n"
                      << identity.toStdString() << "\n"
                      << user.toStdString() << "\n"
+                     << user_id.toStdString() << "\n"
                      ;
 
       if (!identity_infos.good())
@@ -138,6 +141,7 @@ void ClientActions::_on_status(Connection& conn,
                                Client&,
                                QVariantMap const& args)
 {
+  ELLE_DEBUG("Status callback.");
   namespace json = elle::format::json;
 
   CHECK_ID(args);
@@ -149,6 +153,7 @@ void ClientActions::_on_status(Connection& conn,
       network["_id"] = pair.first;
       network["mount_point"] = pair.second->mount_point();
       network["user"] = this->_manager.user();
+      network["user_id"] = this->_manager.user_id();
       networks.push_back(network);
     }
 

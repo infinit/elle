@@ -36,6 +36,11 @@ namespace common
     binary_path(std::string const& name,
                 bool ensure = true);
 
+
+    /// Returns network path.
+    std::string
+    network_directory(std::string const& user_id,
+                      std::string const& network_id);
   }
 
   /// System and Operating System related stuffs
@@ -134,14 +139,14 @@ namespace common
     // XXX scheduled for deletion
     /// Returns the path to the watchdog identity file.
     std::string const&
-    identity_path();
+    identity_path(std::string const& user);
 
   }
 
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
   std::string const&
-  passport_path();
+  passport_path(std::string const& user);
 
 } // !common
 

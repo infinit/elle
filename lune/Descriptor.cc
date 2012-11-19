@@ -4,6 +4,8 @@
 #include <elle/Authority.hh>
 #include <lune/Lune.hh>
 
+#include <common/common.hh>
+
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/concurrency/Scheduler.hh>
@@ -93,13 +95,14 @@ namespace lune
     return (this->_data);
   }
 
-  elle::io::Path
-  Descriptor::_path(elle::String const& user,
-                    elle::String const& network)
+  std::string
+  Descriptor::_path(elle::String const& user_id,
+                    elle::String const& network_id)
   {
-    return (elle::io::Path(Lune::Descriptor,
-                           elle::io::Piece("%USER%", user),
-                           elle::io::Piece("%NETWORK%", network)));
+    return elle::os::path::join(
+      common::infinit::network_directory(user_id, network_id),
+      network_id + ".dsc"
+    );
   }
 
   elle::Status
@@ -126,10 +129,10 @@ namespace lune
   }
 
   void
-  Descriptor::store(elle::String const& user,
-                    elle::String const& network) const
+  Descriptor::store(elle::String const& user_id,
+                    elle::String const& network_id) const
   {
-    this->store(Descriptor::_path(user, network));
+    this->store(Descriptor::_path(user_id, network_id));
   }
 
   void
@@ -144,7 +147,8 @@ namespace lune
                      elle::String const& network)
   {
     return elle::os::path::exists(
-      Descriptor::_path(user, network).string());
+      Descriptor::_path(user, network)
+    );
   }
 
 //

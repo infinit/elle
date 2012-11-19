@@ -33,6 +33,7 @@ void NetworkManager::update_networks()
 
 NetworkManager::NetworkMap const& NetworkManager::networks() const
 {
+  ELLE_DEBUG("Getting networks. %u elements.", this->_networks.size());
   return this->_networks;
 }
 
@@ -88,5 +89,3 @@ void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
   else
     it->second->update(r);
 }
-
-

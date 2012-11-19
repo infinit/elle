@@ -8,6 +8,8 @@
 
 #include <elle/idiom/Close.hh>
 
+ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
+
 // - API responses serializers ------------------------------------------------
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \
@@ -28,11 +30,18 @@
                                                             Value& value)     \
 
 
+SERIALIZE_RESPONSE(plasma::meta::DebugResponse, ar, res)
+{
+  (void) ar;
+  (void) res;
+};
+
+
 SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
 {
   ar & named("token", res.token);
   ar & named("fullname", res.fullname);
-  ar & named("email", res.fullname);
+  ar & named("email", res.email);
   ar & named("identity", res.identity);
   ar & named("_id", res._id);
 }
@@ -57,6 +66,15 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("public_key", res.public_key);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
+{
+  ar & named("_id", res._id);
+  ar & named("fullname", res.fullname);
+  ar & named("email", res.email);
+  ar & named("public_key", res.public_key);
+  ar & named("identity", res.identity);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::UsersResponse, ar, res)
 {
   ar & named("users", res.users);
@@ -79,10 +97,46 @@ SERIALIZE_RESPONSE(plasma::meta::InviteUserResponse, ar, res)
   ar & named("_id", res._id);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::SendFileResponse, ar, res)
+SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
 {
-  (void) ar;
-  (void) res;
+  ar & named("transaction_id", res.transaction_id);
+  ar & named("first_filename", res.first_filename);
+  ar & named("files_count", res.files_count);
+  ar & named("total_size", res.total_size);
+  ar & named("is_directory", res.is_directory);
+  ar & named("network_id", res.network_id);
+  ar & named("sender_id", res.sender_id);
+  ar & named("sender_fullname", res.sender_fullname);
+  ar & named("sender_device_id", res.sender_device_id);
+  ar & named("recipient_id", res.recipient_id);
+  ar & named("recipient_fullname", res.recipient_fullname);
+  ar & named("recipient_device_id", res.recipient_device_id);
+  ar & named("status", res.status);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::TransactionsResponse, ar, res)
+{
+  ar & named("transactions", res.transactions);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::CreateTransactionResponse, ar, res)
+{
+  ar & named("created_transaction_id", res.created_transaction_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::UpdateTransactionResponse, ar, res)
+{
+  ar & named("updated_transaction_id", res.updated_transaction_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::StartTransactionResponse, ar, res)
+{
+  ar & named("updated_transaction_id", res.updated_transaction_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::StopTransactionResponse, ar, res)
+{
+  ar & named("deleted_transaction_id", res.deleted_transaction_id);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
@@ -91,7 +145,13 @@ SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
   (void) res;
 }
 
-SERIALIZE_RESPONSE(plasma::meta::AskNotificationResponse, ar, res)
+SERIALIZE_RESPONSE(plasma::meta::PullNotificationResponse, ar, res)
+{
+  ar & named("notifs", res.notifs);
+  ar & named("old_notifs", res.old_notifs);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::RedNotificationResponse, ar, res)
 {
   (void) ar;
   (void) res;
@@ -171,6 +231,7 @@ namespace plasma
     }
 
     // - API calls ------------------------------------------------------------
+    // XXX add login with token method.
     LoginResponse Client::login(std::string const& email,
                                 std::string const& password)
     {
@@ -205,13 +266,17 @@ namespace plasma
     Client::register_(std::string const& email,
                       std::string const& fullname,
                       std::string const& password,
-                      std::string const& activation_code)
+                      std::string const& activation_code,
+                      std::string const& picture_name,
+                      std::string const& picture_data)
     {
       json::Dictionary request{std::map<std::string, std::string>{
         {"email", email},
         {"fullname", fullname},
         {"password", password},
         {"activation_code", activation_code},
+        {"picture_name", picture_name},
+        {"picture_data", picture_data},
       }};
       return this->_client.post<RegisterResponse>("/user/register", request);
     }
@@ -222,6 +287,12 @@ namespace plasma
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
       return this->_client.get<UserResponse>("/user/" + id + "/view");
+    }
+
+    SelfResponse
+    Client::self()
+    {
+      return this->_client.get<SelfResponse>("/self");
     }
 
     UserResponse
@@ -279,25 +350,91 @@ namespace plasma
       return res;
     }
 
-    SendFileResponse
-    Client::send_file(std::string const& recipient_id,
-                      std::string const& file_name,
-                      size_t size,
-                      bool is_dir
-)
+    CreateTransactionResponse
+    Client::create_transaction(std::string const& recipient_id_or_email,
+                               std::string const& first_filename,
+                               size_t count,
+                               size_t size,
+                               bool is_dir,
+                               std::string const& network_id,
+                               std::string const& device_id)
     {
       json::Dictionary request{std::map<std::string, std::string>
         {
-          {"recipient_id", recipient_id},
-          {"file_name", file_name},
+          {"recipient_id_or_email", recipient_id_or_email},
+          {"first_filename", first_filename},
+          {"device_id", device_id},
+          {"network_id", network_id},
         }};
-      request["file_size"] = size;
-      request["is_dir"] = is_dir;
-      request["notification_id"] = 7;
+      request["total_size"] = size;
+      request["is_directory"] = is_dir;
+      request["files_count"] = count;
 
-      auto res = this->_client.post<SendFileResponse>("/user/share", request);
+      auto res = this->_client.post<CreateTransactionResponse>("/transaction/create", request);
 
       return res;
+    }
+
+    UpdateTransactionResponse
+    Client::update_transaction(std::string const& transaction_id,
+                               int status,
+                               std::string const& device_id,
+                               std::string const& device_name)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+          {"device_id", device_id},
+          {"device_name", device_name},
+        }};
+      request["status"] = status;
+
+      ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%ui'",
+                 transaction_id,
+                 device_name,
+                 status);
+
+      auto res = this->_client.post<UpdateTransactionResponse>("/transaction/update", request);
+
+      return res;
+    }
+
+    StartTransactionResponse
+    Client::start_transaction(std::string const& transaction_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+        }};
+
+      auto res = this->_client.post<StartTransactionResponse>("/transaction/start", request);
+
+      return res;
+    }
+
+    StopTransactionResponse
+    Client::stop_transaction(std::string const& transaction_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+        }};
+
+      auto res = this->_client.post<StopTransactionResponse>("/transaction/stop", request);
+
+      return res;
+    }
+
+    TransactionResponse
+    Client::transaction(std::string const& _id)
+    {
+      return this->_client.get<TransactionResponse>("/transaction/" + _id + "/view");
+    }
+
+    TransactionsResponse
+    Client::transactions()
+    {
+      return this->_client.get<TransactionsResponse>("/transactions");
     }
 
     MessageResponse
@@ -322,13 +459,33 @@ namespace plasma
       return res;
     }
 
-
-    AskNotificationResponse
-    Client::debug_ask_notif(json::Dictionary const& dic)
+    DebugResponse
+    Client::debug()
     {
-      auto res = this->_client.post<AskNotificationResponse>("/debug", dic);
+      return this->_client.get<DebugResponse>("/scratchit");
+    }
+
+
+    PullNotificationResponse
+    Client::pull_notifications(int limit)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+      {
+//        {"empty", ""}
+      }};
+
+      request["limit"] = limit;
+
+      auto res = this->_client.post<PullNotificationResponse>("/notification/get",
+                                                              request);
 
       return res;
+    }
+
+    RedNotificationResponse
+    Client::notification_red()
+    {
+      return this->_client.get<RedNotificationResponse>("/notification/read");
     }
 
     //- Networks --------------------------------------------------------------

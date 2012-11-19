@@ -13,11 +13,19 @@
 # include <plasma/plasma.hh>
 
 # include <elle/HttpClient.hxx>
+# include <surface/gap/gap.h>
 
 namespace plasma
 {
   namespace meta
   {
+    namespace json = elle::format::json;
+
+    /////////////////////////
+    struct DebugResponse : Response
+    {
+    };
+
     struct LoginResponse : plasma::Response
     {
       std::string  token;
@@ -33,18 +41,32 @@ namespace plasma
     struct RegisterResponse : plasma::Response
     {};
 
-    struct AskNotificationResponse : plasma::Response
+    struct PullNotificationResponse : plasma::Response
+    {
+      std::list<json::Dictionary> notifs;
+      std::list<json::Dictionary> old_notifs;
+    };
+
+    struct RedNotificationResponse : plasma::Response
     {};
 
     struct MessageResponse : plasma::Response
     {};
 
-    struct UserResponse : plasma::Response
+    struct User
     {
       std::string _id;
       std::string fullname;
       std::string email;
       std::string public_key;
+    };
+
+    struct UserResponse : User, plasma::Response
+    {};
+
+    struct SelfResponse : UserResponse
+    {
+      std::string identity;
     };
 
     struct InviteUserResponse : plasma::Response
@@ -57,8 +79,47 @@ namespace plasma
       std::list<std::string> users;
     };
 
-    struct SendFileResponse : plasma::Response
+    struct TransactionsResponse : plasma::Response
     {
+      std::list<std::string> transactions;
+    };
+
+    struct TransactionResponse : plasma::Response
+    {
+      std::string           transaction_id;
+      std::string           first_filename;
+      int                   files_count;
+      int                   total_size;
+      bool                  is_directory;
+      std::string           network_id;
+      std::string           sender_id;
+      std::string           sender_fullname;
+      std::string           sender_device_id;
+      std::string           recipient_id;
+      std::string           recipient_fullname;
+      std::string           recipient_device_id;
+      int                   status;
+    };
+
+
+    struct CreateTransactionResponse : plasma::Response
+    {
+      std::string created_transaction_id;
+    };
+
+    struct UpdateTransactionResponse : plasma::Response
+    {
+      std::string updated_transaction_id;
+    };
+
+    struct StartTransactionResponse : plasma::Response
+    {
+      std::string updated_transaction_id;
+    };
+
+    struct StopTransactionResponse : plasma::Response
+    {
+      std::string deleted_transaction_id;
     };
 
     struct NetworksResponse : plasma::Response
@@ -114,7 +175,6 @@ namespace plasma
       std::string             passport;
     };
 
-
     /// Callbacks for API calls.
     typedef std::function<void(LoginResponse const&)> LoginCallback;
     typedef std::function<void(RegisterResponse const&)> RegisterCallback;
@@ -125,10 +185,14 @@ namespace plasma
     typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
     typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
-    namespace json = elle::format::json;
-
     class Client
     {
+    private:
+      elle::HttpClient  _client;
+      std::string       _token;
+      std::string       _identity;
+      std::string       _email;
+
     public:
       Client(std::string const& server,
              uint16_t port,
@@ -136,6 +200,9 @@ namespace plasma
       ~Client();
 
     public:
+      DebugResponse
+      debug();
+
       LoginResponse
       login(std::string const& email,
             std::string const& password);
@@ -147,10 +214,16 @@ namespace plasma
       register_(std::string const& email,
                 std::string const& fullname,
                 std::string const& password,
-                std::string const& activation_code);
+                std::string const& activation_code,
+                std::string const& picture_name = "",
+                std::string const& picture_data = ""
+      );
 
       UserResponse
       user(std::string const& id);
+
+      SelfResponse
+      self();
 
       UserResponse
       user_from_public_key(std::string const& public_key);
@@ -168,20 +241,43 @@ namespace plasma
       InviteUserResponse
       invite_user(std::string const& email);
 
-      SendFileResponse
-      send_file(std::string const& recipient_id,
-                std::string const& file_name,
-                size_t size,
-                bool is_dir = false);
+      TransactionResponse
+      transaction(std::string const& _id);
+
+      TransactionsResponse
+      transactions();
+
+      CreateTransactionResponse
+      create_transaction(std::string const& recipient_id_or_email,
+                         std::string const& first_filename,
+                         size_t count,
+                         size_t size,
+                         bool is_dir,
+                         std::string const& network_id,
+                         std::string const& device_id);
+
+      UpdateTransactionResponse
+      update_transaction(std::string const& transaction_id,
+                         int status,
+                         std::string const& device_id,
+                         std::string const& device_name);
+
+      StartTransactionResponse
+      start_transaction(std::string const& transaction_id);
+
+      StopTransactionResponse
+      stop_transaction(std::string const& transaction_id);
 
       MessageResponse
       send_message(std::string const& recipient_id,
                    std::string const& sender_id, // DEBUG.
                    std::string const& message);
 
-      // DEBUG
-      AskNotificationResponse
-      debug_ask_notif(json::Dictionary const& dic);
+      PullNotificationResponse
+      pull_notifications(int limit);
+
+      RedNotificationResponse
+      notification_red();
 
       NetworkResponse
       network(std::string const& _id);
@@ -230,12 +326,6 @@ namespace plasma
       void identity(std::string const& str);
       std::string const& email() const;
       void email(std::string const& str);
-
-    private:
-      elle::HttpClient _client;
-      std::string _token;
-      std::string _identity;
-      std::string _email;
     };
   }
 }

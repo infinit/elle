@@ -30,7 +30,17 @@ int main (int argc, const char * argv[])
        
        signal(SIGTERM, (sig_t)sigterm);
        launch_data_t req = launch_data_new_string(LAUNCH_KEY_CHECKIN);
+       if (!req)
+       {
+           syslog(LOG_ERR, "Cannot create launch data string");
+           return 1;
+       }
        launch_data_t resp = launch_msg(req);
+       if (!resp)
+       {
+           syslog(LOG_ERR, "Cannot launch msg");
+           return 1;
+       }
        launch_data_t machData = launch_data_dict_lookup(resp, LAUNCH_JOBKEY_MACHSERVICES);
        launch_data_t machPortData = launch_data_dict_lookup(machData, "io.infinit.InfinitDaemon");
        mach_port_t mp = launch_data_get_machport(machPortData);

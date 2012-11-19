@@ -12,6 +12,7 @@
 
 #import <objc/runtime.h>
 #import <syslog.h>
+#import <launch.h>
 
 #import <FinderWindow/IAFinderWindowController.h>
 #import <FinderWindow/IAFinderWindow.h>
@@ -111,7 +112,7 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     IAFinderWindow* window = [WindowLoader retreiveInfinitWindowFor:browserWindow];
     if (window == nil)
     {
-        IAFinderWindowController* window_controller = [[IAFinderWindowController alloc] init];
+        IAFinderWindowController* window_controller = [[IAFinderWindowController alloc] initFromNib];
         window = (IAFinderWindow*)[window_controller window];
         [browserWindow addChildWindow:window
                               ordered:NSWindowAbove];
@@ -144,11 +145,26 @@ syslog(LOG_NOTICE, "Successfully hooked " #hook " method");                     
     
     HOOK_NAV_SETUP(specialNodeOfType:);
     
-
+    NSLog(@"INJECTOR loaded");
     [[WindowLoader instance] initialize];
+   // [self _exposeGapIPC];
 }
 
 
+//+ (void)_exposeGapIPC
+//{
+//    static NSConnection* conn = [NSConnection connectionWithRegisteredName:@"io.infinit.FinderWindow" host:nil];
+//    static IAGapIPC* interface = [[IAGapIPC alloc] init];
+//        NSLog(@"interface: %d", interface.logged_in);
+//    [conn setRootObject:interface];
+//
+//    NSLog(@"Registered Gap interface: %d", interface.logged_in);
+////    int i =0;
+////    while (interface.should_keep_running && [loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]])
+////        NSLog(@"I'm in it : %d", ++i);
+////        ;
+//
+//}
 
 + (BOOL)_exchangeImplementation:(Class)cls ofMethod:(SEL)arg1 withMethod:(SEL)arg2
  {
@@ -290,7 +306,7 @@ struct TFENode
 - (id)_hook_zoneList:(int)arg1
 {
     id initial_list = [self _hook_zoneList:arg1];
-    if (arg1 != 3 /*FAVORITES*/)
+    if (arg1 != 3) //FAVORITES
         return initial_list;
     
     NSString* path = [Test getDrivePath];
@@ -349,7 +365,7 @@ struct TFENode
 ////            
 ////            id new_fbe_node = [[CLS(NSNavFBENode) alloc] initWithPath:@""];
 //            //[new_node performSelector:@selector(setOriginalNode:) withObject:new_cell];
-///*            SEL sel = @selector(initTextCell:);
+// *           SEL sel = @selector(initTextCell:);
 //            id new_cell = [NSClassFromString(@"TSidebarItemCell") alloc];
 //            NSInvocation* inv = [NSInvocation invocationWithMethodSignature:[new_cell methodSignatureForSelector:sel]];
 //            [inv setSelector:sel];
@@ -362,11 +378,10 @@ struct TFENode
 ////            [inv setArgument:&i atIndex:3];
 //            [inv invoke];
 //            [new_cell performSelector:@selector(setTitle:) withObject:@"CELL TITLE"];
-//            [new_cell performSelector:@selector(setStringValue:) withObject:@"CELL STRING VALUE"];*/
+//            [new_cell performSelector:@selector(setStringValue:) withObject:@"CELL STRING VALUE"];* //
 //            //syslog(LOG_NOTICE, "New cell: %s", CSTR(new_cell));
 //        }
 
-    
     return [self _hook_zoneList:arg1];
 }
 
@@ -417,7 +432,8 @@ struct TFENode
                 id img = [self image];
                 if ([img respondsToSelector:@selector(initWithSourceImage:)])
                 {
-                    [img initWithSourceImage:[Test getSidebarImage]];
+                    [img performSelector:@selector(initWithSourceImage:)
+                              withObject:[Test getSidebarImage]];
                 }
                 else if ([self respondsToSelector:@selector(setImage:)])
                 {
@@ -442,11 +458,24 @@ struct TFENode
     [self _initializeInfinitWindow];
     if ([self _isInfinitWindow])
     {
+        syslog(LOG_NOTICE, "IT IS AN INFINIT WINDOW");
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderFront:self];
+    }
+    else
+    {
+        syslog(LOG_NOTICE, "IT IS AN NOT INFINIT WINDOW");
+        [[WindowLoader retreiveInfinitWindowFor:[self window]] orderOut:self];
+    }
+   /* if ([self _isInfinitWindow])
+    {
         [[[WindowLoader retreiveInfinitWindowFor:[self window]] windowController] showWindow:self];
         [[WindowLoader retreiveInfinitWindowFor:[self window]] orderFront:self];
     }
     else
+    {
+        [[[WindowLoader retreiveInfinitWindowFor:[self window]] windowController] hide:self];
         [[WindowLoader retreiveInfinitWindowFor:[self window]] orderOut:self];
+    }*/
 }
 
 - (BOOL)_isInfinitWindow
@@ -454,12 +483,22 @@ struct TFENode
     id view_controller = [self performSelector:@selector(browserViewController)];
     if (view_controller != nil)
     {
+
         TFENode* target = (TFENode*)[view_controller performSelector:@selector(target)];
+
         if (target != nil)
         {
-            NSString* path = [[CLS(NSNavFBENode) _nodeWithFBENode:target->opaque_node_ref] performSelector:@selector(path)];
+                    syslog(LOG_NOTICE, "PIF");
+            NSString* path =
+                [[[CLS(NSNavFBENode) alloc] _initWithFBENode:target->opaque_node_ref]
+                              performSelector:@selector(path)];
+                    syslog(LOG_NOTICE, "PAF");
             if ([path isEqualToString:[Test getDrivePath]])
+            {
+                       syslog(LOG_NOTICE, "YES");
                 return YES;
+            }
+                                   syslog(LOG_NOTICE, "NO");
         }
         else
             syslog(LOG_ERR, "Couldn't retreive the view controller target");
@@ -472,8 +511,8 @@ struct TFENode
 - (void)_initializeInfinitWindow
 {
     //[[self window] setTitle:@"MEGA TITLE DE OUF"];
-    NSWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
-    
+    IAFinderWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
+
     [window setFrame:[self getInfinitWindowsFrameFor:window]
              display:YES
              animate:NO];
@@ -487,10 +526,11 @@ struct TFENode
 
 
 - (void)receiveUpdateFrameNotification:(NSNotification *) notification {
-    IAFinderWindow* window = [WindowLoader retreiveOrCreateInfinitWindowFor:[self window]];
+    IAFinderWindow* window = [WindowLoader retreiveInfinitWindowFor:[self window]];
     if (window != nil) {
         [window setFrame:[self getInfinitWindowsFrameFor:window]
-                 display:YES];
+                 display:[self _isInfinitWindow]];
+
     }
 }
 //
@@ -501,9 +541,9 @@ struct TFENode
 
 
 - (NSRect)getInfinitWindowsFrameFor:(IAFinderWindow*)arg1 {
-    id browserWindow = [self browserWindow];
-    id browserViewContainer = [self browserViewContainer];
-    id browserViewController = [self browserViewController];
+    id browserWindow = [self performSelector:@selector(browserWindow)];
+    id browserViewContainer = [self performSelector:@selector(browserViewContainer)];
+    id browserViewController = [self performSelector:@selector(browserViewController)];
     id browserView = [browserViewController view];
     NSRect windowFrame = [browserWindow frame];
     NSRect browserViewContainerFrame = [browserViewContainer frame];
@@ -543,7 +583,7 @@ struct TFENode
         {
             unsigned long long int selected_menu_node_index = [bbb firstIndex];
             TFENode selected_menu_node = [controller _hook_nodeAtIndex:selected_menu_node_index];
-            NSLog([[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:selected_menu_node.opaque_node_ref] path]);
+//            NSLog([[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:selected_menu_node.opaque_node_ref] path]);
         }
         [self insertItem:[NSMenuItem separatorItem] atIndex:2];
         NSMenuItem *infItem = [self insertItemWithTitle:@"Infinit" action:nil keyEquivalent:@"" atIndex:3];

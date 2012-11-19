@@ -8,6 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+
 @interface IAMainViewController : NSViewController
+
+- (void)refresh;
 
 @end

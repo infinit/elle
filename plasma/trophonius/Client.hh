@@ -50,15 +50,18 @@
       }                                                                 \
                                                                         \
       void                                                              \
-      call(elle::format::json::Dictionary const& dic)                   \
+      call(elle::format::json::Dictionary const& dic, bool _new)        \
       {                                                                 \
-        _call(dic, std::unique_ptr<Notification>(new Notification));    \
+        _call(dic,                                                      \
+              std::unique_ptr<Notification>(new Notification),          \
+              _new);                                                    \
       }                                                                 \
                                                                         \
     private:                                                            \
       void                                                              \
       _call(elle::format::json::Dictionary const& dic,                  \
-              std::unique_ptr<Notification>&& notification);            \
+            std::unique_ptr<Notification>&& notification,               \
+            bool _new);                                                 \
     }                                                                   \
 /**/
 
@@ -70,7 +73,7 @@ namespace plasma
     {
       virtual
       void
-      call(elle::format::json::Dictionary const& dic) = 0;
+      call(elle::format::json::Dictionary const& dic, bool _new = true) = 0;
 
       virtual
       ~BasicHandler()
@@ -86,10 +89,10 @@ namespace plasma
       _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus);
 
       // Generate: FileTransferRequestHandler and FileTransferRequestNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferRequest);
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Transaction);
 
       // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(FileTransferStatus);
+      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(TransactionStatus);
 
       // Generate: MessageHandler and MessageNotification.
       _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message);
