@@ -36,6 +36,11 @@ namespace common
     binary_path(std::string const& name,
                 bool ensure = true);
 
+
+    /// Returns network path.
+    std::string
+    network_directory(std::string const& user_id,
+                      std::string const& network_id);
   }
 
   /// System and Operating System related stuffs

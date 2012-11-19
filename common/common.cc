@@ -19,6 +19,8 @@
 
 #include <common/common.hh>
 
+namespace path = elle::os::path;
+
 namespace
 {
 
@@ -128,6 +130,19 @@ namespace common
         throw std::runtime_error("Cannot find any binary at '" + path + "'");
 
       return (binaries[name] = path);
+    }
+
+    std::string
+    network_directory(std::string const& user_id,
+                      std::string const& network_id)
+    {
+      return path::join(
+          home(),
+          "users",
+          user_id,
+          "networks",
+          network_id
+      );
     }
 
   }
