@@ -865,7 +865,7 @@ namespace surface
         throw Exception(gap_not_logged_in,
                         "Cannot start infinit anonymously");
 
-      std::string old_watchdog_id();
+      std::string old_watchdog_id;
       try
         {
           old_watchdog_id = this->_watchdog_id();
