@@ -223,11 +223,12 @@ namespace surface
       if (!conn.waitForBytesWritten(2000))
           throw Exception(gap_internal_error,
                           "Couldn't send the command '" + cmd + "'");
-      ELLE_DEBUG("Command sent");
+
+      ELLE_DEBUG("Command '%s' sent.", cmd);
 
       if (response == nullptr)
         {
-          ELLE_WARN("Watchdog response is empty.");
+          ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
           return;
         }
       if (!conn.waitForReadyRead(2000))
@@ -864,7 +865,7 @@ namespace surface
         throw Exception(gap_not_logged_in,
                         "Cannot start infinit anonymously");
 
-      std::string old_watchdog_id;
+      std::string old_watchdog_id();
       try
         {
           old_watchdog_id = this->_watchdog_id();

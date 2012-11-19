@@ -117,6 +117,7 @@ static void _init_daemon(std::string const& infinit_home)
               }
           }
 
+
         /* child (daemon) continues */
         setsid(); /* obtain a new process group */
 
@@ -134,6 +135,14 @@ static void _init_daemon(std::string const& infinit_home)
               }
           }
 
+
+          if (::getenv("WATCHDOG_STARTUP_SLEEP") != nullptr)
+          {
+            fprintf(stderr, "===== WATCHDOG_STARTUP_SLEEP. Pid: %i  =====\n",
+                    getpid());
+            ::sleep(10);
+            fprintf(stderr, "===== FINISHED =====\n");
+          }
         //for (i=getdtablesize();i>=0;--i)
         //  close(i); /* close all descriptors */
         //i=open("/dev/null",O_RDWR); dup(i); dup(i); /* handle standart I/O */

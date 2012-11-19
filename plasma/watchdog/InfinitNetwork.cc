@@ -128,6 +128,8 @@ void InfinitNetwork::_update()
     }
   else
     this->_register_device();
+
+  LOG("End of _update");
 }
 
 /// Called when the network does not have any descriptor
@@ -295,6 +297,8 @@ void InfinitNetwork::_prepare_directory()
   LOG("Group block stored.");
 
   this->_register_device();
+
+  LOG("End of prepare directory");
 }
 
 
@@ -315,6 +319,8 @@ void InfinitNetwork::_register_device()
 
   this->_on_network_nodes(this->_manager.meta().network_nodes(
     this->_description._id));
+
+  LOG("End of _register_device.");
 }
 
 /// Update the network nodes set when everything is good
@@ -343,6 +349,8 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
   );
 
   this->_start_process();
+
+  LOG("InfinitNetwork::_on_network_nodes");
 }
 void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {
