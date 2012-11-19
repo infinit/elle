@@ -36,7 +36,7 @@ namespace lune
   private:
     /// XXX
     static
-    elle::io::Path
+    std::string
     _path(elle::String const& user,
           elle::String const& network);
 
