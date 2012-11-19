@@ -1,7 +1,12 @@
-simple_test(Integer "" "tests done." "")
-simple_test(Bool "" "tests done." "")
-simple_test(Null "" "tests done." "")
-simple_test(Float "" "tests done." "")
-simple_test(Dictionary "" "tests done." "")
-simple_test(Array "" "tests done." "")
-simple_test(String "" "tests done." "")
+
+set(FORMAT_LIB
+    elle
+    ${Boost_LIBRARIES})
+
+simple_test(NAME Integer PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME Bool PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME Null PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME Float PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME Dictionary PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME Array PASS_REGEX "tests done." LIB ${FORMAT_LIB})
+simple_test(NAME String PASS_REGEX "tests done." LIB ${FORMAT_LIB})

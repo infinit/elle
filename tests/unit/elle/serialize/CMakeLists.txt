@@ -1,11 +1,15 @@
-simple_test(all_archives "" "tests done." "")
+set(SERIALIZE_LIB
+    ${INFINIT_LIBRARIES} comet lune #Fuck
+    ) 
 
-simple_test(BinaryArchive "" "tests done." "")
-simple_test(JSONArchive "" "tests done." "")
-simple_test(Base64Archive "" "tests done." "")
-simple_test(Pointer "" "tests done." "")
-simple_test(footprint "" "tests done." "")
-simple_test(version_change "" "tests done." "")
-simple_test(Serializable "" "tests done." "")
-simple_test(construct "" "tests done." "")
-simple_test(extract "" "tests done." "")
+simple_test(NAME all_archives PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME BinaryArchive PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME JSONArchive PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME Base64Archive PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME Pointer PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME footprint PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME version_change PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME Serializable PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME construct PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
+simple_test(NAME extract PASS_REGEX "tests done."
+    LIB ${SERIALIZE_LIB})
