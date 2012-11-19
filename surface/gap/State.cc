@@ -58,9 +58,9 @@ namespace surface
     {
       printf("transaction_id: %s\n", t.transaction_id.c_str());
       printf("first_filename: %s\n", t.first_filename.c_str());
-      printf("files_count: %l\n", t.files_count);
-      printf("total_size: %l\n", t.total_size);
-      printf("is_directory: %s\n", t.is_directory);
+      printf("files_count: %i\n", t.files_count);
+      printf("total_size: %i\n", t.total_size);
+      printf("is_directory: %i\n", (int)t.is_directory);
       printf("network_id: %s\n", t.network_id.c_str());
       printf("sender_id: %s\n", t.sender_id.c_str());
       printf("sender_fullname: %s\n", t.sender_fullname.c_str());
@@ -68,7 +68,7 @@ namespace surface
       printf("recipient_id: %s\n", t.recipient_id.c_str());
       printf("recipient_fullname: %s\n", t.recipient_fullname.c_str());
       printf("recipient_device_id: %s\n", t.recipient_device_id.c_str());
-      printf("status: %l\n", t.status);
+      printf("status: %i\n", t.status);
     }
 
     namespace fs = boost::filesystem;
@@ -702,6 +702,7 @@ namespace surface
       auto response = this->_meta->create_network(name);
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
+      this->refresh_networks(); //XXX not optimal
       return response.created_network_id;
     }
 
