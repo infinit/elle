@@ -51,7 +51,9 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _description(response)
   , _manager(manager)
   , _process()
-  , _network_dir{path::join(common::infinit::home(), "networks", response._id)}
+  , _network_dir{
+      common::infinit::network_directory(_manager.user_id(), response._id)
+    }
   , _mount_point{path::join(_network_dir, "mnt")}
 {
   LOG("Creating new network.");
@@ -139,7 +141,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   auto e              = elle::Status::Error;
   auto genreDirectory = nucleus::neutron::Genre::directory;
 
-  LOG("Create proton network from id '%s'." id);
+  LOG("Create proton network from id '%s'.", id);
   nucleus::proton::Network network(id);
 
   //- identity ----------------------------------------------------------------
