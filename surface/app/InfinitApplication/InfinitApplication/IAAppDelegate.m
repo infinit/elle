@@ -101,7 +101,6 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 
 -(IBAction)toggleNotificationPanel:(id)sender
 {
-    NSLog(@"YEAHHAA");
     if ([IAClientGapState ready] && [IAClientGapState gap_instance].logged_in)
     {
         [self._notification_panel_controller toggleVisibility];
