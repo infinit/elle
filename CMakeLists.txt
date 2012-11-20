@@ -284,6 +284,10 @@ set(INFINIT_LIBRARIES
   ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
   readline
   pthread
+
+  nucleus
+  elle
+  comet
 )
 
 OPTION(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)

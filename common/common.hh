@@ -41,6 +41,10 @@ namespace common
     std::string
     network_directory(std::string const& user_id,
                       std::string const& network_id);
+
+    /// Returns user directory path.
+    std::string
+    user_directory(std::string const& user_id);
   }
 
   /// System and Operating System related stuffs
@@ -138,7 +142,7 @@ namespace common
 
     // XXX scheduled for deletion
     /// Returns the path to the watchdog identity file.
-    std::string const&
+    std::string
     identity_path(std::string const& user);
 
   }
