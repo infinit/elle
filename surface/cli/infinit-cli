@@ -16,7 +16,6 @@ import sys
 
 # Poll thread
 import time
-import datetime
 import threading
 
 
@@ -273,43 +272,45 @@ class InfinitShell(cmd.Cmd):
             print(e)
 
     ###########################################################################
-    # .
+    # Send files.
     _sendfiles_argument_parser = make_simple_argument_parser(
-        prog = "send_files",
+        prog = "sendfiles",
         description = "Invite a user to exchange a file. If the user doesn't exist, invite him to infinit.",
         args = [
             {
                 'flags': 'user',
                 'help': 'email of the user to invite (can also be its id).',
             },
+            {
+                'flags': 'files',
+                'action': 'append',
+                'help': 'files to send.',
+            }
         ],
     )
 
-    def help_send_files(self):
+    def help_sendfiles(self):
         self._sendfiles_argument_parser.print_help()
 
-    def do_send_files(self, line):
+    def do_sendfiles(self, line):
         args = self._get_args(self._sendfiles_argument_parser, line)
         if not args:
             return
 
         recipient = args.user
 
-        files = []
-        _file = input("List here the file(s) you want to send.\nFile: ")
-        while _file:
-            files.append(_file)
-            _file = input("File: ")
-
-        if not files:
-            print('No file to send.')
-            return
-
         try:
             self._state.send_files(recipient, files)
         except Exception as e:
             print(e)
 
+    # def complete_sendfiles(self, text, line, begidx, endidx):
+    #     # XXX: Finish completion.
+    #     print(text, line, begidx, endidx, sep="|")
+    #     return []
+
+    ###########################################################################
+    # Default.
     def default(self, line):
         if line == 'EOF':
             print()
@@ -486,8 +487,8 @@ def main():
         print("Authentication required (if you don't have an account, try -r)")
         login(state)
 
-    state.OnFileTransfer(_IncommingFileTransferHandler)
-    state.OnFileTransferStatus(_FileTransferStatusHandler)
+    state.OnTransaction(_IncommingFileTransferHandler)
+    state.OnTransactionStatus(_FileTransferStatusHandler)
     state.OnMessage(_MessageHandler)
     thread = PollThread(state)
     thread.start()
@@ -506,8 +507,6 @@ def _MessageHandler(message):
     print("_MessageHandler")
 
 class PollThread (threading.Thread):
-    now = datetime.datetime.now()
-    count = 0
     close = False
 
     def __init__(self, state):
@@ -517,12 +516,8 @@ class PollThread (threading.Thread):
     def run (self):
         self.bite = False
         while True:
-            time.sleep(0.05)
-            self.count += (datetime.datetime.now() - self.now).microseconds
-            if self.count > 1000000:
-                self.state.poll()
-                self.count -= 1000000
-            self.now = datetime.datetime.now()
+            time.sleep(0.5)
+            self.state.poll()
             if self.close == True:
                 return
 
