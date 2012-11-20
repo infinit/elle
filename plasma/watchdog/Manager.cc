@@ -11,6 +11,7 @@
 #include "Connection.hh"
 #include "Manager.hh"
 #include "NetworkManager.hh"
+#include "InfinitNetwork.hh"
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
@@ -33,6 +34,8 @@ Manager::~Manager()
   this->_commands = nullptr;
   delete this->_actions;
   this->_actions = nullptr;
+  delete this->_network_manager;
+  this->_network_manager = nullptr;
 }
 
 void Manager::token(QByteArray const& token)
