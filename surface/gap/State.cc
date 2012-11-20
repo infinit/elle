@@ -786,6 +786,7 @@ namespace surface
           for (size_t i = 0; i < networks.size(); ++i)
             {
               auto& network = networks[i].as_dictionary();
+              ELLE_DEBUG("network '%i': '%s'", i, network["_id"].as_string());
               std::string mount_point = network["mount_point"].as_string();
               std::string network_id = network["_id"].as_string();
 
