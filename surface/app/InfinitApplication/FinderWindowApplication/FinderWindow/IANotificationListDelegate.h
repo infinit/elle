@@ -16,7 +16,14 @@
 // Number of rows.
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view;
 
+/**
+ * @brief Update a transaction notification row with a new status.
+ */
 - (void)updateTransactionStatus:(IATransactionStatusNotification*)notif;
+
+/**
+ * @brief Triggered by a pending transaction notification.
+ */
 - (IBAction)on_accept:(id)sender;
 - (IBAction)on_reject:(id)sender;
 

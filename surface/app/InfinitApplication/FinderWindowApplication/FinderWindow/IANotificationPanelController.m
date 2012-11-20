@@ -27,9 +27,6 @@
                                              selector:@selector(_onTransactionStatusNotification:)
                                                  name:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
                                                object:nil];
-//    NSLog(@"YEAH I'm there: %@", self.source);
-//    for (int i=0; i < 200; ++i)
-//        [self.source addNotification:[[NSString alloc] initWithFormat:@"ROW %d", i]];
 }
 
 - (void)_onTransactionNotification:(NSNotification*)n;
@@ -45,7 +42,6 @@
     assert([[n object] isKindOfClass:[IATransactionStatusNotification class]]);
     IATransactionStatusNotification* notif = [n object];
     [self.source updateTransactionStatus:notif];
-    //[[self source] addNotification:notif];
     [self.table reloadData];
 }
 
@@ -65,7 +61,7 @@
     if (visibility)
     {
         [NSApp activateIgnoringOtherApps:YES];
-        [[self panel]  makeKeyAndOrderFront:self];
+        [[self panel] makeKeyAndOrderFront:self];
         [[self panel] setOrderedIndex:0];
         [[self panel] show];
     }

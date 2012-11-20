@@ -136,4 +136,11 @@
                         onObject:(id)object;
 
 
+/**
+ * @brief Accept transaction.
+ */
+- (void)       rejectTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object;
+
 @end

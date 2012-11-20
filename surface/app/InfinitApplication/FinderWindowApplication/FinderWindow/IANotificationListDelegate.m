@@ -172,6 +172,25 @@
 - (IBAction)on_reject:(id)sender
 {
     NSLog(@"reject");
+    NSUInteger row = [self.table rowForView:sender];
+    IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
+    
+    id item = [_notifications objectAtIndex:row];
+    assert([item isKindOfClass:[IATransactionNotification class]]);
+    IATransactionNotification* notif = item;
+    NSLog(@"reject for view: %@", view);
+    [view freeze];
+    [[IAClientGapState gap_instance] rejectTransaction:notif
+                                       performSelector:@selector(_on_reject_done:)
+                                              onObject:self];
+}
+
+- (IBAction)_on_reject_done:(IAGapOperationResult*)op
+{
+    if (op.success)
+    {
+        NSLog(@"Reject with success");
+    }
 }
 
 @end

@@ -34,6 +34,7 @@
     
     return self;
 }
+
 - (void)freeze
 {
     [self.accept_button setEnabled:FALSE];
