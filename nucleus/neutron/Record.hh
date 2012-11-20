@@ -49,6 +49,14 @@ namespace nucleus
       `------*/
     public:
       typedef Subject Symbol;
+      struct Valid;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Valid*, valid);
 
       /*-------------.
       | Construction |
@@ -151,13 +159,6 @@ namespace nucleus
         /// permission.
         ELLE_ATTRIBUTE_R(Token*, token);
       };
-
-      /*-----------.
-      | Attributes |
-      `-----------*/
-    private:
-      ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Valid*, valid);
     };
 
   }

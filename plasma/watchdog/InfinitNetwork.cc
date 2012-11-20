@@ -225,24 +225,27 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
+  using elle::serialize::from_string;
+  using elle::serialize::InputBase64Archive;
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
   hole::storage::Directory storage(shelter_path.string());
-  LOG("Built directory storage of %s", this->_description._id);
 
-  assert(this->_description.root_block.size());
-  assert(this->_description.descriptor.size());
+  {
+    LOG("Built directory storage of %s", this->_description._id);
 
-  LOG("Create lune descriptor of %s", this->_description._id);
+    assert(this->_description.root_block.size());
+    assert(this->_description.descriptor.size());
 
-  using elle::serialize::from_string;
-  using elle::serialize::InputBase64Archive;
-  lune::Descriptor descriptor{
-    from_string<InputBase64Archive>(_description.descriptor)
-  };
+    LOG("Create lune descriptor of %s", this->_description._id);
+
+    lune::Descriptor descriptor{
+      from_string<InputBase64Archive>(_description.descriptor)
+    };
+    LOG("Lune descriptor created");
 
   // XXX[pas forcement necessaire si le format n'a pas change entre
   //     la version du descriptor et celle d'Infinit. il faudrait
@@ -260,41 +263,46 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
-  LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user_id());
-  descriptor.store(this->_manager.user_id(), this->_description._id);
+    LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user_id());
+    descriptor.store(this->_manager.user_id(), this->_description._id);
 
-  nucleus::neutron::Object directory{
-    from_string<InputBase64Archive>(_description.root_block)
-  };
+    nucleus::neutron::Object directory{
+      from_string<InputBase64Archive>(_description.root_block)
+    };
 
-  storage.store(descriptor.meta().root(), directory);
-  LOG("Root block stored.");
+    storage.store(descriptor.meta().root(), directory);
+    LOG("Root block stored.");
+  }
 
-  LOG("Storing access block.");
-  LOG("block: '%s'.", _description.access_block);
-  nucleus::neutron::Access access{
-    from_string<InputBase64Archive>(_description.access_block)
-  };
-  LOG("address: '%s'.", _description.access_address);
-  nucleus::proton::Address access_address{
-    from_string<InputBase64Archive>(_description.access_address)
-  };
-  LOG("Deserialization complete.");
-  storage.store(access_address, access);
-  LOG("Address block stored.");
+  {
+    LOG("Storing access block.");
+    LOG("block: '%s'.", _description.access_block);
+    nucleus::neutron::Access access{
+      from_string<InputBase64Archive>(_description.access_block)
+    };
+    LOG("address: '%s'.", _description.access_address);
+    nucleus::proton::Address access_address{
+      from_string<InputBase64Archive>(_description.access_address)
+    };
+    LOG("Deserialization complete.");
+    storage.store(access_address, access);
+    LOG("Address block stored.");
+  }
 
-  LOG("Storing group block.");
-  LOG("block: '%s'.", _description.group_block);
-  nucleus::neutron::Group group{
-    from_string<InputBase64Archive>(_description.group_block)
-  };
-  LOG("address: '%s'.", _description.group_address);
-  nucleus::proton::Address group_address{
-    from_string<InputBase64Archive>(_description.group_address)
-  };
-  LOG("Deserialization complete.");
-  storage.store(group_address, group);
-  LOG("Group block stored.");
+  {
+    LOG("Storing group block.");
+    LOG("block: '%s'.", _description.group_block);
+    nucleus::neutron::Group group{
+      from_string<InputBase64Archive>(_description.group_block)
+    };
+    LOG("address: '%s'.", _description.group_address);
+    nucleus::proton::Address group_address{
+      from_string<InputBase64Archive>(_description.group_address)
+    };
+    LOG("Deserialization complete.");
+    storage.store(group_address, group);
+    LOG("Group block stored.");
+  }
 
   this->_register_device();
 
@@ -326,6 +334,7 @@ void InfinitNetwork::_register_device()
 /// Update the network nodes set when everything is good
 void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& response)
 {
+  LOG("begin");
   lune::Set locusSet;
 
   auto it =  response.nodes.begin(),
@@ -350,7 +359,7 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
 
   this->_start_process();
 
-  LOG("InfinitNetwork::_on_network_nodes");
+  LOG("end");
 }
 void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {

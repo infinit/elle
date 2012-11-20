@@ -104,12 +104,28 @@ namespace nucleus
       static const elle::Natural32 keypair_length;
 
       //
+      // attributes
+      //
+    private:
+      ELLE_ATTRIBUTE_R(elle::String, description);
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, pass_K);
+      ELLE_ATTRIBUTE_RW(Size, size);
+      ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
+      ELLE_ATTRIBUTE_R(proton::Address, ensemble);
+      ELLE_ATTRIBUTE_R(Token, manager_token);
+      ELLE_ATTRIBUTE(cryptography::Signature, signature);
+      // XXX[not serialized]
+      ELLE_ATTRIBUTE(Fellow*, manager_fellow); //XXX unique_ptr
+
+      //
       // construction
       //
     public:
       Group();
       ELLE_SERIALIZE_CONSTRUCT(Group, ImprintBlock)
-      {}
+      {
+        _manager_fellow = nullptr;
+      }
       Group(proton::Network const& network,
             cryptography::PublicKey const& manager_K,
             elle::String const& description);
@@ -160,19 +176,6 @@ namespace nucleus
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
       ELLE_SERIALIZE_FRIEND_FOR(Group);
 
-      //
-      // attributes
-      //
-    private:
-      ELLE_ATTRIBUTE_R(elle::String, description);
-      ELLE_ATTRIBUTE_R(cryptography::PublicKey, pass_K);
-      ELLE_ATTRIBUTE_RW(Size, size);
-      ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
-      ELLE_ATTRIBUTE_R(proton::Address, ensemble);
-      ELLE_ATTRIBUTE_R(Token, manager_token);
-      ELLE_ATTRIBUTE(cryptography::Signature, signature);
-      // XXX[not serialized]
-      ELLE_ATTRIBUTE(Fellow*, manager_fellow);
     };
 
   }
