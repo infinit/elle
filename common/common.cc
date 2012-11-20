@@ -137,11 +137,19 @@ namespace common
                       std::string const& network_id)
     {
       return path::join(
-          home(),
-          "users",
-          user_id,
+          user_directory(user_id),
           "networks",
           network_id
+      );
+    }
+
+    std::string
+    user_directory(std::string const& user_id)
+    {
+      return path::join(
+          home(),
+          "users",
+          user_id
       );
     }
 
@@ -327,23 +335,13 @@ namespace common
 
   namespace watchdog
   {
-    static
     std::string
-    _identity_path(std::string const& user)
+    identity_path(std::string const& user_id)
     {
-      ELLE_ASSERT(!lune::Lune::Identity.string.empty());
-
-      elle::io::Path identity_path(lune::Lune::Identity);
-      identity_path.Complete(elle::io::Piece{"%USER%", user});
-
-      return identity_path.string();
-    }
-
-    std::string const&
-    identity_path(std::string const& user)
-    {
-      static std::string const path(_identity_path(user));
-      return path;
+        return path::join(
+          infinit::user_directory(user_id),
+          "identity.wtg"
+        );
     }
 
     std::string const&
