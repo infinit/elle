@@ -48,9 +48,11 @@ namespace
   {
     static std::unordered_map<std::string, std::string> paths{
       {"8access",   "satellites/access/8access"},
-      {"8group",   "satellites/group/8group"},
+      {"8group",    "satellites/group/8group"},
       {"8infinit",  "8infinit"},
       {"8watchdog", "plasma/watchdog/8watchdog"},
+      {"8transfer", "satellites/transfer/8transfer"},
+      {"8progess",  "satellites/transfer/8progress"},
     };
     auto it = paths.find(name);
     if (it == paths.end())
