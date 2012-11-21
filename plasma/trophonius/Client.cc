@@ -164,49 +164,56 @@ namespace plasma
     Client::_read_socket()
     {
       boost::system::error_code err;
+      auto old_available = _impl->response.in_avail();
       // Read socket.
-      std::size_t size =  boost::asio::read_until(_impl->socket,
-                                                  _impl->response,
-                                                  '\n',
-                                                  err);
-
-      if(!err && size != 0)
+      std::size_t size =  boost::asio::read_until(
+        _impl->socket, _impl->response, "\n", err
+      );
+      auto new_available = _impl->response.in_avail();
+      if (new_available != old_available)
         {
-          try
-            {
-              ELLE_TRACE("Recieved stream from trophonius.");
-
-              // Bind stream to response.
-              std::istream is(&(_impl->response));
-              // Don't skip whitespaces in the stream.
-              is >> std::noskipws;
-
-              std::stringstream debug_ss;
-
-              // Copy stream to streambuff.
-              std::copy(
-                std::istream_iterator<char>(is),
-                std::istream_iterator<char>(),
-                std::ostream_iterator<char>(debug_ss)
-              );
-
-              auto tmp = elle::format::json::parse(debug_ss);
-
-              _notifications.push(&tmp->as_dictionary());
-
-              tmp.release();
-            }
-          catch (std::exception const& err)
-            {
-              throw elle::HTTPException(elle::ResponseCode::bad_content, err.what());
-            }
+          if (size)
+            ELLE_DEBUG("Read %s bytes from the socket (will use %s)",
+                       new_available - old_available,
+                       size);
+          else
+            ELLE_DEBUG("Read %s bytes from the socket (still not enough to build an object)",
+                       new_available - old_available);
         }
-      else if (err != boost::asio::error::would_block)
+      ELLE_DEBUG("Nothing to read");
+
+      if (err)
         {
-          // An important error occurred.
-          throw elle::HTTPException(elle::ResponseCode::error,
-                                    elle::sprintf("Reading socket error: '%s'",
-                                                  err));
+          if (err != boost::asio::error::would_block)
+            throw elle::HTTPException{elle::ResponseCode::error,
+                elle::sprintf("Reading socket error: '%s'", err)
+            };
+          else
+            return;
+        }
+      if (size == 0)
+        return;
+      try
+        {
+          ELLE_DEBUG("Recieved stream from trophonius.");
+
+          // Bind stream to response.
+          std::istream is(&(_impl->response));
+
+          // Don't skip whitespaces in the stream.
+          is >> std::noskipws;
+
+          auto tmp = elle::format::json::parse(is);
+
+          _notifications.push(&tmp->as_dictionary());
+
+          tmp.release();
+        }
+      catch (std::runtime_error const& err)
+        {
+          throw elle::HTTPException{
+            elle::ResponseCode::bad_content, err.what()
+          };
         }
     }
 
@@ -214,8 +221,7 @@ namespace plasma
     Client::connect(std::string const& _id,
                     std::string const& token)
     {
-      json::Dictionary connection_request{std::map<std::string, std::string>
-      {
+      json::Dictionary connection_request{std::map<std::string, std::string>{
         {"_id", _id},
         {"token", token},
       }};
@@ -234,7 +240,7 @@ namespace plasma
         _impl->socket,
         _impl->request,
         err
-        );
+      );
 
       if (!err)
         return true;
