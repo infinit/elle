@@ -9,10 +9,11 @@
 #include <iostream>
 #include <fstream>
 
-
 #include <elle/idiom/Close.hh>
 
 #include <elle/print.hh>
+
+#include <fcntl.h>
 
 ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
@@ -42,8 +43,7 @@ namespace plasma
         , check_errors{check_errors}
         , request{}  // Use once to initiate connection.
         , response{}
-      {
-      }
+      {}
     };
 
 
@@ -191,8 +191,8 @@ namespace plasma
 
       // Start connect operation.
       _impl->socket.connect(*endpoint_iterator);
-
       _impl->socket.non_blocking(true);
+      ::fcntl(_impl->socket.native_handle(), F_SETFD, 1);
     }
 
     void
