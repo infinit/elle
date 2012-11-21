@@ -224,7 +224,7 @@ namespace reactor
 
     template <typename AsioSocket>
     typename PlainSocket<AsioSocket>::EndPoint
-    PlainSocket<AsioSocket>::localEndpoint() const
+    PlainSocket<AsioSocket>::local_endpoint() const
     {
         return this->_socket->local_endpoint();
     }
