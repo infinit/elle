@@ -8,6 +8,7 @@
 #include <elle/network/Interface.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/cast.hh>
+#include <elle/nat/Nat.hh>
 
 #include <agent/Agent.hh>
 
@@ -149,6 +150,9 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   if (agent::Agent::Initialize() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
+
+  // Create the NAT Manipulation class
+  elle::nat::NAT NAT(elle::concurrency::scheduler());
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
