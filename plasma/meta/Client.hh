@@ -317,6 +317,25 @@ namespace plasma
                              std::string const* external_ip = nullptr,
                              uint16_t external_port = 0);
 
+      template <class Container>
+      NetworkConnectDeviceResponse
+      network_connect_device(std::string const& network_id,
+                             std::string const& device_id,
+                             Container const & local_endpoints,
+                             std::string const* external_ip = nullptr,
+                             uint16_t external_port = 0);
+
+    private:
+
+      using adapter_type = std::vector<std::pair<std::string, uint16_t>>;
+
+      NetworkConnectDeviceResponse
+      _network_connect_device(std::string const& network_id,
+                              std::string const& device_id,
+                              adapter_type const& local_endpoints,
+                              std::string const* external_ip = nullptr,
+                              uint16_t external_port = 0);
+
 
 
     public:
@@ -329,5 +348,7 @@ namespace plasma
     };
   }
 }
+
+#include "plasma/meta/Client.hxx"
 
 #endif
