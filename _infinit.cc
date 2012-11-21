@@ -274,6 +274,11 @@ Main(elle::Natural32 argc, elle::Character* argv[])
     {
       Infinit(argc, argv);
     }
+  catch (elle::utility::ParserException const &e)
+  {
+      std::cerr << e.what() << std::endl;
+      Infinit::Parser->Usage();
+  }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
@@ -292,8 +297,11 @@ int
 main(int argc, char* argv[])
 {
   reactor::Scheduler& sched = elle::concurrency::scheduler();
-  reactor::VThread<elle::Status> main(sched, "Infinit main",
-                                      boost::bind(&Main, argc, argv));
+  reactor::VThread<elle::Status> main(sched,
+                                      "Infinit main",
+                                      [&argc, &argv] () -> elle::Status {
+                                        return Main(argc, argv);
+                                      });
   sched.run();
   return main.result() == elle::Status::Ok ? 0 : 1;
 }

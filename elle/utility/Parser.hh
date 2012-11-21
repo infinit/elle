@@ -5,6 +5,8 @@
 
 #include <elle/radix/Entity.hh>
 
+#include <elle/Exception.hh>
+
 #include <elle/idiom/Close.hh>
 # include <vector>
 # include <unistd.h>
@@ -15,6 +17,18 @@ namespace elle
 {
   namespace utility
   {
+    /*
+     * This class is used to throw exception from the Parser, instead of using
+     * escape.
+     *
+     * This allow for clearer diagnostics of incorrect inputs.
+     */
+    class ParserException : public elle::Exception
+    {
+    public:
+      template <typename ...ARGS>
+      ParserException(elle::String const &fmt, ARGS && ... args);
+    };
 
     ///
     /// this class wraps the command line parser by enabling one to define
