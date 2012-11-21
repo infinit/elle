@@ -13,7 +13,7 @@ project(Infinit C CXX)
 # - Set target directories ----------------------------------------------------
 #
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 
 # - Infinit version -----------------------------------------------------------
