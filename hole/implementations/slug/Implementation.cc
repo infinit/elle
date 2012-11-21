@@ -29,8 +29,8 @@ namespace hole
         reactor::Duration connection_timeout):
         Hole(storage, passport, authority),
         _members(members),
-        _port(port),
-        _connection_timeout(connection_timeout)
+        _connection_timeout(connection_timeout),
+        _port(port)
       {}
 
       /*------------.
