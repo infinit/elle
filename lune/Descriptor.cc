@@ -1,8 +1,10 @@
 #include <Infinit.hh>
 
 #include <lune/Descriptor.hh>
-#include <elle/Authority.hh>
 #include <lune/Lune.hh>
+#include <lune/Identity.hh>
+#include <elle/Authority.hh>
+
 
 #include <common/common.hh>
 
@@ -129,10 +131,10 @@ namespace lune
   }
 
   void
-  Descriptor::store(elle::String const& user_id,
-                    elle::String const& network_id) const
+  Descriptor::store(Identity const& identity) const
   {
-    this->store(Descriptor::_path(user_id, network_id));
+    ELLE_TRACE("store descriptor with %s", identity);
+    this->store(Descriptor::_path(identity.id(), this->meta().id()));
   }
 
   void

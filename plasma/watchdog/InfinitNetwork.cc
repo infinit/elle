@@ -258,8 +258,15 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
-  LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user_id());
-  descriptor.store(this->_manager.user_id(), this->_description._id);
+
+  lune::Identity identity{};
+  LOG("Loading Identity")
+  {
+    identity.load(this->_manager.user_id());
+  }
+
+  LOG("Storing the descriptor of %s for user %s", _description._id, identity);
+  descriptor.store(identity);
 
   nucleus::neutron::Object directory{
     from_string<InputBase64Archive>(_description.root_block)

@@ -30,7 +30,6 @@ namespace lune
   elle::io::Pattern Lune::Authority;
   elle::io::Pattern Lune::Users;
   elle::io::Pattern Lune::User;
-  elle::io::Pattern Lune::Identity;
   elle::io::Pattern Lune::Dictionary;
   elle::io::Pattern Lune::Passport;
   elle::io::Pattern Lune::Configuration;
@@ -77,16 +76,6 @@ namespace lune
             "users" +
             elle::system::path::separator +
             "%USER%") == elle::Status::Error)
-        escape("unable to create the pattern");
-
-      if (Lune::Identity.Create(
-            home +
-            elle::system::path::separator +
-            "users" +
-            elle::system::path::separator +
-            "%USER%" +
-            elle::system::path::separator +
-            "%USER%.idy") == elle::Status::Error)
         escape("unable to create the pattern");
 
       if (Lune::Dictionary.Create(

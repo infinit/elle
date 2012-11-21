@@ -1,6 +1,7 @@
 #ifndef LUNE_IDENTITY_HH
 # define LUNE_IDENTITY_HH
 
+# include <elle/attribute.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/fwd.hh>
@@ -65,7 +66,7 @@ namespace lune
   private:
     /// XXX
     static
-    elle::io::Path
+    std::string
     _path(elle::String const& user);
 
     //
@@ -98,8 +99,8 @@ namespace lune
     //
     // attributes
     //
-  private:
-    elle::String                _id;
+  public:
+    ELLE_ATTRIBUTE_RW(elle::String, id);
   public: // XXX
     elle::String                name;
     cryptography::KeyPair       pair;

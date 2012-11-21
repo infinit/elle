@@ -2,6 +2,8 @@
 #include <elle/Authority.hh>
 #include <lune/Lune.hh>
 
+#include <common/common.hh>
+
 #include <cryptography/KeyPair.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/SecretKey.hh>
@@ -10,8 +12,12 @@
 #include <elle/io/Piece.hh>
 #include <elle/serialize/TupleSerializer.hxx>
 
+namespace path = elle::os::path;
+
 namespace lune
 {
+
+  ELLE_LOG_COMPONENT("infinit.lune.Identity");
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -164,11 +170,13 @@ namespace lune
     return elle::Status::Ok;
   }
 
-  elle::io::Path
-  Identity::_path(elle::String const& user)
+  std::string
+  Identity::_path(elle::String const& user_id)
   {
-    return (elle::io::Path(Lune::Identity,
-                           elle::io::Piece("%USER%", user)));
+    return path::join(
+      common::infinit::user_directory(user_id),
+      user_id + ".idy"
+    );
   }
 
 //
@@ -226,12 +234,17 @@ namespace lune
   void
   Identity::load(elle::String const& user_id)
   {
-    this->load(Identity::_path(user_id));
+    elle::io::Path path{
+        Identity::_path(user_id)
+    };
+
+    this->load(path);
   }
 
   void
   Identity::store() const
   {
+    ELLE_TRACE("store identity %s", *this);
     this->store(Identity::_path(this->_id));
   }
 
@@ -244,7 +257,7 @@ namespace lune
   elle::Boolean
   Identity::exists(elle::String const& user_id)
   {
-    return (elle::os::path::exists(Identity::_path(user_id).string()));
+    return (elle::os::path::exists(Identity::_path(user_id)));
   }
 
 }
