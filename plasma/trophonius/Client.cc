@@ -58,9 +58,7 @@ namespace plasma
     {
       ELLE_TRACE("Handling user status modification.");
 
-      std::string temp = dic["user_id"].as_string();
-      notification->user_id = temp.c_str();
-
+      notification->user_id = dic["user_id"].as_string().value().c_str();
       notification->status = dic["status"].as_integer();
 
       this->callback(notification.get());
@@ -75,30 +73,18 @@ namespace plasma
     {
       ELLE_TRACE("Handling new file transfer request.");
 
-      std::string temp = dic["transaction_id"].as_string();
-      notification->transaction_id = temp.c_str();
-
-      temp = dic["first_filename"].as_string();
-      notification->first_filename = temp.c_str();
-
+      notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
+      notification->first_filename = dic["first_filename"].as_string().value().c_str();
       notification->files_count = dic["files_count"].as_integer();
       notification->total_size = dic["total_size"].as_integer();
       notification->is_directory = dic["is_directory"].as_bool();
-
-      temp = dic["network_id"].as_string();
-      notification->network_id = temp.c_str();
-
-      temp = dic["sender_id"].as_string();
-      notification->sender_id = temp.c_str();
-
-      temp = dic["sender_fullname"].as_string();
-      notification->sender_fullname = temp.c_str();
-
-      temp = dic["recipient_id"].as_string();
-      notification->recipient_id = temp.c_str();
-
+      notification->network_id = dic["network_id"].as_string().value().c_str();
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->sender_fullname = dic["sender_fullname"].as_string().value().c_str();
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
       notification->is_new = _new;
 
+      ELLE_DEBUG("Deserialized successfuly.");
       this->callback(notification.get());
     }
 
@@ -111,34 +97,19 @@ namespace plasma
     {
       ELLE_TRACE("Handling file transfer status update.");
 
-      std::string temp = dic["transaction_id"].as_string();
-      notification->transaction_id = temp.c_str();
-
-      temp = dic["network_id"].as_string();
-      notification->network_id = temp.c_str();
-
-      temp = dic["recipient_id"].as_string();
-      notification->network_id = temp.c_str();
-
-      temp = dic["sender_id"].as_string();
-      notification->network_id = temp.c_str();
-
-      temp = dic["sender_device_id"].as_string();
-      notification->sender_device_id = temp.c_str();
-
-      temp = dic["recipient_device_id"].as_string();
-      notification->recipient_device_id = temp.c_str();
-
-      temp = dic["recipient_device_name"].as_string();
-      notification->recipient_device_name = temp.c_str();
-
+      notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
+      notification->network_id = dic["network_id"].as_string().value().c_str();
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
+      notification->recipient_device_id = dic["recipient_device_id"].as_string().value().c_str();
+      notification->recipient_device_name = dic["recipient_device_name"].as_string().value().c_str();
       notification->status = dic["status"].as_integer();
-
       notification->is_new = _new;
 
+      ELLE_DEBUG("Deserialized successfuly.");
       this->callback(notification.get());
     }
-
     ////////////////////////////////
     // Message.
     void
@@ -148,12 +119,8 @@ namespace plasma
     {
       ELLE_TRACE("Handling new message.");
 
-      std::string temp = dic["sender_id"].as_string();
-      notification->sender_id = temp.c_str();
-
-      temp = dic["message"].as_string();
-      notification->message = temp.c_str();
-
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->message = dic["message"].as_string().value().c_str();
       notification->is_new = _new;
 
       // Use callback function.
@@ -168,9 +135,7 @@ namespace plasma
                                std::unique_ptr<Notification>&& notification,
                                bool _new)
     {
-      std::string temp = dic["debug"].as_string();
-      notification->debug = temp.c_str();
-
+      notification->debug = dic["debug"].as_string().value().c_str();
       notification->is_new = _new;
 
       // Use callback function.
