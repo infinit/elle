@@ -142,6 +142,7 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_TransactionStatus_accepted", gap_transaction_status_accepted)
     .value("gap_TransactionStatus_ready", gap_transaction_status_ready)
     .value("gap_TransactionStatus_started", gap_transaction_status_started)
+    .value("gap_TransactionStatus_deleted", gap_transaction_status_deleted)
     .value("gap_TransactionStatus_finished", gap_transaction_status_finished)
     .value("gap_TransactionStatus_count", _gap_transaction_status_count)
     .export_values()
@@ -171,7 +172,6 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("get_notifications", &gap_meta_pull_notification);
   py::def("notifications_red", &gap_meta_notifications_red);
   py::def("scratch_db", &gap_debug);
-
   py::def("poll", &gap_poll);
 
   //- Notifications ------------------------------------------------------------
@@ -190,6 +190,7 @@ BOOST_PYTHON_MODULE(_gap)
   ////////////////////////////////
   // File transfer request.
   py::class_<gap_TransactionNotification, boost::noncopyable>("TransactionNotification", py::no_init)
+    .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
     .def_readonly("first_filename", &gap_TransactionNotification::first_filename)
     .def_readonly("files_count", &gap_TransactionNotification::files_count)
     .def_readonly("total_size", &gap_TransactionNotification::total_size)
@@ -197,7 +198,7 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("network_id", &gap_TransactionNotification::network_id)
     .def_readonly("sender_id", &gap_TransactionNotification::sender_id)
     .def_readonly("sender_fullname", &gap_TransactionNotification::sender_fullname)
-    .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
+    .def_readonly("recipient_id", &gap_TransactionNotification::recipient_id)
     .def_readonly("new", &gap_TransactionNotification::is_new)
   ;
   py::def(
@@ -211,6 +212,8 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
     .def_readonly("network_id", &gap_TransactionStatusNotification::network_id)
     .def_readonly("sender_device_id", &gap_TransactionStatusNotification::sender_device_id)
+    .def_readonly("sender_id", &gap_TransactionStatusNotification::sender_id)
+    .def_readonly("recipient_id", &gap_TransactionStatusNotification::recipient_id)
     .def_readonly("recipient_device_name", &gap_TransactionStatusNotification::recipient_device_name)
     .def_readonly("recipient_device_id", &gap_TransactionStatusNotification::recipient_device_id)
     .def_readonly("status", &gap_TransactionStatusNotification::status)
@@ -267,6 +270,7 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());
+  py::def("_id", &gap_self_id, by_value());
 
   //- Watchdog ----------------------------------------------------------------
 

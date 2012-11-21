@@ -114,6 +114,10 @@ class State:
         pw_hash = self._call('hash_password', email, password)
         self._call('register', fullname, email, pw_hash, dev_name, activation_code)
 
+    @property
+    def _id(self):
+        return self._call('_id');
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

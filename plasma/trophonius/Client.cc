@@ -94,6 +94,9 @@ namespace plasma
       temp = dic["sender_fullname"].as_string();
       notification->sender_fullname = temp.c_str();
 
+      temp = dic["recipient_id"].as_string();
+      notification->recipient_id = temp.c_str();
+
       notification->is_new = _new;
 
       this->callback(notification.get());
@@ -112,6 +115,12 @@ namespace plasma
       notification->transaction_id = temp.c_str();
 
       temp = dic["network_id"].as_string();
+      notification->network_id = temp.c_str();
+
+      temp = dic["recipient_id"].as_string();
+      notification->network_id = temp.c_str();
+
+      temp = dic["sender_id"].as_string();
       notification->network_id = temp.c_str();
 
       temp = dic["sender_device_id"].as_string();

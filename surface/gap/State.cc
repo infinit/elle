@@ -231,7 +231,7 @@ namespace surface
           ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
           return;
         }
-      if (!conn.waitForReadyRead(2000))
+      if (!conn.waitForReadyRead(-1)) // Infinit is maybe too long, or not.
         throw Exception{
             gap_internal_error,
             "Couldn't read response of '" + cmd + "' command"
@@ -462,6 +462,25 @@ namespace surface
       // Ensure the network status is available
       (void) this->network_status(network_id);
 
+      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
+
+      QStringList arguments;
+      arguments << "-n" << network_id.c_str()
+                << "-u" << this->_me._id.c_str()
+                << "--path" << files.cbegin()->c_str()
+                << "--to"
+      ;
+      ELLE_DEBUG("LAUNCH: %s %s",
+                      transfer_binary,
+                      arguments.join(" ").toStdString());
+
+      QProcess p;
+      p.start(transfer_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8transfer binary failed");
+      if (p.exitCode())
+        throw Exception(gap_internal_error, "8transfer binary exited with errors");
+
       this->_meta->create_transaction(recipient_id_or_email,
                                       first_filename,
                                       files.size(),
@@ -477,6 +496,29 @@ namespace surface
     {
       ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
+      switch(status)
+      {
+        case gap_TransactionStatus::gap_transaction_status_accepted:
+          this->_accept_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_rejected:
+          this->_deny_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_started:
+          this->_start_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_deleted:
+          //this->_delete_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_finished:
+          this->_stop_transaction(transaction_id);
+          break;
+        default:
+          ELLE_WARN("You are not able to change transaction status to '%i'.",
+            status);
+          return;
+      }
+
       this->_meta->update_transaction(transaction_id,
                                       status,
                                       this->_device_id,
@@ -484,11 +526,25 @@ namespace surface
     }
 
     void
+    State::_accept_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Accept transaction '%s'", transaction_id);
+    }
+
+    void
+    State::_deny_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Deny transaction '%s'", transaction_id);
+    }
+
+    void
     State::_start_transaction(std::string const& transaction_id)
     {
       ELLE_DEBUG("Start transaction '%s'", transaction_id);
 
-      this->_meta->start_transaction(transaction_id);
+      auto res = this->_meta->start_transaction(transaction_id);
+
+      (void) res;
     }
 
     void
@@ -496,7 +552,9 @@ namespace surface
     {
       ELLE_DEBUG("Stop transaction '%s'", transaction_id);
 
-      this->_meta->stop_transaction(transaction_id);
+      auto res = this->_meta->stop_transaction(transaction_id);
+
+      (void) res;
     }
 
     void
@@ -560,11 +618,6 @@ namespace surface
             new plasma::meta::TransactionResponse{response};
         }
 
-      for (auto const& transaction : *(this->_transactions))
-      {
-        print_transaction(*(transaction.second));
-      }
-
       return *(this->_transactions);
     }
 
@@ -583,8 +636,26 @@ namespace surface
     void
     State::_on_notification(gap_TransactionNotification const* n)
     {
-      (void) n;
-      printf("_on_notification(gap_TransactionNotification\n");
+      assert(n != nullptr);
+
+      if (!n->is_new)
+        return;
+
+      auto trans = State::transactions().find(n->transaction_id);
+
+      if (trans != State::transactions().end())
+        throw Exception(
+          gap_error,
+          "This transaction is already stored.");
+
+
+
+
+
+#ifdef DEBUG
+
+#endif
+
     }
 
     void
@@ -670,7 +741,6 @@ namespace surface
 
       if (force_create || !this->has_device())
         {
-          printf("queue\n");
           auto res = this->_meta->create_device(name);
           passport_string = res.passport;
           this->_device_id = res.created_device_id;
@@ -783,10 +853,12 @@ namespace surface
           this->_send_watchdog_cmd("status", nullptr, &response);
 
           auto& networks = response["networks"].as_array();
+
           for (size_t i = 0; i < networks.size(); ++i)
             {
+              ELLE_DEBUG("network '%i'.", i);
               auto& network = networks[i].as_dictionary();
-              ELLE_DEBUG("network '%i': '%s'", i, network["_id"].as_string());
+              ELLE_DEBUG("> '%s'.", network["_id"].as_string());
               std::string mount_point = network["mount_point"].as_string();
               std::string network_id = network["_id"].as_string();
 
@@ -808,6 +880,10 @@ namespace surface
               };
             }
           this->_networks_status_dirty = false;
+        }
+      else
+        {
+          ELLE_DEBUG("Networks are clean.");
         }
       return this->_networks_status;
     }

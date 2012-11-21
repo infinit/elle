@@ -221,7 +221,7 @@ extern "C"
   {
     assert(transaction_id != nullptr);
     assert(   status > gap_TransactionStatus::gap_transaction_status_none
-              && status < gap_TransactionStatus::_gap_transaction_status_count);
+           && status < gap_TransactionStatus::_gap_transaction_status_count);
 
     __WRAP_CPP_RET(state,
                    update_transaction,
@@ -458,6 +458,22 @@ extern "C"
       {
         auto token = __TO_CPP(state)->get_token();
         return token.c_str();
+      }
+    CATCH_ALL(user_token);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_self_id(gap_State* state)
+  {
+    assert(state != nullptr);
+    gap_Status ret;
+    try
+      {
+        auto user_id = __TO_CPP(state)->get_me()._id;
+        return user_id.c_str();
       }
     CATCH_ALL(user_token);
 

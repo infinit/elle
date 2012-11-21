@@ -164,6 +164,13 @@ namespace surface
       void
       _stop_transaction(std::string const& transaction_id);
 
+      void
+      _accept_transaction(std::string const& transaction_id);
+
+      void
+      _deny_transaction(std::string const& transaction_id);
+
+
     private:
       std::string _device_id;
       std::string _device_name;

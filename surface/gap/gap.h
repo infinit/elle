@@ -158,6 +158,7 @@ extern "C" {
     gap_transaction_status_accepted,
     gap_transaction_status_ready,
     gap_transaction_status_started,
+    gap_transaction_status_deleted,
     gap_transaction_status_finished,
     _gap_transaction_status_count,
   } gap_TransactionStatus;
@@ -191,6 +192,8 @@ extern "C" {
     const char* sender_id;
     const char* sender_fullname;
     const char* transaction_id;
+    const char* recipient_id;
+
     int is_new;
   } gap_TransactionNotification;
 
@@ -207,6 +210,8 @@ extern "C" {
   {
     const char* transaction_id;
     const char* network_id;
+    const char* sender_id;
+    const char* recipient_id;
     const char* sender_device_id;
     const char* recipient_device_id;
     const char* recipient_device_name;
@@ -311,6 +316,9 @@ extern "C" {
   /// - Self ----------------------------------------------------------------
   char const*
   gap_user_token(gap_State* state);
+
+  char const*
+  gap_self_id(gap_State* state);
 
   /// - User ----------------------------------------------------------------
 
