@@ -180,7 +180,8 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       plasma::meta::Client client(common::meta::host(), common::meta::port());
       try
         {
-          std::string address;
+          std::vector<std::pair<std::string, uint16_t>> addresses;
+
           auto interfaces = elle::network::Interface::get_map(
             elle::network::Interface::Filter::only_up
             | elle::network::Interface::Filter::no_loopback
@@ -189,22 +190,24 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
             if (pair.second.ipv4_address.size() > 0 &&
                 pair.second.mac_address.size() > 0)
               {
-                address = pair.second.ipv4_address;
+                addresses.emplace_back(pair.second.ipv4_address, slug->port());
                 break;
               }
-          if (address.size() == 0)
+          if (addresses.size() == 0)
             {
               ELLE_ERR("Cannot find any valid ip address");
             }
           else
             {
-              ELLE_LOG("Register instance address: %s:%d", address,
-                       slug->port());
+              for (auto const &pair: addresses)
+              {
+                ELLE_LOG("Register instance address: %s:%d", pair.first,
+                         pair.second);
+              }
               client.token(agent::Agent::meta_token);
               client.network_connect_device(descriptor.meta().id(),
-                                            passport.id(),
-                                            &address,
-                                            slug->port());
+                                            passport.id,
+                                            addresses);
             }
         }
       catch (std::exception const& err)
