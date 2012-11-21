@@ -223,11 +223,11 @@ namespace plasma
                 std::istream_iterator<char>(is),
                 std::istream_iterator<char>(),
                 std::ostream_iterator<char>(debug_ss)
-                );
+              );
 
               auto tmp = elle::format::json::parse(debug_ss);
 
-              _notifications.push(dynamic_cast<json::Dictionary*>(tmp.get()));
+              _notifications.push(&tmp->as_dictionary());
 
               tmp.release();
             }

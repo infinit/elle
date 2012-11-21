@@ -39,7 +39,7 @@
 
 #include <signal.h>
 
-ELLE_LOG_COMPONENT("infinit.surface.gap");
+ELLE_LOG_COMPONENT("infinit.surface.gap.State");
 
 #define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                      \
   void                                                                         \
@@ -670,6 +670,7 @@ namespace surface
     bool
     State::poll()
     {
+      ELLE_TRACE("Polling trophonius client.");
       std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
 
       if(!dict_ptr)
