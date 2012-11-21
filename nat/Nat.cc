@@ -1,3 +1,4 @@
+#include <sstream>
 #include <elle/nat/Nat.hh>
 #include <elle/concurrency/Scheduler.hh>
 
@@ -35,21 +36,32 @@ Hole::~Hole()
 }
 
 void
-Hole::requestPublicIP(void)
+Hole::sayHello(void)
 {
-    int n;
-    char msg[] = "echo sasp\n";
+    char msg[] = "hello\n";
     std::string resp;
 
     resp.resize(512);
     this->_handle->write(rnet::Buffer(msg, sizeof(msg)));
-    n = this->_handle->read_some(rnet::Buffer(resp));
+}
+
+void
+Hole::exchangeIP(void)
+{
+    std::string resp;
+    std::stringstream ss;
+
+    ss << "local " << this->_handle->local_endpoint() << std::endl;
+    resp.resize(512);
+    this->_handle->write(rnet::Buffer(ss.str()));
+    this->_handle->read_some(rnet::Buffer(resp));
 }
 
 void
 Hole::drill(void)
 {
-    this->requestPublicIP();
+    this->sayHello();
+    this->exchangeIP();
 }
 
 // class Hole }}}
@@ -71,7 +83,6 @@ void
 KeepAlive::run(void)
 {
     std::string  buf;
-    int n;
 
     buf.resize(128);
     while (this->running == true)
@@ -79,7 +90,7 @@ KeepAlive::run(void)
         reactor::Sleep s(this->sched, boost::posix_time::seconds(2));
 
         handle->write(rnet::Buffer(std::string("ping\n")));
-        n = handle->read_some(rnet::Buffer(buf));
+        handle->read_some(rnet::Buffer(buf));
         s.run();
     }
 }

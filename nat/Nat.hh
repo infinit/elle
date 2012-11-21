@@ -43,7 +43,10 @@ public:
 
 public:
     void
-    requestPublicIP(void);
+    sayHello(void);
+
+    void
+    exchangeIP(void);
 
     void
     drill(void);
