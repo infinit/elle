@@ -157,6 +157,8 @@ void ClientActions::_on_status(Connection& conn,
       networks.push_back(network);
     }
 
+  ELLE_DEBUG("Status: Building response.");
+
   json::Dictionary response;
   response["networks"] = networks;
   conn.send_data((response.repr() + "\n").c_str());
