@@ -258,7 +258,15 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                 (gap_transaction_callback(self.state, &on_transaction) == gap_ok) &&
                 (gap_transaction_status_callback(self.state, &on_transaction_status) == gap_ok))
             {
-                gap_meta_pull_notification(self.state, 10);
+                if (gap_meta_pull_notification(self.state, 10) != gap_ok)
+                {
+                    NSLog(@"WARNING: Couldn't fetch notifications from meta");
+                }
+                if (gap_trophonius_connect(self.state) != gap_ok)
+                {
+                    NSLog(@"WARNING: Cannot connect to tropho !");
+                    return;
+                }
                 _polling = TRUE;
                 [self _poll];
             }
@@ -358,7 +366,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
             res = gap_set_device_name(self.state, [device_name UTF8String]);
         
         if (res == gap_ok)
-            res = gap_trophonius_connect(self.state);
+        {}
         else
             NSLog(@"Cannot login !");
         
