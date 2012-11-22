@@ -458,6 +458,20 @@ namespace surface
       // Ensure the network status is available
       (void) this->network_status(network_id);
 
+      auto portal_path = common::infinit::portal_path(
+        this->_me._id,
+        network_id
+      );
+      for (int i = 0; i < 10; ++i)
+        {
+          if (fs::exists(portal_path))
+            break;
+          ::sleep(1);
+        }
+
+      if (!fs::exists(portal_path))
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
       QStringList arguments;
