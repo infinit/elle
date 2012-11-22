@@ -27,9 +27,23 @@ namespace elle
       void
       serialize(OutputArchive& archive) const = 0;
 
+      /// This method can be used with rvalue-references.
+      void
+      serialize(OutputArchive&& archive) const
+      {
+        // XXX this->serialize(archive);
+      }
+
       virtual
       void
       deserialize(InputArchive& archive) = 0;
+
+      /// This method can be used with rvalue-references.
+      void
+      deserialize(InputArchive&& archive)
+      {
+        // XXX this->deserialize(archive);
+      }
 
       virtual
       void
