@@ -1,11 +1,10 @@
 #include "metalib.hh"
 
-#include <lune/Identity.hh>
-
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 
 #include <cryptography/random.hh>
+#include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
@@ -28,7 +27,7 @@ using namespace infinit;
 
 static elle::Passport create_passport(elle::String const& id,
                                       elle::String const& name,
-                                      elle::String const& user_id,
+                                      elle::String const& user_pubkey,
                                       elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
@@ -44,11 +43,11 @@ static elle::Passport create_passport(elle::String const& id,
   if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
 
-  lune::Identity identity;
-  identity.load(user_id);
+  cryptography::PublicKey pubkey{};
+  pubkey.Restore(user_pubkey);
 
   elle::Passport passport{
-      id, name, identity.pair.K(), authority
+      id, name, pubkey, authority
   };
 
   return passport;
@@ -61,13 +60,13 @@ metalib_generate_passport(PyObject*, PyObject* args)
   PyObject* ret = nullptr;
   char const* id = nullptr,
             * name = nullptr,
-            * user_id = nullptr,
+            * pubkey = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
   if (!PyArg_ParseTuple(args, "sssss:generate_passport",
-                        &id, &name, &user_id, &authority_file, &authority_password))
+                        &id, &name, &pubkey, &authority_file, &authority_password))
     return nullptr;
-  if (!id || !authority_file || !name || !user_id || !authority_password)
+  if (!id || !authority_file || !name || !pubkey || !authority_password)
     return nullptr;
 
   Py_BEGIN_ALLOW_THREADS;
@@ -75,7 +74,7 @@ metalib_generate_passport(PyObject*, PyObject* args)
   try
     {
       auto passport = create_passport(
-          id, name, user_id, authority_file, authority_password
+          id, name, pubkey, authority_file, authority_password
       );
       elle::String passport_string;
       if (passport.Save(passport_string) != elle::Status::Error)

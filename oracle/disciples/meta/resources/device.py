@@ -89,7 +89,7 @@ class Create(Page):
         to_save['passport'] = metalib.generate_passport(
             str(id_),
             str(to_save['name']),
-            str(self.user['_id']),
+            self.user['public_key'],
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
