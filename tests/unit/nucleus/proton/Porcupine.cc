@@ -345,7 +345,7 @@ test_porcupine_catalog()
 #ifdef PORCUPINE_SERIALIZE_TEST
   nucleus::proton::Porcupine porcupine2 =
     test_porcupine_serialize(porcupine1, secret1, vector);
-  /* XXX
+
   test_porcupine_remove(porcupine2, vector, N / 3, N / 3);
 
   cryptography::SecretKey secret2;
@@ -355,7 +355,6 @@ test_porcupine_catalog()
 
   nucleus::proton::Porcupine porcupine3 =
     test_porcupine_serialize(porcupine2, secret2, vector);
-  */
 #endif
 
   test_porcupine_remove(porcupine1, vector, 0, vector.size());
