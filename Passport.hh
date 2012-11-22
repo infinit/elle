@@ -1,21 +1,16 @@
 #ifndef ELLE_PASSPORT_HH
 # define ELLE_PASSPORT_HH
 
-# include <lune/fwd.hh>
+# include <elle/attribute.hh>
 # include <elle/Authority.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <cryptography/Signature.hh>
 
 // XXX[temporary: for cryptography]
 using namespace infinit;
-
-# include <hole/Label.hh>
-
-# include <elle/idiom/Open.hh>
-
-# include <elle/Authority.hh>
 
 namespace elle
 {
@@ -28,40 +23,37 @@ namespace elle
     public elle::concept::MakeFileable<Passport>,
     public elle::concept::MakeUniquable<Passport>
   {
+  private:
+    ELLE_ATTRIBUTE_R(elle::String, id);
+    ELLE_ATTRIBUTE_R(elle::String, name);
+    cryptography::PublicKey _owner_K;
+    cryptography::Signature _signature;
+
     /*-------------.
     | Construction |
     `-------------*/
   public:
-    Passport(); // XXX[to deserialize]
-    Passport(hole::Label const& label,
-             elle::String const& id);
+    Passport(); // XXX Do not use (sheduled for deletion)
+    ELLE_SERIALIZE_CONSTRUCT(Passport) {}
+    Passport(elle::String const& id,
+             elle::String const& name,
+             cryptography::PublicKey const& owner_K,
+             elle::Authority const& authority);
 
   public:
-    //
-    // methods
-    //
-    elle::Status        Seal(elle::Authority const&);
-    elle::Status        Validate(elle::Authority const&) const;
+    /// Check the passport signature.
+    bool
+    validate(elle::Authority const&) const;
 
-    //
-    // interfaces
-    //
-  public:
-    // dumpable
-    elle::Status        Dump(const elle::Natural32 = 0) const;
+    /// Dump the passport.
+    void
+    dump(const elle::Natural32 = 0) const;
 
-    // fileable
+    /// Passport is fileable.
     ELLE_CONCEPT_FILEABLE_METHODS();
 
-    //
-    // attributes
-    //
-    hole::Label         label;
-
-    // XXX[temporary: mongodb id]
-    elle::String        id;
-
-    cryptography::Signature     signature;
+  private:
+    ELLE_SERIALIZE_FRIEND_FOR(Passport);
   };
 
 }
