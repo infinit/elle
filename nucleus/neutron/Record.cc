@@ -263,7 +263,7 @@ namespace nucleus
     `----------*/
 
     Subject const&
-    Record::symbol()
+    Record::symbol() const
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);

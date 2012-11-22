@@ -239,19 +239,14 @@ namespace etoile
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");
 
-      /* XXX[porcupine: now needless]
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-      */
-
       // If the index starts with 0, include the manager by creating
       // a record for him.
       if (index == 0)
         {
           // Add the manager's fellow to the range.
-          if (range.Add(&context.group->manager_fellow()) == elle::Status::Error)
-            escape("unable to add the owner record");
+          range.insert(
+            std::shared_ptr<nucleus::neutron::Fellow>{
+              new nucleus::neutron::Fellow{context.group->manager_fellow()}});
 
           // Consult the ensemble by taking care of consulting one fellow
           // less i.e the manager's.
@@ -263,8 +258,8 @@ namespace etoile
 
               r = context.ensemble->consult(index, size - 1);
 
-              if (range.Add(r) == elle::Status::Error)
-                escape("unable to add the consulted range to the final range");
+              // XXX[this is not optimised: insert the manager afterwards]
+              range.add(r);
             }
           catch (...)
             {

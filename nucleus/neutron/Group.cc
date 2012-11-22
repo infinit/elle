@@ -12,17 +12,12 @@ namespace nucleus
   namespace neutron
   {
 
-    /*------------------.
-    | Static Attributes |
-    `------------------*/
-
-    Component const Group::_component{ComponentGroup};
-
     /*----------.
     | Constants |
     `----------*/
 
     elle::Natural32 const Group::Constants::keypair_length{1024};
+    Component const Group::Constants::component{ComponentGroup};
 
 //
 // ---------- construction ----------------------------------------------------

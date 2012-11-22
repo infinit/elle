@@ -16,6 +16,7 @@ namespace nucleus
     ///
     elle::Status        Attributes::Add(Trait*                  trait)
     {
+      /* XXX
       // check that the trait's name is non-empty.
       if (trait->name().empty() == true)
         escape("unable to create an empty-named trait in the attributes");
@@ -23,7 +24,7 @@ namespace nucleus
       // add the trait in the range.
       if (this->range.Add(trait) == elle::Status::Error)
         escape("unable to add the trait in the range");
-
+      */
       return elle::Status::Ok;
     }
 
@@ -32,9 +33,11 @@ namespace nucleus
     ///
     elle::Boolean       Attributes::Exist(const elle::String&   name) const
     {
+      /* XXX
       // test.
       if (this->range.Exist(name) == false)
-        return false;
+        return elle::Status::False;
+      */
 
       return true;
     }
@@ -45,10 +48,11 @@ namespace nucleus
     elle::Status        Attributes::Lookup(const elle::String&  name,
                                            Trait const*& trait) const
     {
+      /* XXX
       // look in the range.
       if (this->range.Lookup(name, trait) == false)
         escape("unable to retrieve the trait");
-
+      */
       return elle::Status::Ok;
     }
 
@@ -60,14 +64,9 @@ namespace nucleus
                                             const Size&         size,
                                             Range<Trait>&       range) const
     {
+      /* XXX
       Range<Trait>::Scoutor     scoutor;
       Index                     i;
-
-      /* XXX[porcupine: now useless]
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-      */
 
       // go through the attributes entries.
       for (scoutor = this->range.container.begin(), i = 0;
@@ -84,6 +83,7 @@ namespace nucleus
                 escape("unable to add the trait to the range");
             }
         }
+      */
 
       return elle::Status::Ok;
     }
@@ -94,6 +94,7 @@ namespace nucleus
     elle::Status        Attributes::Update(const elle::String&  name,
                                            const elle::String&  value)
     {
+      /* XXX
       Range<Trait>::Iterator    iterator;
 
       // locate the trait.
@@ -102,6 +103,7 @@ namespace nucleus
 
       // update the value.
       (*iterator)->value(value);
+      */
 
       return elle::Status::Ok;
     }
@@ -111,9 +113,11 @@ namespace nucleus
     ///
     elle::Status        Attributes::Remove(const elle::String&  name)
     {
+      /* XXX
       // remove the trait from the range.
       if (this->range.Remove(name) == elle::Status::Error)
         escape("unable to remove the trait");
+      */
 
       return elle::Status::Ok;
     }
@@ -123,9 +127,11 @@ namespace nucleus
     ///
     elle::Status        Attributes::Capacity(Size&              size) const
     {
+      /* XXX
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the range size");
+      */
 
       return elle::Status::Ok;
     }
@@ -137,11 +143,13 @@ namespace nucleus
     elle::Boolean
     Attributes::operator ==(Attributes const& other) const
     {
+      /* XXX
       // check the address as this may actually be the same object.
       if (this == &other)
         return true;
 
       return (this->range == other.range);
+      */
     }
 
 //
@@ -153,6 +161,7 @@ namespace nucleus
     ///
     elle::Status        Attributes::Dump(elle::Natural32        margin) const
     {
+      /* XXX
       elle::String              alignment(margin, ' ');
       Range<Trait>::Scoutor     scoutor;
 
@@ -161,7 +170,7 @@ namespace nucleus
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the range");
-
+      */
       return elle::Status::Ok;
     }
 
@@ -172,9 +181,11 @@ namespace nucleus
     void
     Attributes::print(std::ostream& stream) const
     {
+      /* XXX
       stream << "attributes("
              << this->range
              << ")";
+      */
     }
 
   }

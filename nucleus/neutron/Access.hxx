@@ -1,63 +1,65 @@
 #ifndef NUCLEUS_NEUTRON_ACCESS_HXX
 # define NUCLEUS_NEUTRON_ACCESS_HXX
 
-namespace nucleus
-{
-  namespace neutron
-  {
-
-    ///
-    /// this method updates the access block, more precisely the record
-    /// associated with the _subject_.
-    ///
-    /// the permissions are updated along with _secret_ which can represent
-    /// either a secret key which will be encrypted with the user's public
-    /// key or a token already formed.
-    ///
-    template <typename T>
-    elle::Status
-    Access::Update(Subject const& subject,
-                   Permissions permissions,
-                   T const& secret,
-                   cryptography::PublicKey const& K)
-    {
-      // XXX[remove try/catch later]
-      try
-        {
-          Token token(K, secret);
-
-          if (this->Update(subject, permissions, token) == elle::Status::Error)
-            escape("unable to update the record");
-        }
-      catch (std::exception const& e)
-        {
-          escape("%s", e.what());
-        }
-
-      return (elle::Status::Ok);
-    }
-
-  }
-}
-
 //
 // ---------- serialize -------------------------------------------------------
 //
 
-
 # include <elle/serialize/Serializer.hh>
 
-ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
-                      archive,
-                      value,
-                      version)
+ELLE_SERIALIZE_SPLIT(nucleus::neutron::Access);
+
+ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Access,
+                          archive,
+                          value,
+                          version)
+{
+  nucleus::neutron::Size size;
+  nucleus::neutron::Size i;
+
+  enforce(version == 0);
+
+  archive >> base_class<nucleus::proton::ContentHashBlock>(value);
+
+  archive >> size;
+
+  for (i = 0; i < size; ++i)
+    {
+      std::shared_ptr<nucleus::neutron::Record> record{
+        archive.template Construct<nucleus::neutron::Record>().release()};
+
+      if (value._container.find(record->subject()) != value._container.end())
+        throw nucleus::Exception("the record's subject '%s' seems to already "
+                                 "exist", record->subject());
+
+      auto result =
+        value._container.insert(
+          std::pair<nucleus::neutron::Subject const,
+                    std::shared_ptr<nucleus::neutron::Record>>{
+            record->subject(), record});
+
+      if (result.second == false)
+        throw Exception("unable to insert the record the container");
+    }
+}
+
+ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Access,
+                          archive,
+                          value,
+                          version)
 {
   enforce(version == 0);
 
-  archive & base_class<nucleus::proton::ContentHashBlock>(value);
-  archive & value._range;
+  archive << base_class<nucleus::proton::ContentHashBlock const>(value);
 
-  // XXX enforce(value.component() == nucleus::proton::Component::access);
+  archive << static_cast<nucleus::neutron::Size>(value._container.size());
+
+  for (auto& pair: value._container)
+    {
+      auto& record = pair.second;
+
+      archive << *record;
+    }
 }
 
 #endif

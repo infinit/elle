@@ -376,7 +376,7 @@ namespace horizon
             offset++;
           }
 
-        if (range.container.size() < Crux::Range)
+        if (range.size() < Crux::Range)
           break;
       }
 

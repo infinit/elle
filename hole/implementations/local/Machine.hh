@@ -29,11 +29,11 @@ namespace hole
         /// Store an immutable block.
         void
         put(const nucleus::proton::Address&,
-                 const nucleus::proton::ImmutableBlock&);
+            const nucleus::proton::ImmutableBlock&);
         /// Store a mutable block.
         void
         put(const nucleus::proton::Address&,
-                 const nucleus::proton::MutableBlock&);
+            const nucleus::proton::MutableBlock&);
         /// Retrieve an immutable block.
         std::unique_ptr<nucleus::proton::Block>
         get(nucleus::proton::Address const&);

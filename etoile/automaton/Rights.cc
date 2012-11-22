@@ -94,32 +94,30 @@ namespace etoile
             escape("unable to open the access block");
 
           // check that the subject is referenced in the access block.
-          if (context.access->Exist(agent::Agent::Subject) == true)
+          if (context.access->exist(agent::Agent::Subject) == true)
             {
               //
               // in this case, the subject is referenced in the ACL, hence
               // is considered a lord.
               //
-              nucleus::neutron::Record* record;
 
               ELLE_TRACE("the subject seems to be present in "
-                             "the Access block");
+                         "the Access block");
 
               // retrieve the record associated with this subject.
-              if (context.access->Lookup(agent::Agent::Subject,
-                                         record) == elle::Status::Error)
-                escape("unable to retrieve the access record");
+              nucleus::neutron::Record const& record =
+                context.access->locate(agent::Agent::Subject);
 
               // set the role.
               context.rights.role = nucleus::neutron::Object::RoleLord;
 
               // set the permissions according to the access record.
-              context.rights.permissions = record->permissions();
+              context.rights.permissions = record.permissions();
 
               // finally, set the record for ease purpose.
               delete context.rights.record;
               context.rights.record =
-                new nucleus::neutron::Record(*record);
+                new nucleus::neutron::Record(record);
 
               // if a token is present, decrypt it.
               if (context.rights.record->token() != nullptr)
@@ -144,8 +142,10 @@ namespace etoile
 
               // Go through the Access records in order to explore the groups
               // which have been granted some permissions over the object.
-              for (auto record: *context.access)
+              for (auto& pair: *context.access)
                 {
+                  auto& record = pair.second;
+
                   if (record->subject().type() ==
                       nucleus::neutron::Subject::TypeGroup)
                     {
@@ -256,7 +256,7 @@ namespace etoile
                                 }
 
                               // Look for the user's subject in the ensemble.
-                              if (ensemble->exists(agent::Agent::Subject) == false)
+                              if (ensemble->exist(agent::Agent::Subject) == false)
                                 {
                                   ELLE_TRACE("the subject does not exist in the ensemble");
                                   continue;

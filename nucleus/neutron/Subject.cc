@@ -98,19 +98,19 @@ namespace nucleus
       _type(other._type),
       _user(nullptr)
     {
-      switch (this->_type)
+      switch (other._type)
         {
         case Subject::TypeUser:
           {
             // Copy the user public key.
-            this->_user = new typename User::Identity(other.user());
+            this->_user = new typename User::Identity(*other._user);
 
             break;
           }
         case Subject::TypeGroup:
           {
             // Copy the group address.
-            this->_group = new typename Group::Identity(other.group());
+            this->_group = new typename Group::Identity(*other._group);
 
             break;
           }
@@ -203,32 +203,67 @@ namespace nucleus
     elle::Boolean
     Subject::operator ==(Subject const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return true;
+        return (true);
 
-      // compare the type.
-      if (this->_type != other.type())
-        return false;
+      // Compare the type.
+      if (this->_type != other._type)
+        return (false);
 
-      // compare the identifier.
+      // Compare the identifier.
       switch (this->_type)
         {
         case Subject::TypeUser:
           {
-            return (*this->_user == other.user());
+            return (*this->_user == *other._user);
           }
         case Subject::TypeGroup:
           {
-            return (*this->_group == other.group());
+            return (*this->_group == *other._group);
           }
         default:
           {
+            // XXX
+            ELLE_ASSERT(false);
             break;
           }
         }
 
-      return true;
+      elle::unreachable();
+    }
+
+    elle::Boolean
+    Subject::operator <(Subject const& other) const
+    {
+      if (this == &other)
+        return (false);
+
+      // Compare the type.
+      if (this->_type < other._type)
+        return (true);
+      else if (this->_type > other._type)
+        return (false);
+
+      // Compare the identifier.
+      switch (this->_type)
+        {
+        case Subject::TypeUser:
+          {
+            return (*this->_user < *other._user);
+          }
+        case Subject::TypeGroup:
+          {
+            return (*this->_group < *other._group);
+          }
+        default:
+          {
+            // XXX
+            ELLE_ASSERT(false);
+            break;
+          }
+        }
+
+      elle::unreachable();
     }
 
 //

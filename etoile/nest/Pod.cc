@@ -26,22 +26,19 @@ namespace etoile
     ///
     /// XXX
     ///
-    Pod::Pod():
-      nature(NatureUnknown),
-      state(StateUnloaded),
-      block(nullptr),
-      counter(0)
+    Pod::Pod()
     {
     }
 
     ///
     /// XXX
     ///
-    Pod::Pod(const nucleus::proton::Placement&                              placement,
-             std::shared_ptr<nucleus::proton::Contents>                        block):
+    Pod::Pod(const nucleus::proton::Placement& placement,
+             nucleus::proton::Contents* block):
       nature(NatureVolatile),
       state(StateUnloaded),
       placement(placement),
+      address(nucleus::proton::Address::null()),
       block(block),
       counter(0)
     {
@@ -50,8 +47,8 @@ namespace etoile
     ///
     /// XXX
     ///
-    Pod::Pod(const nucleus::proton::Placement&                              placement,
-             const nucleus::proton::Address&                                address):
+    Pod::Pod(const nucleus::proton::Placement& placement,
+             const nucleus::proton::Address& address):
       nature(NaturePersistent),
       state(StateUnloaded),
       placement(placement),

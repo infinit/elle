@@ -16,7 +16,6 @@ ELLE_LOG_COMPONENT("infinit.nucleus");
 
 namespace nucleus
 {
-
   /*----------.
   | Functions |
   `----------*/
@@ -49,5 +48,4 @@ namespace nucleus
 
     return (*factory);
   }
-
 }

@@ -49,7 +49,7 @@ namespace elle
 
     std::ostream& operator <<(std::ostream& out, elle::Null);
 
-    typedef unsigned int                  Size;
+    typedef Natural64 Size;
 
     ///
     /// this enumeration represents a return status.

@@ -12,11 +12,12 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
-    const neutron::Component Contents::_component = neutron::ComponentContents;
+    neutron::Component const Contents::Constants::component{
+      neutron::ComponentContents};
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -70,14 +71,11 @@ namespace nucleus
     elle::Status
     Contents::decrypt(cryptography::SecretKey const& key)
     {
-      static const elle::Boolean useless = Node::setup();
-      (void)useless;
-
       ELLE_TRACE_SCOPE("decrypt(%s)", key);
 
       ELLE_TRACE("allocating a node of type '%s'", this->_type);
 
-      this->_node = Node::factory.allocate<Node>(this->_type);
+      this->_node = Node::factory().allocate<Node>(this->_type);
 
       assert(this->_cipher != nullptr);
       assert(this->_node != nullptr);

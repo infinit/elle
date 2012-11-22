@@ -99,7 +99,7 @@ namespace nucleus
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
       // rangeable
       Subject const&
-      symbol();
+      symbol() const;
 
       /*-----------.
       | Structures |

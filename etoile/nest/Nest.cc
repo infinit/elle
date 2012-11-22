@@ -102,14 +102,8 @@ namespace etoile
                     {
                       pod->address = pod->block.get()->bind();
 
-                      /* XXX[porcupine]
-                      if (transcript.Record(
-                            new gear::Action(
-                              pod->address,
-                              pod->block)) == elle::Status::Error)
-                        throw reactor::Exception(elle::concurrency::scheduler(),
-                                                 "Unable to record the action.");
-                      */
+                      transcript.record(new gear::action::Push(pod->address,
+                                                               pod->block));
                     }
                   }
 
@@ -118,22 +112,14 @@ namespace etoile
             case Pod::NatureOrphan:
               {
                 if (pod->address != nucleus::proton::Address::null())
-                  {
-                    /* XXX[porcupine]
-                    if (transcript.Record(
-                          new gear::Action(
-                            pod->address)) == elle::Status::Error)
-                      throw reactor::Exception(elle::concurrency::scheduler(),
-                                               "Unable to record the action.");
-                    */
-                  }
+                  transcript.record(new gear::action::Wipe(pod->address));
 
                 break;
               }
-            case Pod::NatureUnknown:
+            default:
               {
                 throw reactor::Exception(elle::concurrency::scheduler(),
-                                         "Unknown pod nature.");
+                                         "unknown pod nature");
               }
             }
         }
@@ -295,8 +281,8 @@ namespace etoile
       // create a new selectionoid.
       auto pod =
         std::unique_ptr<Pod>(
-          new Pod(placement,
-                  std::shared_ptr<nucleus::proton::Contents>(block.release())));
+          new Pod(placement, block.release()));
+      // XXX[use finally instead]
 
       // insert the pod.
       this->_insert(pod.get()->placement, pod.get());

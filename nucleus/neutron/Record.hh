@@ -124,7 +124,7 @@ namespace nucleus
       // rangeable
       virtual
       Subject const&
-      symbol();
+      symbol() const;
 
       /*-----------.
       | Structures |

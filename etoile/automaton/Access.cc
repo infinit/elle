@@ -123,7 +123,7 @@ namespace etoile
             escape("unable to open the access block");
 
           // look in the access object.
-          if (context.access->Exist(subject) == true)
+          if (context.access->exist(subject) == true)
             {
               ELLE_TRACE("the target subject exists in the Access block");
 
@@ -180,12 +180,11 @@ namespace etoile
                                   nucleus::neutron::Token(context.rights.key,
                                                           subject.user());
 
-                                // update the record.
-                                if (context.access->Update(
-                                      subject,
-                                      permissions,
-                                      token) == elle::Status::Error)
-                                  escape("unable to update the access");
+                                nucleus::neutron::Record& record =
+                                  context.access->locate(subject);
+
+                                record.permissions(permissions);
+                                record.token(token);
                               }
                           }
                         catch (std::exception const& e)
@@ -221,12 +220,11 @@ namespace etoile
                                   nucleus::neutron::Token(context.rights.key,
                                                           group->pass_K());
 
-                                // update the record.
-                                if (context.access->Update(
-                                      subject,
-                                      permissions,
-                                      token) == elle::Status::Error)
-                                  escape("unable to update the access");
+                                nucleus::neutron::Record& record =
+                                  context.access->locate(subject);
+
+                                record.permissions(permissions);
+                                record.token(token);
                               }
                           }
                         catch (std::exception const& e)
@@ -326,12 +324,8 @@ namespace etoile
                   }
                 }
 
-              ELLE_TRACE("add the record to the Access block")
-                {
-                  // add the record to the access object.
-                  if (context.access->Add(record.get()) == elle::Status::Error)
-                    escape("unable to add the new record");
-                }
+              ELLE_TRACE("add the record to the Access block");
+              context.access->insert(record.get());
 
               // stop tracking record.
               record.release();
@@ -445,17 +439,7 @@ namespace etoile
                 escape("unable to open the access block");
 
               // lookup the subject.
-              try
-                {
-                  if (context.access->Lookup(subject,
-                                             record) == elle::Status::Error)
-                    escape("unable to lookup in the access object");
-                }
-              catch (elle::Exception const& e)
-                {
-                  // XXX[return normally with a null-pointer record]
-                  record = nullptr;
-                }
+              record = context.access->lookup(subject);
             }
         }
 
@@ -489,25 +473,26 @@ namespace etoile
       if (index == 0)
         {
           // add the record to the range.
-          if (range.Add(&context.object->owner_record()) == elle::Status::Error)
-            escape("unable to add the owner record");
+          range.insert(
+            std::shared_ptr<nucleus::neutron::Record>{
+              new nucleus::neutron::Record{context.object->owner_record()}});
 
           // consult the access object by taking care of consulting one
           // record less.
-          if (context.access->Consult(index,
-                                      size - 1,
-                                      range) == elle::Status::Error)
-            escape("unable to consult the access");
+          nucleus::neutron::Range<nucleus::neutron::Record> range_access{
+            context.access->consult(index, size - 1)};
+
+          // XXX merge both ranges OR better:
+          //       range = consult() and then insert(owner)
+          assert(false);
         }
       else
         {
           // consult the access object by taking care of starting the
           // consultation one index before since the owner record, which
           // is not located in the access block, counts as one record.
-          if (context.access->Consult(index - 1,
-                                      size,
-                                      range) == elle::Status::Error)
-            escape("unable to consult the ensemble");
+          range =
+            context.access->consult(index - 1, size);
         }
 
       return elle::Status::Ok;
@@ -555,8 +540,7 @@ namespace etoile
             escape("unable to open the access block");
 
           // remove the record associated with the given subject.
-          if (context.access->Remove(subject) == elle::Status::Error)
-            escape("unable to remove the subject's access record");
+          context.access->erase(subject);
 
           // the object must be marked as administered i.e dirty so
           // that the meta signature gets re-computed i.e the access
@@ -619,8 +603,10 @@ namespace etoile
       //     nucleus::neutron::Access.]
 
       // Go through the access block's records.
-      for (auto record: *context.access)
+      for (auto& pair: *context.access)
         {
+          auto& record = pair.second;
+
           // Ignore records which relate to subjects which do not have
           // the read permission; these ones do not have a token.
           if ((record->permissions() & nucleus::neutron::permissions::read) !=
@@ -751,16 +737,14 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access");
 
-      // XXX[to change later]
-      nucleus::neutron::Size n;
-      if (context.access->Capacity(n) == elle::Status::Error)
-        escape("unable to retrieve the access capacity");
-
-      ELLE_TRACE("set the Access #%s records with a null token", n);
+      ELLE_TRACE("set the Access #%s records with a null token",
+                 context.access->size());
 
       // Go through the Access records.
-      for (auto record: *context.access)
+      for (auto& pair: *context.access)
         {
+          auto& record = pair.second;
+
           // Check if the subject has the proper permissions.
           if ((record->permissions() & nucleus::neutron::permissions::read) !=
               nucleus::neutron::permissions::read)
@@ -843,8 +827,6 @@ namespace etoile
     elle::Status        Access::Close(
                           gear::Object&                         context)
     {
-      nucleus::neutron::Size size;
-
       ELLE_TRACE_FUNCTION(context);
 
       //
@@ -863,8 +845,7 @@ namespace etoile
       ELLE_TRACE("the Access block seems to have been modified");
 
       // retrieve the access's size.
-      if (context.access->Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the access's size");
+      nucleus::neutron::Size size{context.access->size()};
 
       //
       // at this point, this access block is known to have been modified.
@@ -1010,20 +991,16 @@ namespace etoile
 
             // check whether a record exist for the subject as it
             // could very well have been removed.
-            if (context.access->Exist(subject) == true)
+            if (context.access->exist(subject) == true)
               {
-                nucleus::neutron::Record const* record;
-
-                // retrieve the access record.
-                if (context.access->Lookup(subject,
-                                           record) == elle::Status::Error)
-                  escape("unable to lookup the access record");
+                nucleus::neutron::Record const& record =
+                  context.access->locate(subject);
 
                 // check that the subject, also author, still has the
                 // write permission.
                 //
                 // if he has, nothing has to be done.
-                if ((record->permissions() &
+                if ((record.permissions() &
                      nucleus::neutron::permissions::write) ==
                     nucleus::neutron::permissions::write)
                   break;

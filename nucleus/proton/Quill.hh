@@ -103,7 +103,7 @@ namespace nucleus
               typename T::K const& to);
       /// XXX
       elle::Boolean
-      exists(typename T::K const& k) const;
+      exist(typename T::K const& k) const;
       /// XXX
       typename Scoutor::Forward
       lookup_iterator(typename T::K const& k) const;

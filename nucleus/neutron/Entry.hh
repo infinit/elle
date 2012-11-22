@@ -64,8 +64,8 @@ namespace nucleus
       print(std::ostream& stream) const;
       // rangeable
       virtual
-      elle::String&
-      symbol();
+      elle::String const&
+      symbol() const;
 
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Entry);

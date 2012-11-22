@@ -2,86 +2,99 @@
 # define NUCLEUS_NEUTRON_RANGE_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
+# include <elle/serialize/Serializable.hh>
 
 # include <nucleus/neutron/fwd.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <list>
-# include <elle/idiom/Open.hh>
+# include <vector>
+# include <memory>
 
 namespace nucleus
 {
   namespace neutron
   {
-
+    /// Represent a set of items from a container-based nucleus class
+    /// such as Catalog, Access, Ensemble etc.
     ///
-    /// this class represents a set of something.
+    /// Whenever such a class is consulted, a range is returned contained
+    /// some or all of the items requested.
     ///
-    /// a range must be parameterised with a type providing two things:
-    ///  1) a type T::S which defines the key type used to differenciate
+    /// A range must be parameterised with a type providing two things:
+    ///
+    ///  1) A type T::Symbol which defines the key type used to differenciate
     ///     items.
-    ///  2) a symbol() method which must returns a T::S&, this method
+    ///  2) A symbol() method which must returns a T::Symbol const&, this method
     ///     being used to retrieve the key value of a given item.
     ///
+    /// Note that since range represent a subset of another container-based
+    /// instance, it is preferable to directly reference the items within the
+    /// original container so as to avoid copying them all. However, since one
+    /// may want to use a range after its original instance has been destroyed,
+    /// ranges make use of shared pointers.
     template <typename T>
     class Range:
       public elle::Printable
     {
+      /*------.
+      | Types |
+      `------*/
     public:
-      //
-      // constants
-      //
-      static const T*                   Trash;
-
-      //
-      // types
-      //
       typedef typename T::Symbol Symbol;
 
-      // XXX[use shared_ptr instead]
-      // XXX[should be a vector?]
-      typedef std::list<T*> Container;
+      typedef std::vector<std::shared_ptr<T const>> Container;
       typedef typename Container::iterator Iterator;
       typedef typename Container::const_iterator Scoutor;
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
       Range();
-      Range(elle::Natural32 const size);
-      Range(const Range<T>&);
+      Range(nucleus::neutron::Size const size);
+      Range(Range<T> const& other);
 
       //
-      // methods
-      //
-      elle::Status      Add(T*);
-      /// XXX
-      elle::Status
-      Add(Range<T> const& other);
-      elle::Boolean     Exist(const Symbol&) const;
-      elle::Boolean     Lookup(const Symbol&,
-                               T const*& = Trash) const;
-      elle::Boolean     Lookup(const Symbol&,
-                               T*& = Trash) const;
-      elle::Status      Remove(const Symbol&);
-      elle::Status      Capacity(Size&) const;
-      elle::Boolean     Locate(const Symbol&,
-                               Scoutor&) const;
-      elle::Boolean     Locate(const Symbol&,
-                               Iterator&);
-
-      //
-      // operators
+      // Methods
       //
     public:
+      /// Insert an item to the range.
+      void
+      insert(std::shared_ptr<T const> const& item);
+      /// XXX[is it really used?]
+      void
+      add(Range<T> const& other);
+      /// Return true if the given symbol exists.
       elle::Boolean
-      operator ==(Range<T> const& other) const;
-      // XXX ELLE_OPERATOR_NEQ_T1(Range<T>);
+      exist(Symbol const& symbol) const;
+      /// Return the item associated with the given symbol.
+      T const&
+      locate(Symbol const& symbol) const;
+      /// Erase the item associated with the given symbol.
+      void
+      erase(Symbol const& symbol);
+      /// Return the size of the range.
+      elle::Size
+      size() const;
+    private:
+      /// Return an iterator on the given symbol's item.
+      Scoutor
+      _iterator(Symbol const& symbol) const;
+      /// Return an iterator on the given symbol's item.
+      Iterator
+      _iterator(Symbol const& symbol);
 
-      //
-      // interfaces
-      //
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_ASSIGNMENT(Range<T>); // XXX
+
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -90,21 +103,23 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Range<T>);
       // iterable
       Scoutor
       begin() const;
       Scoutor
       end() const;
 
-      //
-      // attributes
-      //
-      Container         container;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(Container, container);
     };
-
   }
 }
 
-#include <nucleus/neutron/Range.hxx>
+# include <nucleus/neutron/Range.hxx>
 
 #endif

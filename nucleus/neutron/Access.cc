@@ -2,6 +2,7 @@
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Subject.hh>
+#include <nucleus/Exception.hh>
 
 #include <elle/Buffer.hh>
 
@@ -15,18 +16,14 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    cryptography::oneway::Algorithm const Access::Constants::oneway_algorithm(
-      cryptography::oneway::Algorithm::sha256);
+    cryptography::oneway::Algorithm const Access::Constants::oneway_algorithm{
+      cryptography::oneway::Algorithm::sha256};
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    Component const Access::Constants::component{ComponentAccess};
 
-    const Component Access::_component = ComponentAccess;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Access::Access():
       proton::ContentHashBlock()
@@ -39,194 +36,144 @@ namespace nucleus
     {
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
-    ///
-    /// this method adds the given record to the ACL.
-    ///
-    elle::Status        Access::Add(Record*                     record)
+    void
+    Access::insert(Record* record)
     {
-      // add the record in the range.
-      if (this->_range.Add(record) == elle::Status::Error)
-        escape("unable to add the record in the range");
+      std::shared_ptr<Record> pointer{record};
 
-      // set the block as dirty.
-      this->state(proton::StateDirty);
-
-      return elle::Status::Ok;
+      this->_insert(pointer);
     }
 
-    ///
-    /// this method tests if the given subject exists.
-    ///
-    elle::Boolean       Access::Exist(const Subject&            subject) const
+    elle::Boolean
+    Access::exist(Subject const& subject) const
     {
-      // test.
-      if (this->_range.Exist(subject) == false)
-        return false;
-
-      return true;
+      return (this->_container.find(subject) != this->_container.end());
     }
 
-    ///
-    /// this method returns the record corresponding to the given subject.
-    ///
-    elle::Status        Access::Lookup(const Subject&           subject,
-                                       Record const*& record) const
+    Record const&
+    Access::locate(Subject const& subject) const
     {
-      // look in the range.
-      if (this->_range.Lookup(subject, record) == false)
-        escape("unable to retrieve the record");
+      Scoutor scoutor;
 
-      return elle::Status::Ok;
+      if ((scoutor = this->_container.find(subject)) == this->_container.end())
+        throw Exception("unable to locate the given subject's record");
+
+      auto& record = scoutor->second;
+
+      return (*record);
     }
 
-    elle::Status        Access::Lookup(const Subject&           subject,
-                                       Record*& record) const
+    Record&
+    Access::locate(Subject const& subject)
     {
-      // look in the range.
-      if (this->_range.Lookup(subject, record) == false)
-        escape("unable to retrieve the record");
+      Iterator iterator;
 
-      return elle::Status::Ok;
+      if ((iterator = this->_container.find(subject)) == this->_container.end())
+        throw Exception("unable to locate the given subject's record");
+
+      auto& record = iterator->second;
+
+      return (*record);
     }
 
-    ///
-    /// this method returns the index location of the given subject.
-    ///
-    elle::Status        Access::Lookup(const Subject&           subject,
-                                       Index&                   index) const
+    Index
+    Access::seek(Subject const& subject) const
     {
-      Range<Record>::Scoutor    scoutor;
+      Index index{0};
 
-      // go through the range.
-      for (scoutor = this->_range.container.begin(), index = 0;
-           scoutor != this->_range.container.end();
-           scoutor++, index++)
+      for (auto& pair: this->_container)
         {
-          Record*       record = *scoutor;
+          auto& record = pair.second;
 
-          // if found, stop.
           if (record->subject() == subject)
-            return elle::Status::Ok;
+            return (index);
+
+          index++;
         }
 
-      escape("unable to locate the given subject");
+      throw Exception("unable to locate the given subject");
     }
 
-    ///
-    /// this method returns the access record located at the given index.
-    ///
-    elle::Status        Access::Lookup(const Index&             index,
-                                       Record*&                 record) const
+    Record const&
+    Access::select(Index const& index) const
     {
-      Range<Record>::Scoutor    scoutor;
-      Index                     i;
+      Index i{0};
 
-      // set the record to null.
-      record = nullptr;
-
-      // go through the range.
-      for (scoutor = this->_range.container.begin(), i = 0;
-           scoutor != this->_range.container.end();
-           scoutor++, i++)
+      for (auto& pair: this->_container)
         {
-          // if found, stop.
+          auto& record = pair.second;
+
           if (i == index)
-            {
-              // return the record.
-              record = *scoutor;
-
-              return elle::Status::Ok;
-            }
+            return (*record);
         }
 
-      escape("unable to locate the record at the given index");
+      throw Exception("unable to locate the record at the given index");
     }
 
-    elle::Status
-    Access::Update(Subject const& subject,
-                   Permissions permissions,
-                   Token const& token)
+    Record&
+    Access::select(Index const& index)
     {
-      Record* record;
+      Index i{0};
 
-      // retrieve the record.
-      if (this->Lookup(subject, record) == elle::Status::Error)
-        escape("unable to retrieve the subject's record");
-
-      record->permissions(permissions);
-      record->token(token);
-
-      // set the block as dirty.
-      this->state(proton::StateDirty);
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method returns a range representing a subset of the access
-    /// control list delimited by the given index and size.
-    ///
-    elle::Status        Access::Consult(const Index&            index,
-                                        const Size&             size,
-                                        Range<Record>&          range) const
-    {
-      Range<Record>::Scoutor    scoutor;
-      Index                     i;
-
-      /* XXX[porcupine: is now useless]
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-      */
-
-      // go through the records.
-      for (scoutor = this->_range.container.begin(), i = 0;
-           scoutor != this->_range.container.end();
-           scoutor++, i++)
+      for (auto& pair: this->_container)
         {
-          Record*       record = *scoutor;
+          auto& record = pair.second;
 
-          // if this record lies in the selected range [index, index + size[
-          if ((i >= index) && (i < (index + size)))
-            {
-              // add the record to the range.
-              if (range.Add(record) == elle::Status::Error)
-                escape("unable to add the record to the given range");
-            }
+          if (i == index)
+            return (*record);
+
+          i++;
         }
 
-      return elle::Status::Ok;
+      throw Exception("unable to locate the record at the given index");
     }
 
-    ///
-    /// this method removes the given record.
-    ///
-    elle::Status        Access::Remove(const Subject&           subject)
+    Range<Record>
+    Access::consult(Index const& index,
+                    Size const& size) const
     {
-      // remove the record from the range.
-      if (this->_range.Remove(subject) == elle::Status::Error)
-        escape("unable to remove the record");
+      Range<Record> range;
+      Index i{0};
 
-      // set the block as dirty.
+      for (auto& pair: this->_container)
+        {
+          auto& record = pair.second;
+
+          // If this record lies in the selected range [index, index + size[.
+          if ((i >= index) && (i < (index + size)))
+            range.insert(record);
+
+          i++;
+        }
+
+      return (range);
+    }
+
+    void
+    Access::erase(Subject const& subject)
+    {
+      Iterator iterator;
+
+      // Locate the record.
+      if ((iterator = this->_container.find(subject)) == this->_container.end())
+        throw Exception("unable to locate the given subject's record");
+
+      // Remove the record from the container. Should that be that last
+      // reference on the record, it would be deleted.
+      this->_container.erase(iterator);
+
+      // Set the block as dirty.
       this->state(proton::StateDirty);
-
-      return elle::Status::Ok;
     }
 
-    ///
-    /// this method returns the size of the access control list.
-    ///
-    elle::Status        Access::Capacity(Size&                  size) const
+    Size
+    Access::size() const
     {
-      // look at the size of the range.
-      if (this->_range.Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the range size");
-
-      return elle::Status::Ok;
+      return (static_cast<Size>(this->_container.size()));
     }
 
     cryptography::Digest
@@ -234,9 +181,13 @@ namespace nucleus
     {
       elle::Buffer buffer;
 
-      for (auto record: this->_range)
-        buffer.writer() << record->subject()
-                        << record->permissions();
+      for (auto& pair: this->_container)
+        {
+          auto& record = pair.second;
+
+          buffer.writer() << record->subject()
+                          << record->permissions();
+        }
 
       cryptography::Digest digest{
         cryptography::oneway::hash(
@@ -246,67 +197,88 @@ namespace nucleus
       return (digest);
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    elle::Boolean
-    Access::operator ==(Access const& other) const
+    void
+    Access::_insert(std::shared_ptr<Record> const& record)
     {
-      // check the address as this may actually be the same object.
-      if (this == &other)
-        return true;
+      // Check that the record's subject does not already exist.
+      if (this->_container.find(record->subject()) != this->_container.end())
+        throw Exception("the record's subject '%s' seems to already exist",
+                        record->subject());
 
-      return (this->_range == other._range);
+      // Insert the record to the container.
+      auto result =
+        this->_container.insert(
+          std::pair<Subject const, std::shared_ptr<Record>>{
+            record->subject(), record});
+
+      // Check if the insertion was successful.
+      if (result.second == false)
+        throw Exception("unable to insert the record the container");
+
+      // Set the block as dirty.
+      this->state(proton::StateDirty);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    ///
-    /// this function dumps the access.
-    ///
     elle::Status        Access::Dump(elle::Natural32            margin) const
     {
       elle::String      alignment(margin, ' ');
 
-      std::cout << alignment << "[Access]" << std::endl;
+      std::cout << alignment << "[Access] #"
+                << this->_container.size() << std::endl;
 
-      // dump the range.
-      if (this->_range.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the range");
+      for (auto& pair: this->_container)
+        {
+          auto& record = pair.second;
+
+          if (record->Dump(margin + 2) == elle::Status::Error)
+            escape("unable to dump the record");
+        }
 
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Access::print(std::ostream& stream) const
     {
-      stream << "access("
-             << this->_range
+      stream << "access(#"
+             << this->_container.size()
              << ")";
     }
 
-//
-// ---------- iterable --------------------------------------------------------
-//
+    /*---------.
+    | Iterable |
+    `---------*/
 
-    typename Range<Record>::Scoutor
+    typename Access::Scoutor
     Access::begin() const
     {
-      return (this->_range.begin());
+      return (this->_container.begin());
     }
 
-    typename Range<Record>::Scoutor
+    typename Access::Scoutor
     Access::end() const
     {
-      return (this->_range.end());
+      return (this->_container.end());
     }
 
+    typename Access::Iterator
+    Access::begin()
+    {
+      return (this->_container.begin());
+    }
+
+    typename Access::Iterator
+    Access::end()
+    {
+      return (this->_container.end());
+    }
   }
 }

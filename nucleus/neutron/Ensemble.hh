@@ -25,11 +25,14 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Ensemble>,
       public elle::concept::UniquableMixin<Ensemble>
     {
-      //
-      // constants
-      //
+      /*----------.
+      | Constants |
+      `----------*/
     public:
-      static const Component _component;
+      struct Constants
+      {
+        static Component const component;
+      };
 
       //
       // types
@@ -60,7 +63,7 @@ namespace nucleus
       empty() const;
       /// Returns true if the given subject belongs to the ensemble.
       elle::Boolean
-      exists(Subject const& subject) const;
+      exist(Subject const& subject) const;
       /// Returns a reference on the fellow associated with the given subject.
       Fellow const&
       locate(Subject const& subject) const;

@@ -2,7 +2,6 @@
 # define NUCLEUS_NEUTRON_REFERENCE_HH
 
 # include <elle/types.hh>
-# include <elle/Printable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
@@ -29,7 +28,6 @@ namespace nucleus
     ///
     class Reference:
       public proton::Value,
-      public elle::Printable, // XXX[in the root class? Node?]
       public elle::serialize::SerializableMixin<Reference>,
       private boost::noncopyable
     {

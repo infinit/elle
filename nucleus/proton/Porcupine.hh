@@ -180,7 +180,7 @@ namespace nucleus
       /// value.
       template <typename T>
       elle::Boolean
-      exists(typename T::K const& k);
+      exist(typename T::K const& k);
       /// XXX
       template <typename T>
       Handle
@@ -269,7 +269,7 @@ namespace nucleus
       Mode _mode;
       Height _height;
       Capacity _capacity;
-      Handle _root;
+      ELLE_ATTRIBUTE_X(Handle, root); // XXX[remove X}]
 
       ELLE_ATTRIBUTE_R(Network, network);
       ELLE_ATTRIBUTE_R(cryptography::PublicKey, agent_K);

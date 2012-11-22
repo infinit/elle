@@ -28,7 +28,6 @@ namespace etoile
       //
       enum Nature
         {
-          NatureUnknown,
           NatureVolatile,
           NaturePersistent,
           NatureOrphan
@@ -44,8 +43,9 @@ namespace etoile
       // constructors & destructors
       //
       Pod();
+      // XXX[ownership transferred]
       Pod(const nucleus::proton::Placement&,
-          std::shared_ptr<nucleus::proton::Contents>);
+          nucleus::proton::Contents*);
       Pod(const nucleus::proton::Placement&,
           const nucleus::proton::Address&);
       Pod(const Pod&);

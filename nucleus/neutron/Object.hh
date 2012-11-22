@@ -56,11 +56,14 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Object>,
       public elle::concept::UniquableMixin<Object>
     {
-      //
-      // constants
-      //
+      /*----------.
+      | Constants |
+      `----------*/
     public:
-      static const Component _component;
+      struct Constants
+      {
+        static Component const component;
+      };
 
       //
       // enumerations

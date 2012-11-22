@@ -14,15 +14,13 @@
 /// as not be found though such a behavior is not considered "exceptional".
 namespace nucleus
 {
-
   /*----------.
   | Functions |
   `----------*/
 
-  /// Returns the factory capable of building nucleus class instances.
+  /// Return the factory capable of building nucleus class instances.
   elle::utility::Factory<neutron::Component> const&
   factory();
-
 }
 
 #endif

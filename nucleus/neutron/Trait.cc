@@ -213,7 +213,7 @@ namespace nucleus
     `----------*/
 
     elle::String const&
-    Trait::symbol()
+    Trait::symbol() const
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);

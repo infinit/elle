@@ -10,6 +10,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Data,
 {
   enforce(version == 0);
 
+  // XXX base value
+
   archive & value.region;
 }
 

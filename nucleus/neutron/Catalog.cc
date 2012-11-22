@@ -6,6 +6,7 @@
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/proton/Limits.hh>
 
+#include <elle/assert.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.nucleus.proton.Catalog");
@@ -50,22 +51,23 @@ namespace nucleus
     {
       static proton::Footprint const initial =
         elle::serialize::footprint<Catalog>();
-      auto end = left->container().end();
-      auto i = left->container().begin();
       proton::Extent const extent = left->nest().limits().extent();
       proton::Footprint footprint(initial);
 
       ELLE_TRACE_SCOPE("transfer_right(%s, %s, %s)",
                        left, right, size);
 
-      assert(left->nest().limits().extent() == right->nest().limits().extent());
+      ELLE_ASSERT(left->nest().limits().extent() == right->nest().limits().extent());
 
-      // go through the left catalog's entries until the future size is
+      auto end = left->_container.end();
+      auto i = left->_container.begin();
+
+      // Go through the left catalog's entries until the future size is
       // reached after which all the remaining entries will be moved to
       // the right range.
       for (; i != end; ++i)
         {
-          Entry* entry = i->second;
+          auto& entry = i->second;
 
           // check whether the container's contention size has been reached.
           if (footprint >= size)
@@ -88,20 +90,20 @@ namespace nucleus
       // the right catalog.
       for (auto j = i; j != end; ++j)
         {
-          Entry* entry = j->second;
+          auto& entry = j->second;
 
           // substract the entry's footprint from the left catalog since
           // it is getting moved to the right one.
           left->footprint(left->footprint() - entry->footprint());
 
           // insert the entry into the right catalog.
-          right->insert(entry);
+          right->_insert(entry);
         }
 
       // remove the moved entries from the the current catalog.
-      left->container().erase(i, end);
+      left->_container.erase(i, end);
 
-      left->capacity(left->container().size());
+      left->capacity(left->_container.size());
     }
 
     ///
@@ -119,22 +121,23 @@ namespace nucleus
     {
       static proton::Footprint const initial =
         elle::serialize::footprint<Catalog>();
-      auto rend = right->container().rend();
-      auto i = right->container().rbegin();
       proton::Extent const extent = left->nest().limits().extent();
       proton::Footprint footprint(initial);
 
       ELLE_TRACE_SCOPE("transfer_left(%s, %s, %s)",
                        left, right, size);
 
-      assert(left->nest().limits().extent() == right->nest().limits().extent());
+      ELLE_ASSERT(left->nest().limits().extent() == right->nest().limits().extent());
+
+      auto rend = right->_container.rend();
+      auto i = right->_container.rbegin();
 
       // go through the right catalog's entries until the future size is
       // reached after which all the remaining entries will be moved to
       // the left catalog.
       for (; i != rend; ++i)
         {
-          Entry* entry = i->second;
+          auto& entry = i->second;
 
           // check whether the container's contention size has been reached.
           if (footprint >= size)
@@ -157,20 +160,20 @@ namespace nucleus
       // the left catalog.
       for (auto j = i; j != rend; ++j)
         {
-          Entry* entry = j->second;
+          auto& entry = j->second;
 
           // substract the entry's footprint from the right catalog since
           // it is getting moved to the left one.
           right->footprint(right->footprint() - entry->footprint());
 
           // insert the entry into the left catalog.
-          left->insert(entry);
+          left->_insert(entry);
         }
 
       // remove the moved entries from the right catalog.
-      right->container().erase(right->container().begin(), i.base());
+      right->_container.erase(right->_container.begin(), i.base());
 
-      right->capacity(right->container().size());
+      right->capacity(right->_container.size());
     }
 
 //
@@ -186,125 +189,73 @@ namespace nucleus
       this->footprint(initial);
     }
 
-    Catalog::~Catalog()
-    {
-      auto iterator = this->_container.begin();
-      auto end = this->_container.end();
-
-      for (; iterator != end; ++iterator)
-        delete iterator->second;
-
-      this->_container.clear();
-    }
-
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    /// XXX
-    /// this method inserts the given entry to the catalog.
-    ///
     void
     Catalog::insert(Entry* entry)
     {
-      std::pair<typename Catalog::Iterator, elle::Boolean> result;
+      ELLE_TRACE_METHOD(entry);
 
-      ELLE_TRACE_SCOPE("insert(%s)", entry);
+      std::shared_ptr<Entry> pointer{entry};
 
-      // check if this name has already been recorded.
-      if (this->_container.find(entry->name()) != this->_container.end())
-        throw Exception(
-          elle::sprintf("The name '%s' seems to have already been recorded",
-                        entry->name()));
-
-      // insert the entry in the container.
-      result = this->_container.insert(
-        std::pair<const elle::String, Entry*>(entry->name(), entry));
-
-      // check if the insertion was successful.
-      if (result.second == false)
-        throw Exception("unable to insert the entry in the container");
-
-      assert(entry->footprint() != 0);
-      this->footprint(this->footprint() + entry->footprint());
-      this->capacity(this->capacity() + 1);
-      this->state(proton::StateDirty);
+      this->_insert(pointer);
     }
 
     elle::Boolean
-    Catalog::exists(elle::String const& name) const
+    Catalog::exist(elle::String const& name) const
     {
       return (this->_container.find(name) != this->_container.end());
     }
 
-    Catalog::Scoutor
-    Catalog::locate_iterator(elle::String const& name) const
+    Entry const&
+    Catalog::locate(elle::String const& name) const
     {
-      Catalog::Scoutor scoutor;
+      auto scoutor = this->_iterator(name);
+      auto& entry = scoutor->second;
 
-      // locate the entry.
-      if ((scoutor = this->_container.find(name)) == this->_container.end())
-        throw Exception(
-          elle::sprintf("unable to locate the given name: '%s'", name));
-
-      return (scoutor);
+      return (*entry);
     }
 
-    Catalog::Iterator
-    Catalog::locate_iterator(elle::String const& name)
+    Entry&
+    Catalog::locate(elle::String const& name)
     {
-      Catalog::Iterator iterator;
+      auto iterator = this->_iterator(name);
+      auto& entry = iterator->second;
 
-      // locate the entry.
-      if ((iterator = this->_container.find(name)) == this->_container.end())
-        throw Exception(
-          elle::sprintf("unable to locate the given name: '%s'", name));
-
-      return (iterator);
-    }
-
-    Entry const*
-    Catalog::locate_entry(elle::String const& name) const
-    {
-      Catalog::Scoutor scoutor;
-
-      // locate the entry.
-      scoutor = this->locate_iterator(name);
-
-      return (scoutor->second);
+      return (*entry);
     }
 
     Range<Entry>
-    Catalog::consult(Index const index,
-                     Size const size) const
+    Catalog::consult(Index const& index,
+                     Size const& size) const
     {
-      auto end = this->_container.end();
-      auto iterator = this->_container.begin();
       Range<Entry> range;
       Index i(0);
 
-      ELLE_TRACE_SCOPE("consult(%s, %s)", index, size);
+      ELLE_TRACE_METHOD(index, size);
 
-      for (; iterator != end; ++iterator)
+      for (auto& pair: this->_container)
         {
-          Entry* entry = iterator->second;
+          auto& entry = pair.second;
 
-          // if this entry lies in the selected range [index, index + size[
+          // If this entry lies in the selected range [index, index + size[
           if ((i >= index) && (i < (index + size)))
             {
-              // check if the entry is empty: this should never
-              // happen but you never know!
+              // Check if the entry is empty: this should never
+              // happen but you never know! You do not want to throw an
+              // exception because a malicious user created such a catalog.
               if (entry->name().empty() == true)
                 continue;
 
-              // insert the entry to the range.
-              if (range.Add(entry) == elle::Status::Error)
-                throw Exception("unable to add the entry to the rane");
+              // Insert the entry to the range.
+              range.insert(entry);
             }
 
-          // increment the index.
+          // Increment the index.
           //
-          // note that this is done at the end so that empty
+          // Note that this is done at the end so that empty
           // entries are not taken into account.
           i++;
         }
@@ -315,36 +266,36 @@ namespace nucleus
     void
     Catalog::erase(elle::String const& name)
     {
-      typename Catalog::Iterator iterator;
-      Entry* entry;
+      ELLE_TRACE_METHOD(name);
 
-      ELLE_TRACE_SCOPE("erase(%s)", name);
+      // Locate the entry for the given name.
+      auto iterator = this->_iterator(name);
 
-      // locate the entry for the given name.
-      iterator = this->locate_iterator(name);
+      // Retrieve the entry.
+      auto& entry = iterator->second;
 
-      // retrieve the entry.
-      entry = iterator->second;
-
-      // substract the entry footprint from the catalog's.
-      assert(entry->footprint() != 0);
-      assert(this->footprint() >= entry->footprint());
+      // Substract the entry footprint from the catalog's.
+      ELLE_ASSERT(entry->footprint() != 0);
+      ELLE_ASSERT(this->footprint() >= entry->footprint());
       this->footprint(this->footprint() - entry->footprint());
-      assert(this->capacity() > 0);
+      ELLE_ASSERT(this->capacity() > 0);
       this->capacity(this->capacity() - 1);
       this->state(proton::StateDirty);
 
-      // delete the entry.
-      delete entry;
-
-      // finally, erase the entry.
+      // Finally, erase (and possibly delete) the entry.
       this->_container.erase(iterator);
+    }
+
+    Size
+    Catalog::size() const
+    {
+      return (static_cast<Size>(this->_container.size()));
     }
 
     proton::Handle
     Catalog::split()
     {
-      ELLE_TRACE_SCOPE("split()");
+      ELLE_TRACE_METHOD("");
 
       std::unique_ptr<proton::Contents> contents{
         new proton::Contents(new Catalog)};
@@ -402,10 +353,52 @@ namespace nucleus
       contents.unload();
     }
 
-    Catalog::Container&
-    Catalog::container()
+    void
+    Catalog::_insert(std::shared_ptr<Entry> const& entry)
     {
-      return (this->_container);
+      ELLE_DEBUG_METHOD(entry);
+
+      // Check if this name has already been recorded.
+      if (this->_container.find(entry->name()) != this->_container.end())
+        throw Exception("the name '%s' seems to have already been recorded",
+                        entry->name());
+
+      // Insert the entry in the container.
+      auto result =
+        this->_container.insert(
+          std::pair<const elle::String, std::shared_ptr<Entry>>(
+            entry->name(), entry));
+
+      // Check if the insertion was successful.
+      if (result.second == false)
+        throw Exception("unable to insert the entry in the container");
+
+      ELLE_ASSERT(entry->footprint() != 0);
+      this->footprint(this->footprint() + entry->footprint());
+      this->capacity(this->capacity() + 1);
+      this->state(proton::StateDirty);
+    }
+
+    typename Catalog::Scoutor
+    Catalog::_iterator(elle::String const& name) const
+    {
+      Scoutor scoutor;
+
+      if ((scoutor = this->_container.find(name)) == this->_container.end())
+        throw Exception("unable to locate the given name: '%s'", name);
+
+      return (scoutor);
+    }
+
+    typename Catalog::Iterator
+    Catalog::_iterator(elle::String const& name)
+    {
+      Iterator iterator;
+
+      if ((iterator = this->_container.find(name)) == this->_container.end())
+        throw Exception("unable to locate the given name: '%s'", name);
+
+      return (iterator);
     }
 
 //
@@ -421,7 +414,7 @@ namespace nucleus
     elle::String
     Catalog::mayor() const
     {
-      assert(this->_container.empty() == false);
+      ELLE_ASSERT(this->_container.empty() == false);
 
       return (this->_container.rbegin()->first);
     }
@@ -448,11 +441,9 @@ namespace nucleus
                 << this->_container.size() << std::endl;
 
       // go through the entries.
-      for (scoutor = this->_container.begin();
-           scoutor != this->_container.end();
-           scoutor++)
+      for (auto& pair: this->_container)
         {
-          Entry* entry = scoutor->second;
+          auto& entry = pair.second;
 
           // dump the entry.
           if (entry->Dump(margin + 4) == elle::Status::Error)
@@ -472,6 +463,34 @@ namespace nucleus
       stream << "catalog("
              << "XXX"
              << ")";
+    }
+
+    /*---------.
+    | Iterable |
+    `---------*/
+
+    typename Catalog::Scoutor
+    Catalog::begin() const
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Scoutor
+    Catalog::end() const
+    {
+      return (this->_container.end());
+    }
+
+    typename Catalog::Iterator
+    Catalog::begin()
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Iterator
+    Catalog::end()
+    {
+      return (this->_container.end());
     }
 
   }

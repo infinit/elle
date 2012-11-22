@@ -81,7 +81,7 @@ namespace hole
     void
     wipe(const nucleus::proton::Address& address);
   private:
-    ELLE_ATTRIBUTE_R(storage::Storage&, storage);
+    ELLE_ATTRIBUTE_RX(storage::Storage&, storage);
 
   /*---------------.
   | Implementation |

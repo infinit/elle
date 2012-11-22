@@ -22,7 +22,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class is one of the most fundamental of the nucleus library
     /// as it is used to identify a block in the storage layer.
     ///
@@ -170,6 +169,13 @@ namespace nucleus
       ELLE_ATTRIBUTE(Valid*, valid);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Address::Type const type);
   }
 }
 

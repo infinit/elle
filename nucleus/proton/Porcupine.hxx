@@ -146,11 +146,11 @@ namespace nucleus
 
     template <typename T>
     elle::Boolean
-    Porcupine::exists(typename T::K const& k)
+    Porcupine::exist(typename T::K const& k)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
 
-      ELLE_TRACE_SCOPE("exists(%s)", k);
+      ELLE_TRACE_SCOPE("exist(%s)", k);
 
       switch (this->_mode)
         {
@@ -170,7 +170,7 @@ namespace nucleus
 
                 value.load();
 
-                if (value()->exists(k) == false)
+                if (value()->exist(k) == false)
                   return false;
 
                 value.unload();
@@ -194,7 +194,7 @@ namespace nucleus
 
                 value.load();
 
-                if (value()->exists(k) == false)
+                if (value()->exist(k) == false)
                   return false;
 
                 value.unload();
@@ -303,10 +303,9 @@ namespace nucleus
 
             // verify the validity of the target index.
             if (target >= this->_capacity)
-              throw Exception(
-                elle::sprintf("the given target index '%s' exceeds the "
+              throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
-                              target, this->_capacity));
+                              target, this->_capacity);
 
             // return the value block with a base of zero since it
             // is the first and unique block.
@@ -504,18 +503,16 @@ namespace nucleus
 
                 // compare the addresses.
                 if (this->_root.address() != address)
-                  throw Exception(
-                    elle::sprintf("invalid address: root(%s) versus bind(%s)",
-                                  this->_root.address(), address));
+                  throw Exception("invalid address: root(%s) versus bind(%s)",
+                                  this->_root.address(), address);
               }
 
             // check the capacity.
             if (flags & FlagCapacity)
               {
                 if (this->_capacity != value()->capacity())
-                  throw Exception(
-                    elle::sprintf("invalid capacity: this(%s) versus value(%s)",
-                                  this->_capacity, value()->capacity()));
+                  throw Exception("invalid capacity: this(%s) versus value(%s)",
+                                  this->_capacity, value()->capacity());
               }
 
             // check the footprint.
@@ -526,17 +523,15 @@ namespace nucleus
 
                 if (value()->footprint() !=
                     elle::serialize::footprint(*value()))
-                  throw Exception(
-                    elle::sprintf("the recorded footprint does not match the "
+                  throw Exception("the recorded footprint does not match the "
                                   "instance's: value(%s) versus footprint(%s)",
                                   value()->footprint(),
-                                  elle::serialize::footprint(*value())));
+                                  elle::serialize::footprint(*value()));
 
                 if (value()->footprint() > this->nest().limits().extent())
-                  throw Exception(
-                    elle::sprintf("the footprint '%s' exceeds the extent '%s'",
+                  throw Exception("the footprint '%s' exceeds the extent '%s'",
                                   value()->footprint(),
-                                  this->nest().limits().extent()));
+                                  this->nest().limits().extent());
               }
 
             // unload the value nodule.
@@ -563,9 +558,8 @@ namespace nucleus
 
                 // compare the addresses.
                 if (this->_root.address() != address)
-                  throw Exception(
-                    elle::sprintf("invalid address: root(%s) versus bind(%s)",
-                                  this->_root.address(), address));
+                  throw Exception("invalid address: root(%s) versus bind(%s)",
+                                  this->_root.address(), address);
               }
 
             // trigger the check method on the root nodule.
@@ -578,9 +572,8 @@ namespace nucleus
                 ELLE_DEBUG_SCOPE("checking capacities");
 
                 if (this->_capacity != root()->capacity())
-                  throw Exception(
-                    elle::sprintf("invalid capacity: this(%s) versus root(%s)",
-                                  this->_capacity, root()->capacity()));
+                  throw Exception("invalid capacity: this(%s) versus root(%s)",
+                                  this->_capacity, root()->capacity());
               }
 
             // check the footprint.
@@ -593,17 +586,15 @@ namespace nucleus
 
                 if (root()->footprint() !=
                     elle::serialize::footprint(*root()))
-                  throw Exception(
-                    elle::sprintf("the recorded footprint does not match the "
+                  throw Exception("the recorded footprint does not match the "
                                   "instance's: root(%s) versus footprint(%s)",
                                   root()->footprint(),
-                                  elle::serialize::footprint(*root())));
+                                  elle::serialize::footprint(*root()));
 
                 if (root()->footprint() > this->nest().limits().extent())
-                  throw Exception(
-                    elle::sprintf("the footprint '%s' exceeds the extent '%s'",
+                  throw Exception("the footprint '%s' exceeds the extent '%s'",
                                   root()->footprint(),
-                                  this->nest().limits().extent()));
+                                  this->nest().limits().extent());
               }
 
             // check the state.
@@ -612,9 +603,8 @@ namespace nucleus
                 ELLE_DEBUG_SCOPE("checking states");
 
                 if (this->_state != root()->state())
-                  throw Exception(
-                    elle::sprintf("invalid state: this(%s) versus root(%s)",
-                                  this->_state, root()->state()));
+                  throw Exception("invalid state: this(%s) versus root(%s)",
+                                  this->_state, root()->state());
               }
 
             // unload the root nodule.

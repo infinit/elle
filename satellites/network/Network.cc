@@ -184,11 +184,7 @@ namespace satellite
 
           // Note that a null token is provided because the root directory
           // contains no data.
-          nucleus::neutron::Record* record =
-            new nucleus::neutron::Record(subject, permissions);
-
-          if (access.Add(record) == elle::Status::Error)
-            escape("unable to add the record to the access");
+          access.insert(new nucleus::neutron::Record{subject, permissions});
 
           access_address = new nucleus::proton::Address(access.bind());
 

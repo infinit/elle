@@ -45,17 +45,13 @@ namespace etoile
           }
         case nucleus::neutron::Object::RoleLord:
           {
-            nucleus::neutron::Index      index;
-
             // open the access.
             if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access");
 
             // lookup the user's subject in the access records.
-            if (context.access->Lookup(agent::Agent::Subject,
-                                       index) == elle::Status::Error)
-              escape("unable to lookup the user's identity in the "
-                     "access block");
+            nucleus::neutron::Index index{
+              context.access->seek(agent::Agent::Subject)};
 
             // Create a lord author.
             context.author = new nucleus::neutron::Author(index);

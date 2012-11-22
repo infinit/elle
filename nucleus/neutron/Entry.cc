@@ -103,10 +103,10 @@ namespace nucleus
     ///
     /// this method returns the symbol of an entry i.e the name.
     ///
-    elle::String&
-    Entry::symbol()
+    elle::String const&
+    Entry::symbol() const
     {
-      return (this->_name); // XXX[to remove?]
+      return (this->_name);
     }
 
   }

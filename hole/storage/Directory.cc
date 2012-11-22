@@ -62,7 +62,7 @@ namespace hole
 
     void
     Directory::_store(const nucleus::proton::Address& address,
-                      const nucleus::proton::ImmutableBlock& block) const
+                      const nucleus::proton::ImmutableBlock& block)
     {
       elle::io::Path path(this->path(address));
 
@@ -77,12 +77,13 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to open the file '%s'.", path));
 
-      block.serialize(out);
+      // XXX[to improve: contact Raphael]
+      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(out);
     }
 
     void
     Directory::_store(const nucleus::proton::Address& address,
-                      const nucleus::proton::MutableBlock& block) const
+                      const nucleus::proton::MutableBlock& block)
 
     {
       // Generate path.
@@ -102,7 +103,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to open the file '%s'.", path));
 
-      block.serialize(out);
+      // XXX[to improve: contact Raphael]
+      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(out);
     }
 
     std::unique_ptr<nucleus::proton::Block>
@@ -127,7 +129,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to open the file '%s'.", path));
 
-      block->deserialize(in);
+      // XXX[to improve: contact Raphael]
+      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(in);
 
       ELLE_FINALLY_ABORT(block);
 
@@ -157,7 +160,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to open the file '%s'.", path));
 
-      block->deserialize(in);
+      // XXX[to improve: contact Raphael]
+      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(in);
 
       ELLE_FINALLY_ABORT(block);
 
@@ -165,7 +169,7 @@ namespace hole
     }
 
     void
-    Directory::_erase(nucleus::proton::Address const& address) const
+    Directory::_erase(nucleus::proton::Address const& address)
     {
       // Get block path.
       elle::io::Path path(this->path(address));

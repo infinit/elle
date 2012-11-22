@@ -96,7 +96,7 @@ namespace nucleus
       // rangeable
       virtual
       elle::String const&
-      symbol();
+      symbol() const;
 
       /*-----------.
       | Structures |

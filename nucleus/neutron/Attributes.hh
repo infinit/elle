@@ -51,6 +51,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Attributes const& other) const;
       ELLE_OPERATOR_NEQ(Attributes);
+      ELLE_OPERATOR_ASSIGNMENT(Attributes); // XXX
 
       //
       // interfaces

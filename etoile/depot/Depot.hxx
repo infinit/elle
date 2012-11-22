@@ -21,12 +21,12 @@ namespace etoile
       // type of block requested. For instance, if one requests
       // a block of type Group, the block's address must embed
       // a component 'group'.
-      if (address.component() != T::_component)
+      if (address.component() != T::Constants::component)
         throw reactor::Exception{
           elle::concurrency::scheduler(),
             elle::sprintf("the address' component '%s' does not "
                           "match the type's '%s'",
-                          address.component(), T::_component)};
+                          address.component(), T::Constants::component)};
 
       // Retrieve the block from the storage layer.
       block = hole().pull(address, revision);

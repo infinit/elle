@@ -156,12 +156,13 @@ namespace satellite
     etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
     Ward ward(identifier);
     // Consult the object access.
-    nucleus::neutron::Range<nucleus::neutron::Record> records(
-      Access::rpcs->accessconsult(identifier,
-                                  std::numeric_limits<nucleus::neutron::Index>::min(),
-                                  std::numeric_limits<nucleus::neutron::Size>::max()));
+    nucleus::neutron::Range<nucleus::neutron::Record> range(
+      Access::rpcs->accessconsult(
+        identifier,
+        std::numeric_limits<nucleus::neutron::Index>::min(),
+        std::numeric_limits<nucleus::neutron::Size>::max()));
     // Dump the records.
-    BOOST_FOREACH(auto record, records.container)
+    for (auto& record: range)
       display(*record);
   }
 

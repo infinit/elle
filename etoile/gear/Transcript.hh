@@ -6,11 +6,7 @@
 
 # include <etoile/gear/Action.hh>
 
-# include <nucleus/proton/Address.hh>
-
-# include <elle/idiom/Close.hh>
-#  include <vector>
-# include <elle/idiom/Open.hh>
+# include <vector>
 
 # include <boost/noncopyable.hpp>
 
@@ -24,13 +20,14 @@ namespace etoile
     /// on.
     class Transcript:
       public elle::Printable,
+      public elle::io::Dumpable,
       private boost::noncopyable
     {
       /*------.
       | Types |
       `------*/
     public:
-      typedef std::vector<Action*> Container;
+      typedef std::vector<Action const*> Container;
       typedef Container::iterator Iterator;
       typedef Container::const_iterator Scoutor;
 
@@ -44,19 +41,19 @@ namespace etoile
       | Methods |
       `--------*/
     public:
-      /// Records the address/block tuple for insertion in the storage
-      /// layer.
+      /// Record an action in the transcript.
+      ///
+      /// Note that the ownership of the given action is transferred to
+      /// the transcript.
       void
-      push(nucleus::proton::Address const& address,
-           nucleus::proton::Block const* block);
-      /// Records the block associated with the given address for removal
-      /// from the storage layer.
-      void
-      wipe(nucleus::proton::Address const& address);
+      record(Action const* action);
+      /// Return the number of actions recorded in the transcript.
+      elle::Size
+      size() const;
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -71,9 +68,9 @@ namespace etoile
       Scoutor
       end() const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       ELLE_ATTRIBUTE(Container, container);
     };

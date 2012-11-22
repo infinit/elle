@@ -17,7 +17,8 @@ namespace nucleus
     /// XXX
     class Node:
       public elle::serialize::Serializable<>,
-      public elle::io::Dumpable
+      public elle::io::Dumpable,
+      public elle::Printable
     {
       //
       // enumerations
@@ -47,12 +48,14 @@ namespace nucleus
       elle::Boolean
       setup();
 
-      //
-      // static attributes
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      /// XXX
-      static elle::utility::Factory<Type> factory;
+      /// Return the factory capable of building nucleus class instances.
+      static
+      elle::utility::Factory<Type> const&
+      factory();
 
       //
       // constructors & destructors
@@ -97,6 +100,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 margin) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Node);

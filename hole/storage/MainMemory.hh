@@ -1,5 +1,5 @@
-#ifndef HOLE_STORAGE_DIRECTORY_HH
-# define HOLE_STORAGE_DIRECTORY_HH
+#ifndef HOLE_STORAGE_MAINMEMORY_HH
+# define HOLE_STORAGE_MAINMEMORY_HH
 
 # include <elle/Printable.hh>
 # include <elle/attribute.hh>
@@ -9,33 +9,43 @@
 # include <nucleus/proton/ImmutableBlock.hh>
 # include <nucleus/proton/MutableBlock.hh>
 
+# include <map>
+
 namespace hole
 {
   namespace storage
   {
-    /// Storage that holds blocks as single files in a given
-    /// directory.
-    class Directory:
+    /// Storage that holds blocks in a map located in main memory.
+    class MainMemory:
       public Storage,
       public elle::Printable
     {
-    /*-------------.
-    | Construction |
-    `-------------*/
-    public:
-      /// Create a Directory storage.
-      ///
-      /// @param path The directory where to stock blocks.
-      Directory(std::string const& root);
-      /// Delete a directory.
-      ~Directory();
+      /*------.
+      | Types |
+      `------*/
     private:
-      ELLE_ATTRIBUTE_R(std::string, root);
+      typedef std::map<elle::String const, elle::String const> Container;
+      typedef typename Container::iterator Iterator;
+      typedef typename Container::const_iterator Scoutor;
+
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      /// Create a main-memory-basedstorage.
+      MainMemory();
+      /// Delete a directory.
+      ~MainMemory();
+    private:
+      ELLE_ATTRIBUTE(Container, container);
 
     /*----------.
     | Printable |
     `----------*/
     public:
+      // XXX[to remove?]
+      void
+      dump() const;
       virtual
       void
       print(std::ostream& stream) const;
@@ -71,17 +81,6 @@ namespace hole
       virtual
       void
       _erase(nucleus::proton::Address const& address);
-
-    private:
-      /*----------.
-      | Utilities |
-      `----------*/
-      std::string
-      path(nucleus::proton::Address const& address,
-           nucleus::proton::Revision const& revision = nucleus::proton::Revision::Last) const;
-
-      std::string
-      path(std::string const& identifier) const;
     };
   }
 }

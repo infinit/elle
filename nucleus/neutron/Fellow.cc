@@ -230,7 +230,7 @@ namespace nucleus
     `----------*/
 
     Subject const&
-    Fellow::symbol()
+    Fellow::symbol() const
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);

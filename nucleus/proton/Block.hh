@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_BLOCK_HH
 
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/utility/Time.hh>
@@ -84,6 +85,12 @@ namespace nucleus
       virtual
       void
       validate(Address const& address) const = 0;
+
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_NO_ASSIGNMENT(Block);
 
       /*-----------.
       | Interfaces |

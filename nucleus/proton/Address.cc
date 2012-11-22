@@ -291,5 +291,34 @@ namespace nucleus
         }
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Address::Type const type)
+    {
+      switch (type)
+        {
+        case Address::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Address::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown address type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

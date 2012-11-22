@@ -10,90 +10,122 @@ namespace etoile
 {
   namespace gear
   {
+//
+// ---------- action ----------------------------------------------------------
+//
 
     /*-------------.
     | Construction |
     `-------------*/
 
-    Action::Action(nucleus::proton::Address const& address,
-                   nucleus::proton::Block const* block):
-      _type(Action::Type::push),
-      _address(address),
-      _block(block)
+    Action::Action(Type const type):
+      _type(type)
     {
     }
 
-    Action::Action(nucleus::proton::Address const& address):
-      _type(Action::Type::wipe),
-      _address(address)
+    namespace action
     {
-    }
+//
+// ---------- push ------------------------------------------------------------
+//
 
-    /*--------.
-    | Methods |
-    `--------*/
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-    nucleus::proton::Block const&
-    Action::block() const
-    {
-      ELLE_ASSERT(this->_block != nullptr);
+      Push::Push(nucleus::proton::Address const& address,
+                 std::shared_ptr<nucleus::proton::Block const> block):
+        Action(Action::Type::push),
 
-      return (*this->_block);
-    }
+        _address(address),
+        _block(block)
+      {
+        ELLE_ASSERT(this->_block != nullptr);
+      }
 
-    /*-----------.
-    | Interfaces |
-    `-----------*/
+      /*--------.
+      | Methods |
+      `--------*/
 
-    elle::Status
-    Action::Dump(const elle::Natural32      margin) const
-    {
-      elle::String      alignment(margin, ' ');
+      nucleus::proton::Block const&
+      Push::block() const
+      {
+        ELLE_ASSERT(this->_block != nullptr);
 
-      std::cout << alignment << "[Action]" << std::endl;
+        return (*this->_block);
+      }
 
-      // display the type.
-      std::cout << alignment << elle::io::Dumpable::Shift << "[Type] "
-                << this->_type << std::endl;
+      /*-----------.
+      | Interfaces |
+      `-----------*/
 
-      // dump according to the type.
-      switch (this->_type)
-        {
-        case Action::Type::push:
-          {
-            // display the address.
-            if (this->_address.Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the address");
+      elle::Status
+      Push::Dump(const elle::Natural32      margin) const
+      {
+        elle::String alignment(margin, ' ');
 
-            // display the block.
-            if (this->_block->Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the block");
+        std::cout << alignment << "[Push]" << std::endl;
 
-            break;
-          }
-        case Action::Type::wipe:
-          {
-            // display the address.
-            if (this->_address.Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the address");
+        if (this->_address.Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the address");
 
-            break;
-          }
-        }
+        if (this->_block->Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the block");
 
-      return elle::Status::Ok;
-    }
+        return elle::Status::Ok;
+      }
 
-    void
-    Action::print(std::ostream& stream) const
-    {
-      stream << "action{"
-             << this->_type
-             << ", "
-             << this->_address
-             << ", "
-             << this->_block
-             << "}";
+      void
+      Push::print(std::ostream& stream) const
+      {
+        ELLE_ASSERT(this->_block != nullptr);
+
+        stream << "push{"
+               << this->_address
+               << ", "
+               << *this->_block
+               << "}";
+      }
+
+//
+// ---------- wipe ------------------------------------------------------------
+//
+
+      /*-------------.
+      | Construction |
+      `-------------*/
+
+      Wipe::Wipe(nucleus::proton::Address const& address):
+        Action(Action::Type::wipe),
+
+        _address(address)
+      {
+      }
+
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+
+      elle::Status
+      Wipe::Dump(const elle::Natural32      margin) const
+      {
+        elle::String alignment(margin, ' ');
+
+        std::cout << alignment << "[Wipe]" << std::endl;
+
+        if (this->_address.Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the address");
+
+        return elle::Status::Ok;
+      }
+
+      void
+      Wipe::print(std::ostream& stream) const
+      {
+        stream << "wipe{"
+               << this->_address
+               << "}";
+      }
     }
 
     /*----------.

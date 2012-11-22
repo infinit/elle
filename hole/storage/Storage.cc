@@ -49,7 +49,7 @@ namespace hole
 
     void
     Storage::store(const nucleus::proton::Address& address,
-                   const nucleus::proton::ImmutableBlock& block) const
+                   const nucleus::proton::ImmutableBlock& block)
     {
       ELLE_TRACE_SCOPE("Storing immutable '%s' at '%s'.", block, address);
 
@@ -61,7 +61,7 @@ namespace hole
 
     void
     Storage::store(const nucleus::proton::Address& address,
-                   const nucleus::proton::MutableBlock& block) const
+                   const nucleus::proton::MutableBlock& block)
     {
       ELLE_TRACE_SCOPE("Storing mutable '%s' at '%s'.", block, address);
 
@@ -100,7 +100,7 @@ namespace hole
     }
 
     void
-    Storage::erase(nucleus::proton::Address const& address) const
+    Storage::erase(nucleus::proton::Address const& address)
     {
       ELLE_TRACE_SCOPE("%s: deleting block at @'%s'.", *this, address);
 
@@ -135,7 +135,8 @@ namespace hole
         elle::cast<nucleus::proton::MutableBlock>::runtime(
           load(address));
 
-      ELLE_DEBUG("Current block revision '%s' and given block revision is '%s'.",
+      ELLE_DEBUG("Current block revision '%s' and given block "
+                 "revision is '%s'.",
                  current->revision(), block.revision());
 
       // Check if the block derives from the local block.

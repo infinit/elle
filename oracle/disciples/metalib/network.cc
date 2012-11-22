@@ -184,8 +184,10 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (access_address.Restore(access_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore access address");
 
+    /* XXX[contact Raphael]
     if (access_block.Restore(access_block_) == elle::Status::Error)
       throw std::runtime_error("Cannot restore access block");
+    */
 
     try
       {
@@ -204,8 +206,10 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
       throw std::runtime_error("Unable to restore root address");
 
     nucleus::neutron::Object root_block;
+    /* XXX[contact Raphael]
     if (root_block.Restore(root_block_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore root block: <" + root_block_ + ">");
+    */
 
     try
       {
@@ -228,8 +232,10 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
       throw std::runtime_error("Unable to restore group address");
 
     nucleus::neutron::Group group_block;
+    /* XXX[contact Raphael]
     if (group_block.Restore(group_block_) == elle::Status::Error)
       throw std::runtime_error("Cannot restore group block");
+    */
 
     try
       {

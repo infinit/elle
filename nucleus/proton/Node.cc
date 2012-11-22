@@ -7,36 +7,48 @@
 #include <nucleus/neutron/Data.hh>
 #include <nucleus/neutron/Reference.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.Node");
+
 namespace nucleus
 {
   namespace proton
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*----------.
+    | Functions |
+    `----------*/
 
-    elle::utility::Factory<Node::Type> Node::factory;
-
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    elle::Boolean
-    Node::setup()
+    static
+    elle::utility::Factory<Node::Type> const*
+    _setup()
     {
-      // XXX[Data]
+      elle::utility::Factory<Node::Type>* factory =
+        new elle::utility::Factory<Node::Type>;
 
-      // XXX[in nodule?]
-      //Node::factory.record<Seam<neutron::Catalog>>(Node::TypeSeamCatalog);
-      //Node::factory.record<Quill<neutron::Catalog>>(Node::TypeQuillCatalog);
+      ELLE_TRACE("setting up the node factory");
 
-      // XXX[in value?]
-      //Node::factory.record<neutron::Catalog>(Node::TypeValueCatalog);
+      factory->record<Seam<neutron::Catalog>>(Node::TypeSeamCatalog);
+      factory->record<Quill<neutron::Catalog>>(Node::TypeQuillCatalog);
 
-      // XXX[Reference]
+      factory->record<neutron::Catalog>(Node::TypeValueCatalog);
 
-      return (true);
+      return (factory);
+    }
+
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    elle::utility::Factory<Node::Type> const&
+    Node::factory()
+    {
+      static elle::utility::Factory<Node::Type> const* factory = _setup();
+
+      ELLE_ASSERT(factory != nullptr);
+
+      return (*factory);
     }
 
 //
@@ -131,5 +143,14 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Node::print(std::ostream& stream) const
+    {
+      stream << "node";
+    }
   }
 }

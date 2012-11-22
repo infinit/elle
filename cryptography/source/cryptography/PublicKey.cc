@@ -38,7 +38,7 @@ namespace infinit
     ///
     /// this is the copy constructor.
     ///
-    PublicKey::PublicKey(const PublicKey& K) :
+    PublicKey::PublicKey(const PublicKey& K):
       Object(K),
       _key(nullptr),
       _contexts{nullptr, nullptr, nullptr}
@@ -339,33 +339,52 @@ namespace infinit
 // ---------- object ----------------------------------------------------------
 //
 
-    ///
-    /// this method checks if two objects match.
-    ///
-    elle::Boolean PublicKey::operator==(const PublicKey& element) const
+    elle::Boolean
+    PublicKey::operator ==(PublicKey const& other) const
     {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
+      if (this == &other)
+        return (true);
 
-      // if one of the key is null....
-      if ((this->_key == nullptr) || (element._key == nullptr))
-        {
-          // compare the addresses.
-          if (this->_key != element._key)
-            return false;
-        }
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(other._key != nullptr);
+
+      // Compare the internal numbers.
+      if ((::BN_cmp(this->_key->pkey.rsa->n,
+                    other._key->pkey.rsa->n) != 0) ||
+          (::BN_cmp(this->_key->pkey.rsa->e,
+                    other._key->pkey.rsa->e) != 0))
+        return (false);
+
+      return (true);
+    }
+
+    elle::Boolean
+    PublicKey::operator <(PublicKey const& other) const
+    {
+      if (this == &other)
+        return (true);
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(other._key != nullptr);
+
+      // Compare the internal numbers.
+      int cmp_n = ::BN_cmp(this->_key->pkey.rsa->n,
+                           other._key->pkey.rsa->n);
+
+      if (cmp_n < 0)
+        return (true);
+      else if (cmp_n > 0)
+        return (false);
+
+      int cmp_e = ::BN_cmp(this->_key->pkey.rsa->e,
+                           other._key->pkey.rsa->e);
+
+      if (cmp_e < 0)
+        return (true);
       else
-        {
-          // compare the internal numbers.
-          if ((::BN_cmp(this->_key->pkey.rsa->n,
-                        element._key->pkey.rsa->n) != 0) ||
-              (::BN_cmp(this->_key->pkey.rsa->e,
-                        element._key->pkey.rsa->e) != 0))
-            return false;
-        }
+        return (false);
 
-      return true;
+      elle::unreachable();
     }
 
     ///

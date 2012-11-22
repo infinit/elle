@@ -13,11 +13,11 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
-    const Component Ensemble::_component = ComponentEnsemble;
+    Component const Ensemble::Constants::component{ComponentEnsemble};
 
 //
 // ---------- construction ----------------------------------------------------
@@ -43,7 +43,7 @@ namespace nucleus
     {
       ELLE_TRACE_SCOPE("[%p] add(%s)", this, fellow);
 
-      if (this->exists(fellow->subject()) == true)
+      if (this->exist(fellow->subject()) == true)
         throw Exception("a fellow with this subject already exists");
         // XXX[remove in the future]
 
@@ -59,11 +59,11 @@ namespace nucleus
     }
 
     elle::Boolean
-    Ensemble::exists(Subject const& subject) const
+    Ensemble::exist(Subject const& subject) const
     {
       Ensemble::Scoutor scoutor;
 
-      ELLE_TRACE_SCOPE("[%p] exists(%s)", this, subject);
+      ELLE_TRACE_SCOPE("[%p] exist(%s)", this, subject);
 
       try
         {
@@ -109,10 +109,8 @@ namespace nucleus
             return (*fellow);
         }
 
-      throw Exception(
-              elle::sprintf(
-                "unable to locate the fellow at the given index %s",
-                index));
+      throw Exception("unable to locate the fellow at the given index %s",
+                      index);
     }
 
     Index
@@ -133,26 +131,20 @@ namespace nucleus
             return (i);
         }
 
-      throw Exception(
-              elle::sprintf(
-                "unable to locate the fellow at the given index %s",
-                subject));
+      throw Exception("unable to locate the fellow at the given index %s",
+                      subject);
     }
 
     Range<Fellow> const
     Ensemble::consult(Index const& index,
                       Size const& size) const
     {
+      /* XXX
       Ensemble::Scoutor scoutor;
       Range<Fellow> range;
       Index i(0);
 
       ELLE_TRACE_SCOPE("consult(%s, %s)", index, size);
-
-      /* XXX
-      if (range.Detach() == elle::Status::Error)
-        throw Exception("unable to detach the data from the range"); // XXX[to remove in the future]
-      */
 
       for (scoutor = this->_container.begin();
            scoutor != this->_container.end();
@@ -170,6 +162,7 @@ namespace nucleus
         }
 
       return (range);
+      */
     }
 
     void
@@ -208,9 +201,8 @@ namespace nucleus
             case Subject::TypeUnknown:
             default:
               {
-                throw Exception(
-                        elle::sprintf("unknown subject type '%s'",
-                                      fellow->subject().type()));
+                throw Exception("unknown subject type '%s'",
+                                fellow->subject().type());
               }
             }
         }
@@ -255,10 +247,8 @@ namespace nucleus
             return (scoutor);
         }
 
-      throw Exception(
-              elle::sprintf(
-                "unable to locate the given subject %s",
-                subject));
+      throw Exception("unable to locate the given subject %s",
+                      subject);
     }
 
     Ensemble::Iterator const
@@ -276,8 +266,7 @@ namespace nucleus
             return (iterator);
         }
 
-      throw Exception(elle::sprintf("unable to locate the given subject %s",
-                                    subject));
+      throw Exception("unable to locate the given subject %s", subject);
     }
 
 //

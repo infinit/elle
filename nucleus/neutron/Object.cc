@@ -17,11 +17,11 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
-    const Component Object::_component = ComponentObject;
+    Component const Object::Constants::component{ComponentObject};
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -503,8 +503,6 @@ namespace nucleus
             }
           case Object::RoleLord:
             {
-              Record* record;
-
               // check that an access block has been provided.
               if (access == nullptr)
                 throw Exception("the Validate() method must take the object's "
@@ -512,25 +510,23 @@ namespace nucleus
 
               // retrieve the access record corresponding to the author's
               // index.
-              if (access->Lookup(this->_author->lord.index,
-                                 record) == elle::Status::Error)
-                throw Exception("unable to retrieve the access record");
+              Record const& record = access->select(this->_author->lord.index);
 
               // check the access record permissions for the given author.
-              if ((record->permissions() & permissions::write) !=
+              if ((record.permissions() & permissions::write) !=
                   permissions::write)
                 throw Exception("the object's author does not seem to have had "
                                 "the permission to modify this object");
 
               // check that the subject is indeed a user.
-              if (record->subject().type() != Subject::TypeUser)
+              if (record.subject().type() != Subject::TypeUser)
                 throw Exception("the author references an access record which "
                                 "is not related to a user");
 
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = record->subject().user();
+              author = record.subject().user();
 
               break;
             }
@@ -542,9 +538,8 @@ namespace nucleus
             }
           default:
             {
-              throw Exception(
-                elle::sprintf("unexpected author's role '%u'",
-                              this->_author->role));
+              throw Exception("unexpected author's role '%u'",
+                              this->_author->role);
             }
           }
       }

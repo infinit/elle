@@ -1,15 +1,16 @@
 #include <etoile/gear/Transcript.hh>
 
+#include <elle/finally.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Transcript::~Transcript()
     {
@@ -19,26 +20,29 @@ namespace etoile
       this->_container.clear();
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     void
-    Transcript::push(nucleus::proton::Address const& address,
-                     nucleus::proton::Block const* block)
+    Transcript::record(Action const* action)
     {
-      this->_container.push_back(new Action(address, block));
+      ELLE_FINALLY_DELETE(action);
+
+      this->_container.push_back(action);
+
+      ELLE_FINALLY_ABORT(action);
     }
 
-    void
-    Transcript::wipe(nucleus::proton::Address const& address)
+    elle::Size
+    Transcript::size() const
     {
-      this->_container.push_back(new Action(address));
+      return (static_cast<elle::Size>(this->_container.size()));
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status        Transcript::Dump(const elle::Natural32  margin) const
     {
@@ -53,24 +57,31 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Transcript::print(std::ostream& stream) const
     {
-      stream << "transcript(";
+      elle::Size i{0};
+
+      stream << "transcript{";
 
       for (auto action: this->_container)
-        stream << action->type() << " " << action->address();
+        {
+          stream << *action;
 
-      stream << ")";
+          if (++i != this->size())
+            stream << " ";
+        }
+
+      stream << "}";
     }
 
-//
-// ---------- iterable --------------------------------------------------------
-//
+    /*---------.
+    | Iterable |
+    `---------*/
 
     typename Transcript::Scoutor
     Transcript::begin() const
@@ -83,6 +94,5 @@ namespace etoile
     {
       return (this->_container.end());
     }
-
   }
 }

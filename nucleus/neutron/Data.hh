@@ -2,7 +2,6 @@
 # define NUCLEUS_NEUTRON_DATA_HH
 
 # include <elle/types.hh>
-# include <elle/Printable.hh>
 # include <elle/standalone/Region.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -28,7 +27,6 @@ namespace nucleus
     ///
     class Data:
       public proton::Value,
-      public elle::Printable, // XXX[in the root class? Node?]
       public elle::serialize::SerializableMixin<Data>,
       private boost::noncopyable
     {

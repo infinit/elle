@@ -1,6 +1,7 @@
-#include <elle/Elle.hh>
 #include <elle/types.hh>
+#include <elle/assert.hh>
 #include <elle/Exception.hh>
+#include <elle/finally.hh>
 #include <elle/format/hexadecimal.hh>
 
 #include <cryptography/Digest.hh>
@@ -24,6 +25,8 @@
 #include <lune/Lune.hh>
 
 #include <hole/Hole.hh>
+#include <hole/storage/MainMemory.hh>
+#include <hole/implementations/local/Implementation.hh>
 
 #include <Infinit.hh>
 
@@ -101,8 +104,8 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 #endif
     }
 
-  assert(porcupine.capacity() == vector.size());
-  assert(porcupine.state() == nucleus::proton::StateDirty);
+  ELLE_ASSERT(porcupine.capacity() == vector.size());
+  ELLE_ASSERT(porcupine.state() == nucleus::proton::StateDirty);
 
   porcupine.check<nucleus::neutron::Catalog>(
     nucleus::proton::Porcupine::FlagRecursive |
@@ -131,11 +134,11 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 
       catalog.load();
 
-      assert(catalog()->exists(vector[i]) == true);
+      ELLE_ASSERT(catalog()->exist(vector[i]) == true);
 
       catalog.unload();
 
-      assert(porcupine.exists<nucleus::neutron::Catalog>(vector[i]) == true);
+      ELLE_ASSERT(porcupine.exist<nucleus::neutron::Catalog>(vector[i]) == true);
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
@@ -189,19 +192,12 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
 
       catalog.load();
 
-      nucleus::neutron::Range<nucleus::neutron::Entry> range;
+      nucleus::neutron::Range<nucleus::neutron::Entry> range{
+        catalog()->consult(i - base,
+                           catalog()->capacity() - (i - base))};
 
-      range = catalog()->consult(i - base,
-                                 catalog()->capacity() - (i - base));
-
-      for (auto it = range.container.begin();
-           it != range.container.end();
-           ++it)
-        {
-          nucleus::neutron::Entry* entry = *it;
-
-          w[i++] = entry->name();
-        }
+      for (auto& entry: range)
+        w[i++] = entry->name();
 
       catalog.unload();
 
@@ -218,7 +214,7 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
   std::vector<elle::String> s(vector);
   sort(s.begin(), s.end());
 
-  assert(s == w);
+  ELLE_ASSERT(s == w);
 
   porcupine.check<nucleus::neutron::Catalog>(
     nucleus::proton::Porcupine::FlagAll);
@@ -237,46 +233,17 @@ test_porcupine_serialize(nucleus::proton::Porcupine& input,
   nest->record(transcript);
 
   for (auto action: transcript)
-    {
-      // perform the action.
-      switch (action->type())
-        {
-        case etoile::gear::Action::Type::push:
-          {
-            // store the block in the depot.
-            if (etoile::depot::Depot::Push(
-                  action->address(),
-                  action->block()) == elle::Status::Error)
-              throw elle::Exception("unable to push the block in the depot");
+    action->apply<etoile::depot::Depot>();
 
-            break;
-          }
-        case etoile::gear::Action::Type::wipe:
-          {
-            // wipe the block from the depot.
-            if (etoile::depot::Depot::Wipe(
-                  action->address()) == elle::Status::Error)
-              throw elle::Exception("unable to wipe the block from the depot");
-
-            break;
-          }
-        default:
-          {
-            throw elle::Exception("unknown action type");
-          }
-        }
-    }
+  elle::Buffer buffer;
+  buffer.writer() << input;
 
   nucleus::proton::Porcupine output;
-  etoile::nest::Nest* n = new etoile::nest::Nest(input.nest().limits());
-  {
-    elle::Buffer buffer;
-    buffer.writer() << input;
-    buffer.reader() >> output;
+  buffer.reader() >> output;
 
-    output.nest(*n);
-    output.unseal(secret);
-  }
+  etoile::nest::Nest* n = new etoile::nest::Nest(input.nest().limits());
+  output.nest(*n);
+  output.unseal(secret);
 
   // This first lookup phase is going to be slower than when the
   // porcupine has been created because blocks needed to be fetched
@@ -337,7 +304,7 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
     nucleus::proton::Porcupine::FlagFootprint |
     nucleus::proton::Porcupine::FlagState);
 
-  assert(porcupine.state() == nucleus::proton::StateDirty);
+  ELLE_ASSERT(porcupine.state() == nucleus::proton::StateDirty);
 }
 
 void
@@ -357,8 +324,8 @@ test_porcupine_catalog()
 
   test_porcupine_add(porcupine1, vector);
 
-  assert(porcupine1.height() >= 1);
-  assert(porcupine1.height() <= 10);
+  ELLE_ASSERT(porcupine1.height() >= 1);
+  ELLE_ASSERT(porcupine1.height() <= 10);
 
   test_porcupine_lookup(porcupine1, vector);
 
@@ -378,7 +345,7 @@ test_porcupine_catalog()
 #ifdef PORCUPINE_SERIALIZE_TEST
   nucleus::proton::Porcupine porcupine2 =
     test_porcupine_serialize(porcupine1, secret1, vector);
-
+  /* XXX
   test_porcupine_remove(porcupine2, vector, N / 3, N / 3);
 
   cryptography::SecretKey secret2;
@@ -388,6 +355,7 @@ test_porcupine_catalog()
 
   nucleus::proton::Porcupine porcupine3 =
     test_porcupine_serialize(porcupine2, secret2, vector);
+  */
 #endif
 
   test_porcupine_remove(porcupine1, vector, 0, vector.size());
@@ -397,28 +365,47 @@ int
 Main(elle::Natural32,
      elle::Character* argv[])
 {
-  // XXX
-  Infinit::Network = "local";
-
   try
     {
+      // XXX
+      Infinit::Network = "test";
       lune::Lune::Initialize();
       etoile::Etoile::Initialize();
       Infinit::Initialize();
+      // XXX
 
 #ifdef PORCUPINE_SERIALIZE_TEST
-      hole::Hole::Initialize();
+      cryptography::KeyPair pair{cryptography::KeyPair::generate(1024)};
+      elle::Authority authority(pair);
+
+      elle::Passport passport(hole::Label{elle::String{"node"}},
+                              elle::String{"me"});
+      passport.Seal(authority);
+
+      hole::storage::MainMemory storage;
+      hole::Hole* hole{
+        new hole::implementations::local::Implementation(
+          storage, passport, authority)};
+      ELLE_FINALLY_DELETE(hole);
+
+      etoile::depot::hole(hole);
+
+      hole->join();
 #endif
 
       test_porcupine_catalog();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
-      hole::Hole::Clean();
+      hole->leave();
+      ELLE_FINALLY_ABORT(hole);
+      delete hole;
 #endif
 
+      // XXX
       Infinit::Clean();
       etoile::Etoile::Clean();
       lune::Lune::Clean();
+      // XXX
 
       std::cout << "tests done.\n";
     }

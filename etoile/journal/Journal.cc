@@ -68,24 +68,15 @@ namespace etoile
         // Go through the blocks which needs to be pushed.
         for (auto action: scope->context->transcript)
           {
-            // perform the action.
             switch (action->type())
               {
               case gear::Action::Type::push:
                 {
-                  // store the block in the depot.
-                  if (depot::Depot::Push(action->address(),
-                                         action->block()) == elle::Status::Error)
-                    escape("unable to push the block in the depot");
-
+                  action->apply<depot::Depot>();
                   break;
                 }
               case gear::Action::Type::wipe:
-                {
-                  // Ignore these actions for now.
-
-                  break;
-                }
+                break;
               }
           }
       }
@@ -95,21 +86,13 @@ namespace etoile
         // Then, process the blocks to wipe.
         for (auto action: scope->context->transcript)
           {
-            // perform the action.
             switch (action->type())
               {
               case gear::Action::Type::push:
-                {
-                  // Ignore these actions as already handled above.
-
-                  break;
-                }
+                break;
               case gear::Action::Type::wipe:
                 {
-                  // wipe the block from the depot.
-                  if (depot::Depot::Wipe(action->address()) == elle::Status::Error)
-                    escape("unable to wipe the block from the depot");
-
+                  action->apply<depot::Depot>();
                   break;
                 }
               }

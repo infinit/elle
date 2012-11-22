@@ -12,45 +12,40 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
                           value,
                           version)
 {
-  elle::Natural32 size;
-  elle::Natural32 i;
+  nucleus::neutron::Size size;
+  nucleus::neutron::Size i;
 
   enforce(version == 0);
 
-  archive >> base_class<nucleus::proton::Node>(value);
+  archive >> base_class<nucleus::proton::Value>(value);
 
   archive >> size;
 
   for (i = 0; i< size; i++)
     {
-      auto entry =
-        archive.template Construct<nucleus::neutron::Entry>();
+      std::shared_ptr<nucleus::neutron::Entry> entry{
+        archive.template Construct<nucleus::neutron::Entry>().release()};
 
       // Compute the entry's footprint because the entry proper
       // constructor has not been called. Instead, the default
       // constructor has been used before deserializing the entry.
       entry->footprint(elle::serialize::footprint(*entry));
 
-      std::pair<typename nucleus::neutron::Catalog::Iterator,
-                elle::Boolean> result;
-
       if (value._container.find(entry->name()) != value._container.end())
-        throw nucleus::Exception(
-          elle::sprintf("the name '%s' seems to have already been recorded.",
-                        entry->name()));
+        throw nucleus::Exception("the entry's name '%s' seems to already "
+                                 "exist", entry->name());
 
-      result = value._container.insert(
-        std::pair<const elle::String, nucleus::neutron::Entry*>(
-          entry->name(), entry.get()));
+      auto result =
+        value._container.insert(
+          std::pair<elle::String const,
+                    std::shared_ptr<nucleus::neutron::Entry>>{
+            entry->name(), entry});
 
       if (result.second == false)
-        throw nucleus::Exception("unable to insert the entry in "
-                                 "the container.");
+        throw Exception("unable to insert the entry the container");
 
       // Update the catalog's footprint.
       value.footprint(value.footprint() + entry->footprint());
-
-      entry.release();
     }
 }
 
@@ -61,15 +56,16 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Catalog,
 {
   enforce(version == 0);
 
-  archive << base_class<nucleus::proton::Node>(value);
+  archive << base_class<nucleus::proton::Value>(value);
 
-  archive << static_cast<elle::Natural32>(value._container.size());
+  archive << static_cast<nucleus::neutron::Size>(value._container.size());
 
-  auto it = value._container.begin();
-  auto end = value._container.end();
+  for (auto& pair: value._container)
+    {
+      auto& entry = pair.second;
 
-  for (; it != end; ++it)
-    archive << *(it->second);
+      archive << *entry;
+    }
 }
 
 #endif

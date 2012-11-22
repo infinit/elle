@@ -2,8 +2,9 @@
 # define NUCLEUS_NEUTRON_ACCESS_HH
 
 # include <elle/types.hh>
-# include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/serialize/Serializable.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <cryptography/oneway.hh>
 // XXX[temporary: for cryptography]
@@ -14,15 +15,15 @@ using namespace infinit;
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Range.hh>
 # include <nucleus/neutron/Record.hh>
-
-# include <elle/idiom/Open.hh>
+# include <nucleus/neutron/Size.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents an access control list.
+    /// This class represents an access control list which contains
+    /// tuples representing the subject (user or group) having been
+    /// granted permssion on the object associated with this ACL.
     class Access:
       public proton::ContentHashBlock,
       public elle::serialize::SerializableMixin<Access>,
@@ -35,17 +36,21 @@ namespace nucleus
       struct Constants
       {
         static cryptography::oneway::Algorithm const oneway_algorithm;
+
+        static Component const component;
       };
 
-      //
-      // constants
-      //
+      /*------.
+      | Types |
+      `------*/
     public:
-      static const Component _component;
+      typedef std::map<Subject const, std::shared_ptr<Record>> Container;
+      typedef typename Container::iterator Iterator;
+      typedef typename Container::const_iterator Scoutor;
 
-      //
-      // construction
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Access(); // XXX[to deserialize]
       ELLE_SERIALIZE_CONSTRUCT(Access, ContentHashBlock)
@@ -53,54 +58,71 @@ namespace nucleus
       Access(proton::Network const& network,
              cryptography::PublicKey const& creator_K);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      elle::Status      Add(Record*);
-      elle::Boolean     Exist(const Subject&) const;
-      elle::Status      Lookup(const Subject&,
-                               Record const*&) const;
-      elle::Status      Lookup(const Subject&,
-                               Record*&) const;
-      elle::Status      Lookup(const Subject&,
-                               Index&) const; // XXX[rename to seek()]
-      elle::Status      Lookup(const Index&,
-                               Record*&) const;
-      /// XXX
-      template <typename T>
-      elle::Status
-      Update(Subject const& subject,
-             Permissions permissions,
-             T const& secret,
-             cryptography::PublicKey const& K);
-      /// XXX
-      elle::Status
-      Update(Subject const& subject,
-             Permissions permissions,
-             Token const& token);
-      elle::Status      Consult(const Index&,
-                                const Size&,
-                                Range<Record>&) const;
-      elle::Status      Remove(const Subject&);
-      elle::Status      Capacity(Size&) const;
-
-      /// Computes a fingerprint of the (subject, permissions) tuples
-      /// composing the access block.
+      /// Insert a record in the access control list.
+      ///
+      /// Note that the given pointer's ownership is transfered to the
+      /// Access instance.
+      void
+      insert(Record* record);
+      /// Return true if a record exists for the given subject.
+      elle::Boolean
+      exist(Subject const& subject) const;
+      /// Return the record assocaited with the given subject.
+      Record const&
+      locate(Subject const& subject) const;
+      /// Return the record associated with the given subject.
+      Record&
+      locate(Subject const& subject);
+      /// Return the index of the record associated with the given subject.
+      Index
+      seek(Subject const& subject) const;
+      /// Return the record located at the given index.
+      Record const&
+      select(Index const& index) const;
+      /// Return the record located at the given index.
+      Record&
+      select(Index const& index);
+      /// Return the range [index, index + size[ from the access control list.
+      Range<Record>
+      consult(Index const& index,
+              Size const& size) const;
+      /// Erase the record associated with the given subject from the access
+      /// control list.
+      void
+      erase(Subject const& subject);
+      /// Return the size of the access control list.
+      Size
+      size() const;
+      /// Compute a fingerprint of the record tuples composing the access block.
       cryptography::Digest
       fingerprint() const;
 
-      //
-      // operators
-      //
-    public:
-      elle::Boolean
-      operator ==(Access const& other) const;
-      ELLE_OPERATOR_NEQ(Access);
+      // XXX[transition for etoile]
+      Record const*
+      lookup(Subject const& subject) const
+      {
+        Record const& record = this->locate(subject);
+        return (&record);
+      }
+      Record*
+      lookup(Subject const& subject)
+      {
+        Record& record = this->locate(subject);
+        return (&record);
+      }
+      // XXX
+    private:
+      /// Insert a shared_ptr-based record.
+      void
+      _insert(std::shared_ptr<Record> const& record);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -112,18 +134,21 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Access);
       // iterable
-      typename Range<Record>::Scoutor
+      Scoutor
       begin() const;
-      typename Range<Record>::Scoutor
+      Scoutor
       end() const;
+      Iterator
+      begin();
+      Iterator
+      end();
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Range<Record> _range;
+      ELLE_ATTRIBUTE(Container, container);
     };
-
   }
 }
 

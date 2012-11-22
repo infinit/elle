@@ -2,13 +2,15 @@
 # define NUCLEUS_NEUTRON_CATALOG_HH
 
 # include <elle/types.hh>
-# include <elle/Printable.hh>
+# include <elle/operator.hh>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
 # include <nucleus/proton/Node.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Entry.hh>
+# include <nucleus/neutron/Size.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -16,7 +18,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
     ///
     /// this class represents the content of a directory and is composed
     /// of a set of tuples (name, address).
@@ -29,19 +30,22 @@ namespace nucleus
     ///
     class Catalog:
       public proton::Value,
-      public elle::Printable, // XXX[in the root class? Node?]
       public elle::serialize::SerializableMixin<Catalog>,
       private boost::noncopyable
     {
+      /*------.
+      | Types |
+      `------*/
     public:
-      //
-      // types
-      //
       typedef elle::String K;
 
-      //
-      // constants
-      //
+      typedef std::map<elle::String const, std::shared_ptr<Entry>> Container;
+      typedef typename Container::iterator Iterator;
+      typedef typename Container::const_iterator Scoutor;
+
+      /*----------.
+      | Constants |
+      `----------*/
     public:
       struct Constants
       {
@@ -51,16 +55,10 @@ namespace nucleus
         static const proton::Node::Type type;
       };
 
-      //
-      // types
-      //
-      typedef std::map<elle::String const, Entry*> Container;
-      typedef typename Container::iterator Iterator;
-      typedef typename Container::const_iterator Scoutor;
-
-      //
-      // static methods
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
+    public:
       /// XXX
       static
       proton::Footprint
@@ -78,52 +76,64 @@ namespace nucleus
                     Catalog* right,
                     proton::Extent const size);
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Catalog();
-      ~Catalog();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX
+      /// XXX[ownership transfered]
       void
       insert(Entry* entry);
       /// XXX
       elle::Boolean
-      exists(elle::String const& name) const;
+      exist(elle::String const& name) const;
       /// XXX
-      Scoutor
-      locate_iterator(elle::String const& name) const;
+      Entry const&
+      locate(elle::String const& name) const;
       /// XXX
-      Iterator
-      locate_iterator(elle::String const& name);
-      /// XXX
-      Entry const*
-      locate_entry(elle::String const& name) const;
+      Entry&
+      locate(elle::String const& name);
       /// XXX
       Range<Entry>
-      consult(Index const index,
-              Size const size) const;
+      consult(Index const& index,
+              Size const& size) const;
       /// XXX
       void
       erase(elle::String const& name);
+      /// XXX
+      Size
+      size() const;
       /// XXX
       proton::Handle
       split();
       /// XXX
       void
       merge(proton::Handle& handle);
-      /// XXX[changer et fournir un begin() et end() plutot]
-      Container&
-      container();
+    private:
+      /// XXX
+      void
+      _insert(std::shared_ptr<Entry> const& entry);
+      /// XXX
+      Scoutor
+      _iterator(elle::String const& name) const;
+      /// XXX
+      Iterator
+      _iterator(elle::String const& name);
 
-      //
-      // interfaces
-      //
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_NO_ASSIGNMENT(Catalog);
+
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -140,12 +150,21 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // iterable
+      Scoutor
+      begin() const;
+      Scoutor
+      end() const;
+      Iterator
+      begin();
+      Iterator
+      end();
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Container  _container;
+      ELLE_ATTRIBUTE(Container, container);
     };
 
   }
