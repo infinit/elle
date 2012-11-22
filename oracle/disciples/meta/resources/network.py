@@ -360,7 +360,7 @@ class ConnectDevice(_Page):
     __pattern__ = '/network/connect_device'
 
     _validators = {
-        'id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
+        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
         'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
     }
 

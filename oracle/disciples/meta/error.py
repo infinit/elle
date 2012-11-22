@@ -50,6 +50,13 @@ USER_ALREADY_IN_INFINIT = -30002
 
 FILE_NAME_EMPTY = -40000
 
+#############
+## Transactions.
+TRANSACTION_DOESNT_EXIST = -50001
+TRANSACTION_DOESNT_BELONG_TO_YOU = -50002
+TRANSACTION_OPERATION_NOT_PERMITTED = -50003
+TRANSACTION_CANT_BE_ACCEPTED = -50004
+
 # Other.
 UNKNOWN = -666666
 
@@ -92,6 +99,11 @@ error_details = {
 
     USER_ALREADY_INVITED: "You already invited this user.",
     USER_ALREADY_IN_INFINIT: "This user already use infinit.",
+
+    TRANSACTION_DOESNT_EXIST: "This transaction doesn't exists.",
+    TRANSACTION_DOESNT_BELONG_TO_YOU: "This transaction doesn't belong to you.",
+    TRANSACTION_OPERATION_NOT_PERMITTED: "This operation is not permited with this transaction.",
+    TRANSACTION_CANT_BE_ACCEPTED: "You can't accept this transaction.",
 
     # Other.
     UNKNOWN: "Unknown error.",

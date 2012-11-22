@@ -42,7 +42,7 @@ class TrophoniusNotify(Notifier):
                 else:
                         log.err('Notification was bad formed.')
 
-                print(" ".format(msg))
+                print("{}\n".format(msg))
 		self.conn.send("{}\n".format(msg))
 
         def _add_notif_to_db(self, recipient_id, notif):
@@ -68,18 +68,22 @@ class TrophoniusNotify(Notifier):
                         return
 
                 if user_['connected']:
-                        dict_ = {'recipient_id': str(recipient_id)}
-                        dict_.update(message)
-                        self.send_notification(dict_)
+                        message.update({'to': str(recipient_id)})
+                        self.send_notification(message)
 
         def notify_some(self, notification_id, recipients_id, message):
-                print("Original message {}\n".format(message));
                 if not isinstance(recipients_id, list):
                         return self.notify_one(notification_id, recipients_id, message)
+
+                # Recipients empty.
+                if not recipients_id:
+                        return
+
+                message.update({'notification_id' : notification_id})
 
                 for _id in recipients_id:
                         self._add_notif_to_db(_id, message)
 
-                dict_ = {'recipient_id': recipients_id, 'notification_id' : notification_id}
-                dict_.update(message)
-                self.send_notification(dict_)
+                message.update({'to': recipients_id})
+
+                self.send_notification(message)

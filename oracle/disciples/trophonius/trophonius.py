@@ -46,6 +46,9 @@ class Trophonius(basic.LineReceiver):
 	delimiter = "\n"
 	def __init__(self, factory):
 		self.factory = factory
+                self.devices = None
+                self.id = None
+                self.token = None
 		self.state = 'HELLO'
 
 	def __str__(self):
@@ -59,20 +62,22 @@ class Trophonius(basic.LineReceiver):
 
         def connectionLost(self, reason):
 		log.msg("Connection lost with", self.transport.getPeer(), reason)
-                if not hasattr(self, "id"):
+
+                if self.id is None:
                         return
 
                 print("Disconnect user: id=%s" % self.id)
 
                 status = False
                 try:
-                        status = self.factory.clients.remove(self);
+                        if self.devices is not None:
+                                self.devices.remove(self);
                 except Exception as e:
                         log.msg('self.factory.clients.remove(self) failed')
                 pythia.Admin().post('/user/disconnected', {
                     'user_id': self.id,
                     'user_token': self.token,
-                    'full': status,
+                    'full': self.devices and len(self.devices) or 0,
                 })
 
 	def _send_res(self, res, msg=""):
@@ -87,7 +92,8 @@ class Trophonius(basic.LineReceiver):
 			else:
 				s["response_details"] = "{}".format(response_matrix[res])
 			message = json.dumps(s)
-			self.sendLine("{}\ǹ".format(message))
+                        print("sending message from", self, "to", self.transport.getPeer(), ":", message)
+			self.sendLine("{}".format(message))
 
 	def handle_CHAT(self, line):
 		"""
@@ -116,7 +122,13 @@ class Trophonius(basic.LineReceiver):
 			self.id = res["_id"]
 			self.token = js_req["token"]
 			# Add the current client to the client list
-			self.factory.clients.add(self)
+			assert isinstance(self.factory.clients, dict)
+                        self.factory.clients.setdefault(self.id, set()).add(self)
+                        self.devices = self.factory.clients[self.id]
+
+                        print("client {}: current devices {}".format(self.id, self.devices));
+                        for d in self.devices:
+                                print(self.transport.getPeer())
 
 			# Enable the notifications for the current client
 			self.state = "CHAT"
@@ -166,11 +178,14 @@ class MetaTropho(basic.LineReceiver):
 	def enqueue(self, line, recipients):
 		try:
 			for rec_id in recipients:
-				for c in self.factory.clients[rec_id]:
+                                print("Send to: ", rec_id)
+				if not rec_id in self.factory.clients:
+                                        print("User not connected")
+                                        continue
+                                for c in self.factory.clients[rec_id]:
+                                        print(rec_id, c, line, sep=" | ");
                                         msg = "{}".format(line)
-                                        print("line: '{}'".format(msg))
 					c.sendLine(msg)
-                                        print("lined")
 		except KeyError as ke:
 			log.err("Handled exception {}: {} unknow id".format(
                                         ke.__class__.__name__,
@@ -181,7 +196,7 @@ class MetaTropho(basic.LineReceiver):
 		try:
 			recipients_ids = []
 			js_req = json.loads(line)
-			_recipient = js_req["recipient_id"]
+			_recipient = js_req["to"]
 			if isinstance(_recipient, list):
 				recipients_ids = _recipient
 			elif isinstance(_recipient, str) or isinstance(_recipient, unicode):
