@@ -15,48 +15,48 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Passport::Passport()
+  Passport::Passport() {} //XXX to remove
+
+  Passport::Passport(elle::String const& id,
+                     elle::String const& name,
+                     cryptography::PublicKey const& owner_K,
+                     elle::Authority const& authority)
+    : _id{id}
+    , _name{name}
+    , _owner_K{owner_K}
+    , _signature{authority.k->sign(elle::serialize::make_tuple(id, owner_K))}
   {
+    ELLE_ASSERT(id.size() > 0);
+    ELLE_ASSERT(name.size() > 0);
+    ELLE_ASSERT(this->validate(authority));
   }
 
-  Passport::Passport(hole::Label const& label,
-                     elle::String const& id):
-    label(label),
-    id(id)
-  {
-  }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-  ///
-  /// this method seals the passport with the authority.
-  ///
-  elle::Status
-  Passport::Seal(elle::Authority const& authority)
-  {
-    // sign the pair with the authority.
-    this->signature =
-      authority.k->sign(elle::serialize::make_tuple(this->label, this->id));
-
-    return elle::Status::Ok;
-  }
 
   ///
   /// this method verifies the validity of the passport.
   ///
-  elle::Status
-  Passport::Validate(elle::Authority const& authority)
-    const
+  bool
+  Passport::validate(elle::Authority const& authority) const
   {
-    // verify the signature.
-    if (authority.K.Verify(this->signature,
-                           elle::serialize::make_tuple(this->label,
-                                           this->id)) == elle::Status::Error)
-      escape("unable to verify the signature");
-
-    return elle::Status::Ok;
+    auto res = authority.K.Verify(
+        this->_signature,
+        authority.k->sign(elle::serialize::make_tuple(_id, _owner_K))
+    );
+    static_assert(
+      std::is_same<decltype(res), Status>::value,
+      "Remove the above switch."
+    );
+    switch (res)
+      {
+      case Status::Ok:
+      case Status::True:
+        return true;
+      case Status::Error:
+      case Status::False:
+        return false;
+      default:
+        ELLE_ASSERT(false && "Invalid return code");
+      }
   }
 
 //
@@ -66,24 +66,20 @@ namespace elle
   ///
   /// this method dumps a passport.
   ///
-  elle::Status          Passport::Dump(const elle::Natural32    margin) const
+  void
+  Passport::dump(const elle::Natural32    margin) const
   {
     elle::String        alignment(margin, ' ');
 
     std::cout << alignment << "[Passport]" << std::endl;
 
-    // dump the label.
-    if (this->label.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the label");
-
-    // dump the id.
     std::cout << alignment << elle::io::Dumpable::Shift << "[Id] "
-              << this->id << std::endl;
+              << this->_id << std::endl;
 
-    // dump the signature.
-    if (this->signature.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the signature");
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
+              << this->_name << std::endl;
 
-    return elle::Status::Ok;
+    this->_owner_K.Dump(margin + 2);
+    this->_signature.Dump(margin + 2);
   }
 }

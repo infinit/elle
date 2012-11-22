@@ -323,10 +323,12 @@ void InfinitNetwork::_register_device()
 
   this->_manager.meta().network_add_device(
     this->_description._id,
-    passport.id);
+    passport.id()
+  );
 
-  this->_on_network_nodes(this->_manager.meta().network_nodes(
-    this->_description._id));
+  this->_on_network_nodes(
+    this->_manager.meta().network_nodes(this->_description._id)
+  );
 
   LOG("End of _register_device.");
 }

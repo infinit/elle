@@ -38,7 +38,7 @@ namespace hole
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
 
-    if (_passport.Validate(this->authority()) == elle::Status::Error)
+    if (!_passport.validate(this->authority()))
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to validate the passport");
 

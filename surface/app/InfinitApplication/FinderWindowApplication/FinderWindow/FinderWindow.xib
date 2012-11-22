@@ -61,7 +61,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{83, 223}, {325, 70}}</string>
 							<reference key="NSSuperview" ref="1006"/>
-							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView"/>
 							<int key="NSViewLayerContentsRedrawPolicy">2</int>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
@@ -100,7 +99,6 @@
 					</array>
 					<string key="NSFrameSize">{480, 388}</string>
 					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="45347150"/>
 					<bool key="NSViewIsLayerTreeHost">YES</bool>
 					<int key="NSViewLayerContentsRedrawPolicy">2</int>
@@ -130,7 +128,6 @@
 						</set>
 						<string key="NSFrame">{{0, 262}, {480, 126}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="541990740"/>
 						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -155,7 +152,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{99, 19}, {282, 28}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
 						<bool key="NSEnabled">YES</bool>
@@ -183,7 +179,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{96, 84}, {288, 22}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="910985337"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -206,7 +201,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{182, 52}, {116, 25}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="69179144"/>
 						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
@@ -231,7 +225,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{99, 114}, {282, 29}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="904934424"/>
 						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -271,7 +264,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{99, 153}, {282, 28}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="200615124"/>
 						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -292,7 +284,6 @@
 				</array>
 				<string key="NSFrameSize">{480, 388}</string>
 				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="194869007"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
@@ -3482,271 +3473,7 @@
 			<nil key="sourceID"/>
 			<int key="maxID">1249</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes">
-			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
-				<object class="IBPartialClassDescription">
-					<string key="className">IADropFileView</string>
-					<string key="superclassName">NSView</string>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="label">NSTextField</string>
-						<string key="main_controller">IAMainViewController</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="label">
-							<string key="name">label</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="main_controller">
-							<string key="name">main_controller</string>
-							<string key="candidateClassName">IAMainViewController</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IADropFileView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IAFinderWindow</string>
-					<string key="superclassName">NSWindow</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IAFinderWindow.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IAFinderWindowController</string>
-					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="switchToLoginView:">id</string>
-						<string key="switchToRegisterView:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="switchToLoginView:">
-							<string key="name">switchToLoginView:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="switchToRegisterView:">
-							<string key="name">switchToRegisterView:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="login_view_controller">IALoginViewController</string>
-						<string key="main_view_controller">IAMainViewController</string>
-						<string key="register_view_controller">IARegisterViewController</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="login_view_controller">
-							<string key="name">login_view_controller</string>
-							<string key="candidateClassName">IALoginViewController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="main_view_controller">
-							<string key="name">main_view_controller</string>
-							<string key="candidateClassName">IAMainViewController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="register_view_controller">
-							<string key="name">register_view_controller</string>
-							<string key="candidateClassName">IARegisterViewController</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IAFinderWindowController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IALoginViewController</string>
-					<string key="superclassName">NSViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doLogin:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doLogin:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doLogin:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="error_message">NSTextField</string>
-						<string key="login">NSTextFieldCell</string>
-						<string key="login_button">NSButton</string>
-						<string key="password">NSSecureTextFieldCell</string>
-						<string key="register_button">NSButton</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="error_message">
-							<string key="name">error_message</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="login">
-							<string key="name">login</string>
-							<string key="candidateClassName">NSTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="login_button">
-							<string key="name">login_button</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="password">
-							<string key="name">password</string>
-							<string key="candidateClassName">NSSecureTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="register_button">
-							<string key="name">register_button</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IALoginViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IAMainView</string>
-					<string key="superclassName">NSView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IAMainView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IAMainViewController</string>
-					<string key="superclassName">NSViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">sendFile:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">sendFile:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">sendFile:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="drop_box">IADropFileView</string>
-						<string key="search_bar">IAUserSearchBar</string>
-						<string key="send_button">NSButton</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="drop_box">
-							<string key="name">drop_box</string>
-							<string key="candidateClassName">IADropFileView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="search_bar">
-							<string key="name">search_bar</string>
-							<string key="candidateClassName">IAUserSearchBar</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="send_button">
-							<string key="name">send_button</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IAMainViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IARegisterView</string>
-					<string key="superclassName">NSView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IARegisterView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IARegisterViewController</string>
-					<string key="superclassName">NSViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doRegister:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doRegister:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doRegister:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="activation_code">NSSecureTextFieldCell</string>
-						<string key="error_message">NSTextField</string>
-						<string key="fullname">NSTextFieldCell</string>
-						<string key="login">NSTextFieldCell</string>
-						<string key="password">NSSecureTextFieldCell</string>
-						<string key="password_confirm">NSSecureTextFieldCell</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="activation_code">
-							<string key="name">activation_code</string>
-							<string key="candidateClassName">NSSecureTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="error_message">
-							<string key="name">error_message</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="fullname">
-							<string key="name">fullname</string>
-							<string key="candidateClassName">NSTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="login">
-							<string key="name">login</string>
-							<string key="candidateClassName">NSTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="password">
-							<string key="name">password</string>
-							<string key="candidateClassName">NSSecureTextFieldCell</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="password_confirm">
-							<string key="name">password_confirm</string>
-							<string key="candidateClassName">NSSecureTextFieldCell</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IARegisterViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IATextFieldCell</string>
-					<string key="superclassName">NSTextFieldCell</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IATextFieldCell.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">IAUserSearchBar</string>
-					<string key="superclassName">NSTextField</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">main_controller</string>
-						<string key="NS.object.0">IAMainViewController</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">main_controller</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">main_controller</string>
-							<string key="candidateClassName">IAMainViewController</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/IAUserSearchBar.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSLayoutConstraint</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
-					</object>
-				</object>
-			</array>
-		</object>
+		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>

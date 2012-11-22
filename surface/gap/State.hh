@@ -175,6 +175,12 @@ namespace surface
       std::string _device_id;
       std::string _device_name;
 
+    public:
+      std::string const&
+      device_id();
+      std::string const&
+      device_name();
+
     ///
     /// Launch and stop infinit instances.
     ///

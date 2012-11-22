@@ -102,10 +102,10 @@
 /**/
 
 /// Define implementation of the pre-deserialization constructor.
-# define ELLE_SERIALIZE_CONSTRUCT_DEF(...)                              \
-  __ESC_HEAD(__VA_ARGS__)                                              \
-    ::__ESC_HEAD(__VA_ARGS__)(elle::serialize::NoInit)                 \
-  __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                \
+# define ELLE_SERIALIZE_CONSTRUCT_DEF(...)                                    \
+  __ESC_HEAD(__VA_ARGS__)                                                     \
+    ::__ESC_HEAD(__VA_ARGS__)(elle::serialize::NoInit)                        \
+  __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                      \
 /**/
 
 //
@@ -139,16 +139,16 @@ namespace elle
   __elem{elle::serialize::no_init}                                            \
 /**/
 
-# define __ESC_INITIALIZATION_LIST(...)                                 \
-  BOOST_PP_IF(                                                          \
-    BOOST_PP_DEC(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__)),                  \
-    BOOST_PP_SEQ_FOR_EACH_I(                                            \
-      __ESC_INITIALIZATION_LIST_REPEAT,                                 \
-      _,                                                                \
-      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))                 \
-      ),                                                                \
-    BOOST_PP_EMPTY()                                                    \
-    )                                                                   \
+# define __ESC_INITIALIZATION_LIST(...)                                       \
+  BOOST_PP_IF(                                                                \
+    BOOST_PP_DEC(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__)),                        \
+    BOOST_PP_SEQ_FOR_EACH_I(                                                  \
+      __ESC_INITIALIZATION_LIST_REPEAT,                                       \
+      _,                                                                      \
+      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))                       \
+      ),                                                                      \
+    BOOST_PP_EMPTY()                                                          \
+    )                                                                         \
 /**/
 
 #define __ESC_HEAD(F, ...) F

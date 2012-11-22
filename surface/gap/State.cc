@@ -732,6 +732,32 @@ namespace surface
       return fs::exists(common::passport_path(this->_me._id));
     }
 
+    std::string const&
+    State::device_id()
+    {
+      if (this->_device_id.size() == 0)
+        {
+          elle::Passport passport;
+          passport.load(common::passport_path(this->_me._id));
+          this->_device_id = passport.id();
+          this->_device_name = passport.name();
+        }
+      return this->_device_id;
+    }
+
+    std::string const&
+    State::device_name()
+    {
+      if (this->_device_name.size() == 0)
+        {
+          elle::Passport passport;
+          passport.load(common::passport_path(this->_me._id));
+          this->_device_id = passport.id();
+          this->_device_name = passport.name();
+        }
+      return this->_device_name;
+    }
+
     void
     State::update_device(std::string const& name, bool force_create)
     {
@@ -758,8 +784,8 @@ namespace surface
           elle::Passport passport;
           passport.load(passport_path);
 
-          ELLE_DEBUG("Passport id: %s", passport.id);
-          auto res = this->_meta->update_device(passport.id, name);
+          ELLE_DEBUG("Passport id: %s", passport.id());
+          auto res = this->_meta->update_device(passport.id(), name);
           this->_device_id = res.updated_device_id;
           passport_string = res.passport;
         }

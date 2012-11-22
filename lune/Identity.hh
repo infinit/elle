@@ -32,24 +32,25 @@ namespace lune
     public elle::concept::MakeUniquable<Identity>
   {
   public:
-    //
-    // enumerations
-    //
     enum Mode
       {
         ModeEncrypted,
         ModeUnencrypted
       };
 
-    //
-    // constructors & destructors
-    //
+  private:
+    ELLE_ATTRIBUTE_R(elle::String, id);
+  public: // XXX
+    elle::String                name;
+    cryptography::KeyPair       pair;
+    cryptography::Signature     signature;
+    cryptography::Cipher*       cipher;
+
+  public:
     Identity();
     ~Identity();
 
-    //
-    // methods
-    //
+  public:
     elle::Status        Create(elle::String const&,
                                const elle::String&,
                                cryptography::KeyPair const&);
@@ -95,17 +96,6 @@ namespace lune
     elle::Boolean
     exists(elle::String const& user_id);
 
-    //
-    // attributes
-    //
-  private:
-    elle::String                _id;
-  public: // XXX
-    elle::String                name;
-    cryptography::KeyPair       pair;
-    cryptography::Signature     signature;
-
-    cryptography::Cipher*       cipher;
 
     ELLE_SERIALIZE_FRIEND_FOR(Identity);
   };
