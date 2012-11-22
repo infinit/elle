@@ -129,7 +129,10 @@ namespace infinit
       // object
       declare(PublicKey);
       // XXX ELLE_OPERATOR_ASSIGNMENT(PrivateKey); // XXX
-      elle::Boolean           operator==(const PublicKey&) const;
+      elle::Boolean
+      operator ==(PublicKey const& other) const;
+      elle::Boolean
+      operator <(PublicKey const& other) const;
 
       // dumpable
       elle::Status            Dump(const elle::Natural32 = 0) const;
