@@ -180,7 +180,8 @@ namespace plasma
             ELLE_DEBUG("Read %s bytes from the socket (still not enough to build an object)",
                        new_available - old_available);
         }
-      ELLE_DEBUG("Nothing to read");
+      else
+        ELLE_DEBUG("Nothing to read");
 
       if (err)
         {
@@ -200,10 +201,27 @@ namespace plasma
           // Bind stream to response.
           std::istream is(&(_impl->response));
 
-          // Don't skip whitespaces in the stream.
-          is >> std::noskipws;
+          // Transfer socket stream to stringstream that ensure there are no
+          // encoding troubles (and make the stream human readable).
+          std::unique_ptr<char[]> data{new char[size]};
+          if (!data)
+            throw std::bad_alloc{};
+          is.read(data.get(), size);
+          std::stringstream ss{std::string{data.get(), size}};
 
-          auto tmp = elle::format::json::parse(is);
+          ELLE_DEGUG("Stream contains: '%s'.", std::string{data.get(), size});
+
+          // while (!is.eof())
+          // {
+          //   std::string s;
+          //   is >> s;
+
+          //   ELLE_DEBUG("Stream is '%s'.", s);
+
+          //   ::sleep(1);
+          // }
+
+          auto tmp = elle::format::json::parse(ss);
 
           _notifications.push(&tmp->as_dictionary());
 
@@ -262,6 +280,7 @@ namespace plasma
       if (!_notifications.empty())
         {
           ELLE_TRACE("Pop notification dictionnary to be handle.");
+
           // Fill dictionary.
           ret.reset(_notifications.front());
           _notifications.pop();
