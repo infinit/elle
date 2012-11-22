@@ -91,12 +91,7 @@ namespace surface
           common::meta::port(),
           true,
         }}
-      , _trophonius{
-        new plasma::trophonius::Client{
-          common::trophonius::host(),
-          common::trophonius::port(),
-          true,
-        }}
+      , _trophonius{nullptr}
       , _users{}
       , _files_infos{}
       , _networks{}
@@ -154,14 +149,15 @@ namespace surface
     State::~State()
     {
       for (auto& it: this->_networks)
-        delete (it).second;
+        delete it.second;
       this->_networks.clear();
 
-      delete this->_meta;
-      this->_meta = nullptr;
-
-      delete this->_trophonius;
-      this->_trophonius = nullptr;
+      if (this->_transactions)
+        {
+          for (auto& it: *this->_transactions)
+            delete it.second;
+          this->_transactions->clear();
+        }
     }
 
     void
@@ -673,16 +669,22 @@ namespace surface
     bool
     State::poll()
     {
+      if (!this->_trophonius)
+        throw Exception{gap_error, "Trophonius is not connected"};
       ELLE_TRACE("Polling trophonius client.");
-      std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
+      bool continue_ = false;
+      do
+        {
+          std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
 
-      if(!dict_ptr)
-        return false;
+          if (!dict_ptr)
+            return continue_;
 
-      ELLE_DEBUG("Dictionnary polled.");
-      json::Dictionary const& dict = *dict_ptr;
-
-      return this->_handle_dictionnary(dict);
+          ELLE_DEBUG("Dictionnary polled.");
+          json::Dictionary const& dict = *dict_ptr;
+          continue_ = this->_handle_dictionnary(dict);
+        } while (continue_);
+      return true;
     }
 
     bool
@@ -1180,6 +1182,21 @@ namespace surface
     void
     State::connect()
     {
+      if (this->_trophonius)
+        throw Exception{gap_error, "trophonius is already connected"};
+
+      try
+        {
+          this->_trophonius.reset(new plasma::trophonius::Client{
+            common::trophonius::host(),
+            common::trophonius::port(),
+            true,
+          });
+        }
+      catch (std::runtime_error const& err)
+        {
+          throw Exception{gap_error, "Couldn't connect to trophonius"};
+        }
       this->_trophonius->connect(this->_me._id,
                                  this->_meta->token());
 

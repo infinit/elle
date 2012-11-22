@@ -51,8 +51,8 @@ namespace surface
    class State
     {
     private:
-      plasma::meta::Client* _meta;
-      plasma::trophonius::Client* _trophonius;
+      std::unique_ptr<plasma::meta::Client>       _meta;
+      std::unique_ptr<plasma::trophonius::Client> _trophonius;
 
     public:
       State();
