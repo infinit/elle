@@ -108,17 +108,6 @@ namespace plasma
              uint16_t port,
              bool check_error = true);
 
-      private:
-      void
-      handle_connect(const boost::system::error_code& e,
-                     boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
-
-      void
-      handle_read(const boost::system::error_code& e);
-
-      void
-      handle_write(const boost::system::error_code& e);
-
     public:
       bool
       connect(std::string const& _id,
@@ -136,6 +125,10 @@ namespace plasma
 
       void
       _read_socket();
+
+      void
+      _on_read_socket(boost::system::error_code const& err,
+                      size_t bytes_transferred);
     };
   }
 }

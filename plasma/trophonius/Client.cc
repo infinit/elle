@@ -147,53 +147,30 @@ namespace plasma
                    bool check_errors)
       : _impl{new Impl{server, port, check_errors}}
     {
+      typedef boost::asio::ip::tcp tcp;
       // Resolve the host name into an IP address.
-      boost::asio::ip::tcp::resolver resolver(_impl->io_service);
-      boost::asio::ip::tcp::resolver::query query(_impl->server,
-        elle::sprint(_impl->port));
-      boost::asio::ip::tcp::resolver::iterator endpoint_iterator =
-        resolver.resolve(query);
+      tcp::resolver resolver(_impl->io_service);
+      tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
+      tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
       // Start connect operation.
       _impl->socket.connect(*endpoint_iterator);
-      _impl->socket.non_blocking(true);
+      //_impl->socket.non_blocking(true);
       ::fcntl(_impl->socket.native_handle(), F_SETFD, 1);
     }
 
-    void
-    Client::_read_socket()
+    void Client::_on_read_socket(boost::system::error_code const& err,
+                                 size_t bytes_transferred)
     {
-      boost::system::error_code err;
-      auto old_available = _impl->response.in_avail();
-      // Read socket.
-      std::size_t size =  boost::asio::read_until(
-        _impl->socket, _impl->response, "\n", err
-      );
-      auto new_available = _impl->response.in_avail();
-      if (new_available != old_available)
+      ELLE_DEBUG_SCOPE("Read %s bytes from the socket (%s available)",
+                       bytes_transferred,
+                       _impl->response.in_avail());
+      if (err || bytes_transferred == 0)
         {
-          if (size)
-            ELLE_DEBUG("Read %s bytes from the socket (will use %s)",
-                       new_available - old_available,
-                       size);
-          else
-            ELLE_DEBUG("Read %s bytes from the socket (still not enough to build an object)",
-                       new_available - old_available);
+          ELLE_WARN("Something went wrong while reading from socket: %s", err);
+          return;
         }
-      else
-        ELLE_DEBUG("Nothing to read");
 
-      if (err)
-        {
-          if (err != boost::asio::error::would_block)
-            throw elle::HTTPException{elle::ResponseCode::error,
-                elle::sprintf("Reading socket error: '%s'", err)
-            };
-          else
-            return;
-        }
-      if (size == 0)
-        return;
       try
         {
           ELLE_DEBUG("Recieved stream from trophonius.");
@@ -203,13 +180,13 @@ namespace plasma
 
           // Transfer socket stream to stringstream that ensure there are no
           // encoding troubles (and make the stream human readable).
-          std::unique_ptr<char[]> data{new char[size]};
+          std::unique_ptr<char[]> data{new char[bytes_transferred]};
           if (!data)
             throw std::bad_alloc{};
-          is.read(data.get(), size);
-          std::stringstream ss{std::string{data.get(), size}};
+          is.read(data.get(), bytes_transferred);
+          std::stringstream ss{std::string{data.get(), bytes_transferred}};
 
-          ELLE_DEBUG("Stream contains: '%s'.", std::string{data.get(), size});
+          ELLE_DEBUG("Stream contains: '%s'.", std::string{data.get(), bytes_transferred});
 
           // while (!is.eof())
           // {
@@ -226,6 +203,7 @@ namespace plasma
           _notifications.push(&tmp->as_dictionary());
 
           tmp.release();
+          this->_read_socket();
         }
       catch (std::runtime_error const& err)
         {
@@ -233,6 +211,18 @@ namespace plasma
             elle::ResponseCode::bad_content, err.what()
           };
         }
+    }
+
+    void
+    Client::_read_socket()
+    {
+      boost::asio::async_read_until(
+        _impl->socket, _impl->response, "\n",
+        std::bind(
+          &Client::_on_read_socket, this,
+          std::placeholders::_1, std::placeholders::_2
+        )
+      );
     }
 
     bool
@@ -260,20 +250,20 @@ namespace plasma
         err
       );
 
-      if (!err)
-        return true;
+      if (err)
+        throw elle::HTTPException(elle::ResponseCode::error, "Writting socket error");
 
-      //An error occurred.
-      throw elle::HTTPException(elle::ResponseCode::error, "Writting socket error");
-
-      return false;
+      this->_read_socket();
+      return true;
     }
 
     std::unique_ptr<json::Dictionary>
     Client::poll()
     {
       // Check socket and insert notification dictionary in the queue if any.
-      _read_socket();
+      //_read_socket();
+
+      _impl->io_service.poll_one();
 
       std::unique_ptr<json::Dictionary> ret;
 
