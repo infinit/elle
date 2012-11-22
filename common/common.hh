@@ -37,10 +37,15 @@ namespace common
                 bool ensure = true);
 
 
-    /// Returns network path.
+    /// Returns network directory path.
     std::string
     network_directory(std::string const& user_id,
                       std::string const& network_id);
+
+    /// Returns portal file path.
+    std::string
+    portal_path(std::string const& user_id,
+                std::string const& network_id);
 
     /// Returns user directory path.
     std::string

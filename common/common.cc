@@ -146,13 +146,16 @@ namespace common
     }
 
     std::string
+    portal_path(std::string const& user_id,
+                std::string const& network_id)
+    {
+      return path::join(network_directory(user_id, network_id), "portal.phr");
+    }
+
+    std::string
     user_directory(std::string const& user_id)
     {
-      return path::join(
-          home(),
-          "users",
-          user_id
-      );
+      return path::join(home(), "users", user_id);
     }
 
   }
