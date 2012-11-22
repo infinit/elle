@@ -483,7 +483,7 @@ namespace surface
                                       size,
                                       fs::is_directory(first_filename),
                                       network_id,
-                                      this->_device_id);
+                                      this->device_id());
     }
 
     void
@@ -517,8 +517,8 @@ namespace surface
 
       this->_meta->update_transaction(transaction_id,
                                       status,
-                                      this->_device_id,
-                                      this->_device_name);
+                                      this->device_id(),
+                                      this->device_name());
     }
 
     void
