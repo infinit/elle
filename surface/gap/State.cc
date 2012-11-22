@@ -582,24 +582,25 @@ namespace surface
       this->login(email, password);
     }
 
+
     _REGISTER_CALLBACK_HANDLER(gap_UserStatusNotification,
-                               8,
+                               gap_Notification::gap_notification_user_status,
                                plasma::trophonius::Client::UserStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_TransactionNotification,
-                               7,
+                               gap_Notification::gap_notification_transaction_request,
                                plasma::trophonius::Client::TransactionHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_TransactionStatusNotification,
-                               11,
+                               gap_Notification::gap_notification_transaction_status,
                                plasma::trophonius::Client::TransactionStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
-                               217,
+                               gap_Notification::gap_notification_message,
                                plasma::trophonius::Client::MessageHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_BiteNotification,
-                               0,
+                               gap_Notification::gap_notification_debug,
                                plasma::trophonius::Client::BiteHandler)
 
     State::TransactionsMap const&
@@ -638,23 +639,25 @@ namespace surface
     {
       assert(n != nullptr);
 
-      if (!n->is_new)
-        return;
+      ELLE_TRACE("_on_notification(gap_TransactionNotification\n");
 
-      auto trans = State::transactions().find(n->transaction_id);
+//       if (!n->is_new)
+//         return;
 
-      if (trans != State::transactions().end())
-        throw Exception(
-          gap_error,
-          "This transaction is already stored.");
+//       auto trans = State::transactions().find(n->transaction_id);
 
+//       if (trans != State::transactions().end())
+//       {
+//         /// XXX: DEBUG
+//         return;
+//         throw Exception(
+//           gap_error,
+//           "This transaction is already stored.");
+//       }
 
+// #ifdef DEBUG
 
-
-
-#ifdef DEBUG
-
-#endif
+// #endif
 
     }
 
@@ -662,7 +665,7 @@ namespace surface
     State::_on_notification(gap_TransactionStatusNotification const* n)
     {
       (void) n;
-      printf("_on_notification(gap_TransactionStatusNotification\n");
+      ELLE_TRACE("_on_notification(gap_TransactionStatusNotification\n");
     }
 
 
@@ -697,7 +700,7 @@ namespace surface
 
       // XXX: Value of shit written in hard coded.
       // Connexion established.
-      if (notification_id == -666)
+      if (notification_id == gap_Notification::gap_notificaiton_connection_enabled)
         return false;
 
       auto handler_list = _notification_handlers.find(notification_id);

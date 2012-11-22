@@ -127,10 +127,11 @@ extern "C" {
   typedef enum
   {
     gap_notification_debug = 0,
-    gap_notification_user_status,
-    gap_notification_file_transfer_request,
-    gap_notification_file_transfer_status,
-    gap_notification_message,
+    gap_notification_user_status = 8,
+    gap_notification_transaction_request = 7,
+    gap_notification_transaction_status = 11,
+    gap_notification_message = 217,
+    gap_notificaiton_connection_enabled = -666,
   } gap_Notification;
 
   /// XXX: inherite is_new ?
