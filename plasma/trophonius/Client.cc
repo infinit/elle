@@ -209,7 +209,7 @@ namespace plasma
           is.read(data.get(), size);
           std::stringstream ss{std::string{data.get(), size}};
 
-          ELLE_DEGUG("Stream contains: '%s'.", std::string{data.get(), size});
+          ELLE_DEBUG("Stream contains: '%s'.", std::string{data.get(), size});
 
           // while (!is.eof())
           // {
