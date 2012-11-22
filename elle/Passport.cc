@@ -40,7 +40,7 @@ namespace elle
   {
     auto res = authority.K.Verify(
         this->_signature,
-        authority.k->sign(elle::serialize::make_tuple(_id, _owner_K))
+        elle::serialize::make_tuple(_id, _owner_K)
     );
     static_assert(
       std::is_same<decltype(res), Status>::value,
