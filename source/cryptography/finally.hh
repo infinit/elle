@@ -5,25 +5,25 @@
 
 /// Make it so simple to track an EVP_PKEY so it gets freed should an
 /// error occur i.e should we leave the scope.
-# define CRYPTOGRAPHY_FINALLY_FREE_EVP_PKEY(_variable_)                 \
+# define CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_variable_)          \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (::EVP_PKEY* pkey) { ::EVP_PKEY_free(pkey); });
 
 /// Make it easy to free an RSA key on leaving the scope.
-# define CRYPTOGRAPHY_FINALLY_FREE_RSA(_variable_)                      \
+# define CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_variable_)               \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (::RSA* rsa) { ::RSA_free(rsa); });
 
 /// Make it simply to free a BINUM.
-# define CRYPTOGRAPHY_FINALLY_FREE_BN(_variable_)                       \
+# define CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(_variable_)                \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (::BIGNUM* bignum) { ::BN_clear_free(bignum); });
 
 /// Make it easy to free memory through the OpenSSL_free() function.
-# define CRYPTOGRAPHY_FINALLY_FREE_OPENSSL(_variable_)                  \
+# define CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_variable_)           \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (void* pointer) { ::OPENSSL_free(pointer); });
