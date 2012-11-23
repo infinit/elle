@@ -78,6 +78,7 @@ namespace etoile
                           const nucleus::proton::Address& address)
     {
       ELLE_TRACE_FUNCTION(context, name, address);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -187,7 +188,7 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Entry>& range)
     {
-      ELLE_TRACE_FUNCTION(context, index, size, range);
+      ELLE_TRACE_FUNCTION(context, index, size);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -336,6 +337,10 @@ namespace etoile
                           gear::Directory&                      context)
     {
       ELLE_TRACE_FUNCTION(context);
+
+      // discard the object-related information.
+      if (Object::Destroy(context) == elle::Status::Error)
+        escape("unable to destroy the object");
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;

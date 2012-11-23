@@ -27,7 +27,7 @@ namespace etoile
     void
     Transcript::record(Action const* action)
     {
-      ELLE_FINALLY_DELETE(action);
+      ELLE_FINALLY_ACTION_DELETE(action);
 
       this->_container.push_back(action);
 

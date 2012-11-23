@@ -92,6 +92,8 @@ namespace etoile
     Group::Information(gear::Group& context,
                        abstract::Group& abstract)
     {
+      ELLE_TRACE_FUNCTION(context, abstract);
+
       // generate the abstract based on the group.
       if (abstract.Create(*context.group) == elle::Status::Error)
         escape("unable to generate the abstract");
@@ -234,7 +236,7 @@ namespace etoile
                    nucleus::neutron::Size const& size,
                    nucleus::neutron::Range<nucleus::neutron::Fellow>& range)
     {
-      ELLE_TRACE_FUNCTION(context, index, size, range);
+      ELLE_TRACE_FUNCTION(context, index, size);
 
       if (Ensemble::Open(context) == elle::Status::Error)
         escape("unable to open the ensemble");

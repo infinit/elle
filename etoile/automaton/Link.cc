@@ -7,6 +7,10 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Link");
+
 namespace etoile
 {
   namespace automaton
@@ -22,6 +26,8 @@ namespace etoile
     elle::Status        Link::Create(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       context.object =
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
                                      agent::Agent::Identity.pair.K(),
@@ -46,6 +52,8 @@ namespace etoile
     elle::Status        Link::Load(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
@@ -71,6 +79,8 @@ namespace etoile
                           gear::Link&                           context,
                           const path::Way&                      way)
     {
+      ELLE_TRACE_FUNCTION(context, way);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -123,6 +133,8 @@ namespace etoile
                           gear::Link&                           context,
                           path::Way&                            way)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -157,6 +169,12 @@ namespace etoile
     elle::Status        Link::Discard(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
+      // discard the object-related information.
+      if (Object::Destroy(context) == elle::Status::Error)
+        escape("unable to destroy the object");
+
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -170,6 +188,8 @@ namespace etoile
     elle::Status        Link::Destroy(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -204,6 +224,8 @@ namespace etoile
     elle::Status        Link::Store(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // close the contents.
       if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");

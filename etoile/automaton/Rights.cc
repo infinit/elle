@@ -39,8 +39,7 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      ELLE_TRACE_SCOPE("determine the user's rights over the "
-                           "object context");
+      ELLE_TRACE_FUNCTION(context);
 
       if (context.rights.role != nucleus::neutron::Object::RoleUnknown)
         {
@@ -358,6 +357,8 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::neutron::Permissions& permissions)
     {
+      ELLE_TRACE_FUNCTION(context, permissions);
+
       // update the permission.
       context.rights.permissions = permissions;
 
@@ -371,7 +372,7 @@ namespace etoile
     elle::Status
     Rights::Determine(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("determine the user's rights over the group context");
+      ELLE_TRACE_FUNCTION(context);
 
       if (context.rights.role != nucleus::neutron::Group::RoleUnknown)
         {

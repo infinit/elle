@@ -10,6 +10,10 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Author");
+
 namespace etoile
 {
   namespace automaton
@@ -25,6 +29,8 @@ namespace etoile
     ///
     elle::Status        Author::Forge(gear::Object&             context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // if an author exists, return.
       if (context.author != nullptr)
         return elle::Status::Ok;

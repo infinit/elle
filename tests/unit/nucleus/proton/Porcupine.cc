@@ -318,7 +318,8 @@ test_porcupine_catalog()
 
   vector = test_porcupine_prepare(N);
 
-  // XXX[provide a path to where blocks should be stored, if not, impossible to store]
+  // XXX[provide a path to where blocks should be stored i.e another
+  //     hole storage]
   etoile::nest::Nest nest1(nucleus::proton::Limits(1024, 0.5, 0.2));
   nucleus::proton::Porcupine porcupine1(nest1);
 

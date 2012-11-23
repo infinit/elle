@@ -8,6 +8,10 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.File");
+
 namespace etoile
 {
   namespace automaton
@@ -23,6 +27,8 @@ namespace etoile
     elle::Status        File::Create(
                           gear::File&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       context.object =
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
                                      agent::Agent::Identity.pair.K(),
@@ -48,6 +54,8 @@ namespace etoile
                           gear::File&                           context)
 
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
@@ -74,6 +82,8 @@ namespace etoile
                           const nucleus::neutron::Offset& offset,
                           const elle::standalone::Region& region)
     {
+      ELLE_TRACE_FUNCTION(context, offset, region);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -131,6 +141,8 @@ namespace etoile
                           const nucleus::neutron::Size& size,
                           elle::standalone::Region&                         region)
     {
+      ELLE_TRACE_FUNCTION(context, offset, size);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -167,9 +179,9 @@ namespace etoile
     ///
     elle::Status        File::Adjust(
                           gear::File&                           context,
-                          const nucleus::neutron::Size& length)
+                          const nucleus::neutron::Size& size)
     {
-      nucleus::neutron::Size size;
+      ELLE_TRACE_FUNCTION(context, size);
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -192,18 +204,20 @@ namespace etoile
                "file");
 
       // adjust the data size.
-      if (context.contents->content->Adjust(length) == elle::Status::Error)
+      if (context.contents->content->Adjust(size) == elle::Status::Error)
         escape("unable to adjust the file size");
 
+      nucleus::neutron::Size _size;
+
       // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::Status::Error)
+      if (context.contents->content->Capacity(_size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            size,
+            _size,
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
@@ -222,6 +236,12 @@ namespace etoile
     elle::Status        File::Discard(
                           gear::File&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
+      // discard the object-related information.
+      if (Object::Destroy(context) == elle::Status::Error)
+        escape("unable to destroy the object");
+
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -235,6 +255,8 @@ namespace etoile
     elle::Status        File::Destroy(
                           gear::File&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -269,6 +291,8 @@ namespace etoile
     elle::Status        File::Store(
                           gear::File&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // close the contents.
       if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");

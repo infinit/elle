@@ -36,8 +36,7 @@ namespace etoile
                           T&                                    context)
     {
       ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
-
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       /* XXX[porcupine]
       // if the contents is already opened, return.
@@ -95,8 +94,7 @@ namespace etoile
                           T&                                    context)
     {
       ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
-
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
+      ELLE_TRACE_FUNCTION(context);
 
       /* XXX[porcupine]
       // if a block is referenced by the object, mark it as needing removal.
@@ -122,11 +120,10 @@ namespace etoile
                           T&                                    context)
     {
       ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
+      ELLE_TRACE_FUNCTION(context);
 
       cryptography::SecretKey   key;
       nucleus::neutron::Size     size;
-
-      ELLE_TRACE_SCOPE("%s(%s)", __FUNCTION__, context);
 
       //
       // first, check if the block has been modified i.e exists and is dirty.

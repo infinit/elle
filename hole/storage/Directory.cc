@@ -118,7 +118,7 @@ namespace hole
         nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
-      ELLE_FINALLY_DELETE(block);
+      ELLE_FINALLY_ACTION_DELETE(block);
 
       // Open an input stream.
       std::ifstream in(path.string(),
@@ -149,7 +149,7 @@ namespace hole
         nucleus::factory().allocate<nucleus::proton::MutableBlock>(
           address.component())};
 
-      ELLE_FINALLY_DELETE(block);
+      ELLE_FINALLY_ACTION_DELETE(block);
 
       // Open an input stream.
       std::ifstream in(path.string(),

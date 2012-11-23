@@ -28,7 +28,7 @@ namespace etoile
     elle::Status
     Ensemble::Open(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Open()");
+      ELLE_TRACE_FUNCTION(context);
 
       // if the ensemble is already opened, return.
       if (context.ensemble != nullptr)
@@ -70,7 +70,7 @@ namespace etoile
     elle::Status
     Ensemble::Destroy(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_FUNCTION(context);
 
       assert(context.group != nullptr);
 
@@ -89,7 +89,7 @@ namespace etoile
     elle::Status
     Ensemble::Close(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Close()");
+      ELLE_TRACE_FUNCTION(context);
 
       //
       // first, check if the block has been modified i.e exists and is dirty.

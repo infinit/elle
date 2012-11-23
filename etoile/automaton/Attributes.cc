@@ -8,9 +8,13 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Object.hh>
 
+#include <elle/log.hh>
+
 #include <elle/idiom/Close.hh>
 # include <limits>
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Attributes");
 
 namespace etoile
 {
@@ -29,6 +33,8 @@ namespace etoile
                           const elle::String&                   name,
                           const elle::String&                   value)
     {
+      ELLE_TRACE_FUNCTION(context, name, value);
+
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -83,6 +89,8 @@ namespace etoile
                           const elle::String&                   name,
                           nucleus::neutron::Trait const*& trait)
     {
+      ELLE_TRACE_FUNCTION(context, name);
+
       // lookup in the attributes object.
       try
         {
@@ -107,6 +115,8 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Trait>& range)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // consult the attributes.
       if (context.object->attributes().Consult(
             std::numeric_limits<nucleus::neutron::Index>::min(),
@@ -124,6 +134,8 @@ namespace etoile
                           gear::Object&                         context,
                           const elle::String&                   name)
     {
+      ELLE_TRACE_FUNCTION(context, name);
+
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");

@@ -67,6 +67,8 @@ namespace etoile
                           gear::Object&                         context,
                           abstract::Object&              abstract)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // generate the abstract based on the object.
       if (abstract.Create(*context.object) == elle::Status::Error)
         escape("unable to generate the abstract");
@@ -82,6 +84,7 @@ namespace etoile
                           gear::Object&                         context)
     {
       ELLE_TRACE_FUNCTION(context);
+
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
