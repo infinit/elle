@@ -40,7 +40,7 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 #undef PORCUPINE_THOROUGH_CHECK
 
 // To define to test the serialization mechanism with porcupines.
-#undef PORCUPINE_SERIALIZE_TEST
+#define PORCUPINE_SERIALIZE_TEST
 
 // To define to dump the porcupine's statistcs.
 #undef PORCUPINE_STATISTICS
@@ -371,7 +371,6 @@ Main(elle::Natural32,
       // XXX
       Infinit::Network = "test";
       lune::Lune::Initialize();
-      etoile::Etoile::Initialize();
       Infinit::Initialize();
       // XXX
 
@@ -387,9 +386,10 @@ Main(elle::Natural32,
       hole::Hole* hole{
         new hole::implementations::local::Implementation(
           storage, passport, authority)};
-      ELLE_FINALLY_DELETE(hole);
+      ELLE_FINALLY_ACTION_DELETE(hole);
 
       etoile::depot::hole(hole);
+      etoile::Etoile::Initialize();
 
       hole->join();
 #endif
@@ -397,6 +397,8 @@ Main(elle::Natural32,
       test_porcupine_catalog();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
+      etoile::Etoile::Clean();
+
       hole->leave();
       ELLE_FINALLY_ABORT(hole);
       delete hole;
@@ -404,7 +406,6 @@ Main(elle::Natural32,
 
       // XXX
       Infinit::Clean();
-      etoile::Etoile::Clean();
       lune::Lune::Clean();
       // XXX
 
