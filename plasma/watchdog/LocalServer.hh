@@ -34,6 +34,7 @@ namespace plasma
       LocalServer(QCoreApplication& app);
       ~LocalServer();
       void start(std::string const& watchdogId);
+      void stop();
 
     private:
       void _handle_new_connection(ConnectionPtr& newConnection);

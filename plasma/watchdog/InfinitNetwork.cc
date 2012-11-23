@@ -79,7 +79,10 @@ InfinitNetwork::~InfinitNetwork()
 {
   if (this->_process.state() != QProcess::NotRunning)
     {
-      ELLE_WARN("Network %s not terminated !", this->_description.name);
+      ELLE_WARN("Network %s not terminated (sending SIGTERM)",
+                this->_description.name);
+      ::kill(this->_process.pid(), SIGKILL);
+      this->_process.waitForFinished(100);
     }
 }
 
@@ -103,9 +106,11 @@ void InfinitNetwork::update(meta::NetworkResponse const& response)
 void InfinitNetwork::stop()
 {
   ELLE_DEBUG("Shutting down network %s", this->_description.name);
-  this->_process.terminate();
-  //this->_process.waitForFinished();
-  ELLE_DEBUG("Done!");
+  if (this->_process.state() == QProcess::Running)
+    {
+      ::kill(this->_process.pid(), SIGINT);
+      this->_process.waitForFinished(3000);
+    }
 }
 
 void InfinitNetwork::_update()

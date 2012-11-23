@@ -11,14 +11,14 @@
 #include "LocalServer.hh"
 #include "Manager.hh"
 
-ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
+ELLE_LOG_COMPONENT("infinit.plasma.watchdog.LocalServer");
 
 using namespace plasma::watchdog;
 
 LocalServer::LocalServer(QCoreApplication& app) :
   QLocalServer(),
   _state(State::Stopped),
-  _manager(new Manager(app))
+  _manager(new Manager(app, *this))
 {}
 
 LocalServer::~LocalServer()
@@ -53,6 +53,12 @@ void LocalServer::start(std::string const& watchdogId)
       this, SIGNAL(newConnection()),
       this, SLOT(_on_new_connection())
   );
+}
+
+void LocalServer::stop()
+{
+  ELLE_TRACE("Closing local server");
+  this->close();
 }
 
 void LocalServer::_on_new_connection()

@@ -21,6 +21,7 @@ namespace plasma
     class Client;
     class ClientActions;
     class NetworkManager;
+    class LocalServer;
 
     ///
     /// The manager dispatch received command and stores clients with
@@ -49,6 +50,7 @@ namespace plasma
       ClientActions*      _actions;
       NetworkManager*     _network_manager;
       MetaClient          _meta;
+      LocalServer&        _local_server;
       QTimer              _timer;
       std::string         _identity;
       std::string         _user;
@@ -56,7 +58,7 @@ namespace plasma
 
     public:
       /// ctor & dtor
-      Manager(QCoreApplication& app);
+      Manager(QCoreApplication& app, LocalServer& local_server);
       ~Manager();
 
       /// properties

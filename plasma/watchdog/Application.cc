@@ -85,6 +85,7 @@ int Application::exec()
   this->_server->start(watchdogId);
   return this->QCoreApplication::exec();
 }
+
 bool
 Application::notify(QObject* rec,
                     QEvent* ev)
