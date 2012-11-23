@@ -112,55 +112,53 @@ BOOST_PYTHON_MODULE(_gap)
   //////////////////////////
   // value MUST be gap_EnumName_name
   py::enum_<gap_Status>("Status")
-    .value("gap_Status_ok", gap_ok)
-    .value("gap_Status_error", gap_error)
-    .value("gap_Status_network_error", gap_network_error)
-    .value("gap_Status_internal_error", gap_internal_error)
-    .value("gap_Status_api_error", gap_api_error)
-    .value("gap_Status_no_device_error", gap_no_device_error)
-    .value("gap_Status_not_logged_in", gap_not_logged_in)
-    .value("gap_Status_bad_request", gap_bad_request)
-    .value("gap_Status_already_logged_in", gap_already_logged_in)
-    .value("gap_Status_not_logged_in", gap_not_logged_in)
-    .value("gap_Status_email_not_valid", gap_email_not_valid)
-    .value("gap_Status_handle_not_valid", gap_handle_not_valid)
-    .value("gap_Status_device_not_valid", gap_device_not_valid)
-    .value("gap_Status_password_not_valid", gap_password_not_valid)
-    .value("gap_Status_user_id_not_valid", gap_user_id_not_valid)
-    .value("gap_Status_network_id_not_valid", gap_network_id_not_valid)
-    .value("gap_Status_device_id_not_valid", gap_device_id_not_valid)
-    .value("gap_Status_field_is_empty", gap_field_is_empty)
-    .value("gap_Status_activation_code_not_valid", gap_activation_code_not_valid)
-    .value("gap_Status_deprecated", gap_deprecated)
-    .value("gap_Status_email_already_registred", gap_email_already_registred)
-    .value("gap_Status_handle_already_registred", gap_handle_already_registred)
-    .value("gap_Status_device_already_registred", gap_device_already_registred)
-    .value("gap_Status_activation_code_doesnt_exist", gap_activation_code_doesnt_exist)
-    .value("gap_Status_email_password_dont_match", gap_email_password_dont_match)
-    .value("gap_Status_unknown_user", gap_unknown_user)
-    .value("gap_Status_user_already_in_network", gap_user_already_in_network)
-    .value("gap_Status_network_not_found", gap_network_not_found)
-    .value("gap_Status_device_not_found", gap_device_not_found)
-    .value("gap_Status_device_not_in_network", gap_device_not_in_network)
-    .value("gap_Status_root_block_already_exist", gap_root_block_already_exist)
-    .value("gap_Status_root_block_badly_signed", gap_root_block_badly_signed)
-    .value("gap_Status_user_already_invited", gap_user_already_invited)
-    .value("gap_Status_user_already_in_infinit", gap_user_already_in_infinit)
-    .value("gap_Status_file_name_empty", gap_file_name_empty)
-    .value("gap_Status_unknown", gap_unknown)
-    .export_values()
+    .value("ok", gap_ok)
+    .value("error", gap_error)
+    .value("network_error", gap_network_error)
+    .value("internal_error", gap_internal_error)
+    .value("api_error", gap_api_error)
+    .value("no_device_error", gap_no_device_error)
+    .value("not_logged_in", gap_not_logged_in)
+    .value("bad_request", gap_bad_request)
+    .value("already_logged_in", gap_already_logged_in)
+    .value("not_logged_in", gap_not_logged_in)
+    .value("email_not_valid", gap_email_not_valid)
+    .value("handle_not_valid", gap_handle_not_valid)
+    .value("device_not_valid", gap_device_not_valid)
+    .value("password_not_valid", gap_password_not_valid)
+    .value("user_id_not_valid", gap_user_id_not_valid)
+    .value("network_id_not_valid", gap_network_id_not_valid)
+    .value("device_id_not_valid", gap_device_id_not_valid)
+    .value("field_is_empty", gap_field_is_empty)
+    .value("activation_code_not_valid", gap_activation_code_not_valid)
+    .value("deprecated", gap_deprecated)
+    .value("email_already_registred", gap_email_already_registred)
+    .value("handle_already_registred", gap_handle_already_registred)
+    .value("device_already_registred", gap_device_already_registred)
+    .value("activation_code_doesnt_exist", gap_activation_code_doesnt_exist)
+    .value("email_password_dont_match", gap_email_password_dont_match)
+    .value("unknown_user", gap_unknown_user)
+    .value("user_already_in_network", gap_user_already_in_network)
+    .value("network_not_found", gap_network_not_found)
+    .value("device_not_found", gap_device_not_found)
+    .value("device_not_in_network", gap_device_not_in_network)
+    .value("root_block_already_exist", gap_root_block_already_exist)
+    .value("root_block_badly_signed", gap_root_block_badly_signed)
+    .value("user_already_invited", gap_user_already_invited)
+    .value("user_already_in_infinit", gap_user_already_in_infinit)
+    .value("file_name_empty", gap_file_name_empty)
+    .value("unknown", gap_unknown)
   ;
 
   py::enum_<gap_TransactionStatus>("TransactionStatus")
-    .value("gap_TransactionStatus_none", gap_transaction_status_none)
-    .value("gap_TransactionStatus_pending", gap_transaction_status_pending)
-    .value("gap_TransactionStatus_rejected", gap_transaction_status_rejected)
-    .value("gap_TransactionStatus_accepted", gap_transaction_status_accepted)
-    .value("gap_TransactionStatus_started", gap_transaction_status_started)
-    .value("gap_TransactionStatus_canceled", gap_transaction_status_canceled)
-    .value("gap_TransactionStatus_finished", gap_transaction_status_finished)
-    .value("gap_TransactionStatus_count", _gap_transaction_status_count)
-    .export_values()
+    .value("none", gap_transaction_status_none)
+    .value("pending", gap_transaction_status_pending)
+    .value("rejected", gap_transaction_status_rejected)
+    .value("accepted", gap_transaction_status_accepted)
+    .value("started", gap_transaction_status_started)
+    .value("canceled", gap_transaction_status_canceled)
+    .value("finished", gap_transaction_status_finished)
+    .value("count", _gap_transaction_status_count)
   ;
 
   //- gap ctor and dtor -------------------------------------------------------
@@ -181,28 +179,23 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("invite_user", &gap_invite_user);
   py::def("send_message", &gap_message);
-  py::def("send_files", &_send_files);
-  py::def("update_transaction", &gap_update_transaction);
   py::def("connect", &gap_trophonius_connect);
-  py::def("get_notifications", &gap_meta_pull_notification);
-  py::def("notifications_red", &gap_meta_notifications_red);
-  py::def("scratch_db", &gap_debug);
-  py::def("poll", &gap_poll);
 
   //- Notifications ------------------------------------------------------------
 
-  ////////////////////////////////
-  // User status.
+  py::def("pull_notifications", &gap_pull_notifications);
+  py::def("notifications_read", &gap_notifications_read);
+  py::def("poll", &gap_poll);
+
+  ///////////////////////////
+  // Data structures.
+
+  //User status.
   py::class_<gap_UserStatusNotification, boost::noncopyable>("UserStatus", py::no_init)
     .def_readonly("user_id", &gap_UserStatusNotification::user_id)
     .def_readonly("status", &gap_UserStatusNotification::status)
   ;
-  py::def(
-    "on_bite",
-    &_gap_set_callback<gap_BiteNotification>
-  );
 
-  ////////////////////////////////
   // File transfer request.
   py::class_<gap_TransactionNotification, boost::noncopyable>("TransactionNotification", py::no_init)
     .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
@@ -216,12 +209,7 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("recipient_id", &gap_TransactionNotification::recipient_id)
     .def_readonly("new", &gap_TransactionNotification::is_new)
   ;
-  py::def(
-    "on_transaction",
-    &_gap_set_callback<gap_TransactionNotification>
-  );
 
-  ////////////////////////////////
   // File transfer status.
   py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransactionStatusNotification", py::no_init)
     .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
@@ -235,12 +223,6 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("new", &gap_TransactionStatusNotification::is_new)
   ;
 
-  py::def(
-    "on_transaction_status",
-    &_gap_set_callback<gap_TransactionStatusNotification>
-  );
-
-  ////////////////////////////////
   // Message.
   py::class_<gap_MessageNotification, boost::noncopyable>("MessageNotification", py::no_init)
     .def_readonly("sender_id", &gap_MessageNotification::sender_id)
@@ -248,21 +230,23 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("new", &gap_MessageNotification::is_new)
   ;
 
+  ///////////////////////////
+  // Callbacks.
+
+  py::def(
+    "on_transaction",
+    &_gap_set_callback<gap_TransactionNotification>
+  );
+
+  py::def(
+    "on_transaction_status",
+    &_gap_set_callback<gap_TransactionStatusNotification>
+  );
+
   py::def(
     "on_message",
     &_gap_set_callback<gap_MessageNotification>
-    );
-
-
-  py::class_<gap_BiteNotification, boost::noncopyable>("BiteNotification", py::no_init)
-    .def_readonly("debug", &gap_BiteNotification::debug)
-    .def_readonly("new", &gap_BiteNotification::is_new)
-  ;
-  py::def(
-    "on_bite",
-    &_gap_set_callback<gap_BiteNotification>
   );
-
 
    //- Infinit services status -------------------------------------------------
 
@@ -303,6 +287,9 @@ BOOST_PYTHON_MODULE(_gap)
   ;
   py::def("set_permissions", &gap_set_permissions);
 
-  //- Notifications ------------------------------------------------------------
+  //- Transactions- ------------------------------------------------------------
+
   py::def("transactions", &_get_transactions);
+  py::def("send_files", &_send_files);
+  py::def("update_transaction", &gap_update_transaction);
 }

@@ -74,14 +74,25 @@ namespace plasma
       ELLE_TRACE("Handling new file transfer request.");
 
       notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
+
+      // Sender.
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->sender_fullname = dic["sender_fullname"].as_string().value().c_str();
+      notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
+
+      // Recipient.
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+      notification->recipient_fullname = dic["recipient_fullname"].as_string().value().c_str();
+
+      // Network.
+      notification->network_id = dic["network_id"].as_string().value().c_str();
+
+      // File info.
       notification->first_filename = dic["first_filename"].as_string().value().c_str();
       notification->files_count = dic["files_count"].as_integer();
       notification->total_size = dic["total_size"].as_integer();
       notification->is_directory = dic["is_directory"].as_bool();
-      notification->network_id = dic["network_id"].as_string().value().c_str();
-      notification->sender_id = dic["sender_id"].as_string().value().c_str();
-      notification->sender_fullname = dic["sender_fullname"].as_string().value().c_str();
-      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+
       notification->is_new = _new;
 
       ELLE_DEBUG("Deserialized successfuly.");
@@ -98,18 +109,28 @@ namespace plasma
       ELLE_TRACE("Handling file transfer status update.");
 
       notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
-      notification->network_id = dic["network_id"].as_string().value().c_str();
-      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+
+      // Sender.
       notification->sender_id = dic["sender_id"].as_string().value().c_str();
       notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
+
+      // Recipient.
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
       notification->recipient_device_id = dic["recipient_device_id"].as_string().value().c_str();
       notification->recipient_device_name = dic["recipient_device_name"].as_string().value().c_str();
+
+      // Network.
+      notification->network_id = dic["network_id"].as_string().value().c_str();
+
+      // Status.
       notification->status = dic["status"].as_integer();
+
       notification->is_new = _new;
 
       ELLE_DEBUG("Deserialized successfuly.");
       this->callback(notification.get());
     }
+
     ////////////////////////////////
     // Message.
     void

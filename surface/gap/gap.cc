@@ -653,17 +653,17 @@ extern "C"
   // - Notifications -----------------------------------------------------------
 
   gap_Status
-  gap_meta_pull_notification(gap_State* state,
-                             int count,
-                             int offset)
+  gap_pull_notifications(gap_State* state,
+                         int count,
+                         int offset)
   {
     __WRAP_CPP(state, pull_notifications, count, offset);
   }
 
   gap_Status
-  gap_meta_notifications_red(gap_State* state)
+  gap_notifications_read(gap_State* state)
   {
-    __WRAP_CPP(state, notifications_red);
+    __WRAP_CPP(state, notifications_read);
   }
 
  char** gap_transactions(gap_State* state)

@@ -47,7 +47,7 @@ namespace plasma
       std::list<json::Dictionary> old_notifs;
     };
 
-    struct RedNotificationResponse : plasma::Response
+    struct ReadNotificationResponse : plasma::Response
     {};
 
     struct MessageResponse : plasma::Response
@@ -284,8 +284,8 @@ namespace plasma
       PullNotificationResponse
       pull_notifications(int count, int offset = 0);
 
-      RedNotificationResponse
-      notification_red();
+      ReadNotificationResponse
+      notification_read();
 
       NetworkResponse
       network(std::string const& _id);

@@ -123,7 +123,7 @@ namespace surface
       pull_notifications(int count, int offset);
 
       void
-      notifications_red();
+      notifications_read();
 
       std::string
       invite_user(std::string const& email);

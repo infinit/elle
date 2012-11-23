@@ -81,12 +81,13 @@ extern "C" {
 
   /// Debug func: Pull notifications.
   gap_Status
-  gap_meta_pull_notification(gap_State*,
-                             int count,
-                             int offset);
+
+  gap_pull_notifications(gap_State*,
+                         int count,
+                         int offset);
 
   gap_Status
-  gap_meta_notifications_red(gap_State*);
+  gap_notifications_read(gap_State*);
 
   /// - Authentication & registration ---------------------------------------
 
@@ -139,7 +140,7 @@ extern "C" {
   // Login/Logout/AFK/... Notification
   typedef struct
   {
-    const char* user_id;
+    char const* user_id;
     int status;
   } gap_UserStatusNotification;
 
@@ -184,14 +185,14 @@ extern "C" {
   // File transfer recieved callback.
   typedef struct
   {
-    const char* transaction_id;
-    const char* sender_id;
-    const char* sender_device_id;
-    const char* sender_fullname;
-    const char* recipient_id;
-    const char* recipient_fullname;
-    const char* network_id;
-    const char* first_filename;
+    char const* transaction_id;
+    char const* sender_id;
+    char const* sender_device_id;
+    char const* sender_fullname;
+    char const* recipient_id;
+    char const* recipient_fullname;
+    char const* network_id;
+    char const* first_filename;
     int files_count;
     int total_size;
     int is_directory;
@@ -209,13 +210,13 @@ extern "C" {
   // File transfer status callback.
   typedef struct
   {
-    const char* transaction_id;
-    const char* network_id;
-    const char* sender_id;
-    const char* recipient_id;
-    const char* sender_device_id;
-    const char* recipient_device_id;
-    const char* recipient_device_name;
+    char const* transaction_id;
+    char const* network_id;
+    char const* sender_id;
+    char const* recipient_id;
+    char const* sender_device_id;
+    char const* recipient_device_id;
+    char const* recipient_device_name;
     int status;
     int is_new;
   } gap_TransactionStatusNotification;
@@ -230,10 +231,10 @@ extern "C" {
   // Chat message.
   typedef struct
   {
-    const char* sender_id;
+    char const* sender_id;
     /* FIXME: remove that shit */
-    const char* recipient_id;
-    const char* message;
+    char const* recipient_id;
+    char const* message;
     int is_new;
   } gap_MessageNotification;
 

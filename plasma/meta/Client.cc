@@ -156,7 +156,7 @@ SERIALIZE_RESPONSE(plasma::meta::PullNotificationResponse, ar, res)
   ar & named("old_notifs", res.old_notifs);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::RedNotificationResponse, ar, res)
+SERIALIZE_RESPONSE(plasma::meta::ReadNotificationResponse, ar, res)
 {
   (void) ar;
   (void) res;
@@ -484,7 +484,6 @@ namespace plasma
       return this->_client.get<DebugResponse>("/scratchit");
     }
 
-
     PullNotificationResponse
     Client::pull_notifications(int count, int offset)
     {
@@ -501,10 +500,10 @@ namespace plasma
       return res;
     }
 
-    RedNotificationResponse
-    Client::notification_red()
+    ReadNotificationResponse
+    Client::notification_read()
     {
-      return this->_client.get<RedNotificationResponse>("/notification/read");
+      return this->_client.get<ReadNotificationResponse>("/notification/read");
     }
 
     //- Networks --------------------------------------------------------------
