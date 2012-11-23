@@ -71,11 +71,7 @@
             case gap_transaction_status_pending:
                 str = @"transaction pending.";
                 break;
-                
-            case gap_transaction_status_ready:
-                str = @"transaction ready.";
-                break;
-                
+           
             case gap_transaction_status_finished:
                 str = @"transaction finished.";
                 break;
