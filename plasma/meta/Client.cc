@@ -134,9 +134,14 @@ SERIALIZE_RESPONSE(plasma::meta::StartTransactionResponse, ar, res)
   ar & named("updated_transaction_id", res.updated_transaction_id);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::StopTransactionResponse, ar, res)
+SERIALIZE_RESPONSE(plasma::meta::FinishTransactionResponse, ar, res)
 {
-  ar & named("deleted_transaction_id", res.deleted_transaction_id);
+  ar & named("finished_transaction_id", res.finished_transaction_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::CancelTransactionResponse, ar, res)
+{
+  ar & named("canceled_transaction_id", res.canceled_transaction_id);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
@@ -412,15 +417,29 @@ namespace plasma
       return res;
     }
 
-    StopTransactionResponse
-    Client::stop_transaction(std::string const& transaction_id)
+    FinishTransactionResponse
+    Client::finish_transaction(std::string const& transaction_id)
     {
       json::Dictionary request{std::map<std::string, std::string>
         {
           {"transaction_id", transaction_id},
         }};
 
-      auto res = this->_client.post<StopTransactionResponse>("/transaction/stop", request);
+      auto res = this->_client.post<FinishTransactionResponse>("/transaction/finish", request);
+
+      return res;
+    }
+
+
+    CancelTransactionResponse
+    Client::cancel_transaction(std::string const& transaction_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>
+        {
+          {"transaction_id", transaction_id},
+        }};
+
+      auto res = this->_client.post<CancelTransactionResponse>("/transaction/cancel", request);
 
       return res;
     }
@@ -467,14 +486,14 @@ namespace plasma
 
 
     PullNotificationResponse
-    Client::pull_notifications(int limit)
+    Client::pull_notifications(int count, int offset)
     {
       json::Dictionary request{std::map<std::string, std::string>
       {
-//        {"empty", ""}
       }};
 
-      request["limit"] = limit;
+      request["count"] = count;
+      request["offset"] = offset;
 
       auto res = this->_client.post<PullNotificationResponse>("/notification/get",
                                                               request);

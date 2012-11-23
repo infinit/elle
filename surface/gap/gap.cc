@@ -154,21 +154,6 @@ extern "C"
     return gap_ok;
   }
 
-
-  gap_Status
-  gap_meta_pull_notification(gap_State* state,
-                             int limit)
-  {
-    __WRAP_CPP(state, pull_notifications, limit);
-  }
-
-  gap_Status
-  gap_meta_notifications_red(gap_State* state)
-  {
-    __WRAP_CPP(state, notifications_red);
-  }
-
-
   gap_Status
   gap_debug(gap_State* state)
   {
@@ -183,52 +168,6 @@ extern "C"
                   char const* email)
   {
     __WRAP_CPP(state, invite_user, email);
-  }
-
-  gap_Status
-  gap_send_files(gap_State* state,
-                 char const* recipient_id,
-                 char const* const* files)
-  {
-    assert(state != nullptr);
-    assert(recipient_id != nullptr);
-    assert(files != nullptr);
-
-    gap_Status ret = gap_ok;
-
-    try
-      {
-        std::unordered_set<std::string> s;
-
-        while(*files != nullptr)
-          {
-            s.insert(*files);
-            ++files;
-          }
-
-        __TO_CPP(state)->send_files(recipient_id,
-                                    s);
-      }
-    CATCH_ALL(send_files)
-
-      return ret;
-  }
-
-  gap_Status
-  gap_update_transaction(gap_State* state,
-                         char const* transaction_id,
-                         gap_TransactionStatus status)
-  {
-    assert(transaction_id != nullptr);
-    assert(   status > gap_TransactionStatus::gap_transaction_status_none
-           && status < gap_TransactionStatus::_gap_transaction_status_count);
-
-    __WRAP_CPP_RET(state,
-                   update_transaction,
-                   transaction_id,
-                   status);
-
-    return ret;
   }
 
   gap_Status
@@ -711,4 +650,103 @@ extern "C"
     return ret;
   }
 
+  // - Notifications -----------------------------------------------------------
+
+  gap_Status
+  gap_meta_pull_notification(gap_State* state,
+                             int count,
+                             int offset)
+  {
+    __WRAP_CPP(state, pull_notifications, count, offset);
+  }
+
+  gap_Status
+  gap_meta_notifications_red(gap_State* state)
+  {
+    __WRAP_CPP(state, notifications_red);
+  }
+
+ char** gap_transactions(gap_State* state)
+  {
+    assert(state != nullptr);
+    gap_Status ret = gap_ok;
+    try
+      {
+        auto const& transactions_map = __TO_CPP(state)->transactions();
+
+        std::list<std::string> res;
+
+        for (auto const& transaction_pair : transactions_map)
+          res.push_back(transaction_pair.first);
+
+        return _cpp_stringlist_to_c_stringlist(res);
+      }
+    CATCH_ALL(transactions);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  void gap_transactions_free(char** transactions)
+  {
+    ::free(transactions);
+  }
+
+  gap_Status
+  gap_send_files(gap_State* state,
+                 char const* recipient_id,
+                 char const* const* files)
+  {
+    assert(state != nullptr);
+    assert(recipient_id != nullptr);
+    assert(files != nullptr);
+
+    gap_Status ret = gap_ok;
+
+    try
+      {
+        std::unordered_set<std::string> s;
+
+        while(*files != nullptr)
+          {
+            s.insert(*files);
+            ++files;
+          }
+
+        __TO_CPP(state)->send_files(recipient_id,
+                                    s);
+      }
+    CATCH_ALL(send_files)
+
+      return ret;
+  }
+
+  gap_Status
+  gap_update_transaction(gap_State* state,
+                         char const* transaction_id,
+                         gap_TransactionStatus status)
+  {
+    assert(transaction_id != nullptr);
+    assert(   status > gap_TransactionStatus::gap_transaction_status_none
+           && status < gap_TransactionStatus::_gap_transaction_status_count);
+
+    __WRAP_CPP_RET(state,
+                   update_transaction,
+                   transaction_id,
+                   status);
+
+    return ret;
+  }
+
+  gap_Status
+  gap_download_files(gap_State* state,
+                     char const* transaction_id,
+                     char const* output_path)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+    assert(output_path != nullptr);
+
+    __WRAP_CPP(state, download_files, transaction_id, output_path);
+  }
 } // ! extern "C"

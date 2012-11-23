@@ -358,7 +358,6 @@ namespace surface
 
       // Store the identity
         {
-          // user.idy
           if (identity.Restore(identity_clear)  == elle::Status::Error)
             throw Exception(gap_internal_error,
                             "Cannot save the identity file.");
@@ -371,9 +370,6 @@ namespace surface
           dictionary.store(res._id);
         }
 
-        // for (auto t : transactions())
-          // transaction(t.first);
-
         transactions();
     }
 
@@ -384,12 +380,15 @@ namespace surface
     }
 
     void
-    State::pull_notifications(int limit)
+    State::pull_notifications(int count, int offset)
     {
-      if (limit < 1)
+      if (count < 1)
         return;
 
-      auto res = this->_meta->pull_notifications(limit);
+      if (offset < 0)
+        return;
+
+      auto res = this->_meta->pull_notifications(count, offset);
 
       for (auto dict : res.notifs)
         this->_handle_dictionnary(dict, true);
@@ -501,6 +500,14 @@ namespace surface
     }
 
     void
+    download_files(std::string const& transaction_id,
+                   std::string const& path)
+    {
+      (void) transaction_id;
+      (void) path;
+    }
+
+    void
     State::update_transaction(std::string const& transaction_id,
                               gap_TransactionStatus status)
     {
@@ -517,11 +524,11 @@ namespace surface
         case gap_TransactionStatus::gap_transaction_status_started:
           this->_start_transaction(transaction_id);
           break;
-        case gap_TransactionStatus::gap_transaction_status_deleted:
-          //this->_delete_transaction(transaction_id);
+        case gap_TransactionStatus::gap_transaction_status_canceled:
+          this->_cancel_transaction(transaction_id);
           break;
         case gap_TransactionStatus::gap_transaction_status_finished:
-          this->_stop_transaction(transaction_id);
+          this->_close_transaction(transaction_id);
           break;
         default:
           ELLE_WARN("You are not able to change transaction status to '%i'.",
@@ -539,12 +546,44 @@ namespace surface
     State::_accept_transaction(std::string const& transaction_id)
     {
       ELLE_DEBUG("Accept transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      //XXX: Give the writes here.
+
+      this->_meta->start_transaction(transaction_id);
     }
 
     void
     State::_deny_transaction(std::string const& transaction_id)
     {
       ELLE_DEBUG("Deny transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      //XXX: Delete network.
+
+      this->_meta->cancel_transaction(transaction_id);
     }
 
     void
@@ -552,19 +591,55 @@ namespace surface
     {
       ELLE_DEBUG("Start transaction '%s'", transaction_id);
 
-      auto res = this->_meta->start_transaction(transaction_id);
+      auto pair = State::transactions().find(transaction_id);
 
-      (void) res;
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      //XXX: Launch 8transfer.
     }
 
     void
-    State::_stop_transaction(std::string const& transaction_id)
+    State::_cancel_transaction(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Stop transaction '%s'", transaction_id);
+      ELLE_DEBUG("Cancel transaction '%s'", transaction_id);
 
-      auto res = this->_meta->stop_transaction(transaction_id);
+      auto pair = State::transactions().find(transaction_id);
 
-      (void) res;
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      //XXX: If download has started, cancel it, delete files, ...
+    }
+
+    void
+    State::_close_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Close transaction '%s'", transaction_id);
+
+
+      auto const& pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      //XXX: Copy is finished, clean networks ...
     }
 
     void
@@ -645,37 +720,63 @@ namespace surface
     }
 
     void
-    State::_on_notification(gap_TransactionNotification const* n)
+    State::_on_notification(gap_TransactionNotification const* notif)
     {
-      assert(n != nullptr);
+      assert(notif != nullptr);
 
       ELLE_TRACE("_on_notification(gap_TransactionNotification\n");
 
-//       if (!n->is_new)
-//         return;
+      if (!notif->is_new)
+        return;
 
-//       auto trans = State::transactions().find(n->transaction_id);
+      auto const pair = State::transactions().find(notif->transaction_id);
 
-//       if (trans != State::transactions().end())
-//       {
-//         /// XXX: DEBUG
-//         return;
-//         throw Exception(
-//           gap_error,
-//           "This transaction is already stored.");
-//       }
+      if (pair != State::transactions().end())
+      {
 
-// #ifdef DEBUG
+        plasma::meta::TransactionResponse *trans = pair->second;
 
-// #endif
+        // Compare notif and see if everything match.
+        // XXX: This process has a cost and should ALWAYS be ok.
+#ifdef DEBUG
+        if (   trans->transaction_id   != notif->transaction_id
+            || trans->sender_id        != notif->sender_id
+            || trans->sender_device_id != notif->sender_device_id
+            || trans->sender_fullname  != notif->sender_fullname
+            || trans->recipient_id     != notif->recipient_id
+            || trans->network_id       != notif->network_id
+            || trans->first_filename   != notif->first_filename
+            || trans->files_count - notif->files_count
+            || trans->total_size - notif->total_size
+            || trans->is_directory - notif->is_directory)
+        {
+          ELLE_WARN("Notifications pulled and stored mismatch.");
+        }
+#endif
+        return;
+      }
 
+      // // Normal case, this is a new transaction, store it to match server.
+      // auto t = new plasma::meta::TransactionResponse();
     }
 
     void
-    State::_on_notification(gap_TransactionStatusNotification const* n)
+    State::_on_notification(gap_TransactionStatusNotification const* notif)
     {
-      (void) n;
       ELLE_TRACE("_on_notification(gap_TransactionStatusNotification\n");
+
+      if (!notif->is_new)
+        return;
+
+      auto const trans = State::transactions().find(notif->transaction_id);
+
+      if (trans == State::transactions().end())
+      {
+        // Something went wrong.
+        auto response = this->_meta->transaction(notif->transaction_id);
+        (*this->_transactions)[notif->transaction_id] =
+          new plasma::meta::TransactionResponse{response};
+      }
     }
 
 

@@ -120,7 +120,7 @@ namespace surface
                    std::string const& message);
 
       void
-      pull_notifications(int limit);
+      pull_notifications(int count, int offset);
 
       void
       notifications_red();
@@ -157,18 +157,29 @@ namespace surface
       update_transaction(std::string const& transaction_id,
                          gap_TransactionStatus status);
 
-    private:
+      /// @brief Start the transfer process on recipient.
+      ///
       void
-      _start_transaction(std::string const& transaction_id);
+      download_files(std::string const& transaction_id,
+                     std::string const& path);
 
-      void
-      _stop_transaction(std::string const& transaction_id);
+    private:
 
       void
       _accept_transaction(std::string const& transaction_id);
 
       void
       _deny_transaction(std::string const& transaction_id);
+
+      void
+      _cancel_transaction(std::string const& transaction_id);
+
+      void
+      _start_transaction(std::string const& transaction_id);
+
+      void
+      _close_transaction(std::string const& transaction_id);
+
 
 
     private:
@@ -267,13 +278,13 @@ namespace surface
       network_add_user(std::string const& network_id,
                        std::string const& user);
 
-      /// Accept file transfer.
-      void
-      accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+      // /// Accept file transfer.
+      // void
+      // accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
 
-      /// Deny file transfer.
-      void
-      deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+      // /// Deny file transfer.
+      // void
+      // deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
 
       /// Trophonius binding.
     private:

@@ -21,6 +21,22 @@ _get_networks(gap_State* state)
   return networks_;
 }
 
+static boost::python::object
+_get_transactions(gap_State* state)
+{
+  boost::python::list transactions_;
+  char** transactions = gap_transactions(state);
+  if (transactions != nullptr)
+    {
+      for (char** ptr = transactions; *ptr != nullptr; ++ptr)
+        {
+          transactions_.append(boost::python::str(std::string(*ptr)));
+        }
+        gap_transactions_free(transactions);
+    }
+  return transactions_;
+}
+
 static std::string
 _hash_password(gap_State* state, std::string email, std::string password)
 {
@@ -140,9 +156,8 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_TransactionStatus_pending", gap_transaction_status_pending)
     .value("gap_TransactionStatus_rejected", gap_transaction_status_rejected)
     .value("gap_TransactionStatus_accepted", gap_transaction_status_accepted)
-    .value("gap_TransactionStatus_ready", gap_transaction_status_ready)
     .value("gap_TransactionStatus_started", gap_transaction_status_started)
-    .value("gap_TransactionStatus_deleted", gap_transaction_status_deleted)
+    .value("gap_TransactionStatus_canceled", gap_transaction_status_canceled)
     .value("gap_TransactionStatus_finished", gap_transaction_status_finished)
     .value("gap_TransactionStatus_count", _gap_transaction_status_count)
     .export_values()
@@ -183,7 +198,7 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("status", &gap_UserStatusNotification::status)
   ;
   py::def(
-    "OnBite",
+    "on_bite",
     &_gap_set_callback<gap_BiteNotification>
   );
 
@@ -202,7 +217,7 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("new", &gap_TransactionNotification::is_new)
   ;
   py::def(
-    "OnTransaction",
+    "on_transaction",
     &_gap_set_callback<gap_TransactionNotification>
   );
 
@@ -221,7 +236,7 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   py::def(
-    "OnTransactionStatus",
+    "on_transaction_status",
     &_gap_set_callback<gap_TransactionStatusNotification>
   );
 
@@ -234,7 +249,7 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   py::def(
-    "OnMessage",
+    "on_message",
     &_gap_set_callback<gap_MessageNotification>
     );
 
@@ -244,7 +259,7 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("new", &gap_BiteNotification::is_new)
   ;
   py::def(
-    "OnBite",
+    "on_bite",
     &_gap_set_callback<gap_BiteNotification>
   );
 
@@ -286,7 +301,8 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_exec", gap_exec)
     .export_values()
   ;
-
   py::def("set_permissions", &gap_set_permissions);
 
+  //- Notifications ------------------------------------------------------------
+  py::def("transactions", &_get_transactions);
 }
