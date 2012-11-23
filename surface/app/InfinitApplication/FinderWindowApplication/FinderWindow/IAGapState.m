@@ -510,7 +510,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         SET_CSTR(sender_id);
         SET_CSTR(sender_fullname);
         SET_CSTR(transaction_id);
-        self.recipient_fullname = @"Unknown";
+        SET_CSTR(recipient_fullname);
     }
     return self;
 }
