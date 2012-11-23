@@ -4,7 +4,7 @@
 # include <elle/finally.hh>
 
 /// Make it easy to release an scope from etoile.
-# define HORIZON_FINALLY_DISCARD(_variable_)                            \
+# define HORIZON_FINALLY_ACTION_DISCARD(_variable_)                     \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (etoile::gear::Identifier const& identifier)                     \
