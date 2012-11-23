@@ -267,7 +267,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                 (gap_transaction_callback(self.state, &on_transaction) == gap_ok) &&
                 (gap_transaction_status_callback(self.state, &on_transaction_status) == gap_ok))
             {
-                if (gap_meta_pull_notification(self.state, 10, 0) != gap_ok)
+                if (gap_pull_notifications(self.state, 10, 0) != gap_ok)
                 {
                     NSLog(@"WARNING: Couldn't fetch notifications from meta");
                 }
