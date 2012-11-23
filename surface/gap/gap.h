@@ -83,7 +83,7 @@ extern "C" {
   gap_Status
   gap_meta_pull_notification(gap_State*,
                              int count,
-                             int offset = 0);
+                             int offset);
 
   gap_Status
   gap_meta_notifications_red(gap_State*);
