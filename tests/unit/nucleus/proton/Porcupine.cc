@@ -138,7 +138,8 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 
       catalog.unload();
 
-      ELLE_ASSERT(porcupine.exist<nucleus::neutron::Catalog>(vector[i]) == true);
+      ELLE_ASSERT(
+        porcupine.exist<nucleus::neutron::Catalog>(vector[i]) == true);
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
