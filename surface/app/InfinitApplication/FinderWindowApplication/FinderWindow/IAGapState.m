@@ -208,7 +208,16 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 - (NSString*) token
 {
+    if (!_state)
+        return nil;
     return [[NSString alloc] initWithUTF8String:gap_user_token(_state)];
+}
+
+- (NSString*) self_id
+{
+    if (!_state)
+        return nil;
+    return [[NSString alloc] initWithUTF8String:gap_self_id(_state)];
 }
 
 -(id) init
@@ -339,6 +348,19 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                                      gap_transaction_status_rejected);
         return res;
     } performSelector:selector onObject:object];
+}
+
+- (void)       cancelTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+//    [self _addOperation:^(void) {
+//        gap_Status res;
+//        res = gap_update_transaction(self.state,
+//                                     [notif.transaction_id UTF8String],
+//                                     gap_transaction_status_cancel);
+//        return res;
+//    } performSelector:selector onObject:object];
 }
 
 //- User -------------------------------------------------------------------------------------
@@ -473,6 +495,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 @synthesize sender_id;
 @synthesize sender_fullname;
 @synthesize transaction_id;
+@synthesize recipient_fullname;
 
 - (id) init:(gap_TransactionNotification const*)n
 {
@@ -487,6 +510,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         SET_CSTR(sender_id);
         SET_CSTR(sender_fullname);
         SET_CSTR(transaction_id);
+        self.recipient_fullname = @"Unknown";
     }
     return self;
 }

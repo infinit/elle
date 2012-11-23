@@ -26,5 +26,6 @@
  */
 - (IBAction)on_accept:(id)sender;
 - (IBAction)on_reject:(id)sender;
+- (IBAction)on_cancel:(id)sender;
 
 @end

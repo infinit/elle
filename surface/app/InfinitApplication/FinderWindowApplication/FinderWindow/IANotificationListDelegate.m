@@ -96,16 +96,37 @@
     else if ([item isKindOfClass:[IATransactionNotification class]])
     {
         IATransactionNotification* notif = item;
-        if (notif.files_count == 1)
-            str = [[NSString alloc] initWithFormat:@"%@ wants to share %@ with you"
-                                                  , notif.sender_fullname
-                                                  , notif.first_filename];
+        NSLog(@"SELF ID   = %@",[IAClientGapState gap_instance].self_id);
+        NSLog(@"sender id = %@", notif.sender_id);
+        if ([notif.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])
+        {
+            // We sent a file to somebody
+            if (notif.files_count == 1)
+                str = [[NSString alloc] initWithFormat:@"%@ has not yet accepted the file %@"
+                       , notif.recipient_fullname
+                       , notif.first_filename];
+            else
+                str = [[NSString alloc] initWithFormat:@"%@ has not yet accepteted the %lu files (%@, ...)"
+                       , notif.recipient_fullname
+                       , notif.files_count
+                       , notif.first_filename];
+            result = [table_view makeViewWithIdentifier:@"TransactionNotificationCellViewFromSelf" owner:self];
+        }
         else
-            str = [[NSString alloc] initWithFormat:@"%@ wants to share %lu files with you (%@, ...)"
-                                                  , notif.sender_fullname
-                                                  , notif.files_count
-                                                  , notif.first_filename];
-        result = [table_view makeViewWithIdentifier:@"TransactionNotificationCellView" owner:self];
+        {
+            // Someone sent us some files
+            if (notif.files_count == 1)
+                str = [[NSString alloc] initWithFormat:@"%@ wants to share %@ with you"
+                       , notif.sender_fullname
+                       , notif.first_filename];
+            else
+                str = [[NSString alloc] initWithFormat:@"%@ wants to share %lu files with you (%@, ...)"
+                       , notif.sender_fullname
+                       , notif.files_count
+                       , notif.first_filename];
+            result = [table_view makeViewWithIdentifier:@"TransactionNotificationCellView" owner:self];
+        }
+        [result setNotification:notif];
     }
     else
     {
@@ -165,7 +186,7 @@
     NSLog(@"ACCEPT DONE !");
     if (op.success)
     {
-        NSLog(@"SUCCESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        
     }
 }
 
@@ -185,7 +206,30 @@
                                               onObject:self];
 }
 
-- (IBAction)_on_reject_done:(IAGapOperationResult*)op
+- (void)_on_reject_done:(IAGapOperationResult*)op
+{
+    if (op.success)
+    {
+        NSLog(@"Reject with success");
+    }
+}
+
+- (IBAction)on_cancel:(id)sender
+{
+    NSUInteger row = [self.table rowForView:sender];
+    IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
+    
+    id item = [_notifications objectAtIndex:row];
+    assert([item isKindOfClass:[IATransactionNotification class]]);
+    IATransactionNotification* notif = item;
+    NSLog(@"cancel for view: %@", view);
+    [view freeze];
+    [[IAClientGapState gap_instance] cancelTransaction:notif
+                                       performSelector:@selector(_on_cancel_done:)
+                                              onObject:self];
+}
+
+- (void)_on_cancel_done:(IAGapOperationResult*)op
 {
     if (op.success)
     {
