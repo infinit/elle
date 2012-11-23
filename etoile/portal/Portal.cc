@@ -17,14 +17,14 @@ using namespace infinit;
 #include <nucleus/neutron/Fellow.hh>
 
 #include <etoile/portal/Portal.hh>
+#include <etoile/portal/Manifest.hh>
+#include <etoile/depot/Depot.hh>
 #include <etoile/path/Way.hh>
 #include <etoile/path/Chemin.hh>
 #include <etoile/path/Path.hh>
 #include <etoile/gear/Identifier.hh>
 #include <etoile/abstract/Object.hh>
 #include <etoile/abstract/Group.hh>
-#include <etoile/portal/Manifest.hh>
-
 #include <etoile/wall/Object.hh>
 #include <etoile/wall/File.hh>
 #include <etoile/wall/Directory.hh>
@@ -35,6 +35,8 @@ using namespace infinit;
 #include <etoile/wall/Group.hh>
 
 #include <lune/Lune.hh>
+
+#include <hole/Hole.hh>
 
 #include <Infinit.hh>
 
@@ -73,6 +75,28 @@ namespace etoile
     /// this method initializes the portal system.
     ///
     elle::Status        Portal::Initialize()
+    {
+      // Wait for hole to be ready before enabling outside applications to
+      // issue file system requests.
+      switch (depot::hole().state())
+        {
+        case hole::Hole::State::offline:
+          {
+            depot::hole().ready_hook(&Portal::_run);
+            break;
+          }
+        case hole::Hole::State::online:
+          {
+            Portal::_run();
+            break;
+          }
+        }
+
+      return (elle::Status::Ok);
+    }
+
+    void
+    Portal::_run()
     {
       elle::network::Port port;
 
@@ -116,8 +140,6 @@ namespace etoile
         escape("unable to create the phrase");
 
       Portal::phrase.store(Infinit::User, Infinit::Network, "portal");
-
-      return elle::Status::Ok;
     }
 
     ///
