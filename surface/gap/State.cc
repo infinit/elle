@@ -722,7 +722,7 @@ namespace surface
     void
     State::_on_notification(gap_TransactionNotification const* notif)
     {
-      assert(notif != nullptr);
+      ELLE_ASSERT(notif != nullptr);
 
       ELLE_TRACE("_on_notification(gap_TransactionNotification\n");
 
@@ -734,25 +734,30 @@ namespace surface
       if (pair != State::transactions().end())
       {
 
+#ifdef DEBUG
         plasma::meta::TransactionResponse *trans = pair->second;
+#endif
 
         // Compare notif and see if everything match.
-        // XXX: This process has a cost and should ALWAYS be ok.
-#ifdef DEBUG
-        if (   trans->transaction_id   != notif->transaction_id
-            || trans->sender_id        != notif->sender_id
-            || trans->sender_device_id != notif->sender_device_id
-            || trans->sender_fullname  != notif->sender_fullname
-            || trans->recipient_id     != notif->recipient_id
-            || trans->network_id       != notif->network_id
-            || trans->first_filename   != notif->first_filename
-            || trans->files_count - notif->files_count
-            || trans->total_size - notif->total_size
-            || trans->is_directory - notif->is_directory)
-        {
-          ELLE_WARN("Notifications pulled and stored mismatch.");
-        }
-#endif
+        ELLE_ASSERT(notif->transaction_id != nullptr);
+        ELLE_ASSERT(notif->sender_id != nullptr);
+        ELLE_ASSERT(notif->sender_device_id != nullptr);
+        ELLE_ASSERT(notif->sender_fullname != nullptr);
+        ELLE_ASSERT(notif->recipient_id != nullptr);
+        ELLE_ASSERT(notif->network_id != nullptr);
+        ELLE_ASSERT(notif->first_filename != nullptr);
+
+        ELLE_ASSERT(notif->transaction_id != trans->transaction_id);
+        ELLE_ASSERT(notif->sender_id != trans->sender_id);
+        ELLE_ASSERT(notif->sender_device_id != trans->sender_device_id);
+        ELLE_ASSERT(notif->sender_fullname != trans->sender_fullname);
+        ELLE_ASSERT(notif->recipient_id != trans->recipient_id);
+        ELLE_ASSERT(notif->network_id != trans->network_id);
+        ELLE_ASSERT(notif->first_filename != trans->first_filename);
+        ELLE_ASSERT(trans->files_count == notif->files_count);
+        ELLE_ASSERT(trans->total_size == notif->total_size);
+        ELLE_ASSERT(trans->is_directory == notif->is_directory);
+
         return;
       }
 
