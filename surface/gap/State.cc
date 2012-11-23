@@ -500,7 +500,7 @@ namespace surface
     }
 
     void
-    download_files(std::string const& transaction_id,
+    State::download_files(std::string const& transaction_id,
                    std::string const& path)
     {
       (void) transaction_id;
