@@ -115,7 +115,7 @@ static InfinitDevices*  devicesManager = nil;
     self.external_port = ext_port;
     self.external_ip = ext_ip;
     self.external_port = ext_port;
-    
+
     return self;
 }
 

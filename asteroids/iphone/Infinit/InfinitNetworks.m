@@ -57,12 +57,12 @@ static InfinitNetworks*  networksManager = nil;
     NSError *error = NULL;
     NSURLResponse *response = nil;
     NSString* networkId;
-    
+
     [request setHTTPMethod:@"GET"];
     [request setValue:token forHTTPHeaderField:@"AUTHORIZATION"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-    
+
     while (networkId = [idsEnum nextObject]) {
         NSURL *url = [NSURL URLWithString:[@"http://infinit.im:12345/network/" stringByAppendingFormat:@"%@/view", networkId]];
         [request setURL:url];
@@ -71,7 +71,7 @@ static InfinitNetworks*  networksManager = nil;
         NSString *resultString = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
      //   NSLog(@"\n\t=> %@ \n\t=> %@ \n\t=> %@", resultString, error.userInfo, response.description);
         NSMutableDictionary* networkDico = [[NSMutableDictionary alloc] initWithDictionary:[resultString objectFromJSONString] copyItems:TRUE];
-        
+
         if (networkDico && (CFBooleanGetValue((__bridge CFBooleanRef)([networkDico valueForKey:@"success"])))) {
             InfinitNetwork*  ifNetwork = [[InfinitNetwork alloc] initWithName:[networkDico objectForKey:@"name"]
                                                                             devices:[networkDico objectForKey:@"devices"]
@@ -109,7 +109,7 @@ static InfinitNetworks*  networksManager = nil;
     self.name = network_name;
     self.devices = network_devices;
     self.users = network_users;
-    
+
     return self;
 }
 

@@ -7,7 +7,7 @@
 // Originally created by Petrovic, Tommy (tpetrovi@akamai.com)
 // OpenVideoPlayer is free software, you may use, modify, and/or redistribute under the terms of the license:
 // http://openvideoplayer.com/license
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 
 #import <Foundation/Foundation.h>
@@ -33,7 +33,7 @@ static NSString *const _OVP_INTERNAL_PLAYER_NAME = @_OVP_PLAYER_NAME;
 extern NSString *const OVPMovieWillPlayNotification;
 
 // Errors returned by the OVP calls
-typedef enum 
+typedef enum
 {
 	OVP_NO_ERROR = 0,
 	OVP_URL_MALFORMED,
@@ -49,22 +49,22 @@ typedef enum
 // Following Protocols are mainly used in handling internal queued media items
 // You class should adopt this protocol in order to provide customization on the current MoviePlayer object,
 // as well as to provide URL for the clip/movie to be played in the queue.
-// When enqueueFirstItem/enqueueLastItem methods mediaURL will be called before 
+// When enqueueFirstItem/enqueueLastItem methods mediaURL will be called before
 // MPMoviePlayerController object has been instantiated to get the url of the media to play.
 //
 @class OVPMoviePlayerController;
-@protocol OVPMediaInitialize 
+@protocol OVPMediaInitialize
 @required
--(NSURL*)mediaURL; 
+-(NSURL*)mediaURL;
 @optional
 -(void)setPlayerPlaybackSettings:(OVPMoviePlayerController*)moviePlayer;
 -(UIView *)getOverlayView; // this is provided as a helper call
 @end
 
-// Adopt OVPMediaPlayback protocol when interested in receiving movieWillPlay call 
-// just before the play and pass it to +assignPlayDelegate: call.  
+// Adopt OVPMediaPlayback protocol when interested in receiving movieWillPlay call
+// just before the play and pass it to +assignPlayDelegate: call.
 //
-@protocol OVPMediaPlayback 
+@protocol OVPMediaPlayback
 
 -(void)movieWillPlay:(OVPMoviePlayerController*)moviePlayer;
 @optional
@@ -101,13 +101,9 @@ typedef enum
 -(OVPStatus)enqueueLastItem:(id)item;
 -(OVPStatus)enqueueFirstItem:(id)item;
 -(void)assignPlayDelegate:(id<OVPMediaPlayback>)object;
--(void)play; 
+-(void)play;
 #if !defined( __IPHONE_OS_VERSION_MIN_REQUIRED) || __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
 -(void)addSubview:(UIView *)view;
 #endif
 
 @end
-
-
-
-

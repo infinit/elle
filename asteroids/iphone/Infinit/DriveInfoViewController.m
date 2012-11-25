@@ -30,7 +30,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     UITableViewCell *testCell = [self.oTableView dequeueReusableCellWithIdentifier:@"testCell"];
     if (testCell == nil) {
         testCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"testCell"];
@@ -39,17 +39,17 @@
     NSArray *firstSection = [NSArray arrayWithObjects: nil];
     NSArray *secondSection = [NSArray arrayWithObjects:testCell,
                               [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"testCell"], nil];
-    
+
     self.infoList = [[NSMutableArray alloc] initWithObjects:firstSection, secondSection/*, thirdSection*/, nil];
-    
+
     [self setTitle:ifNetwork.name];
 }
 
 - (DriveInfoViewController*) initWithInfinitNetwork:(InfinitNetwork*) ifNet {
     self = [super init];
-    
+
     self.ifNetwork = ifNet;
-    
+
     return self;
 }
 
@@ -80,7 +80,7 @@
 {
     NSArray *sectionContents = [[self infoList] objectAtIndex:[indexPath section]];
     UITableViewCell *contentForThisRow = [sectionContents objectAtIndex:[indexPath row]];
-    
+
     if (contentForThisRow) {        // Configure the cell.
         return contentForThisRow;
         //cell.textLabel.text = contentForThisRow;
@@ -88,11 +88,11 @@
     else {
         static NSString *CellIdentifier = @"Cell";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        
+
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
-        
+
         return cell;
     }
 }
@@ -112,10 +112,10 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
 }
 */
 
@@ -188,7 +188,7 @@
     [super setSelected:selected animated:animated];
     self.infoButton.selected = NO;
     // If you don't set highlighted to NO in this method,
-    // for some reason it'll be highlighed while the 
+    // for some reason it'll be highlighed while the
     // table cell selection animates out
     self.infoButton.highlighted = NO;
     [self.infoButton setShowsTouchWhenHighlighted:TRUE];
@@ -203,4 +203,3 @@
 }
 
 @end
-

@@ -24,7 +24,7 @@
     if (self) {
         // Custom initialization
     }
-    
+
     return self;
 }
 
@@ -37,7 +37,7 @@
                                  20);
     self.view.backgroundColor = [UIColor redColor];
     self.view.alpha = 0;
-    
+
     self.textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
 
     self.textLabel.backgroundColor = [UIColor clearColor];
@@ -46,7 +46,7 @@
 
     [self.view addSubview:self.textLabel];
     self.isRevealed = FALSE;
-    
+
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(revealNotifBar:)
                                                    name:@"revealNotifBar"
@@ -64,7 +64,7 @@
 }
 
 - (void)revealNotifBar:(NSNotification*) notification {
-    
+
     if (notification.object)
         self.textLabel.text = notification.object;
     else
@@ -78,9 +78,9 @@
  //   tblInset.top = 20;
 
  //   [self.tblView setContentInset:tblInset];
-    
+
     [self.navigationCtrl.view addSubview:self.view];
-    
+
     [UIView animateWithDuration:1 animations:^{
         self.view.alpha = 1;
     }];
@@ -88,11 +88,11 @@
 
 - (void)hideNotifBar:(NSNotification*) notification {
    // [self.tblView setContentOffset:CGPointMake(0, 0) animated:YES];
-    
+
     [UIView animateWithDuration:0.25 animations:^{
         self.view.alpha = 0;
     }];
-    
+
     [self.view removeFromSuperview];
     self.textLabel.text = @"";
 }

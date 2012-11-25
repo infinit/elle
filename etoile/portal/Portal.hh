@@ -51,6 +51,9 @@ namespace etoile
       // static methods
       //
       static elle::Status       Initialize();
+      static
+      void
+      _run();
       static elle::Status       Clean();
 
       static elle::Status       Add(Application*);

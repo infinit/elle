@@ -63,4 +63,3 @@ typedef enum {
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier rootView:(id) rootView;
 @end
-

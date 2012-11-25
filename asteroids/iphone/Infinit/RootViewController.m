@@ -44,13 +44,13 @@ static CGRect editBarHiddenFrame;
     [oSearchBar setShowsCancelButton:NO];
     self.navigationItem.revealSidebarDelegate = self;
     self.nextRootViewController = nil;
-    
+
   //  if (!self.loginViewController || !self.data.rootList) {
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(revealEditBar:)
                                                    name:@"didEnterEditMode"
                                                  object:nil];
-    [[NSNotificationCenter defaultCenter]   addObserver:self 
+    [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(hideEditBar)
                                                    name:@"didExitEditMode"
                                                  object:nil];
@@ -111,7 +111,7 @@ static CGRect editBarHiddenFrame;
         }
 
         //path = [self.data.filesDirectory stringByAppendingPathComponent:@"InfinitUInfo.plist"];
-        
+
         NSMutableDictionary *plistDico = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
 
         [plistDico setObject:self.loginViewController.userMail forKey:@"rememberM"];
@@ -123,7 +123,7 @@ static CGRect editBarHiddenFrame;
             [plistDico setObject:@"NO" forKey:@"rememberMe?"];
 
         [plistDico writeToFile:path atomically:YES];
-        
+
         self.presentedViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
         [self.presentedViewController dismissModalViewControllerAnimated:YES];
     }
@@ -136,17 +136,17 @@ static CGRect editBarHiddenFrame;
 {
     [super viewWillAppear:animated];
  //   [infinitAppDelegate putLoginBackView];
-    
+
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"navigationbar-back.png"] forBarMetrics:UIBarMetricsDefault];
-    
+
     if (!self.data)
     {
-        [[NSNotificationCenter defaultCenter]   addObserver:self 
-                                                   selector:@selector(handleDidLogIn:)        
-                                                       name:@"didLogIn" 
+        [[NSNotificationCenter defaultCenter]   addObserver:self
+                                                   selector:@selector(handleDidLogIn:)
+                                                       name:@"didLogIn"
                                                      object:nil];
-        [[NSNotificationCenter defaultCenter]   addObserver:self 
-                                                   selector:@selector(handleDidLogOut:)        
+        [[NSNotificationCenter defaultCenter]   addObserver:self
+                                                   selector:@selector(handleDidLogOut:)
                                                        name:@"didLogOut"
                                                      object:nil];
 
@@ -197,7 +197,7 @@ static CGRect editBarHiddenFrame;
 
         if (!self.data.rootList)
             [self setupNotifBarInset];
-        
+
         [oTableView setDataSource:data];
         NSArray* pathComp = [data.filesDirectory pathComponents];
         self.title = [pathComp objectAtIndex:[pathComp count] - 1];
@@ -210,11 +210,11 @@ static CGRect editBarHiddenFrame;
 
             self._tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
             self._tapGesture.delegate = self;
-            
+
             self._pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
             self._pinchGesture.delegate = self;
             [self.view addGestureRecognizer:self._pinchGesture];
-            
+
             UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(oToggleAddView:)];
             self.navigationItem.rightBarButtonItem = addButton;
             self.data.addViewButtonItem = self.navigationItem.rightBarButtonItem;
@@ -230,13 +230,13 @@ static CGRect editBarHiddenFrame;
 
         self.tableViewInitialFrame = self.tableView.frame;
         self.tableViewEditModeFrame = CGRectMake(self.tableViewInitialFrame.origin.x, self.tableViewInitialFrame.origin.y,
-                                             self.tableViewInitialFrame.size.width, self.tableViewInitialFrame.size.height - 44);    
+                                             self.tableViewInitialFrame.size.width, self.tableViewInitialFrame.size.height - 44);
         [self setupNotifBarInset];
- 
+
         if (self.data.editMode)
         {
             CGRect editFrame = self.tableViewEditModeFrame;
-            
+
             if (!token || [token isEqualToString:@""]) {
                 editFrame.origin.y = 20;
                 editFrame.size.height -= 20;
@@ -259,7 +259,7 @@ static CGRect editBarHiddenFrame;
             RootViewController *dirContentViewController;
             NSEnumerator    *rootViewEnumerator = [rootViewArray objectEnumerator];
             NSString        *filesDirectory;
-                
+
             if (token) {
                 NSArray*    networkKeys = [[InfinitNetworks singleton].networks allKeys];
                 InfinitNetwork* network = [[InfinitNetworks singleton].networks objectForKey:[networkKeys objectAtIndex:[indexPath row]]];
@@ -271,7 +271,7 @@ static CGRect editBarHiddenFrame;
 
                 filesDirectory = [self.data.filesDirectory stringByAppendingPathComponent:ifFile.dic.name];
             }
-                
+
             while (dirContentViewController = [rootViewEnumerator nextObject]) {
                 if ([dirContentViewController.data.filesDirectory isEqualToString:filesDirectory])
                     break;
@@ -282,7 +282,7 @@ static CGRect editBarHiddenFrame;
                 dirContentViewController.data = [[InfinitData alloc] initWithDocumentInteractionControllerDelegate:self filesDirectory:filesDirectory tableView:dirContentViewController.tableView];
 
                 dirContentViewController.data.rootView = dirContentViewController;
-                
+
                 [rootViewArray addObject:dirContentViewController];
                 // dirContentViewController.prevRootViewController = self;
             }
@@ -303,7 +303,7 @@ static CGRect editBarHiddenFrame;
                     [self toggleSearchBarSelected];
                 else {
                     InfinitFile* ifFile = [data getValueAtIndex:indexPath.row];
-                    
+
                     if (!ifFile.isDirectory) {
                         if (self.data.editMode) {
                             if (!ifFile.isDownloading) {
@@ -315,10 +315,10 @@ static CGRect editBarHiddenFrame;
                                     [[self.data getCheckedData] addObject:self.data];
                                     [[self.data getCheckedFiles] addObject:ifFile];
                                 }
-                                
+
                                 ifFile.isChecked = !ifFile.isChecked;
                                 [ifFile.checkStatusView removeFromSuperview];
-                                
+
                                 [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                 //[self hideSearchBar];
                             }
@@ -330,7 +330,7 @@ static CGRect editBarHiddenFrame;
                         RootViewController *dirContentViewController;
                         NSEnumerator    *rootViewEnumerator = [rootViewArray objectEnumerator];
                         NSString        *filesDirectory;
-                        
+
                         filesDirectory = [self.data.filesDirectory stringByAppendingPathComponent:ifFile.dic.name];
 
                         while (dirContentViewController = [rootViewEnumerator nextObject]) {
@@ -414,7 +414,7 @@ static CGRect editBarHiddenFrame;
         [self alignSearchBar];
 }
 
-- (IBAction) pushLoginView: (id) sender { 
+- (IBAction) pushLoginView: (id) sender {
     [self presentModalViewController:loginViewController animated:NO];
 }
 
@@ -460,7 +460,7 @@ static CGRect editBarHiddenFrame;
     {
         NSError*    error;
         NSString *bundle = [[NSBundle mainBundle] pathForResource:@"InfinitUInfo" ofType:@"plist"];
-        
+
         [fileManager copyItemAtPath:bundle toPath: path error:&error];
         NSLog(@">> WROTE: %@", error);
     }
@@ -545,7 +545,7 @@ static CGRect editBarHiddenFrame;
         [self.navigationController popViewControllerAnimated:YES];
 }*/
 
-- (IBAction)handleTap:(UIGestureRecognizer *)sender { 
+- (IBAction)handleTap:(UIGestureRecognizer *)sender {
     if (self.navigationItem.rightBarButtonItem.style == UIBarButtonItemStyleDone)
         [self oToggleAddView:self];
 }
@@ -555,7 +555,7 @@ static CGRect editBarHiddenFrame;
 
     if (![self.data numberOfRowsInTableView:self.tableView] || (self.navigationItem.rightBarButtonItem.style == UIBarButtonItemStyleDone))
         return;
-    
+
     if (sender.velocity < 0) {
         if (self.data.editMode || sender.velocity > -0.95)
             return;
@@ -598,7 +598,7 @@ static CGRect editBarHiddenFrame;
 
             ifFile.isChecked = !ifFile.isChecked;
             [ifFile.checkStatusView removeFromSuperview];
-            
+
             [self.tableView reloadData];
 
          //   [self hideSearchBar];
@@ -610,39 +610,39 @@ static CGRect editBarHiddenFrame;
     if (!self.data.editMode)
     {
         self.data.editMode = TRUE;
-        
+
         if (![[notification object] isEqual:self])
             return;
-     
+
         UIView* keyWindow = [[UIApplication sharedApplication] keyWindow];
 
         [[self.data getCheckedFiles] removeAllObjects];
         [[self.data getCheckedData] removeAllObjects];
-        
+
         editBarRevealedFrame = CGRectMake(keyWindow.frame.origin.x,
                                           keyWindow.frame.size.height - 44,
                                           keyWindow.frame.size.width,
                                           44);
-        
+
         editBarHiddenFrame = CGRectMake(keyWindow.frame.origin.x,
                                         keyWindow.frame.size.height,
                                         keyWindow.frame.size.width,
                                         44);
-        
+
         editBar.frame = editBarHiddenFrame;
         CGRect editFrame = self.tableViewEditModeFrame;
-        
+
         if (!token || [token isEqualToString:@""]) {
             editFrame.origin.y = 20;
             editFrame.size.height -= 20;
         }
-        
+
         [UIView animateWithDuration:0.25 animations:^{
             [self.tableView setFrame:editFrame];
 
             //if (editBar.frame.origin.y != editBarRevealedFrame.origin.y)
             //{
-            
+
             editBar.frame = editBarRevealedFrame;
             editBar.backgroundColor = [UIColor greenColor];
             if ([keyWindow.subviews indexOfObject:editBar] == NSNotFound) {
@@ -670,7 +670,7 @@ static CGRect editBarHiddenFrame;
         [UIView animateWithDuration:0.25 animations:^{
             // Repostion tableView frame while hiding search bar
             // [self hideSearchBar]
-            
+
 
             [self.tableView setFrame:self.tableViewInitialFrame];
             [self hideSearchBar];
@@ -694,7 +694,7 @@ static CGRect editBarHiddenFrame;
     editBar = [[UIToolbar alloc] init];
 
     UIView* keyWindow = [[UIApplication sharedApplication] keyWindow];
-    
+
     editBarRevealedFrame = CGRectMake(keyWindow.frame.origin.x,
                                       keyWindow.frame.size.height - 44,
                                       keyWindow.frame.size.width,
@@ -709,7 +709,7 @@ static CGRect editBarHiddenFrame;
     [editBar insertSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationbar-back.png"]] atIndex:1];
 
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc]
-                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace 
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                       target:nil action:nil];
 
     UIBarButtonItem *pinButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"pin-up.png"] style:UIBarButtonItemStylePlain
@@ -749,7 +749,7 @@ static CGRect editBarHiddenFrame;
 
 - (void)refreshHeader {
     [self performSelector:@selector(stopHeaderLoading) withObject:nil afterDelay:0.5];
-    
+
     NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:
                                 self.loginViewController.userMail,   @"email",
                                 self.loginViewController.pswd,   @"password",
@@ -774,7 +774,7 @@ static CGRect editBarHiddenFrame;
 - (IBAction)oPresentFolderTextInput:(id)sender {
     [self oToggleAddView:self];
     if ([self.oTableView numberOfRowsInSection:0] > 2) {
-        [self.oTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES]; 
+        [self.oTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
     [self.data addDirTextInputCell];
     [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
@@ -878,9 +878,9 @@ static CGRect editBarHiddenFrame;
         [self.data addFileTextInputCell];
     }
 
-    if ([[info objectForKey:UIImagePickerControllerMediaType] isEqualToString:@"public.movie"]) {        
+    if ([[info objectForKey:UIImagePickerControllerMediaType] isEqualToString:@"public.movie"]) {
         self.data.movieToSavePath = [info objectForKey:UIImagePickerControllerMediaURL];
-        
+
         [self.data addFileTextInputCell];
     }
 
@@ -906,7 +906,7 @@ static CGRect editBarHiddenFrame;
         NSInteger row = [[self.tableView indexPathForCell:self.data.currentlyRevealedCell] row];
         InfinitFile* file = [self.data getValueAtIndex:row];
         NSData* fileData = [NSData dataWithContentsOfFile:[self.data.filesDirectory stringByAppendingPathComponent:[[file dic] name]]];
-        
+
         MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] init];
         [mailController setSubject:nil];
         [mailController setMessageBody:nil isHTML:NO];
@@ -919,7 +919,7 @@ static CGRect editBarHiddenFrame;
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
 {
     [self dismissModalViewControllerAnimated:YES];
-    
+
     [self.data.currentlyRevealedCell setRevealing:NO];
     self.data.currentlyRevealedCell = nil;
 }
@@ -927,7 +927,7 @@ static CGRect editBarHiddenFrame;
 -(IBAction)oPresentLinkTextInput:(id)sender {
     [self oToggleAddView:self];
     if ([self.oTableView numberOfRowsInSection:0] > 2) {
-       [self.oTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES]; 
+       [self.oTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
     [self.navigationItem.rightBarButtonItem setEnabled:NO];
     [self.data addLinkTextInputCell];
@@ -961,7 +961,7 @@ static CGRect editBarHiddenFrame;
     RootViewController  *presentedRoot = [self nextRootViewController];
     NSString    *newFilePath = [presentedRoot.data.filesDirectory stringByAppendingPathComponent:ifFile.dic.name];
     int         arrayCount = 0;
-    
+
     BOOL isDir;
     int row = 0;
 
@@ -976,7 +976,7 @@ static CGRect editBarHiddenFrame;
 
     while (ifFile = [checkedEnumerator nextObject]) {
         newFilePath = [presentedRoot.data.filesDirectory stringByAppendingPathComponent:ifFile.dic.name];
-        
+
         if ([[NSFileManager defaultManager] fileExistsAtPath:newFilePath isDirectory:&isDir])
             continue;
 
@@ -1053,9 +1053,9 @@ static CGRect editBarHiddenFrame;
 - (IBAction)oShowDriveInfo:(id)sender {
     UIButton* driveInfoButton = sender;
     NSArray*    networkKeys = [[InfinitNetworks singleton].networks allKeys];
-    
+
     InfinitNetwork* network = [[InfinitNetworks singleton].networks objectForKey:[networkKeys objectAtIndex:driveInfoButton.tag]];
-    
+
     DriveInfoViewController *driveInfoViewController = [[DriveInfoViewController alloc] initWithInfinitNetwork:network];
 
     [self.navigationController pushViewController:driveInfoViewController animated:YES];

@@ -78,7 +78,7 @@ static char *revealedStateKey;
 
 - (CGAffineTransform)baseTransform {
     CGAffineTransform baseTransform;
-    
+
     return self.view.transform;
     switch (self.interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
@@ -128,9 +128,9 @@ static char *revealedStateKey;
         UIView *view = [self.view.superview viewWithTag:(int)context];
         [view removeFromSuperview];
     }
-    
+
     // notify delegate for controller changed state
-    id <JTRevealSidebarV2Delegate> delegate = 
+    id <JTRevealSidebarV2Delegate> delegate =
         [self selectedViewController].navigationItem.revealSidebarDelegate;
     if ([delegate respondsToSelector:@selector(didChangeRevealedStateForViewController:)]) {
         [delegate didChangeRevealedStateForViewController:self];
@@ -151,19 +151,19 @@ static char *revealedStateKey;
 
     if (showLeftSidebar) {
         [self.view.superview insertSubview:revealedView belowSubview:self.view];
-        
+
         [UIView beginAnimations:@"" context:nil];
 //        self.view.transform = CGAffineTransformTranslate([self baseTransform], width, 0);
-        
+
         self.view.frame = CGRectOffset(self.view.frame, width, 0);
 
     } else {
         [UIView beginAnimations:@"hideSidebarView" context:(void *)SIDEBAR_VIEW_TAG];
 //        self.view.transform = CGAffineTransformTranslate([self baseTransform], -width, 0);
-        
+
         self.view.frame = (CGRect){CGPointZero, self.view.frame.size};
     }
-    
+
     [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
     [UIView setAnimationDelegate:self];
 
@@ -173,7 +173,7 @@ static char *revealedStateKey;
 - (void)revealRightSidebar:(BOOL)showRightSidebar {
 
     id <JTRevealSidebarV2Delegate> delegate = [self selectedViewController].navigationItem.revealSidebarDelegate;
-    
+
     if ( ! [delegate respondsToSelector:@selector(viewForRightSidebar)]) {
         return;
     }
@@ -184,7 +184,7 @@ static char *revealedStateKey;
 
     if (showRightSidebar) {
         [self.view.superview insertSubview:revealedView aboveSubview:self.view];
-        
+
         revealedView.frame = CGRectMake(self.view.frame.size.width, revealedFrame.origin.y, revealedFrame.size.width, revealedFrame.size.height);
 
         revealedView.layer.masksToBounds = NO;
@@ -192,20 +192,20 @@ static char *revealedStateKey;
         revealedView.layer.shadowOffset = CGSizeMake(-10, 0);
         revealedView.layer.shadowRadius = 5;
         revealedView.layer.shadowOpacity = 0.5;
-        
+
         [UIView beginAnimations:@"" context:nil];
 
         revealedView.frame = revealedFrame;
     } else {
         [UIView beginAnimations:@"" context:nil];
-        
+
         revealedView.frame = (CGRect){self.view.frame.size.width, revealedFrame.origin.y, revealedView.frame.size};
         revealedView.layer.shadowOpacity = 0.0;
     }
-    
+
     [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
     [UIView setAnimationDelegate:self];
-    
+
     [UIView commitAnimations];
 }
 

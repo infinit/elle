@@ -29,14 +29,14 @@
     };
 
     dic = [UIDocumentInteractionController interactionControllerWithURL:[NSURL  fileURLWithPath:fileURL]];
-    
+
     if (dic) {
         dic.delegate = dicDelegate;
     }
-    
+
     self.fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(45, 12, 270, 20)];
     [self.fileNameLabel setText:self.dic.name];
-    
+
     self.isDownloading = NO;
     self.isChecked = NO;
 
@@ -56,7 +56,7 @@
     NSURLRequest *theRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:filePath]
                                               cachePolicy:NSURLRequestUseProtocolCachePolicy
                                           timeoutInterval:60.0];
-    
+
     self.dlConnection=[[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
  //   [theConnection start];
 }
@@ -68,31 +68,31 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    
+
    // NSString* path = [filesDirectory stringByAppendingPathComponent:@"TST.mp4"];
     if (self.progress == 0)
         [data writeToURL:[self.dic URL] atomically:NO];
       //  [data writeToFile:path atomically:NO];
     else {
         // NSLog(@"resourceData length: %d", [self.resourceData length]);
-        
+
         // [self.resourceData appendData:data];
-        
+
         // NSNumber *resourceLength = [NSNumber numberWithUnsignedInteger:[self.resourceData length]];
-        
+
         // NSLog(@"resourceData length: %d", [resourceLength intValue]);
         //  progressView.progress = [resourceLength floatValue] / [self.filesize floatValue];
-        
+
         // [self saveData:resourceData toFile:@"TST.mov"];
-        
+
         NSFileHandle *myHandle = [NSFileHandle fileHandleForUpdatingURL:[self.dic URL] error:nil];
         [myHandle seekToEndOfFile];
         [myHandle writeData:data];
         [myHandle closeFile];
     }
-    
+
     self.progress = [NSNumber numberWithInt:[self.progress intValue] + [data length]];
-    
+
     if ([self.progress floatValue] == [self.filesize floatValue])
     {
         self.isDownloading = NO;

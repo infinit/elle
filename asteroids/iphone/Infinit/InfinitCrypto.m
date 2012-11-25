@@ -17,7 +17,7 @@ static NSString* salt = @"MEGABIET";
 }
 
 + (NSString *)sha256: (NSString *)str
-{	
+{
     const char *inputString = [str UTF8String];
 
     unsigned char hashedChars[32];

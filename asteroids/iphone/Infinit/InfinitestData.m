@@ -44,15 +44,15 @@
         DICDelegate = dic;
 
         files = [[NSMutableArray alloc] init];
-        
+
         // Create file manager
         fileMgr = [NSFileManager defaultManager];
-        
+
         // Point to Document directory
         filesDirectory = filesDir;
-        
+
         _tableView = tableView;
-        
+
         NSError*            error;
         NSArray*            array = [fileMgr contentsOfDirectoryAtPath:filesDirectory error:&error];
         nextFile = [array objectEnumerator];
@@ -75,12 +75,12 @@
     //NSEnumerator*       e = [array objectEnumerator];
     NSString*             fileURL;
     NSInteger           i = 0;
-    
+
     [files removeAllObjects];
     while ((fileURL = [nextFile nextObject]) && (i++ < FILES_LIST_BATCH_SIZE)) {
-        [files addObject:[[InfinitestFile alloc] initWithFileURL:[filesDirectory stringByAppendingPathComponent:fileURL] dicDelegate:DICDelegate]];   
+        [files addObject:[[InfinitestFile alloc] initWithFileURL:[filesDirectory stringByAppendingPathComponent:fileURL] dicDelegate:DICDelegate]];
     }
-    
+
     return (fileURL != nil);
 }
 
@@ -89,7 +89,7 @@
 //    InfinitestFile*     file;
 
     NSArray *containsJ;
-    
+
     if ([searchChars isEqualToString:@""])
     {
         [files removeAllObjects];
@@ -107,17 +107,17 @@
 
 - (void) addFile {
     // File we want to create in the documents directory
-    NSString *filePath = [[filesDirectory 
+    NSString *filePath = [[filesDirectory
                           stringByAppendingPathComponent:@"file"] stringByAppendingFormat:@"%d.txt", [files count]];
     // String to write
     NSString *str = [@"Content" stringByAppendingFormat:@"%d", [files count]];
 
     // For error information
     NSError *error;
-    
+
     // Write the file
     [str writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    
+
     [files addObject:[@"file" stringByAppendingFormat:@"%d.txt", [files count]]];
 }
 
@@ -139,7 +139,7 @@
 
 - (void) addFileTextInputCell {
     self->fileTextInput = YES;
-    
+
     [self toggleInputCell];
 }
 
@@ -148,7 +148,7 @@
 
     if (set) // Text input wasn't displayed
         [files insertObject:@"_" atIndex:0];
-    
+
     self->displayTextInputCell = set;
     self->lockReveal = set;
     self._tableView.scrollEnabled = !set;
@@ -174,15 +174,15 @@
 
     NSUInteger row = [indexPath row];
     InfinitestFile *ifFile = [self getValueAtIndex:row];
-    
+
     if (self->displayTextInputCell && row == 0) {
         UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"textInputCell"];
-        
+
         if (self->dirTextInput)
             cell.imageView.image = folderImage;
-        else if (self->fileTextInput) 
+        else if (self->fileTextInput)
             cell.imageView.image = plusImage;
-        
+
         UITextField *txtField=[[UITextField alloc]initWithFrame:CGRectMake(/*5*/ cell.imageView.image.size.width + 5, 10, 310 - cell.imageView.image.size.width - 5, 34)];
         txtField.autoresizingMask=UIViewAutoresizingFlexibleHeight;
         txtField.autoresizesSubviews=YES;
@@ -194,7 +194,7 @@
         [cell.contentView addSubview:txtField];
         txtField.delegate = self;
         [txtField becomeFirstResponder];
-        
+
         return cell;
     }
     else {
@@ -204,9 +204,9 @@
         cell.delegate = self;
         //cell.backView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
         cell.backView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"InnerShadowBack.png"]];
-        
+
         cell.direction = ZKRevealingTableViewCellDirectionLeft;
-        
+
        // [cell drawInnerShadowInRect:cell.bounds fillColor:[UIColor blackColor]];
 
         UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom]; //UIButtonTypeRoundedRect];
@@ -219,21 +219,21 @@
         [deleteButton setImage:[UIImage imageNamed:@"delete.png"] forState:UIControlStateNormal];
         [deleteButton addTarget:self action:@selector(deleteRow:) forControlEvents:UIControlEventTouchUpInside];
         [cell.backView addSubview:deleteButton];
-        
+
         UIButton *emailButton = [UIButton buttonWithType:UIButtonTypeCustom]; //UIButtonTypeRoundedRect];
         //[button setTitle:@"X" forState:UIControlStateNormal];
         emailButton.frame = CGRectMake(cell.backView.bounds.size.width - 180,
                                   cell.backView.bounds.origin.y,
                                   100,
                                   cell.backView.bounds.size.height - 1);
-        
+
         [emailButton setImage:[UIImage imageNamed:@"mail.png"] forState:UIControlStateNormal];
         [emailButton addTarget:self action:@selector(oPresentSendEmailFile:) forControlEvents:UIControlEventTouchUpInside];
         if (ifFile.isDirectory) {
             emailButton.enabled = NO;
         }
         [cell.backView addSubview:emailButton];
-        
+
     }
 
     cell.textLabel.text = ifFile.dic.name;
@@ -269,11 +269,11 @@
 {
     NSString*       fileURL;
     NSInteger       i = 0;
-    
+
     while ((i++ < FILES_LIST_BATCH_SIZE) && (fileURL = [nextFile nextObject])) {
-        [files addObject:[[InfinitestFile alloc] initWithFileURL:[filesDirectory stringByAppendingPathComponent:fileURL] dicDelegate:DICDelegate]];   
+        [files addObject:[[InfinitestFile alloc] initWithFileURL:[filesDirectory stringByAppendingPathComponent:fileURL] dicDelegate:DICDelegate]];
     }
-    
+
     return (fileURL != nil);
 }
 
@@ -289,7 +289,7 @@
         self.currentlyRevealedCell = nil;
 
         [self.fileMgr removeItemAtPath:[self.filesDirectory stringByAppendingPathComponent:[[[self.files objectAtIndex:row] dic] name]] error:nil];
-        
+
         [self.files removeObjectAtIndex:row];
 
         [self._tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:row inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
@@ -300,7 +300,7 @@
     [self._tableView beginUpdates];
     [self.files removeObjectAtIndex:0];
     [self._tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-    
+
     if (self->dirTextInput) {
         if (![textField.text isEqualToString:@""] && ![self.fileMgr fileExistsAtPath:textField.text] && [self addDir:[textField text]]) {
             [self._tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
@@ -312,7 +312,7 @@
         if (self.imageToSave) {
             if (![textField.text isEqualToString:@""] && ![self.fileMgr fileExistsAtPath:[filesDirectory stringByAppendingPathComponent:[textField.text stringByAppendingString:@".png"]]]) {
                // NSData* imageData = [NSData dataWithData:UIImagePNGRepresentation(self.imageToSave)];
-                //[imageData writeToFile:[textField.text stringByAppendingString:@".png"] atomically:NO]; 
+                //[imageData writeToFile:[textField.text stringByAppendingString:@".png"] atomically:NO];
                 [self saveData:[NSData dataWithData:UIImagePNGRepresentation(self.imageToSave)] toFile:[textField.text stringByAppendingString:@".png"]];
                 [self._tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
             }
