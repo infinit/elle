@@ -1942,6 +1942,9 @@ def run(root, *cfg, **kwcfg):
 
     except Exception as e:
         print('%s: %s' % (sys.argv[0], e))
+        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+            import traceback
+            traceback.print_exc()
         exit(1)
     except KeyboardInterrupt:
         print('%s: interrupted.' % sys.argv[0])
