@@ -85,6 +85,9 @@ namespace satellite
       elle::io::Path passport_path(lune::Lune::Passport);
       passport_path.Complete(elle::io::Piece{"%USER%", user});
 
+      // XXX
+      passport_path.Dump();
+
       // store the passport.
       passport.store(passport_path);
     }
@@ -238,6 +241,14 @@ namespace satellite
     if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
 
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
+      {
+        // display the usage.
+        Infinit::Parser->Usage();
+        return (elle::Status::Ok);
+      }
+
     // retrieve the user name.
     if (Infinit::Parser->Value("User",
                                Infinit::User) == elle::Status::Error)
@@ -246,27 +257,6 @@ namespace satellite
         Infinit::Parser->Usage();
 
         escape("unable to retrieve the user name");
-      }
-
-    std::string passport_name;
-    if (Infinit::Parser->Value("Passport",
-                               passport_name) == elle::Status::Error)
-      {
-        // display the usage.
-        Infinit::Parser->Usage();
-
-        escape("unable to retrieve the passport name");
-      }
-
-
-    // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
-      {
-        // display the usage.
-        Infinit::Parser->Usage();
-
-        // quit.
-        return elle::Status::Ok;
       }
 
     // check the mutually exclusive options.
@@ -298,6 +288,16 @@ namespace satellite
       {
       case Passport::OperationCreate:
         {
+          std::string passport_name;
+          if (Infinit::Parser->Value("Name",
+                                     passport_name) == elle::Status::Error)
+            {
+              // display the usage.
+              Infinit::Parser->Usage();
+
+              escape("unable to retrieve the passport name");
+            }
+
           // create the passport.
           Passport::Create(Infinit::User, passport_name);
 
