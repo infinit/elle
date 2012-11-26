@@ -35,8 +35,10 @@ def configure(cxx_toolkit, cxx_config):
     'src/reactor/network/exception.cc',
     'src/reactor/network/udp-socket.cc',
     'src/reactor/network/tcp-socket.cc',
+    'src/reactor/network/udt-socket.cc',
     'src/reactor/network/resolve.cc',
     'src/reactor/network/tcp-server.cc',
+    'src/reactor/network/udt-server.cc',
     'src/reactor/network/socket.cc',
     'src/reactor/network/server.cc',
     'src/reactor/network/udp-server.cc',
@@ -53,5 +55,3 @@ def configure(cxx_toolkit, cxx_config):
     'tests/reactor/backend/test.cc',
     'tests/reactor/network/test.cc',
     )
-
-
