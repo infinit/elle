@@ -142,14 +142,20 @@ namespace common
   {
 
     /// The name of the local socket.
-    std::string const&
-    server_name();
-
-    // XXX scheduled for deletion
-    /// Returns the path to the watchdog identity file.
     std::string
-    identity_path(std::string const& user);
+    server_name(std::string const& user_id);
 
+    /// The path to the watchdog identity file.
+    std::string
+    identity_path(std::string const& user_id);
+
+    /// The path to the lock file.
+    std::string
+    lock_path(std::string const& user_id);
+
+    /// The path to the log file.
+    std::string
+    log_path(std::string const& user_id);
   }
 
   // XXX scheduled for deletion

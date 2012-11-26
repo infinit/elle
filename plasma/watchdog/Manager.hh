@@ -54,11 +54,13 @@ namespace plasma
       QTimer              _timer;
       std::string         _identity;
       std::string         _user;
-      std::string         _user_id;
+      std::string const   _user_id;
 
     public:
       /// ctor & dtor
-      Manager(QCoreApplication& app, LocalServer& local_server);
+      Manager(QCoreApplication& app,
+              LocalServer& local_server,
+              std::string const& user_id);
       ~Manager();
 
       /// properties
@@ -77,8 +79,6 @@ namespace plasma
       void user(QString const& user)      { this->_user = user.toStdString(); }
       std::string const& user() const                   { return this->_user; }
 
-      void user_id(std::string const& user_id)                { this->_user_id = user_id; }
-      void user_id(QString const& user_id)      { this->_user_id = user_id.toStdString(); }
       std::string const& user_id() const                   { return this->_user_id; }
 
       /// Called from the LocalServer to add a new connection

@@ -7,21 +7,19 @@
 
 #include <common/common.hh>
 
+#include "Manager.hh"
 #include "Connection.hh"
 #include "LocalServer.hh"
-#include "Manager.hh"
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog.LocalServer");
 
 using namespace plasma::watchdog;
 
-LocalServer::LocalServer(QCoreApplication& app) :
+LocalServer::LocalServer(QCoreApplication& app,
+                         std::string const& user_id):
   QLocalServer(),
   _state(State::Stopped),
-  _manager(new Manager(app, *this))
-{}
-
-LocalServer::~LocalServer()
+  _manager{new Manager{app, *this, user_id}}
 {}
 
 void LocalServer::start(std::string const& watchdogId)
@@ -31,19 +29,20 @@ void LocalServer::start(std::string const& watchdogId)
 
   this->_manager->start(watchdogId);
 
+  std::string server_name = common::watchdog::server_name(_user_id);
   // Trying to create a listening socket
-  if (!this->listen(common::watchdog::server_name().c_str()))
+  if (!this->listen(server_name.c_str()))
     {
       ELLE_WARN("Server name already used (maybe previous crash)");
 
       // We try to remove the server instance first
-      if (!QLocalServer::removeServer(common::watchdog::server_name().c_str()))
+      if (!QLocalServer::removeServer(server_name.c_str()))
         throw std::runtime_error{"Cannot remove previous server instance"};
 
       // Then call listen again, since old socket have been removed
-      if (!this->listen(common::watchdog::server_name().c_str()))
+      if (!this->listen(server_name.c_str()))
         throw std::runtime_error{
-            "Cannot start the local server: " + common::watchdog::server_name()
+            "Cannot start the local server: " + server_name
         };
     }
 

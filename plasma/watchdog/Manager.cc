@@ -18,14 +18,17 @@ ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 using namespace plasma::watchdog;
 
-Manager::Manager(QCoreApplication& app, LocalServer& local_server) :
+Manager::Manager(QCoreApplication& app,
+                 LocalServer& local_server,
+                 std::string const& user_id):
   _app(app),
   _clients(new ClientMap()),
   _commands(new CommandMap()),
-  _actions(new ClientActions(*this)),
+  _actions(new ClientActions(*this, user_id)),
   _network_manager(new NetworkManager(*this)),
   _meta(common::meta::host(), common::meta::port()),
-  _local_server(local_server)
+  _local_server(local_server),
+  _user_id{user_id}
 {}
 
 Manager::~Manager()

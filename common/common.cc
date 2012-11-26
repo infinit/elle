@@ -349,13 +349,28 @@ namespace common
         );
     }
 
-    std::string const&
-    server_name()
+    std::string
+    lock_path(std::string const& user_id)
     {
-      // The name is specific to the infinit home, as many instance could be
-      // launched on the same machine.
-      static std::string const name = "WATCHDOG_SERVER_NAME";
-      return name;
+        return path::join(
+          infinit::user_directory(user_id),
+          "lock.wtg"
+        );
+    }
+
+    std::string
+    log_path(std::string const& user_id)
+    {
+        return path::join(
+          infinit::user_directory(user_id),
+          "log.wtg"
+        );
+    }
+
+    std::string
+    server_name(std::string const& user_id)
+    {
+      return ".infinit-watchdog-server-name-for-" + user_id;
     }
 
   }
