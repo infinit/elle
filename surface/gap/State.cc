@@ -205,7 +205,7 @@ namespace surface
       if (!conn.waitForConnected(2000))
         throw Exception{
             gap_internal_error,
-              "Couldn't connect to the watchdog:" + conn.error()
+              "Couldn't connect to the watchdog:" + std::to_string(conn.error())
         };
 
       json::Dictionary req;
