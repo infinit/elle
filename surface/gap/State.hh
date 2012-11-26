@@ -164,22 +164,47 @@ namespace surface
                      std::string const& path);
 
     private:
+      // Functions callback on each status (set and get).
 
+      /// @brief Use to accept the transaction for the recipient.
       void
       _accept_transaction(std::string const& transaction_id);
 
+      /// @brief Use to add rights on network when the recipient accepts.
+      void
+      _on_transaction_accepted(std::string const& transaction_id);
+
+      /// @brief Use to deny the transaction for the recipient.
       void
       _deny_transaction(std::string const& transaction_id);
 
+      /// @brief Use to "delete" the transaction if the recipient denied it.
+      void
+      _on_transaction_denied(std::string const& transaction_id);
+
+      /// @brief Use to cancel a pending transaction or an unfinished one.
       void
       _cancel_transaction(std::string const& transaction_id);
 
+      /// @brief Use to destroy network if transaction has been canceled.
+      void
+      _on_transaction_canceled(std::string const& transaction_id);
+
+      /// @brief Use to inform recipient that everything is ok and he can start downloading.
       void
       _start_transaction(std::string const& transaction_id);
 
+      /// @brief Use to .
+      void
+      _on_transaction_started(std::string const& transaction_id);
+
+      /// @brief Use to inform the sender that download is complete.
       void
       _close_transaction(std::string const& transaction_id);
 
+      /// @brief Use to close network.
+      void
+      _on_transaction_closed(std::string const& transaction_id);
 
 
     private:
@@ -278,15 +303,6 @@ namespace surface
       network_add_user(std::string const& network_id,
                        std::string const& user);
 
-      // /// Accept file transfer.
-      // void
-      // accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
-
-      // /// Deny file transfer.
-      // void
-      // deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
-
-      /// Trophonius binding.
     private:
       typedef std::map<int, std::list<plasma::trophonius::BasicHandler*>> HandlerMap;
       HandlerMap _notification_handlers;
