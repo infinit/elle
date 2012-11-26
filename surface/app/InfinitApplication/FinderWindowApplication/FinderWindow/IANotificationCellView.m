@@ -80,6 +80,7 @@
             str = [[NSString alloc] initWithFormat:@"Unknown transaction status %d", notif.status];
             break;
     }
+    [self.status setStringValue:str];
 }
 
 - (void) setNotification:(id)notif
@@ -89,9 +90,5 @@
     assert([notif isKindOfClass:[IATransactionNotification class]]);
     _notification = notif;
 }
-
-@end
-
-@implementation IATransactionStatusNotificationCellView
 
 @end
