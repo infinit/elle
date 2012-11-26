@@ -71,7 +71,7 @@ extern "C" {
   /// Enable debug messages.
   void gap_enable_debug(gap_State* state);
 
-  /// Scratch db
+  /// Debug func.
   gap_Status gap_debug(gap_State* state);
 
   /// - Services status -----------------------------------------------------
@@ -81,7 +81,6 @@ extern "C" {
 
   /// Debug func: Pull notifications.
   gap_Status
-
   gap_pull_notifications(gap_State*,
                          int count,
                          int offset);
@@ -211,12 +210,13 @@ extern "C" {
   typedef struct
   {
     char const* transaction_id;
-    char const* network_id;
     char const* sender_id;
-    char const* recipient_id;
     char const* sender_device_id;
+    char const* recipient_id;
+    char const* recipient_fullname;
     char const* recipient_device_id;
     char const* recipient_device_name;
+    char const* network_id;
     int status;
     int is_new;
   } gap_TransactionStatusNotification;
@@ -396,9 +396,17 @@ extern "C" {
 
   /// Start the 8transfer process on the recipient.
   gap_Status
-  gap_download_file(gap_State* state,
-                    char const* transaction_id,
-                    char const* output_path);
+  gap_download_files(gap_State* state,
+                     char const* transaction_id,
+                     char const* output_path);
+
+  gap_TransactionStatus
+  gap_transaction_status(gap_State* state,
+                         char const* transaction_id);
+
+  char const*
+  gap_transaction_owner(gap_State* state,
+                        char const* transaction_id);
 
 # ifdef __cplusplus
 } // ! extern "C"

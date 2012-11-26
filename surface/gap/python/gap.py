@@ -4,7 +4,8 @@ import _gap
 from collections import namedtuple
 import sys
 
-"""gap library binding module
+"""
+gap library binding module
 
 >>> state = State
 >>> state.meta_status
@@ -41,23 +42,26 @@ class State:
             'network_mount_point',
             'logout',
             'connect',
-            'poll',
-            'OnBite',
-            'OnTransaction',
-            'OnTransactionStatus',
-            'OnMessage',
+            'invite_user',
+            'send_message',
+
+            # Transaction
             'send_files',
             'update_transaction',
-            'invite_user',
-            'scratch_db',
-            'send_message',
-            'get_notifications',
-            'notifications_red',
-        ]
+            'download_files',
+            'transactions',
 
-        directly_exported_enums = [
-            'Status',
-            'TransactionStatus',
+            # Notifications
+            'poll',
+            'pull_notifications',
+            'notifications_read',
+            'transaction_status',
+            'transaction_owner',
+
+            # Callback.
+            'on_transaction',
+            'on_transaction_status',
+            'on_message',
         ]
 
         def make_method(m):
@@ -70,14 +74,10 @@ class State:
         for method in directly_exported_methods:
             setattr(self, method, make_method(method))
 
-        # transforms gap_EnumName_value to EnumName.value
-        for enum in directly_exported_enums:
-            to_remove = len('gap_') + len(enum) + 1
-            l_mbrs = [i[to_remove:] for i in dir(getattr(_gap, enum)) if i.startswith('gap_')]
-            l_vals = [getattr(_gap, "gap_"+enum+"_"+m) for m in l_mbrs]
-            T = namedtuple(enum, " ".join(l_mbrs))
-            t = T(*l_vals)
-            setattr(self, enum, t)
+        self.Status = getattr(_gap, "Status")
+        self.TransactionStatus = getattr(_gap, "TransactionStatus")
+        self.TransferNotification = getattr(_gap, "TransferNotification")
+        self.TransferStatusNotification = getattr(_gap, "TransferStatusNotification")
 
     def __del__(self):
         _gap.free(self._state)

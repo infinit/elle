@@ -374,6 +374,14 @@ namespace common
         );
     }
 
+    std::string
+    id_path(std::string const& user_id)
+    {
+        return path::join(
+          infinit::user_directory(user_id),
+          "id.wtg"
+        );
+    }
   }
 
 }

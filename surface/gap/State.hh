@@ -61,7 +61,7 @@ namespace surface
 
     public:
       void
-      scratch_db();
+      debug();
 
     ///
     /// Login & register

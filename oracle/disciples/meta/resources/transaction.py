@@ -12,13 +12,13 @@ import re
 
 import metalib
 
+# Possible transaction status.
 NONE = 0
 PENDING = 1
 REJECTED = 2
 ACCEPTED = 3
-READY = 4
-DELETED = 5
-STARTED = 6
+STARTED = 5
+CANCELED = 6
 FINISHED = 7
 
 class Create(Page):
@@ -69,53 +69,58 @@ class Create(Page):
         total_size = int(self.data['total_size'])
         is_dir = bool(self.data['is_directory'])
 
-        invitee_id = 0
-        invitee_email = ""
         new_user = False
+        is_ghost = False
         invitee = 0
 
         # Determine if user sent a mail or an id.
         if re.match(regexp.Email, id_or_email):
             invitee_email = id_or_email
             # Check is user is in database.
-            invitee = database.users().find_one({'email': id_or_email})
+            recipient = database.users().find_one({'email': id_or_email})
             # if the user doesn't exist, create a ghost and invite.
-            if not invitee:
+            if not recipient:
                 new_user = True
-                invitee_id = database.users().save({})
+                recipient_id = database.users().save({})
                 self.registerUser(
-                    _id = invitee_id,
+                    _id = recipient_id,
                     email = invitee_email,
                     register_status = 'ghost',
                     notifications = [],
                     accounts=[{'type':'email', 'id':invitee_email}]
                 )
+                recipient_fullname = id_or_email
             else:
-                invitee_id = invitee['_id']
+                recipient_id = recipient['_id']
+                recipient_fullname = recipient['register_status'] == 'ghost' and recipient['email'] or recipient['fullname']
         elif not re.match(regexp.ID, id_or_email):
             return self.error(error.USER_ID_NOT_VALID)
         else:
-             invitee_id = database.ObjectId(id_or_email)
+             recipient_id = database.ObjectId(id_or_email)
+             recipient = database.users().find_one(recipient_id)
+             recipient_fullname = recipient['register_status'] == 'ghost' and recipient['email'] or recipient['fullname']
 
         _id = self.user['_id']
 
         req = {
-            'recipient_id': database.ObjectId(invitee_id),
             'sender_id': database.ObjectId(_id),
+            'sender_fullname' : self.user['fullname'],
             'sender_device_id': database.ObjectId(device_id),
+
+            'recipient_id': database.ObjectId(recipient_id),
+            'recipient_fullname' : recipient_fullname,
+            # Empty while accepted or rejected.
+            'recipient_device_id' : '',
+            'recipient_device_name' : '',
+
             'network_id': database.ObjectId(network_id),
-            'status': PENDING,
+
             'first_filename' : first_filename,
             'files_count' : files_count,
             'total_size' : total_size,
             'is_directory' : is_dir,
-            'sender_fullname' : self.user['fullname'],
-            'sender_device_id' : device_id,
 
-            # Empty while accepted or rejected.
-            'recipient_fullname' : '',
-            'recipient_device_id' : '',
-            'recipient_device_name' : '',
+            'status': PENDING,
         }
 
         if not database.transactions().find_one(req):
@@ -123,7 +128,7 @@ class Create(Page):
 
         sent = first_filename + (files_count == 1 and "" or " and %i other files" % (files_count - 1))
 
-        if not self.connected(invitee_id):
+        if not self.connected(recipient_id):
             if not invitee_email:
                 invitee_email = database.users().find_one({'_id': database.ObjectId(id_or_email)})['email']
             inviter_mail = self.user['email']
@@ -141,7 +146,7 @@ class Create(Page):
 
         self.notifier.notify_some(
             notifier.FILE_TRANSFER,
-            [database.ObjectId(invitee_id), database.ObjectId(_id)], # sender and recipient.
+            [database.ObjectId(recipient_id), database.ObjectId(_id)], # sender and recipient.
             {
                 'transaction_id' : transaction_id,
 
@@ -151,7 +156,8 @@ class Create(Page):
                 'sender_device_id': device_id,
 
                 # Recipient.
-                'recipient_id': invitee_id,
+                'recipient_id': recipient_id,
+                'recipient_fullname': recipient_fullname,
 
                 # Network.
                 'network_id' : network_id,
@@ -214,7 +220,12 @@ class Update(Page):
         if self.data['device_id'] == transaction['sender_device_id']:
             return self.error(error.TRANSACTION_CANT_BE_ACCEPTED, "Sender and recipient devices are the same.")
 
+        if transaction['status'] != PENDING :
+            return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
+                              "This transaction can't be accepted or declined. Status : %i" % transaction['status'])
+
         transaction.update({
+            'recipient_fullname': self.user['fullname'],
             'recipient_device_name' : self.data['device_name'],
             'recipient_device_id': database.ObjectId(self.data['device_id']),
             'status': self.data['status'], # accept or declined.
@@ -223,14 +234,21 @@ class Update(Page):
         sender = database.users().find_one(database.ObjectId(transaction['sender_id']))
         recipient = database.users().find_one(database.ObjectId(transaction['recipient_id']))
 
+        assert sender
+        assert recipient
+
         # If transfer is accepted, increase popularity of each user.
+
         if self.data['status'] == ACCEPTED and recipient['_id'] != sender['_id']:
             # XXX: probably not optimized, we should maybe use database.find_and_modify and increase
             # the value.
             sender['swaggers'][recipient['_id']] = sender['swaggers'].setdefault(recipient['_id'], 0) + 1;
             recipient['swaggers'][sender['_id']] = recipient['swaggers'].setdefault(sender['_id'], 0) + 1;
-            database.users().save(sender);
-            database.users().save(recipient);
+            print(sender['swaggers'])
+            print(recipient['swaggers'])
+ #XXX: Saving user fail
+            #database.users().save(sender)
+            #database.users().save(recipient)
 
         updated_transaction_id = database.transactions().save(transaction);
 
@@ -246,6 +264,7 @@ class Update(Page):
 
                 # Recipient.
                 'recipient_id': str(transaction['recipient_id']),
+                'recipient_fullname': transaction['recipient_fullname'],
                 'recipient_device_id': self.data['device_id'],
                 'recipient_device_name': self.data['device_name'],
 
@@ -298,7 +317,7 @@ class Start(Page):
         if self.user['_id'] != transaction['sender_id']:
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
-        if not transaction['status'] in (ACCEPTED, READY) :
+        if transaction['status'] != ACCEPTED :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
                               "This transaction can't be started. Status : %i" % transaction['status'])
 
@@ -319,6 +338,7 @@ class Start(Page):
 
                 # Recipient.
                 'recipient_id': str(transaction['recipient_id']),
+                'recipient_fullname': transaction['recipient_fullname'],
                 'recipient_device_id': str(transaction['recipient_device_id']),
                 'recipient_device_name': transaction['recipient_device_name'],
 
@@ -334,9 +354,9 @@ class Start(Page):
             'updated_transaction_id': str(updated_transaction_id),
         })
 
-class Delete(Page):
+class Cancel(Page):
     """
-    Delete the transaction that has been rejected or you want to delete by your self.
+    Delete the transaction that has been rejected or you may want to delete it by your self.
     POST {
               'transaction_id': the id
          }
@@ -349,7 +369,7 @@ class Delete(Page):
         The user is not the sender.
         The transaction is not in a state in which it can be deleted.
     """
-    __pattern__ = "/transaction/delete"
+    __pattern__ = "/transaction/cancel"
 
     _validators = {
         'transaction_id': regexp.TransactionValidator,
@@ -376,7 +396,7 @@ class Delete(Page):
                               "This transaction can't be started. Status : %i" % transaction['status'])
 
         transaction.update({
-            'status': DELETED, # started.
+            'status': CANCELED, # canceled.
         })
 
         updated_transaction_id = database.transactions().save(transaction)
@@ -393,6 +413,7 @@ class Delete(Page):
 
                 # Recipient.
                 'recipient_id': str(transaction['recipient_id']),
+                'recipient_fullname': transaction['recipient_fullname'],
                 'recipient_device_id': str(transaction['recipient_device_id']),
                 'recipient_device_name': transaction['recipient_device_name'],
 
@@ -405,11 +426,11 @@ class Delete(Page):
         )
 
         return self.success({
-            'updated_transaction_id': str(updated_transaction_id),
+            'canceled_transaction_id': str(updated_transaction_id),
         })
 
 
-class Close(Page):
+class Finish(Page):
     """
     Notify the sender that the transaction is complete.
     POST {
@@ -445,7 +466,7 @@ class Close(Page):
         if self.user['_id'] != transaction['recipient_id']:
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
-        if not transaction['status'] in (STARTED) :
+        if transaction['status'] != STARTED :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
                               "This transaction can't be started. Status : %i" % transaction['status'])
 
@@ -468,6 +489,7 @@ class Close(Page):
 
                 # Recipient.
                 'recipient_id': str(transaction['recipient_id']),
+                'recipient_name': str(transaction['recipient_id']),
                 'recipient_device_id': str(transaction['recipient_device_id']),
                 'recipient_device_name': transaction['recipient_device_name'],
 
@@ -480,7 +502,7 @@ class Close(Page):
         )
 
         return self.success({
-            'updated_transaction_id': updated_transaction_id,
+            'finished_transaction_id': updated_transaction_id,
         })
 
 class All(Page):

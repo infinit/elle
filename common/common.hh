@@ -153,6 +153,10 @@ namespace common
     std::string
     lock_path(std::string const& user_id);
 
+    /// The path to the id file.
+    std::string
+    id_path(std::string const& user_id);
+
     /// The path to the log file.
     std::string
     log_path(std::string const& user_id);

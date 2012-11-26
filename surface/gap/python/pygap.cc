@@ -197,7 +197,7 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   // File transfer request.
-  py::class_<gap_TransactionNotification, boost::noncopyable>("TransactionNotification", py::no_init)
+  py::class_<gap_TransactionNotification, boost::noncopyable>("TransferNotification", py::no_init)
     .def_readonly("transaction_id", &gap_TransactionNotification::transaction_id)
     .def_readonly("first_filename", &gap_TransactionNotification::first_filename)
     .def_readonly("files_count", &gap_TransactionNotification::files_count)
@@ -211,7 +211,7 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   // File transfer status.
-  py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransactionStatusNotification", py::no_init)
+  py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransferStatusNotification", py::no_init)
     .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
     .def_readonly("network_id", &gap_TransactionStatusNotification::network_id)
     .def_readonly("sender_device_id", &gap_TransactionStatusNotification::sender_device_id)
@@ -292,4 +292,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("transactions", &_get_transactions);
   py::def("send_files", &_send_files);
   py::def("update_transaction", &gap_update_transaction);
+  py::def("download_files", &gap_download_files);
+  py::def("transaction_status", &gap_transaction_status);
+  py::def("transaction_owner", &gap_transaction_owner);
 }
