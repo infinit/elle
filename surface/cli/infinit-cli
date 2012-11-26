@@ -208,6 +208,12 @@ class InfinitShell(cmd.Cmd):
         """Mount all infinit networks."""
         try:
             self._state.launch_watchdog()
+            self._state.connect()
+
+            self._thread = PollThread(self._state)
+            self._thread.start()
+
+            self._state.launch_watchdog()
         except Exception as e:
             print(e)
 
@@ -679,12 +685,6 @@ def main():
         print("Authentication required (if you don't have an account, try -r)")
         login(state)
 
-    state.launch_watchdog()
-    state.connect()
-    state.set_device_name("Penis")
-
-    thread = PollThread(state)
-    thread.start()
     start_shell(state, args)
 
 class PollThread (threading.Thread):
