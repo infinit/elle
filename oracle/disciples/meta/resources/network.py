@@ -176,10 +176,10 @@ class Nodes(_Page):
         for node in network['nodes'].values():
             for addr_kind in ['locals', 'externals']:
                 addr = node[addr_kind]
-                if addr and addr[0] and addr[1]:
+                if addr and addr["ip"] and addr["port"]:
                     print("Append", addr_kind, addr)
                     addrs[addr_kind].append(
-                        addr[0] + ':' + str(addr[1]),
+                        addr["ip"] + ':' + str(addr["port"]),
                     )
         res['nodes'] = addrs['locals'] + addrs['externals']
         print("Find nodes of %s: " % network['name'], res['nodes'])
@@ -330,8 +330,8 @@ class AddDevice(_Page):
             return self.error(error.DEVICE_NOT_FOUND)
         if str(device_id) not in network['nodes']:
             network['nodes'][str(device_id)] = {
-                    "local": None,
-                    "external": None,
+                    "locals": None,
+                    "externals": None,
             }
         database.networks().save(network)
         return self.success({
