@@ -511,6 +511,9 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
+      // Ensure the network status is available
+      (void) this->network_status(trans->network_id);
+
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
       QStringList arguments;
@@ -532,6 +535,10 @@ namespace surface
 
       ELLE_WARN("TRANSFER IS FUCKING COMPLETE MOTHER FUCKER!! Your file is at '%s'.",
                 path.c_str());
+
+      update_transaction(transaction_id,
+                         gap_TransactionStatus::gap_transaction_status_finished);
+
     }
 
     void
@@ -578,10 +585,8 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
-      if (trans->sender_id != this->_me._id)
+      if (trans->recipient_id != this->_me._id)
         return;
-
-      //XXX: Give the writes here.
 
       this->_meta->update_transaction(transaction_id,
                                       gap_TransactionStatus::gap_transaction_status_accepted,
@@ -603,7 +608,7 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
-      if (trans->sender_id != this->_me._id)
+      if (trans->recipient_id != this->_me._id)
         return;
 
       this->_meta->update_transaction(transaction_id,
@@ -626,10 +631,10 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
-      if (trans->recipient_id != this->_me._id)
-        return;
-
-      //XXX: Launch 8transfer.
+      if (trans->sender_id == this->_me._id)
+      {
+        this->_meta->start_transaction(transaction_id);
+      }
     }
 
     void
@@ -650,6 +655,16 @@ namespace surface
         return;
 
       //XXX: If download has started, cancel it, delete files, ...
+      if (trans->sender_id == this->_me._id)
+      {
+        //XXX
+        this->_meta->cancel_transaction(transaction_id);
+      }
+      else
+      {
+        //XXX
+        this->_meta->cancel_transaction(transaction_id);
+      }
     }
 
     void
@@ -665,7 +680,12 @@ namespace surface
       if (pair == State::transactions().end())
         return;
 
-      //XXX: Copy is finished, clean networks ...
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id == this->_me._id)
+      {
+        this->_meta->finish_transaction(transaction_id);
+      }
     }
 
     void
@@ -805,6 +825,7 @@ namespace surface
       trans->files_count = notif->files_count;
       trans->total_size = notif->total_size;
       trans->is_directory = notif->is_directory;
+      trans->status = gap_TransactionStatus::gap_transaction_status_pending;
 
       print_transaction(*trans);
 
@@ -851,9 +872,131 @@ namespace surface
       trans->recipient_device_id = notif->recipient_device_id;
       trans->recipient_device_name = notif->recipient_device_name;
 
-      ELLE_DEBUG("Status");
       trans->status = notif->status;
-      ELLE_DEBUG("Over");
+
+      switch(trans->status)
+      {
+        case gap_TransactionStatus::gap_transaction_status_accepted:
+          this->_on_transaction_accepted(trans->transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_rejected:
+          this->_on_transaction_denied(trans->transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_started:
+          this->_on_transaction_started(trans->transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_canceled:
+          this->_on_transaction_canceled(trans->transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_finished:
+          this->_on_transaction_closed(trans->transaction_id);
+          break;
+        default:
+          ELLE_WARN("The status '%i' is unknown.",
+                    trans->status);
+          return;
+      }
+    }
+
+    void
+    State::_on_transaction_accepted(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("On transaction accepted '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      // Give rights.
+      network_add_user(trans->network_id,
+                       trans->recipient_id);
+
+      // When recipient has rights, allow him to start download.
+      this->update_transaction(transaction_id,
+                               gap_TransactionStatus::gap_transaction_status_started);
+
+    }
+
+    void
+    State::_on_transaction_denied(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Deny transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      //XXX:
+    }
+
+    void
+    State::_on_transaction_started(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Start transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      // Waiting for "download files".
+    }
+
+    void
+    State::_on_transaction_canceled(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Cancel transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      //XXX: If download has started, cancel it, delete files, ...
+    }
+
+    void
+    State::_on_transaction_closed(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Close transaction '%s'", transaction_id);
+
+
+      auto const& pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
     }
 
 
@@ -1044,12 +1187,12 @@ namespace surface
       std::string const& group_binary = common::infinit::binary_path("8group");
 
       QStringList arguments;
-      arguments << "--user" << _meta->email().c_str()
+      arguments << "--user" << user_id.c_str()
                 << "--type" << "user"
                 << "--add"
                 << "--network" << network->_id.c_str()
                 << "--identity" << this->user(user_id).public_key.c_str()
-                ;
+      ;
       ELLE_DEBUG("LAUNCH: %s %s",
                       group_binary,
                       arguments.join(" ").toStdString());
