@@ -651,8 +651,8 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
-      if (trans->recipient_id != this->_me._id)
-        return;
+      //if (trans->recipient_id != this->_me._id)
+      //  return;
 
       //XXX: If download has started, cancel it, delete files, ...
       if (trans->sender_id == this->_me._id)
@@ -972,12 +972,13 @@ namespace surface
 
       auto pair = State::transactions().find(transaction_id);
 
-      assert(pair != State::transactions().end());
-
       if (pair == State::transactions().end())
-        return;
-
+        {
+          ELLE_WARN("Unknown transaction %s", transaction_id);
+          return;
+        }
       plasma::meta::TransactionResponse *trans = pair->second;
+      ELLE_ASSERT(trans != nullptr);
 
       if (trans->recipient_id != this->_me._id)
         return;
