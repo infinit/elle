@@ -344,7 +344,9 @@ class Path(object):
         """
         if not self.__path:
             raise Exception("Cannot take the dirname of an empty path.")
-        return Path(self.__path[0:-1])
+        res = Path(self.__path[0:-1])
+        res.__absolute = self.__absolute
+        return res
 
     def empty(self):
         """Whether the path is empty.
@@ -1076,7 +1078,9 @@ class Builder:
     def cachedir(self):
         """The cachedir that stores dependency files."""
         path = self.__targets[0].name()
-        res = prefix() / path.dirname() / _CACHEDIR / path.basename()
+        res = path.dirname() / _CACHEDIR / path.basename()
+        if not res.absolute():
+            res = prefix() / res
         res.mkpath()
         return res
 
