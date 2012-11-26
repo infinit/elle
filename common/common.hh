@@ -37,10 +37,15 @@ namespace common
                 bool ensure = true);
 
 
-    /// Returns network path.
+    /// Returns network directory path.
     std::string
     network_directory(std::string const& user_id,
                       std::string const& network_id);
+
+    /// Returns portal file path.
+    std::string
+    portal_path(std::string const& user_id,
+                std::string const& network_id);
 
     /// Returns user directory path.
     std::string
@@ -137,14 +142,20 @@ namespace common
   {
 
     /// The name of the local socket.
-    std::string const&
-    server_name();
-
-    // XXX scheduled for deletion
-    /// Returns the path to the watchdog identity file.
     std::string
-    identity_path(std::string const& user);
+    server_name(std::string const& user_id);
 
+    /// The path to the watchdog identity file.
+    std::string
+    identity_path(std::string const& user_id);
+
+    /// The path to the lock file.
+    std::string
+    lock_path(std::string const& user_id);
+
+    /// The path to the log file.
+    std::string
+    log_path(std::string const& user_id);
   }
 
   // XXX scheduled for deletion

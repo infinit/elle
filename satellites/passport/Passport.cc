@@ -2,6 +2,8 @@
 
 #include <Infinit.hh>
 
+#include <lune/Identity.hh>
+
 #include <elle/io/Console.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
@@ -29,7 +31,9 @@ namespace satellite
   ///
   /// this method creates a new passport.
   ///
-  elle::Status          Passport::Create(elle::String const& user)
+  void
+  Passport::Create(elle::String const& user,
+                   elle::String const& passport_name)
   {
     //
     // test the arguments.
@@ -66,22 +70,17 @@ namespace satellite
     //
     {
       elle::Natural32 const id_length = 128;
-      elle::Natural32 const buffer_size = 512;
 
-      elle::String id(
-        cryptography::random::generate<elle::String>(id_length));
-      elle::Buffer buffer(
-        cryptography::random::generate<elle::Buffer>(buffer_size));
+      elle::String id{
+        cryptography::random::generate<elle::String>(id_length)
+      };
 
-      // create a label.
-      hole::Label label(buffer);
+      lune::Identity identity{};
+      identity.load(user);
 
-      // create the passport.
-      elle::Passport passport(label, id);
-
-      // seal the passport.
-      if (passport.Seal(authority) == elle::Status::Error)
-        escape("unable to seal the passport");
+      elle::Passport passport{
+        id, passport_name, identity.pair.K(), authority
+      };
 
       elle::io::Path passport_path(lune::Lune::Passport);
       passport_path.Complete(elle::io::Piece{"%USER%", user});
@@ -89,8 +88,6 @@ namespace satellite
       // store the passport.
       passport.store(passport_path);
     }
-
-    return elle::Status::Ok;
   }
 
   ///
@@ -135,18 +132,11 @@ namespace satellite
       passport.load(passport_path);
 
       // validate the passport.
-      if (passport.Validate(Infinit::authority()) == elle::Status::Error)
+      if (passport.validate(Infinit::authority()) == elle::Status::Error)
         escape("unable to validate the passport");
     }
 
-    //
-    // display information.
-    //
-    {
-      // dump the passport.
-      if (passport.Dump() == elle::Status::Error)
-        escape("unable to dump the passport");
-    }
+    passport.dump();
 
     return elle::Status::Ok;
   }
@@ -236,6 +226,14 @@ namespace satellite
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
+    if (Infinit::Parser->Register(
+          "Name",
+          'n',
+          "name",
+          "specifies the name of the passport (device)",
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
+      escape("unable to register the option");
+
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
@@ -249,6 +247,17 @@ namespace satellite
 
         escape("unable to retrieve the user name");
       }
+
+    std::string passport_name;
+    if (Infinit::Parser->Value("Passport",
+                               passport_name) == elle::Status::Error)
+      {
+        // display the usage.
+        Infinit::Parser->Usage();
+
+        escape("unable to retrieve the passport name");
+      }
+
 
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::Status::True)
@@ -290,8 +299,7 @@ namespace satellite
       case Passport::OperationCreate:
         {
           // create the passport.
-          if (Passport::Create(Infinit::User) == elle::Status::Error)
-            escape("unable to create the passport");
+          Passport::Create(Infinit::User, passport_name);
 
           // display a message.
           std::cout << "The passport has been created successfully!"

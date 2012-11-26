@@ -9,10 +9,11 @@
 #include <iostream>
 #include <fstream>
 
-
 #include <elle/idiom/Close.hh>
 
 #include <elle/print.hh>
+
+#include <fcntl.h>
 
 ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
@@ -42,8 +43,7 @@ namespace plasma
         , check_errors{check_errors}
         , request{}  // Use once to initiate connection.
         , response{}
-      {
-      }
+      {}
     };
 
 
@@ -58,9 +58,7 @@ namespace plasma
     {
       ELLE_TRACE("Handling user status modification.");
 
-      std::string temp = dic["user_id"].as_string();
-      notification->user_id = temp.c_str();
-
+      notification->user_id = dic["user_id"].as_string().value().c_str();
       notification->status = dic["status"].as_integer();
 
       this->callback(notification.get());
@@ -75,27 +73,29 @@ namespace plasma
     {
       ELLE_TRACE("Handling new file transfer request.");
 
-      std::string temp = dic["transaction_id"].as_string();
-      notification->transaction_id = temp.c_str();
+      notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
 
-      temp = dic["first_filename"].as_string();
-      notification->first_filename = temp.c_str();
+      // Sender.
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->sender_fullname = dic["sender_fullname"].as_string().value().c_str();
+      notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
 
+      // Recipient.
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+      notification->recipient_fullname = dic["recipient_fullname"].as_string().value().c_str();
+
+      // Network.
+      notification->network_id = dic["network_id"].as_string().value().c_str();
+
+      // File info.
+      notification->first_filename = dic["first_filename"].as_string().value().c_str();
       notification->files_count = dic["files_count"].as_integer();
       notification->total_size = dic["total_size"].as_integer();
       notification->is_directory = dic["is_directory"].as_bool();
 
-      temp = dic["network_id"].as_string();
-      notification->network_id = temp.c_str();
-
-      temp = dic["sender_id"].as_string();
-      notification->sender_id = temp.c_str();
-
-      temp = dic["sender_fullname"].as_string();
-      notification->sender_fullname = temp.c_str();
-
       notification->is_new = _new;
 
+      ELLE_DEBUG("Deserialized successfuly.");
       this->callback(notification.get());
     }
 
@@ -108,25 +108,26 @@ namespace plasma
     {
       ELLE_TRACE("Handling file transfer status update.");
 
-      std::string temp = dic["transaction_id"].as_string();
-      notification->transaction_id = temp.c_str();
+      notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
 
-      temp = dic["network_id"].as_string();
-      notification->network_id = temp.c_str();
+      // Sender.
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
 
-      temp = dic["sender_device_id"].as_string();
-      notification->sender_device_id = temp.c_str();
+      // Recipient.
+      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+      notification->recipient_device_id = dic["recipient_device_id"].as_string().value().c_str();
+      notification->recipient_device_name = dic["recipient_device_name"].as_string().value().c_str();
 
-      temp = dic["recipient_device_id"].as_string();
-      notification->recipient_device_id = temp.c_str();
+      // Network.
+      notification->network_id = dic["network_id"].as_string().value().c_str();
 
-      temp = dic["recipient_device_name"].as_string();
-      notification->recipient_device_name = temp.c_str();
-
+      // Status.
       notification->status = dic["status"].as_integer();
 
       notification->is_new = _new;
 
+      ELLE_DEBUG("Deserialized successfuly.");
       this->callback(notification.get());
     }
 
@@ -139,12 +140,8 @@ namespace plasma
     {
       ELLE_TRACE("Handling new message.");
 
-      std::string temp = dic["sender_id"].as_string();
-      notification->sender_id = temp.c_str();
-
-      temp = dic["message"].as_string();
-      notification->message = temp.c_str();
-
+      notification->sender_id = dic["sender_id"].as_string().value().c_str();
+      notification->message = dic["message"].as_string().value().c_str();
       notification->is_new = _new;
 
       // Use callback function.
@@ -159,9 +156,7 @@ namespace plasma
                                std::unique_ptr<Notification>&& notification,
                                bool _new)
     {
-      std::string temp = dic["debug"].as_string();
-      notification->debug = temp.c_str();
-
+      notification->debug = dic["debug"].as_string().value().c_str();
       notification->is_new = _new;
 
       // Use callback function.
@@ -173,75 +168,89 @@ namespace plasma
                    bool check_errors)
       : _impl{new Impl{server, port, check_errors}}
     {
+      typedef boost::asio::ip::tcp tcp;
       // Resolve the host name into an IP address.
-      boost::asio::ip::tcp::resolver resolver(_impl->io_service);
-      boost::asio::ip::tcp::resolver::query query(_impl->server,
-        elle::sprint(_impl->port));
-      boost::asio::ip::tcp::resolver::iterator endpoint_iterator =
-        resolver.resolve(query);
+      tcp::resolver resolver(_impl->io_service);
+      tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
+      tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
       // Start connect operation.
       _impl->socket.connect(*endpoint_iterator);
+      //_impl->socket.non_blocking(true);
+      ::fcntl(_impl->socket.native_handle(), F_SETFD, 1);
+    }
 
-      _impl->socket.non_blocking(true);
+    void Client::_on_read_socket(boost::system::error_code const& err,
+                                 size_t bytes_transferred)
+    {
+      ELLE_DEBUG_SCOPE("Read %s bytes from the socket (%s available)",
+                       bytes_transferred,
+                       _impl->response.in_avail());
+      if (err || bytes_transferred == 0)
+        {
+          ELLE_WARN("Something went wrong while reading from socket: %s", err);
+          return;
+        }
+
+      try
+        {
+          ELLE_DEBUG("Recieved stream from trophonius.");
+
+          // Bind stream to response.
+          std::istream is(&(_impl->response));
+
+          // Transfer socket stream to stringstream that ensure there are no
+          // encoding troubles (and make the stream human readable).
+          std::unique_ptr<char[]> data{new char[bytes_transferred]};
+          if (!data)
+            throw std::bad_alloc{};
+          is.read(data.get(), bytes_transferred);
+          std::stringstream ss{std::string{data.get(), bytes_transferred}};
+
+          ELLE_DEBUG("Stream contains: '%s'.", std::string{data.get(), bytes_transferred});
+
+          // while (!is.eof())
+          // {
+          //   std::string s;
+          //   is >> s;
+
+          //   ELLE_DEBUG("Stream is '%s'.", s);
+
+          //   ::sleep(1);
+          // }
+
+          auto tmp = elle::format::json::parse(ss);
+
+          _notifications.push(&tmp->as_dictionary());
+
+          tmp.release();
+          this->_read_socket();
+        }
+      catch (std::runtime_error const& err)
+        {
+          throw elle::HTTPException{
+            elle::ResponseCode::bad_content, err.what()
+          };
+        }
     }
 
     void
     Client::_read_socket()
     {
-      boost::system::error_code err;
-      // Read socket.
-      std::size_t size =  boost::asio::read_until(_impl->socket,
-                                                  _impl->response,
-                                                  '\n',
-                                                  err);
-
-      if(!err && size != 0)
-        {
-          try
-            {
-              ELLE_TRACE("Recieved stream from trophonius.");
-
-              // Bind stream to response.
-              std::istream is(&(_impl->response));
-              // Don't skip whitespaces in the stream.
-              is >> std::noskipws;
-
-              std::stringstream debug_ss;
-
-              // Copy stream to streambuff.
-              std::copy(
-                std::istream_iterator<char>(is),
-                std::istream_iterator<char>(),
-                std::ostream_iterator<char>(debug_ss)
-                );
-
-              auto tmp = elle::format::json::parse(debug_ss);
-
-              _notifications.push(dynamic_cast<json::Dictionary*>(tmp.get()));
-
-              tmp.release();
-            }
-          catch (std::exception const& err)
-            {
-              throw elle::HTTPException(elle::ResponseCode::bad_content, err.what());
-            }
-        }
-      else if (err != boost::asio::error::would_block)
-        {
-          // An important error occurred.
-          throw elle::HTTPException(elle::ResponseCode::error,
-                                    elle::sprintf("Reading socket error: '%s'",
-                                                  err));
-        }
+      boost::asio::async_read_until(
+        _impl->socket, _impl->response, "\n",
+        std::bind(
+          &Client::_on_read_socket, this,
+          std::placeholders::_1, std::placeholders::_2
+        )
+      );
     }
 
     bool
     Client::connect(std::string const& _id,
                     std::string const& token)
     {
-      json::Dictionary connection_request{std::map<std::string, std::string>
-      {
+      json::Dictionary connection_request{std::map<std::string, std::string>{
         {"_id", _id},
         {"token", token},
       }};
@@ -260,28 +269,29 @@ namespace plasma
         _impl->socket,
         _impl->request,
         err
-        );
+      );
 
-      if (!err)
-        return true;
+      if (err)
+        throw elle::HTTPException(elle::ResponseCode::error, "Writting socket error");
 
-      //An error occurred.
-      throw elle::HTTPException(elle::ResponseCode::error, "Writting socket error");
-
-      return false;
+      this->_read_socket();
+      return true;
     }
 
     std::unique_ptr<json::Dictionary>
     Client::poll()
     {
       // Check socket and insert notification dictionary in the queue if any.
-      _read_socket();
+      //_read_socket();
+
+      _impl->io_service.poll_one();
 
       std::unique_ptr<json::Dictionary> ret;
 
       if (!_notifications.empty())
         {
           ELLE_TRACE("Pop notification dictionnary to be handle.");
+
           // Fill dictionary.
           ret.reset(_notifications.front());
           _notifications.pop();

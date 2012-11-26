@@ -34,6 +34,7 @@
 @property (retain) NSString*    sender_id;
 @property (retain) NSString*    sender_fullname;
 @property (retain) NSString*    transaction_id;
+@property (retain) NSString*    recipient_fullname;
 
 @end
 
@@ -68,7 +69,7 @@
 
 
 @property (readonly, nonatomic) NSString* token;
-
+@property (readonly, nonatomic) NSString* self_id;
 
 /**
  * @brief Returns a new IAGapState instance with a valid token.
@@ -135,5 +136,20 @@
                  performSelector:(SEL)selector
                         onObject:(id)object;
 
+
+/**
+ * @brief Reject transaction (refuse to download a file).
+ */
+- (void)       rejectTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object;
+
+
+/**
+ * @brief Cancel transaction (stop or cancel a transaction from self).
+ */
+- (void)       cancelTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object;
 
 @end

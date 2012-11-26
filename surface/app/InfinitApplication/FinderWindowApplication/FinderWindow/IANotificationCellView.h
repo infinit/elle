@@ -12,14 +12,16 @@
 
 @interface IANotificationCellView : NSTableCellView
 
-- (void)freeze;
+- (void) freeze;
+- (void) setNotification:(id)notif;
+- (void) update:(id)status_notif;
 
 @end
 
 @interface IATransactionNotificationCellView : IANotificationCellView
 
 @property (retain) IBOutlet NSButton* accept_button;
-@property (retain) IBOutlet NSButton* reject_button;
+@property (retain) IBOutlet NSButton* reject_button; //or cancel
 
 @end
 

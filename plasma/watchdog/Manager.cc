@@ -11,18 +11,24 @@
 #include "Connection.hh"
 #include "Manager.hh"
 #include "NetworkManager.hh"
+#include "InfinitNetwork.hh"
+#include "LocalServer.hh"
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 using namespace plasma::watchdog;
 
-Manager::Manager(QCoreApplication& app) :
+Manager::Manager(QCoreApplication& app,
+                 LocalServer& local_server,
+                 std::string const& user_id):
   _app(app),
   _clients(new ClientMap()),
   _commands(new CommandMap()),
-  _actions(new ClientActions(*this)),
+  _actions(new ClientActions(*this, user_id)),
   _network_manager(new NetworkManager(*this)),
-  _meta(common::meta::host(), common::meta::port())
+  _meta(common::meta::host(), common::meta::port()),
+  _local_server(local_server),
+  _user_id{user_id}
 {}
 
 Manager::~Manager()
@@ -33,6 +39,8 @@ Manager::~Manager()
   this->_commands = nullptr;
   delete this->_actions;
   this->_actions = nullptr;
+  delete this->_network_manager;
+  this->_network_manager = nullptr;
 }
 
 void Manager::token(QByteArray const& token)
@@ -118,8 +126,11 @@ void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
 void Manager::stop()
 {
   ELLE_DEBUG("Shutting down the watchdog");
+  this->_timer.stop();
   this->_network_manager->stop();
+  this->_local_server.stop();
   this->_app.quit();
+  exit(0);
 }
 
 void Manager::start(std::string const& watchdogId)

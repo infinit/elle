@@ -79,7 +79,10 @@ InfinitNetwork::~InfinitNetwork()
 {
   if (this->_process.state() != QProcess::NotRunning)
     {
-      ELLE_WARN("Network %s not terminated !", this->_description.name);
+      ELLE_WARN("Network %s not terminated (sending SIGTERM)",
+                this->_description.name);
+      ::kill(this->_process.pid(), SIGKILL);
+      this->_process.waitForFinished(100);
     }
 }
 
@@ -103,9 +106,11 @@ void InfinitNetwork::update(meta::NetworkResponse const& response)
 void InfinitNetwork::stop()
 {
   ELLE_DEBUG("Shutting down network %s", this->_description.name);
-  this->_process.terminate();
-  //this->_process.waitForFinished();
-  ELLE_DEBUG("Done!");
+  if (this->_process.state() == QProcess::Running)
+    {
+      ::kill(this->_process.pid(), SIGINT);
+      this->_process.waitForFinished(3000);
+    }
 }
 
 void InfinitNetwork::_update()
@@ -128,6 +133,8 @@ void InfinitNetwork::_update()
     }
   else
     this->_register_device();
+
+  LOG("End of _update");
 }
 
 /// Called when the network does not have any descriptor
@@ -223,24 +230,27 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 void InfinitNetwork::_prepare_directory()
 {
   LOG("Prepare network directory.");
+  using elle::serialize::from_string;
+  using elle::serialize::InputBase64Archive;
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
   hole::storage::Directory storage(shelter_path.string());
-  LOG("Built directory storage of %s", this->_description._id);
 
-  assert(this->_description.root_block.size());
-  assert(this->_description.descriptor.size());
+  {
+    LOG("Built directory storage of %s", this->_description._id);
 
-  LOG("Create lune descriptor of %s", this->_description._id);
+    assert(this->_description.root_block.size());
+    assert(this->_description.descriptor.size());
 
-  using elle::serialize::from_string;
-  using elle::serialize::InputBase64Archive;
-  lune::Descriptor descriptor{
-    from_string<InputBase64Archive>(_description.descriptor)
-  };
+    LOG("Create lune descriptor of %s", this->_description._id);
+
+    lune::Descriptor descriptor{
+      from_string<InputBase64Archive>(_description.descriptor)
+    };
+    LOG("Lune descriptor created");
 
   // XXX[pas forcement necessaire si le format n'a pas change entre
   //     la version du descriptor et celle d'Infinit. il faudrait
@@ -258,50 +268,50 @@ void InfinitNetwork::_prepare_directory()
   //     static_assert(false, "migrate the descriptor here and send to meta");
   //  }
 
+    LOG("Storing the descriptor of %s for user %s", _description._id, _manager.user_id());
+    descriptor.store(this->_manager.user_id(), this->_description._id);
 
-  lune::Identity identity{};
-  LOG("Loading Identity")
-  {
-    identity.load(this->_manager.user_id());
+    nucleus::neutron::Object directory{
+      from_string<InputBase64Archive>(_description.root_block)
+    };
+
+    storage.store(descriptor.meta().root(), directory);
+    LOG("Root block stored.");
   }
 
-  LOG("Storing the descriptor of %s for user %s", _description._id, identity);
-  descriptor.store(identity);
+  {
+    LOG("Storing access block.");
+    LOG("block: '%s'.", _description.access_block);
+    nucleus::neutron::Access access{
+      from_string<InputBase64Archive>(_description.access_block)
+    };
+    LOG("address: '%s'.", _description.access_address);
+    nucleus::proton::Address access_address{
+      from_string<InputBase64Archive>(_description.access_address)
+    };
+    LOG("Deserialization complete.");
+    storage.store(access_address, access);
+    LOG("Address block stored.");
+  }
 
-  nucleus::neutron::Object directory{
-    from_string<InputBase64Archive>(_description.root_block)
-  };
-
-  storage.store(descriptor.meta().root(), directory);
-  LOG("Root block stored.");
-
-  LOG("Storing access block.");
-  LOG("block: '%s'.", _description.access_block);
-  nucleus::neutron::Access access{
-    from_string<InputBase64Archive>(_description.access_block)
-  };
-  LOG("address: '%s'.", _description.access_address);
-  nucleus::proton::Address access_address{
-    from_string<InputBase64Archive>(_description.access_address)
-  };
-  LOG("Deserialization complete.");
-  storage.store(access_address, access);
-  LOG("Address block stored.");
-
-  LOG("Storing group block.");
-  LOG("block: '%s'.", _description.group_block);
-  nucleus::neutron::Group group{
-    from_string<InputBase64Archive>(_description.group_block)
-  };
-  LOG("address: '%s'.", _description.group_address);
-  nucleus::proton::Address group_address{
-    from_string<InputBase64Archive>(_description.group_address)
-  };
-  LOG("Deserialization complete.");
-  storage.store(group_address, group);
-  LOG("Group block stored.");
+  {
+    LOG("Storing group block.");
+    LOG("block: '%s'.", _description.group_block);
+    nucleus::neutron::Group group{
+      from_string<InputBase64Archive>(_description.group_block)
+    };
+    LOG("address: '%s'.", _description.group_address);
+    nucleus::proton::Address group_address{
+      from_string<InputBase64Archive>(_description.group_address)
+    };
+    LOG("Deserialization complete.");
+    storage.store(group_address, group);
+    LOG("Group block stored.");
+  }
 
   this->_register_device();
+
+  LOG("End of prepare directory");
 }
 
 
@@ -318,15 +328,20 @@ void InfinitNetwork::_register_device()
 
   this->_manager.meta().network_add_device(
     this->_description._id,
-    passport.id);
+    passport.id()
+  );
 
-  this->_on_network_nodes(this->_manager.meta().network_nodes(
-    this->_description._id));
+  this->_on_network_nodes(
+    this->_manager.meta().network_nodes(this->_description._id)
+  );
+
+  LOG("End of _register_device.");
 }
 
 /// Update the network nodes set when everything is good
 void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& response)
 {
+  LOG("begin");
   lune::Set locusSet;
 
   auto it =  response.nodes.begin(),
@@ -350,6 +365,8 @@ void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& respons
   );
 
   this->_start_process();
+
+  LOG("end");
 }
 void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {

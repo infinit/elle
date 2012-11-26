@@ -17,17 +17,12 @@ ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
 using namespace plasma::watchdog;
 
-Application::Application(int ac, char* av[]) :
-  QCoreApplication(ac, av)
-{
-  this->_server = new LocalServer(*this);
-}
+static int dummy = 0;
 
-Application::~Application()
-{
-  delete this->_server;
-  this->_server = nullptr;
-}
+Application::Application(std::string const& user_id) :
+  QCoreApplication(dummy, (char**)nullptr),
+  _server{new LocalServer(*this, user_id)}
+{}
 
 namespace
 {
@@ -85,6 +80,7 @@ int Application::exec()
   this->_server->start(watchdogId);
   return this->QCoreApplication::exec();
 }
+
 bool
 Application::notify(QObject* rec,
                     QEvent* ev)

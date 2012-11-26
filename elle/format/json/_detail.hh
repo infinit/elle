@@ -82,6 +82,12 @@ namespace elle
             return *this;
           }
 
+          Type const&
+          value() const
+          {
+            return _value;
+          }
+
           operator CastType() const { return _value; }
 
           using Object::operator ==;

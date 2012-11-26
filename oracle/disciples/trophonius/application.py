@@ -45,7 +45,7 @@ class Application(object):
 		self.port = port
 		self.logfile = logfile
 		self.ssl_port = ssl_port
-		self.clients = clients.ClientList()
+		self.clients = dict()
 		if HAVE_SETPROCTITLE:
 			setproctitle.setproctitle("Trophonius")
 

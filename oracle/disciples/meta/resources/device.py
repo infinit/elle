@@ -86,8 +86,16 @@ class Create(Page):
         id_ = database.devices().insert(to_save)
         assert id_ is not None
 
+        print(str(id_),
+              str(to_save['name']),
+              self.user['public_key'],
+              conf.INFINIT_AUTHORITY_PATH,
+              conf.INFINIT_AUTHORITY_PASSWORD);
+
         to_save['passport'] = metalib.generate_passport(
             str(id_),
+            str(to_save['name']),
+            self.user['public_key'],
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )

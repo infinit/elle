@@ -7,6 +7,7 @@
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
+#include <elle/idiom/Open.hh>
 namespace etoile
 {
   namespace path

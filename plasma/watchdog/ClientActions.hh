@@ -29,12 +29,14 @@ namespace plasma
     class ClientActions
     {
     private:
-      Manager&    _manager;
-      QString     _token;
-      QString     _watchdogId;
+      Manager&          _manager;
+      QString           _token;
+      QString           _watchdogId;
+      std::string const _user_id;
 
     public:
-      ClientActions(Manager& manager);
+      ClientActions(Manager& manager,
+                    std::string const& user_id);
       ~ClientActions();
 
     // properties

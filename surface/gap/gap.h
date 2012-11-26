@@ -65,7 +65,6 @@ extern "C" {
   gap_State* gap_new();
   gap_State* gap_new_with_token(char const* token);
 
-
   /// Release a state.
   void gap_free(gap_State* state);
 
@@ -82,11 +81,13 @@ extern "C" {
 
   /// Debug func: Pull notifications.
   gap_Status
-  gap_meta_pull_notification(gap_State*,
-                             int limit);
+
+  gap_pull_notifications(gap_State*,
+                         int count,
+                         int offset);
 
   gap_Status
-  gap_meta_notifications_red(gap_State*);
+  gap_notifications_read(gap_State*);
 
   /// - Authentication & registration ---------------------------------------
 
@@ -127,10 +128,11 @@ extern "C" {
   typedef enum
   {
     gap_notification_debug = 0,
-    gap_notification_user_status,
-    gap_notification_file_transfer_request,
-    gap_notification_file_transfer_status,
-    gap_notification_message,
+    gap_notification_user_status = 8,
+    gap_notification_transaction_request = 7,
+    gap_notification_transaction_status = 11,
+    gap_notification_message = 217,
+    gap_notificaiton_connection_enabled = -666,
   } gap_Notification;
 
   /// XXX: inherite is_new ?
@@ -138,7 +140,7 @@ extern "C" {
   // Login/Logout/AFK/... Notification
   typedef struct
   {
-    const char* user_id;
+    char const* user_id;
     int status;
   } gap_UserStatusNotification;
 
@@ -153,12 +155,12 @@ extern "C" {
   typedef enum
   {
     gap_transaction_status_none = 0,
-    gap_transaction_status_pending,
-    gap_transaction_status_rejected,
-    gap_transaction_status_accepted,
-    gap_transaction_status_ready,
-    gap_transaction_status_started,
-    gap_transaction_status_finished,
+    gap_transaction_status_pending,   // Waiting for the recipient to accept.
+    gap_transaction_status_rejected,  // The recipient refused the file transfer.
+    gap_transaction_status_accepted,  // The recipient accepted the file transfer.
+    gap_transaction_status_started,   // The sender has set writes and the recipient can start 8transfer.
+    gap_transaction_status_canceled,  // The sender or the recipient cancel transaciton (before it start or while downloading).
+    gap_transaction_status_finished,  // The transaction is done.
     _gap_transaction_status_count,
   } gap_TransactionStatus;
 
@@ -183,14 +185,17 @@ extern "C" {
   // File transfer recieved callback.
   typedef struct
   {
-    const char* first_filename;
+    char const* transaction_id;
+    char const* sender_id;
+    char const* sender_device_id;
+    char const* sender_fullname;
+    char const* recipient_id;
+    char const* recipient_fullname;
+    char const* network_id;
+    char const* first_filename;
     int files_count;
     int total_size;
     int is_directory;
-    const char* network_id;
-    const char* sender_id;
-    const char* sender_fullname;
-    const char* transaction_id;
     int is_new;
   } gap_TransactionNotification;
 
@@ -205,11 +210,13 @@ extern "C" {
   // File transfer status callback.
   typedef struct
   {
-    const char* transaction_id;
-    const char* network_id;
-    const char* sender_device_id;
-    const char* recipient_device_id;
-    const char* recipient_device_name;
+    char const* transaction_id;
+    char const* network_id;
+    char const* sender_id;
+    char const* recipient_id;
+    char const* sender_device_id;
+    char const* recipient_device_id;
+    char const* recipient_device_name;
     int status;
     int is_new;
   } gap_TransactionStatusNotification;
@@ -224,10 +231,10 @@ extern "C" {
   // Chat message.
   typedef struct
   {
-    const char* sender_id;
+    char const* sender_id;
     /* FIXME: remove that shit */
-    const char* recipient_id;
-    const char* message;
+    char const* recipient_id;
+    char const* message;
     int is_new;
   } gap_MessageNotification;
 
@@ -248,16 +255,6 @@ extern "C" {
   // Poll
   gap_Status
   gap_poll(gap_State* state);
-
-  gap_Status
-  gap_send_files(gap_State* state,
-                 char const* recipient_id,
-                 char const* const* files);
-
-  gap_Status
-  gap_update_transaction(gap_State* state,
-                         char const* transaction_id,
-                         gap_TransactionStatus status);
 
   gap_Status
   gap_invite_user(gap_State* state,
@@ -311,6 +308,9 @@ extern "C" {
   /// - Self ----------------------------------------------------------------
   char const*
   gap_user_token(gap_State* state);
+
+  char const*
+  gap_self_id(gap_State* state);
 
   /// - User ----------------------------------------------------------------
 
@@ -373,6 +373,32 @@ extern "C" {
   int gap_get_permissions(gap_State* state,
                           char const* user_id,
                           char const* absolute_path);
+
+  /// Get the list of transaction ids involving the user.
+  char**
+  gap_transactions(gap_State* state);
+
+  /// Free transaction list.
+  void
+  gap_transactions_free(char** transactions);
+
+  /// Send files to a specific user.
+  gap_Status
+  gap_send_files(gap_State* state,
+                 char const* recipient_id,
+                 char const* const* files);
+
+  /// Update transaction status.
+  gap_Status
+  gap_update_transaction(gap_State* state,
+                         char const* transaction_id,
+                         gap_TransactionStatus status);
+
+  /// Start the 8transfer process on the recipient.
+  gap_Status
+  gap_download_file(gap_State* state,
+                    char const* transaction_id,
+                    char const* output_path);
 
 # ifdef __cplusplus
 } // ! extern "C"

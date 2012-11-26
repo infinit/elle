@@ -1,11 +1,6 @@
 #ifndef  LUNE_PASSPORT_HXX
 # define LUNE_PASSPORT_HXX
 
-# include <cassert>
-
-# include <cryptography/Signature.hh>
-# include <hole/Label.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::Passport,
                       archive,
                       value,
@@ -13,9 +8,10 @@ ELLE_SERIALIZE_SIMPLE(elle::Passport,
 {
   enforce(version == 0);
 
-  archive & value.label;
-  archive & value.id;
-  archive & value.signature;
+  archive & value._id;
+  archive & value._name;
+  archive & value._owner_K;
+  archive & value._signature;
 }
 
 #endif

@@ -51,8 +51,8 @@ namespace surface
    class State
     {
     private:
-      plasma::meta::Client* _meta;
-      plasma::trophonius::Client* _trophonius;
+      std::unique_ptr<plasma::meta::Client>       _meta;
+      std::unique_ptr<plasma::trophonius::Client> _trophonius;
 
     public:
       State();
@@ -120,10 +120,10 @@ namespace surface
                    std::string const& message);
 
       void
-      pull_notifications(int limit);
+      pull_notifications(int count, int offset);
 
       void
-      notifications_red();
+      notifications_read();
 
       std::string
       invite_user(std::string const& email);
@@ -157,16 +157,40 @@ namespace surface
       update_transaction(std::string const& transaction_id,
                          gap_TransactionStatus status);
 
+      /// @brief Start the transfer process on recipient.
+      ///
+      void
+      download_files(std::string const& transaction_id,
+                     std::string const& path);
+
     private:
+
+      void
+      _accept_transaction(std::string const& transaction_id);
+
+      void
+      _deny_transaction(std::string const& transaction_id);
+
+      void
+      _cancel_transaction(std::string const& transaction_id);
+
       void
       _start_transaction(std::string const& transaction_id);
 
       void
-      _stop_transaction(std::string const& transaction_id);
+      _close_transaction(std::string const& transaction_id);
+
+
 
     private:
       std::string _device_id;
       std::string _device_name;
+
+    public:
+      std::string const&
+      device_id();
+      std::string const&
+      device_name();
 
     ///
     /// Launch and stop infinit instances.
@@ -254,13 +278,13 @@ namespace surface
       network_add_user(std::string const& network_id,
                        std::string const& user);
 
-      /// Accept file transfer.
-      void
-      accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+      // /// Accept file transfer.
+      // void
+      // accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
 
-      /// Deny file transfer.
-      void
-      deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
+      // /// Deny file transfer.
+      // void
+      // deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
 
       /// Trophonius binding.
     private:

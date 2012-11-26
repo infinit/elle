@@ -39,7 +39,7 @@
 
 #include <signal.h>
 
-ELLE_LOG_COMPONENT("infinit.surface.gap");
+ELLE_LOG_COMPONENT("infinit.surface.gap.State");
 
 #define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                      \
   void                                                                         \
@@ -91,12 +91,7 @@ namespace surface
           common::meta::port(),
           true,
         }}
-      , _trophonius{
-        new plasma::trophonius::Client{
-          common::trophonius::host(),
-          common::trophonius::port(),
-          true,
-        }}
+      , _trophonius{nullptr}
       , _users{}
       , _files_infos{}
       , _networks{}
@@ -154,14 +149,15 @@ namespace surface
     State::~State()
     {
       for (auto& it: this->_networks)
-        delete (it).second;
+        delete it.second;
       this->_networks.clear();
 
-      delete this->_meta;
-      this->_meta = nullptr;
-
-      delete this->_trophonius;
-      this->_trophonius = nullptr;
+      if (this->_transactions)
+        {
+          for (auto& it: *this->_transactions)
+            delete it.second;
+          this->_transactions->clear();
+        }
     }
 
     void
@@ -223,14 +219,15 @@ namespace surface
       if (!conn.waitForBytesWritten(2000))
           throw Exception(gap_internal_error,
                           "Couldn't send the command '" + cmd + "'");
-      ELLE_DEBUG("Command sent");
+
+      ELLE_DEBUG("Command '%s' sent.", cmd);
 
       if (response == nullptr)
         {
-          ELLE_WARN("Watchdog response is empty.");
+          ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
           return;
         }
-      if (!conn.waitForReadyRead(2000))
+      if (!conn.waitForReadyRead(-1)) // Infinit is maybe too long, or not.
         throw Exception{
             gap_internal_error,
             "Couldn't read response of '" + cmd + "' command"
@@ -361,7 +358,6 @@ namespace surface
 
       // Store the identity
         {
-          // user.idy
           if (identity.Restore(identity_clear)  == elle::Status::Error)
             throw Exception(gap_internal_error,
                             "Cannot save the identity file.");
@@ -374,9 +370,6 @@ namespace surface
           dictionary.store(res._id);
         }
 
-        // for (auto t : transactions())
-          // transaction(t.first);
-
         transactions();
     }
 
@@ -387,12 +380,15 @@ namespace surface
     }
 
     void
-    State::pull_notifications(int limit)
+    State::pull_notifications(int count, int offset)
     {
-      if (limit < 1)
+      if (count < 1)
         return;
 
-      auto res = this->_meta->pull_notifications(limit);
+      if (offset < 0)
+        return;
+
+      auto res = this->_meta->pull_notifications(count, offset);
 
       for (auto dict : res.notifs)
         this->_handle_dictionnary(dict, true);
@@ -402,9 +398,9 @@ namespace surface
     }
 
     void
-    State::notifications_red()
+    State::notifications_read()
     {
-      this->_meta->notification_red();
+      this->_meta->notification_read();
     }
 
     std::string
@@ -461,13 +457,54 @@ namespace surface
       // Ensure the network status is available
       (void) this->network_status(network_id);
 
+      auto portal_path = common::infinit::portal_path(
+        this->_me._id,
+        network_id
+      );
+      for (int i = 0; i < 10; ++i)
+        {
+          if (fs::exists(portal_path))
+            break;
+          ::sleep(1);
+        }
+
+      if (!fs::exists(portal_path))
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
+      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
+
+      QStringList arguments;
+      arguments << "-n" << network_id.c_str()
+                << "-u" << this->_me._id.c_str()
+                << "--path" << files.cbegin()->c_str()
+                << "--to"
+      ;
+      ELLE_DEBUG("LAUNCH: %s %s",
+                      transfer_binary,
+                      arguments.join(" ").toStdString());
+
+      QProcess p;
+      p.start(transfer_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8transfer binary failed");
+      if (p.exitCode())
+        throw Exception(gap_internal_error, "8transfer binary exited with errors");
+
       this->_meta->create_transaction(recipient_id_or_email,
                                       first_filename,
                                       files.size(),
                                       size,
                                       fs::is_directory(first_filename),
                                       network_id,
-                                      this->_device_id);
+                                      this->device_id());
+    }
+
+    void
+    State::download_files(std::string const& transaction_id,
+                   std::string const& path)
+    {
+      (void) transaction_id;
+      (void) path;
     }
 
     void
@@ -476,10 +513,77 @@ namespace surface
     {
       ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
+      switch(status)
+      {
+        case gap_TransactionStatus::gap_transaction_status_accepted:
+          this->_accept_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_rejected:
+          this->_deny_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_started:
+          this->_start_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_canceled:
+          this->_cancel_transaction(transaction_id);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_finished:
+          this->_close_transaction(transaction_id);
+          break;
+        default:
+          ELLE_WARN("You are not able to change transaction status to '%i'.",
+            status);
+          return;
+      }
+
       this->_meta->update_transaction(transaction_id,
                                       status,
-                                      this->_device_id,
-                                      this->_device_name);
+                                      this->device_id(),
+                                      this->device_name());
+    }
+
+    void
+    State::_accept_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Accept transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      //XXX: Give the writes here.
+
+      this->_meta->start_transaction(transaction_id);
+    }
+
+    void
+    State::_deny_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Deny transaction '%s'", transaction_id);
+
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->sender_id != this->_me._id)
+        return;
+
+      //XXX: Delete network.
+
+      this->_meta->cancel_transaction(transaction_id);
     }
 
     void
@@ -487,15 +591,55 @@ namespace surface
     {
       ELLE_DEBUG("Start transaction '%s'", transaction_id);
 
-      this->_meta->start_transaction(transaction_id);
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      //XXX: Launch 8transfer.
     }
 
     void
-    State::_stop_transaction(std::string const& transaction_id)
+    State::_cancel_transaction(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Stop transaction '%s'", transaction_id);
+      ELLE_DEBUG("Cancel transaction '%s'", transaction_id);
 
-      this->_meta->stop_transaction(transaction_id);
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      if (trans->recipient_id != this->_me._id)
+        return;
+
+      //XXX: If download has started, cancel it, delete files, ...
+    }
+
+    void
+    State::_close_transaction(std::string const& transaction_id)
+    {
+      ELLE_DEBUG("Close transaction '%s'", transaction_id);
+
+
+      auto const& pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      //XXX: Copy is finished, clean networks ...
     }
 
     void
@@ -523,24 +667,25 @@ namespace surface
       this->login(email, password);
     }
 
+
     _REGISTER_CALLBACK_HANDLER(gap_UserStatusNotification,
-                               8,
+                               gap_Notification::gap_notification_user_status,
                                plasma::trophonius::Client::UserStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_TransactionNotification,
-                               7,
+                               gap_Notification::gap_notification_transaction_request,
                                plasma::trophonius::Client::TransactionHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_TransactionStatusNotification,
-                               11,
+                               gap_Notification::gap_notification_transaction_status,
                                plasma::trophonius::Client::TransactionStatusHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
-                               217,
+                               gap_Notification::gap_notification_message,
                                plasma::trophonius::Client::MessageHandler)
 
     _REGISTER_CALLBACK_HANDLER(gap_BiteNotification,
-                               0,
+                               gap_Notification::gap_notification_debug,
                                plasma::trophonius::Client::BiteHandler)
 
     State::TransactionsMap const&
@@ -559,11 +704,6 @@ namespace surface
             new plasma::meta::TransactionResponse{response};
         }
 
-      for (auto const& transaction : *(this->_transactions))
-      {
-        print_transaction(*(transaction.second));
-      }
-
       return *(this->_transactions);
     }
 
@@ -580,17 +720,71 @@ namespace surface
     }
 
     void
-    State::_on_notification(gap_TransactionNotification const* n)
+    State::_on_notification(gap_TransactionNotification const* notif)
     {
-      (void) n;
-      printf("_on_notification(gap_TransactionNotification\n");
+      ELLE_ASSERT(notif != nullptr);
+
+      ELLE_TRACE("_on_notification(gap_TransactionNotification\n");
+
+      if (!notif->is_new)
+        return;
+
+      auto const pair = State::transactions().find(notif->transaction_id);
+
+      if (pair != State::transactions().end())
+      {
+
+#ifdef DEBUG
+        plasma::meta::TransactionResponse *trans = pair->second;
+#endif
+
+        // Compare notif and see if everything match.
+        ELLE_ASSERT(notif->transaction_id != nullptr);
+        ELLE_ASSERT(notif->sender_id != nullptr);
+        ELLE_ASSERT(notif->sender_device_id != nullptr);
+        ELLE_ASSERT(notif->sender_fullname != nullptr);
+        ELLE_ASSERT(notif->recipient_id != nullptr);
+        ELLE_ASSERT(notif->recipient_fullname != nullptr);
+        ELLE_ASSERT(notif->network_id != nullptr);
+        ELLE_ASSERT(notif->first_filename != nullptr);
+
+
+        ELLE_ASSERT(notif->transaction_id != trans->transaction_id);
+        ELLE_ASSERT(notif->sender_id != trans->sender_id);
+        ELLE_ASSERT(notif->sender_device_id != trans->sender_device_id);
+        ELLE_ASSERT(notif->sender_fullname != trans->sender_fullname);
+        ELLE_ASSERT(notif->recipient_id != trans->recipient_id);
+        ELLE_ASSERT(notif->recipient_fullname != trans->recipient_fullname);
+        ELLE_ASSERT(notif->network_id != trans->network_id);
+        ELLE_ASSERT(notif->first_filename != trans->first_filename);
+        ELLE_ASSERT(trans->files_count == notif->files_count);
+        ELLE_ASSERT(trans->total_size == notif->total_size);
+        ELLE_ASSERT(trans->is_directory == notif->is_directory);
+
+        return;
+      }
+
+      // // Normal case, this is a new transaction, store it to match server.
+      // auto t = new plasma::meta::TransactionResponse();
     }
 
     void
-    State::_on_notification(gap_TransactionStatusNotification const* n)
+    State::_on_notification(gap_TransactionStatusNotification const* notif)
     {
-      (void) n;
-      printf("_on_notification(gap_TransactionStatusNotification\n");
+      ELLE_TRACE("_on_notification(gap_TransactionStatusNotification\n");
+
+      if (!notif->is_new)
+        return;
+
+      auto const trans = State::transactions().find(notif->transaction_id);
+
+      if (trans == State::transactions().end())
+      {
+        // Something went wrong.
+        auto response = this->_meta->transaction(notif->transaction_id);
+        (*this->_transactions)[notif->transaction_id] =
+          new plasma::meta::TransactionResponse{response};
+      }
     }
 
 
@@ -598,15 +792,22 @@ namespace surface
     bool
     State::poll()
     {
-      std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
+      if (!this->_trophonius)
+        throw Exception{gap_error, "Trophonius is not connected"};
+      ELLE_TRACE("Polling trophonius client.");
+      bool continue_ = false;
+      do
+        {
+          std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
 
-      if(!dict_ptr)
-        return false;
+          if (!dict_ptr)
+            return continue_;
 
-      ELLE_DEBUG("Dictionnary polled.");
-      json::Dictionary const& dict = *dict_ptr;
-
-      return this->_handle_dictionnary(dict);
+          ELLE_DEBUG("Dictionnary polled.");
+          json::Dictionary const& dict = *dict_ptr;
+          continue_ = this->_handle_dictionnary(dict);
+        } while (continue_);
+      return true;
     }
 
     bool
@@ -624,7 +825,7 @@ namespace surface
 
       // XXX: Value of shit written in hard coded.
       // Connexion established.
-      if (notification_id == -666)
+      if (notification_id == gap_Notification::gap_notificaiton_connection_enabled)
         return false;
 
       auto handler_list = _notification_handlers.find(notification_id);
@@ -654,6 +855,32 @@ namespace surface
       return fs::exists(common::passport_path(this->_me._id));
     }
 
+    std::string const&
+    State::device_id()
+    {
+      if (this->_device_id.size() == 0)
+        {
+          elle::Passport passport;
+          passport.load(common::passport_path(this->_me._id));
+          this->_device_id = passport.id();
+          this->_device_name = passport.name();
+        }
+      return this->_device_id;
+    }
+
+    std::string const&
+    State::device_name()
+    {
+      if (this->_device_name.size() == 0)
+        {
+          elle::Passport passport;
+          passport.load(common::passport_path(this->_me._id));
+          this->_device_id = passport.id();
+          this->_device_name = passport.name();
+        }
+      return this->_device_name;
+    }
+
     void
     State::update_device(std::string const& name, bool force_create)
     {
@@ -669,7 +896,6 @@ namespace surface
 
       if (force_create || !this->has_device())
         {
-          printf("queue\n");
           auto res = this->_meta->create_device(name);
           passport_string = res.passport;
           this->_device_id = res.created_device_id;
@@ -681,8 +907,8 @@ namespace surface
           elle::Passport passport;
           passport.load(passport_path);
 
-          ELLE_DEBUG("Passport id: %s", passport.id);
-          auto res = this->_meta->update_device(passport.id, name);
+          ELLE_DEBUG("Passport id: %s", passport.id());
+          auto res = this->_meta->update_device(passport.id(), name);
           this->_device_id = res.updated_device_id;
           passport_string = res.passport;
         }
@@ -782,9 +1008,12 @@ namespace surface
           this->_send_watchdog_cmd("status", nullptr, &response);
 
           auto& networks = response["networks"].as_array();
+
           for (size_t i = 0; i < networks.size(); ++i)
             {
+              ELLE_DEBUG("network '%i'.", i);
               auto& network = networks[i].as_dictionary();
+              ELLE_DEBUG("> '%s'.", network["_id"].as_string());
               std::string mount_point = network["mount_point"].as_string();
               std::string network_id = network["_id"].as_string();
 
@@ -806,6 +1035,10 @@ namespace surface
               };
             }
           this->_networks_status_dirty = false;
+        }
+      else
+        {
+          ELLE_DEBUG("Networks are clean.");
         }
       return this->_networks_status;
     }
@@ -1098,6 +1331,21 @@ namespace surface
     void
     State::connect()
     {
+      if (this->_trophonius)
+        throw Exception{gap_error, "trophonius is already connected"};
+
+      try
+        {
+          this->_trophonius.reset(new plasma::trophonius::Client{
+            common::trophonius::host(),
+            common::trophonius::port(),
+            true,
+          });
+        }
+      catch (std::runtime_error const& err)
+        {
+          throw Exception{gap_error, "Couldn't connect to trophonius"};
+        }
       this->_trophonius->connect(this->_me._id,
                                  this->_meta->token());
 

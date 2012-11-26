@@ -1,7 +1,11 @@
 #ifndef PLASMA_WATCHDOG_APPLICATION_HH
 # define PLASMA_WATCHDOG_APPLICATION_HH
 
+# include "LocalServer.hh"
+
 # include <QCoreApplication>
+
+# include <memory>
 
 namespace plasma
 {
@@ -18,11 +22,10 @@ namespace plasma
       Q_OBJECT
 
     private:
-      LocalServer*    _server;
+        std::unique_ptr<LocalServer> _server;
 
     public:
-      Application(int ac, char* av[]);
-      ~Application();
+      Application(std::string const& user_id);
 
       /// Start main loop
       int exec();

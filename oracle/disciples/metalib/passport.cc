@@ -4,6 +4,7 @@
 #include <elle/types.hh>
 
 #include <cryptography/random.hh>
+#include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
@@ -25,6 +26,8 @@ using namespace infinit;
 //
 
 static elle::Passport create_passport(elle::String const& id,
+                                      elle::String const& name,
+                                      elle::String const& user_pubkey,
                                       elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
@@ -40,46 +43,39 @@ static elle::Passport create_passport(elle::String const& id,
   if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
 
-  //
-  // create the passport.
-  //
-  elle::Buffer buffer(
-    cryptography::random::generate<elle::Buffer>(512));
-  // XXX
-  elle::standalone::Region region;
-  if (region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
-    escape("XXX");
+  cryptography::PublicKey pubkey{};
+  pubkey.Restore(user_pubkey);
 
-  // create a label.
-  hole::Label label(region);
-
-  // create the passport.
-  elle::Passport passport(label, id);
-
-  // seal the passport.
-  if (passport.Seal(authority) == elle::Status::Error)
-    throw std::runtime_error("unable to seal the passport");
+  elle::Passport passport{
+      id, name, pubkey, authority
+  };
 
   return passport;
 }
 
-extern "C" PyObject* metalib_generate_passport(PyObject*, PyObject* args)
+extern "C"
+PyObject*
+metalib_generate_passport(PyObject*, PyObject* args)
 {
   PyObject* ret = nullptr;
   char const* id = nullptr,
+            * name = nullptr,
+            * pubkey = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
-  if (!PyArg_ParseTuple(args, "sss:generate_passport",
-                        &id, &authority_file, &authority_password))
+  if (!PyArg_ParseTuple(args, "sssss:generate_passport",
+                        &id, &name, &pubkey, &authority_file, &authority_password))
     return nullptr;
-  if (!id || !authority_file || !authority_password)
+  if (!id || !authority_file || !name || !pubkey || !authority_password)
     return nullptr;
 
   Py_BEGIN_ALLOW_THREADS;
 
   try
     {
-      auto passport = create_passport(id, authority_file, authority_password);
+      auto passport = create_passport(
+          id, name, pubkey, authority_file, authority_password
+      );
       elle::String passport_string;
       if (passport.Save(passport_string) != elle::Status::Error)
         {

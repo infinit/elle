@@ -18,11 +18,14 @@ def BiteFunc(bite:'Bite'):
     print("Notification bite reçue", bite.debug)
 
 def TransactionHandler(t):
-    print("\n\n=== Transaction")
-    introspect(t)
-    print("\n=== Accepted")
-    if t.new :
+    print(">>>>New transaction")
+    if t.new and t.recipient_id == state._id :
+        print(">>>>>>It's a new one, it for me so accept it !")
         state.update_transaction(t.transaction_id, state.TransactionStatus.accepted)
+    elif t.new and t.sender_id == state._id:
+        print(">>>>>>It's a new one but i'm the sender, so i do my shit alone.")
+    else:
+        print(">>>>>>This transaction is an old one, I don't give a shit")
 
 def TransactionStatusHandler(ts:'FileTransferStatus'):
     print("TransactionStatusHandler :", ts.status)
@@ -30,14 +33,14 @@ def TransactionStatusHandler(ts:'FileTransferStatus'):
     if ts.status == state.TransactionStatus.none or ts.status == state.TransactionStatus.pending :
         print(">>Do nothing")
 
-    elif ts.status == state.TransactionStatus.accepted:
+    elif ts.status == state.TransactionStatus.accepted and ts.sender_id == state._id:
         print('[Accepted on', ts.recipient_device_name, "]")
         print(">>Invite user to network, start copying, giving rights, ...")
-
-        state.start_transaction(ts.transaction_id)
+        state.update_transaction(ts.transaction_id, state.TransactionStatus.started)
 
     elif ts.status == state.TransactionStatus.rejected:
         print(">>The transaction has been canceled, destroy network, delete files...")
+        state.update_transaction(ts.transaction_id, state.TransactionStatus.deleted)
 
     elif ts.status == state.TransactionStatus.finished:
         print(">>The transaction is finished.")
@@ -55,7 +58,7 @@ class PollThread (threading.Thread):
     def run (self) :
         self.bite = False
         while True:
-            time.sleep(1)
+            time.sleep(0.05)
             state.poll()
             if self.bite == True:
                 return
@@ -78,7 +81,7 @@ def __connect():
     state.connect()
 
 def __send_file(mail):
-    files = ["/home/dimrok/test/main.cpp", "/home/dimrok/test/main2.cpp", "/home/dimrok/test/main3.cpp"]
+    files = ["/home/dimrok/.zsh", "/home/dimrok/.emacs"]
     state.send_files(mail, files)
 
 def __create_network():
@@ -123,7 +126,7 @@ def main():
 
     state.login(good_email, password)
 
-#    state.set_device_name("device")
+    state.set_device_name("device")
 
     try :
         __connect();
@@ -136,18 +139,21 @@ def main():
 
         time.sleep(4)
 
+        print('\n\nPulling notifs')
+        __pullNotifs()
+
         # Send file to me.
         print('Send file to myself')
         __send_file(good_email)
-        time.sleep(10)
-        print('Send file to myself')
-        __send_file(good_email)
-        time.sleep(10)
-        print('Send file to myself')
-        __send_file(good_email)
-        time.sleep(10)
-        print('Send file to myself')
-        __send_file(good_email)
+        # time.sleep(10)
+        # print('Send file to myself')
+        # __send_file(good_email)
+        # time.sleep(10)
+        # print('Send file to myself')
+        # __send_file(good_email)
+        # time.sleep(10)
+        # print('Send file to myself')
+        # __send_file(good_email)
 
         # Sleep 1sec to wait for transaction
         time.sleep(5)
@@ -223,7 +229,6 @@ def main2():
         if input('\nsend_file? y/N\n> ') == 'y':
             __send_file(recipient)
 
-        time.sleep(100000)
         input('break infinit wait? y/N\n> ')
         q.stop()
     except KeyboardInterrupt:
@@ -232,31 +237,3 @@ def main2():
 
 print(">>>>>>Launching apply")
 main()
-
-# finally:
-#     print("<<<<<<Closing watchdog")
-#     state.stop_watchdog()
-
-##########################################
-
-
-
-# # state.send_file("juaodjaozj", "/home/dimrok/test")
-# # state.send_file("jafoijaz", "/home/dimrok/test/main.cpp");
-# # state.send_file("kjladkaj", "poijaoieazupihp");
-
-# # now = datetime.datetime.now()
-# # count1 = 0
-# # count2 = 0
-
-# # while True:
-# #     time.sleep(0.05)
-# #     count1 += (datetime.datetime.now() - now).microseconds
-# #     count2 += (datetime.datetime.now() - now).microseconds
-# #     if count1 > 50000:
-# #         state.poll()
-# #         count1 -= 50000
-# #     if count2 > 2000000:
-# #         state.ask_notif(math.floor(random.random() * 3))
-# #         count2 -= 2000000
-# #     now = datetime.datetime.now()

@@ -56,8 +56,10 @@ using namespace plasma::watchdog;
   } while (false)                                                             \
   /**/
 
-ClientActions::ClientActions(Manager& manager) :
-  _manager(manager)
+ClientActions::ClientActions(Manager& manager,
+                             std::string const& user_id):
+  _manager(manager),
+  _user_id{user_id}
 {
   REGISTER(run);
   REGISTER(stop);
@@ -76,12 +78,12 @@ void ClientActions::_on_run(Connection&,
   QString identity = args["identity"].toString();
   QString user = args["user"].toString();
   QString user_id = args["user_id"].toString();
+  ELLE_ASSERT(user_id.toStdString() == this->_user_id);
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.user(user);
-      this->_manager.user_id(user_id);
 
       std::ofstream identity_infos{common::watchdog::identity_path(user_id.toStdString())};
 
@@ -156,6 +158,8 @@ void ClientActions::_on_status(Connection& conn,
       network["user_id"] = this->_manager.user_id();
       networks.push_back(network);
     }
+
+  ELLE_DEBUG("Status: Building response.");
 
   json::Dictionary response;
   response["networks"] = networks;

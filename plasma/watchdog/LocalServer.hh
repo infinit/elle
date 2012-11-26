@@ -1,6 +1,8 @@
 #ifndef  PLASMA_WATCHDOG_LOCALSERVER_HH
 # define PLASMA_WATCHDOG_LOCALSERVER_HH
 
+# include "Manager.hh"
+
 # include <memory>
 
 # include <QCoreApplication>
@@ -29,11 +31,13 @@ namespace plasma
     private:
       State                         _state;
       std::unique_ptr<Manager>      _manager;
+      std::string const             _user_id;
 
     public:
-      LocalServer(QCoreApplication& app);
-      ~LocalServer();
+      LocalServer(QCoreApplication& app,
+                  std::string const& user_id);
       void start(std::string const& watchdogId);
+      void stop();
 
     private:
       void _handle_new_connection(ConnectionPtr& newConnection);

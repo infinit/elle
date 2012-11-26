@@ -7,6 +7,7 @@
 //
 
 #import "IANotificationCellView.h"
+#import "IAClientGapState.h"
 
 @implementation IANotificationCellView
 
@@ -20,11 +21,17 @@
     return self;
 }
 
-- (void)freeze {}
+- (void) freeze {assert(false);}
+- (void) update:(id)status_notif {assert(false);}
+- (void) setNotification:(id)notif {assert(false);}
 
 @end
 
 @implementation IATransactionNotificationCellView
+{
+@private
+    IATransactionNotification* _notification;
+}
 
 - (id)initWithFrame:(NSRect)frame
 {
@@ -34,14 +41,56 @@
     
     return self;
 }
+
 - (void)freeze
 {
     [self.accept_button setEnabled:FALSE];
     [self.reject_button setEnabled:FALSE];
 }
 
-@end
+- (void) update:(id)status_notif
+{
+    assert(_notification == nil);
+    assert(status_notif != nil);
+    assert([status_notif isKindOfClass:[IATransactionStatusNotification class]]);
+    IATransactionStatusNotification* notif = status_notif;
+    NSString* str = nil;
+    switch (notif.status)
+    {
+        case gap_transaction_status_accepted:
+            str = @"transaction accepted.";
+            break;
+            
+        case gap_transaction_status_pending:
+            str = @"transaction pending.";
+            break;
 
+        case gap_transaction_status_finished:
+            str = @"transaction finished.";
+            break;
+            
+        case gap_transaction_status_rejected:
+            str = @"transaction rejected.";
+            break;
+        case gap_transaction_status_started:
+            str = @"transaction started.";
+            break;
+            
+        default:
+            str = [[NSString alloc] initWithFormat:@"Unknown transaction status %d", notif.status];
+            break;
+    }
+}
+
+- (void) setNotification:(id)notif
+{
+    assert(_notification == nil);
+    assert(notif != nil);
+    assert([notif isKindOfClass:[IATransactionNotification class]]);
+    _notification = notif;
+}
+
+@end
 
 @implementation IATransactionStatusNotificationCellView
 

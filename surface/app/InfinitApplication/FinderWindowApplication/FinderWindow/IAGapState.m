@@ -10,6 +10,7 @@
 
 #import "gap.h"
 
+//- Timer operation -----------------------------------------------------------
 
 @interface TimerOperation : NSOperation
 {
@@ -98,8 +99,12 @@
 
 @end
 
+//- operation function bloc -----------------------------------------------------
+
 // Block type to queue gap operation
 typedef int(^gap_operation_t)(void);
+
+//- Operation result ------------------------------------------------------------
 
 @interface IAGapOperationResult ()
 {
@@ -137,7 +142,7 @@ typedef int(^gap_operation_t)(void);
 
 
 
-
+//- Callbacks for notifications -----------------------------------------------------
 
 
 
@@ -145,6 +150,7 @@ static void on_user_status(gap_UserStatusNotification const* n);
 static void on_transaction(gap_TransactionNotification const* n);
 static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
+//- Gap state additions -------------------------------------------------------------
 
 @interface IAGapState ()
 {
@@ -157,6 +163,8 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 @property gap_State* state;
 
 @end
+
+//- Gap state implementation --------------------------------------------------------
 
 @implementation IAGapState
 
@@ -200,7 +208,16 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 - (NSString*) token
 {
+    if (!_state)
+        return nil;
     return [[NSString alloc] initWithUTF8String:gap_user_token(_state)];
+}
+
+- (NSString*) self_id
+{
+    if (!_state)
+        return nil;
+    return [[NSString alloc] initWithUTF8String:gap_self_id(_state)];
 }
 
 -(id) init
@@ -250,7 +267,15 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                 (gap_transaction_callback(self.state, &on_transaction) == gap_ok) &&
                 (gap_transaction_status_callback(self.state, &on_transaction_status) == gap_ok))
             {
-                gap_meta_pull_notification(self.state, 10);
+                if (gap_pull_notifications(self.state, 10, 0) != gap_ok)
+                {
+                    NSLog(@"WARNING: Couldn't fetch notifications from meta");
+                }
+                if (gap_trophonius_connect(self.state) != gap_ok)
+                {
+                    NSLog(@"WARNING: Cannot connect to tropho !");
+                    return;
+                }
                 _polling = TRUE;
                 [self _poll];
             }
@@ -311,6 +336,33 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
     } performSelector:selector onObject:object];
 }
 
+
+- (void)       rejectTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+    [self _addOperation:^(void) {
+        gap_Status res;
+        res = gap_update_transaction(self.state,
+                                     [notif.transaction_id UTF8String],
+                                     gap_transaction_status_rejected);
+        return res;
+    } performSelector:selector onObject:object];
+}
+
+- (void)       cancelTransaction:(IATransactionNotification*)notif
+                 performSelector:(SEL)selector
+                        onObject:(id)object
+{
+//    [self _addOperation:^(void) {
+//        gap_Status res;
+//        res = gap_update_transaction(self.state,
+//                                     [notif.transaction_id UTF8String],
+//                                     gap_transaction_status_cancel);
+//        return res;
+//    } performSelector:selector onObject:object];
+}
+
 //- User -------------------------------------------------------------------------------------
 
 
@@ -322,7 +374,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                      onObject:(id)object
 {
     NSLog(@"Calling login method");
-    __weak id this = self;
+//    __weak id this = self;
     [self _addOperation:^(void) {
         NSLog(@"Starting LOGIN");
         char* hash_password = gap_hash_password(self.state,
@@ -336,7 +388,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
             res = gap_set_device_name(self.state, [device_name UTF8String]);
         
         if (res == gap_ok)
-            res = gap_trophonius_connect(self.state);
+        {}
         else
             NSLog(@"Cannot login !");
         
@@ -365,7 +417,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                   performSelector:(SEL)selector
                          onObject:(id)object
 {
-    __weak id this = self;
+//    __weak id this = self;
     [self _addOperation:^(void) {
         gap_Status res;
         char* hash_password = gap_hash_password(self.state,
@@ -407,6 +459,8 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 @end
 
+//- User status notification implementation ---------------------------------
+
 #define SET_CSTR(__name)                                                    \
     self.__name = [[NSString alloc] initWithUTF8String:n->__name];          \
 /**/
@@ -429,7 +483,10 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 @end
 
+//- Transaction notification implementation -----------------------------------
+
 @implementation IATransactionNotification
+
 @synthesize first_filename;
 @synthesize files_count;
 @synthesize total_size;
@@ -438,6 +495,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 @synthesize sender_id;
 @synthesize sender_fullname;
 @synthesize transaction_id;
+@synthesize recipient_fullname;
 
 - (id) init:(gap_TransactionNotification const*)n
 {
@@ -452,13 +510,17 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         SET_CSTR(sender_id);
         SET_CSTR(sender_fullname);
         SET_CSTR(transaction_id);
+        SET_CSTR(recipient_fullname);
     }
     return self;
 }
 
 @end
 
+//- Transaction status notification implementation ---------------------------
+
 @implementation IATransactionStatusNotification
+
 @synthesize transaction_id;
 @synthesize network_id;
 @synthesize sender_device_id;
@@ -483,6 +545,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 @end
 
+//- notif callback implementation -----------------------------------------------------------
 
 static void on_user_status(gap_UserStatusNotification const* n)
 {
@@ -499,7 +562,6 @@ static void on_transaction(gap_TransactionNotification const* n)
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_NOTIFICATION
                                                         object:[[IATransactionNotification alloc] init:n]];
 }
-
 
 static void on_transaction_status(gap_TransactionStatusNotification const* n)
 {

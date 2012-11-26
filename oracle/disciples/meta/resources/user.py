@@ -37,15 +37,6 @@ class GetSwaggers(Page):
     def GET(self):
             return self.success({"swaggers" : self.user["swaggers"]})
 
-class GetPendingSwaggers(Page):
-    __pattern__ =  "/user/get_pending_swaggers"
-
-    def GET(self):
-        if "pending_swaggers" in self.user:
-            return self.success({"pending_swaggers" : self.user["pending_swaggers"]})
-        else:
-            return self.error(error.UNKNOWN, "No swagger is pending.")
-
 class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
 
@@ -262,6 +253,7 @@ class Register(Page):
         status = self.validate()
         if status:
             return self.error(*status)
+
         user = self.data
 
         if database.users().find_one({
@@ -269,6 +261,7 @@ class Register(Page):
             'register_status': 'ok',
         }):
             return self.error(error.EMAIL_ALREADY_REGISTRED)
+
         elif user['activation_code'] != 'bitebite': # XXX
             invitation = database.invitations().find_one({
                 'code': user['activation_code'],
@@ -295,20 +288,19 @@ class Register(Page):
         )
 
         user_id = self.registerUser(
-            _id=user["_id"],
-            register_status='ok',
-            email=user['email'],
-            fullname=user['fullname'],
-            password=self.hashPassword(user['password']),
-            identity=identity,
-            public_key=public_key,
-            swaggers=[],
-            pending_swaggers=[],
-            networks=[],
-            devices=[],
-            notifications = [],
+            _id = user["_id"],
+            register_status = 'ok',
+            email = user['email'],
+            fullname = user['fullname'],
+            password = self.hashPassword(user['password']),
+            identity = identity,
+            public_key = public_key,
+            swaggers = {},
+            networks = [],
+            devices = [],
+            notifications = (ghost and ghost['notifications'] or []),
             old_notifications = [],
-            accounts=[
+            accounts = [
                 {'type':'email', 'id': user['email']}
             ]
         )

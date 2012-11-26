@@ -198,7 +198,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                        slug->port());
               client.token(agent::Agent::meta_token);
               client.network_connect_device(descriptor.meta().id(),
-                                            passport.id,
+                                            passport.id(),
                                             &address,
                                             slug->port());
             }

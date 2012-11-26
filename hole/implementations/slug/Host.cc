@@ -130,9 +130,7 @@ namespace hole
         assert(this->_state == State::connected
                || this->_state == State::authenticating);
 
-        // Validate the passport.
-        if (passport.Validate(this->_machine.hole().authority())
-            == elle::Status::Error)
+        if (!passport.validate(this->_machine.hole().authority()))
           throw reactor::Exception(elle::concurrency::scheduler(),
                                    "unable to validate the passport");
         else

@@ -16,7 +16,8 @@ import metalib
 class Get(Page):
     """
     POST {
-              'limit': the number of notif you want to pull.
+              'count': the number of notif you want to pull.
+              'offset': the offset.
          }
         -> {
                 'notifs': [{}, {}, {}]
@@ -35,12 +36,23 @@ class Get(Page):
         if not _user:
           return self.error(error.UNKNOWN_USER)
 
-        limit = self.data['limit']
+        #XXX: limit
+        try:
+            limit = self.data['limit']
+        except Exception as e:
+            pass
 
-        notifs = _user['notifications']
+        try:
+            count = self.data['count']
+            offset = self.data['offset']
+        except Exception as e:
+            count = limit
+            offset = 0
+
+        notifs = _user['notifications'][offset:]
         old_notifs = []
-        if (len(notifs) < limit):
-            old_notifs = _user['old_notifications'][:(limit - len(notifs))]
+        if (len(notifs) < count):
+            old_notifs = _user['old_notifications'][:(count - len(notifs))]
 
         return self.success({
             'notifs' : notifs,

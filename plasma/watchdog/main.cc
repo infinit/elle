@@ -1,13 +1,14 @@
-#include <cstdio>
-#include <fstream>
-#include <iostream>
 
-#include <boost/filesystem.hpp>
+#include "Application.hh"
 
 #include <elle/log.hh>
 #include <elle/os/getenv.hh>
 
-#include "Application.hh"
+#include <common/common.hh>
+
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 
 #include <fcntl.h>
 #include <errno.h>
@@ -16,31 +17,38 @@
 
 ELLE_LOG_COMPONENT("infinit.plasma.watchdog");
 
-static void _initAll();
+static void _initAll(std::string const& user_id);
 
-#define BUF_SIZE 4096
-#define CATCH_OUTPUT_FILE "/tmp/wtg.log"
+// Signals handler must have access to the application.
+static plasma::watchdog::Application *app = nullptr;
 
 int     main(int ac, char* av[])
 {
 
-  plasma::watchdog::Application app(ac, av);
+  if (ac != 2 || av[1] == nullptr)
+    {
+      fprintf(stderr, "usage: %s user_id", av[0]);
+      return EXIT_FAILURE;
+    }
+
+  std::string user_id{av[1]};
+
+  app = new plasma::watchdog::Application{user_id};
 
   try
     {
-      _initAll();
-      ELLE_DEBUG("Starting the watchdog !");
+      _initAll(user_id);
+      ELLE_DEBUG("Starting the watchdog for user %s", user_id);
 
-#ifdef CATCH_OUTPUT_FILE
       ::setenv("ELLE_LOG_COMPONENTS", "*plasma*", 1);
       ::setenv("ELLE_LOG_LEVEL", "DEBUG", 1);
 
-      if (freopen(CATCH_OUTPUT_FILE, "a+", stderr) == NULL ||
-          freopen(CATCH_OUTPUT_FILE, "a+", stdout) == NULL)
-        fprintf(stderr, "Cannot open /tmp/wtg.txt: %s", strerror(errno));
-#endif
+      std::string log_file = common::watchdog::log_path(user_id);
+      if (freopen(log_file.c_str(), "a+", stderr) == NULL ||
+          freopen(log_file.c_str(), "a+", stdout) == NULL)
+        fprintf(stderr, "Cannot open %s: %s", log_file.c_str(), strerror(errno));
 
-      auto res = app.exec();
+      auto res = app->exec();
       return res;
     }
   catch (std::exception const& err)
@@ -96,11 +104,13 @@ static void _signal_handler(int sig)
  * create background process out of the application, source code taken from:
  * http://www.enderunix.org/docs/eng/daemon.php with some minor modifications
  */
-static void _init_daemon(std::string const& infinit_home)
+static
+void
+_init_daemon(std::string const& user_id)
 {
-    namespace fs = boost::filesystem;
+    auto lock_file = common::watchdog::lock_path(user_id);
     int lfp;
-    char str[10];
+    char str[20]; // used to store the pid.
     if (::getppid() != 1) // if parent pid
       {
         // first fork
@@ -116,6 +126,7 @@ static void _init_daemon(std::string const& infinit_home)
                 exit(0); /* parent exits */
               }
           }
+
 
         /* child (daemon) continues */
         setsid(); /* obtain a new process group */
@@ -134,6 +145,14 @@ static void _init_daemon(std::string const& infinit_home)
               }
           }
 
+
+          if (::getenv("WATCHDOG_STARTUP_SLEEP") != nullptr)
+          {
+            fprintf(stderr, "===== WATCHDOG_STARTUP_SLEEP. Pid: %i  =====\n",
+                    getpid());
+            ::sleep(10);
+            fprintf(stderr, "===== FINISHED =====\n");
+          }
         //for (i=getdtablesize();i>=0;--i)
         //  close(i); /* close all descriptors */
         //i=open("/dev/null",O_RDWR); dup(i); dup(i); /* handle standart I/O */
@@ -141,8 +160,6 @@ static void _init_daemon(std::string const& infinit_home)
         umask(027); /* set newly created file permissions */
 
         ::chdir("/");
-        auto lock_file = fs::path(infinit_home)
-          .append("lock.wtg", fs::path::codecvt()).string();
 
         lfp = ::open(lock_file.c_str(), O_RDWR | O_CREAT, 0640);
         if (lfp < 0)
@@ -156,7 +173,7 @@ static void _init_daemon(std::string const& infinit_home)
             exit(0); /* can not lock */
           }
         /* first instance continues */
-        sprintf(str,"%d\n",getpid());
+        sprintf(str,"%d\n", getpid());
         write(lfp, str, strlen(str)); /* record pid to lockfile */
       }
     else
@@ -189,12 +206,10 @@ static void _init_daemon(std::string const& infinit_home)
 #include <elle/types.hh>
 #include "lune/Lune.hh"
 
-static void _initAll()
+static void _initAll(std::string const& user_id)
 {
   if (lune::Lune::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
 
-  // XXX use elle here
-
-  _init_daemon(lune::Lune::Home.string);
+  _init_daemon(user_id);
 }

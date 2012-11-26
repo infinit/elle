@@ -41,6 +41,9 @@ static PyMethodDef _metalib_methods[] = {
     METH_VARARGS,
     "Generate a passport.\n"
     "\n"
+    ":param id: Passport id\n"
+    ":param name: Passport name\n"
+    ":param user_pubkey: User public key\n"
     ":param authority_file: The path to the authority file\n"
     ":param authority_password: Password to decrypt the authority file\n"
     ":rtype: String\n"

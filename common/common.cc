@@ -51,6 +51,8 @@ namespace
       {"8group",    "bin/8group"},
       {"8infinit",  "bin/8infinit"},
       {"8watchdog", "bin/8watchdog"},
+      {"8transfer", "bin/8transfer"},
+      {"8progess",  "bin/8progress"},
     };
     auto it = paths.find(name);
     if (it == paths.end())
@@ -144,13 +146,16 @@ namespace common
     }
 
     std::string
+    portal_path(std::string const& user_id,
+                std::string const& network_id)
+    {
+      return path::join(network_directory(user_id, network_id), "portal.phr");
+    }
+
+    std::string
     user_directory(std::string const& user_id)
     {
-      return path::join(
-          home(),
-          "users",
-          user_id
-      );
+      return path::join(home(), "users", user_id);
     }
 
   }
@@ -335,6 +340,13 @@ namespace common
 
   namespace watchdog
   {
+
+    std::string
+    server_name(std::string const& user_id)
+    {
+      return ".infinit-watchdog-server-name-for-" + user_id;
+    }
+
     std::string
     identity_path(std::string const& user_id)
     {
@@ -344,13 +356,22 @@ namespace common
         );
     }
 
-    std::string const&
-    server_name()
+    std::string
+    lock_path(std::string const& user_id)
     {
-      // The name is specific to the infinit home, as many instance could be
-      // launched on the same machine.
-      static std::string const name = "WATCHDOG_SERVER_NAME";
-      return name;
+        return path::join(
+          infinit::user_directory(user_id),
+          "lock.wtg"
+        );
+    }
+
+    std::string
+    log_path(std::string const& user_id)
+    {
+        return path::join(
+          infinit::user_directory(user_id),
+          "log.wtg"
+        );
     }
 
   }

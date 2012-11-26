@@ -47,7 +47,7 @@ namespace plasma
       std::list<json::Dictionary> old_notifs;
     };
 
-    struct RedNotificationResponse : plasma::Response
+    struct ReadNotificationResponse : plasma::Response
     {};
 
     struct MessageResponse : plasma::Response
@@ -117,9 +117,14 @@ namespace plasma
       std::string updated_transaction_id;
     };
 
-    struct StopTransactionResponse : plasma::Response
+    struct FinishTransactionResponse : plasma::Response
     {
-      std::string deleted_transaction_id;
+      std::string finished_transaction_id;
+    };
+
+    struct CancelTransactionResponse : plasma::Response
+    {
+      std::string canceled_transaction_id;
     };
 
     struct NetworksResponse : plasma::Response
@@ -265,8 +270,11 @@ namespace plasma
       StartTransactionResponse
       start_transaction(std::string const& transaction_id);
 
-      StopTransactionResponse
-      stop_transaction(std::string const& transaction_id);
+      CancelTransactionResponse
+      cancel_transaction(std::string const& transaction_id);
+
+      FinishTransactionResponse
+      finish_transaction(std::string const& transaction_id);
 
       MessageResponse
       send_message(std::string const& recipient_id,
@@ -274,10 +282,10 @@ namespace plasma
                    std::string const& message);
 
       PullNotificationResponse
-      pull_notifications(int limit);
+      pull_notifications(int count, int offset = 0);
 
-      RedNotificationResponse
-      notification_red();
+      ReadNotificationResponse
+      notification_read();
 
       NetworkResponse
       network(std::string const& _id);

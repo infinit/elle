@@ -86,8 +86,7 @@ namespace hole
       Customer::challenge(elle::Passport const& passport)
       {
         ELLE_TRACE_SCOPE("%s: challenge", *this);
-        if (passport.Validate(this->_server.hole().authority())
-            == elle::Status::Error)
+        if (!passport.validate(this->_server.hole().authority()))
           {
             _server._remove(this);
             return false;
