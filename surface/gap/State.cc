@@ -1187,7 +1187,7 @@ namespace surface
       std::string const& group_binary = common::infinit::binary_path("8group");
 
       QStringList arguments;
-      arguments << "--user" << user_id.c_str()
+      arguments << "--user" << this->_me._id.c_str()
                 << "--type" << "user"
                 << "--add"
                 << "--network" << network->_id.c_str()
@@ -1202,6 +1202,7 @@ namespace surface
         throw Exception(gap_internal_error, "8group binary failed");
       if (p.exitCode())
         throw Exception(gap_internal_error, "8group binary exited with errors");
+
       auto res = this->_meta->network_add_user(network_id, user_id);
       if (std::find(network->users.begin(),
                     network->users.end(),
