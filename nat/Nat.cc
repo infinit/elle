@@ -100,7 +100,7 @@ KeepAlive::run(void)
     buf.resize(128);
     while (this->running == true)
     {
-        reactor::Sleep s(this->sched, boost::posix_time::seconds(2));
+        reactor::Sleep s(this->sched, boost::posix_time::seconds(60));
 
         handle->write(rnet::Buffer(std::string("ping\n")));
         handle->read_some(rnet::Buffer(buf));
