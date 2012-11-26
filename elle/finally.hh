@@ -1,10 +1,12 @@
 #ifndef ELLE_FINALLY_HH
 # define ELLE_FINALLY_HH
 
-# include <functional>
-# include <cstdlib>
+# include <elle/attribute.hh>
 
 # include <boost/preprocessor/cat.hpp>
+
+# include <functional>
+# include <cstdlib>
 
 /// Provide a lambda-based skeleton for creating Finally instances based
 /// on the name of a variable.
@@ -13,23 +15,23 @@
   elle::Finally BOOST_PP_CAT(_elle_finally_variable_, _variable_)(      \
     std::bind(BOOST_PP_CAT(_elle_finally_lambda_, __LINE__), _variable_));
 
-/// Make it super easy to abort the final action based on the name of
-/// the variable it relates to.
-# define ELLE_FINALLY_ABORT(_variable_)                                 \
-  BOOST_PP_CAT(_elle_finally_variable_, _variable_).abort();
-
 /// Make it extremely simple to call delete on a pointer when leaving the
 /// variable's scope.
-# define ELLE_FINALLY_DELETE(_variable_)                                \
+# define ELLE_FINALLY_ACTION_DELETE(_variable_)                         \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (decltype(_variable_) pointer) { delete pointer; });
 
 /// Make it extremely simple to call free on a pointer when leaving a scope.
-# define ELLE_FINALLY_FREE(_variable_)                                  \
+# define ELLE_FINALLY_ACTION_FREE(_variable_)                           \
   ELLE_FINALLY_LAMBDA(                                                  \
     _variable_,                                                         \
     [] (void* pointer) { ::free(pointer); });
+
+/// Make it super easy to abort the final action based on the name of
+/// the variable it relates to.
+# define ELLE_FINALLY_ABORT(_variable_)                                 \
+  BOOST_PP_CAT(_elle_finally_variable_, _variable_).abort();
 
 namespace elle
 {
@@ -68,7 +70,7 @@ namespace elle
     | Attributes |
     `-----------*/
   private:
-    std::function<void()> _action;
+    ELLE_ATTRIBUTE(std::function<void()>, action);
   };
 }
 

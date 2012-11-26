@@ -18,7 +18,7 @@
 {
     [super viewDidLoad];
     _data = [[InfinitestData alloc] initWithDocumentInteractionControllerDelegate:self];
-    
+
 	[oTableView setDataSource:_data];
 }
 
@@ -66,7 +66,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
@@ -99,7 +99,7 @@
     else if (editingStyle == UITableViewCellEditingStyleInsert)
     {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
+    }
 }
 */
 
@@ -136,7 +136,7 @@
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Relinquish ownership any cached data, images, etc that aren't in use.
 }
 

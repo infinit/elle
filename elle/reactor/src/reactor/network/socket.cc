@@ -222,6 +222,13 @@ namespace reactor
       return this->_peer;
     }
 
+    template <typename AsioSocket>
+    typename PlainSocket<AsioSocket>::EndPoint
+    PlainSocket<AsioSocket>::local_endpoint() const
+    {
+        return this->_socket->local_endpoint();
+    }
+
     /*------------------------.
     | Explicit instantiations |
     `------------------------*/

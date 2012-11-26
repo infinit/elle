@@ -87,7 +87,7 @@ namespace infinit
       ELLE_ASSERT(key != nullptr);
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
-      CRYPTOGRAPHY_FINALLY_FREE_EVP_PKEY(key);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
       KeyPair pair(key);
       CRYPTOGRAPHY_FINALLY_ABORT(key);
 

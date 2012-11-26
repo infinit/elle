@@ -83,7 +83,7 @@ namespace satellite
       escape("unable to seal the identity");
 
     // store the identity.
-    identity.store(name);
+    identity.store();
 
     // store an empty dictionary.
     dictionary.store(name);

@@ -11,6 +11,15 @@ namespace elle
 {
   namespace utility
   {
+    /*
+     * Just forwarding everything to elle::Exception
+     */
+    template <typename ...ARGS>
+    ParserException::ParserException(elle::String const &fmt, ARGS && ... args)
+        : elle::Exception(fmt, args...)
+    {
+      /* Do nothing special */
+    }
 
 //
 // ---------- types -----------------------------------------------------------
@@ -69,16 +78,18 @@ namespace elle
       Parser::Option*   option;
 
       if (this->Locate(name, option) == Status::False)
-          escape("unable to locate the option '%s'", name.c_str());
+        throw ParserException("unable to locate the option '%s'", name.c_str());
 
       if (option->state == Parser::StateDeactivated)
-        escape("the option '%s' has not been activated",
-               name.c_str());
+        throw ParserException("the option '%s' has not been activated",
+                              name.c_str());
 
       // if no argument has been provided, return an error.
       if (option->value == nullptr)
-        escape("the option '%s' has not been provided with an argument",
-               name.c_str());
+        throw ParserException(
+            "the option '%s' has not been provided with an argument",
+            name.c_str()
+        );
 
       try
         {
@@ -86,9 +97,9 @@ namespace elle
         }
       catch (std::exception const& err)
         {
-          escape(
-            "unable to convert the argument '%s' for the option '%s'",
-            option->value->c_str(), name.c_str()
+          throw ParserException(
+              "unable to convert the argument '%s' for the option '%s'",
+              option->value->c_str(), name.c_str()
           );
         }
       return elle::Status::Ok;
@@ -111,12 +122,17 @@ namespace elle
         }
 
       if (option->state == Parser::StateDeactivated)
-        escape("the option '%s' has not been activated", name.c_str());
+        throw ParserException(
+            "the option '%s' has not been activated",
+            name.c_str()
+        );
 
       // if no argument has been provided, return an error.
       if (option->value == nullptr)
-        escape("the option '%s' has not been provided with an argument",
-               name.c_str());
+        throw ParserException(
+            "the option '%s' has not been provided with an argument",
+            name.c_str()
+        );
 
       try
         {
@@ -124,7 +140,7 @@ namespace elle
         }
       catch (std::exception const& err)
         {
-          escape(
+          throw ParserException(
             "unable to convert the argument '%s' for the option '%s'",
             option->value->c_str(), name.c_str()
           );

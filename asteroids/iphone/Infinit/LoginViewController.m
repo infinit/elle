@@ -30,7 +30,7 @@
 
 - (IBAction)oSignUp:(id)sender {
     SignUpViewController *signUpViewController = [[SignUpViewController alloc] initWithNibName:@"SignUpViewController" bundle:NULL];
-    
+
     self.view.backgroundColor = [UIColor blackColor];
 
     signUpViewController.loginView = self.view;
@@ -47,10 +47,10 @@
     UITextField*    txtField = (UITextField*) sender;
     NSInteger      nextTag = txtField.tag + 1;
     UIResponder* nextResponder = [txtField.superview viewWithTag:nextTag];
-    
+
     if (nextResponder) {
         // Found next responder, so set it.
-        [((UITextField*) nextResponder) setEnabled:TRUE]; 
+        [((UITextField*) nextResponder) setEnabled:TRUE];
         [nextResponder becomeFirstResponder];
     } else {
         // Not found, so remove keyboard.
@@ -69,36 +69,36 @@
 }
 
 - (NSString*) loginRequest:(NSDictionary*) dictionary {
-    
+
     self.oPassField.text = @"";
     NSString *JSON = [dictionary JSONString];
-    
+
     // NSLog(@"SENT <%@>", JSON);
-    
+
     NSData *theData = [JSON dataUsingEncoding:NSUTF8StringEncoding];
     NSURL *url = [NSURL URLWithString:@"http://infinit.im:12345/user/login"];
-    
+
     NSString *postLength = [NSString stringWithFormat:@"%d", [theData length]];
-    
+
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     NSError *error = NULL;
     NSURLResponse *response = nil;
-    
+
     [request setURL:url];
     [request setHTTPMethod:@"POST"];
     [request setTimeoutInterval:10];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     [request setHTTPBody:theData];
-    
+
     NSData *result = [NSURLConnection sendSynchronousRequest:request
                                            returningResponse:&response error:&error];
-    
+
     NSString *resultString = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
    // NSLog(@"\n\t=> %@ \n\t=> %@ \n\t=> %@", resultString, error.userInfo, response.description);
-   
+
     NSDictionary*   dico = [resultString objectFromJSONString];
-    
+
     if (([resultString length] != 0) && (CFBooleanGetValue((__bridge CFBooleanRef)([dico valueForKey:@"success"])))) {  // Online authentication suceeded
         token = [dico valueForKey:@"token"];
         NSLog(@"!%@!", token);
@@ -107,7 +107,7 @@
         token = nil;
         NSLog(@"Nope");
     }
-    
+
     return resultString;
 }
 
@@ -121,12 +121,12 @@
                                 self.userMail,   @"email",
                                 self.pswd,   @"password",
                                 nil];
-    
+
     NSString            *path = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"InfinitUInfo.plist"];
     NSMutableDictionary *plistDico = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:path])
         plistDico = [[NSMutableDictionary alloc] initWithContentsOfFile: path];
-    
+
     if (plistDico) {
         NSLog(@">> EXIST : %@", path);
         NSLog(@">> M : %@        P : %@", [plistDico objectForKey:@"rememberM"], [plistDico objectForKey:@"rememberP"]);
@@ -135,7 +135,7 @@
         NSLog(@">> NOPE : %@", path);
 
     NSString*   resultString = [self loginRequest:dictionary];
-    
+
     if ([resultString length] == 0) {     // Offline mode
         if (!plistDico ||                                                               // plistDico doesn't exist, cannot authenticate or
             !([[plistDico objectForKey:@"rememberM"] isEqualToString:self.userMail] &&
@@ -156,7 +156,7 @@
             //  token = [dictionary valueForKey:@"token"];
 
             // [self showAuthError:FALSE offline:FALSE];
-            
+
             if (plistDico &&
                 ![[plistDico objectForKey:@"rememberM"] isEqualToString:@""] &&
                 ![[plistDico objectForKey:@"rememberM"] isEqualToString:self.userMail])     // New user, delete local files warning
@@ -176,12 +176,12 @@
        /* UIImage* infinitBack;
 
         NSLog(@":%f:", [UIScreen mainScreen].bounds.size.height);
-        
+
         if ([UIScreen mainScreen].bounds.size.height == 568)   // iPhone 5 ++
             infinitBack = [UIImage imageNamed:@"Default-568h@2x.png"];
         else
-           infinitBack = [UIImage imageNamed:@"Default@2x.png"]; 
-        
+           infinitBack = [UIImage imageNamed:@"Default@2x.png"];
+
         UIGraphicsBeginImageContext(self.view.bounds.size);
 
         CGContextRef context = UIGraphicsGetCurrentContext();
@@ -248,7 +248,7 @@
 
 - (void) pushRootView {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didLogIn" object:self];
-    
+
     InfinitAppDelegate *infinitAppDelegate = [[UIApplication sharedApplication] delegate];
     [infinitAppDelegate putRootBackView];
 
@@ -271,13 +271,13 @@
 
     self.userMail = self.oLoginField.text;
     self.pswd = self.oPassField.text;
-    
+
     [self pushRootView];
 }
 
 - (IBAction)oDismissLocalFilesWarning:(id)sender {
     [self showDeleteLocalFilesWarning:FALSE];
-    
+
     [self logoutRequest];
 }
 
@@ -296,7 +296,7 @@
         return
 
     [self showAuthForm:!set animated:FALSE];
-    
+
     [UIView animateWithDuration:duration animations:^() {
         [self showAuthForm:!set animated:NO];
 
@@ -314,12 +314,12 @@
 
 - (void) showDeleteLocalFilesWarning:(BOOL) set {
     [self showAuthForm:!set animated:FALSE];
-    
+
     if (set) {
         [self.oSpinner stopAnimating];
         [self.oSpinner setHidden:TRUE];
     }
-    
+
     [self.oDeleteFilesLbl setHidden:!set];
     [self.oDeleteFilesConfirmButton setHidden:!set];
     [self.oDeleteFilesCancelButton setHidden:!set];
@@ -328,7 +328,7 @@
 - (void) showSpinner:(BOOL) set {
     [self.oLoginField setEnabled:!set];
     [self.oPassField setEnabled:!set];
-    
+
     if (set) {
         [self.oSpinner startAnimating];
     }
@@ -340,7 +340,7 @@
 - (IBAction) oPassDidEndOnExit:(id)sender {
     [self.oPassField resignFirstResponder];
     [self showSpinner:TRUE];
-    
+
     [NSTimer    scheduledTimerWithTimeInterval:0.5    target:self    selector:@selector(oLogin:) userInfo:nil repeats:NO];
 }
 
@@ -379,7 +379,7 @@
                                               self.oLoginField.frame.size.width,
                                               self.oLoginField.frame.size.height) ];
         [self.oLoginField setEnabled:set];
-        
+
         // [self.oPassField setHidden:!set];
         [self.oPassField setAlpha:alpha];
         [self.oPassField setFrame:CGRectMake(self.oPassField.frame.origin.x,
@@ -395,9 +395,9 @@
 - (void) showAuthError:(BOOL) set offline:(BOOL) offline {
     if (set) {
         [self showSpinner:FALSE];
-        
+
         [self.oPassField resignFirstResponder];
-        
+
         if (offline)
             [self.oPassField setPlaceholder:@"offline authentication failed"];
         else
@@ -414,12 +414,12 @@
 
 - (void) logoutRequest {
     NSURL *url = [NSURL URLWithString:@"http://infinit.im:12345/user/logout"];
-    
+
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setHTTPShouldHandleCookies:NO];
     NSError *error = NULL;
     NSURLResponse *response = nil;
-    
+
     [request setURL:url];
 
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -429,7 +429,7 @@
 
     /* NSData *result = */
     [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    
+
 //    NSString *resultString = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
     //NSLog(@"\n\t=> %@ \n\t=> %@ \n\t=> %@", resultString, error.userInfo, response.description);
 }
@@ -445,7 +445,7 @@
     InfinitAppDelegate *infinitAppDelegate = [[UIApplication sharedApplication] delegate];
     [infinitAppDelegate dismissRootBackView];
     [self.view setBackgroundColor:[UIColor clearColor]];
-    
+
 }
 
 @end

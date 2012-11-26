@@ -244,7 +244,7 @@ namespace satellite
 
       descriptor.seal(identity.pair.k());
 
-      descriptor.store(name);
+      descriptor.store(identity);
     }
 
     return elle::Status::Ok;

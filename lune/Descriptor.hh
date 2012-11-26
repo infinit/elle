@@ -200,8 +200,8 @@ namespace lune
     load(elle::String const& user,
          elle::String const& network);
     void
-    store(elle::String const& user_id,
-          elle::String const& network_id) const;
+    store(Identity const& identity) const;
+
     static
     void
     erase(elle::String const& user,

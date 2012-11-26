@@ -643,6 +643,47 @@ namespace plasma
       );
     }
 
+    NetworkConnectDeviceResponse
+      Client::_network_connect_device(std::string const& network_id,
+                                      std::string const& device_id,
+                                      std::vector<std::pair<std::string, uint16_t>> const &c,
+                                      std::string const* external_ip,
+                                      uint16_t external_port)
+      {
+        json::Dictionary request {
+            std::map<std::string, std::string> {
+                  {"_id", network_id},
+                  {"device_id", device_id},
+            }
+        };
+
+        json::Array local_addrs;
+
+        for (auto &a: c)
+        {
+          json::Dictionary endpoint;
+
+          endpoint["ip"] = a.first;
+          endpoint["port"] = a.second;
+          local_addrs.push_back(endpoint);
+        }
+
+        request["locals"] = local_addrs;
+
+        if (external_ip != nullptr)
+        {
+            json::Array external_addr;
+            external_addr.push_back(*external_ip);
+            external_addr.push_back(external_port);
+            request["external"] = external_addr;
+        }
+
+        return this->_client.post<NetworkConnectDeviceResponse>(
+            "/network/connect_device",
+            request
+        );
+      }
+
     //- Properties ------------------------------------------------------------
 
     void

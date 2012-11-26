@@ -18,13 +18,13 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL isDirectory:&isDirectory]) {
         return nil;
     };
-    
+
     dic = [UIDocumentInteractionController interactionControllerWithURL:[NSURL  fileURLWithPath:fileURL]];
-    
+
     if (dic) {
         dic.delegate = dicDelegate;
     }
-    
+
     return self;
 }
 

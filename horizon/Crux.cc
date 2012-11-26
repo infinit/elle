@@ -71,7 +71,7 @@ namespace horizon
     ELLE_DEBUG("load the object")
       identifier = etoile::wall::Object::load(chemin);
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Create a local handle.
     Handle handle(Handle::OperationGetattr, identifier);
@@ -412,7 +412,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(directory);
+    HORIZON_FINALLY_ACTION_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -427,7 +427,7 @@ namespace horizon
     // Create the subdirectory.
     etoile::gear::Identifier subdirectory(etoile::wall::Directory::create());
 
-    HORIZON_FINALLY_DISCARD(subdirectory);
+    HORIZON_FINALLY_ACTION_DISCARD(subdirectory);
 
     // Compute the permissions.
     if (mode & S_IRUSR)
@@ -512,7 +512,7 @@ namespace horizon
     etoile::gear::Identifier directory(
       etoile::wall::Directory::load(chemin_parent));
 
-    HORIZON_FINALLY_DISCARD(directory);
+    HORIZON_FINALLY_ACTION_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -531,7 +531,7 @@ namespace horizon
     etoile::gear::Identifier subdirectory(
       etoile::wall::Directory::load(chemin_child));
 
-    HORIZON_FINALLY_DISCARD(subdirectory);
+    HORIZON_FINALLY_ACTION_DISCARD(subdirectory);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -586,7 +586,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve the user's permissions on the object.
     nucleus::neutron::Record record(
@@ -717,7 +717,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -837,7 +837,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -882,7 +882,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Get the attribute.
     nucleus::neutron::Trait trait(
@@ -931,7 +931,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Fetch the attributes.
     nucleus::neutron::Range<nucleus::neutron::Trait> range(
@@ -995,7 +995,7 @@ namespace horizon
     // Load the object.
     etoile::gear::Identifier identifier(etoile::wall::Object::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -1052,7 +1052,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(directory);
+    HORIZON_FINALLY_ACTION_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1067,7 +1067,7 @@ namespace horizon
     // Create a link.
     etoile::gear::Identifier link(etoile::wall::Link::create());
 
-    HORIZON_FINALLY_DISCARD(link);
+    HORIZON_FINALLY_ACTION_DISCARD(link);
 
     // FIXME: do not re-parse the descriptor every time.
     lune::Descriptor descriptor(Infinit::User, Infinit::Network);
@@ -1148,7 +1148,7 @@ namespace horizon
     if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
       return (-ENOENT);
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1199,7 +1199,7 @@ namespace horizon
     // Load the directory.
     etoile::gear::Identifier directory(etoile::wall::Directory::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(directory);
+    HORIZON_FINALLY_ACTION_DISCARD(directory);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(
@@ -1214,7 +1214,7 @@ namespace horizon
     // Create the file.
     etoile::gear::Identifier file(etoile::wall::File::create());
 
-    HORIZON_FINALLY_DISCARD(file);
+    HORIZON_FINALLY_ACTION_DISCARD(file);
 
     // Set default permissions: read and write.
     permissions =
@@ -1446,7 +1446,7 @@ namespace horizon
     // Load the file.
     etoile::gear::Identifier identifier(etoile::wall::File::load(chemin));
 
-    HORIZON_FINALLY_DISCARD(identifier);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Create a local handle.
     Handle                    handle(Handle::OperationTruncate,
@@ -1588,7 +1588,7 @@ namespace horizon
         etoile::gear::Identifier directory(
           etoile::wall::Directory::load(chemin));
 
-        HORIZON_FINALLY_DISCARD(directory);
+        HORIZON_FINALLY_ACTION_DISCARD(directory);
 
         ELLE_TRACE("retrieve the subject's permissions on the object");
         nucleus::neutron::Record record(
@@ -1650,7 +1650,7 @@ namespace horizon
         // do not need to know to perform this operation.
         identifier_object = etoile::wall::Object::load(chemin);
 
-        HORIZON_FINALLY_DISCARD(identifier_object);
+        HORIZON_FINALLY_ACTION_DISCARD(identifier_object);
 
         // Resolve the path.
         chemin = etoile::wall::Path::resolve(to);
@@ -1659,7 +1659,7 @@ namespace horizon
         etoile::gear::Identifier identifier_to(
           etoile::wall::Directory::load(chemin));
 
-        HORIZON_FINALLY_DISCARD(identifier_to);
+        HORIZON_FINALLY_ACTION_DISCARD(identifier_to);
 
         // Retrieve the subject's permissions on the object.
         nucleus::neutron::Record record_to(
@@ -1678,7 +1678,7 @@ namespace horizon
         etoile::gear::Identifier identifier_from(
           etoile::wall::Directory::load(chemin));
 
-        HORIZON_FINALLY_DISCARD(identifier_from);
+        HORIZON_FINALLY_ACTION_DISCARD(identifier_from);
 
         // Retrieve the subject's permissions on the object.
         nucleus::neutron::Record record_from(
@@ -1766,7 +1766,7 @@ namespace horizon
     etoile::gear::Identifier identifier_child(
       etoile::wall::Object::load(chemin_child));
 
-    HORIZON_FINALLY_DISCARD(identifier_child);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier_child);
 
     // Retrieve information on the object.
     etoile::abstract::Object abstract(
@@ -1787,7 +1787,7 @@ namespace horizon
     etoile::gear::Identifier identifier_parent(
       etoile::wall::Directory::load(chemin_parent));
 
-    HORIZON_FINALLY_DISCARD(identifier_parent);
+    HORIZON_FINALLY_ACTION_DISCARD(identifier_parent);
 
     // Retrieve the subject's permissions on the object.
     nucleus::neutron::Record record(

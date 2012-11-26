@@ -10,6 +10,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules"
 
 project(Infinit C CXX)
 
+# - Set target directories ----------------------------------------------------
+#
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+
 # - Infinit version -----------------------------------------------------------
 #
 # Defines INFINIT_VERSION

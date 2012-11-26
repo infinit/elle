@@ -115,14 +115,14 @@ namespace infinit
                            ::BIGNUM* dmq1,
                            ::BIGNUM* iqmp)
     {
-      CRYPTOGRAPHY_FINALLY_FREE_BN(n);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(e);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(d);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(p);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(q);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(dmp1);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(dmq1);
-      CRYPTOGRAPHY_FINALLY_FREE_BN(iqmp);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
 
       // First, create the RSA key based on the given big numbers.
 
@@ -138,7 +138,7 @@ namespace infinit
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      CRYPTOGRAPHY_FINALLY_FREE_RSA(rsa);
+      CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
       // Assign the big numbers relevant to the private key.
       rsa->n = n;

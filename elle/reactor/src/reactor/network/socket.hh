@@ -103,6 +103,7 @@ namespace reactor
     `-----------*/
     public:
       EndPoint peer() const;
+      EndPoint local_endpoint() const;
 
     /*----------------.
     | Pretty printing |

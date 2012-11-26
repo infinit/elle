@@ -72,7 +72,7 @@ namespace elle
       // Create a generatoid.
       auto generatoid = new Factory<P>::Generatoid<T>(product);
 
-      ELLE_FINALLY_DELETE(generatoid);
+      ELLE_FINALLY_ACTION_DELETE(generatoid);
 
       // Insert the generator in the container.
       auto result = this->_container.insert(

@@ -1,6 +1,7 @@
 #ifndef LUNE_IDENTITY_HH
 # define LUNE_IDENTITY_HH
 
+# include <elle/attribute.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/fwd.hh>
@@ -66,7 +67,7 @@ namespace lune
   private:
     /// XXX
     static
-    elle::io::Path
+    std::string
     _path(elle::String const& user);
 
     //
@@ -95,7 +96,6 @@ namespace lune
     static
     elle::Boolean
     exists(elle::String const& user_id);
-
 
     ELLE_SERIALIZE_FRIEND_FOR(Identity);
   };

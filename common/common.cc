@@ -47,12 +47,12 @@ namespace
   _built_binary_relative_path(std::string const& name)
   {
     static std::unordered_map<std::string, std::string> paths{
-      {"8access",   "satellites/access/8access"},
-      {"8group",    "satellites/group/8group"},
-      {"8infinit",  "8infinit"},
-      {"8watchdog", "plasma/watchdog/8watchdog"},
-      {"8transfer", "satellites/transfer/8transfer"},
-      {"8progess",  "satellites/transfer/8progress"},
+      {"8access",   "bin/8access"},
+      {"8group",    "bin/8group"},
+      {"8infinit",  "bin/8infinit"},
+      {"8watchdog", "bin/8watchdog"},
+      {"8transfer", "bin/8transfer"},
+      {"8progess",  "bin/8progress"},
     };
     auto it = paths.find(name);
     if (it == paths.end())
@@ -340,6 +340,13 @@ namespace common
 
   namespace watchdog
   {
+
+    std::string
+    server_name(std::string const& user_id)
+    {
+      return ".infinit-watchdog-server-name-for-" + user_id;
+    }
+
     std::string
     identity_path(std::string const& user_id)
     {
@@ -375,13 +382,6 @@ namespace common
           "id.wtg"
         );
     }
-
-    std::string
-    server_name(std::string const& user_id)
-    {
-      return ".infinit-watchdog-server-name-for-" + user_id;
-    }
-
   }
 
 }
