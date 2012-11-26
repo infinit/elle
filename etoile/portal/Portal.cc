@@ -76,6 +76,14 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
+      // XXX[to remove later: just a hack for now because some satellites
+      //     do not need portal to be launched because there is no hole]
+      if (depot::have_hole() == false)
+        {
+          ELLE_WARN("portal is not launched (no hole instance)");
+          return (elle::Status::Ok);
+        }
+
       // Wait for hole to be ready before enabling outside applications to
       // issue file system requests.
       switch (depot::hole().state())
