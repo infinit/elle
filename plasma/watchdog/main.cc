@@ -40,7 +40,7 @@ int     main(int ac, char* av[])
       _initAll(user_id);
       ELLE_DEBUG("Starting the watchdog for user %s", user_id);
 
-      ::setenv("ELLE_LOG_COMPONENTS", "*plasma*", 1);
+      ::setenv("ELLE_LOG_COMPONENTS", "*", 1);
       ::setenv("ELLE_LOG_LEVEL", "DEBUG", 1);
 
       std::string log_file = common::watchdog::log_path(user_id);

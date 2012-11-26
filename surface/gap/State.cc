@@ -179,11 +179,10 @@ namespace surface
 
     std::string State::_watchdog_id() const // XXX should be cached
     {
-      boost::filesystem::path wtg_id_path(common::infinit::home());
-      wtg_id_path /= "infinit.wtg";
-      std::ifstream file(wtg_id_path.string());
+      std::string watchdog_id_file = common::watchdog::id_path(_me._id);
+      std::ifstream file(watchdog_id_file);
       if (!file.good())
-        throw std::runtime_error("Cannot open '" + wtg_id_path.string() + "'");
+        throw std::runtime_error("Cannot open '" + watchdog_id_file + "'");
 
       char wtg_id[4096];
       file.read(wtg_id, 4096);
@@ -864,7 +863,6 @@ namespace surface
     {
       if (!this->_trophonius)
         throw Exception{gap_error, "Trophonius is not connected"};
-      ELLE_TRACE("Polling trophonius client.");
       bool continue_ = false;
       do
         {
@@ -873,7 +871,6 @@ namespace surface
           if (!dict_ptr)
             return continue_;
 
-          ELLE_DEBUG("Dictionnary polled.");
           json::Dictionary const& dict = *dict_ptr;
           continue_ = this->_handle_dictionnary(dict);
         } while (continue_);
@@ -1137,7 +1134,9 @@ namespace surface
       do {
             {
               QLocalSocket conn;
-              conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
+              conn.connectToServer(
+                  common::watchdog::server_name(this->_me._id).c_str()
+              );
               if (!conn.waitForConnected(2000))
                 break;
               conn.disconnectFromServer();
@@ -1180,6 +1179,9 @@ namespace surface
 
       ELLE_ASSERT(this->_me._id.size() != 0);
 
+      elle::os::path::make_path(
+          common::infinit::user_directory(this->_me._id)
+      );
       std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
       QStringList arguments;
@@ -1192,7 +1194,7 @@ namespace surface
       // Connect to the new watchdog instance
       QLocalSocket conn;
       int tries = 0;
-      while (tries++ < 5)
+      while (tries++ < 10)
         {
           conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
           ELLE_DEBUG("Trying to connect to the new watchdog");
