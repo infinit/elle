@@ -4,6 +4,7 @@
 #include <string>
 
 #include <elle/log.hh>
+#include <elle/Exception.hh>
 
 #include "Array.hh"
 #include "Bool.hh"
@@ -68,9 +69,14 @@ namespace elle
       Parser<T>::parse(StreamType& input)
       {
         ELLE_TRACE_SCOPE("Parsing json from stream");
+        if (!input.good())
+          throw elle::Exception("The stream is not good.");
+        if (input.eof())
+          throw elle::Exception("The stream is empty.");
+
         ObjectPtr res;
         if (!_ReadJSONValue(input, res))
-          throw std::runtime_error("Couldn't read any JSON value");
+          throw elle::Exception("Couldn't read any JSON value");
         assert(res && "true returned, the object should not be null");
         return res;
       }
@@ -80,6 +86,7 @@ namespace elle
       Parser<T>::_ReadJSONValue(StreamType& in,
                                 ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading any value.");
         _Skip(in);
         return (
             _ReadJSONInt(in, out)      ||
@@ -97,6 +104,7 @@ namespace elle
       Parser<T>::_ReadJSONBool(StreamType& in,
                                ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading bool.");
         if (_ReadString(in, _trueString))
           out.reset(new json::Bool(true));
         else if (_ReadString(in, _falseString))
@@ -111,6 +119,7 @@ namespace elle
       Parser<T>::_ReadJSONNull(StreamType& in,
                                ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading null.");
         if (_ReadString(in, _nullString))
           {
             out.reset(new json::Null);
@@ -124,14 +133,18 @@ namespace elle
       Parser<T>::_ReadJSONInt(StreamType& in,
                               ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading int.");
+        assert(in.good());
         auto pos = in.tellg();
+        assert(pos != -1);
         json::Integer::Type i;
 
         in >> i;
         CharType c = 0;
-        if (!in.eof())
+        if (!in.eof() && in.good())
           {
             auto charpos = in.tellg();
+            assert(pos != -1 && "Corrupition");
             in >> c;
             if (c != '.')
               in.seekg(charpos);
@@ -142,6 +155,7 @@ namespace elle
           {
             in.clear();
             in.seekg(pos);
+            assert(in.good());
             return false;
           }
         out.reset(new json::Integer(i));
@@ -153,6 +167,7 @@ namespace elle
       Parser<T>::_ReadJSONFloat(StreamType& in,
                                 ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading float.");
         auto pos = in.tellg();
         json::Float::Type f;
         in >> f;
@@ -162,6 +177,7 @@ namespace elle
           {
             in.clear();
             in.seekg(pos);
+            assert(in.good());
             return false;
           }
         out.reset(new json::Float(f));
@@ -173,6 +189,7 @@ namespace elle
       Parser<T>::_ReadJSONString(StreamType& in,
                                  ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading string.");
         std::string res;
 
         if (!_ReadChar(in, '"'))
@@ -213,6 +230,7 @@ namespace elle
       Parser<T>::_ReadJSONArray(StreamType& in,
                                 ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading array.");
         if (!_ReadChar(in, '['))
           return false;
 
@@ -255,11 +273,12 @@ namespace elle
       Parser<T>::_ReadJSONDict(StreamType& in,
                                ObjectPtr& out)
       {
+        ELLE_TRACE_SCOPE("Trying reading dict.");
         if (!_ReadChar(in, '{'))
           return false;
         std::unique_ptr<json::Dictionary> res(new json::Dictionary);
 
-        auto pos = in.tellg();
+        ELLE_DEBUG_SCOPE("Start reading dict.");
         while (in.good())
           {
             _Skip(in);
@@ -277,13 +296,13 @@ namespace elle
                 _Skip(in);
 
                 if (!_ReadChar(in, ':'))
-                  throw std::runtime_error("':' expected");
+                  throw Error(in, "':' expected");
 
                 _Skip(in);
 
                 std::unique_ptr<Object> value;
                 if (!_ReadJSONValue(in, value))
-                  throw std::runtime_error("Could not read dictionary pair");
+                  throw Error(in, "Could not read dictionary pair");
 
                 (*res)[static_cast<json::String&>(*key)] = std::move(value);
 
@@ -299,8 +318,7 @@ namespace elle
               }
             throw Error(in, "Expected ',' or '}' after a dictionary value");
           }
-        in.seekg(pos);
-        return false;
+        throw Error(in, "Dictionnary was bad formed.");
       }
 
 
@@ -316,10 +334,16 @@ namespace elle
             in >> c;
             if (c == val)
               {
+                ELLE_DEBUG("read : %c", c);
                 return true;
               }
+            ELLE_DEBUG("Expected char %c but found %c.", val, c);
             in.seekg(pos);
           }
+        else
+        {
+          ELLE_DEBUG("Stream is not valid.");
+        }
         return false;
       }
 
