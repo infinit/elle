@@ -20,11 +20,8 @@
 
 @interface IATransactionNotificationCellView : IANotificationCellView
 
-@property (retain) IBOutlet NSButton* accept_button;
-@property (retain) IBOutlet NSButton* reject_button; //or cancel
-
-@end
-
-@interface IATransactionStatusNotificationCellView : IANotificationCellView
+@property (retain) IBOutlet NSButton*       accept_button;
+@property (retain) IBOutlet NSButton*       reject_button; //or cancel
+@property (retain) IBOutlet NSTextField*    status;
 
 @end
