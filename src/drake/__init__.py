@@ -1008,7 +1008,6 @@ class Builder:
         srcs -- The list of source nodes, or the node if there is only on.
         dsts -- The list of target nodes, or the node if there is only on.
         """
-        assert srcs.__class__ == list
         self.__sources = {}
         self.__vsrcs = {}
         for src in srcs:
