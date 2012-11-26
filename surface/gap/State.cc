@@ -1178,10 +1178,15 @@ namespace surface
           ELLE_WARN("Couldn't stop the watchdog: %s", err.what());
         }
 
+      ELLE_ASSERT(this->_me._id.size() != 0);
+
       std::string watchdog_binary = common::infinit::binary_path("8watchdog");
 
-      ELLE_WARN("Launching binary: %s", watchdog_binary);
-      if (QProcess::execute(watchdog_binary.c_str()) < 0)
+      QStringList arguments;
+      arguments << this->_me._id.c_str();
+
+      ELLE_DEBUG("Launching binary: %s with id: %s", watchdog_binary, this->_me._id);
+      if (QProcess::execute(watchdog_binary.c_str(), arguments) < 0)
         throw Exception(gap_internal_error, "Cannot start the watchdog");
 
       // Connect to the new watchdog instance
