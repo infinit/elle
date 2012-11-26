@@ -31,6 +31,7 @@
 
 - (void)_onTransactionNotification:(NSNotification*)n;
 {
+    NSLog(@"ON TRANSACTION NOTIFICATION");
     assert([[n object] isKindOfClass:[IATransactionNotification class]]);
     IATransactionNotification* notif = [n object];
     [[self source] addNotification:notif];
@@ -39,6 +40,7 @@
 
 - (void)_onTransactionStatusNotification:(NSNotification*)n
 {
+    NSLog(@"ON TRANSACTION STATUS NOTIFICATION");
     assert([[n object] isKindOfClass:[IATransactionStatusNotification class]]);
     IATransactionStatusNotification* notif = [n object];
     [self.source updateTransactionStatus:notif];

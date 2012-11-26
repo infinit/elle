@@ -101,6 +101,10 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 
 -(IBAction)toggleNotificationPanel:(id)sender
 {
+#ifdef DEBUG_WITHOUT_FINDER
+    [[self._window_controller window] orderFront:self];
+    [NSApp activateIgnoringOtherApps:YES];
+#endif
     if ([IAClientGapState ready] && [IAClientGapState gap_instance].logged_in)
     {
         [self._notification_panel_controller toggleVisibility];

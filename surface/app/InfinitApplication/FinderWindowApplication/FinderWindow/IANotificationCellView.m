@@ -37,8 +37,8 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _notification = nil;
     }
-    
     return self;
 }
 
@@ -50,10 +50,10 @@
 
 - (void) update:(id)status_notif
 {
-    assert(_notification == nil);
     assert(status_notif != nil);
     assert([status_notif isKindOfClass:[IATransactionStatusNotification class]]);
     IATransactionStatusNotification* notif = status_notif;
+    NSLog(@"Updating transaction notif with status == %d", notif.status);
     NSString* str = nil;
     switch (notif.status)
     {
@@ -80,15 +80,17 @@
             str = [[NSString alloc] initWithFormat:@"Unknown transaction status %d", notif.status];
             break;
     }
+    NSLog(@"Update transaction status to %@", str);
     [self.status setStringValue:str];
 }
 
 - (void) setNotification:(id)notif
 {
-    assert(_notification == nil);
+//assert(_notification == nil);
     assert(notif != nil);
     assert([notif isKindOfClass:[IATransactionNotification class]]);
     _notification = notif;
+    [self.status setStringValue:@"Pending"]; //XXX
 }
 
 @end

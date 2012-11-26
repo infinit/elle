@@ -139,6 +139,7 @@
 
 - (void)updateTransactionStatus:(IATransactionStatusNotification*)notif
 {
+    NSLog(@"Updating transaction status");
     NSInteger i = 0, row = -1;
     for (id n in _notifications)
     {
@@ -158,7 +159,7 @@
         IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
         if (view == nil)
             return;
-        
+        [view update:notif];
     }
 }
 
@@ -229,7 +230,7 @@
 {
     if (op.success)
     {
-        NSLog(@"Reject with success");
+        NSLog(@"Cancel with success");
     }
 }
 
