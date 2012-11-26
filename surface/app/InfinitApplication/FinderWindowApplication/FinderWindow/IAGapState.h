@@ -54,6 +54,8 @@
  */
 @interface IAGapOperationResult : NSObject
 
+@property (retain) NSString* data;
+
 -(BOOL)success;
 -(BOOL)error;
 

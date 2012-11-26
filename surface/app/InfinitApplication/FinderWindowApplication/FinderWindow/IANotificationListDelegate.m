@@ -136,37 +136,43 @@
     return result;
 }
 
-
-- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif
+- (NSInteger)_rowForTransactionId:(NSString*)transaction_id
 {
-    NSLog(@"Updating transaction status");
-    NSInteger i = 0, row = -1;
+    NSInteger row = 0;
     for (id n in _notifications)
     {
         if ([n isKindOfClass:[IATransactionNotification class]])
         {
             IATransactionNotification* tr_n;
-            if (tr_n.transaction_id == notif.transaction_id)
-            {
-                row = i;
-                break;
-            }
+            if (tr_n.transaction_id == transaction_id)
+                return row;
         }
-        i++;
+        row++;
     }
+    return -1;
+}
+
+- (IANotificationCellView*)_viewForTransactionId:(NSString*)transaction_id
+{
+    NSInteger row = [self _rowForTransactionId:transaction_id];
     if (row != -1)
     {
-        IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
-        if (view == nil)
-        {
-            NSLog(@"Cannot find view for transaction id = %@  (row = %ld)", notif.transaction_id, row);
-            return;
-        }
+        return [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
+    }
+    return nil;
+}
+
+- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif
+{
+    NSLog(@"Updating transaction status");
+    IANotificationCellView* view = [self _viewForTransactionId:notif.transaction_id];
+    if (view != nil)
+    {
         [view update:notif];
     }
     else
     {
-        NSLog(@"Cannot find row for transaction id = %@", notif.transaction_id);
+        NSLog(@"Cannot find view for transaction id = %@", notif.transaction_id);
     }
 }
 
@@ -235,13 +241,15 @@
 
 - (void)_on_cancel_done:(IAGapOperationResult*)op
 {
+    assert([op.data isKindOfClass:[IATransactionNotification class]]);
+    IATransactionNotification* notif = (IATransactionNotification*)op.data;
     if (op.success)
     {
         NSLog(@"Cancel with success");
     }
     else
     {
-        NSLog(@"Couldn't cancel op");
+        NSLog(@"Couldn't cancel transaction_id %@", notif.transaction_id);
     }
 }
 

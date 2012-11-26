@@ -114,18 +114,37 @@ typedef int(^gap_operation_t)(void);
 @property gap_Status status;
 
 - (id)initWithStatusCode:(gap_Status)status_code;
-
+- (id)initWithStatusCode:(gap_Status)status_code
+             andObjectId:(NSString*)object_id;
 @end
 
 
 @implementation IAGapOperationResult
 
 @synthesize status;
+@synthesize data = _data;
 
 - (id)initWithStatusCode:(gap_Status)status_code
 {
-    self.status = status_code;
+    self = [super init];
+    if (self)
+    {
+        self.status = status_code;
+    }
     return self;
+}
+
+- (id)initWithStatusCode:(gap_Status)status_code
+             andData:(NSString*)data
+{
+    self = [super init];
+    if (self)
+    {
+        self.status = status_code;
+        self.data = data;
+    }
+    return self;
+    
 }
 
 -(BOOL)success
@@ -333,7 +352,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                                      [notif.transaction_id UTF8String],
                                      gap_transaction_status_accepted);
         return res;
-    } performSelector:selector onObject:object];
+    } performSelector:selector onObject:object withData:notif];
 }
 
 
@@ -347,7 +366,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                                      [notif.transaction_id UTF8String],
                                      gap_transaction_status_rejected);
         return res;
-    } performSelector:selector onObject:object];
+    } performSelector:selector onObject:object withData:notif];
 }
 
 - (void)       cancelTransaction:(IATransactionNotification*)notif
@@ -360,7 +379,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                                      [notif.transaction_id UTF8String],
                                      gap_transaction_status_canceled);
         return res;
-    } performSelector:selector onObject:object];
+    } performSelector:selector onObject:object withData:notif];
 }
 
 //- User -------------------------------------------------------------------------------------
@@ -456,6 +475,20 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
                               waitUntilDone:NO];
     }];
 }
+
+-(void) _addOperation:(gap_operation_t)operation
+      performSelector:(SEL)selector
+             onObject:(id)object
+             withData:(id)data
+{
+    [self addOperationWithBlock:^(void) {
+        int result = operation();
+        [object performSelectorOnMainThread:selector
+                                 withObject:[[IAGapOperationResult alloc] initWithStatusCode:result andData:data]
+                              waitUntilDone:NO];
+    }];
+}
+
 
 @end
 
