@@ -155,6 +155,11 @@ namespace etoile
     ///
     elle::Status        Portal::Clean()
     {
+      // XXX[to remove later: just a hack for now because some satellites
+      //     do not need portal to be launched because there is no hole]
+      if (depot::have_hole() == false)
+        return (elle::Status::Ok);
+
       Portal::Scoutor scoutor;
 
       lune::Phrase::erase(Infinit::User, Infinit::Network, "portal");
