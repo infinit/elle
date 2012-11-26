@@ -65,7 +65,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "INFINIT_BUILD_DIR"
-            value = "/Users/infinit/sandbox/infinit/build/macosx64"
+            value = "/Users/infinit/sandbox/infinit/build"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
