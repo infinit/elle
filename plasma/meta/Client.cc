@@ -658,7 +658,6 @@ namespace plasma
         };
 
         json::Array local_addrs;
-
         for (auto &a: c)
         {
           json::Dictionary endpoint;
@@ -670,13 +669,19 @@ namespace plasma
 
         request["locals"] = local_addrs;
 
+        // We make a list from one element in order to be ready for when we want
+        // to handle multiple public IP.
+        json::Array public_addrs;
         if (external_ip != nullptr)
         {
-            json::Array external_addr;
-            external_addr.push_back(*external_ip);
-            external_addr.push_back(external_port);
-            request["external"] = external_addr;
+            json::Dictionary pub_addr;
+
+            pub_addr["ip"] = *external_ip;
+            pub_addr["port"] = external_port;
+            public_addrs.push_back(pub_addr);
         }
+
+        request["externals"] = public_addrs;
 
         return this->_client.post<NetworkConnectDeviceResponse>(
             "/network/connect_device",

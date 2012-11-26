@@ -154,6 +154,9 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   // Create the NAT Manipulation class
   elle::nat::NAT NAT(elle::concurrency::scheduler());
 
+  auto public_endpoint = NAT.punch(common::longinus::host(),
+                                   common::longinus::port());
+
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
                         elle::io::Piece{"%NETWORK%", Infinit::Network});
@@ -206,8 +209,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
               }
               client.token(agent::Agent::meta_token);
               client.network_connect_device(descriptor.meta().id(),
-                                            passport.id,
-                                            addresses);
+                                            passport.id(),
+                                            addresses,
+                                            &public_endpoint.first,
+                                            public_endpoint.second);
             }
         }
       catch (std::exception const& err)
