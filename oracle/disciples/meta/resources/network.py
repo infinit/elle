@@ -389,11 +389,11 @@ class ConnectDevice(_Page):
             # Generate a list of dictionary ip:port.
             # We can not take the local_addresses content directly:
             # it's not checked before this point. Therefor, it's insecure.
-            node['locals'] = [{v["ip"] : v["port"]} for v in local_addresses]
+            node['locals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in local_addresses]
 
         external_addresses = self.data.get('externals')
         if external_addresses is not None:
-            node['externals'] = [{v["ip"] : v["port"]} for v in external_addresses]
+            node['externals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in external_addresses]
         else:
             node['externals'] = []
 
