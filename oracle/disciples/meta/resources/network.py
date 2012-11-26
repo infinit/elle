@@ -392,7 +392,7 @@ class ConnectDevice(_Page):
             node['locals'] = [{v["ip"] : v["port"]} for v in local_addresses]
 
         external_addresses = self.data.get('externals')
-        if external_address is not None:
+        if external_addresses is not None:
             node['externals'] = [{v["ip"] : v["port"]} for v in external_addresses]
         else:
             node['externals'] = []
