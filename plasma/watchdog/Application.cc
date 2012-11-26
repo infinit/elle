@@ -23,7 +23,9 @@ Application::Application(std::string const& user_id) :
   QCoreApplication(dummy, (char**)nullptr),
   _server{new LocalServer(*this, user_id)},
   _user_id{user_id}
-{}
+{
+  ELLE_TRACE("Creating new application for user %s", _user_id);
+}
 
 namespace
 {
@@ -76,6 +78,7 @@ int Application::exec()
   }
 
 
+  ELLE_DEBUG("Starting the local server");
   this->_server->start(watchdogId);
   return this->QCoreApplication::exec();
 }

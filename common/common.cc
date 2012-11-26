@@ -344,7 +344,7 @@ namespace common
     std::string
     server_name(std::string const& user_id)
     {
-      return ".infinit-watchdog-server-name-for-" + user_id;
+      return path::join(infinit::user_directory(user_id), "server.wtg");
     }
 
     std::string

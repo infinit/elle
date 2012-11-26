@@ -19,8 +19,11 @@ LocalServer::LocalServer(QCoreApplication& app,
                          std::string const& user_id):
   QLocalServer(),
   _state(State::Stopped),
-  _manager{new Manager{app, *this, user_id}}
-{}
+  _manager{new Manager{app, *this, user_id}},
+  _user_id{user_id}
+{
+  ELLE_DEBUG("Creating local server for user %s", user_id);
+}
 
 void LocalServer::start(std::string const& watchdogId)
 {
@@ -30,10 +33,12 @@ void LocalServer::start(std::string const& watchdogId)
   this->_manager->start(watchdogId);
 
   std::string server_name = common::watchdog::server_name(_user_id);
+  ELLE_DEBUG("Trying to listen on %s", server_name);
   // Trying to create a listening socket
   if (!this->listen(server_name.c_str()))
     {
-      ELLE_WARN("Server name already used (maybe previous crash)");
+      ELLE_WARN("Server name %s already used (maybe previous crash) and"
+                " will be removed.", server_name);
 
       // We try to remove the server instance first
       if (!QLocalServer::removeServer(server_name.c_str()))
