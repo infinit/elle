@@ -161,7 +161,7 @@ namespace surface
     }
 
     void
-    State::scratch_db()
+    State::debug()
     {
       this->_meta->debug();
     }
@@ -503,8 +503,36 @@ namespace surface
     State::download_files(std::string const& transaction_id,
                    std::string const& path)
     {
-      (void) transaction_id;
-      (void) path;
+      auto pair = State::transactions().find(transaction_id);
+
+      assert(pair != State::transactions().end());
+
+      if (pair == State::transactions().end())
+        return;
+
+      plasma::meta::TransactionResponse *trans = pair->second;
+
+      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
+
+      QStringList arguments;
+      arguments << "-n" << trans->network_id.c_str()
+                << "-u" << trans->sender_id.c_str()
+                << "--path" << path.c_str()
+                << "--from"
+      ;
+      ELLE_DEBUG("LAUNCH: %s %s",
+                      transfer_binary,
+                      arguments.join(" ").toStdString());
+
+      QProcess p;
+      p.start(transfer_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8transfer binary failed");
+      if (p.exitCode())
+        throw Exception(gap_internal_error, "8transfer binary exited with errors");
+
+      ELLE_WARN("TRANSFER IS FUCKING COMPLETE MOTHER FUCKER!! Your file is at '%s'.",
+                path.c_str());
     }
 
     void
@@ -535,11 +563,6 @@ namespace surface
             status);
           return;
       }
-
-      this->_meta->update_transaction(transaction_id,
-                                      status,
-                                      this->device_id(),
-                                      this->device_name());
     }
 
     void
@@ -561,7 +584,10 @@ namespace surface
 
       //XXX: Give the writes here.
 
-      this->_meta->start_transaction(transaction_id);
+      this->_meta->update_transaction(transaction_id,
+                                      gap_TransactionStatus::gap_transaction_status_accepted,
+                                      this->device_id(),
+                                      this->device_name());
     }
 
     void
@@ -581,9 +607,10 @@ namespace surface
       if (trans->sender_id != this->_me._id)
         return;
 
-      //XXX: Delete network.
-
-      this->_meta->cancel_transaction(transaction_id);
+      this->_meta->update_transaction(transaction_id,
+                                      gap_TransactionStatus::gap_transaction_status_rejected,
+                                      this->device_id(),
+                                      this->device_name());
     }
 
     void
@@ -729,6 +756,8 @@ namespace surface
       if (!notif->is_new)
         return;
 
+      ELLE_ASSERT(notif->transaction_id != nullptr);
+
       auto const pair = State::transactions().find(notif->transaction_id);
 
       if (pair != State::transactions().end())
@@ -748,15 +777,14 @@ namespace surface
         ELLE_ASSERT(notif->network_id != nullptr);
         ELLE_ASSERT(notif->first_filename != nullptr);
 
-
-        ELLE_ASSERT(notif->transaction_id != trans->transaction_id);
-        ELLE_ASSERT(notif->sender_id != trans->sender_id);
-        ELLE_ASSERT(notif->sender_device_id != trans->sender_device_id);
-        ELLE_ASSERT(notif->sender_fullname != trans->sender_fullname);
-        ELLE_ASSERT(notif->recipient_id != trans->recipient_id);
-        ELLE_ASSERT(notif->recipient_fullname != trans->recipient_fullname);
-        ELLE_ASSERT(notif->network_id != trans->network_id);
-        ELLE_ASSERT(notif->first_filename != trans->first_filename);
+        ELLE_ASSERT(notif->transaction_id == trans->transaction_id);
+        ELLE_ASSERT(notif->sender_id == trans->sender_id);
+        ELLE_ASSERT(notif->sender_device_id == trans->sender_device_id);
+        ELLE_ASSERT(notif->sender_fullname == trans->sender_fullname);
+        ELLE_ASSERT(notif->recipient_id == trans->recipient_id);
+        ELLE_ASSERT(notif->recipient_fullname == trans->recipient_fullname);
+        ELLE_ASSERT(notif->network_id == trans->network_id);
+        ELLE_ASSERT(notif->first_filename == trans->first_filename);
         ELLE_ASSERT(trans->files_count == notif->files_count);
         ELLE_ASSERT(trans->total_size == notif->total_size);
         ELLE_ASSERT(trans->is_directory == notif->is_directory);
@@ -765,7 +793,23 @@ namespace surface
       }
 
       // // Normal case, this is a new transaction, store it to match server.
-      // auto t = new plasma::meta::TransactionResponse();
+      auto trans = new plasma::meta::TransactionResponse();
+
+      trans->transaction_id = notif->transaction_id;
+      trans->sender_id = notif->sender_id;
+      trans->sender_device_id = notif->sender_device_id;
+      trans->sender_fullname = notif->sender_fullname;
+      trans->recipient_id = notif->recipient_id;
+      trans->recipient_fullname = notif->recipient_fullname;
+      trans->network_id = notif->network_id;
+      trans->first_filename = notif->first_filename;
+      trans->files_count = notif->files_count;
+      trans->total_size = notif->total_size;
+      trans->is_directory = notif->is_directory;
+
+      print_transaction(*trans);
+
+      (*this->_transactions)[trans->transaction_id] = trans;
     }
 
     void
@@ -773,18 +817,44 @@ namespace surface
     {
       ELLE_TRACE("_on_notification(gap_TransactionStatusNotification\n");
 
+      ELLE_ASSERT(notif != nullptr);
+
       if (!notif->is_new)
         return;
 
-      auto const trans = State::transactions().find(notif->transaction_id);
+      ELLE_ASSERT(notif->transaction_id != nullptr);
 
-      if (trans == State::transactions().end())
+      auto const pair = State::transactions().find(notif->transaction_id);
+
+      if (pair == State::transactions().end())
       {
         // Something went wrong.
         auto response = this->_meta->transaction(notif->transaction_id);
         (*this->_transactions)[notif->transaction_id] =
           new plasma::meta::TransactionResponse{response};
+
+        return;
       }
+
+      ELLE_ASSERT(notif->sender_id != nullptr);
+      ELLE_ASSERT(notif->sender_device_id != nullptr);
+      ELLE_ASSERT(notif->recipient_id != nullptr);
+      ELLE_ASSERT(notif->recipient_fullname != nullptr);
+      ELLE_ASSERT(notif->recipient_device_id != nullptr);
+      ELLE_ASSERT(notif->recipient_device_name != nullptr);
+      ELLE_ASSERT(notif->network_id != nullptr);
+
+      auto trans = pair->second;
+
+      ELLE_ASSERT(trans != nullptr);
+
+      trans->recipient_fullname = notif->recipient_fullname;
+      trans->recipient_device_id = notif->recipient_device_id;
+      trans->recipient_device_name = notif->recipient_device_name;
+
+      ELLE_DEBUG("Status");
+      trans->status = notif->status;
+      ELLE_DEBUG("Over");
     }
 
 

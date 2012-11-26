@@ -87,17 +87,18 @@ namespace plasma
     struct TransactionResponse : plasma::Response
     {
       std::string           transaction_id;
-      std::string           first_filename;
-      int                   files_count;
-      int                   total_size;
-      bool                  is_directory;
-      std::string           network_id;
       std::string           sender_id;
       std::string           sender_fullname;
       std::string           sender_device_id;
       std::string           recipient_id;
       std::string           recipient_fullname;
       std::string           recipient_device_id;
+      std::string           recipient_device_name;
+      std::string           network_id;
+      std::string           first_filename;
+      int                   files_count;
+      int                   total_size;
+      bool                  is_directory;
       int                   status;
     };
 

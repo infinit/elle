@@ -12,6 +12,7 @@
 #include <elle/idiom/Close.hh>
 
 #include <elle/print.hh>
+#include <elle/assert.hh>
 
 #include <fcntl.h>
 
@@ -58,6 +59,11 @@ namespace plasma
     {
       ELLE_TRACE("Handling user status modification.");
 
+#ifdef DEBUG
+      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
+      memset(notification.get(), 0, sizeof(Notification));
+#endif
+
       notification->user_id = dic["user_id"].as_string().value().c_str();
       notification->status = dic["status"].as_integer();
 
@@ -72,6 +78,11 @@ namespace plasma
                                       bool _new)
     {
       ELLE_TRACE("Handling new file transfer request.");
+
+#ifdef DEBUG
+      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
+      memset(notification.get(), 0, sizeof(Notification));
+#endif
 
       notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
 
@@ -108,6 +119,11 @@ namespace plasma
     {
       ELLE_TRACE("Handling file transfer status update.");
 
+#ifdef DEBUG
+      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
+      memset(notification.get(), 0, sizeof(Notification));
+#endif
+
       notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
 
       // Sender.
@@ -116,6 +132,7 @@ namespace plasma
 
       // Recipient.
       notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
+      notification->recipient_fullname = dic["recipient_fullname"].as_string().value().c_str();
       notification->recipient_device_id = dic["recipient_device_id"].as_string().value().c_str();
       notification->recipient_device_name = dic["recipient_device_name"].as_string().value().c_str();
 
@@ -140,6 +157,11 @@ namespace plasma
     {
       ELLE_TRACE("Handling new message.");
 
+#ifdef DEBUG
+      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
+      memset(notification.get(), 0, sizeof(Notification));
+#endif
+
       notification->sender_id = dic["sender_id"].as_string().value().c_str();
       notification->message = dic["message"].as_string().value().c_str();
       notification->is_new = _new;
@@ -156,6 +178,12 @@ namespace plasma
                                std::unique_ptr<Notification>&& notification,
                                bool _new)
     {
+
+#ifdef DEBUG
+      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
+      memset(notification.get(), 0, sizeof(Notification));
+#endif
+
       notification->debug = dic["debug"].as_string().value().c_str();
       notification->is_new = _new;
 

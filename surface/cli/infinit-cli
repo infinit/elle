@@ -13,6 +13,7 @@ import os
 import re
 import stat
 import sys
+import glob
 
 # Poll thread
 import time
@@ -108,8 +109,19 @@ class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
         self._state = state
         self._args = args
-        self.prompt = state.email + '$ '
+        self._notifs = []
+        self._notif_count = 0
+        self._attach_callbacks()
         super(InfinitShell, self).__init__()
+
+    def _attach_callbacks(self):
+        self._state.on_transaction(self._incomming_transfer_handler)
+        self._state.on_transaction_status(self._file_transfer_status_handler)
+        self._state.on_message(self._message_handler)
+
+    @property
+    def prompt(self):
+      return self._state.email + '(' + str(self._notif_count) + ') $ '
 
     def default(self, line):
         if line == 'EOF':
@@ -154,7 +166,7 @@ class InfinitShell(cmd.Cmd):
         self._networks_argument_parser.print_help()
 
     ###########################################################################
-    # Retreive networks.
+    # Create network.
 
     _create_network_argument_parser = make_simple_argument_parser(
         prog = "create_network",
@@ -298,16 +310,179 @@ class InfinitShell(cmd.Cmd):
             return
 
         recipient = args.user
+        files = args.files
 
         try:
             self._state.send_files(recipient, files)
         except Exception as e:
             print(e)
 
-    # def complete_sendfiles(self, text, line, begidx, endidx):
-    #     # XXX: Finish completion.
-    #     print(text, line, begidx, endidx, sep="|")
-    #     return []
+    def complete_sendfiles(self, text, line, begidx, endidx):
+        # XXX: Finish completion.
+        sp = line.split(" ")
+        if len(sp) >= 3:
+            return glob.glob(os.path.expanduser(sp[len(sp) - 1]+'*'))
+
+    ###########################################################################
+    # Send files.
+    _downloadfiles_argument_parser = make_simple_argument_parser(
+        prog = "downloadfiles",
+        description = "Invite a user to exchange a file. If the user doesn't exist, invite him to infinit.",
+        args = [
+            {
+                'flags': 'transaction_id',
+                'help': 'id of the transaction.',
+            },
+            {
+                'flags': 'output_dir',
+                'help': 'the directory to put file on.',
+            }
+        ],
+    )
+
+    def help_downloadfiles(self):
+        self._downloadfiles_argument_parser.print_help()
+
+    def do_downloadfiles(self, line):
+        args = self._get_args(self._downloadfiles_argument_parser, line)
+        if not args:
+            return
+
+        transaction_id = args.transaction_id
+        output_dir = args.output_dir
+
+        try:
+            self._state.download_files(transaction_id, output_dir)
+        except Exception as e:
+            print(e)
+
+    def complete_downloadfiles(self, text, line, begidx, endidx):
+        sp = line.split(" ")
+        if len(sp) == 2:
+            return [t for t in self._state.transactions() if t.startswith(text)]
+        if len(sp) == 3:
+            return glob.glob(os.path.expanduser(sp[2]+'*'))
+
+
+    ###########################################################################
+    # Retreive transactions.
+
+    _transactions_argument_parser = make_simple_argument_parser(
+        prog = "transactions",
+        description = "Print all transactions",
+        args = [],
+    )
+
+    def do_transactions(self, line):
+        """Print transactions."""
+        args = self._get_args(self._transactions_argument_parser, line)
+        try:
+            transactions = self._state.transactions()
+            print(", ".join(transactions))
+        except Exception as e:
+            print(e)
+
+    def help_transactions(self):
+        self._transactions_argument_parser.print_help()
+
+    ###########################################################################
+    # Update transactions
+
+    _update_transaction_argument_parser = make_simple_argument_parser(
+        prog = "update_transaction",
+        description = "update a specific transaction.",
+        args = [
+            {
+                'flags': 'transaction_id',
+                'help': 'The transaction id to update.',
+            },
+            {
+                'flags': 'status',
+                'help': 'The new status',
+            }
+        ]
+    )
+
+    def do_update_transaction(self, line):
+        args = self._get_args(self._update_transaction_argument_parser, line)
+
+        transaction = args.transaction_id;
+        status = args.status;
+
+        try:
+            self._state.update_transaction(transaction, self._state.TransactionStatus(status))
+        except Exception as e:
+            print(e)
+
+    def help_update_transaction(self):
+        self._update_transaction_argument_parser.print_help()
+
+    def complete_update_transaction(self, text, line, begidx, endidx):
+        # command_len = len("update_transaction")
+        # transaction_len = 24
+        # if begidx >= command_len + 1 and endidx < command_len + 1 + transaction_len:
+        sp = line.split(" ")
+        if len(sp) == 2:
+            return [t for t in self._state.transactions() if t.startswith(text)]
+        #elif begidx >= command_len + 1 + transaction_len + 1:
+        else:
+            # XXX: improve that shit.
+            transaction_id = line[command_len+1:command_len + transaction_len + 1]
+            ps = self._state.TransactionStatus
+            # if self._state._id == self._state.transaction_owner(transaction_id):
+            #     possible_status = {
+            #         ps.pending : [ps.canceled],
+            #         ps.rejected : [ps.canceled],
+            #         ps.accepted : [ps.canceled],
+            #         ps.started : [ps.canceled],
+            #         ps.cancelded : [],
+            #         ps.finished : [],
+            #     }
+            # else:
+            #     possible_status = {
+            #         ps.pending : [ps.accepted, ps.rejected)],
+            #         ps.rejected : [],
+            #         ps.accepted : [],
+            #         ps.started : [ps.canceled],
+            #         ps.cancelded : [],
+            #         ps.finished : [],
+            #     }
+
+            status = self._state.transaction_status(transaction_id)
+            if self._state._id == self._state.transaction_owner(transaction_id):
+                return [ps.canceled]
+            else:
+                return [ps.accepted, ps.rejected]
+
+        return []
+
+
+
+    ###########################################################################
+    # Notifications.
+    _notifications_argument_parser = make_simple_argument_parser(
+        prog = "notifications",
+        description = "Display current notifications.",
+        args = [
+            {
+                'flags': 'count',
+                'help': 'number of notifications you want to display. Default: 10.',
+            },
+            {
+               'flags': 'offset',
+               'help': 'offset of notifications to display. Default: 0.',
+            }
+        ],
+    )
+
+    def help_notifications(self):
+        self._notifications_argument_parser.print_help()
+
+    def do_notifications(self, line):
+        args = self._get_args(self._notifications_argument_parser, line)
+        for notif in self._notifs:
+            print(notif)
+        self._state.notifications_read()
 
     ###########################################################################
     # Default.
@@ -316,6 +491,23 @@ class InfinitShell(cmd.Cmd):
             print()
             raise KeyboardInterrupt()
         print("Command not found:", line)
+
+    ###########################################################################
+    # Callbacks.
+    def _incomming_transfer_handler(self, transfer):
+        assert isinstance(transfer, self._state.TransferNotification)
+        self._notifs.append(transfer)
+        if transfer.new:
+            self._notif_count += 1
+
+    def _file_transfer_status_handler(self, status):
+        assert isinstance(status, self._state.TransferStatusNotification)
+        self._notifs.append(status)
+        if status.new:
+            self._notif_count += 1
+
+    def _message_handler(self, message):
+        print("Message")
 
 def start_shell(state, args):
     shell = InfinitShell(state, args)
@@ -487,24 +679,13 @@ def main():
         print("Authentication required (if you don't have an account, try -r)")
         login(state)
 
-    state.OnTransaction(_IncommingFileTransferHandler)
-    state.OnTransactionStatus(_FileTransferStatusHandler)
-    state.OnMessage(_MessageHandler)
+    state.launch_watchdog()
+    state.connect()
+    state.set_device_name("Penis")
+
     thread = PollThread(state)
     thread.start()
-    state.connect()
     start_shell(state, args)
-
-def _IncommingFileTransferHandler(transfer):
-    username = state.user_fullname(transfer.sender_id)
-    print("_IncommingFileTransferHandler:", username)
-    #state.answer_transaction(transfer.transaction_id, answer)
-
-def _FileTransferStatusHandler(status):
-    print("_FileTransferStatusHandler")
-
-def _MessageHandler(message):
-    print("_MessageHandler")
 
 class PollThread (threading.Thread):
     close = False

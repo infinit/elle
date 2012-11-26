@@ -157,8 +157,7 @@ extern "C"
   gap_Status
   gap_debug(gap_State* state)
   {
-    __WRAP_CPP(state, scratch_db);
-
+    (void) state;
     return gap_ok;
   }
 
@@ -749,4 +748,43 @@ extern "C"
 
     __WRAP_CPP(state, download_files, transaction_id, output_path);
   }
+
+  gap_TransactionStatus
+  gap_transaction_status(gap_State* state,
+                         char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+    gap_Status ret;
+
+    try
+      {
+        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+        return (gap_TransactionStatus) transaction.status;
+      }
+    CATCH_ALL(transaction_status);
+
+    (void) ret;
+    return gap_TransactionStatus::gap_transaction_status_none;
+  }
+
+  char const*
+  gap_transaction_owner(gap_State* state,
+                        char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+
+    gap_Status ret;
+    try
+      {
+        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+        return transaction.sender_id.c_str();
+      }
+    CATCH_ALL(transaction_owned);
+
+    (void) ret;
+    return nullptr;
+  }
+
 } // ! extern "C"
