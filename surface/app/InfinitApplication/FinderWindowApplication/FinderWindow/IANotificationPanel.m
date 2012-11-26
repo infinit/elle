@@ -11,7 +11,7 @@
 #import "IAStatusItemView.h"
 
 #define PANEL_HEIGHT 400
-#define PANEL_WIDTH 400
+#define PANEL_WIDTH 800
 
 #define ARROW_HEIGHT 20
 
@@ -42,28 +42,25 @@
 
 - (void)show
 {
-    NSRect screenRect = [[[NSScreen screens] objectAtIndex:0] frame];
-    NSRect statusRect = [self statusRectForWindow:self];
-    
-    NSRect panelRect = [self frame];
-    panelRect.size.width = PANEL_WIDTH;
-    panelRect.origin.x = roundf(NSMidX(statusRect) - NSWidth(panelRect) / 2);
-    panelRect.origin.y = NSMaxY(statusRect) - NSHeight(panelRect);
-    
-    if (NSMaxX(panelRect) > (NSMaxX(screenRect) - ARROW_HEIGHT))
-        panelRect.origin.x -= NSMaxX(panelRect) - (NSMaxX(screenRect) - ARROW_HEIGHT);
-    
-    NSLog(@"Showing panel at (x=%f, y=%f, w=%f, h=%f)",
-          panelRect.origin.x,
-          panelRect.origin.y,
-          panelRect.size.width,
-          panelRect.size.height);
-    
-    [NSApp activateIgnoringOtherApps:YES];
-    [self setAlphaValue:0];
-    [self setFrame:statusRect display:YES];
-    [self makeKeyAndOrderFront:self];
+    IAStatusItemView *status_item_view = [_status_bar_controller getStatusItemView];
+    NSRect frame = [status_item_view frame];
+    frame.origin = [status_item_view.window convertBaseToScreen:frame.origin];
+    frame.origin.x -= PANEL_WIDTH / 2;
+    frame.origin.y -= PANEL_HEIGHT;//frame.size.height;
+    frame.size.width = PANEL_WIDTH;
+    frame.size.height = PANEL_HEIGHT;
 
+    NSLog(@"Showing panel at (x=%f, y=%f, w=%f, h=%f)",
+          frame.origin.x,
+          frame.origin.y,
+          frame.size.width,
+          frame.size.height);
+    
+    [NSApp activateIgnoringOtherApps:NO];
+    [self setHidesOnDeactivate:YES];
+   // [self setAlphaValue:0];
+    [self setFrame:frame display:YES];
+    [self makeKeyAndOrderFront:self];
 }
 
 - (void)hide
@@ -80,8 +77,13 @@
     
     if (status_item_view)
     {
-        statusRect = status_item_view.absoluteFrame;
-        statusRect.origin.y = NSMinY(statusRect) - NSHeight(statusRect);
+        NSRect frame = [status_item_view frame];
+        frame.origin = [status_item_view.window convertBaseToScreen:frame.origin];
+        frame.origin.y = frame.size.height;
+        statusRect = frame;
+
+        NSLog(@"statusRect computed from status item view (x=%f, y=%f, w=%f, h=%f",
+              frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
     }
     else
     {

@@ -158,8 +158,15 @@
     {
         IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
         if (view == nil)
+        {
+            NSLog(@"Cannot find view for transaction id = %@  (row = %ld)", notif.transaction_id, row);
             return;
+        }
         [view update:notif];
+    }
+    else
+    {
+        NSLog(@"Cannot find row for transaction id = %@", notif.transaction_id);
     }
 }
 
@@ -231,6 +238,10 @@
     if (op.success)
     {
         NSLog(@"Cancel with success");
+    }
+    else
+    {
+        NSLog(@"Couldn't cancel op");
     }
 }
 

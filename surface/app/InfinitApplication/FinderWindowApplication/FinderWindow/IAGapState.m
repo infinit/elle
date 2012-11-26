@@ -550,7 +550,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 static void on_user_status(gap_UserStatusNotification const* n)
 {
     assert(n != NULL);
-    NSLog(@"on user status notif !");
+    NSLog(@">>> on user status notif !");
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_USER_STATUS_NOTIFICATION
                                                         object:[[IAUserStatusNotification alloc] init:n]];
 }
@@ -558,7 +558,7 @@ static void on_user_status(gap_UserStatusNotification const* n)
 static void on_transaction(gap_TransactionNotification const* n)
 {
     assert(n != NULL);
-    NSLog(@"On transaction notif");
+    NSLog(@">>> On transaction notif");
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_NOTIFICATION
                                                         object:[[IATransactionNotification alloc] init:n]];
 }
@@ -566,7 +566,7 @@ static void on_transaction(gap_TransactionNotification const* n)
 static void on_transaction_status(gap_TransactionStatusNotification const* n)
 {
     assert(n != NULL);
-    NSLog(@"On transaction status notif");
+    NSLog(@">>> On transaction status notif");
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
                                                         object:[[IATransactionStatusNotification alloc] init:n]];
 }
