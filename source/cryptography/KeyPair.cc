@@ -224,6 +224,7 @@ namespace infinit
       return elle::Status::Ok;
     }
 
+
     /*----------.
     | Printable |
     `----------*/
