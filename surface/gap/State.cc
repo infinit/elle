@@ -201,7 +201,7 @@ namespace surface
     {
       QLocalSocket conn;
 
-      conn.connectToServer(common::watchdog::server_name().c_str());
+      conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
       if (!conn.waitForConnected(2000))
         throw Exception{
             gap_internal_error,
@@ -1137,7 +1137,7 @@ namespace surface
       do {
             {
               QLocalSocket conn;
-              conn.connectToServer(common::watchdog::server_name().c_str());
+              conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
               if (!conn.waitForConnected(2000))
                 break;
               conn.disconnectFromServer();
@@ -1189,7 +1189,7 @@ namespace surface
       int tries = 0;
       while (tries++ < 5)
         {
-          conn.connectToServer(common::watchdog::server_name().c_str());
+          conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
           ELLE_DEBUG("Trying to connect to the new watchdog");
           if (conn.waitForConnected(2000))
             break;
