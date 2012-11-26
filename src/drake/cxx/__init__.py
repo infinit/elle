@@ -962,9 +962,9 @@ class LibraryConfiguration(drake.Configuration):
         # for i in range(len(test)):
         #     if not test[i].absolute:
         #         test[i] = srctree() / test[i]
-        self.__prefix = self._search_all(token, test)[0]
+        self.__prefix = self._search_all(token, test)[0].dirname()
         self.__config = drake.cxx.Config()
-        self.__config.add_system_include_path(self.__prefix / include_dir)
+        self.__config.add_system_include_path(self.__prefix / 'include')
         self.__config.lib_path(self.__prefix / 'lib')
         for lib in libs:
             self.__config.lib(lib)
