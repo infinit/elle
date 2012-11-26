@@ -667,9 +667,9 @@ def main():
 
     file_dir = os.path.abspath(os.path.dirname(__file__))
     sys.path = [
-        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '../lib'),
+        os.path.join(file_dir, '../surface/gap/python'),
         os.path.join(INFINIT_HOME, 'python'),
-        os.path.join(file_dir, '..', 'python'),
     ] + sys.path
 
     import gap
