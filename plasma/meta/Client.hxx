@@ -22,15 +22,15 @@ namespace plasma
           adapter.emplace_back(a.first, a.second);
         }
 
-        /* 
+        /*
          * This adapter is only there in order for the Json and Serialization
          * classes to be forward declared
          */
-        this->_network_connect_device(network_id,
-                                      device_id,
-                                      adapter,
-                                      external_ip,
-                                      external_port);
+        return this->_network_connect_device(network_id,
+                                             device_id,
+                                             adapter,
+                                             external_ip,
+                                             external_port);
       }
   }
 }
