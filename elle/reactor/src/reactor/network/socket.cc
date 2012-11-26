@@ -3,6 +3,9 @@
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/udp-socket.hh>
+#include <reactor/network/udt-socket.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/scheduler.hh>
 
@@ -237,5 +240,7 @@ namespace reactor
     class PlainSocket<boost::asio::ip::tcp::socket>;
     template
     class PlainSocket<boost::asio::ip::udp::socket>;
+    template
+    class PlainSocket<boost::asio::ip::udt::socket>;
   }
 }

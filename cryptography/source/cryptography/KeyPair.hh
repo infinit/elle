@@ -79,12 +79,12 @@ namespace infinit
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
       // printable
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
 
       /*-----------.
       | Attributes |

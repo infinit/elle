@@ -1,3 +1,6 @@
 [submodule "oracle/disciples/troll"]
 	path = oracle/disciples/troll
 	url = git://github.com/hotgloupi/troll.git
+[submodule "asio-udt"]
+	path = asio-udt
+	url = git@development.infinit.io:asio-udt

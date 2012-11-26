@@ -1,5 +1,5 @@
 #include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
+#include <reactor/network/udt-server.hh>
 
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
@@ -60,7 +60,7 @@ namespace hole
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
-          new reactor::network::TCPSocket(
+          new reactor::network::UDTSocket(
             elle::concurrency::scheduler(),
             hostname, locus.port, _connection_timeout));
         _connect(std::move(socket), locus, true);
@@ -116,7 +116,7 @@ namespace hole
         , _connection_timeout(connection_timeout)
         , _state(State::detached)
         , _port(port)
-        , _server(new reactor::network::TCPServer
+        , _server(new reactor::network::UDTServer
                   (elle::concurrency::scheduler()))
         , _acceptor()
       {
@@ -225,7 +225,7 @@ namespace hole
       {
         while (true)
           {
-            std::unique_ptr<reactor::network::TCPSocket> socket(_server->accept());
+            std::unique_ptr<reactor::network::UDTSocket> socket(_server->accept());
 
             ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
 
