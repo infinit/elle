@@ -26,9 +26,9 @@ def patch_satellites_path(dir=None):
     new_paths = [path, base_path]
     for i in ("authority", "network", "passport", "user"):
         bin_name = "8{0}".format(i)
-        bin_path = os.path.join(base_path, "satellites", i, bin_name)
+        bin_path = os.path.join(base_path, "bin", bin_name)
         if os.path.exists(bin_path):
-            new_paths.append(os.path.join(base_path, "satellites", i))
+            new_paths.append(os.path.join(base_path, "bin/"))
     os.environ["PATH"]= ":".join(new_paths)
 
 def render_mail_template(stats, templatefile):
