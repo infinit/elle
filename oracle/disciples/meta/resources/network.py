@@ -392,6 +392,8 @@ class ConnectDevice(_Page):
             # We can not take the local_addresses content directly:
             # it's not checked before this point. Therefor, it's insecure.
             node['locals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in local_addresses]
+        else:
+            node['locals'] = []
 
         external_addresses = self.data.get('externals')
         if external_addresses is not None:
