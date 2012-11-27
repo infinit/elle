@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 def run_cmd(cmd, stdin=None):
     p = None
+    print("run", cmd)
     if stdin == None:
         return sp.check_call(cmd)
     else:
