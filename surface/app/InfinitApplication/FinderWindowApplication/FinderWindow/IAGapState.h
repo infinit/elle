@@ -36,6 +36,8 @@
 @property (retain) NSString*    transaction_id;
 @property (retain) NSString*    recipient_fullname;
 
+@property gap_TransactionStatus status;
+
 @end
 
 @interface IATransactionStatusNotification : NSObject
@@ -55,9 +57,9 @@
 @interface IAGapOperationResult : NSObject
 
 @property (retain) NSString* data;
-
--(BOOL)success;
--(BOOL)error;
+@property (nonatomic, readonly) gap_Status status;
+@property (nonatomic, readonly) BOOL success;
+@property (nonatomic, readonly) BOOL error;
 
 @end
 

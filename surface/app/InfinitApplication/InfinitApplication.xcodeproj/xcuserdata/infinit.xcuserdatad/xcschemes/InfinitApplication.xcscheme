@@ -60,7 +60,12 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "ELLE_LOG_COMPONENTS"
-            value = "*"
+            value = "*infinit*,*plasma*"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "INFINIT_META_PORT"
+            value = "12347"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

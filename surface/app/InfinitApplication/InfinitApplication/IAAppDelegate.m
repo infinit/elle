@@ -85,7 +85,7 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
     
     NSPoint p;
     p.x = 400;
-    p.y = 200;
+    p.y = 400;
     [[self._window_controller window] setFrameOrigin:p];
     [self._window_controller showWindow:self];
 #else

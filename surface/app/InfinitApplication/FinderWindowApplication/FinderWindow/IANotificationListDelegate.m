@@ -33,8 +33,14 @@
 
 - (void)addNotification:(id)notification
 {
+    IATransactionNotification* tr = notification;
+    if ([self _rowForTransactionId:tr.transaction_id] != -1)
+    {
+        NSLog(@"Ignoring one more notif for transaction %@", tr.transaction_id);
+        return;
+    }
     [_notifications insertObject:notification atIndex:0];
-    NSLog(@"ADD: source %@ size: %lu", self, [_notifications count]);
+    NSLog(@"ADD: source %@ size: %lu", tr.transaction_id, [_notifications count]);
 }
 
 // Number of rows.
@@ -56,72 +62,21 @@
            viewForTableColumn:(NSTableColumn*)table_column
                           row:(NSInteger)row
 {
-    NSString* str = nil;
     IANotificationCellView *result = nil;
     id item = [_notifications objectAtIndex:row];
-    if ([item isKindOfClass:[IATransactionStatusNotification class]])
-    {
-        IATransactionStatusNotification* notif = item;
-        switch (notif.status)
-        {
-            case gap_transaction_status_accepted:
-                str = @"transaction accepted.";
-                break;
-                
-            case gap_transaction_status_pending:
-                str = @"transaction pending.";
-                break;
-           
-            case gap_transaction_status_finished:
-                str = @"transaction finished.";
-                break;
-                
-            case gap_transaction_status_rejected:
-                str = @"transaction rejected.";
-                break;
-            case gap_transaction_status_started:
-                str = @"transaction started.";
-                break;
-                
-            default:
-                str = [[NSString alloc] initWithFormat:@"Unknown transaction status %d", notif.status];
-                break;
-        }
-        result = [table_view makeViewWithIdentifier:@"TransactionStatusNotificationCellView" owner:self];
-    }
-    else if ([item isKindOfClass:[IATransactionNotification class]])
+    
+    if ([item isKindOfClass:[IATransactionNotification class]])
     {
         IATransactionNotification* notif = item;
         NSLog(@"SELF ID   = %@",[IAClientGapState gap_instance].self_id);
-        NSLog(@"sender id = %@", notif.sender_id);
+        NSString* cell_id;
         if ([notif.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])
-        {
-            // We sent a file to somebody
-            if (notif.files_count == 1)
-                str = [[NSString alloc] initWithFormat:@"%@ has not yet accepted the file %@"
-                       , notif.recipient_fullname
-                       , notif.first_filename];
-            else
-                str = [[NSString alloc] initWithFormat:@"%@ has not yet accepteted the %lu files (%@, ...)"
-                       , notif.recipient_fullname
-                       , notif.files_count
-                       , notif.first_filename];
-            result = [table_view makeViewWithIdentifier:@"TransactionNotificationCellViewFromSelf" owner:self];
-        }
+            cell_id = @"TransactionNotificationCellViewFromSelf";
         else
-        {
-            // Someone sent us some files
-            if (notif.files_count == 1)
-                str = [[NSString alloc] initWithFormat:@"%@ wants to share %@ with you"
-                       , notif.sender_fullname
-                       , notif.first_filename];
-            else
-                str = [[NSString alloc] initWithFormat:@"%@ wants to share %lu files with you (%@, ...)"
-                       , notif.sender_fullname
-                       , notif.files_count
-                       , notif.first_filename];
-            result = [table_view makeViewWithIdentifier:@"TransactionNotificationCellView" owner:self];
-        }
+            cell_id = @"TransactionNotificationCellView";
+        
+        result = [table_view makeViewWithIdentifier:cell_id owner:self];
+        
         [result setNotification:notif];
     }
     else
@@ -129,9 +84,6 @@
         NSLog(@"WARNING: Unexpected notification type");
         return nil;
     }
-
-//    IANotificationCellView *result = [table_view makeViewWithIdentifier:table_column.identifier owner:self];
-    result.textField.stringValue = str;
 
     return result;
 }
@@ -143,9 +95,11 @@
     {
         if ([n isKindOfClass:[IATransactionNotification class]])
         {
-            IATransactionNotification* tr_n;
-            if (tr_n.transaction_id == transaction_id)
+            IATransactionNotification* tr_n = n;
+            if ([tr_n.transaction_id isEqualToString:transaction_id])
                 return row;
+            else
+                NSLog(@"%@ != %@!", tr_n.transaction_id, transaction_id);
         }
         row++;
     }
@@ -251,6 +205,14 @@
     {
         NSLog(@"Couldn't cancel transaction_id %@", notif.transaction_id);
     }
+    NSInteger row = [self _rowForTransactionId:notif.transaction_id];
+    if (row != -1)
+    {
+        [_notifications removeObjectAtIndex:row];
+        [[self table] reloadData];
+    }
+    else
+        NSLog(@"CANNOT FIND ROW FOR TR ID = %@", notif.transaction_id);
 }
 
 @end

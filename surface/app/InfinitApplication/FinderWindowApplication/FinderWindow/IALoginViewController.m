@@ -47,14 +47,25 @@
 // Login callback
 -(void) _login_callback:(IAGapOperationResult*)result
 {
-    NSLog(@"BITE Login result: %d", [result error]);
-    
     [self.login_button setHidden:NO];
     [self.login setEnabled:YES];
     [self.password setEnabled:YES];
     
-    if (![result success])
-        [self.error_message setStringValue:@"Wrong login / password"];
+    NSString* err = nil;
+    switch (result.status)
+    {
+    case gap_network_error:
+        err = @"No connection to the internet";
+        break;
+    case gap_email_password_dont_match:
+        err = @"Wrong login / password";
+        break;
+    default:
+        err = [[NSString alloc] initWithFormat:@"Something went wrong (%d)", result.status];
+        break;
+    }
+    if (!result.success)
+        [self.error_message setStringValue:err];
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_LOGIN_OPERATION
                                                         object:result];
 }

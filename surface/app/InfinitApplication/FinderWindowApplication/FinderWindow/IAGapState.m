@@ -107,21 +107,16 @@ typedef int(^gap_operation_t)(void);
 //- Operation result ------------------------------------------------------------
 
 @interface IAGapOperationResult ()
-{
-    gap_Status status;
-}
-
-@property gap_Status status;
 
 - (id)initWithStatusCode:(gap_Status)status_code;
 - (id)initWithStatusCode:(gap_Status)status_code
-             andObjectId:(NSString*)object_id;
+             andData:(NSString*)object_id;
 @end
 
 
 @implementation IAGapOperationResult
 
-@synthesize status;
+@synthesize status = _status;
 @synthesize data = _data;
 
 - (id)initWithStatusCode:(gap_Status)status_code
@@ -129,7 +124,8 @@ typedef int(^gap_operation_t)(void);
     self = [super init];
     if (self)
     {
-        self.status = status_code;
+        _status = status_code;
+        _data = nil;
     }
     return self;
 }
@@ -140,8 +136,8 @@ typedef int(^gap_operation_t)(void);
     self = [super init];
     if (self)
     {
-        self.status = status_code;
-        self.data = data;
+        _status = status_code;
+        _data = data;
     }
     return self;
     
@@ -154,7 +150,7 @@ typedef int(^gap_operation_t)(void);
 
 -(BOOL)error
 {
-    return self.status != gap_ok;
+    return !self.success;
 }
 
 @end
@@ -529,6 +525,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 @synthesize sender_fullname;
 @synthesize transaction_id;
 @synthesize recipient_fullname;
+@synthesize status;
 
 - (id) init:(gap_TransactionNotification const*)n
 {
@@ -544,6 +541,7 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
         SET_CSTR(sender_fullname);
         SET_CSTR(transaction_id);
         SET_CSTR(recipient_fullname);
+        self.status = gap_transaction_status_pending; // XXX
     }
     return self;
 }
