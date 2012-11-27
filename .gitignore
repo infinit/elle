@@ -8,7 +8,7 @@ CMakeLists.txt.shared
 CMakeLists.txt.user
 DerivedData/
 __pycache__
-build
+*build
 config.hh
 config.mk
 dependencies/environment.sh

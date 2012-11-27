@@ -318,6 +318,9 @@ namespace plasma
       network_add_device(std::string const& network_id,
                          std::string const& device_id);
 
+      //
+      // Frontend on _network_connect_device
+      //
       NetworkConnectDeviceResponse
       network_connect_device(std::string const& network_id,
                              std::string const& device_id,
@@ -326,24 +329,38 @@ namespace plasma
                              std::string const* external_ip = nullptr,
                              uint16_t external_port = 0);
 
+      //
+      // Frontend on _network_connect_device
+      //
+      template <class Container1, class Container2>
+      NetworkConnectDeviceResponse
+      network_connect_device(std::string const& network_id,
+                             std::string const& device_id,
+                             Container1 const& local_endpoints,
+                             Container2 const& public_endpoints);
+      //
+      // Frontend on _network_connect_device
+      //
       template <class Container>
       NetworkConnectDeviceResponse
       network_connect_device(std::string const& network_id,
                              std::string const& device_id,
-                             Container const & local_endpoints,
-                             std::string const* external_ip = nullptr,
-                             uint16_t external_port = 0);
+                             Container const& local_endpoints);
 
     private:
 
       using adapter_type = std::vector<std::pair<std::string, uint16_t>>;
 
+      //
+      // This member function is a adapter used to convert from any type of
+      // container to `adapter_type´. This allow an interface handling all types
+      // of iterable, but working with only one specific type.
+      //
       NetworkConnectDeviceResponse
       _network_connect_device(std::string const& network_id,
                               std::string const& device_id,
                               adapter_type const& local_endpoints,
-                              std::string const* external_ip = nullptr,
-                              uint16_t external_port = 0);
+                              adapter_type const& public_endpoints);
 
 
 

@@ -29,7 +29,9 @@ using s_ptr = std::shared_ptr<C>;
 class Hole
 {
 private:
-    u_ptr<rnet::UDPSocket> _handle; 
+    u_ptr<rnet::UDPSocket> _handle;
+
+    std::pair<std::string, uint16_t> _public_endpoint;
 public:
     Hole(reactor::Scheduler &sched,
          std::string const &hostname,
@@ -43,16 +45,25 @@ public:
 
 public:
     void
-    requestPublicIP(void);
+    sayHello(void);
+
+    void
+    exchangeIP(void);
 
     void
     drill(void);
 
 public:
     u_ptr<rnet::UDPSocket> &&
-    getPunchedHandle()
+    punched_handle()
     {
         return std::move(this->_handle);
+    }
+
+    std::pair<std::string, uint16_t>
+    public_endpoint()
+    {
+        return this->_public_endpoint;
     }
 };
 
@@ -86,7 +97,7 @@ public:
     ~NAT();
 
 public:
-    void
+    std::pair<std::string, uint16_t>
     punch(std::string const &hostname,
           int port);
 

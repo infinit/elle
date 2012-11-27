@@ -617,66 +617,54 @@ namespace plasma
                                    std::string const* external_ip,
                                    uint16_t external_port)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
-          {"_id", network_id},
-          {"device_id", device_id},
-      }};
+        adapter_type local_adapter;
+        adapter_type public_adapter;
 
-      if (local_ip != nullptr)
-      {
-        json::Array local_addr;
-        local_addr.push_back(*local_ip);
-        local_addr.push_back(local_port);
-        request["local"] = local_addr;
-      }
+        local_adapter.emplace_back(*local_ip, local_port);
+        public_adapter.emplace_back(*external_ip, external_port);
 
-      if (external_ip != nullptr)
-      {
-        json::Array external_addr;
-        external_addr.push_back(*external_ip);
-        external_addr.push_back(external_port);
-        request["external"] = external_addr;
-      }
-      return this->_client.post<NetworkConnectDeviceResponse>(
-          "/network/connect_device",
-          request
-      );
+        return this->_network_connect_device(network_id,
+                                             device_id,
+                                             local_adapter,
+                                             public_adapter);
     }
 
     NetworkConnectDeviceResponse
-      Client::_network_connect_device(std::string const& network_id,
-                                      std::string const& device_id,
-                                      std::vector<std::pair<std::string, uint16_t>> const &c,
-                                      std::string const* external_ip,
-                                      uint16_t external_port)
+    Client::_network_connect_device(std::string const& network_id,
+                                    std::string const& device_id,
+                                    adapter_type const& local_endpoints,
+                                    adapter_type const& public_endpoints)
       {
-        json::Dictionary request {
-            std::map<std::string, std::string> {
-                  {"_id", network_id},
-                  {"device_id", device_id},
-            }
+        json::Dictionary request{
+          std::map<std::string, std::string>{
+                {"_id", network_id},
+                {"device_id", device_id},
+          }
         };
 
         json::Array local_addrs;
+        for (auto& a: local_endpoints)
+          {
+            json::Dictionary endpoint;
 
-        for (auto &a: c)
-        {
-          json::Dictionary endpoint;
-
-          endpoint["ip"] = a.first;
-          endpoint["port"] = a.second;
-          local_addrs.push_back(endpoint);
-        }
+            endpoint["ip"] = a.first;
+            endpoint["port"] = a.second;
+            local_addrs.push_back(endpoint);
+          }
 
         request["locals"] = local_addrs;
 
-        if (external_ip != nullptr)
-        {
-            json::Array external_addr;
-            external_addr.push_back(*external_ip);
-            external_addr.push_back(external_port);
-            request["external"] = external_addr;
-        }
+        json::Array public_addrs;
+        for (auto& a : public_endpoints)
+         {
+           json::Dictionary pub_addr;
+
+           pub_addr["ip"] = a.first;
+           pub_addr["port"] = a.second;
+           public_addrs.push_back(pub_addr);
+         }
+
+        request["externals"] = public_addrs;
 
         return this->_client.post<NetworkConnectDeviceResponse>(
             "/network/connect_device",

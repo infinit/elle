@@ -17,7 +17,7 @@
     if (self) {
         // Initialization code here.
     }
-    
+
     return self;
 }
 - (void) freeze {assert(false);}
@@ -84,27 +84,27 @@
             str = @"transaction accepted.";
             [self _hideActions];
             break;
-            
+
         case gap_transaction_status_pending:
             str = @"transaction pending.";
             [self _enableActions];
             break;
-            
+
         case gap_transaction_status_finished:
             str = @"transaction finished.";
             [self _hideActions];
             break;
-            
+
         case gap_transaction_status_rejected:
             str = @"transaction rejected.";
             [self _hideActions];
             break;
-            
+
         case gap_transaction_status_started:
             str = @"transaction started.";
             [self _hideActions];
             break;
-            
+
         default:
             str = [[NSString alloc] initWithFormat:@"Unknown transaction status %d", status];
             [self _hideActions];
@@ -131,7 +131,7 @@
     if ([_notification.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])
     {
         // COMPARE SENDER DEVICE ID HERE
-        
+
         // We sent a file to somebody
         if (_notification.files_count == 1)
             str = [[NSString alloc] initWithFormat:@"%@ has not yet accepted the file %@"

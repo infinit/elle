@@ -11,6 +11,8 @@
 # define COMMON_DEFAULT_TROPHONIUS_HOST "infinit.im"
 # define COMMON_DEFAULT_TROPHONIUS_PORT 23456
 # define COMMON_DEFAULT_RESOURCES_ROOT_URL "http://download.infinit.io"
+# define COMMON_DEFAULT_LONGINUS_HOST "infinit.im"
+# define COMMON_DEFAULT_LONGINUS_PORT 9999
 
 namespace common
 {
@@ -162,6 +164,15 @@ namespace common
     log_path(std::string const& user_id);
   }
 
+  namespace longinus
+  {
+
+    std::string const&
+    host();
+
+    int
+    port();
+  }
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
   std::string const&

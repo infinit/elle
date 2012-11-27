@@ -27,6 +27,9 @@ namespace etoile
     hole();
     void
     hole(hole::Hole* hole);
+    // XXX[to remove]
+    elle::Boolean
+    have_hole();
 
     ///
     /// this class abstracts the storage layer.

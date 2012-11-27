@@ -172,17 +172,19 @@ class Nodes(_Page):
             "network_id": network['_id'],
             "nodes": [],
         }
-        addrs = {'local': [], 'external': []}
+        addrs = {'locals': set(), 'externals': set()}
         for node in network['nodes'].values():
-            print(node)
-            for addr_kind in ['local', 'external']:
-                addr = node[addr_kind]
-                if addr and addr[0] and addr[1]:
-                    print("Append", addr_kind, addr)
-                    addrs[addr_kind].append(
-                        addr[0] + ':' + str(addr[1]),
-                    )
-        res['nodes'] = addrs['local'] + addrs['external']
+            assert 'locals' in node
+            assert 'externals' in node
+            assert len(node) == 2
+            for addr_kind in ['locals', 'externals']:
+                for a in node[addr_kind]:
+                    if a and a["ip"] and a["port"]:
+                        print("Append", addr_kind, a)
+                        addrs[addr_kind].add(
+                            a["ip"] + ':' + str(a["port"]),
+                        )
+        res['nodes'] = list(addrs['locals'].union(addrs['externals']))
         print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
@@ -331,8 +333,8 @@ class AddDevice(_Page):
             return self.error(error.DEVICE_NOT_FOUND)
         if str(device_id) not in network['nodes']:
             network['nodes'][str(device_id)] = {
-                    "local": None,
-                    "external": None,
+                    "locals": None,
+                    "externals": None,
             }
         database.networks().save(network)
         return self.success({
@@ -347,15 +349,14 @@ class ConnectDevice(_Page):
         "device_id": "the device id",
 
         # Optional local ip, port
-        "local": (192.168.x.x, 62014),
+        "locals": [{"ip" : 192.168.x.x, "port" : 62014}, ...],
 
         # optional external address and port
-        "external": (212.27.23.67, 62015)
+        "externals": [{"ip" : "212.27.23.67", "port" : 62015}, ...],
     }
         -> {
             "updated_network_id": "the same network id",
         }
-
     """
     __pattern__ = '/network/connect_device'
 
@@ -373,31 +374,42 @@ class ConnectDevice(_Page):
 
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
+
         network = database.networks().find_one(network_id)
         if not network:
             return self.error(error.NETWORK_NOT_FOUND)
+
         device = database.devices().find_one(device_id)
         if not device:
             return self.error(error.DEVICE_NOT_FOUND)
+
         node = network['nodes'].get(str(device_id))
         if node is None:
             return self.error(error.DEVICE_NOT_IN_NETWORK)
-        local_address = self.data.get('local')
-        if local_address is not None:
-            node['local'] = (local_address[0], int(local_address[1]))
-        external_address = self.data.get('external')
-        if external_address is not None:
-            node['external'] = (external_address[0], int(external_address[1]))
+
+        local_addresses = self.data.get('locals') # notice the 's'
+        if local_addresses is not None:
+            # Generate a list of dictionary ip:port.
+            # We can not take the local_addresses content directly:
+            # it's not checked before this point. Therefor, it's insecure.
+            node['locals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in local_addresses]
         else:
-            node['external'] = (web.ctx.env['REMOTE_ADDR'], node['local'] and node['local'][1] or 0)
+            node['locals'] = []
+
+        external_addresses = self.data.get('externals')
+        if external_addresses is not None:
+            node['externals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in external_addresses]
+        else:
+            node['externals'] = []
+
         database.networks().save(network)
+
         print("Connected device", device['name'], "(%s)" % device_id,
               "to network", network['name'], "(%s)" % network_id,
               "with", node)
         return self.success({
             "updated_network_id": network_id
         })
-
 
 class Create(_Page):
     """

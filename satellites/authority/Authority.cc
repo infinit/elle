@@ -85,7 +85,7 @@ namespace satellite
       escape("unable to read the input");
 
     // Load the authority.
-    elle::Authority authority(elle::io::Path(lune::Lune::Authority));
+    elle::Authority authority{elle::io::Path(lune::Lune::Authority)};
 
     authority.Dump();
 
