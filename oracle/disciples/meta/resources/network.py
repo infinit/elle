@@ -172,18 +172,19 @@ class Nodes(_Page):
             "network_id": network['_id'],
             "nodes": [],
         }
-        addrs = {'locals': [], 'externals': []}
+        addrs = {'locals': set(), 'externals': set()}
         for node in network['nodes'].values():
+            assert 'locals' in node
+            assert 'externals' in node
+            assert len(node) == 2
             for addr_kind in ['locals', 'externals']:
-                addr = node[addr_kind]
-                if addr is not None:
-                    for a in addr:
-                        if a and a["ip"] and a["port"]:
-                            print("Append", addr_kind, a)
-                            addrs[addr_kind].append(
-                                a["ip"] + ':' + str(a["port"]),
-                            )
-        res['nodes'] = addrs['locals'] + addrs['externals']
+                for a in node[addr_kind]:
+                    if a and a["ip"] and a["port"]:
+                        print("Append", addr_kind, a)
+                        addrs[addr_kind].add(
+                            a["ip"] + ':' + str(a["port"]),
+                        )
+        res['nodes'] = list(addrs['locals'].union(addrs['externals']))
         print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
