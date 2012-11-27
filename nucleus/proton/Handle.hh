@@ -101,6 +101,13 @@ namespace nucleus
       cryptography::SecretKey _secret;
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Handle const& handle);
   }
 }
 

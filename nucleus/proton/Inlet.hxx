@@ -15,7 +15,7 @@ namespace nucleus
     template <typename K>
     Inlet<K>::Inlet():
       _capacity(0),
-      _state(StateClean),
+      _state(State::clean),
       _footprint(0)
     {
     }
@@ -26,7 +26,7 @@ namespace nucleus
       _key(key),
       _value(value),
       _capacity(0),
-      _state(StateClean),
+      _state(State::clean),
       _footprint(0)
     {
       this->_footprint = elle::serialize::footprint(*this);

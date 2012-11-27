@@ -11,13 +11,13 @@ namespace nucleus
 // ---------- definitions -----------------------------------------------------
 //
 
-    const proton::Node::Type Reference::Constants::seam =
-      proton::Node::TypeSeamReference;
-    const proton::Node::Type Reference::Constants::quill =
-      proton::Node::TypeQuillReference;
-    const proton::Node::Type Reference::Constants::value =
-      proton::Node::TypeValueReference;
-    const proton::Node::Type Reference::Constants::type =
+    proton::Contents::Type const Reference::Constants::seam =
+      proton::Contents::Type::reference_seam;
+    proton::Contents::Type const Reference::Constants::quill =
+      proton::Contents::Type::reference_quill;
+    proton::Contents::Type const Reference::Constants::value =
+      proton::Contents::Type::reference_value;
+    proton::Contents::Type const Reference::Constants::type =
       Reference::Constants::value;
 
 //
@@ -27,7 +27,7 @@ namespace nucleus
     Reference::Reference():
       Value::Value()
     {
-      this->state(proton::StateDirty); // XXX[est-ce necessaire?]
+      this->state(proton::State::dirty); // XXX[est-ce necessaire?]
       this->footprint(0); // XXX[initial catalog footprint]
     }
 
@@ -41,7 +41,7 @@ namespace nucleus
     elle::Status        Reference::Create()
     {
       // set the initial state.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -55,7 +55,7 @@ namespace nucleus
       this->target = target;
 
       // set the reference as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }

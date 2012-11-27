@@ -73,7 +73,7 @@ namespace nucleus
       this->_ensemble = ensemble;
       this->_manager_token = manager_token;
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     void
@@ -84,7 +84,7 @@ namespace nucleus
 
       this->_ensemble = proton::Address::null();
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     void
@@ -92,14 +92,14 @@ namespace nucleus
     {
       switch (this->state())
         {
-        case proton::StateClean:
-        case proton::StateConsistent:
+        case proton::State::clean:
+        case proton::State::consistent:
           {
             // Nothing to do, the group is already valid.
 
             break;
           }
-        case proton::StateDirty:
+        case proton::State::dirty:
           {
             this->_signature =
               owner_k.sign(elle::serialize::make_tuple(
@@ -119,7 +119,7 @@ namespace nucleus
 
       // Now that the group has been sealed, the block can be considered
       // as consistent.
-      this->state(proton::StateConsistent);
+      this->state(proton::State::consistent);
     }
 
     cryptography::PublicKey const&

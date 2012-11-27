@@ -35,7 +35,9 @@ namespace nucleus
       // types
       //
     public:
+      /// XXX
       typedef Nodule<T> V;
+      /// XXX
       typedef Inlet<typename T::K> I;
 
       //
@@ -44,7 +46,7 @@ namespace nucleus
     public:
       struct Constants
       {
-        static Node::Type const type;
+        static Contents::Type const type;
       };
 
       //

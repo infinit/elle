@@ -148,7 +148,7 @@ namespace etoile
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
-      if (context.object->state() == nucleus::proton::StateDirty)
+      if (context.object->state() == nucleus::proton::State::dirty)
         {
           // seal the object, depending on the presence of a referenced
           // access block.

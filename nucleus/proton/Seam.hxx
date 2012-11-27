@@ -10,30 +10,30 @@
 
 # include <elle/serialize/footprint.hh>
 
+# include <elle/assert.hh>
 # include <elle/log.hh>
+# include <elle/finally.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
     template <typename T>
-    Node::Type const Seam<T>::Constants::type = T::Constants::seam;
+    Contents::Type const Seam<T>::Constants::type = T::Constants::seam;
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     template <typename T>
     Seam<T>::Seam():
-      Nodule<T>::Nodule()
+      Nodule<T>::Nodule(Nodule<T>::Type::seam)
     {
-      static Footprint const initial =
-        elle::serialize::footprint(*this);
+      static Footprint const initial = elle::serialize::footprint(*this);
 
       this->footprint(initial);
     }
@@ -76,11 +76,11 @@ namespace nucleus
         throw Exception("unable to insert the inlet in the container");
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
 
       // add the inlet footprint to the seam's.
-      assert(this->footprint() != 0);
-      assert(inlet->footprint() != 0);
+      ELLE_ASSERT(this->footprint() != 0);
+      ELLE_ASSERT(inlet->footprint() != 0);
       this->footprint(this->footprint() + inlet->footprint());
     }
 
@@ -111,11 +111,11 @@ namespace nucleus
       inlet = iterator->second;
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
 
       // substract the inlet footprint to the seam's.
-      assert(this->footprint() != 0);
-      assert(inlet->footprint() != 0);
+      ELLE_ASSERT(this->footprint() != 0);
+      ELLE_ASSERT(inlet->footprint() != 0);
       this->footprint(this->footprint() - inlet->footprint());
 
       // delete the inlet.
@@ -167,7 +167,7 @@ namespace nucleus
         throw Exception("unable to insert the inlet in the container");
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
     }
 
     template <typename T>
@@ -345,23 +345,23 @@ namespace nucleus
       current.load();
 
       // add the key/value tuple recursively.
-      current()->add(k, v);
+      current().add(k, v);
 
       // Make sure that child nodule is dirty since a key/value tuple
       // has been added.
-      assert(current()->state() == StateDirty);
+      ELLE_ASSERT(current().state() == State::dirty);
 
       // update the inlet's and seam's state.
-      inlet->state(StateDirty);
-      this->state(StateDirty);
+      inlet->state(State::dirty);
+      this->state(State::dirty);
 
       //
       // update the key.
       //
       {
         // update the seam if necessary.
-        if (inlet->key() != current()->mayor())
-          this->refresh(iterator, current()->mayor());
+        if (inlet->key() != current().mayor())
+          this->refresh(iterator, current().mayor());
       }
 
       //
@@ -369,10 +369,10 @@ namespace nucleus
       //
       {
         // make sure the operation is valid.
-        assert(inlet->capacity() <= current()->capacity());
+        ELLE_ASSERT(inlet->capacity() <= current().capacity());
 
         // compute the capacity variation.
-        variation = current()->capacity() - inlet->capacity();
+        variation = current().capacity() - inlet->capacity();
 
         // update the inlet's and seam's capacity by adding the difference.
         inlet->capacity(inlet->capacity() + variation);
@@ -384,7 +384,7 @@ namespace nucleus
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
-      Nodule<T>::optimize(this, inlet->key());
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -410,25 +410,25 @@ namespace nucleus
       current.load();
 
       // remove the key entry recursively.
-      current()->remove(k);
+      current().remove(k);
 
       // Make sure that child nodule is dirty since a key/value tuple
       // has been removed.
-      assert(current()->state() == StateDirty);
+      ELLE_ASSERT(current().state() == State::dirty);
 
       // update the inlet's and seam's state.
-      inlet->state(StateDirty);
-      this->state(StateDirty);
+      inlet->state(State::dirty);
+      this->state(State::dirty);
 
       //
       // update the key, if possible
       //
-      if (current()->empty() == false)
+      if (current().empty() == false)
         {
           // update the current seam so as to reference the new
           // mayor key, if necessary.
-          if (inlet->key() != current()->mayor())
-            this->refresh(iterator, current()->mayor());
+          if (inlet->key() != current().mayor())
+            this->refresh(iterator, current().mayor());
         }
 
       //
@@ -436,10 +436,10 @@ namespace nucleus
       //
       {
         // make sure the operation is valid.
-        assert(inlet->capacity() <= current()->capacity());
+        ELLE_ASSERT(inlet->capacity() <= current().capacity());
 
         // compute the capacity variation.
-        variation = current()->capacity() - inlet->capacity();
+        variation = current().capacity() - inlet->capacity();
 
         // update the inlet's and seam's capacity by substracting the difference.
         inlet->capacity(inlet->capacity() + variation);
@@ -451,7 +451,7 @@ namespace nucleus
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
-      Nodule<T>::optimize(this, inlet->key());
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -476,24 +476,24 @@ namespace nucleus
       current.load();
 
       // update the nodule recursively.
-      current()->update(k);
+      current().update(k);
 
       // Make sure that child nodule is dirty since a key/value tuple
       // has been updated.
-      assert(current()->state() == StateDirty);
+      ELLE_ASSERT(current().state() == State::dirty);
 
       // update the inlet's and seam's state.
-      inlet->state(StateDirty);
-      this->state(StateDirty);
+      inlet->state(State::dirty);
+      this->state(State::dirty);
 
       //
       // update the key, if possible
       //
-      if (current()->empty() == false)
+      if (current().empty() == false)
         {
           // update the seam if necessary.
-          if (inlet->key() != current()->mayor())
-            this->refresh(iterator, current()->mayor());
+          if (inlet->key() != current().mayor())
+            this->refresh(iterator, current().mayor());
         }
 
       //
@@ -503,10 +503,10 @@ namespace nucleus
         Capacity variation;
 
         // depending on the variation.
-        if (current()->capacity() > inlet->capacity())
+        if (current().capacity() > inlet->capacity())
           {
             // compute the capacity variation.
-            variation = current()->capacity() - inlet->capacity();
+            variation = current().capacity() - inlet->capacity();
 
             // update the both the inlet and quill capacities.
             inlet->capacity(inlet->capacity() + variation);
@@ -515,10 +515,10 @@ namespace nucleus
         else
           {
             // compute the capacity variation.
-            variation = inlet->capacity() - current()->capacity();
+            variation = inlet->capacity() - current().capacity();
 
             // make sure the operation is valid.
-            assert(variation <= inlet->capacity());
+            ELLE_ASSERT(variation <= inlet->capacity());
 
             // update the both the inlet and quill capacities.
             inlet->capacity(inlet->capacity() - variation);
@@ -531,7 +531,7 @@ namespace nucleus
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
-      Nodule<T>::optimize(this, inlet->key());
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -539,28 +539,27 @@ namespace nucleus
     Seam<T>::split()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
+      ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE_SCOPE("split()");
-
-      // allocate a new nodule.
+      // Allocate a new seam.
       std::unique_ptr<Contents> contents(new Contents(new Seam<T>));
       Handle orphan(this->nest().attach(std::move(contents)));
       Ambit<Seam<T>> newright(this->nest(), orphan);
 
-      // load the new right nodule.
+      // Load the new right nodule.
       newright.load();
 
-      // export inlets from the current seam into the new seam.
-      Nodule<T>::transfer_right(this,
+      // Export the inlets from the current seam into the new seam.
+      Nodule<T>::transfer_right(*this,
                                 newright(),
                                 this->nest().limits().extent() *
                                 this->nest().limits().contention());
 
-      // set both seams' state as dirty.
-      this->state(StateDirty);
-      newright()->state(StateDirty);
+      // Set both seams' state as dirty.
+      this->state(State::dirty);
+      newright().state(State::dirty);
 
-      // unload the new right nodule.
+      // Unload the new right nodule.
       newright.unload();
 
       return (orphan);
@@ -580,20 +579,20 @@ namespace nucleus
       seam.load();
 
       // check which nodule has the lowest keys.
-      if (seam()->mayor() < this->mayor())
+      if (seam().mayor() < this->mayor())
         {
           // in this case, export the lower seam's inlets into the current's.
-          Nodule<T>::transfer_right(seam(), this, 0);
+          Nodule<T>::transfer_right(seam(), *this, 0);
         }
       else
         {
           // otherwise, import the higher seam's inlets into the current's.
-          Nodule<T>::transfer_left(this, seam(), 0);
+          Nodule<T>::transfer_left(*this, seam(), 0);
         }
 
       // set both seams' state as dirty.
-      this->state(StateDirty);
-      seam()->state(StateDirty);
+      this->state(State::dirty);
+      seam().state(State::dirty);
 
       // unload the given seam.
       seam.unload();
@@ -643,7 +642,7 @@ namespace nucleus
       current.load();
 
       // search in this nodule.
-      v = current()->search(k);
+      v = current().search(k);
 
       // unload the current nodule.
       current.unload();
@@ -694,7 +693,7 @@ namespace nucleus
               current.load();
 
               // seek the target in this nodule.
-              v = current()->seek(target, base);
+              v = current().seek(target, base);
 
               // unload the current nodule.
               current.unload();
@@ -740,7 +739,7 @@ namespace nucleus
               ELLE_DEBUG_SCOPE("checking addresses");
 
               // bind the current block.
-              Address address{current.contents()->bind()};
+              Address address{current.contents().bind()};
 
               // compare the addresses.
               if (inlet->value().address() != address)
@@ -759,25 +758,25 @@ namespace nucleus
                                 inlet->key(), scoutor->first);
 
               // compare the mayor key with the inlet's reference.
-              if (inlet->key() != current()->mayor())
+              if (inlet->key() != current().mayor())
                 throw Exception("the current nodule's mayor key differs from"
                                 "its reference: inlet(%s) versus nodule(%s)",
-                                inlet->key(), current()->mayor());
+                                inlet->key(), current().mayor());
             }
 
           // trigger the check on the current nodule.
           if (flags & Porcupine::FlagRecursive)
-            current()->check(flags);
+            current().check(flags);
 
           // check the capacities, if required.
           if (flags & Porcupine::FlagCapacity)
             {
               ELLE_DEBUG_SCOPE("checking capacities");
 
-              if (inlet->capacity() != current()->capacity())
+              if (inlet->capacity() != current().capacity())
                 throw Exception("invalid inlet capacity: inlet(%s) "
                                 "versus nodule(%s)",
-                                inlet->capacity(), current()->capacity());
+                                inlet->capacity(), current().capacity());
 
               capacity += inlet->capacity();
             }
@@ -787,19 +786,19 @@ namespace nucleus
             {
               ELLE_DEBUG_SCOPE("checking footprints");
 
-              if (current()->footprint() == 0)
+              if (current().footprint() == 0)
                 throw Exception("the footprint is null");
 
-              if (current()->footprint() !=
-                  elle::serialize::footprint(*current()))
+              if (current().footprint() !=
+                  elle::serialize::footprint(current()))
                 throw Exception("the recorded footprint does not match the "
                                 "instance's: nodule(%s) versus footprint(%s)",
-                                current()->footprint(),
-                                elle::serialize::footprint(*current()));
+                                current().footprint(),
+                                elle::serialize::footprint(current()));
 
-              if (current()->footprint() > this->nest().limits().extent())
+              if (current().footprint() > this->nest().limits().extent())
                 throw Exception("the footprint '%s' exceeds the extent '%s",
-                                current()->footprint(),
+                                current().footprint(),
                                 this->nest().limits().extent());
             }
 
@@ -808,31 +807,31 @@ namespace nucleus
             {
               ELLE_DEBUG_SCOPE("checking states");
 
-              if (inlet->state() != current()->state())
+              if (inlet->state() != current().state())
                 throw Exception("invalid state: inlet(%s) versus nodule(%s)",
-                                inlet->state(), current()->state());
+                                inlet->state(), current().state());
 
               switch (this->state())
                 {
-                case StateClean:
+                case State::clean:
                   {
-                    if (inlet->state() != StateClean)
+                    if (inlet->state() != State::clean)
                       throw Exception("the inlet's state '%s' should "
                                       "be clean", inlet->state());
 
                     break;
                   }
-                case StateDirty:
+                case State::dirty:
                   {
-                    if (inlet->state() == StateDirty)
+                    if (inlet->state() == State::dirty)
                       dirty = true;
 
                     break;
                   }
-                case StateConsistent:
+                case State::consistent:
                   {
-                    if ((inlet->state() != StateClean) &&
-                        (inlet->state() != StateConsistent))
+                    if ((inlet->state() != State::clean) &&
+                        (inlet->state() != State::consistent))
                       throw Exception("the inlet's state '%s' should "
                                       "be either clean or consistent",
                                       inlet->state());
@@ -862,7 +861,7 @@ namespace nucleus
         {
           ELLE_DEBUG_SCOPE("checking states");
 
-          if ((this->state() == StateDirty) && (dirty == false))
+          if ((this->state() == State::dirty) && (dirty == false))
             throw Exception("none of the inlet seems to be dirty");
         }
     }
@@ -894,47 +893,45 @@ namespace nucleus
           // i.e is not dirty.
           switch (inlet->state())
             {
-            case StateClean:
+            case State::clean:
               {
-                ELLE_TRACE_SCOPE("StateClean");
+                ELLE_TRACE_SCOPE("State::clean");
 
                 break;
               }
-            case StateDirty:
+            case State::dirty:
               {
-                ELLE_TRACE_SCOPE("StateDirty");
+                ELLE_TRACE_SCOPE("State::dirty");
 
                 // set the secret key.
-                assert(inlet->value().secret() !=
+                ELLE_ASSERT(inlet->value().secret() !=
                        cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
                 // seal recursively.
-                current()->seal(inlet->value().secret());
+                current().seal(inlet->value().secret());
 
-                // encrypt and bind the root block.
-                if (current.contents()->encrypt(secret) == elle::Status::Error)
-                  throw Exception("unable to encrypt the nodule");
+                // Encrypt and bind the block.
+                current.contents().encrypt(secret);
+                Address address{current.contents().bind()};
 
-                Address address{current.contents()->bind()};
-
-                current()->state(StateConsistent);
-                current.contents()->state(StateConsistent);
+                current().state(State::consistent);
+                current.contents().state(State::consistent);
 
                 inlet->value().address(address);
-                inlet->state(StateConsistent);
+                inlet->state(State::consistent);
 
                 // set the current seam as dirty.
-                this->state(StateDirty);
+                this->state(State::dirty);
 
                 break;
               }
-            case StateConsistent:
+            case State::consistent:
               {
-                ELLE_TRACE_SCOPE("StateConsistent");
+                ELLE_TRACE_SCOPE("State::consistent");
 
                 throw Exception("unexpected state '%s'",
-                                current()->state());
+                                current().state());
               }
             }
 
@@ -976,7 +973,7 @@ namespace nucleus
           current.load();
 
           // walk through the nodule.
-          current()->walk(margin + 6);
+          current().walk(margin + 6);
 
           // unload the value block.
           current.unload();
@@ -1001,25 +998,25 @@ namespace nucleus
 
           current.load();
 
-          current()->statistics(stats);
+          current().statistics(stats);
 
           stats.blocks.all += 1;
 
-          switch (current()->state())
+          switch (current().state())
             {
-            case StateClean:
+            case State::clean:
               {
                 stats.blocks.clean++;
 
                 break;
               }
-            case StateDirty:
+            case State::dirty:
               {
                 stats.blocks.dirty++;
 
                 break;
               }
-            case StateConsistent:
+            case State::consistent:
               {
                 stats.blocks.consistent++;
 
@@ -1027,8 +1024,7 @@ namespace nucleus
               }
             }
 
-          Footprint footprint =
-            elle::serialize::footprint(*current());
+          Footprint footprint = elle::serialize::footprint(current());
 
           stats.footprint.minimum =
             footprint < stats.footprint.minimum ?
@@ -1047,7 +1043,7 @@ namespace nucleus
     typename T::K const&
     Seam<T>::mayor() const
     {
-      assert(this->_container.empty() == false);
+      ELLE_ASSERT(this->_container.empty() == false);
 
       return (this->_container.rbegin()->first);
     }
@@ -1056,7 +1052,7 @@ namespace nucleus
     typename T::K const&
     Seam<T>::maiden() const
     {
-      assert(this->_container.size() == 1);
+      ELLE_ASSERT(this->_container.size() == 1);
 
       return (this->_container.begin()->first);
     }

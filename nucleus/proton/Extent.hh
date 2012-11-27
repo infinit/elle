@@ -7,10 +7,9 @@ namespace nucleus
 {
   namespace proton
   {
-
-    /// XXX
+    /// Define the maximum size of the blocks when serialized i.e when
+    /// transmitted over the network and stored.
     typedef elle::Natural32 Extent;
-
   }
 }
 

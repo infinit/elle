@@ -9,6 +9,7 @@
 # include <nucleus/proton/Contents.hh>
 # include <nucleus/proton/Statistics.hh>
 
+# include <elle/assert.hh>
 # include <elle/log.hh>
 
 namespace nucleus
@@ -42,9 +43,9 @@ namespace nucleus
 
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             // In this case, the porcupine already contains a value. A
             // hierarchy therefore needs to be created.
@@ -57,7 +58,7 @@ namespace nucleus
             std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
             Handle handle(this->nest().attach(std::move(contents)));
 
-            assert(this->_root != Handle::Null);
+            ELLE_ASSERT(this->_root != Handle::Null);
 
             // Load the created quill, insert the existing value,
             // update the porcupine's characteristics (state, capacity etc.)
@@ -66,7 +67,7 @@ namespace nucleus
             typename T::K key;
 
             value.load();
-            key = value()->key();
+            key = value().key();
             value.unload();
 
             Ambit<Quill<T>> newroot(this->nest(), handle);
@@ -76,10 +77,10 @@ namespace nucleus
             // Note that calling add() is valid because _newroot_
             // is a quill i.e the call will not be propagated down
             // to the hierarchy since the quill is the bottom of it!
-            newroot()->add(key, this->_root);
+            newroot().add(key, this->_root);
 
-            this->_capacity = newroot()->capacity();
-            this->_state = newroot()->state();
+            this->_capacity = newroot().capacity();
+            this->_state = newroot().state();
 
             newroot.unload();
 
@@ -111,10 +112,10 @@ namespace nucleus
 
             root.load();
 
-            root()->add(k, v);
+            root().add(k, v);
 
-            this->_capacity = root()->capacity();
-            this->_state = root()->state();
+            this->_capacity = root().capacity();
+            this->_state = root().state();
 
             root.unload();
 
@@ -139,7 +140,7 @@ namespace nucleus
 
       value.load();
 
-      this->add(value()->mayor(), value.handle());
+      this->add(value().mayor(), value.handle());
 
       value.unload();
     }
@@ -160,9 +161,9 @@ namespace nucleus
 
             return false;
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             try
               {
@@ -170,7 +171,7 @@ namespace nucleus
 
                 value.load();
 
-                if (value()->exist(k) == false)
+                if (value().exist(k) == false)
                   return false;
 
                 value.unload();
@@ -194,7 +195,7 @@ namespace nucleus
 
                 value.load();
 
-                if (value()->exist(k) == false)
+                if (value().exist(k) == false)
                   return false;
 
                 value.unload();
@@ -230,11 +231,11 @@ namespace nucleus
             //
             // do not break and proceed with the lookup.
             //
-            assert(this->_mode == Porcupine::Mode::value);
+            ELLE_ASSERT(this->_mode == Porcupine::Mode::single);
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             // XXX verify that the key is valid.
 
@@ -258,7 +259,7 @@ namespace nucleus
             quill.load();
 
             // retrieve the handle of the looked up value.
-            v = quill()->lookup_handle(k);
+            v = quill().lookup_handle(k);
 
             // unload the quill.
             quill.unload();
@@ -295,11 +296,11 @@ namespace nucleus
             //
             // do not break and proceed with the lookup.
             //
-            assert(this->_mode == Porcupine::Mode::value);
+            ELLE_ASSERT(this->_mode == Porcupine::Mode::single);
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             // verify the validity of the target index.
             if (target >= this->_capacity)
@@ -323,7 +324,7 @@ namespace nucleus
             root.load();
 
             // seek down the tree.
-            v = root()->seek(target, base);
+            v = root().seek(target, base);
 
             // unload the root.
             root.unload();
@@ -352,9 +353,9 @@ namespace nucleus
             throw Exception("unable to update an empty porcupine");
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             Ambit<T> value(this->nest(), this->_root);
 
@@ -364,8 +365,8 @@ namespace nucleus
             // XXX verify that the key is valid.
 
             // update the capacity state.
-            this->_capacity = value()->capacity();
-            this->_state = value()->state();
+            this->_capacity = value().capacity();
+            this->_state = value().state();
 
             // unload the value.
             value.unload();
@@ -385,11 +386,11 @@ namespace nucleus
             root.load();
 
             // recursively update the porcupine from the given key.
-            root()->update(k);
+            root().update(k);
 
             // update the capacity and state.
-            this->_capacity = root()->capacity();
-            this->_state = root()->state();
+            this->_capacity = root().capacity();
+            this->_state = root().state();
 
             // unload the root nodule.
             root.unload();
@@ -419,9 +420,9 @@ namespace nucleus
             throw Exception("unable to remove from an empty porcupine");
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             // XXX verify that the key is valid.
 
@@ -436,10 +437,10 @@ namespace nucleus
 
             // set the capacity and state.
             this->_capacity = 0;
-            this->_state = StateDirty;
+            this->_state = State::dirty;
 
             // make sure the tree is now empty.
-            assert(this->_height == 0);
+            ELLE_ASSERT(this->_height == 0);
 
             break;
           }
@@ -453,11 +454,11 @@ namespace nucleus
             root.load();
 
             // recursively remove the element from the root.
-            root()->remove(k);
+            root().remove(k);
 
             // update the capacity and state.
-            this->_capacity = root()->capacity();
-            this->_state = root()->state();
+            this->_capacity = root().capacity();
+            this->_state = root().state();
 
             // unload the root nodule.
             root.unload();
@@ -486,11 +487,11 @@ namespace nucleus
 
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
             Ambit<T> value(this->nest(), this->_root);
 
-            ELLE_DEBUG_SCOPE("Mode::value");
+            ELLE_DEBUG_SCOPE("Mode::single");
 
             // load the value nodule.
             value.load();
@@ -499,7 +500,7 @@ namespace nucleus
             if (flags & FlagAddress)
               {
                 // bind the current block.
-                Address address{value.contents()->bind()};
+                Address address{value.contents().bind()};
 
                 // compare the addresses.
                 if (this->_root.address() != address)
@@ -510,27 +511,26 @@ namespace nucleus
             // check the capacity.
             if (flags & FlagCapacity)
               {
-                if (this->_capacity != value()->capacity())
+                if (this->_capacity != value().capacity())
                   throw Exception("invalid capacity: this(%s) versus value(%s)",
-                                  this->_capacity, value()->capacity());
+                                  this->_capacity, value().capacity());
               }
 
             // check the footprint.
             if (flags & FlagFootprint)
               {
-                if (value()->footprint() == 0)
+                if (value().footprint() == 0)
                   throw Exception("the footprint is null");
 
-                if (value()->footprint() !=
-                    elle::serialize::footprint(*value()))
+                if (value().footprint() != elle::serialize::footprint(value()))
                   throw Exception("the recorded footprint does not match the "
                                   "instance's: value(%s) versus footprint(%s)",
-                                  value()->footprint(),
-                                  elle::serialize::footprint(*value()));
+                                  value().footprint(),
+                                  elle::serialize::footprint(value()));
 
-                if (value()->footprint() > this->nest().limits().extent())
+                if (value().footprint() > this->nest().limits().extent())
                   throw Exception("the footprint '%s' exceeds the extent '%s'",
-                                  value()->footprint(),
+                                  value().footprint(),
                                   this->nest().limits().extent());
               }
 
@@ -554,7 +554,7 @@ namespace nucleus
                 ELLE_DEBUG_SCOPE("checking addresses");
 
                 // bind the current block.
-                Address address{root.contents()->bind()};
+                Address address{root.contents().bind()};
 
                 // compare the addresses.
                 if (this->_root.address() != address)
@@ -564,16 +564,16 @@ namespace nucleus
 
             // trigger the check method on the root nodule.
             if (flags & FlagRecursive)
-              root()->check(flags);
+              root().check(flags);
 
             // check the capacity, if required.
             if (flags & FlagCapacity)
               {
                 ELLE_DEBUG_SCOPE("checking capacities");
 
-                if (this->_capacity != root()->capacity())
+                if (this->_capacity != root().capacity())
                   throw Exception("invalid capacity: this(%s) versus root(%s)",
-                                  this->_capacity, root()->capacity());
+                                  this->_capacity, root().capacity());
               }
 
             // check the footprint.
@@ -581,19 +581,18 @@ namespace nucleus
               {
                 ELLE_DEBUG_SCOPE("checking footprints");
 
-                if (root()->footprint() == 0)
+                if (root().footprint() == 0)
                   throw Exception("the footprint is null");
 
-                if (root()->footprint() !=
-                    elle::serialize::footprint(*root()))
+                if (root().footprint() != elle::serialize::footprint(root()))
                   throw Exception("the recorded footprint does not match the "
                                   "instance's: root(%s) versus footprint(%s)",
-                                  root()->footprint(),
-                                  elle::serialize::footprint(*root()));
+                                  root().footprint(),
+                                  elle::serialize::footprint(root()));
 
-                if (root()->footprint() > this->nest().limits().extent())
+                if (root().footprint() > this->nest().limits().extent())
                   throw Exception("the footprint '%s' exceeds the extent '%s'",
-                                  root()->footprint(),
+                                  root().footprint(),
                                   this->nest().limits().extent());
               }
 
@@ -602,9 +601,9 @@ namespace nucleus
               {
                 ELLE_DEBUG_SCOPE("checking states");
 
-                if (this->_state != root()->state())
+                if (this->_state != root().state())
                   throw Exception("invalid state: this(%s) versus root(%s)",
-                                  this->_state, root()->state());
+                                  this->_state, root().state());
               }
 
             // unload the root nodule.
@@ -651,7 +650,7 @@ namespace nucleus
               {
                 break;
               }
-            case Mode::value:
+            case Mode::single:
               {
                 Ambit<T> value(this->nest(), this->_root);
 
@@ -663,7 +662,7 @@ namespace nucleus
                 value.load();
 
                 // dump the value.
-                if (value.contents()->Dump(margin + 4) == elle::Status::Error)
+                if (value.contents().Dump(margin + 4) == elle::Status::Error)
                   throw Exception("unable to dump the value");
 
                 // unload the value nodule.
@@ -683,7 +682,7 @@ namespace nucleus
                 root.load();
 
                 // walk through the nodule.
-                root()->walk(margin + 4);
+                root().walk(margin + 4);
 
                 // unload the root nodule.
                 root.unload();
@@ -716,15 +715,15 @@ namespace nucleus
 
       switch (this->_state)
         {
-        case StateClean:
+        case State::clean:
           {
-            ELLE_TRACE_SCOPE("StateClean");
+            ELLE_TRACE_SCOPE("State::clean");
 
             break;
           }
-        case StateDirty:
+        case State::dirty:
           {
-            ELLE_TRACE_SCOPE("StateDirty");
+            ELLE_TRACE_SCOPE("State::dirty");
 
             switch (this->_mode)
               {
@@ -735,31 +734,30 @@ namespace nucleus
                   throw Exception("unable to seal an empty porcupine");
                   break;
                 }
-              case Mode::value:
+              case Mode::single:
                 {
                   Ambit<T> value(this->nest(), this->_root);
 
-                  ELLE_TRACE_SCOPE("Mode::value");
+                  ELLE_TRACE_SCOPE("Mode::single");
 
                   // load the value nodule.
                   value.load();
 
                   // if the porcupine is dirty, so should be the value.
-                  assert(this->_state == value()->state());
+                  ELLE_ASSERT(this->_state == value().state());
 
-                  if (value.contents()->encrypt(secret) == elle::Status::Error)
-                    throw Exception("unable to encrypt the value");
+                  // Encrypt and bind the value.
+                  value.contents().encrypt(secret);
+                  Address address{value.contents().bind()};
 
-                  Address address{value.contents()->bind()};
-
-                  value()->state(StateConsistent);
-                  value.contents()->state(StateConsistent);
+                  value().state(State::consistent);
+                  value.contents().state(State::consistent);
 
                   // unload the value nodule.
                   value.unload();
 
                   this->_root.address(address);
-                  this->_state = StateConsistent;
+                  this->_state = State::consistent;
 
                   break;
                 }
@@ -773,25 +771,23 @@ namespace nucleus
                   root.load();
 
                   // if the porcupine is dirty, so should be the root.
-                  assert(this->_state == root()->state());
+                  ELLE_ASSERT(this->_state == root().state());
 
                   // seal recursively.
-                  root()->seal(secret);
+                  root().seal(secret);
 
-                  // encrypt and bind the root block.
-                  if (root.contents()->encrypt(secret) == elle::Status::Error)
-                    throw Exception("unable to encrypt the root nodule");
+                  // Encrypt and bind the root block.
+                  root.contents().encrypt(secret);
+                  Address address{root.contents().bind()};
 
-                  Address address{root.contents()->bind()};
-
-                  root()->state(StateConsistent);
-                  root.contents()->state(StateConsistent);
+                  root().state(State::consistent);
+                  root.contents().state(State::consistent);
 
                   // unload the root nodule.
                   root.unload();
 
                   this->_root.address(address);
-                  this->_state = StateConsistent;
+                  this->_state = State::consistent;
 
                   break;
                 }
@@ -799,9 +795,9 @@ namespace nucleus
 
             break;
           }
-        case StateConsistent:
+        case State::consistent:
           {
-            ELLE_TRACE_SCOPE("StateConsistent");
+            ELLE_TRACE_SCOPE("State::consistent");
 
             throw Exception("unable to seal a consistent porcupine");
           }
@@ -829,31 +825,31 @@ namespace nucleus
 
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
             Ambit<T> value(this->nest(), this->_root);
 
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             value.load();
 
             stats.blocks.all += 1;
 
-            switch (value()->state())
+            switch (value().state())
               {
-              case StateClean:
+              case State::clean:
                 {
                   stats.blocks.clean++;
 
                   break;
                 }
-              case StateDirty:
+              case State::dirty:
                 {
                   stats.blocks.dirty++;
 
                   break;
                 }
-              case StateConsistent:
+              case State::consistent:
                 {
                   stats.blocks.consistent++;
 
@@ -861,9 +857,8 @@ namespace nucleus
                 }
               }
 
-            Footprint footprint =
-              elle::serialize::footprint(*value());
-            Capacity capacity = value()->capacity();
+            Footprint footprint = elle::serialize::footprint(value());
+            Capacity capacity = value().capacity();
 
             stats.footprint.minimum =
               footprint < stats.footprint.minimum ?
@@ -896,7 +891,7 @@ namespace nucleus
             // load the root nodule.
             root.load();
 
-            root()->statistics(stats);
+            root().statistics(stats);
 
             // unload the root nodule.
             root.unload();
@@ -917,9 +912,9 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_create()");
 
       // make sure the tree is empty.
-      assert(this->_mode == Porcupine::Mode::empty);
-      assert(this->_root == Handle::Null);
-      assert(this->_height == 0);
+      ELLE_ASSERT(this->_mode == Porcupine::Mode::empty);
+      ELLE_ASSERT(this->_root == Handle::Null);
+      ELLE_ASSERT(this->_height == 0);
 
       // create a unique value and set is as the root though in this
       // case it does not represent the root of a tree.
@@ -931,14 +926,14 @@ namespace nucleus
       value.load();
 
       // set the porcupine's capacity and state.
-      this->_capacity = value()->capacity();
-      this->_state = StateDirty;
+      this->_capacity = value().capacity();
+      this->_state = State::dirty;
 
       value.unload();
 
       this->_root = handle;
 
-      this->_mode = Porcupine::Mode::value;
+      this->_mode = Porcupine::Mode::single;
     }
 
     template <typename T>
@@ -950,9 +945,9 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_create(%s)", &handle);
 
       // make sure the tree is empty.
-      assert(this->_mode == Porcupine::Mode::empty);
-      assert(this->_root == Handle::Null);
-      assert(this->_height == 0);
+      ELLE_ASSERT(this->_mode == Porcupine::Mode::empty);
+      ELLE_ASSERT(this->_root == Handle::Null);
+      ELLE_ASSERT(this->_height == 0);
 
       // a new value is provided, set it in the porcupine.
       Ambit<T> value(this->nest(), handle);
@@ -961,8 +956,8 @@ namespace nucleus
 
       // set the porcupine's capacity and state
       // by computing the value's.
-      this->_capacity = value()->capacity();
-      this->_state = StateDirty;
+      this->_capacity = value().capacity();
+      this->_state = State::dirty;
 
       value.unload();
 
@@ -970,7 +965,7 @@ namespace nucleus
       // only value.
       this->_root = handle;
 
-      this->_mode = Porcupine::Mode::value;
+      this->_mode = Porcupine::Mode::single;
     }
 
     template <typename T>
@@ -990,9 +985,9 @@ namespace nucleus
             throw Exception("unable to optimize an empty porcupine");
             break;
           }
-        case Mode::value:
+        case Mode::single:
           {
-            ELLE_TRACE_SCOPE("Mode::value");
+            ELLE_TRACE_SCOPE("Mode::single");
 
             Ambit<T> value(this->nest(), this->_root);
 
@@ -1002,11 +997,11 @@ namespace nucleus
             //
             // XXX
             //
-            if ((value()->footprint()) > this->nest().limits().extent())
+            if ((value().footprint()) > this->nest().limits().extent())
               {
                 ELLE_TRACE_SCOPE("value's extent high limit reached: "
                                  "%s > %s",
-                                 value()->footprint(),
+                                 value().footprint(),
                                  this->nest().limits().extent());
 
                 //
@@ -1020,7 +1015,7 @@ namespace nucleus
                 typename T::K mayor;
 
                 // retrieve the mayor of the value.
-                mayor = value()->mayor();
+                mayor = value().mayor();
 
                 // unload the value.
                 value.unload();
@@ -1037,7 +1032,7 @@ namespace nucleus
                 //
                 // note that calling add() is valid in this case because
                 // _newroot_ is a quill i.e the last nodule of the hierarchy.
-                newroot()->add(mayor, this->_root);
+                newroot().add(mayor, this->_root);
 
                 // now that the tree is valid, call the Optimize() method because
                 // the added value is still too large to remain as such and
@@ -1045,8 +1040,8 @@ namespace nucleus
                 Nodule<T>::optimize(newroot(), mayor);
 
                 // update the capacity and state.
-                this->_capacity = newroot()->capacity();
-                this->_state = newroot()->state();
+                this->_capacity = newroot().capacity();
+                this->_state = newroot().state();
 
                 // unload the newroot.
                 newroot.unload();
@@ -1060,18 +1055,18 @@ namespace nucleus
                 // set the mode.
                 this->_mode = Porcupine::Mode::hierarchy;
               }
-            else if (value()->footprint() <
+            else if (value().footprint() <
                      (this->nest().limits().extent() *
                       this->nest().limits().balancing()))
               {
                 ELLE_TRACE_SCOPE("value's extent low limit reached: "
                                  "%s < %s",
-                                 value()->footprint(),
+                                 value().footprint(),
                                  this->nest().limits().extent() *
                                  this->nest().limits().balancing());
 
                 // XXX
-                if (value()->empty() == true)
+                if (value().empty() == true)
                   {
                     ELLE_TRACE_SCOPE("the value is empty");
 
@@ -1084,10 +1079,10 @@ namespace nucleus
                     this->_root = Handle::Null;
 
                     // make sure the tree is empty.
-                    assert(this->_capacity == 0);
+                    ELLE_ASSERT(this->_capacity == 0);
 
                     // update the state.
-                    this->_state = StateDirty;
+                    this->_state = State::dirty;
 
                     // set the mode.
                     this->_mode = Porcupine::Mode::empty;
@@ -1111,7 +1106,7 @@ namespace nucleus
 
             ELLE_TRACE("considering the root nodule's footprint: "
                        "%s < %s",
-                       root()->footprint(),
+                       root().footprint(),
                        this->nest().limits().extent());
 
             //
@@ -1125,11 +1120,11 @@ namespace nucleus
             // check if the future nodule's footprint---i.e should the inlet
             // be inserted---would exceed the extent.
             //
-            if ((root()->footprint()) > this->nest().limits().extent())
+            if ((root().footprint()) > this->nest().limits().extent())
               {
                 ELLE_TRACE_SCOPE("root's extent hight limit reached: "
                                  "%s > %s",
-                                 root()->footprint(),
+                                 root().footprint(),
                                  this->nest().limits().extent());
 
                 //
@@ -1138,7 +1133,7 @@ namespace nucleus
                 Handle orphan;
 
                 // split the current root nodule.
-                orphan = root()->split();
+                orphan = root().split();
 
                 //
                 // at this point, the tree needs to grow in order to welcome
@@ -1161,11 +1156,11 @@ namespace nucleus
                 } state;
 
                 // retrieve the mayor key of the current root.
-                mayor.root = root()->mayor();
+                mayor.root = root().mayor();
 
                 // retrieve the capacity and state.
-                capacity.root = root()->capacity();
-                state.root = root()->state();
+                capacity.root = root().capacity();
+                state.root = root().state();
 
                 // unload the root nodule.
                 root.unload();
@@ -1177,11 +1172,11 @@ namespace nucleus
 
                 // retrieve the mayor key of the newright nodule as this will
                 // be required for the future insertion in the current seam.
-                mayor.newright = newright()->mayor();
+                mayor.newright = newright().mayor();
 
                 // retrieve the capacity and state.
-                capacity.newright = newright()->capacity();
-                state.newright = newright()->state();
+                capacity.newright = newright().capacity();
+                state.newright = newright().state();
 
                 // unload the new right nodule.
                 newright.unload();
@@ -1221,24 +1216,24 @@ namespace nucleus
                 // insert the current root nodule in the new root seam.
                 typename Seam<T>::I* inlet;
 
-                newroot()->insert(mayor.root, handle.root);
-                inlet = newroot()->locate_inlet(mayor.root);
+                newroot().insert(mayor.root, handle.root);
+                inlet = newroot().locate_inlet(mayor.root);
                 inlet->capacity(capacity.root);
                 inlet->state(state.root);
 
-                newroot()->insert(mayor.newright, handle.newright);
-                inlet = newroot()->locate_inlet(mayor.newright);
+                newroot().insert(mayor.newright, handle.newright);
+                inlet = newroot().locate_inlet(mayor.newright);
                 inlet->capacity(capacity.newright);
                 inlet->state(state.newright);
 
                 // compute the capacity of the new root seam. note that
                 // the state does not need to be set explicitely because
                 // the insert() methods took care of it.
-                newroot()->capacity(capacity.root + capacity.newright);
+                newroot().capacity(capacity.root + capacity.newright);
 
                 // update the capacity and state.
-                this->_capacity = newroot()->capacity();
-                this->_state = newroot()->state();
+                this->_capacity = newroot().capacity();
+                this->_state = newroot().state();
 
                 // unload the newroot.
                 newroot.unload();
@@ -1254,7 +1249,7 @@ namespace nucleus
                 ELLE_TRACE_SCOPE("root's footprint may be low enough to "
                                  "reorganize the tree");
 
-                assert(this->_height != 0);
+                ELLE_ASSERT(this->_height != 0);
 
                 if (this->_height == 1)
                   {
@@ -1269,7 +1264,7 @@ namespace nucleus
                     quill.load();
 
                     // does the quill contain a single value.
-                    if (quill()->single() == true)
+                    if (quill().single() == true)
                       {
                         ELLE_TRACE_SCOPE("the root quill contains a "
                                          "single entry");
@@ -1281,7 +1276,7 @@ namespace nucleus
                         Handle orphan;
 
                         // retrieve the handle associated with the maiden key.
-                        orphan = quill()->locate_handle(quill()->maiden());
+                        orphan = quill().locate_handle(quill().maiden());
 
                         // detache the root nodule from the porcupine.
                         this->nest().detach(quill.handle());
@@ -1296,11 +1291,11 @@ namespace nucleus
                         this->_height--;
 
                         // at this point, the tree should have a height of zero.
-                        assert(this->_height == 0);
+                        ELLE_ASSERT(this->_height == 0);
 
                         // therefore, set the mode as value now that the
                         // root handle actually references a value.
-                        this->_mode = Porcupine::Mode::value;
+                        this->_mode = Porcupine::Mode::single;
                       }
                     else
                       quill.unload();
@@ -1321,7 +1316,7 @@ namespace nucleus
                     // check whether the root seam contains a single
                     // entry in which case this entry could become
                     // the new root.
-                    if (seam()->single() == true)
+                    if (seam().single() == true)
                       {
                         ELLE_TRACE_SCOPE("the root seam contains a "
                                          "single entry.");
@@ -1335,7 +1330,7 @@ namespace nucleus
                         Handle orphan;
 
                         // retrieve the handle associated with the maiden key.
-                        orphan = seam()->locate_handle(seam()->maiden());
+                        orphan = seam().locate_handle(seam().maiden());
 
                         // detache the root nodule from the porcupine.
                         this->nest().detach(seam.handle());
@@ -1381,7 +1376,7 @@ namespace nucleus
       ELLE_TRACE_SCOPE("_search(%s)", k);
 
       // make sure we are operating in tree mode.
-      assert(this->_mode == Porcupine::Mode::hierarchy);
+      ELLE_ASSERT(this->_mode == Porcupine::Mode::hierarchy);
 
       Ambit<Nodule<T>> root(this->nest(), this->_root);
 
@@ -1389,7 +1384,7 @@ namespace nucleus
       root.load();
 
       // trigger the search method on the root nodule.
-      v = root()->search(k);
+      v = root().search(k);
 
       // unload the root nodule.
       root.unload();

@@ -3,24 +3,23 @@
 
 # include <nucleus/Exception.hh>
 
+# include <elle/assert.hh>
+
 namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    /// XXX: manual(manual load/unload), automatic(unload automatic),
-    ///      transparent(both load/unload are automatic)
     template <typename T>
     Ambit<T>::Ambit(Nest& nest,
                     Handle& handle,
-                    Mode const mode):
+                    Ambit<T>::Mode const mode):
       _nest(nest),
       _mode(mode),
-      _state(StateUnloaded),
+      _state(State::unloaded),
       _handle(handle),
       _block(nullptr)
     {
@@ -28,10 +27,11 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case Ambit<T>::ModeTransparent:
+        case Mode::transparent:
           {
-            ELLE_TRACE("Loading on construction")
-              this->load();
+            ELLE_TRACE("loading on construction");
+
+            this->load();
 
             break;
           }
@@ -42,9 +42,6 @@ namespace nucleus
         }
     }
 
-    ///
-    /// XXX
-    ///
     template <typename T>
     Ambit<T>::~Ambit()
     {
@@ -52,13 +49,14 @@ namespace nucleus
 
       switch (this->_mode)
         {
-        case Ambit<T>::ModeAutomatic:
-        case Ambit<T>::ModeTransparent:
+        case Mode::automatic:
+        case Mode::transparent:
           {
-            if (this->_state == Ambit<T>::StateLoaded)
+            if (this->_state == State::loaded)
               {
-                ELLE_TRACE("Unloading on destruction")
-                  this->unload();
+                ELLE_TRACE("unloading on destruction");
+
+                this->unload();
               }
 
             break;
@@ -70,29 +68,30 @@ namespace nucleus
         }
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     template <typename T>
     void
     Ambit<T>::load()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Ambit");
+      ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE_SCOPE("load() this(%s)", this);
+      ELLE_ASSERT(this->_state == State::unloaded);
+      ELLE_ASSERT(this->_block == nullptr);
 
-      if (this->_state == Ambit<T>::StateLoaded)
-        throw Exception("unable to load an already loaded block");
-
-      assert(this->_block == nullptr);
-
+      // Load the block from the nest.
       this->_block = this->_nest.load(this->_handle);
 
-      if (dynamic_cast<T*>(this->_block->node()) == nullptr)
-        throw Exception("the retrieved block does not match the type");
+      // Make sure the retrieved block is compatible with the type given
+      // at the ambit's construction.
+      if (dynamic_cast<T*>(&this->_block->node()) == nullptr)
+        throw Exception("the referenced node block's type does not match the "
+                        "given type");
 
-      this->_state = Ambit<T>::StateLoaded;
+      this->_state = State::loaded;
     }
 
     template <typename T>
@@ -100,44 +99,55 @@ namespace nucleus
     Ambit<T>::unload()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Ambit");
+      ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE_SCOPE("unload() this(%s)", this);
+      ELLE_ASSERT(this->_state == State::loaded);
+      ELLE_ASSERT(this->_block != nullptr);
 
-      if (this->_state == Ambit<T>::StateUnloaded)
-        throw Exception("unable to unload an already unloaded block");
-
-      assert(this->_block != nullptr);
-
+      // Unload the block to the nest.
       this->_nest.unload(this->_handle);
 
+      // Release the pointer.
       this->_block.reset();
-      this->_state = Ambit<T>::StateUnloaded;
+
+      this->_state = State::unloaded;
     }
 
     template <typename T>
-    Handle&
-    Ambit<T>::handle()
+    Contents const&
+    Ambit<T>::contents() const
     {
-      return (this->_handle);
+      return (*this->_block.get());
     }
 
     template <typename T>
-    Contents*
+    Contents&
     Ambit<T>::contents()
     {
-      return (this->_block.get());
+      return (*this->_block.get());
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    template <typename T>
+    T const&
+    Ambit<T>::operator ()() const
+    {
+      return (static_cast<T const&>(this->_block->node()));
     }
 
     template <typename T>
-    T*
+    T&
     Ambit<T>::operator ()()
     {
-      return (static_cast<T*>(this->_block->node()));
+      return (static_cast<T&>(this->_block->node()));
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     template <typename T>
     elle::Status
@@ -147,22 +157,17 @@ namespace nucleus
 
       std::cout << alignment << "[Ambit]" << std::endl;
 
-      // dump the mode.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Mode] " << std::dec << this->_mode << std::endl;
+                << "[Mode] " << this->_mode << std::endl;
 
-      // dump the state.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[State] " << std::dec << this->_state << std::endl;
+                << "[State] " << this->_state << std::endl;
 
-      // dump the handle.
       if (this->_handle.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the handle");
 
-      // dump the block.
       if (this->_block != nullptr)
         {
-          // dump the hierarchy, if present.
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Block]" << std::endl;
 
@@ -178,6 +183,22 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Ambit<T>::print(std::ostream& stream) const
+    {
+      stream << "ambit("
+             << this->_handle
+             << ", "
+             << this->_mode
+             << ", "
+             << this->_state
+             << ")";
+    }
   }
 }
 

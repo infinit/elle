@@ -1,18 +1,19 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HH
 # define NUCLEUS_PROTON_CONTENTS_HH
 
-# include <cryptography/fwd.hh>
-
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Node.hh>
 # include <nucleus/proton/Address.hh>
 
+# include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
+
+# include <elle/attribute.hh>
 # include <elle/idiom/Open.hh>
 
 // XXX
 # include <cryptography/KeyPair.hh>
-// XXX[temporary: for cryptography]
-using namespace infinit;
 
 namespace nucleus
 {
@@ -47,6 +48,42 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Contents>,
       public elle::concept::UniquableMixin<Contents>
     {
+      /*-------------.
+      | Enumerations |
+      `-------------*/
+    public:
+      /// Represent all the nodes which can be embedded in a Contents i.e
+      /// which need to be encrypted.
+      enum class Type
+        {
+          data_seam,
+          data_quill,
+          data_value,
+          catalog_seam,
+          catalog_quill,
+          catalog_value,
+          reference_seam,
+          reference_quill,
+          reference_value
+        };
+
+      /// Define the mode of the contents i.e the state of its embedded node
+      /// being either encrypted or decrypted.
+      enum class Mode
+        {
+          encrypted,
+          decrypted
+        };
+
+      /*---------------.
+      | Static Methods |
+      `---------------*/
+    public:
+      /// Return the factory capable of building inner-contents classes.
+      static
+      elle::utility::Factory<Type> const&
+      factory();
+
       /*----------.
       | Constants |
       `----------*/
@@ -56,25 +93,19 @@ namespace nucleus
         static neutron::Component const component;
       };
 
-      //
-      // enumerations
-      //
-    public:
-      enum Mode
-        {
-          ModeEncrypted,
-          ModeDecrypted
-        };
-
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Contents(); // XXX[to deserialize]
+      /// Construct a contents based on the given node.
+      ///
+      /// Note that the ownership of the given node is transferred to the
+      /// contents.
       template <typename T>
       Contents(Network const& network,
                cryptography::PublicKey const& creator_K,
-               T*); // XXX[use unique_ptr]
+               T* node);
       ~Contents();
 
       // XXX
@@ -91,26 +122,29 @@ namespace nucleus
       }
       // XXX
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX
-      elle::Status
+      /// Encrypt the contents with the given key.
+      void
       encrypt(cryptography::SecretKey const& key);
-      /// XXX
-      elle::Status
+      /// Decrypt the contents with the given key.
+      void
       decrypt(cryptography::SecretKey const& key);
-      /// XXX
+      /// Return the mode of the contents i.e either encrypted or decrypted.
       Mode
       mode() const;
-      /// XXX
-      Node*
+      /// Return the node (in its decrypted form) referenced by the contents.
+      Node const&
+      node() const;
+      /// Return the node (in its decrypted form) referenced by the contents.
+      Node&
       node();
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -123,15 +157,25 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Node::Type _type;
-      Node* _node;
-      cryptography::Cipher* _cipher;
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Node*, node);
+      ELLE_ATTRIBUTE(cryptography::Cipher*, cipher);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Contents::Type const type);
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Contents::Mode const mode);
   }
 }
 

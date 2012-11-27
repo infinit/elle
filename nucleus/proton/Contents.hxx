@@ -9,9 +9,9 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     template <typename T>
     Contents::Contents(Network const& network,

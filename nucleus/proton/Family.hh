@@ -11,7 +11,7 @@ namespace nucleus
     | Enumerations |
     `-------------*/
 
-    /// Defines the block's physical family.
+    /// Define the block's physical family.
     enum class Family
       {
         content_hash_block,

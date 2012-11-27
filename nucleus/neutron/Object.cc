@@ -32,13 +32,13 @@ namespace nucleus
 
       _author(nullptr)
     {
-      this->_meta.state = proton::StateClean;
+      this->_meta.state = proton::State::clean;
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 
-      this->_data.state = proton::StateClean;
+      this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
     }
@@ -67,13 +67,13 @@ namespace nucleus
       // the attributes below are initialized in the constructor body
       // because they belong to a sub-structure.
       //
-      this->_meta.state = proton::StateClean;
+      this->_meta.state = proton::State::clean;
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 
-      this->_data.state = proton::StateClean;
+      this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
 
@@ -152,10 +152,10 @@ namespace nucleus
       }
 
       // mark the section as dirty.
-      this->_data.state = proton::StateDirty;
+      this->_data.state = proton::State::dirty;
 
       // mark the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -177,7 +177,7 @@ namespace nucleus
       this->_meta.owner.permissions = permissions;
 
       // mark the section as dirty.
-      this->_meta.state = proton::StateDirty;
+      this->_meta.state = proton::State::dirty;
 
       // make sure the owner's record is computed.
       this->_owner_record();
@@ -193,7 +193,7 @@ namespace nucleus
                                             this->_meta.owner.token);
 
       // set the the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -205,7 +205,7 @@ namespace nucleus
                                      Access const* access)
     {
       // re-sign the data if required.
-      if (this->_data.state == proton::StateDirty)
+      if (this->_data.state == proton::State::dirty)
         {
           // increase the data revision.
           this->_data.revision += 1;
@@ -221,11 +221,11 @@ namespace nucleus
                      this->_meta.access));
 
           // mark the section as consistent.
-          this->_data.state = proton::StateConsistent;
+          this->_data.state = proton::State::consistent;
         }
 
       // re-sign the meta data if required.
-      if (this->_meta.state == proton::StateDirty)
+      if (this->_meta.state == proton::State::dirty)
         {
           // increase the meta revision.
           this->_meta.revision += 1;
@@ -282,7 +282,7 @@ namespace nucleus
             }
 
           // mark the section as consistent.
-          this->_meta.state = proton::StateConsistent;
+          this->_meta.state = proton::State::consistent;
         }
 
       // set the mutable block's revision.
@@ -290,7 +290,7 @@ namespace nucleus
       this->revision(this->_meta.revision + this->_data.revision);
 
       // set the block as consistent.
-      this->state(proton::StateConsistent);
+      this->state(proton::State::consistent);
 
       return elle::Status::Ok;
     }

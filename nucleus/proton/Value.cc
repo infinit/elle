@@ -4,10 +4,18 @@ namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    Value::Value():
+      Node(Node::Type::value)
+    {
+    }
+
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Value::Dump(elle::Natural32 margin) const
@@ -21,6 +29,5 @@ namespace nucleus
 
       return (elle::Status::Ok);
     }
-
   }
 }

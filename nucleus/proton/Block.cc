@@ -24,7 +24,7 @@ namespace nucleus
 
     Block::Block():
       _component(neutron::ComponentUnknown),
-      _state(StateClean)
+      _state(State::clean)
     {
     }
 
@@ -38,7 +38,7 @@ namespace nucleus
       _creator(cryptography::oneway::hash(creator_K,
                                           Block::Constants::oneway_algorithm)),
       _salt(cryptography::random::generate<elle::Natural64>()),
-      _state(StateClean)
+      _state(State::clean)
     {
       // XXX[to improve and put in the list above]
 

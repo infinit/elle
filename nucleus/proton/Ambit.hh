@@ -1,98 +1,182 @@
 #ifndef NUCLEUS_PROTON_AMBIT_HH
 # define NUCLEUS_PROTON_AMBIT_HH
 
+# include <nucleus/proton/Handle.hh>
+
 # include <elle/types.hh>
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 
-# include <nucleus/proton/Handle.hh>
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
   namespace proton
   {
-
-    /// XXX
+    /// Represent an area of control over a node. Instanciating such
+    /// an ambit makes it easy to load and unload the referenced node block
+    /// from the nest given at construction.
     template <typename T>
     class Ambit:
-      public elle::io::Dumpable
+      public elle::io::Dumpable,
+      public elle::Printable,
+      private boost::noncopyable
     {
-      //
-      // enumerations
-      //
-    public:
-      /// XXX
-      enum Mode
+      /*-------------.
+      | Enumerations |
+      `-------------*/
+
+      /// Define the way the referenced node block is loaded and unloaded.
+      ///
+      /// The _manual_ mode does nothing and let the caller manually load/unload
+      /// the block. The _automatic_ mode makes sure the block is unloaded is
+      /// the caller forgets to do it manually i.e when the scope is leaved./
+      /// Finally, the _transparent_ mode loads and unloads the node block
+      /// without the caller having to do anything.
+      enum class Mode
         {
-          ModeManual,
-          ModeAutomatic,
-          ModeTransparent
+          manual,
+          automatic,
+          transparent
         };
-      /// XXX
-      enum State
+      /// Represent the state of the node block being either loaded or unloaded.
+      enum class State
         {
-          StateUnloaded,
-          StateLoaded
+          unloaded,
+          loaded
         };
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      /// XXX
-      Ambit(Nest&,
-            Handle&,
-            Mode const = ModeAutomatic);
-      /// XXX
+      /// Construct an ambit enabling one to load/unload from the _nest_ the
+      /// block referenced by _handle_.
+      ///
+      /// Note that through these operations the _handle_ may be changed.
+      Ambit(Nest& nest,
+            Handle& handle,
+            Mode const mode = Mode::automatic);
+      /// Destruct the ambit, making sure to unload the referenced block if
+      /// necessary.
       ~Ambit();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX
+      /// Load the block referenced by the ambit.
       void
       load();
-      /// XXX
+      /// Unload the block referenced by the ambit.
       void
       unload();
-      /// XXX
-      Handle&
-      handle();
-      /// XXX
-      Contents*
+      /// Return the Contents block associated with the given handle.
+      Contents const&
+      contents() const;
+      /// Return the Contents block associated with the given handle.
+      Contents&
       contents();
-      /// XXX[special: cast the content's node into T]
-      T*
-      operator ()();
 
       /*----------.
       | Operators |
       `----------*/
     public:
-      ELLE_OPERATOR_ASSIGNMENT(Ambit<T>);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Ambit<T>);
 
-      //
-      // interfaces
-      //
+      /// Return the node of type T embedded in the referenced Contents block.
+      T const&
+      operator ()() const;
+      /// Return the node of type T embedded in the referenced Contents block.
+      T&
+      operator ()();
+
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Nest& _nest;
-      Mode _mode;
-      State _state;
-      Handle& _handle;
-      std::shared_ptr<Contents> _block;
-    };
+      ELLE_ATTRIBUTE(Nest&, nest);
+      ELLE_ATTRIBUTE(Mode, mode);
+      ELLE_ATTRIBUTE(State, state);
+      ELLE_ATTRIBUTE_RX(Handle&, handle);
+      ELLE_ATTRIBUTE_R(std::shared_ptr<Contents>, block);
 
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      friend
+      std::ostream&
+      operator <<(std::ostream& stream,
+                  Mode const mode)
+      {
+        switch (mode)
+          {
+          case Mode::manual:
+            {
+              stream << "manual";
+              break;
+            }
+          case Mode::automatic:
+            {
+              stream << "automatic";
+              break;
+            }
+          case Mode::transparent:
+            {
+              stream << "transparent";
+              break;
+            }
+          default:
+            {
+              throw Exception("unknown mode: '%s'", static_cast<int>(mode));
+            }
+          }
+
+        return (stream);
+      }
+
+      friend
+      std::ostream&
+      operator <<(std::ostream& stream,
+                  State const state)
+      {
+        switch (state)
+          {
+          case State::unloaded:
+            {
+              stream << "unloaded";
+              break;
+            }
+          case State::loaded:
+            {
+              stream << "loaded";
+              break;
+            }
+          default:
+            {
+              throw Exception("unknown state: '%s'", static_cast<int>(state));
+            }
+          }
+
+        return (stream);
+      }
+    };
   }
 }
 
-#include <nucleus/proton/Ambit.hxx>
+# include <nucleus/proton/Ambit.hxx>
 
 #endif

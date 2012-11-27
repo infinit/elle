@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_QUILL_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Nodule.hh>
@@ -35,7 +36,9 @@ namespace nucleus
       // types
       //
     public:
+      /// XXX
       typedef T V;
+      /// XXX
       typedef Inlet<typename T::K> I;
 
       //
@@ -44,7 +47,7 @@ namespace nucleus
     public:
       struct Constants
       {
-        static Node::Type const type;
+        static Contents::Type const type;
       };
 
       //
@@ -179,11 +182,11 @@ namespace nucleus
 
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Quill<T>);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      Container _container;
+      ELLE_ATTRIBUTE(Container, container);
     };
 
   }

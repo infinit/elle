@@ -2,6 +2,8 @@
 # define NUCLEUS_PROTON_NODULE_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+
 # include <cryptography/fwd.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -19,12 +21,20 @@ namespace nucleus
     /// every nodule therefore encapsulates the type i.e seam or quill
     /// along with common information such as the addresses of the parent
     /// and neighbour nodules.
-    ///
     template <typename T>
     class Nodule:
       public Node
     {
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
+      enum class Type
+        {
+          seam,
+          quill
+        };
+
       //
       // static methods
       //
@@ -33,22 +43,33 @@ namespace nucleus
       template <typename X>
       static
       void
-      transfer_right(X* left,
-                     X* right,
+      transfer_right(X& left,
+                     X& right,
                      Extent const size);
       /// XXX
       template <typename X>
       static
       void
-      transfer_left(X* left,
-                    X* right,
+      transfer_left(X& left,
+                    X& right,
                     Extent const size);
       /// XXX
       template <typename X>
       static
       void
-      optimize(X* nodule,
+      optimize(X& nodule,
                typename T::K const& k);
+      /// XXX[a mettre dans Node?]
+      template <typename N>
+      static
+      Contents*
+      split(N& node);
+
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      Nodule(Type const type);
 
       //
       // virtual methods
@@ -126,8 +147,15 @@ namespace nucleus
 
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Nodule);
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Type, type);
     };
 
+    // XXX operator << for Type
   }
 }
 

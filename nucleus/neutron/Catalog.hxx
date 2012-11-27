@@ -21,6 +21,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
 
   archive >> size;
 
+  ELLE_DECLARE(nucleus::proton::Capacity _capacity{value.capacity()});
+
   for (i = 0; i< size; i++)
     {
       std::shared_ptr<nucleus::neutron::Entry> entry{
@@ -31,22 +33,14 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
       // constructor has been used before deserializing the entry.
       entry->footprint(elle::serialize::footprint(*entry));
 
-      if (value._container.find(entry->name()) != value._container.end())
-        throw nucleus::Exception("the entry's name '%s' seems to already "
-                                 "exist", entry->name());
-
-      auto result =
-        value._container.insert(
-          std::pair<elle::String const,
-                    std::shared_ptr<nucleus::neutron::Entry>>{
-            entry->name(), entry});
-
-      if (result.second == false)
-        throw Exception("unable to insert the entry the container");
-
-      // Update the catalog's footprint.
-      value.footprint(value.footprint() + entry->footprint());
+      // Inject the entry in the catalog, taking care not to update
+      // the state (the block must remain cleaned since deserialized)
+      // or the capacity (since the capacity is also deserialized).
+      value._inject(entry);
     }
+
+  ELLE_ASSERT(value.capacity() == _capacity);
+  ELLE_ASSERT(value.state() == nucleus::proton::State::clean);
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Catalog,

@@ -2,62 +2,111 @@
 # define NUCLEUS_PROTON_LIMITS_HH
 
 # include <elle/types.hh>
-# include <elle/io/Dumpable.hh>
+# include <elle/attribute.hh>
+# include <elle/Printable.hh>
+
+# include <nucleus/proton/Extent.hh>
+# include <nucleus/proton/Contention.hh>
+# include <nucleus/proton/Balancing.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-    /// XXX bien expliquer que par exemple un extent de 512 octets avec 0.5 et 0.2
-    /// ca fera que un nodule avec une seule entree soit au dessus de la limite basse.
-    /// donc l'algo ne traiterait pas ces nodules. attention donc d'utiliser des nombres
-    /// qui ont du sens. -> cela dit le systeme doit s'en premunir.
-    class Limits:
-      public elle::io::Dumpable
+    namespace limits
     {
-      //
-      // constructors & destructor
-      //
-    public:
-      Limits();
-      Limits(elle::Natural32 const extent,
-             elle::Real const contention,
-             elle::Real const balancing);
-
-      //
-      // methods
-      //
-    public:
       /// XXX
-      elle::Natural32
-      extent() const;
-      /// XXX
-      elle::Real
-      contention() const;
-      /// XXX
-      elle::Real
-      balancing() const;
+      struct Porcupine:
+        public elle::Printable
+      {
+        /*-----------.
+        | Interfaces |
+        `-----------*/
+      public:
+        // printable
+        virtual
+        void
+        print(std::ostream& stream) const;
+      };
 
-      //
-      // interfaces
-      //
+      /// XXX
+      struct Node:
+        public elle::Printable
+      {
+        /*-------------.
+        | Construction |
+        `-------------*/
+      public:
+        Node(Extent const extent,
+             Contention const contention,
+             Balancing const balancing);
+
+        /*-----------.
+        | Interfaces |
+        `-----------*/
+      public:
+        // printable
+        virtual
+        void
+        print(std::ostream& stream) const;
+
+        /*-----------.
+        | Attributes |
+        `-----------*/
+      private:
+        ELLE_ATTRIBUTE_R(Extent, extent);
+        ELLE_ATTRIBUTE_R(Contention, contention);
+        ELLE_ATTRIBUTE_R(Balancing, balancing);
+      };
+    }
+
+    /// Define the limits for every component of a block-based data structure
+    /// i.e a porcupine.
+    ///
+    /// One should be careful regarding the limits used as the impact both
+    /// on the performance and the storage consumption can be huge. Besides,
+    /// one should be aware that some values may lead to undetermined behaviours
+    /// (meaning not thorougly tested cases), especially extreme values such
+    /// as very low extent and close to zero or one contention and balancing
+    /// ratios.
+    class Limits:
+      public elle::Printable
+    {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      // dumpable
-      elle::Status Dump(const elle::Natural32 = 0) const;
+      Limits(limits::Porcupine const& porcupine,
+             limits::Node const& nodule,
+             limits::Node const& value);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      /// XXX
-      elle::Natural32 _extent;
-      /// XXX
-      elle::Real _contention;
-      /// XXX
-      elle::Real _balancing;
-    };
+      ELLE_ATTRIBUTE_R(limits::Porcupine, porcupine);
+      ELLE_ATTRIBUTE_R(limits::Node, nodule);
+      ELLE_ATTRIBUTE_R(limits::Node, value);
 
+      // XXX
+    public:
+      elle::Natural32
+      extent() const { return 1024; }
+      elle::Real
+      contention() const { return 0.5; }
+      elle::Real
+      balancing() const { return 0.2; }
+      // XXX
+    };
   }
 }
 

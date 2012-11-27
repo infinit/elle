@@ -167,7 +167,7 @@ namespace nucleus
       this->_container.erase(iterator);
 
       // Set the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     Size
@@ -216,7 +216,7 @@ namespace nucleus
         throw Exception("unable to insert the record the container");
 
       // Set the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     /*---------.

@@ -41,7 +41,7 @@ namespace etoile
       // since a group always has at least one member, its manager. One could
       // therefore want to create a group a later add users. The group, when
       // "empty" should therefore be considered as valid.
-      context.group->state(nucleus::proton::StateDirty);
+      context.group->state(nucleus::proton::State::dirty);
 
       nucleus::proton::Address address(context.group->bind());
 
@@ -407,7 +407,7 @@ namespace etoile
         escape("unable to close the ensemble");
 
       // if the group has been modified i.e is dirty.
-      if (context.group->state() == nucleus::proton::StateDirty)
+      if (context.group->state() == nucleus::proton::State::dirty)
         {
           // seal the group, depending on the presence of a referenced
           // access block.

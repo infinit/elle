@@ -11,13 +11,13 @@ namespace nucleus
 // ---------- definitions -----------------------------------------------------
 //
 
-    const proton::Node::Type Data::Constants::seam =
-      proton::Node::TypeSeamData;
-    const proton::Node::Type Data::Constants::quill =
-      proton::Node::TypeQuillData;
-    const proton::Node::Type Data::Constants::value =
-      proton::Node::TypeValueData;
-    const proton::Node::Type Data::Constants::type =
+    proton::Contents::Type const Data::Constants::seam =
+      proton::Contents::Type::data_seam;
+    proton::Contents::Type const Data::Constants::quill =
+      proton::Contents::Type::data_quill;
+    proton::Contents::Type const Data::Constants::value =
+      proton::Contents::Type::data_value;
+    proton::Contents::Type const Data::Constants::type =
       Data::Constants::value;
 
 //
@@ -27,7 +27,7 @@ namespace nucleus
     Data::Data():
       Value::Value()
     {
-      this->state(proton::StateDirty); // XXX[est-ce necessaire?]
+      this->state(proton::State::dirty); // XXX[est-ce necessaire?]
       this->footprint(0); // XXX[initial catalog footprint]
     }
 
@@ -41,7 +41,7 @@ namespace nucleus
     elle::Status        Data::Create()
     {
       // set the initial state.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -67,7 +67,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -123,7 +123,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }

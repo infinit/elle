@@ -87,18 +87,18 @@ namespace etoile
               {
                 switch (pod->block.get()->state())
                   {
-                  case nucleus::proton::StateClean:
+                  case nucleus::proton::State::clean:
                     {
                       // nothing to do: the block has not been modified.
                       break;
                     }
-                  case nucleus::proton::StateDirty:
+                  case nucleus::proton::State::dirty:
                     {
                       throw reactor::Exception(elle::concurrency::scheduler(),
                                                "The block is dirty but has not"
                                                "been sealed.");
                     }
-                  case nucleus::proton::StateConsistent:
+                  case nucleus::proton::State::consistent:
                     {
                       pod->address = pod->block.get()->bind();
 
@@ -367,9 +367,7 @@ namespace etoile
 
               assert(handle.secret() != cryptography::SecretKey::Null);
 
-              if (contents->decrypt(handle.secret()) == elle::Status::Error)
-                throw reactor::Exception(elle::concurrency::scheduler(),
-                                         "Unable to decrypt the contents");
+              contents->decrypt(handle.secret());
 
               nucleus::proton::Handle h = this->attach(std::move(contents));
 
@@ -398,7 +396,7 @@ namespace etoile
         throw reactor::Exception(elle::concurrency::scheduler(),
                                  "Unable to load a null handle");
 
-      block->node()->nest(*this);
+      block->node().nest(*this);
 
       assert(handle.placement() != nucleus::proton::Placement::Null);
       assert(block != nullptr);

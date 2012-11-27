@@ -138,7 +138,7 @@ namespace nucleus
       enum class Mode
         {
           empty,
-          value,
+          single,
           hierarchy
         };
 

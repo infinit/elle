@@ -88,7 +88,7 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
         new nucleus::neutron::Entry(vector[i],
                                     nucleus::proton::Address::null())};
 
-      catalog()->insert(entry);
+      catalog().insert(entry);
 
       catalog.unload();
 
@@ -105,7 +105,7 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
     }
 
   ELLE_ASSERT(porcupine.capacity() == vector.size());
-  ELLE_ASSERT(porcupine.state() == nucleus::proton::StateDirty);
+  ELLE_ASSERT(porcupine.state() == nucleus::proton::State::dirty);
 
   porcupine.check<nucleus::neutron::Catalog>(
     nucleus::proton::Porcupine::FlagRecursive |
@@ -134,7 +134,7 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 
       catalog.load();
 
-      ELLE_ASSERT(catalog()->exist(vector[i]) == true);
+      ELLE_ASSERT(catalog().exist(vector[i]) == true);
 
       catalog.unload();
 
@@ -194,8 +194,8 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
       catalog.load();
 
       nucleus::neutron::Range<nucleus::neutron::Entry> range{
-        catalog()->consult(i - base,
-                           catalog()->capacity() - (i - base))};
+        catalog().consult(i - base,
+                          catalog().capacity() - (i - base))};
 
       for (auto& entry: range)
         w[i++] = entry->name();
@@ -280,7 +280,7 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
 
       catalog.load();
 
-      catalog()->erase(vector[i]);
+      catalog().erase(vector[i]);
 
       catalog.unload();
 
@@ -305,7 +305,7 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
     nucleus::proton::Porcupine::FlagFootprint |
     nucleus::proton::Porcupine::FlagState);
 
-  ELLE_ASSERT(porcupine.state() == nucleus::proton::StateDirty);
+  ELLE_ASSERT(porcupine.state() == nucleus::proton::State::dirty);
 }
 
 void
@@ -321,7 +321,10 @@ test_porcupine_catalog()
 
   // XXX[provide a path to where blocks should be stored i.e another
   //     hole storage]
-  etoile::nest::Nest nest1(nucleus::proton::Limits(1024, 0.5, 0.2));
+  etoile::nest::Nest nest1{
+    nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
+                            nucleus::proton::limits::Node{1024, 0.5, 0.2},
+                            nucleus::proton::limits::Node{1024, 0.5, 0.2})};
   nucleus::proton::Porcupine porcupine1(nest1);
 
   test_porcupine_add(porcupine1, vector);

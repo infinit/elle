@@ -9,36 +9,54 @@ namespace nucleus
 {
   namespace proton
   {
-
-    /// XXX
+    /// Abstract the notion of value which is a leaf of the tree.
+    ///
+    /// Every class C deriving Value must provide the following methods.
+    /// Besides, every value must provides a type K which represents the
+    /// key i.e the type of the indexing element in the Porcupine hierarchy.
+    ///
+    ///   // Return true if the value is empty.
+    ///   elle::Boolean
+    ///   empty() const;
+    ///
+    ///   // Return the element within the value with the highest key.
+    ///   C::K
+    ///   mayor() const;
+    ///
+    ///   // Split the value and return a additional value repesenting the
+    ///   // right neighbour of the current value.
+    ///   //
+    ///   // Note that the ownership over the returned value is transferred to
+    ///   // the caller.
+    ///   C*
+    ///   split();
+    ///
+    ///   // Merge the _other_ value with the current one. Note that the given
+    ///   // value can be either the left or right neighbour. In any cases, the
+    ///   // two values will be merged in the current one.
+    ///   void
+    ///   merge(C& other);
+    ///
+    /// XXX les protos de split et merge ont changes!?!
     class Value:
       public Node
     {
-      //
-      // methods
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      /// XXX
-      virtual
-      elle::Boolean
-      empty() const = 0;
-      /// XXX
-      virtual
-      elle::String
-      mayor() const = 0;
+      Value();
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Value);
     };
-
   }
 }
 

@@ -68,7 +68,7 @@ namespace nucleus
       _height(0),
       _capacity(0),
       _nest(nullptr),
-      _state(StateClean)
+      _state(State::clean)
     {
     }
 
@@ -83,7 +83,7 @@ namespace nucleus
       _agent_K(agent_K),
       */
       _nest(&nest),
-      _state(StateClean)
+      _state(State::clean)
     {
     }
 
@@ -175,7 +175,7 @@ namespace nucleus
           {
             break;
           }
-        case Mode::value:
+        case Mode::single:
         case Mode::hierarchy:
           {
             if (this->_root.Dump(margin + 4) == elle::Status::Error)
@@ -210,9 +210,9 @@ namespace nucleus
             stream << "empty";
             break;
           }
-        case Porcupine::Mode::value:
+        case Porcupine::Mode::single:
           {
-            stream << "value";
+            stream << "single";
             break;
           }
         case Porcupine::Mode::hierarchy:

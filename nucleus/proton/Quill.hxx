@@ -8,28 +8,30 @@
 # include <nucleus/proton/Limits.hh>
 # include <nucleus/proton/Statistics.hh>
 
+# include <elle/assert.hh>
+# include <elle/log.hh>
+# include <elle/finally.hh>
+
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
     template <typename T>
-    Node::Type const Quill<T>::Constants::type = T::Constants::quill;
+    Contents::Type const Quill<T>::Constants::type = T::Constants::quill;
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     template <typename T>
     Quill<T>::Quill():
-      Nodule<T>::Nodule()
+      Nodule<T>::Nodule(Nodule<T>::Type::quill)
     {
-      static Footprint const initial =
-        elle::serialize::footprint(*this);
+      static Footprint const initial = elle::serialize::footprint(*this);
 
       this->footprint(initial);
     }
@@ -72,11 +74,11 @@ namespace nucleus
         throw Exception("unable to insert the inlet in the container");
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
 
       // add the inlet footprint to the quill's.
-      assert(this->footprint() != 0);
-      assert(inlet->footprint() != 0);
+      ELLE_ASSERT(this->footprint() != 0);
+      ELLE_ASSERT(inlet->footprint() != 0);
       this->footprint(this->footprint() + inlet->footprint());
     }
 
@@ -107,11 +109,11 @@ namespace nucleus
       inlet = iterator->second;
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
 
       // substract the inlet footprint to the quill's.
-      assert(this->footprint() != 0);
-      assert(inlet->footprint() != 0);
+      ELLE_ASSERT(this->footprint() != 0);
+      ELLE_ASSERT(inlet->footprint() != 0);
       this->footprint(this->footprint() - inlet->footprint());
 
       // delete the inlet.
@@ -163,7 +165,7 @@ namespace nucleus
         throw Exception("unable to insert the inlet in the container");
 
       // set the state.
-      this->state(StateDirty);
+      this->state(State::dirty);
     }
 
     template <typename T>
@@ -333,8 +335,8 @@ namespace nucleus
 
       value.load();
 
-      inlet->capacity(value()->capacity());
-      inlet->state(value()->state());
+      inlet->capacity(value().capacity());
+      inlet->state(value().state());
 
       // Note that the current quill's state is not set to
       // Dirty because the insert() method took care of it.
@@ -367,7 +369,7 @@ namespace nucleus
       //
       {
         // make sure the operation is valid.
-        assert(inlet->capacity() <= this->capacity());
+        ELLE_ASSERT(inlet->capacity() <= this->capacity());
 
         // substract the inlet's capacity though should the value block be
         // empty, this capacity may probably be zero.
@@ -404,22 +406,22 @@ namespace nucleus
 
       // Check whether the value has indeed been modified without
       // which one would not need to call update().
-      if (value()->state() != StateDirty)
+      if (value().state() != State::dirty)
         throw Exception("unable to update the nodule based on a non-dirty "
                         "value");
 
       // update the inlet's and quill's state.
-      inlet->state(StateDirty);
-      this->state(StateDirty);
+      inlet->state(State::dirty);
+      this->state(State::dirty);
 
       //
       // update the key, if possible.
       //
-      if (value()->empty() == false)
+      if (value().empty() == false)
         {
           // update the quill if necessary.
-          if (inlet->key() != value()->mayor())
-            this->refresh(iterator, value()->mayor());
+          if (inlet->key() != value().mayor())
+            this->refresh(iterator, value().mayor());
         }
 
       //
@@ -429,27 +431,27 @@ namespace nucleus
         Capacity variation;
 
         // depending on the variation.
-        if (value()->capacity() > inlet->capacity())
+        if (value().capacity() > inlet->capacity())
           {
             // compute the capacity variation.
-            variation = value()->capacity() - inlet->capacity();
+            variation = value().capacity() - inlet->capacity();
 
             // update the both the inlet and quill capacities.
             inlet->capacity(inlet->capacity() + variation);
-            assert(inlet->capacity() == value()->capacity());
+            ELLE_ASSERT(inlet->capacity() == value().capacity());
             this->capacity(this->capacity() + variation);
           }
         else
           {
             // compute the capacity variation.
-            variation = inlet->capacity() - value()->capacity();
+            variation = inlet->capacity() - value().capacity();
 
             // make sure the operation is valid.
-            assert(variation <= inlet->capacity());
+            ELLE_ASSERT(variation <= inlet->capacity());
 
             // update the both the inlet and quill capacities, if necessary.
             inlet->capacity(inlet->capacity() - variation);
-            assert(inlet->capacity() == value()->capacity());
+            ELLE_ASSERT(inlet->capacity() == value().capacity());
             this->capacity(this->capacity() - variation);
           }
       }
@@ -459,7 +461,7 @@ namespace nucleus
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
-      Nodule<T>::optimize(this, inlet->key());
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -467,28 +469,28 @@ namespace nucleus
     Quill<T>::split()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
+      ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE_SCOPE("split()");
-
+      // Allocate a new quill.
       std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
       Handle orphan(this->nest().attach(std::move(contents)));
-      Ambit<Quill<T>> right(this->nest(), orphan);
+      Ambit<Quill<T>> newright(this->nest(), orphan);
 
-      // load the new right nodule.
-      right.load();
+      // Load the new right nodule.
+      newright.load();
 
-      // export inlets from the current quill into the new quill.
-      Nodule<T>::transfer_right(this,
-                                right(),
+      // Export the inlets from the current quill into the new quill.
+      Nodule<T>::transfer_right(*this,
+                                newright(),
                                 this->nest().limits().extent() *
                                 this->nest().limits().contention());
 
-      // set both nodules' state as dirty.
-      this->state(StateDirty);
-      right()->state(StateDirty);
+      // Set both nodules' state as dirty.
+      this->state(State::dirty);
+      newright().state(State::dirty);
 
-      // unload the new right nodule.
-      right.unload();
+      // Unload the new right nodule.
+      newright.unload();
 
       return (orphan);
     }
@@ -507,20 +509,20 @@ namespace nucleus
       quill.load();
 
       // check which nodule has the lowest keys.
-      if (quill()->mayor() < this->mayor())
+      if (quill().mayor() < this->mayor())
         {
           // in this case, export the lower quill's inlets into the current's.
-          Nodule<T>::transfer_right(quill(), this, 0);
+          Nodule<T>::transfer_right(quill(), *this, 0);
         }
       else
         {
           // otherwise, import the higher quill's inlets into the current's.
-          Nodule<T>::transfer_left(this, quill(), 0);
+          Nodule<T>::transfer_left(*this, quill(), 0);
         }
 
       // set both nodules' state as dirty.
-      this->state(StateDirty);
-      quill()->state(StateDirty);
+      this->state(State::dirty);
+      quill().state(State::dirty);
 
       // unload the given quill.
       quill.unload();
@@ -619,7 +621,7 @@ namespace nucleus
               ELLE_DEBUG_SCOPE("checking addresses");
 
               // bind the value block.
-              Address address{value.contents()->bind()};
+              Address address{value.contents().bind()};
 
               // compare the addresses.
               if (inlet->value().address() != address)
@@ -643,11 +645,11 @@ namespace nucleus
             {
               ELLE_DEBUG_SCOPE("checking capacities");
 
-              if (inlet->capacity() != value()->capacity())
+              if (inlet->capacity() != value().capacity())
                 throw Exception("the recorded inlet capacity does not match "
                                 "the value's: inlet(%s) versus value(%s)",
                                 inlet->capacity(),
-                                value()->capacity());
+                                value().capacity());
 
               capacity += inlet->capacity();
             }
@@ -657,19 +659,18 @@ namespace nucleus
             {
               ELLE_DEBUG_SCOPE("checking footprints");
 
-              if (value()->footprint() == 0)
+              if (value().footprint() == 0)
                 throw Exception("the footprint is null");
 
-              if (value()->footprint() !=
-                  elle::serialize::footprint(*value()))
+              if (value().footprint() != elle::serialize::footprint(value()))
                 throw Exception("the recorded footprint does not match the "
                                 "instance's: value(%s) versus footprint(%s)",
-                                value()->footprint(),
-                                elle::serialize::footprint(*value()));
+                                value().footprint(),
+                                elle::serialize::footprint(value()));
 
-              if (value()->footprint() > this->nest().limits().extent())
+              if (value().footprint() > this->nest().limits().extent())
                 throw Exception("the footprint '%s' exceeds the extent '%s'",
-                                value()->footprint(),
+                                value().footprint(),
                                 this->nest().limits().extent());
             }
 
@@ -678,31 +679,31 @@ namespace nucleus
             {
               ELLE_DEBUG_SCOPE("checking states");
 
-              if (inlet->state() != value()->state())
+              if (inlet->state() != value().state())
                 throw Exception("invalid state: inlet(%s) versus value(%s)",
-                                inlet->state(), value()->state());
+                                inlet->state(), value().state());
 
               switch (this->state())
                 {
-                case StateClean:
+                case State::clean:
                   {
-                    if (inlet->state() != StateClean)
+                    if (inlet->state() != State::clean)
                       throw Exception("the inlet's state '%s' should "
                                       "be clean", inlet->state());
 
                     break;
                   }
-                case StateDirty:
+                case State::dirty:
                   {
-                    if (inlet->state() == StateDirty)
+                    if (inlet->state() == State::dirty)
                       dirty = true;
 
                     break;
                   }
-                case StateConsistent:
+                case State::consistent:
                   {
-                    if ((inlet->state() != StateClean) &&
-                        (inlet->state() != StateConsistent))
+                    if ((inlet->state() != State::clean) &&
+                        (inlet->state() != State::consistent))
                       throw Exception("the inlet's state '%s' should "
                                       "be either clean or consistent",
                                       inlet->state());
@@ -732,7 +733,7 @@ namespace nucleus
         {
           ELLE_DEBUG_SCOPE("checking states");
 
-          if ((this->state() == StateDirty) && (dirty == false))
+          if ((this->state() == State::dirty) && (dirty == false))
             throw Exception("none of the inlet seems to be dirty");
         }
     }
@@ -761,44 +762,42 @@ namespace nucleus
           // i.e is not dirty.
           switch (inlet->state())
             {
-            case StateClean:
+            case State::clean:
               {
-                ELLE_TRACE_SCOPE("StateClean");
+                ELLE_TRACE_SCOPE("State::clean");
 
                 break;
               }
-            case StateDirty:
+            case State::dirty:
               {
-                ELLE_TRACE_SCOPE("StateDirty");
+                ELLE_TRACE_SCOPE("State::dirty");
 
                 // set the secret.
-                assert(inlet->value().secret() !=
+                ELLE_ASSERT(inlet->value().secret() !=
                        cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
-                // encrypt and bind the value block.
-                if (value.contents()->encrypt(secret) == elle::Status::Error)
-                  throw Exception("unable to encrypt the value");
+                // Encrypt and bind the value block.
+                value.contents().encrypt(secret);
+                Address address{value.contents().bind()};
 
-                Address address{value.contents()->bind()};
-
-                value()->state(StateConsistent);
-                value.contents()->state(StateConsistent);
+                value().state(State::consistent);
+                value.contents().state(State::consistent);
 
                 inlet->value().address(address);
-                inlet->state(StateConsistent);
+                inlet->state(State::consistent);
 
                 // set the current quill as dirty.
-                this->state(StateDirty);
+                this->state(State::dirty);
 
                 break;
               }
-            case StateConsistent:
+            case State::consistent:
               {
-                ELLE_TRACE_SCOPE("StateConsistent");
+                ELLE_TRACE_SCOPE("State::consistent");
 
                 throw Exception("unexpected state '%s'",
-                                value()->state());
+                                value().state());
               }
             }
 
@@ -839,7 +838,7 @@ namespace nucleus
           value.load();
 
           // dump the value.
-          if (value()->Dump(margin + 6) == elle::Status::Error)
+          if (value().Dump(margin + 6) == elle::Status::Error)
             throw Exception("unable to dump the value");
 
           // unload the value block.
@@ -867,21 +866,21 @@ namespace nucleus
 
           stats.blocks.all += 1;
 
-          switch (value()->state())
+          switch (value().state())
             {
-            case StateClean:
+            case State::clean:
               {
                 stats.blocks.clean++;
 
                 break;
               }
-            case StateDirty:
+            case State::dirty:
               {
                 stats.blocks.dirty++;
 
                 break;
               }
-            case StateConsistent:
+            case State::consistent:
               {
                 stats.blocks.consistent++;
 
@@ -889,9 +888,8 @@ namespace nucleus
               }
             }
 
-          Footprint footprint =
-            elle::serialize::footprint(*value());
-          Capacity capacity = value()->capacity();
+          Footprint footprint = elle::serialize::footprint(value());
+          Capacity capacity = value().capacity();
 
           stats.footprint.minimum =
             footprint < stats.footprint.minimum ?
@@ -919,7 +917,7 @@ namespace nucleus
     typename T::K const&
     Quill<T>::mayor() const
     {
-      assert(this->_container.empty() == false);
+      ELLE_ASSERT(this->_container.empty() == false);
 
       return (this->_container.rbegin()->first);
     }
@@ -928,7 +926,7 @@ namespace nucleus
     typename T::K const&
     Quill<T>::maiden() const
     {
-      assert(this->_container.size() == 1);
+      ELLE_ASSERT(this->_container.size() == 1);
 
       return (this->_container.begin()->first);
     }

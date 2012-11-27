@@ -100,7 +100,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the ensemble has not changed, do nothing.
-        if (context.ensemble->state() == nucleus::proton::StateClean)
+        if (context.ensemble->state() == nucleus::proton::State::clean)
           return elle::Status::Ok;
       }
 
@@ -221,7 +221,7 @@ namespace etoile
           nucleus::proton::Address address(context.ensemble->bind());
 
           // set the content as consistent.
-          context.ensemble->state(nucleus::proton::StateConsistent);
+          context.ensemble->state(nucleus::proton::State::consistent);
 
           /* XXX[porcupine]
           // mark the block as needing to be stored.

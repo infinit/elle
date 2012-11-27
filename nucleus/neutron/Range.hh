@@ -34,6 +34,10 @@ namespace nucleus
     /// original container so as to avoid copying them all. However, since one
     /// may want to use a range after its original instance has been destroyed,
     /// ranges make use of shared pointers.
+    ///
+    /// It is important to understand that the class Range has not been designed
+    /// for locating a precise element but rather to iterate over it. Bear in
+    /// mind that any locate operation is performed in O(n).
     template <typename T>
     class Range:
       public elle::Printable
@@ -53,12 +57,14 @@ namespace nucleus
       `-------------*/
     public:
       Range();
+      /// Construct a range with the given initialize size.
+      explicit
       Range(nucleus::neutron::Size const size);
       Range(Range<T> const& other);
 
-      //
-      // Methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
       /// Insert an item to the range.
       void

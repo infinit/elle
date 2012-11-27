@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_NODE_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
 # include <elle/serialize/Serializable.hh>
 # include <elle/io/Dumpable.hh>
 # include <elle/utility/Factory.hh>
@@ -9,60 +10,36 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Component.hh>
 
+# include <boost/noncopyable.hpp>
+
 namespace nucleus
 {
   namespace proton
   {
-
-    /// XXX
+    /// Provide an abstraction for all the blocks composing a porcupine
+    /// tree being either internal nodules (seam and quill) or leave
+    /// values (catalog, data and reference).
     class Node:
       public elle::serialize::Serializable<>,
       public elle::io::Dumpable,
-      public elle::Printable
+      public elle::Printable,
+      private boost::noncopyable
     {
-      //
-      // enumerations
-      //
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
-      // XXX[peut etre a revoir: mettre dans Contents?]
-      enum Type
+      enum class Type
         {
-          TypeSeamData,
-          TypeQuillData,
-          TypeValueData,
-          TypeSeamCatalog,
-          TypeQuillCatalog,
-          TypeValueCatalog,
-          TypeSeamReference,
-          TypeQuillReference,
-          TypeValueReference
+          nodule,
+          value
         };
 
-
-      //
-      // static methods
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      /// XXX
-      static
-      elle::Boolean
-      setup();
-
-      /*---------------.
-      | Static Methods |
-      `---------------*/
-    public:
-      /// Return the factory capable of building nucleus class instances.
-      static
-      elle::utility::Factory<Type> const&
-      factory();
-
-      //
-      // constructors & destructors
-      //
-    public:
-      /// XXX
-      Node();
+      Node(Type const type);
 
       //
       // methods
@@ -112,12 +89,14 @@ namespace nucleus
       // attributes
       //
     private:
+      ELLE_ATTRIBUTE_R(Type, type);
       Nest* _nest;
       Footprint _footprint;
       Capacity _capacity;
       State _state;
     };
 
+    // XXX operator << for Type
   }
 }
 

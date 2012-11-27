@@ -676,7 +676,7 @@ namespace etoile
           // Acccess block is referenced, hence a new one is created), we
           // do not want the new block to be added to the storage layer,
           // since unreferenced.
-          context.access->state(nucleus::proton::StateDirty);
+          context.access->state(nucleus::proton::State::dirty);
         }
 
       // then, create a new object's owner token.
@@ -760,7 +760,7 @@ namespace etoile
           // Acccess block is referenced, hence a new one is created), we
           // do not want the new block to be added to the storage layer,
           // since unreferenced.
-          context.access->state(nucleus::proton::StateDirty);
+          context.access->state(nucleus::proton::State::dirty);
         }
 
       ELLE_TRACE("update the Object's owner token to null")
@@ -838,7 +838,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the access has not changed, do nothing.
-        if (context.access->state() == nucleus::proton::StateClean)
+        if (context.access->state() == nucleus::proton::State::clean)
           return elle::Status::Ok;
       }
 
@@ -917,7 +917,7 @@ namespace etoile
           nucleus::proton::Address address(context.access->bind());
 
           // set the state as consistent.
-          context.access->state(nucleus::proton::StateConsistent);
+          context.access->state(nucleus::proton::State::consistent);
 
           // finally, update the object with the new access address.
           if (context.object->Update(

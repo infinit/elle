@@ -5,10 +5,8 @@
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
-# include <nucleus/proton/Node.hh>
+# include <nucleus/proton/Contents.hh>
 # include <nucleus/neutron/fwd.hh>
-
-# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -28,8 +26,7 @@ namespace nucleus
     ///
     class Reference:
       public proton::Value,
-      public elle::serialize::SerializableMixin<Reference>,
-      private boost::noncopyable
+      public elle::serialize::SerializableMixin<Reference>
     {
     public:
       //
@@ -38,10 +35,10 @@ namespace nucleus
     public:
       struct Constants
       {
-        static const proton::Node::Type seam;
-        static const proton::Node::Type quill;
-        static const proton::Node::Type value;
-        static const proton::Node::Type type;
+        static proton::Contents::Type const seam;
+        static proton::Contents::Type const quill;
+        static proton::Contents::Type const value;
+        static proton::Contents::Type const type;
       };
 
       //

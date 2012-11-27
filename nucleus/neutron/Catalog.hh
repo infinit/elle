@@ -7,12 +7,10 @@
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
-# include <nucleus/proton/Node.hh>
+# include <nucleus/proton/Contents.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Entry.hh>
 # include <nucleus/neutron/Size.hh>
-
-# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -30,15 +28,12 @@ namespace nucleus
     ///
     class Catalog:
       public proton::Value,
-      public elle::serialize::SerializableMixin<Catalog>,
-      private boost::noncopyable
+      public elle::serialize::SerializableMixin<Catalog>
     {
       /*------.
       | Types |
       `------*/
     public:
-      typedef elle::String K;
-
       typedef std::map<elle::String const, std::shared_ptr<Entry>> Container;
       typedef typename Container::iterator Iterator;
       typedef typename Container::const_iterator Scoutor;
@@ -49,31 +44,34 @@ namespace nucleus
     public:
       struct Constants
       {
-        static const proton::Node::Type seam;
-        static const proton::Node::Type quill;
-        static const proton::Node::Type value;
-        static const proton::Node::Type type;
+        static proton::Contents::Type const seam;
+        static proton::Contents::Type const quill;
+        static proton::Contents::Type const value;
+        static proton::Contents::Type const type;
       };
 
       /*---------------.
       | Static Methods |
       `---------------*/
     public:
-      /// XXX
-      static
-      proton::Footprint
-      compute_initial_footprint();
-      /// XXX
+      /// Transfer a number of entries from the _left_ catalog to the _right_.
+      /// The process stops the _left_ catalog is left with _size_ bytes of
+      /// entries i.e footprint.
+      ///
+      /// Note that the _right_ catalog is supposed to contain higher names
+      /// so that the entries from the _left_ catalog with the highest names
+      /// are moved to _right_ in order to maintain consistency.
       static
       void
-      transfer_right(Catalog* left,
-                     Catalog* right,
+      transfer_right(Catalog& left,
+                     Catalog& right,
                      proton::Extent const size);
-      /// XXX
+      /// Does the same as transfer_right() by moving entries from the _right_
+      /// catalog to the _left_.
       static
       void
-      transfer_left(Catalog* left,
-                    Catalog* right,
+      transfer_left(Catalog& left,
+                    Catalog& right,
                     proton::Extent const size);
 
       /*-------------.
@@ -86,42 +84,46 @@ namespace nucleus
       | Methods |
       `--------*/
     public:
-      /// XXX[ownership transfered]
+      /// Insert the given entry in the catalog.
+      ///
+      /// Note that the ownership of the given entry is transferred to the
+      /// catalog which will therefore be responsible for deleting it.
       void
       insert(Entry* entry);
-      /// XXX
+      /// Return true if the catalog contains an entry with the given name.
       elle::Boolean
       exist(elle::String const& name) const;
-      /// XXX
+      /// Return the entry associated with the given name.
       Entry const&
       locate(elle::String const& name) const;
-      /// XXX
+      /// Return the entry associated with the given name.
       Entry&
       locate(elle::String const& name);
-      /// XXX
+      /// Return a subset of the catalog i.e [index, index + size[.
       Range<Entry>
       consult(Index const& index,
               Size const& size) const;
-      /// XXX
+      /// Remove the entry associated with the given name from the catalog.
       void
       erase(elle::String const& name);
-      /// XXX
+      /// Return the size of the catalog i.e the number of entries.
       Size
       size() const;
-      /// XXX
-      proton::Handle
-      split();
-      /// XXX
-      void
-      merge(proton::Handle& handle);
     private:
-      /// XXX
+      /// Insert the given entry and updates accordingly the catalog's
+      /// capacity and state.
       void
       _insert(std::shared_ptr<Entry> const& entry);
-      /// XXX
+      /// Take the give entry and inject it into the catalog's container.
+      ///
+      /// Note that this method does not update the other catalog attributes
+      /// (except the footprint) so as to be used by the deserializer as well.
+      void
+      _inject(std::shared_ptr<Entry> const& entry);
+      /// Return an iterator on the entry associated with the given name.
       Scoutor
       _iterator(elle::String const& name) const;
-      /// XXX
+      /// Return an iterator on the entry associated with the given name.
       Iterator
       _iterator(elle::String const& name);
 
@@ -139,10 +141,15 @@ namespace nucleus
       elle::Status
       Dump(const elle::Natural32 = 0) const;
       // value
+      typedef elle::String K;
       elle::Boolean
       empty() const;
       elle::String
       mayor() const;
+      proton::Handle
+      split();
+      void
+      merge(proton::Handle& handle);
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Catalog);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Catalog);

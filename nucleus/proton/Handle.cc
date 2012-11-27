@@ -186,5 +186,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Handle const& handle)
+    {
+      // XXX
+
+      return (stream);
+    }
   }
 }

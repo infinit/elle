@@ -1,6 +1,9 @@
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/proton/Node.hh>
+#include <nucleus/proton/Quill.hh>
+#include <nucleus/proton/Seam.hh>
 #include <nucleus/neutron/Component.hh>
+#include <nucleus/neutron/Catalog.hh>
 #include <nucleus/Exception.hh>
 
 #include <elle/log.hh>
@@ -13,15 +16,49 @@ namespace nucleus
   {
 
     /*----------.
+    | Functions |
+    `----------*/
+
+    static
+    elle::utility::Factory<Contents::Type> const*
+    _setup()
+    {
+      elle::utility::Factory<Contents::Type>* factory =
+        new elle::utility::Factory<Contents::Type>;
+
+      ELLE_TRACE("setting up the node factory");
+
+      factory->record<Seam<neutron::Catalog>>(Contents::Type::catalog_seam);
+      factory->record<Quill<neutron::Catalog>>(Contents::Type::catalog_quill);
+      factory->record<neutron::Catalog>(Contents::Type::catalog_value);
+
+      return (factory);
+    }
+
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    elle::utility::Factory<Contents::Type> const&
+    Contents::factory()
+    {
+      static elle::utility::Factory<Contents::Type> const* factory = _setup();
+
+      ELLE_ASSERT(factory != nullptr);
+
+      return (*factory);
+    }
+
+    /*----------.
     | Constants |
     `----------*/
 
     neutron::Component const Contents::Constants::component{
       neutron::ComponentContents};
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Contents::Contents():
       proton::ContentHashBlock(),
@@ -37,81 +74,66 @@ namespace nucleus
       delete this->_cipher;
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
-    /// XXX
-    /// this method takes the contents in its block form, serialises it
-    /// and encrypts the archive.
-    ///
-    elle::Status
+    void
     Contents::encrypt(cryptography::SecretKey const& key)
     {
-      ELLE_TRACE_SCOPE("encrypt(%s)", key);
-
-      ELLE_TRACE("allocating a cipher");
+      ELLE_TRACE_METHOD(key);
 
       delete this->_cipher;
       this->_cipher = new cryptography::Cipher;
 
-      ELLE_TRACE("encrypting the node with the secret key")
-        {
-          if (key.Encrypt(*this->_node, *this->_cipher) == elle::Status::Error)
-            escape("unable to encrypt the archived block");
-        }
+      ELLE_TRACE("encrypting the node with the secret key");
 
-      return elle::Status::Ok;
+      if (key.Encrypt(*this->_node, *this->_cipher) == elle::Status::Error)
+        throw Exception("unable to encrypt the archived block");
     }
 
-    /// XXX
-    /// this method takes the cipher extracted before, decrypts it with the
-    /// given key, creating a new block.
-    ///
-    elle::Status
+    void
     Contents::decrypt(cryptography::SecretKey const& key)
     {
-      ELLE_TRACE_SCOPE("decrypt(%s)", key);
+      ELLE_TRACE_METHOD(key);
 
-      ELLE_TRACE("allocating a node of type '%s'", this->_type);
-
-      this->_node = Node::factory().allocate<Node>(this->_type);
+      this->_node = Contents::factory().allocate<Node>(this->_type);
 
       assert(this->_cipher != nullptr);
       assert(this->_node != nullptr);
 
-      ELLE_TRACE("decrypting the cipher")
-        {
-          if (key.Decrypt(*this->_cipher, *this->_node) == elle::Status::Error)
-            escape("unable to decrypt the cipher");
-        }
+      ELLE_TRACE("decrypting the cipher");
 
-      return elle::Status::Ok;
+      if (key.Decrypt(*this->_cipher, *this->_node) == elle::Status::Error)
+        throw Exception("unable to decrypt the cipher");
     }
 
     typename Contents::Mode
     Contents::mode() const
     {
-      return ((this->_node != nullptr) ? ModeDecrypted : ModeEncrypted);
+      return ((this->_node != nullptr) ? Mode::decrypted : Mode::encrypted);
     }
 
-    Node*
+    Node const&
+    Contents::node() const
+    {
+      ELLE_ASSERT(this->_node != nullptr);
+
+      return (*this->_node);
+    }
+
+    Node&
     Contents::node()
     {
-      if (this->_node == nullptr)
-        throw Exception("the Contents does not seam to have been "
-                        "created/decrypted");
+      ELLE_ASSERT(this->_node != nullptr);
 
-      return (this->_node);
+      return (*this->_node);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    ///
-    /// this method dumps the contents.
-    ///
     elle::Status
     Contents::Dump(elle::Natural32          margin) const
     {
@@ -124,7 +146,7 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Type] " << std::dec << this->_type << std::endl;
+                << "[Type] " << this->_type << std::endl;
 
       if (this->_node != nullptr)
         {
@@ -155,9 +177,9 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Contents::print(std::ostream& stream) const
@@ -165,5 +187,93 @@ namespace nucleus
       stream << "contents(" << this->_type << ")";
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Contents::Type const type)
+    {
+      switch (type)
+        {
+        case Contents::Type::data_seam:
+          {
+            stream << "data(seam)";
+            break;
+          }
+        case Contents::Type::data_quill:
+          {
+            stream << "data(quill)";
+            break;
+          }
+        case Contents::Type::data_value:
+          {
+            stream << "data(value)";
+            break;
+          }
+        case Contents::Type::catalog_seam:
+          {
+            stream << "catalog(seam)";
+            break;
+          }
+        case Contents::Type::catalog_quill:
+          {
+            stream << "catalog(quill))";
+            break;
+          }
+        case Contents::Type::catalog_value:
+          {
+            stream << "catalog(value)";
+            break;
+          }
+        case Contents::Type::reference_seam:
+          {
+            stream << "reference(seam)";
+            break;
+          }
+        case Contents::Type::reference_quill:
+          {
+            stream << "reference(quill)";
+            break;
+          }
+        case Contents::Type::reference_value:
+          {
+            stream << "reference(value)";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown type: '%s'", static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Contents::Mode const mode)
+    {
+      switch (mode)
+        {
+        case Contents::Mode::encrypted:
+          {
+            stream << "encrypted";
+            break;
+          }
+        case Contents::Mode::decrypted:
+          {
+            stream << "decrypted";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown mode: '%s'", static_cast<int>(mode));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

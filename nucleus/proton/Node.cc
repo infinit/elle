@@ -9,57 +9,20 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.nucleus.proton.Node");
-
 namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-    /*----------.
-    | Functions |
-    `----------*/
-
-    static
-    elle::utility::Factory<Node::Type> const*
-    _setup()
-    {
-      elle::utility::Factory<Node::Type>* factory =
-        new elle::utility::Factory<Node::Type>;
-
-      ELLE_TRACE("setting up the node factory");
-
-      factory->record<Seam<neutron::Catalog>>(Node::TypeSeamCatalog);
-      factory->record<Quill<neutron::Catalog>>(Node::TypeQuillCatalog);
-
-      factory->record<neutron::Catalog>(Node::TypeValueCatalog);
-
-      return (factory);
-    }
-
-    /*---------------.
-    | Static Methods |
-    `---------------*/
-
-    elle::utility::Factory<Node::Type> const&
-    Node::factory()
-    {
-      static elle::utility::Factory<Node::Type> const* factory = _setup();
-
-      ELLE_ASSERT(factory != nullptr);
-
-      return (*factory);
-    }
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    Node::Node():
+    Node::Node(Type const type):
+      _type(type),
       _nest(nullptr),
       _footprint(0),
       _capacity(0),
-      _state(StateClean)
+      _state(State::clean)
     {
     }
 

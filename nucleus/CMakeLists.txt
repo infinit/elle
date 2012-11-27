@@ -26,6 +26,7 @@ add_library(nucleus ${LINK_METHOD}
   proton/PublicKeyBlock.cc
   proton/Revision.cc
   proton/Stamp.cc
+  proton/State.cc
   proton/Statistics.cc
   proton/Value.cc
 

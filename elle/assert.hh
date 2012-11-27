@@ -43,6 +43,14 @@ namespace elle
 #  define ELLE_ASSERT(_condition_) ((void) 0)
 # endif
 
+/// Provide a way for generating code only if evolving in the DEBUG mode.
+# if defined(DEBUG) || !defined(NDEBUG)
+#  define ELLE_DECLARE(...)                                             \
+  __VA_ARGS__
+# else
+#  define ELLE_DECLARE(...)
+# endif
+
 namespace elle
 {
 

@@ -49,7 +49,7 @@ namespace nucleus
 
       this->_container.push_back(fellow.release());
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     elle::Boolean
@@ -207,7 +207,7 @@ namespace nucleus
             }
         }
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     void
@@ -223,7 +223,7 @@ namespace nucleus
 
       this->_container.erase(iterator);
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     Size

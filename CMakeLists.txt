@@ -124,6 +124,7 @@ if (UNIX)
         -Wcast-align
         -Wno-overloaded-virtual
         -Wno-empty-body  # for ELLE_LOG_TRACE macro
+        -Wno-non-template-friend
         -DQT_NO_KEYWORDS
 		-fPIC
     )

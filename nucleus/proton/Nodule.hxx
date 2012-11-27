@@ -5,12 +5,70 @@
 # include <nucleus/proton/Footprint.hh>
 
 # include <elle/log.hh>
+# include <elle/assert.hh>
 
 namespace nucleus
 {
   namespace proton
   {
 
+//
+// ---------- split -----------------------------------------------------------
+//
+/* XXX
+    /// XXX[describe this struct]
+    template <typename T, typename N>
+    struct Split
+    {
+      Contents*
+      operator ()(N& node)
+      {
+        elle::unreachable();
+      }
+    };
+
+    template <typename T>
+    struct Split<T, Nodule<T>>
+    {
+      Contents*
+      operator ()(Nodule<T>& nodule)
+      {
+        switch (nodule.type())
+          {
+          case Nodule<T>::Type::seam:
+            {
+              ELLE_ASSERT(dynamic_cast<Seam<T>*>(&nodule) != nullptr);
+
+              Seam<T>& seam = static_cast<Seam<T>&>(nodule);
+
+              return (new Contents{seam.split()});
+            }
+          case Nodule<T>::Type::quill:
+            {
+              ELLE_ASSERT(dynamic_cast<Quill<T>*>(&nodule) != nullptr);
+
+              Quill<T>& quill = static_cast<Quill<T>&>(nodule);
+
+              return (new Contents{quill.split()});
+            }
+          default:
+            throw Exception("unknown nodule type '%s'", nodule.type());
+          }
+
+        elle::unreachable();
+      }
+    };
+
+    template <typename T>
+    struct Split<T, T>
+    {
+      Contents*
+      operator ()(T& value)
+      {
+        return (new Contents{value.split()});
+      }
+    };
+*/
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -30,22 +88,23 @@ namespace nucleus
     template <typename T>
     template <typename X>
     void
-    Nodule<T>::transfer_right(X* left,
-                              X* right,
+    Nodule<T>::transfer_right(X& left,
+                              X& right,
                               Extent const size)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
 
       static Footprint const initial = elle::serialize::footprint<X>();
-      auto end = left->container().end();
-      auto i = left->container().begin();
-      Extent const extent = left->nest().limits().extent();
+      auto end = left.container().end();
+      auto i = left.container().begin();
+      Extent const extent = left.nest().limits().extent();
       Footprint footprint(initial);
 
       ELLE_TRACE_SCOPE("transfer_right(%s, %s, %s)",
                        left, right, size);
 
-      assert(left->nest().limits().extent() == right->nest().limits().extent());
+      ELLE_ASSERT(left.nest().limits().extent() ==
+                  right.nest().limits().extent());
 
       // go through the left seam's inlets until the future size is reached
       // after which all the remaining inlets will be moved to the right
@@ -79,21 +138,21 @@ namespace nucleus
 
           // substract the inlet's footprint from the left seam since
           // it is getting moved to the right one.
-          left->footprint(left->footprint() - inlet->footprint());
+          left.footprint(left.footprint() - inlet->footprint());
 
           // insert the inlet into the right seam.
-          right->insert(inlet);
+          right.insert(inlet);
 
           // make sure the operation is valid.
-          assert(inlet->capacity() <= left->capacity());
+          ELLE_ASSERT(inlet->capacity() <= left.capacity());
 
           // adjust the capacities.
-          left->capacity(left->capacity() - inlet->capacity());
-          right->capacity(right->capacity() + inlet->capacity());
+          left.capacity(left.capacity() - inlet->capacity());
+          right.capacity(right.capacity() + inlet->capacity());
         }
 
       // remove the moved inlets from the this seam.
-      left->container().erase(i, end);
+      left.container().erase(i, end);
     }
 
     ///
@@ -108,22 +167,23 @@ namespace nucleus
     template <typename T>
     template <typename X>
     void
-    Nodule<T>::transfer_left(X* left,
-                             X* right,
+    Nodule<T>::transfer_left(X& left,
+                             X& right,
                              Extent const size)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
 
       static Footprint const initial = elle::serialize::footprint<X>();
-      auto rend = right->container().rend();
-      auto i = right->container().rbegin();
-      Extent const extent = left->nest().limits().extent();
+      auto rend = right.container().rend();
+      auto i = right.container().rbegin();
+      Extent const extent = left.nest().limits().extent();
       Footprint footprint(initial);
 
       ELLE_TRACE_SCOPE("transfer_left(%s, %s, %s)",
                        left, right, size);
 
-      assert(left->nest().limits().extent() == right->nest().limits().extent());
+      ELLE_ASSERT(left.nest().limits().extent() ==
+                  right.nest().limits().extent());
 
       // go through the right seam's inlets until the future size is reached
       // after which all the remaining inlets will be moved to the left seam.
@@ -156,32 +216,31 @@ namespace nucleus
 
           // substract the inlet's footprint from the right seam since
           // it is getting moved to the left one.
-          right->footprint(right->footprint() - inlet->footprint());
+          right.footprint(right.footprint() - inlet->footprint());
 
           // insert the inlet into the left seam.
-          left->insert(inlet);
+          left.insert(inlet);
 
           // make sure the operation is valid.
-          assert(inlet->capacity() <= right->capacity());
+          ELLE_ASSERT(inlet->capacity() <= right.capacity());
 
           // adjust the capacities.
-          left->capacity(left->capacity() + inlet->capacity());
-          right->capacity(right->capacity() - inlet->capacity());
+          left.capacity(left.capacity() + inlet->capacity());
+          right.capacity(right.capacity() - inlet->capacity());
         }
 
       // remove the moved inlets from the right nodule.
-      right->container().erase(right->container().begin(), i.base());
+      right.container().erase(right.container().begin(), i.base());
     }
 
     ///
-    /// XXX si X = Seam<T> alors X::V = Nodule<T> (Quill<T>)
+    /// XXX si X = Seam<T> alors X::V = Nodule<T>
     ///     si X = Quill<T> alors X::V = T
-    ///     => X::V = Value or ChildType
     ///
     template <typename T>
     template <typename X>
     void
-    Nodule<T>::optimize(X* nodule,
+    Nodule<T>::optimize(X& nodule,
                         typename T::K const& k)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
@@ -192,24 +251,23 @@ namespace nucleus
       ELLE_TRACE_SCOPE("optimize(%s, %s)", nodule, k);
 
       // look up the entry responsible for this key.
-      auto iterator = nodule->lookup_iterator(k);
+      auto iterator = nodule.lookup_iterator(k);
 
       // retrieve the inlet.
       inlet = iterator->second;
 
-      Ambit<typename X::V> current(nodule->nest(), inlet->value());
+      Ambit<typename X::V> current(nodule.nest(), inlet->value());
 
       // load the current child nodule.
       current.load();
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((current()->footprint()) > nodule->nest().limits().extent())
+      if ((current().footprint()) > nodule.nest().limits().extent())
         {
           //
           // in this case, the nodule needs to be split.
           //
-          Handle orphan;
           struct
           {
             typename T::K current;
@@ -226,15 +284,14 @@ namespace nucleus
 
           ELLE_TRACE("nodule's extent high limit reached: "
                      "%s > %s",
-                     current()->footprint(),
-                     nodule->nest().limits().extent());
+                     current().footprint(),
+                     nodule.nest().limits().extent());
 
-          // split the current current nodule.
-          orphan = current()->split();
-
-          Ambit<typename X::V> newright(nodule->nest(), orphan);
+          // Split the current current nodule.
+          Handle orphan{current().split()};
 
           // load the new right nodule.
+          Ambit<typename X::V> newright(nodule.nest(), orphan);
           newright.load();
 
           //
@@ -242,12 +299,12 @@ namespace nucleus
           // right nodules.
           //
 
-          mayor.current = current()->mayor();
-          mayor.newright = newright()->mayor();
+          mayor.current = current().mayor();
+          mayor.newright = newright().mayor();
 
           // also retrieve the _newright_ capacity and state.
-          capacity.newright = newright()->capacity();
-          state.newright = newright()->state();
+          capacity.newright = newright().capacity();
+          state.newright = newright().state();
 
           // unload the new right nodule.
           newright.unload();
@@ -257,10 +314,10 @@ namespace nucleus
           // update the current seam so as to reference it properly.
           //
           if (inlet->key() != mayor.current)
-            nodule->refresh(iterator, mayor.current);
+            nodule.refresh(iterator, mayor.current);
 
           // update the current's capacity.
-          inlet->capacity(current()->capacity());
+          inlet->capacity(current().capacity());
 
           // unload the current child nodule.
           current.unload();
@@ -271,31 +328,30 @@ namespace nucleus
           //
 
           // create an inlet.
-          auto il =
-            std::unique_ptr<typename X::I>(
-              new typename X::I(mayor.newright, orphan));
+          auto il = new typename X::I(mayor.newright, orphan);
+
+          ELLE_FINALLY_ACTION_DELETE(il)
 
           // insert the inlet to the left nodule.
-          nodule->insert(il.get());
+          nodule.insert(il);
 
           // update the inlet with the proper capacity and state.
-          il.get()->capacity(capacity.newright);
-          il.get()->state(state.newright);
+          il->capacity(capacity.newright);
+          il->state(state.newright);
 
-          // release the tracking.
-          il.release();
+          ELLE_FINALLY_ABORT(il);
         }
-      else if (current()->footprint() <
-               (nodule->nest().limits().extent() *
-                nodule->nest().limits().balancing()))
+      else if (current().footprint() <
+               (nodule.nest().limits().extent() *
+                nodule.nest().limits().balancing()))
         {
           ELLE_TRACE("nodule's extent low limit reached: "
                      "%s < %s",
-                     current()->footprint(),
-                     nodule->nest().limits().extent() *
-                     nodule->nest().limits().balancing());
+                     current().footprint(),
+                     nodule.nest().limits().extent() *
+                     nodule.nest().limits().balancing());
 
-          if (current()->empty() == true)
+          if (current().empty() == true)
             {
               ELLE_TRACE("nodule is empty");
 
@@ -306,15 +362,15 @@ namespace nucleus
 
               // at this point, the capacity of current nodule must
               // be zero.
-              assert(inlet->capacity() == 0);
-              assert(current()->capacity() == 0);
+              ELLE_ASSERT(inlet->capacity() == 0);
+              ELLE_ASSERT(current().capacity() == 0);
 
               // finally, since the current child is now empty and unreferenced,
               // it needs to be detached from the porcupine so its memory
               // gets released.
               //
               // note that the block is unloaded at the end of this method.
-              nodule->nest().detach(current.handle());
+              nodule.nest().detach(current.handle());
 
               // unload the current nodule.
               current.unload();
@@ -323,7 +379,7 @@ namespace nucleus
               //
               // note that this must be done after the handle has been
               // used for both detaching the block and unloading the handle.
-              nodule->erase(iterator);
+              nodule.erase(iterator);
             }
           else
             {
@@ -352,18 +408,18 @@ namespace nucleus
               Handle l;
               Handle r;
 
-              if ((iterator != nodule->container().begin()) &&
-                  (previous != nodule->container().end()))
+              if ((iterator != nodule.container().begin()) &&
+                  (previous != nodule.container().end()))
                 l = previous->second->value();
 
-              if (next != nodule->container().end())
+              if (next != nodule.container().end())
                 r = next->second->value();
 
               //
               // load the left/right nodules.
               //
-              Ambit<typename X::V> left(nodule->nest(), l);
-              Ambit<typename X::V> right(nodule->nest(), r);
+              Ambit<typename X::V> left(nodule.nest(), l);
+              Ambit<typename X::V> right(nodule.nest(), r);
 
               // XXX expliquer que la on se base sur le pointeur
               // plutot que le handle.
@@ -394,9 +450,9 @@ namespace nucleus
               // can be compared more efficiently.
               //
               if ((left.handle() != Handle::Null) &&
-                  (left()->state() == StateDirty) &&
-                  ((left()->footprint() + current()->footprint() - initial) <
-                   nodule->nest().limits().extent()))
+                  (left().state() == State::dirty) &&
+                  ((left().footprint() + current().footprint() - initial) <
+                   nodule.nest().limits().extent()))
                 {
                   //
                   // this case is a specialization of another one below in
@@ -410,9 +466,9 @@ namespace nucleus
                   goto _merge_left;
                 }
               else if ((right.handle() != Handle::Null) &&
-                       (right()->state() == StateDirty) &&
-                       ((current()->footprint() - initial + right()->footprint()) <
-                        nodule->nest().limits().extent()))
+                       (right().state() == State::dirty) &&
+                       ((current().footprint() - initial + right().footprint()) <
+                        nodule.nest().limits().extent()))
                 {
                   //
                   // this case is similar to the previous but for the right
@@ -421,8 +477,8 @@ namespace nucleus
                   goto _merge_right;
                 }
               else if ((left.handle() != Handle::Null) &&
-                       ((left()->footprint() + current()->footprint() - initial) <
-                        nodule->nest().limits().extent()))
+                       ((left().footprint() + current().footprint() - initial) <
+                        nodule.nest().limits().extent()))
                 {
                   //
                   // in this case the left neighbour nodule seems to be present.
@@ -432,19 +488,19 @@ namespace nucleus
                   ELLE_TRACE("merging with the left neighbour");
 
                   // merge the nodule.
-                  left()->merge(current.handle());
+                  left().merge(current.handle());
 
                   // update the inlet referencing left.
                   typename X::I* il = previous->second;
-                  il->capacity(left()->capacity());
-                  il->state(left()->state());
+                  il->capacity(left().capacity());
+                  il->state(left().state());
 
                   // at this point, current is empty and unreferenced.
                   // therefore, detach the block from the porcupine.
                   //
                   // note that the block is finally unloaded at the end of
                   // this method.
-                  nodule->nest().detach(current.handle());
+                  nodule.nest().detach(current.handle());
 
                   // unload the current nodule.
                   current.unload();
@@ -453,17 +509,17 @@ namespace nucleus
                   //
                   // note that this must be done after the handle has been
                   // used for both detaching the block and unloading the handle.
-                  nodule->erase(iterator);
+                  nodule.erase(iterator);
 
                   // finally, update the current seam so as to reference the new
                   // mayor key for the left nodule since it has received
                   // all the entries of the current child.
-                  nodule->refresh(previous, left()->mayor());
+                  nodule.refresh(previous, left().mayor());
                 }
               else if ((right.handle() != Handle::Null) &&
-                       ((current()->footprint() - initial +
-                         right()->footprint()) <
-                        nodule->nest().limits().extent()))
+                       ((current().footprint() - initial +
+                         right().footprint()) <
+                        nodule.nest().limits().extent()))
                 {
                   //
                   // this case is identical to the previous one except that
@@ -474,19 +530,19 @@ namespace nucleus
                   ELLE_TRACE("merging with the right neighbour");
 
                   // merge the nodule.
-                  right()->merge(current.handle());
+                  right().merge(current.handle());
 
                   // update the inlet referencing right.
                   typename X::I* il = next->second;
-                  il->capacity(right()->capacity());
-                  il->state(right()->state());
+                  il->capacity(right().capacity());
+                  il->state(right().state());
 
                   // at this point, current is empty and unreferenced.
                   // therefore, detach the block from the porcupine.
                   //
                   // note that the block is finally unloaded at the end of
                   // this method.
-                  nodule->nest().detach(current.handle());
+                  nodule.nest().detach(current.handle());
 
                   // unload the current nodule.
                   current.unload();
@@ -495,7 +551,7 @@ namespace nucleus
                   //
                   // note that this must be done after the handle has been
                   // used for both detaching the block and unloading the handle.
-                  nodule->erase(iterator);
+                  nodule.erase(iterator);
 
                   // note that the current seam does not need to be updated
                   // regarding the new inlets merged into the right nodule
@@ -516,7 +572,7 @@ namespace nucleus
 
                   // update the current seam so as to reference the new
                   // mayor key.
-                  nodule->refresh(iterator, current()->mayor());
+                  nodule.refresh(iterator, current().mayor());
 
                   // unload the current nodule.
                   current.unload();
@@ -535,6 +591,31 @@ namespace nucleus
         }
       else
         current.unload();
+    }
+
+    /* XXX
+    template <typename T>
+    template <typename N>
+    Contents*
+    Nodule<T>::split(N& node)
+    {
+      // XXX[do we really need to put that in another method which simple
+      //     instanciate Split?]
+
+      return (Split<T, N>()(node));
+    }
+    */
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    template <typename T>
+    Nodule<T>::Nodule(Type const type):
+      Node(Node::Type::nodule),
+
+      _type(type)
+    {
     }
 
 //

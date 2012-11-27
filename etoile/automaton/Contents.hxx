@@ -137,7 +137,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.
-        if (context.contents->state() == nucleus::proton::StateClean)
+        if (context.contents->state() == nucleus::proton::State::clean)
           return elle::Status::Ok;
         */
       }
@@ -253,7 +253,7 @@ namespace etoile
           nucleus::proton::Address address(context.contents->bind());
 
           // set the content as consistent.
-          context.contents->state(nucleus::proton::StateConsistent);
+          context.contents->state(nucleus::proton::State::consistent);
 
           // update the object.
           if (context.object->Update(
