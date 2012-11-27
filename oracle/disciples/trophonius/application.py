@@ -77,7 +77,7 @@ class Application(object):
 		self.ssl_cert_path = os.path.join(cert_dir, TROPHONIUS_SSL_CERT)
 		open(self.ssl_cert_path, "wt").write(
 				crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-		open(self.ssl_key_path, "wt").wxrite(
+		open(self.ssl_key_path, "wt").write(
 				crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
 
 	def run(self):
