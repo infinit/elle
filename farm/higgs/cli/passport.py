@@ -9,12 +9,14 @@ class Passport:
         pass
 
     @staticmethod
-    def create(auth):
+    def create(auth, user):
         """
         create an passport file
         """
         p = run_cmd([
             "8passport", "-c",
+            "-u", user.name,
+            "-n", "{}.ppt".format(user.name),
             ],
             stdin=subprocess.PIPE)
         p.communicate("{auth}\n".format(auth=auth.passphrase).encode("ascii"))

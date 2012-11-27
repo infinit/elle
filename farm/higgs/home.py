@@ -43,16 +43,17 @@ class Home:
         network = self.network
         conf = self.conf
 
-        # Nota bene: This is not a powerpoint !
-        if not os.path.exists("{home}/infinit.ppt".format(**self.__dict__)):
-            print("creating a new passport file")
-            cli.Passport.create(auth)
-
         if not os.path.exists("{home}/users/{user}".format(**self.__dict__)):
             print("creating user {0}".format(user))
             self.user_auth = cli.User.create(auth, user)
         else:
             self.user_auth = cli.User.fetch(auth, user)
+
+        # Nota bene: This is not a powerpoint !
+        if not os.path.exists("{home}/infinit.ppt".format(**self.__dict__)):
+            print("creating a new passport file")
+            cli.Passport.create(auth, self.user_auth)
+
 
         if not os.path.exists("{home}/networks/{network}".format(**self.__dict__)):
             print("creating network {0}".format(network))
