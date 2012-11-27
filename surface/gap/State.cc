@@ -438,23 +438,16 @@ namespace surface
       elle::utility::Time time;
       time.Current();
 
-      // Create an ostream to convert timestamp to string.
-      std::ostringstream oss;
-      oss << time.nanoseconds;
-
       // FIXME: How to compute network name ?
       /// XXX: Something fucked my id.
-      std::string network_name =
-        std::string(recipient_id_or_email)
-        + "-"
-        + oss.str();
+      std::string network_name = elle::sprint(
+          elle::iomanip::nosep, recipient_id_or_email, "-", time.nanoseconds
+      );
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
       std::string network_id = this->create_network(network_name);
 
-      // Ensure the network status is available
-      (void) this->network_status(network_id);
 
       auto portal_path = common::infinit::portal_path(
         this->_me._id,
@@ -468,7 +461,10 @@ namespace surface
         }
 
       if (!fs::exists(portal_path))
-          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+        throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
+      // Ensure the network status is available
+      (void) this->network_status(network_id);
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
