@@ -11,26 +11,46 @@ namespace plasma
       NetworkConnectDeviceResponse
       Client::network_connect_device(std::string const& network_id,
                              std::string const& device_id,
-                             Container const& local_ips,
-                             std::string const* external_ip,
-                             uint16_t external_port)
+                             Container const& local_ips)
       {
-        std::vector<std::pair<std::string, uint16_t>> adapter;
+        adapter_type local_adapter;
+        adapter_type public_adapter;
 
         for (auto &a: local_ips)
         {
-          adapter.emplace_back(a.first, a.second);
+          local_adapter.emplace_back(a.first, a.second);
         }
 
-        /*
-         * This adapter is only there in order for the Json and Serialization
-         * classes to be forward declared
-         */
         return this->_network_connect_device(network_id,
                                              device_id,
-                                             adapter,
-                                             external_ip,
-                                             external_port);
+                                             local_adapter,
+                                             public_adapter);
+      }
+
+      template <class Container1, class Container2>
+      NetworkConnectDeviceResponse
+      Client::network_connect_device(std::string const& network_id,
+                             std::string const& device_id,
+                             Container1 const& local_ips,
+                             Container2 const& public_endpoints)
+      {
+        adapter_type local_adapter;
+        adapter_type public_adapter;
+
+        for (auto &a: local_ips)
+        {
+          local_adapter.emplace_back(a.first, a.second);
+        }
+
+        for (auto &a: public_endpoints)
+        {
+          public_adapter.emplace_back(a.first, a.second);
+        }
+
+        return this->_network_connect_device(network_id,
+                                             device_id,
+                                             local_adapter,
+                                             public_adapter);
       }
   }
 }
