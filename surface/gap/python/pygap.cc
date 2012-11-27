@@ -104,6 +104,11 @@ namespace
   }
 }
 
+extern "C"
+{
+  struct gap_State { /* dummy declaration for boost::python */ };
+}
+
 BOOST_PYTHON_MODULE(_gap)
 {
   namespace py = boost::python;
@@ -162,6 +167,8 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   //- gap ctor and dtor -------------------------------------------------------
+
+  py::class_<gap_State>("State");
 
   py::def("new",
           &gap_new,

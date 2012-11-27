@@ -56,7 +56,8 @@ extern "C" {
   } gap_Bool;
 
   /// gap_State is an opaque structure used in every calls.
-  typedef void gap_State;
+  struct gap_State;
+  typedef struct gap_State gap_State;
 
   /// - gap ctor & dtor -----------------------------------------------------
 
