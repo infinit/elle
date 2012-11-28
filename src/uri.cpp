@@ -311,7 +311,9 @@ namespace network {
 
   uri::uri(const uri &other)
     : uri_(other.uri_) {
-    parse();
+    std::error_code ec;
+    parse(ec);
+    // don't throw
   }
 
   uri::~uri() {
@@ -320,7 +322,9 @@ namespace network {
 
   uri &uri::operator = (const uri &other) {
     uri_ = other.uri_;
-    parse();
+    std::error_code ec;
+    parse(ec);
+    // don't throw
     return *this;
   }
 
@@ -432,7 +436,7 @@ namespace network {
     return *this;
   }
 
-  void uri::parse() {
+  void uri::parse(std::error_code &ec) {
     if (uri_.empty()) {
       return;
     }
@@ -440,7 +444,8 @@ namespace network {
     const_iterator first(std::begin(uri_)), last(std::end(uri_));
     bool is_valid = detail::parse(first, last, uri_parts_);
     if (!is_valid) {
-      throw uri_syntax_error("Unable to parse URI string.");
+      ec = std::error_code(syntax_error, std::generic_category());
+      return;
     }
 
     if (!uri_parts_.scheme) {
@@ -532,5 +537,18 @@ namespace network {
 
   bool operator < (const uri &lhs, const uri &rhs) {
     return lhs.normalize().native() < rhs.normalize().native();
+  }
+
+  uri_syntax_error::uri_syntax_error() {
+
+  }
+
+  uri_syntax_error::~uri_syntax_error() {
+
+  }
+
+  const char *uri_syntax_error::what() const {
+    static const char message[] = "Unable to parse URI string.";
+    return message;
   }
 } // namespace network

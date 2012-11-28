@@ -11,8 +11,7 @@
 
 #include <network/uri/detail/uri_parts.hpp>
 #include <iterator>
-#include <stdexcept>
-#include <system_error>
+#include <exception>
 #include <cstring>
 
 
@@ -34,17 +33,17 @@ namespace network {
 
   } // namespace detail
 
-  class uri_syntax_error : public std::runtime_error {
+  enum uri_error {
+    syntax_error = 1,
+  };
+
+  class uri_syntax_error : public std::exception {
 
   public:
 
-    uri_syntax_error(const char *what) : std::runtime_error(what) {
-
-    }
-
-    virtual ~uri_syntax_error() {
-
-    }
+    uri_syntax_error();
+    virtual ~uri_syntax_error();
+    virtual const char *what() const;
 
   };
 
@@ -105,7 +104,11 @@ namespace network {
       >
     uri(const InputIter &first, const InputIter &last)
       : uri_(first, last) {
-      parse();
+      std::error_code ec;
+      parse(ec);
+      if (ec) {
+	throw uri_syntax_error();
+      }
     }
 
     template <
@@ -113,7 +116,19 @@ namespace network {
       >
     explicit uri(const Source &uri)
       : uri_(detail::translate(uri)) {
-      parse();
+      std::error_code ec;
+      parse(ec);
+      if (ec) {
+	throw uri_syntax_error();
+      }
+    }
+
+    template <
+      class Source
+      >
+    explicit uri(const Source &uri, std::error_code &ec)
+      : uri_(detail::translate(uri)) {
+      parse(ec);
     }
 
     uri(const uri &other);
@@ -168,7 +183,7 @@ namespace network {
 
   private:
 
-    void parse();
+    void parse(std::error_code &ec);
 
     string_type uri_;
     detail::uri_parts<const_iterator> uri_parts_;
@@ -180,7 +195,7 @@ namespace network {
     >
   inline
   uri make_uri(const Source &source, std::error_code &ec) { // noexcept {
-    return uri();
+    return uri(source, ec);
   }
 
   void swap(uri &lhs, uri &rhs);

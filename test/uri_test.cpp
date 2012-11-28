@@ -18,7 +18,7 @@ TEST(uri_test, construct_invalid_uri) {
   ASSERT_THROW(network::uri("I am not a valid URI."), network::uri_syntax_error);
 }
 
-TEST(uri_test, DISABLED_make_invalid_uri) {
+TEST(uri_test, make_invalid_uri) {
   std::error_code ec;
   network::uri uri = network::make_uri("I am not a valid URI.", ec);
   ASSERT_TRUE(ec);
@@ -28,16 +28,40 @@ TEST(uri_test, construct_uri_from_char_array) {
   ASSERT_NO_THROW(network::uri("http://www.example.com/"));
 }
 
+TEST(uri_test, make_uri_from_char_array) {
+  std::error_code ec;
+  network::uri uri = network::make_uri("http://www.example.com/", ec);
+  ASSERT_FALSE(ec);
+}
+
 TEST(uri_test, construct_uri_from_wchar_t_array) {
   ASSERT_NO_THROW(network::uri(L"http://www.example.com/"));
+}
+
+TEST(uri_test, make_uri_from_wchar_t_array) {
+  std::error_code ec;
+  network::uri uri = network::make_uri(L"http://www.example.com/", ec);
+  ASSERT_FALSE(ec);
 }
 
 TEST(uri_test, construct_uri_from_string) {
   ASSERT_NO_THROW(network::uri(std::string("http://www.example.com/")));
 }
 
+TEST(uri_test, make_uri_from_string) {
+  std::error_code ec;
+  network::uri uri = network::make_uri(std::string("http://www.example.com/"), ec);
+  ASSERT_FALSE(ec);
+}
+
 TEST(uri_test, construct_uri_from_wstring) {
   ASSERT_NO_THROW(network::uri(std::wstring(L"http://www.example.com/")));
+}
+
+TEST(uri_test, make_uri_from_wstring) {
+  std::error_code ec;
+  network::uri uri = network::make_uri(std::wstring(L"http://www.example.com/"), ec);
+  ASSERT_FALSE(ec);
 }
 
 TEST(uri_test, basic_uri_scheme_test) {
