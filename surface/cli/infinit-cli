@@ -14,6 +14,7 @@ import re
 import stat
 import sys
 import glob
+import shlex
 
 # Poll thread
 import time
@@ -104,6 +105,22 @@ def make_simple_argument_parser(prog=None,
             flags = (flags,)
         parser.add_argument(*flags, **arg)
     return parser
+
+def get_candidates_for_path(path, magic):
+    path = os.path.expanduser(path)
+    path = os.path.expandvars(path)
+    save = path
+    candidates = []
+    if os.path.isdir(path):
+        path = path + "*"
+        candidates = [p[len(save):] for p in glob.glob(path)]
+    #else:
+        #path = path + "*"
+        #_candidates = [p for p in glob.glob(path)]
+        #if len(_candidates) > 0:
+        #    candidates = [p[len(os.path.dirname(p)  + magic + os.path.basename(save)):] for p in _candidates]
+        #    candidates = [magic + p for p in candidates]
+    return candidates
 
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
@@ -325,9 +342,9 @@ class InfinitShell(cmd.Cmd):
 
     def complete_sendfiles(self, text, line, begidx, endidx):
         # XXX: Finish completion.
-        sp = line.split(" ")
-        if len(sp) >= 3:
-            return glob.glob(os.path.expanduser(sp[len(sp) - 1]+'*'))
+        tok = shlex.split(line)
+        if len(tok) > 2:
+            return get_candidates_for_path(tok[2], line[begidx:endidx])
 
     ###########################################################################
     # Send files.
@@ -367,7 +384,7 @@ class InfinitShell(cmd.Cmd):
         if len(sp) == 2:
             return [t for t in self._state.transactions() if t.startswith(text)]
         if len(sp) == 3:
-            return glob.glob(os.path.expanduser(sp[2]+'*'))
+            return get_candidates_for_path(line, line[begidx:endidx])
 
 
     ###########################################################################
