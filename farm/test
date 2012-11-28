@@ -91,6 +91,8 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
             # Dump the .set files
             with open(os.path.join(
                     H.home,
+                    "users",
+                    H.user,
                     "networks",
                     H.network,
                     "{net}.set".format(net=H.network)), "r") \

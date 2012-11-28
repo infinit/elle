@@ -38,12 +38,15 @@ class Infinit:
 
 
     def launch(self):
-        self._infinit = subprocess.Popen([
+        cmd = [
                 "8infinit",
                 "-u", self.user,
                 "-n", self.network,
                 "-m", self.mountpoint
-            ],
+        ]
+        print(cmd)
+        self._infinit = subprocess.Popen(
+            cmd,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             env=self.environ

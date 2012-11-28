@@ -43,16 +43,16 @@ class Home:
         network = self.network
         conf = self.conf
 
-        # Nota bene: This is not a powerpoint !
-        if not os.path.exists("{home}/infinit.ppt".format(**self.__dict__)):
-            print("creating a new passport file")
-            cli.Passport.create(auth)
-
         if not os.path.exists("{home}/users/{user}".format(**self.__dict__)):
             print("creating user {0}".format(user))
             self.user_auth = cli.User.create(auth, user)
         else:
             self.user_auth = cli.User.fetch(auth, user)
+
+        # Nota bene: This is not a powerpoint !
+        if not os.path.exists("{home}/infinit.ppt".format(**self.__dict__)):
+            print("creating a new passport file")
+            cli.Passport.create(auth, self.user_auth)
 
         if not os.path.exists("{home}/networks/{network}".format(**self.__dict__)):
             print("creating network {0}".format(network))
@@ -61,7 +61,10 @@ class Home:
 
     def add_peer(self, addr):
         if "dotset" not in self.__dict__:
-            self.dotset = open(os.path.join(self.home,
+            self.dotset = open(os.path.join(
+                self.home,
+                "users",
+                self.user,
                 "networks",
                 self.network,
                 "{0}.set".format(self.network)), "a")
