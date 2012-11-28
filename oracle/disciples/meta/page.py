@@ -121,11 +121,11 @@ class Page(object):
         return hashlib.md5(seasoned).hexdigest()
 
     def notifySwaggers(self, notification_id, data, bAll = False):
-        swgs = list(self.user["swaggers"])
+        swgs = list(self.user["swaggers"].keys())
         # if not bAll, notify only the connected ones.
         if not bAll:
             for s in swgs:
-                if not connected(s):
+                if not self.connected(database.ObjectId(s)):
                     swgs.remove(s)
         d = {
                 "sender_id" : self.user["_id"],
