@@ -220,12 +220,6 @@ BOOST_PYTHON_MODULE(_gap)
   // File transfer status.
   py::class_<gap_TransactionStatusNotification, boost::noncopyable>("TransferStatusNotification", py::no_init)
     .def_readonly("transaction_id", &gap_TransactionStatusNotification::transaction_id)
-    .def_readonly("network_id", &gap_TransactionStatusNotification::network_id)
-    .def_readonly("sender_device_id", &gap_TransactionStatusNotification::sender_device_id)
-    .def_readonly("sender_id", &gap_TransactionStatusNotification::sender_id)
-    .def_readonly("recipient_id", &gap_TransactionStatusNotification::recipient_id)
-    .def_readonly("recipient_device_name", &gap_TransactionStatusNotification::recipient_device_name)
-    .def_readonly("recipient_device_id", &gap_TransactionStatusNotification::recipient_device_id)
     .def_readonly("status", &gap_TransactionStatusNotification::status)
     .def_readonly("new", &gap_TransactionStatusNotification::is_new)
   ;

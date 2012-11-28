@@ -211,13 +211,6 @@ extern "C" {
   typedef struct
   {
     char const* transaction_id;
-    char const* sender_id;
-    char const* sender_device_id;
-    char const* recipient_id;
-    char const* recipient_fullname;
-    char const* recipient_device_id;
-    char const* recipient_device_name;
-    char const* network_id;
     int status;
     int is_new;
   } gap_TransactionStatusNotification;
