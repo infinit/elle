@@ -484,9 +484,10 @@ namespace surface
     }
 
     void
-    State::download_files(std::string const& transaction_id,
-                   std::string const& path)
+    State::_download_files(std::string const& transaction_id)
     {
+      assert(this->_output_dir.length() != 0);
+
       auto pair = State::transactions().find(transaction_id);
 
       assert(pair != State::transactions().end());
@@ -496,6 +497,8 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
+      (void) this->refresh_networks();
+
       // Ensure the network status is available
       (void) this->network_status(trans->network_id);
 
@@ -504,7 +507,7 @@ namespace surface
       QStringList arguments;
       arguments << "-n" << trans->network_id.c_str()
                 << "-u" << this->_me._id.c_str()
-                << "--path" << path.c_str()
+                << "--path" << this->_output_dir.c_str()
                 << "--from"
       ;
       ELLE_DEBUG("LAUNCH: %s %s",
@@ -519,11 +522,27 @@ namespace surface
         throw Exception(gap_internal_error, "8transfer binary exited with errors");
 
       ELLE_WARN("TRANSFER IS FUCKING COMPLETE MOTHER FUCKER!! Your file is at '%s'.",
-                path.c_str());
+                this->_output_dir.c_str());
 
       update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
 
+    }
+
+    void
+    State::output_dir(std::string const& dir)
+    {
+      printf("%s\n", dir.c_str());
+
+      if (!fs::exists(dir))
+        throw Exception(gap_error,
+                        "directory doesn't exist.");
+
+      if (!fs::is_directory(dir))
+        throw Exception(gap_error,
+                        "not a directroy.");
+
+      this->_output_dir = dir;
     }
 
     void
@@ -955,7 +974,7 @@ namespace surface
       if (trans->recipient_id != this->_me._id)
         return;
 
-      // Waiting for "download files".
+      _download_files(transaction_id);
     }
 
     void

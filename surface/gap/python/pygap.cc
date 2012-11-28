@@ -293,7 +293,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("transactions", &_get_transactions);
   py::def("send_files", &_send_files);
   py::def("update_transaction", &gap_update_transaction);
-  py::def("download_files", &gap_download_files);
+  py::def("set_output_dir", &gap_set_output_dir);
   py::def("transaction_status", &gap_transaction_status);
   py::def("transaction_owner", &gap_transaction_owner);
 }

@@ -388,10 +388,9 @@ extern "C" {
                          char const* transaction_id,
                          gap_TransactionStatus status);
 
-  /// Start the 8transfer process on the recipient.
+  // Set output directory.
   gap_Status
-  gap_download_files(gap_State* state,
-                     char const* transaction_id,
+  gap_set_output_dir(gap_State* state,
                      char const* output_path);
 
   gap_TransactionStatus

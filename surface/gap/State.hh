@@ -160,8 +160,14 @@ namespace surface
       /// @brief Start the transfer process on recipient.
       ///
       void
-      download_files(std::string const& transaction_id,
-                     std::string const& path);
+      _download_files(std::string const& transaction_id);
+
+    private:
+      std::string _output_dir;
+
+    public:
+      void
+      output_dir(std::string const& dir);
 
     private:
       // Functions callback on each status (set and get).

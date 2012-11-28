@@ -47,8 +47,8 @@ class State:
 
             # Transaction
             'send_files',
+            'set_output_dir',
             'update_transaction',
-            'download_files',
             'transactions',
 
             # Notifications

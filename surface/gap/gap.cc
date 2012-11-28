@@ -738,15 +738,17 @@ extern "C"
   }
 
   gap_Status
-  gap_download_files(gap_State* state,
-                     char const* transaction_id,
+  gap_set_output_dir(gap_State* state,
                      char const* output_path)
   {
     assert(state != nullptr);
-    assert(transaction_id != nullptr);
     assert(output_path != nullptr);
 
-    __WRAP_CPP(state, download_files, transaction_id, output_path);
+    __WRAP_CPP_RET(state,
+                   output_dir,
+                   output_path);
+
+    return ret;
   }
 
   gap_TransactionStatus
