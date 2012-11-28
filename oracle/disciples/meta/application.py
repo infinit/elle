@@ -8,12 +8,13 @@ from meta import resources
 from meta import database
 from meta.session import Session
 from meta.session_store import SessionStore
+from constants import *
 
 class Application(object):
     """
     Application class wrap web.application.run method
     """
-    def __init__(self, ip='127.0.0.1', port=12345):
+    def __init__(self, ip='127.0.0.1', port=META_LISTEN_TCP_PORT):
         self.ip = ip
         self.port = port
 
