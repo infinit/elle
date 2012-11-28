@@ -130,21 +130,6 @@ SERIALIZE_RESPONSE(plasma::meta::UpdateTransactionResponse, ar, res)
   ar & named("updated_transaction_id", res.updated_transaction_id);
 }
 
-SERIALIZE_RESPONSE(plasma::meta::StartTransactionResponse, ar, res)
-{
-  ar & named("updated_transaction_id", res.updated_transaction_id);
-}
-
-SERIALIZE_RESPONSE(plasma::meta::FinishTransactionResponse, ar, res)
-{
-  ar & named("finished_transaction_id", res.finished_transaction_id);
-}
-
-SERIALIZE_RESPONSE(plasma::meta::CancelTransactionResponse, ar, res)
-{
-  ar & named("canceled_transaction_id", res.canceled_transaction_id);
-}
-
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
 {
   (void) ar;
@@ -390,57 +375,43 @@ namespace plasma
       json::Dictionary request{std::map<std::string, std::string>
         {
           {"transaction_id", transaction_id},
-          {"device_id", device_id},
-          {"device_name", device_name},
         }};
+
       request["status"] = status;
+      if (device_id.length() > 0)
+        request["device_id"] = device_id;
+      if (device_name.length() > 0)
+        request["device_name"] = device_name;
 
       ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%ui'",
                  transaction_id,
                  device_name,
                  status);
 
-      auto res = this->_client.post<UpdateTransactionResponse>("/transaction/update", request);
+      UpdateTransactionResponse res;
 
-      return res;
-    }
+      switch(status)
+      {
+        case gap_TransactionStatus::gap_transaction_status_accepted:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/accept", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_rejected:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/deny", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_started:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_canceled:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/cancel", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_finished:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/finish", request);
+          break;
+        default:
+          ELLE_WARN("You are not able to change transaction status to '%i'.",
+            status);
 
-    StartTransactionResponse
-    Client::start_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<StartTransactionResponse>("/transaction/start", request);
-
-      return res;
-    }
-
-    FinishTransactionResponse
-    Client::finish_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<FinishTransactionResponse>("/transaction/finish", request);
-
-      return res;
-    }
-
-
-    CancelTransactionResponse
-    Client::cancel_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<CancelTransactionResponse>("/transaction/cancel", request);
+      }
 
       return res;
     }

@@ -211,13 +211,6 @@ extern "C" {
   typedef struct
   {
     char const* transaction_id;
-    char const* sender_id;
-    char const* sender_device_id;
-    char const* recipient_id;
-    char const* recipient_fullname;
-    char const* recipient_device_id;
-    char const* recipient_device_name;
-    char const* network_id;
     int status;
     int is_new;
   } gap_TransactionStatusNotification;
@@ -395,10 +388,9 @@ extern "C" {
                          char const* transaction_id,
                          gap_TransactionStatus status);
 
-  /// Start the 8transfer process on the recipient.
+  // Set output directory.
   gap_Status
-  gap_download_files(gap_State* state,
-                     char const* transaction_id,
+  gap_set_output_dir(gap_State* state,
                      char const* output_path);
 
   gap_TransactionStatus

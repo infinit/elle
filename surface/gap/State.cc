@@ -26,6 +26,7 @@
 #include <elle/io/Piece.hh>
 
 #include <common/common.hh>
+#include <elle/os/path.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
@@ -53,24 +54,6 @@ namespace surface
 {
   namespace gap
   {
-    void
-    print_transaction(plasma::meta::TransactionResponse const& t)
-    {
-      printf("transaction_id: %s\n", t.transaction_id.c_str());
-      printf("first_filename: %s\n", t.first_filename.c_str());
-      printf("files_count: %i\n", t.files_count);
-      printf("total_size: %i\n", t.total_size);
-      printf("is_directory: %i\n", (int)t.is_directory);
-      printf("network_id: %s\n", t.network_id.c_str());
-      printf("sender_id: %s\n", t.sender_id.c_str());
-      printf("sender_fullname: %s\n", t.sender_fullname.c_str());
-      printf("sender_device_id: %s\n", t.sender_device_id.c_str());
-      printf("recipient_id: %s\n", t.recipient_id.c_str());
-      printf("recipient_fullname: %s\n", t.recipient_fullname.c_str());
-      printf("recipient_device_id: %s\n", t.recipient_device_id.c_str());
-      printf("status: %i\n", t.status);
-    }
-
     namespace fs = boost::filesystem;
     namespace json = elle::format::json;
 
@@ -198,13 +181,14 @@ namespace surface
                               elle::format::json::Dictionary const* kwargs,
                               elle::format::json::Dictionary* response)
     {
+      ELLE_TRACE("Send watchdog command");
       QLocalSocket conn;
 
       conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
       if (!conn.waitForConnected(2000))
         throw Exception{
             gap_internal_error,
-              "Couldn't connect to the watchdog:" + std::to_string(conn.error())
+              "Couldn't connect to the watchdog:" + conn.error()
         };
 
       json::Dictionary req;
@@ -389,11 +373,12 @@ namespace surface
 
       auto res = this->_meta->pull_notifications(count, offset);
 
-      for (auto dict : res.notifs)
-        this->_handle_dictionnary(dict, true);
-
+      // Handle old notif first to act like a queue.
       for (auto dict : res.old_notifs)
         this->_handle_dictionnary(dict, false);
+
+      for (auto dict : res.notifs)
+        this->_handle_dictionnary(dict, true);
     }
 
     void
@@ -438,16 +423,23 @@ namespace surface
       elle::utility::Time time;
       time.Current();
 
+      // Create an ostream to convert timestamp to string.
+      std::ostringstream oss;
+      oss << time.nanoseconds;
+
       // FIXME: How to compute network name ?
       /// XXX: Something fucked my id.
-      std::string network_name = elle::sprint(
-          elle::iomanip::nosep, recipient_id_or_email, "-", time.nanoseconds
-      );
+      std::string network_name =
+        std::string(recipient_id_or_email)
+        + "-"
+        + oss.str();
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
       std::string network_id = this->create_network(network_name);
 
+      // Ensure the network status is available
+      (void) this->network_status(network_id);
 
       auto portal_path = common::infinit::portal_path(
         this->_me._id,
@@ -461,10 +453,7 @@ namespace surface
         }
 
       if (!fs::exists(portal_path))
-        throw Exception{gap_error, "Couldn't find portal to infinit instance"};
-
-      // Ensure the network status is available
-      (void) this->network_status(network_id);
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
@@ -495,9 +484,10 @@ namespace surface
     }
 
     void
-    State::download_files(std::string const& transaction_id,
-                   std::string const& path)
+    State::_download_files(std::string const& transaction_id)
     {
+      assert(this->_output_dir.length() != 0);
+
       auto pair = State::transactions().find(transaction_id);
 
       assert(pair != State::transactions().end());
@@ -507,6 +497,8 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
+      (void) this->refresh_networks();
+
       // Ensure the network status is available
       (void) this->network_status(trans->network_id);
 
@@ -514,8 +506,8 @@ namespace surface
 
       QStringList arguments;
       arguments << "-n" << trans->network_id.c_str()
-                << "-u" << trans->sender_id.c_str()
-                << "--path" << path.c_str()
+                << "-u" << this->_me._id.c_str()
+                << "--path" << this->_output_dir.c_str()
                 << "--from"
       ;
       ELLE_DEBUG("LAUNCH: %s %s",
@@ -530,11 +522,27 @@ namespace surface
         throw Exception(gap_internal_error, "8transfer binary exited with errors");
 
       ELLE_WARN("TRANSFER IS FUCKING COMPLETE MOTHER FUCKER!! Your file is at '%s'.",
-                path.c_str());
+                this->_output_dir.c_str());
 
       update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
 
+    }
+
+    void
+    State::output_dir(std::string const& dir)
+    {
+      printf("%s\n", dir.c_str());
+
+      if (!fs::exists(dir))
+        throw Exception(gap_error,
+                        "directory doesn't exist.");
+
+      if (!fs::is_directory(dir))
+        throw Exception(gap_error,
+                        "not a directroy.");
+
+      this->_output_dir = dir;
     }
 
     void
@@ -608,9 +616,7 @@ namespace surface
         return;
 
       this->_meta->update_transaction(transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_rejected,
-                                      this->device_id(),
-                                      this->device_name());
+                                      gap_TransactionStatus::gap_transaction_status_rejected);
     }
 
     void
@@ -629,7 +635,8 @@ namespace surface
 
       if (trans->sender_id == this->_me._id)
       {
-        this->_meta->start_transaction(transaction_id);
+        this->_meta->update_transaction(transaction_id,
+                                        gap_TransactionStatus::gap_transaction_status_started);
       }
     }
 
@@ -647,19 +654,22 @@ namespace surface
 
       plasma::meta::TransactionResponse *trans = pair->second;
 
-      //if (trans->recipient_id != this->_me._id)
-      //  return;
+      // if (trans->recipient_id != this->_me._id)
+      //   return;
 
       //XXX: If download has started, cancel it, delete files, ...
       if (trans->sender_id == this->_me._id)
       {
         //XXX
-        this->_meta->cancel_transaction(transaction_id);
+        this->_meta->update_transaction(transaction_id,
+                                        gap_TransactionStatus::gap_transaction_status_canceled);
+
       }
       else
       {
         //XXX
-        this->_meta->cancel_transaction(transaction_id);
+        this->_meta->update_transaction(transaction_id,
+                                        gap_TransactionStatus::gap_transaction_status_canceled);
       }
     }
 
@@ -680,7 +690,8 @@ namespace surface
 
       if (trans->recipient_id == this->_me._id)
       {
-        this->_meta->finish_transaction(transaction_id);
+        this->_meta->update_transaction(transaction_id,
+                                        gap_TransactionStatus::gap_transaction_status_finished);
       }
     }
 
@@ -766,7 +777,7 @@ namespace surface
     {
       ELLE_ASSERT(notif != nullptr);
 
-      ELLE_TRACE("_on_notification(gap_TransactionNotification\n");
+      ELLE_TRACE("_on_notification: gap_TransactionNotification");
 
       if (!notif->is_new)
         return;
@@ -807,7 +818,7 @@ namespace surface
         return;
       }
 
-      // // Normal case, this is a new transaction, store it to match server.
+      // Normal case, this is a new transaction, store it to match server.
       auto trans = new plasma::meta::TransactionResponse();
 
       trans->transaction_id = notif->transaction_id;
@@ -823,7 +834,9 @@ namespace surface
       trans->is_directory = notif->is_directory;
       trans->status = gap_TransactionStatus::gap_transaction_status_pending;
 
-      print_transaction(*trans);
+#ifdef DEBUG
+      printf("transaction_id: %s", trans->transaction_id.c_str());
+#endif
 
       (*this->_transactions)[trans->transaction_id] = trans;
     }
@@ -831,7 +844,7 @@ namespace surface
     void
     State::_on_notification(gap_TransactionStatusNotification const* notif)
     {
-      ELLE_TRACE("_on_notification(gap_TransactionStatusNotification\n");
+      ELLE_TRACE("_on_notification: gap_TransactionStatusNotification");
 
       ELLE_ASSERT(notif != nullptr);
 
@@ -842,54 +855,52 @@ namespace surface
 
       auto const pair = State::transactions().find(notif->transaction_id);
 
+      plasma::meta::TransactionResponse *trans_c;
+
       if (pair == State::transactions().end())
       {
         // Something went wrong.
         auto response = this->_meta->transaction(notif->transaction_id);
-        (*this->_transactions)[notif->transaction_id] =
-          new plasma::meta::TransactionResponse{response};
 
-        return;
+        trans_c = new plasma::meta::TransactionResponse{response};
+
+        (*this->_transactions)[notif->transaction_id] = trans_c;
+      }
+      else
+      {
+        trans_c = pair->second;
+
+        ELLE_ASSERT(trans_c != nullptr);
+
+        auto trans_s = this->_meta->transaction(notif->transaction_id);
+
+        trans_c->recipient_fullname = trans_s.recipient_fullname;
+        trans_c->recipient_device_id = trans_s.recipient_device_id;
+        trans_c->recipient_device_name = trans_s.recipient_device_name;
+
+        trans_c->status = trans_s.status;
       }
 
-      ELLE_ASSERT(notif->sender_id != nullptr);
-      ELLE_ASSERT(notif->sender_device_id != nullptr);
-      ELLE_ASSERT(notif->recipient_id != nullptr);
-      ELLE_ASSERT(notif->recipient_fullname != nullptr);
-      ELLE_ASSERT(notif->recipient_device_id != nullptr);
-      ELLE_ASSERT(notif->recipient_device_name != nullptr);
-      ELLE_ASSERT(notif->network_id != nullptr);
-
-      auto trans = pair->second;
-
-      ELLE_ASSERT(trans != nullptr);
-
-      trans->recipient_fullname = notif->recipient_fullname;
-      trans->recipient_device_id = notif->recipient_device_id;
-      trans->recipient_device_name = notif->recipient_device_name;
-
-      trans->status = notif->status;
-
-      switch(trans->status)
+      switch(trans_c->status)
       {
         case gap_TransactionStatus::gap_transaction_status_accepted:
-          this->_on_transaction_accepted(trans->transaction_id);
+          this->_on_transaction_accepted(trans_c->transaction_id);
           break;
         case gap_TransactionStatus::gap_transaction_status_rejected:
-          this->_on_transaction_denied(trans->transaction_id);
+          this->_on_transaction_denied(trans_c->transaction_id);
           break;
         case gap_TransactionStatus::gap_transaction_status_started:
-          this->_on_transaction_started(trans->transaction_id);
+          this->_on_transaction_started(trans_c->transaction_id);
           break;
         case gap_TransactionStatus::gap_transaction_status_canceled:
-          this->_on_transaction_canceled(trans->transaction_id);
+          this->_on_transaction_canceled(trans_c->transaction_id);
           break;
         case gap_TransactionStatus::gap_transaction_status_finished:
-          this->_on_transaction_closed(trans->transaction_id);
+          this->_on_transaction_closed(trans_c->transaction_id);
           break;
         default:
           ELLE_WARN("The status '%i' is unknown.",
-                    trans->status);
+                    trans_c->status);
           return;
       }
     }
@@ -909,11 +920,16 @@ namespace surface
       plasma::meta::TransactionResponse *trans = pair->second;
 
       if (trans->sender_id != this->_me._id)
+      {
         return;
+      }
+      ELLE_DEBUG("Giving '%s' rights on '%s'",
+                trans->recipient_id,
+                trans->network_id);
 
-      // Give rights.
-      network_add_user(trans->network_id,
-                       trans->recipient_id);
+      // add user.
+      this->network_add_user(trans->network_id,
+                             trans->recipient_id);
 
       // When recipient has rights, allow him to start download.
       this->update_transaction(transaction_id,
@@ -924,7 +940,7 @@ namespace surface
     void
     State::_on_transaction_denied(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Deny transaction '%s'", transaction_id);
+      ELLE_DEBUG("Denied transaction '%s'", transaction_id);
 
       auto pair = State::transactions().find(transaction_id);
 
@@ -944,7 +960,7 @@ namespace surface
     void
     State::_on_transaction_started(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Start transaction '%s'", transaction_id);
+      ELLE_DEBUG("Started transaction '%s'", transaction_id);
 
       auto pair = State::transactions().find(transaction_id);
 
@@ -958,23 +974,22 @@ namespace surface
       if (trans->recipient_id != this->_me._id)
         return;
 
-      // Waiting for "download files".
+      _download_files(transaction_id);
     }
 
     void
     State::_on_transaction_canceled(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Cancel transaction '%s'", transaction_id);
+      ELLE_DEBUG("Canceled transaction '%s'", transaction_id);
 
       auto pair = State::transactions().find(transaction_id);
 
+      assert(pair != State::transactions().end());
+
       if (pair == State::transactions().end())
-        {
-          ELLE_WARN("Unknown transaction %s", transaction_id);
-          return;
-        }
+        return;
+
       plasma::meta::TransactionResponse *trans = pair->second;
-      ELLE_ASSERT(trans != nullptr);
 
       if (trans->recipient_id != this->_me._id)
         return;
@@ -985,7 +1000,7 @@ namespace surface
     void
     State::_on_transaction_closed(std::string const& transaction_id)
     {
-      ELLE_DEBUG("Close transaction '%s'", transaction_id);
+      ELLE_DEBUG("Closed transaction '%s'", transaction_id);
 
 
       auto const& pair = State::transactions().find(transaction_id);
@@ -1194,6 +1209,7 @@ namespace surface
                       group_binary,
                       arguments.join(" ").toStdString());
       QProcess p;
+      p.setStandardOutputFile("/tmp/grospenis.txt");
       p.start(group_binary.c_str(), arguments);
       if (!p.waitForFinished())
         throw Exception(gap_internal_error, "8group binary failed");
@@ -1424,7 +1440,7 @@ namespace surface
       std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
-      arguments << "--user" << this->_meta->email().c_str()
+      arguments << "--user" << this->_me._id.c_str()
                 << "--type" << "user"
                 << "--network" << this->network(infos->network_id)._id.c_str()
                 << "--path" << ("/" + infos->relative_path).c_str()
@@ -1478,7 +1494,7 @@ namespace surface
       std::string const& access_binary = common::infinit::binary_path("8access");
 
       QStringList arguments;
-      arguments << "--user" << _meta->email().c_str()
+      arguments << "--user" << this->_me._id.c_str()
                 << "--type" << "user"
                 << "--grant"
                 << "--network" << network->_id.c_str()

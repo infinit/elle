@@ -126,19 +126,6 @@ namespace plasma
 
       notification->transaction_id = dic["transaction_id"].as_string().value().c_str();
 
-      // Sender.
-      notification->sender_id = dic["sender_id"].as_string().value().c_str();
-      notification->sender_device_id = dic["sender_device_id"].as_string().value().c_str();
-
-      // Recipient.
-      notification->recipient_id = dic["recipient_id"].as_string().value().c_str();
-      notification->recipient_fullname = dic["recipient_fullname"].as_string().value().c_str();
-      notification->recipient_device_id = dic["recipient_device_id"].as_string().value().c_str();
-      notification->recipient_device_name = dic["recipient_device_name"].as_string().value().c_str();
-
-      // Network.
-      notification->network_id = dic["network_id"].as_string().value().c_str();
-
       // Status.
       notification->status = dic["status"].as_integer();
 

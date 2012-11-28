@@ -178,6 +178,8 @@ class Nodes(_Page):
             assert 'externals' in node
             assert len(node) == 2
             for addr_kind in ['locals', 'externals']:
+                if node[addr_kind] is None:
+                    continue
                 for a in node[addr_kind]:
                     if a and a["ip"] and a["port"]:
                         print("Append", addr_kind, a)

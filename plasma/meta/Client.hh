@@ -113,21 +113,6 @@ namespace plasma
       std::string updated_transaction_id;
     };
 
-    struct StartTransactionResponse : plasma::Response
-    {
-      std::string updated_transaction_id;
-    };
-
-    struct FinishTransactionResponse : plasma::Response
-    {
-      std::string finished_transaction_id;
-    };
-
-    struct CancelTransactionResponse : plasma::Response
-    {
-      std::string canceled_transaction_id;
-    };
-
     struct NetworksResponse : plasma::Response
     {
       std::list<std::string> networks;
@@ -265,17 +250,8 @@ namespace plasma
       UpdateTransactionResponse
       update_transaction(std::string const& transaction_id,
                          int status,
-                         std::string const& device_id,
-                         std::string const& device_name);
-
-      StartTransactionResponse
-      start_transaction(std::string const& transaction_id);
-
-      CancelTransactionResponse
-      cancel_transaction(std::string const& transaction_id);
-
-      FinishTransactionResponse
-      finish_transaction(std::string const& transaction_id);
+                         std::string const& device_id = "",
+                         std::string const& device_name = "");
 
       MessageResponse
       send_message(std::string const& recipient_id,

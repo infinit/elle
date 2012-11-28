@@ -5,9 +5,12 @@ import json
 
 import meta.page
 import database
+from meta.constants import *
 
 from twisted.python import log
 import time
+
+import os
 
 FILE_TRANSFER = 7
 FILE_TRANSFER_STATUS = 11
@@ -32,7 +35,7 @@ class TrophoniusNotify(Notifier):
         self.conn = socket.socket()
 
     def open(self):
-        self.conn.connect(("localhost", 23457))
+        self.conn.connect(("localhost", int(TROPHONIUS_LISTEN_SSL_PORT)))
 
     def send_notification(self, message):
         if isinstance(message, dict):
