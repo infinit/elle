@@ -40,7 +40,7 @@ class Message(object):
 		self.type = type
 
 class Application(object):
-	def __init__(self, ip="127.0.0.1", port=TROPHONIUS_LISTEN_TCP_PORT, logfile=sys.stderr, ssl_port=TROPHONIUS_LISTEN_SSL_PORT):
+	def __init__(self, ip="127.0.0.1", port=TROPHONIUS_LISTEN_TCP_PORT, ssl_port=TROPHONIUS_LISTEN_SSL_PORT, logfile=sys.stderr):
 		self.ip = ip
 		self.port = port
 		self.logfile = logfile
