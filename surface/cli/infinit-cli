@@ -710,17 +710,15 @@ class PollThread (threading.Thread):
     def __init__(self, state):
         super(PollThread, self).__init__()
         self.state = state
+        self.running = True
 
     def run (self):
-        self.bite = False
-        while True:
+        while self.running:
             time.sleep(0.5)
             self.state.poll()
-            if self.close == True:
-                return
 
     def stop(self):
-        self.close = True
+        self.running = False
 
 if __name__ == '__main__':
     thread = 0
