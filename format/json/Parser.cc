@@ -37,6 +37,15 @@ namespace elle
         return Parser<std::basic_string<CharType>>(flags).parse(in);
       }
 
+      template <typename CharType>
+      std::unique_ptr<Object>
+      parse(std::basic_string<CharType> const& in,
+            ParserOption flags)
+      {
+        std::stringstream ss(in);
+        return parse(ss, flags);
+      }
+
       template <typename T>
       class Parser<T>::Error:
           public std::runtime_error
@@ -385,6 +394,11 @@ namespace elle
       template
       std::unique_ptr<Object>
       parse(std::basic_istream<std::string::value_type>& in,
+            ParserOption flags);
+
+      template
+      std::unique_ptr<Object>
+      parse(std::basic_string<std::string::value_type> const& in,
             ParserOption flags);
 
       //template class Parser<std::wstring>;
