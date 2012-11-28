@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD4B49A5163A9B9E00EFC714 /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD4B499F163A8EF400EFC714 /* FinderWindow.framework */; };
-		BD4B49A7163A9BD000EFC714 /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD4B499F163A8EF400EFC714 /* FinderWindow.framework */; };
 		BD7212BD16317BEC00B2AB22 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD7212BB16317BEC00B2AB22 /* InfoPlist.strings */; };
 		BD7212C816317CBD00B2AB22 /* Test.m in Sources */ = {isa = PBXBuildFile; fileRef = BD7212C316317BF600B2AB22 /* Test.m */; };
 		BD7212C916317CD700B2AB22 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F97CD16314A4500C1BD49 /* Cocoa.framework */; };
 		BDC694791638214F001A64A0 /* 18px-sidebar-active.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC694781638214F001A64A0 /* 18px-sidebar-active.png */; };
+		F4446940166640260041896C /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F444693F166640260041896C /* FinderWindow.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -22,7 +21,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BD4B49A7163A9BD000EFC714 /* FinderWindow.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30,7 +28,6 @@
 
 /* Begin PBXFileReference section */
 		BD1F97CD16314A4500C1BD49 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		BD4B499F163A8EF400EFC714 /* FinderWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderWindow.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug/FinderWindow.framework"; sourceTree = "<group>"; };
 		BD7212B616317BEC00B2AB22 /* FinderPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinderPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD7212BA16317BEC00B2AB22 /* FinderPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderPlugin-Info.plist"; sourceTree = "<group>"; };
 		BD7212BC16317BEC00B2AB22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -44,6 +41,7 @@
 		BDD9D630163167D8007B941A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BDD9D631163167D8007B941A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BDD9D632163167D8007B941A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F444693F166640260041896C /* FinderWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderWindow.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-codluknbkinfcybrnmkqdlovaccr/Build/Products/Debug/FinderWindow.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD4B49A5163A9B9E00EFC714 /* FinderWindow.framework in Frameworks */,
+				F4446940166640260041896C /* FinderWindow.framework in Frameworks */,
 				BD7212C916317CD700B2AB22 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,6 +83,7 @@
 		BD740F311630333C0093157A = {
 			isa = PBXGroup;
 			children = (
+				F444693F166640260041896C /* FinderWindow.framework */,
 				BD7212B816317BEC00B2AB22 /* FinderPlugin */,
 				BD740F3E1630333C0093157A /* Frameworks */,
 				BD740F3D1630333C0093157A /* Products */,
@@ -102,7 +101,6 @@
 		BD740F3E1630333C0093157A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BD4B499F163A8EF400EFC714 /* FinderWindow.framework */,
 				BD1F97CD16314A4500C1BD49 /* Cocoa.framework */,
 				BD740F3F1630333C0093157A /* CoreFoundation.framework */,
 				BDD9D62F163167D8007B941A /* Other Frameworks */,
@@ -210,6 +208,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-codluknbkinfcybrnmkqdlovaccr/Build/Products/Debug\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPlugin/FinderPlugin-Prefix.pch";
@@ -229,6 +228,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-codluknbkinfcybrnmkqdlovaccr/Build/Products/Debug\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPlugin/FinderPlugin-Prefix.pch";

@@ -172,10 +172,14 @@
 
 - (void)_on_reject_done:(IAGapOperationResult*)op
 {
+    assert([op.data isKindOfClass:[IATransactionNotification class]]);
+    IATransactionNotification* notif = (IATransactionNotification*)op.data;
     if (op.success)
     {
         NSLog(@"Reject with success");
     }
+    else
+        [self _removeNotifFor:notif.transaction_id];
 }
 
 - (IBAction)on_cancel:(id)sender
@@ -205,14 +209,19 @@
     {
         NSLog(@"Couldn't cancel transaction_id %@", notif.transaction_id);
     }
-    NSInteger row = [self _rowForTransactionId:notif.transaction_id];
+    [self _removeNotifFor:notif.transaction_id];
+}
+
+- (void)_removeNotifFor:(NSString*)transaction_id
+{
+    NSInteger row = [self _rowForTransactionId:transaction_id];
     if (row != -1)
     {
         [_notifications removeObjectAtIndex:row];
         [[self table] reloadData];
     }
     else
-        NSLog(@"CANNOT FIND ROW FOR TR ID = %@", notif.transaction_id);
+        NSLog(@"CANNOT FIND ROW FOR TR ID = %@", transaction_id);
 }
 
 @end

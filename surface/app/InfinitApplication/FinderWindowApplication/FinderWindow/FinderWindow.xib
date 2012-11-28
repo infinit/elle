@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">11G63</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2843</string>
-		<string key="IBDocument.AppKitVersion">1138.51</string>
-		<string key="IBDocument.HIToolboxVersion">569.00</string>
+		<int key="IBDocument.SystemTarget">1080</int>
+		<string key="IBDocument.SystemVersion">12C60</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
+		<string key="IBDocument.AppKitVersion">1187.34</string>
+		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2843</string>
+			<string key="NS.object.0">2844</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -53,7 +53,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{480, 388}</string>
 				<object class="NSView" key="NSWindowView" id="1006">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="45347150">
@@ -61,7 +61,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{83, 223}, {325, 70}}</string>
 							<reference key="NSSuperview" ref="1006"/>
-							<int key="NSViewLayerContentsRedrawPolicy">2</int>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="1053039907">
@@ -94,14 +93,15 @@
 									</object>
 								</object>
 							</object>
+							<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 						</object>
 					</array>
 					<string key="NSFrameSize">{480, 388}</string>
+					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="45347150"/>
 					<bool key="NSViewIsLayerTreeHost">YES</bool>
-					<int key="NSViewLayerContentsRedrawPolicy">2</int>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1920, 1058}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1280, 778}}</string>
 				<string key="NSMinSize">{480, 388}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -110,7 +110,7 @@
 				<string key="NSClassName">IALoginViewController</string>
 			</object>
 			<object class="NSCustomView" id="1010704450">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSImageView" id="194869007">
@@ -127,7 +127,6 @@
 						<string key="NSFrame">{{0, 262}, {480, 126}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
 						<reference key="NSNextKeyView" ref="541990740"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSImageCell" key="NSCell" id="862618226">
@@ -143,6 +142,7 @@
 							<int key="NSStyle">0</int>
 							<bool key="NSAnimates">NO</bool>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 						<bool key="NSEditable">YES</bool>
 					</object>
 					<object class="NSButton" id="69179144">
@@ -170,6 +170,7 @@
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="904934424">
 						<reference key="NSNextResponder" ref="1010704450"/>
@@ -192,6 +193,7 @@
 								<bytes key="NSRGB">MC42MTcwMTc2NjMgMC4xMzE5OTY2Mjk1IDAAA</bytes>
 							</object>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSButton" id="910985337">
 						<reference key="NSNextResponder" ref="1010704450"/>
@@ -199,7 +201,6 @@
 						<string key="NSFrame">{{182, 52}, {116, 25}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
 						<reference key="NSNextKeyView" ref="69179144"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="701981489">
@@ -216,6 +217,7 @@
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="200615124">
 						<reference key="NSNextResponder" ref="1010704450"/>
@@ -223,7 +225,6 @@
 						<string key="NSFrame">{{99, 114}, {282, 29}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
 						<reference key="NSNextKeyView" ref="904934424"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="609043042">
@@ -255,6 +256,7 @@
 								<reference key="NSColor" ref="480996891"/>
 							</object>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="541990740">
 						<reference key="NSNextResponder" ref="1010704450"/>
@@ -262,7 +264,6 @@
 						<string key="NSFrame">{{99, 153}, {282, 28}}</string>
 						<reference key="NSSuperview" ref="1010704450"/>
 						<reference key="NSNextKeyView" ref="200615124"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="227341821">
@@ -277,9 +278,11 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 				</array>
 				<string key="NSFrameSize">{480, 388}</string>
+				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="194869007"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
@@ -288,7 +291,7 @@
 				<string key="NSClassName">IAMainViewController</string>
 			</object>
 			<object class="NSCustomView" id="623559333">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSButton" id="388570830">
@@ -296,7 +299,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{334, 289}, {62, 29}}</string>
 						<reference key="NSSuperview" ref="623559333"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="811108271">
@@ -313,6 +315,7 @@
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSCustomView" id="406340707">
 						<reference key="NSNextResponder" ref="623559333"/>
@@ -324,7 +327,6 @@
 								<string key="NSFrame">{{10, 25}, {76, 17}}</string>
 								<reference key="NSSuperview" ref="406340707"/>
 								<reference key="NSNextKeyView" ref="749639962"/>
-								<int key="NSViewLayerContentsRedrawPolicy">2</int>
 								<string key="NSReuseIdentifierKey">_NS:1535</string>
 								<bool key="NSEnabled">YES</bool>
 								<object class="NSTextFieldCell" key="NSCell" id="329077516">
@@ -337,6 +339,7 @@
 									<reference key="NSBackgroundColor" ref="306587371"/>
 									<reference key="NSTextColor" ref="95440946"/>
 								</object>
+								<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 							</object>
 						</array>
 						<string key="NSFrame">{{73, 272}, {95, 62}}</string>
@@ -347,7 +350,6 @@
 							<double key="NSShadowBlurRadius">4</double>
 							<reference key="NSShadowColor" ref="480996891"/>
 						</object>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<string key="NSClassName">IADropFileView</string>
 					</object>
@@ -357,7 +359,6 @@
 						<string key="NSFrame">{{176, 290}, {159, 27}}</string>
 						<reference key="NSSuperview" ref="623559333"/>
 						<reference key="NSNextKeyView" ref="388570830"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="166142685">
@@ -365,13 +366,14 @@
 							<int key="NSCellFlags2">272629824</int>
 							<string key="NSContents"/>
 							<reference key="NSSupport" ref="1060963897"/>
-							<string key="NSPlaceholderString">Enter an email address</string>
+							<string key="NSPlaceholderString">Find a friend or send via email</string>
 							<string key="NSCellIdentifier">_NS:9</string>
 							<reference key="NSControlView" ref="749639962"/>
 							<bool key="NSDrawsBackground">YES</bool>
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSImageView" id="1060717292">
 						<reference key="NSNextResponder" ref="623559333"/>
@@ -388,7 +390,6 @@
 						<reference key="NSSuperview" ref="623559333"/>
 						<reference key="NSNextKeyView" ref="406340707"/>
 						<double key="NSViewAlphaValue">0.50000000000000011</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSImageCell" key="NSCell" id="1034486378">
@@ -404,13 +405,14 @@
 							<int key="NSStyle">0</int>
 							<bool key="NSAnimates">NO</bool>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 						<bool key="NSEditable">YES</bool>
 					</object>
 				</array>
 				<string key="NSFrameSize">{480, 388}</string>
+				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="1060717292"/>
 				<bool key="NSViewIsLayerTreeHost">YES</bool>
-				<int key="NSViewLayerContentsRedrawPolicy">2</int>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">IAMainView</string>
 			</object>
@@ -418,7 +420,7 @@
 				<string key="NSClassName">IARegisterViewController</string>
 			</object>
 			<object class="NSCustomView" id="167505223">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSButton" id="27304706">
@@ -426,7 +428,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{99, 19}, {282, 28}}</string>
 						<reference key="NSSuperview" ref="167505223"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="208520082">
@@ -443,6 +444,7 @@
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="541312789">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -450,7 +452,6 @@
 						<string key="NSFrame">{{96, 84}, {288, 22}}</string>
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="543690141"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="928519327">
@@ -466,6 +467,7 @@
 								<bytes key="NSRGB">MC42MTcwMTc2NjMgMC4xMzE5OTY2Mjk1IDAAA</bytes>
 							</object>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSButton" id="543690141">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -473,7 +475,6 @@
 						<string key="NSFrame">{{265, 52}, {116, 25}}</string>
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="27304706"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:22</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="203539388">
@@ -490,6 +491,7 @@
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="554467300">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -498,7 +500,6 @@
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="541312789"/>
 						<double key="NSViewAlphaValue">0.80000000000000004</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="982835024">
@@ -513,6 +514,7 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="247722266">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -521,7 +523,6 @@
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="554467300"/>
 						<double key="NSViewAlphaValue">0.80000000000000004</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="590562932">
@@ -536,6 +537,7 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="501583792">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -544,7 +546,6 @@
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="247722266"/>
 						<double key="NSViewAlphaValue">0.80000000000000004</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="777218442">
@@ -559,6 +560,7 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="349486204">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -567,7 +569,6 @@
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="741567071"/>
 						<double key="NSViewAlphaValue">0.80000000000000004</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="562092042">
@@ -582,6 +583,7 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSTextField" id="741567071">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -590,7 +592,6 @@
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="501583792"/>
 						<double key="NSViewAlphaValue">0.80000000000000004</double>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="788999457">
@@ -605,6 +606,7 @@
 							<reference key="NSBackgroundColor" ref="748809268"/>
 							<reference key="NSTextColor" ref="666950081"/>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 					</object>
 					<object class="NSImageView" id="1037572851">
 						<reference key="NSNextResponder" ref="167505223"/>
@@ -620,7 +622,6 @@
 						<string key="NSFrame">{{0, 262}, {480, 126}}</string>
 						<reference key="NSSuperview" ref="167505223"/>
 						<reference key="NSNextKeyView" ref="349486204"/>
-						<int key="NSViewLayerContentsRedrawPolicy">2</int>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSImageCell" key="NSCell" id="1014262779">
@@ -633,13 +634,12 @@
 							<int key="NSStyle">0</int>
 							<bool key="NSAnimates">NO</bool>
 						</object>
+						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 						<bool key="NSEditable">YES</bool>
 					</object>
 				</array>
 				<string key="NSFrameSize">{480, 388}</string>
-				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="1037572851"/>
-				<int key="NSViewLayerContentsRedrawPolicy">2</int>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">IARegisterView</string>
 			</object>
