@@ -444,7 +444,7 @@ namespace network {
     const_iterator first(std::begin(uri_)), last(std::end(uri_));
     bool is_valid = detail::parse(first, last, uri_parts_);
     if (!is_valid) {
-      ec = std::error_code(syntax_error, std::generic_category());
+      ec = make_error_code(uri_error::syntax_error);
       return;
     }
 
@@ -537,6 +537,30 @@ namespace network {
 
   bool operator < (const uri &lhs, const uri &rhs) {
     return lhs.normalize().native() < rhs.normalize().native();
+  }
+
+
+  const char *uri_category_impl::name() const {
+    return "uri_error";
+  }
+
+  std::string uri_category_impl::message(int ev) const {
+    switch (ev) {
+    case uri_error::syntax_error:
+      return "Unable to parse URI string.";
+    default:
+      break;
+    }
+    return std::string("Unknown URI error.");
+  }
+
+  const std::error_category &uri_category() {
+    static uri_category_impl uri_category;
+    return uri_category;
+  }
+
+  std::error_code make_error_code(uri_error e) {
+    return std::error_code(static_cast<int>(e), uri_category());
   }
 
   uri_syntax_error::uri_syntax_error() {

@@ -33,9 +33,22 @@ namespace network {
 
   } // namespace detail
 
-  enum uri_error {
+  enum class uri_error {
     syntax_error = 1,
   };
+
+  class uri_category_impl : public std::error_category {
+
+  public:
+
+    virtual const char *name() const;
+    virtual std::string message(int ev) const;
+
+  };
+
+  const std::error_category &uri_category();
+
+  std::error_code make_error_code(uri_error e);
 
   class uri_syntax_error : public std::exception {
 
@@ -235,6 +248,11 @@ namespace network {
     return !(lhs < rhs);
   }
 } // namespace network
+
+namespace std {
+  template <>
+  struct is_error_code_enum<network::uri_error> : public true_type { };
+} // namespace std
 
 namespace std {
   template <>
