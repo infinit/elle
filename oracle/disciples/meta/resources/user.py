@@ -179,15 +179,8 @@ class MinimumSelf(Page):
     Get self infos
         GET
             -> {
-                'fullname': "My Name",
                 'email': "My email",
-                'devices': [device_id1, ...],
-                'networks': [network_id1, ...]
-                'identity': 'identity string',
                 'public_key': 'public_key string',
-                'accounts': [
-                    {'type':'account type', 'id':'unique account identifier'}
-                ]
             }
     """
 

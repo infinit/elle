@@ -59,7 +59,8 @@
     }
     sleep(1);
 
-	syslog(LOG_NOTICE, "injecting bundle %s into finder pid %d", [source_bundle_path UTF8String], process_id);
+	syslog(LOG_NOTICE, "injecting bundle %s into finder pid %d",
+           [source_bundle_path UTF8String], process_id);
 	
 	mach_error_t err = mach_inject_bundle_pid([source_bundle_path fileSystemRepresentation],
                                               [stub_bundle_path fileSystemRepresentation], process_id);

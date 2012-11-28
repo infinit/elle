@@ -29,6 +29,12 @@ namespace elle
       parse(std::basic_istream<CharType>& in,
             ParserOption flags = ParserOption::None);
 
+      /// Shortcut to parse a json object from string.
+      template <typename CharType = std::string::value_type>
+      std::unique_ptr<Object>
+      parse(std::basic_string<CharType> const& in,
+            ParserOption flags = ParserOption::None);
+
       template <typename StringType_ = std::string>
       class Parser
       {

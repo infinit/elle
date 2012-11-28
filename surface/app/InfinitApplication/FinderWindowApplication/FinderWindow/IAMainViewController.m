@@ -61,17 +61,20 @@
 
 - (void)refresh
 {
+    [self.send_button setHidden:true];
     if (!_locked && [[self drop_box] hasPendingFiles])
     {
-        [[self.search_bar cell] setPlaceholderString:@"Enter an email address"];
+        [[self.search_bar cell] setPlaceholderString:@"Find friend or send via email"];
         [self.search_bar setEnabled:true];
         if ([self.search_bar isValid])
         {
             [self.send_button setEnabled:true];
+            [self.send_button setHidden:false];
         }
         else
         {
             [self.send_button setEnabled:false];
+            [self.send_button setHidden:true];
         }
     }
     else

@@ -1,16 +1,16 @@
 #ifndef  PLASMA_WATCHDOG_MANAGER_HH
 # define PLASMA_WATCHDOG_MANAGER_HH
 
-# include <unordered_map>
-# include <memory>
-# include <functional>
+# include "Client.hh"
+
+# include <elle/format/json.hh>
 
 # include <QCoreApplication>
 # include <QTimer>
-# include <QVariantMap>
-# include <QVariantList>
 
-# include "plasma/meta/Client.hh"
+# include <unordered_map>
+# include <memory>
+# include <functional>
 
 namespace plasma
 {
@@ -22,6 +22,8 @@ namespace plasma
     class ClientActions;
     class NetworkManager;
     class LocalServer;
+
+    namespace json = elle::format::json;
 
     ///
     /// The manager dispatch received command and stores clients with
@@ -38,7 +40,7 @@ namespace plasma
       typedef std::unique_ptr<ClientActions> ClientActionsPtr;
       typedef std::unordered_map<ConnectionPtr, ClientPtr> ClientMap;
 
-      typedef std::function<void(Connection&, Client&, QVariantMap const&)> Command;
+      typedef std::function<void(Connection&, Client&, json::Dictionary const&)> Command;
       typedef std::unordered_map<std::string, Command> CommandMap;
 
       typedef plasma::meta::Client MetaClient;
@@ -70,6 +72,8 @@ namespace plasma
 
       void token(QByteArray const& token);
       void token(QString const& token)        { this->token(token.toAscii()); }
+      void token(std::string const& token)
+      { this->token(QString(token.c_str())); }
 
       std::string const& identity() const           { return this->_identity; }
       void identity(std::string const& id)            { this->_identity = id; }
@@ -94,7 +98,9 @@ namespace plasma
       void unregister_all_commands();
 
       /// Dispatch a command from a connection
-      void execute_command(ConnectionPtr& conn, QVariantMap const& cmd);
+      void
+      execute_command(ConnectionPtr& conn,
+                      json::Dictionary const& cmd);
 
       ///
       /// The manager is started from the class Application, but can

@@ -25,7 +25,7 @@ using namespace plasma::watchdog;
     using namespace std::placeholders;                                        \
     this->_manager.register_command(                                          \
       #name,                                                                  \
-      [this](Connection& conn, Client& cl, QVariantMap const& qm){            \
+      [this](Connection& conn, Client& cl, json::Dictionary const& qm){       \
         this->_on_##name(conn, cl, qm);                                       \
       }                                                                       \
     );                                                                        \
@@ -39,10 +39,9 @@ using namespace plasma::watchdog;
 // Security check (the watchdog id is valid)
 #define CHECK_ID(args)                                                        \
   do {                                                                        \
-      if (args["_id"].toString() != this->_watchdogId)                        \
+      if (args["_id"] != this->_watchdog_id)                                  \
         {                                                                     \
-          ELLE_WARN("Invalid watchdog id: %s",                                \
-                    args["_id"].toString().toStdString());                    \
+          ELLE_WARN("Invalid watchdog id: %s", args["_id"]);                  \
           return;                                                             \
         }                                                                     \
   } while(false)                                                              \
@@ -70,22 +69,22 @@ ClientActions::~ClientActions()
 
 void ClientActions::_on_run(Connection&,
                             Client&,
-                            QVariantMap const& args)
+                            json::Dictionary const& args)
 {
   ELLE_DEBUG("Starting watchdog monitoring.");
   CHECK_ID(args);
-  QString token = args["token"].toString();
-  QString identity = args["identity"].toString();
-  QString user = args["user"].toString();
-  QString user_id = args["user_id"].toString();
-  ELLE_ASSERT(user_id.toStdString() == this->_user_id);
+  std::string token = args["token"].as<std::string>();
+  std::string identity = args["identity"].as<std::string>();
+  std::string user = args["user"].as<std::string>();
+  std::string user_id = args["user_id"].as<std::string>();
+  ELLE_ASSERT(user_id == this->_user_id);
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.user(user);
 
-      std::ofstream identity_infos{common::watchdog::identity_path(user_id.toStdString())};
+      std::ofstream identity_infos{common::watchdog::identity_path(user_id)};
 
       if (!identity_infos.good())
         {
@@ -93,10 +92,10 @@ void ClientActions::_on_run(Connection&,
           std::abort();
         }
 
-      identity_infos << token.toStdString() << "\n"
-                     << identity.toStdString() << "\n"
-                     << user.toStdString() << "\n"
-                     << user_id.toStdString() << "\n"
+      identity_infos << token << "\n"
+                     << identity << "\n"
+                     << user << "\n"
+                     << user_id << "\n"
                      ;
 
       if (!identity_infos.good())
@@ -122,7 +121,7 @@ void ClientActions::_on_run(Connection&,
 
 void ClientActions::_on_stop(Connection&,
                             Client&,
-                            QVariantMap const& args)
+                            json::Dictionary const& args)
 {
   CHECK_ID(args);
   this->_manager.unregister_all_commands();
@@ -132,7 +131,7 @@ void ClientActions::_on_stop(Connection&,
 
 void ClientActions::_on_refresh_networks(Connection&,
                                          Client&,
-                                         QVariantMap const& args)
+                                         json::Dictionary const& args)
 {
   CHECK_ID(args);
   this->_manager.refresh_networks();
@@ -141,11 +140,9 @@ void ClientActions::_on_refresh_networks(Connection&,
 
 void ClientActions::_on_status(Connection& conn,
                                Client&,
-                               QVariantMap const& args)
+                               json::Dictionary const& args)
 {
   ELLE_DEBUG("Status callback.");
-  namespace json = elle::format::json;
-
   CHECK_ID(args);
 
   json::Array networks;

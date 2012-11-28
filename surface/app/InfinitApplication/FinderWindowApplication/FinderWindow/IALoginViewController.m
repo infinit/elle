@@ -31,13 +31,14 @@
 // Login button
 -(IBAction) doLogin:(id)sender
 {
-    NSString* login = [self.login stringValue];
+    NSString* login = [[self.login stringValue] lowercaseString];
     NSString* password = [self.password stringValue];
     NSString* device_name = @"TODO";
     [self.login_button setHidden:YES];
     [self.login setEnabled:NO];
     [self.password setEnabled:NO];
-    [[IAGapState instance]              login:login withPassword:password
+    [[IAGapState instance]              login:login
+                                 withPassword:password
                                 andDeviceName:device_name
                               performSelector:@selector(_login_callback:)
                                      onObject:self];
