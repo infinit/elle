@@ -39,6 +39,8 @@
 		BDBAEDFA163AB282001B2FD1 /* IAFinderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */; };
 		BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */; };
+		F4446944166670D50041896C /* IASwaggersView.h in Headers */ = {isa = PBXBuildFile; fileRef = F4446942166670D50041896C /* IASwaggersView.h */; };
+		F4446945166670D50041896C /* IASwaggersView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4446943166670D50041896C /* IASwaggersView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -92,6 +94,8 @@
 		BDBAEDF8163AB282001B2FD1 /* IAFinderWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAFinderWindow.m; sourceTree = "<group>"; };
 		BDBAEE46163ED234001B2FD1 /* IALoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IALoginViewController.h; sourceTree = "<group>"; };
 		BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IALoginViewController.m; sourceTree = "<group>"; };
+		F4446942166670D50041896C /* IASwaggersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASwaggersView.h; sourceTree = "<group>"; };
+		F4446943166670D50041896C /* IASwaggersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASwaggersView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,8 +158,8 @@
 				BD1A1C28163946A500186C48 /* Supporting Files */,
 				BDB63FCA1647D456008FCDAB /* Gap */,
 				BDB63FCC1647D4AE008FCDAB /* Common */,
-				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
 				BDB63FCD1647D4D0008FCDAB /* MainView */,
+				BD1A1C35163947E000186C48 /* FinderWindow.xib */,
 				BD59542E1655561300B3317E /* IAAppIPCClient.h */,
 				BD59542F1655561300B3317E /* IAAppIPCClient.m */,
 			);
@@ -243,6 +247,8 @@
 				BDB63FC21647D14C008FCDAB /* IADropFileView.m */,
 				BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */,
 				BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */,
+				F4446942166670D50041896C /* IASwaggersView.h */,
+				F4446943166670D50041896C /* IASwaggersView.m */,
 			);
 			name = MainView;
 			sourceTree = "<group>";
@@ -266,6 +272,7 @@
 				BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */,
 				BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */,
 				BD5954301655561300B3317E /* IAAppIPCClient.h in Headers */,
+				F4446944166670D50041896C /* IASwaggersView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +358,7 @@
 				BD1BE37B1644181E004810F9 /* IATextFieldCell.m in Sources */,
 				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
 				BD5954311655561300B3317E /* IAAppIPCClient.m in Sources */,
+				F4446945166670D50041896C /* IASwaggersView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
