@@ -234,21 +234,17 @@ class Update(Page):
         sender = database.users().find_one(database.ObjectId(transaction['sender_id']))
         recipient = database.users().find_one(database.ObjectId(transaction['recipient_id']))
 
-        assert sender
-        assert recipient
+        assert sender is not None
+        assert recipient is not None
 
         # If transfer is accepted, increase popularity of each user.
-
         if self.data['status'] == ACCEPTED and recipient['_id'] != sender['_id']:
             # XXX: probably not optimized, we should maybe use database.find_and_modify and increase
             # the value.
-            sender['swaggers'][recipient['_id']] = sender['swaggers'].setdefault(recipient['_id'], 0) + 1;
-            recipient['swaggers'][sender['_id']] = recipient['swaggers'].setdefault(sender['_id'], 0) + 1;
-            print(sender['swaggers'])
-            print(recipient['swaggers'])
- #XXX: Saving user fail
-            #database.users().save(sender)
-            #database.users().save(recipient)
+            sender['swaggers'][str(recipient['_id'])] = sender['swaggers'].setdefault(str(recipient['_id']), 0) + 1;
+            recipient['swaggers'][str(sender['_id'])] = recipient['swaggers'].setdefault(str(sender['_id']), 0) + 1;
+            database.users().save(sender)
+            database.users().save(recipient)
 
         updated_transaction_id = database.transactions().save(transaction);
 
@@ -393,7 +389,7 @@ class Cancel(Page):
 
         if not transaction['status'] in (REJECTED, PENDING, STARTED) :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
-                              "This transaction can't be started. Status : %i" % transaction['status'])
+                              "This transaction can't be canceled. Status : %i" % transaction['status'])
 
         transaction.update({
             'status': CANCELED, # canceled.
@@ -468,7 +464,7 @@ class Finish(Page):
 
         if transaction['status'] != STARTED :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
-                              "This transaction can't be started. Status : %i" % transaction['status'])
+                              "This transaction can't be finished. Status : %i" % transaction['status'])
 
         transaction.update({
             'status': FINISHED, # finished.
@@ -489,7 +485,7 @@ class Finish(Page):
 
                 # Recipient.
                 'recipient_id': str(transaction['recipient_id']),
-                'recipient_name': str(transaction['recipient_id']),
+                'recipient_fullname': str(transaction['recipient_fullname']),
                 'recipient_device_id': str(transaction['recipient_device_id']),
                 'recipient_device_name': transaction['recipient_device_name'],
 
