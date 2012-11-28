@@ -114,7 +114,6 @@ namespace network {
 	case '.':
 	case '_':
 	case '~':
-	case '/':
 	  out++ = in;
 	  break;
 	default:
@@ -148,6 +147,10 @@ namespace network {
    OutputIterator encode_host(InputIterator first,
 			      InputIterator last,
 			      OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      ++it;
+    }
     return out;
   }
 

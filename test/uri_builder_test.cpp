@@ -9,10 +9,15 @@
 #include <network/uri.hpp>
 
 
-TEST(builder_test, empty_uri) {
+TEST(builder_test, empty_uri_doesnt_throw) {
   network::uri_builder builder;
   ASSERT_NO_THROW(builder.uri());
-  //BOOST_CHECK_EQUAL("http://www.example.com/", instance.string());
+}
+
+TEST(builder_test, empty_uri) {
+  network::uri_builder builder;
+  network::uri instance(builder.uri());
+  ASSERT_TRUE(instance.empty());
 }
 
 TEST(builder_test, DISABLED_simple_uri) {

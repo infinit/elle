@@ -20,14 +20,4 @@ namespace network {
     //return os << uri_.wstring();
     return os;
   }
-
-  std::ostream &operator << (std::ostream &os, const uri::part_range &part) {
-    //boost::copy(part, std::ostream_iterator<uri::value_type>(os));
-    return os;
-  }
-
-  std::wostream &operator << (std::wostream &os, const uri::part_range &part) {
-    //boost::copy(part, std::ostream_iterator<uri::value_type>(os));
-    return os;
-  }
 } // namespace network

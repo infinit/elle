@@ -10,7 +10,7 @@
 #include <iterator>
 
 
-TEST(uri_encoding_test, encode_user_info_iterator_test) {
+TEST(uri_encoding_test, encode_user_info_iterator) {
   const std::string unencoded(" !\"#$%&\'()*");
 
   std::string instance;
@@ -20,7 +20,7 @@ TEST(uri_encoding_test, encode_user_info_iterator_test) {
 }
 
 
-TEST(uri_encoding_test, encode_user_info_test) {
+TEST(uri_encoding_test, encode_user_info) {
   const std::string unencoded(" !\"#$%&\'()*");
   ASSERT_EQ(network::encode_user_info(unencoded), "%20%21%22%23%24%25%26%27%28%29%2A");
 }

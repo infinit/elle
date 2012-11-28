@@ -15,10 +15,6 @@ namespace network {
   std::ostream &operator << (std::ostream &os, const uri &uri_);
 
   std::wostream &operator << (std::wostream &os, const uri &uri_);
-
-  std::ostream &operator << (std::ostream &os, const uri::part_range &part);
-
-  std::wostream &operator << (std::wostream &os, const uri::part_range &part);
 } // namespace network
 
 #endif // NETWORK_URI_URI_IO_INC

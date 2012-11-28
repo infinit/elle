@@ -25,6 +25,12 @@ namespace network {
 
     template <typename Source>
     uri_builder &scheme(const Source &scheme) {
+      //set_scheme(detail::translate(scheme));
+      return *this;
+    }
+
+    template <typename Source>
+    uri_builder &user_info(const Source &user_info) {
       return *this;
     }
 
@@ -34,7 +40,22 @@ namespace network {
     }
 
     template <typename Source>
+    uri_builder &port(const Source &port) {
+      return *this;
+    }
+
+    template <typename Source>
     uri_builder &path(const Source &path) {
+      return *this;
+    }
+
+    template <typename Source>
+    uri_builder &query(const Source &query) {
+      return *this;
+    }
+
+    template <typename Source>
+    uri_builder &fragment(const Source &fragment) {
       return *this;
     }
 
@@ -42,7 +63,15 @@ namespace network {
 
   private:
 
-    string_type scheme_, user_name, host_, port_, path_, query_, fragment_;
+    void set_scheme(const string_type &scheme);
+    void set_user_info(const string_type &user_info);
+    void set_host(const string_type &host);
+    void set_port(const string_type &port);
+    void set_path(const string_type &path);
+    void set_query(const string_type &query);
+    void set_fragment(const string_type &fragment);
+
+    string_type scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
 } // namespace network

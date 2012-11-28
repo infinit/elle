@@ -7,7 +7,12 @@
 cmake_minimum_required(VERSION 2.8)
 project(Uri)
 
-include_directories(${Uri_SOURCE_DIR}/src ${Uri_SOURCE_DIR}/deps)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost 1.5.3 REQUIRED)
+
+#include_directories(${Uri_SOURCE_DIR}/src ${Uri_SOURCE_DIR}/deps)
+include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 
@@ -37,7 +42,6 @@ endif(MSVC)
 if (WIN32)
   add_definitions(-D_WIN32_WINNT=0x0501)
 endif(WIN32)
-include_directories(${Boost_INCLUDE_DIRS})
 enable_testing()
 find_package(GTest REQUIRED)
 

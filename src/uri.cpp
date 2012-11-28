@@ -470,7 +470,7 @@ namespace network {
     return seed;
   }
 
-  bool compare(const uri &lhs, const uri &rhs, uri_comparison_level level) {
+  bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level) {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (lhs.empty() && rhs.empty()) {
@@ -527,7 +527,7 @@ namespace network {
   }
 
   bool operator == (const uri &lhs, const uri &rhs) {
-    return compare(lhs, rhs, path_segment_normalization);
+    return equals(lhs, rhs, path_segment_normalization);
   }
 
   bool operator < (const uri &lhs, const uri &rhs) {

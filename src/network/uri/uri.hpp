@@ -194,7 +194,7 @@ namespace network {
     path_segment_normalization,
   };
 
-  bool compare(const uri &lhs, const uri &rhs, uri_comparison_level level);
+  bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level);
 
   bool operator == (const uri &lhs, const uri &rhs);
 
