@@ -67,18 +67,18 @@ namespace network {
   public:
 
     typedef std::string string_type;
-    typedef string_type::const_iterator iterator;
     typedef string_type::const_iterator const_iterator;
-    typedef std::iterator_traits<const_iterator>::value_type value_type;
+    typedef string_type::iterator iterator;
+    typedef std::iterator_traits<iterator>::value_type value_type;
 
     class part_range {
 
     public:
 
-      typedef std::string string_type;
-      typedef string_type::const_iterator iterator;
-      typedef string_type::const_iterator const_iterator;
-      typedef std::iterator_traits<const_iterator>::value_type value_type;
+      typedef uri::string_type string_type;
+      typedef uri::const_iterator const_iterator;
+      typedef uri::iterator iterator;
+      typedef uri::value_type value_type;
 
       typedef bool (part_range::*unspecified_bool_type)() const;
 
