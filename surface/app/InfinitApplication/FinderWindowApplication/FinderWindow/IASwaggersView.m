@@ -21,7 +21,7 @@
 @implementation IASwaggersView
 {
 @private
-    NSArray* _cirles;
+    NSArray* _circles;
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -34,7 +34,7 @@
     
     if (self)
     {
-        NSMutableArray* cirles = [NSMutableArray arrayWithCapacity:CIRCLE_COUNT];
+        NSMutableArray* circles = [NSMutableArray arrayWithCapacity:CIRCLE_COUNT];
         for (int i = 0; i < CIRCLE_COUNT; ++i)
         {
             float radius = (i + 1) * CIRCLE_OFFSET + CIRCLE_INITIAL_OFFSET;
@@ -44,9 +44,9 @@
                                      radius * CIRCLE_HEIGHT_RATIO * 2.0f);
             NSBezierPath* path = [NSBezierPath bezierPath];
             [path appendBezierPathWithOvalInRect:rect];
-            [cirles insertObject:path atIndex:i];
+            [circles insertObject:path atIndex:i];
         }
-        _cirles = [NSArray arrayWithArray:cirles]; // we won't mutate the circles
+        _circles = [NSArray arrayWithArray:circles]; // we won't mutate the circles
     }
     
     return self;
@@ -60,7 +60,7 @@
     
     [[NSColor CIRCLE_COLOR] set];
     for (int i = 0; i < CIRCLE_COUNT; ++i)
-        [[_cirles objectAtIndex:i] stroke];
+        [[_circles objectAtIndex:i] stroke];
 }
 
 @end
