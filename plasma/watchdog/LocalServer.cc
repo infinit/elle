@@ -1,9 +1,8 @@
 #include <stdexcept>
 #include <iostream>
 
-#include <QJson/Parser>
-
 #include <elle/log.hh>
+#include <elle/format/json.hh>
 
 #include <common/common.hh>
 
@@ -99,13 +98,7 @@ void LocalServer::_on_client_error(ConnectionPtr conn, std::string const&)
 
 void LocalServer::_on_client_command(ConnectionPtr conn, QByteArray const& data)
 {
-  QJson::Parser parser;
-  bool result;
-  QVariantMap cmd = parser.parse(data, &result).toMap();
-  if (!result)
-    ELLE_WARN("Got invalid command: %s", QString(data).toStdString());
-  else if (!cmd.contains("_id"))
-    ELLE_WARN("The command has to contain an _id.");
-  else
-    this->_manager->execute_command(conn, cmd);
+  auto object = elle::format::json::parse(QString(data).toStdString());
+
+  this->_manager->execute_command(conn, object->as_dictionary());
 }
