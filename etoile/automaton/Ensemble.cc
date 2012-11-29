@@ -7,6 +7,7 @@
 #include <nucleus/proton/State.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
+#include <elle/finally.hh>
 #include <elle/log.hh>
 
 #include <cryptography/KeyPair.hh>
@@ -166,6 +167,8 @@ namespace etoile
           // XXX[use finally, from cryptography]
           cryptography::KeyPair* pass(nullptr);
 
+          ELLE_FINALLY_ACTION_DELETE(pass);
+
           // XXX: restore history handling
           // does the network support the history?
           // if (depot::hole().descriptor().meta().history() == false)
@@ -241,6 +244,8 @@ namespace etoile
             {
               escape("unable to upgrade the group");
             }
+
+          ELLE_FINALLY_ABORT(pass);
 
           delete pass;
         }
