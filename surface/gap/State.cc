@@ -288,6 +288,31 @@ namespace surface
       return result;
     }
 
+    // SwaggersMap
+    // State::swaggers()
+    // {
+    //   if (this->_swaggers_dirty)
+    //     {
+    //       auto response = this->_meta->swaggers();
+    //       for (auto const& network_id: response.networks)
+    //         {
+    //           if (this->_networks.find(network_id) == this->_networks.end())
+    //             {
+    //               auto response = this->_meta->network(network_id);
+    //               this->_networks[network_id] = new Network{response};
+    //             }
+    //         }
+    //       this->_networks_dirty = false;
+    //     }
+    //   return this->_networks;
+    // }
+
+    // User const&
+    // State::swagger(std::string const& id)
+    // {
+
+    // }
+
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
     {
@@ -931,6 +956,10 @@ namespace surface
       this->network_add_user(trans->network_id,
                              trans->recipient_id);
 
+      this->set_permissions(trans->recipient_id,
+                            trans->network_id,
+                            nucleus::neutron::permissions::write);
+
       // When recipient has rights, allow him to start download.
       this->update_transaction(transaction_id,
                                gap_TransactionStatus::gap_transaction_status_started);
@@ -1210,6 +1239,8 @@ namespace surface
                       arguments.join(" ").toStdString());
       QProcess p;
       p.setStandardOutputFile("/tmp/grospenis.txt");
+      p.setStandardErrorFile("/tmp/grospenis2.txt");
+
       p.start(group_binary.c_str(), arguments);
       if (!p.waitForFinished())
         throw Exception(gap_internal_error, "8group binary failed");
@@ -1478,10 +1509,11 @@ namespace surface
       return *(infos.release());
     }
 
-    void State::set_permissions(std::string const& user_id,
-                                std::string const& abspath,
-                                int permissions,
-                                bool recursive)
+    void
+    State::deprecated_set_permissions(std::string const& user_id,
+                                      std::string const& abspath,
+                                      nucleus::neutron::Permissions permissions,
+                                      bool recursive)
     {
       FileInfos const& infos = this->file_infos(abspath);
       auto it = this->networks().find(infos.network_id);
@@ -1499,11 +1531,11 @@ namespace surface
                 << "--grant"
                 << "--network" << network->_id.c_str()
                 << "--path" << ("/" + infos.relative_path).c_str()
-                << "--identifier" << this->user(user_id).public_key.c_str()
+                << "--identity" << this->user(user_id).public_key.c_str()
                 ;
-      if (permissions & gap_read)
+      if (permissions & nucleus::neutron::permissions::read)
         arguments << "--read";
-      if (permissions & gap_write)
+      if (permissions & nucleus::neutron::permissions::write)
         arguments << "--write";
 
       ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
@@ -1524,12 +1556,47 @@ namespace surface
                                                 end{};
           for (; it != end; ++it)
             {
-              this->set_permissions(user_id,
-                                    it->path().string(),
-                                    permissions,
-                                    true);
+              this->deprecated_set_permissions(user_id,
+                                               it->path().string(),
+                                               permissions,
+                                               true);
             }
         }
+    }
+
+    void
+    State::set_permissions(std::string const& user_id,
+                           std::string const& network_id,
+                           nucleus::neutron::Permissions permissions)
+    {
+      std::string const& access_binary = common::infinit::binary_path("8access");
+
+      QStringList arguments;
+      arguments << "--user" << this->_me._id.c_str()
+                << "--type" << "user"
+                << "--grant"
+                << "--network" << network_id.c_str()
+                << "--path" << "/"
+                << "--identity" << this->user(user_id).public_key.c_str()
+        ;
+      if (permissions & nucleus::neutron::permissions::read)
+        arguments << "--read";
+      if (permissions & nucleus::neutron::permissions::write)
+        arguments << "--write";
+
+      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
+
+      if (permissions & gap_exec)
+      {
+        ELLE_WARN("XXX: setting executable permissions not yet implemented");
+      }
+
+      QProcess p;
+      p.start(access_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8access binary failed");
+      if (p.exitCode())
+        throw Exception(gap_internal_error, "8access binary exited with errors");
     }
 
     size_t

@@ -520,7 +520,7 @@ extern "C"
   {
     assert(user_id != nullptr);
     assert(absolute_path != nullptr);
-    __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
+    __WRAP_CPP(state, deprecated_set_permissions, user_id, absolute_path, permissions);
   }
 
   gap_Status gap_set_permissions_rec(gap_State* state,
@@ -531,7 +531,7 @@ extern "C"
     assert(user_id != nullptr);
     assert(absolute_path != nullptr);
     __WRAP_CPP(state,
-               set_permissions,
+               deprecated_set_permissions,
                user_id,
                absolute_path,
                permissions,

@@ -9,9 +9,10 @@
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
 
+# include <nucleus/neutron/Permissions.hh>
+
 # include <plasma/meta/Client.hh>
 # include <plasma/trophonius/Client.hh>
-
 
 # include "gap.h"
 
@@ -109,6 +110,19 @@ namespace surface
       // Search users
       std::map<std::string, User const*>
       search_users(std::string const& text);
+
+    //   /// Swaggers.
+
+    // private:
+    //   typedef std::map<std::string, User const*> SwaggersMap;
+    //   SwaggersMap _swaggers;
+
+    // public:
+    //   SwaggersMap
+    //   swaggers();
+
+    //   User const&
+    //   swagger(std::string const& id);
 
       /// Connect to trophonius
       void
@@ -265,12 +279,18 @@ namespace surface
       get_name(boost::filesystem::path const& path);
 
       /// Set the permissions for a file.
+      /// XXX: old
+      void
+      deprecated_set_permissions(std::string const& user_id,
+                                 std::string const& abspath,
+                                 nucleus::neutron::Permissions permissions,
+                                 bool recursive = false);
+
+      /// Give the recipient the write on the root of the network.
       void
       set_permissions(std::string const& user_id,
-                      std::string const& abspath,
-                      int permissions,
-                      bool recursive = false);
-
+                      std::string const& network_id,
+                      nucleus::neutron::Permissions permissions);
     ///
     /// Manipulate networks
     ///
