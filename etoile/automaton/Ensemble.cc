@@ -191,6 +191,7 @@ namespace etoile
           // XXX
           {
             nucleus::neutron::Token token(context.group->manager_token());
+
             cryptography::PrivateKey k(
               token.extract<cryptography::PrivateKey>(
                 agent::Agent::Identity.pair.k()));
