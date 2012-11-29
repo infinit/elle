@@ -1,13 +1,14 @@
 #ifndef INFINIT_CRYPTOGRAPHY_KEYPAIR_HH
 # define INFINIT_CRYPTOGRAPHY_KEYPAIR_HH
 
+# include <cryptography/PublicKey.hh>
+# include <cryptography/PrivateKey.hh>
+
 # include <elle/types.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/operator.hh>
-
-# include <cryptography/PublicKey.hh>
-# include <cryptography/PrivateKey.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -22,6 +23,7 @@ namespace infinit
     /// Note that the public key is always written as a capital 'K'
     /// while a private key is noted with a lower-case 'k'.
     class KeyPair:
+      public elle::concept::MakeUniquable<KeyPair>,
       public elle::Printable,
       public elle::io::Dumpable
     {
