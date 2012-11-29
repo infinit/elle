@@ -29,21 +29,30 @@ class State:
         self.email = ''
 
         directly_exported_methods = [
-            'create_network',
+
             'enable_debug',
-            'refresh_networks',
-            'networks',
-            'launch_watchdog',
-            'stop_watchdog',
             'set_permissions',
             'set_device_name',
-            'network_add_user',
-            'network_name',
-            'network_mount_point',
+
             'logout',
             'connect',
             'invite_user',
             'send_message',
+            # Users.
+            'search_users',
+            'get_swaggers',
+            'user_fullname',
+            'user_email',
+
+            # Networks.
+            'launch_watchdog',
+            'stop_watchdog',
+            'create_network',
+            'refresh_networks',
+            'networks',
+            'network_add_user',
+            'network_name',
+            'network_mount_point',
 
             # Transaction
             'send_files',

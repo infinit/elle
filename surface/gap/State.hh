@@ -111,18 +111,19 @@ namespace surface
       std::map<std::string, User const*>
       search_users(std::string const& text);
 
-    //   /// Swaggers.
+      /// Swaggers.
 
-    // private:
-    //   typedef std::map<std::string, User const*> SwaggersMap;
-    //   SwaggersMap _swaggers;
+    private:
+      typedef std::map<std::string, User const*> SwaggersMap;
+      SwaggersMap _swaggers;
+      bool _swaggers_dirty;
 
-    // public:
-    //   SwaggersMap
-    //   swaggers();
+    public:
+      SwaggersMap const&
+      swaggers();
 
-    //   User const&
-    //   swagger(std::string const& id);
+      User const&
+      swagger(std::string const& id);
 
       /// Connect to trophonius
       void

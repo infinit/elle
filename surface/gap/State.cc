@@ -81,6 +81,7 @@ namespace surface
       , _networks_dirty{true}
       , _networks_status{}
       , _networks_status_dirty{true}
+      , _swaggers_dirty{true}
     {
       this->attach_callback(
         std::function<void (gap_TransactionNotification const*)>(
@@ -288,30 +289,41 @@ namespace surface
       return result;
     }
 
-    // SwaggersMap
-    // State::swaggers()
-    // {
-    //   if (this->_swaggers_dirty)
-    //     {
-    //       auto response = this->_meta->swaggers();
-    //       for (auto const& network_id: response.networks)
-    //         {
-    //           if (this->_networks.find(network_id) == this->_networks.end())
-    //             {
-    //               auto response = this->_meta->network(network_id);
-    //               this->_networks[network_id] = new Network{response};
-    //             }
-    //         }
-    //       this->_networks_dirty = false;
-    //     }
-    //   return this->_networks;
-    // }
+    State::SwaggersMap const&
+    State::swaggers()
+    {
+      if (this->_swaggers_dirty)
+        {
+          auto response = this->_meta->get_swaggers();
+          for (auto const& swagger_id: response.swaggers)
+            {
+              if (this->_swaggers.find(swagger_id) == this->_swaggers.end())
+                {
+                  auto response = this->_meta->user(swagger_id);
+                  this->_swaggers[swagger_id] = new User{
+                      response._id,
+                      response.fullname,
+                      response.email,
+                      response.public_key,
+                  };
+                }
+            }
+          this->_swaggers_dirty = false;
+        }
+      return this->_swaggers;
+    }
 
-    // User const&
-    // State::swagger(std::string const& id)
-    // {
-
-    // }
+    User const&
+    State::swagger(std::string const& id)
+    {
+      auto it = this->swaggers().find(id);
+      if (it == this->swaggers() .end())
+        throw Exception{
+            gap_error,
+            "Cannot find any swagger for id '" + id + "'"
+        };
+      return *(it->second);
+    }
 
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
@@ -621,6 +633,9 @@ namespace surface
                                       gap_TransactionStatus::gap_transaction_status_accepted,
                                       this->device_id(),
                                       this->device_name());
+
+      // Could be improve.
+      _swaggers_dirty = true;
     }
 
     void
@@ -964,6 +979,8 @@ namespace surface
       this->update_transaction(transaction_id,
                                gap_TransactionStatus::gap_transaction_status_started);
 
+      // Could be improve.
+      _swaggers_dirty = true;
     }
 
     void
@@ -1039,8 +1056,6 @@ namespace surface
       if (pair == State::transactions().end())
         return;
     }
-
-
 
     bool
     State::poll()

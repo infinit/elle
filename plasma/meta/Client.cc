@@ -66,6 +66,14 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("public_key", res.public_key);
 }
 
+// SERIALIZE_RESPONSE(plasma::meta::SwaggerResponse, ar, res)
+// {
+//   ar & named("_id", res._id);
+//   ar & named("fullname", res.fullname);
+//   ar & named("email", res.email);
+//   ar & named("public_key", res.public_key);
+// }
+
 SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
 {
   ar & named("_id", res._id);
@@ -78,6 +86,11 @@ SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::UsersResponse, ar, res)
 {
   ar & named("users", res.users);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::SwaggersResponse, ar, res)
+{
+  ar & named("swaggers", res.swaggers);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::CreateDeviceResponse, ar, res)
@@ -303,6 +316,19 @@ namespace plasma
       request["text"] = text;
       return this->_client.post<UsersResponse>("/user/search", request);
     }
+
+    SwaggersResponse
+    Client::get_swaggers()
+    {
+      return this->_client.get<SwaggersResponse>("/user/swaggers");
+    }
+
+    // SwaggerResponse
+    // Client::get_swagger(std::string const& id)
+    // {
+    //   return this->_client.get<SwaggerResponse>("/user/" + id + "/view");
+    // }
+
 
     //- Devices ---------------------------------------------------------------
 

@@ -323,8 +323,15 @@ extern "C" {
   /// Free the search users result.
   void gap_search_users_free(char** users);
 
+  /// - Swaggers ----------------------------------------------------------------
 
-  //void free_user(gap_User*)
+  /// Get the list of user's swaggers.
+  char**
+  gap_swaggers(gap_State* state);
+
+  /// Free swagger list.
+  void
+  gap_swaggers_free(char** swaggers);
 
   /// - Watchdog ------------------------------------------------------------
 

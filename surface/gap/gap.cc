@@ -472,8 +472,7 @@ extern "C"
   char** gap_search_users(gap_State* state, char const* text)
   {
     assert(state != nullptr);
-    text = ""; //XXX text search not used
-    assert(text != nullptr);
+
     gap_Status ret;
     try
       {
@@ -492,6 +491,32 @@ extern "C"
   void gap_search_users_free(char** users)
   {
     ::free(users);
+  }
+
+  char**
+  gap_swaggers(gap_State* state)
+  {
+  assert(state != nullptr);
+
+    gap_Status ret;
+    try
+      {
+        auto swaggers = __TO_CPP(state)->swaggers();
+        std::list<std::string> result;
+        for (auto const& pair : swaggers)
+          result.push_back(pair.first);
+        return _cpp_stringlist_to_c_stringlist(result);
+      }
+    CATCH_ALL(get_swaggers);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  void
+  gap_swaggers_free(char** swaggers)
+  {
+    ::free(swaggers);
   }
 
   /// - Watchdog ------------------------------------------------------------

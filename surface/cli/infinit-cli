@@ -254,6 +254,58 @@ class InfinitShell(cmd.Cmd):
             print(e)
 
     ###########################################################################
+    # Search user.
+
+    _search_users_argument_parser = make_simple_argument_parser(
+        prog = "search_users",
+        description = "Print all users",
+        args = [
+            {
+                'flags':'search',
+                'help':'The user email or fullname.'
+            }
+        ],
+    )
+
+    def do_search_users(self, line):
+        """Print search_users."""
+        args = self._get_args(self._search_users_argument_parser, line)
+
+        search_ = args.search
+
+        try:
+            users = self._state.search_users(search_)
+            for user_id in users:
+                print(user_id, ":", self._state.user_fullname(user_id), "-", self._state.user_email(user_id))
+        except Exception as e:
+            print(e)
+
+    def help_search_users(self):
+        self._search_users_argument_parser.print_help()
+
+    ###########################################################################
+    # Get swaggers.
+
+    _swaggers_argument_parser = make_simple_argument_parser(
+        prog = "swaggers",
+        description = "Print all users",
+        args = [],
+    )
+
+    def do_swaggers(self, line):
+        """Print swaggers."""
+        args = self._get_args(self._swaggers_argument_parser, line)
+        try:
+            users = self._state.get_swaggers()
+            for user_id in users:
+                print(user_id, ":", self._state.user_fullname(user_id), "-", self._state.user_email(user_id))
+        except Exception as e:
+            print(e)
+
+    def help_swaggers(self):
+        self._swaggers_argument_parser.print_help()
+
+    ###########################################################################
     # Invite a user to a network.
 
     _invite_argument_parser = make_simple_argument_parser(

@@ -8,6 +8,8 @@
 static boost::python::object
 _get_networks(gap_State* state)
 {
+  assert(state != nullptr);
+
   boost::python::list networks_;
   char** networks = gap_networks(state);
   if (networks != nullptr)
@@ -24,6 +26,8 @@ _get_networks(gap_State* state)
 static boost::python::object
 _get_transactions(gap_State* state)
 {
+  assert(state != nullptr);
+
   boost::python::list transactions_;
   char** transactions = gap_transactions(state);
   if (transactions != nullptr)
@@ -35,6 +39,43 @@ _get_transactions(gap_State* state)
         gap_transactions_free(transactions);
     }
   return transactions_;
+}
+
+static boost::python::object
+_get_swaggers(gap_State* state)
+{
+  assert(state != nullptr);
+
+  boost::python::list swaggers_;
+  char** swaggers = gap_swaggers(state);
+  if (swaggers != nullptr)
+    {
+      for (char** ptr = swaggers; *ptr != nullptr; ++ptr)
+        {
+          swaggers_.append(boost::python::str(std::string(*ptr)));
+        }
+        gap_swaggers_free(swaggers);
+    }
+  return swaggers_;
+}
+
+static boost::python::object
+_search_users(gap_State* state, std::string text)
+{
+  assert(state != nullptr);
+  assert(text.length() > 0);
+
+  boost::python::list users_;
+  char** users = gap_search_users(state, text.c_str());
+  if (users != nullptr)
+    {
+      for (char** ptr = users; *ptr != nullptr; ++ptr)
+        {
+          users_.append(boost::python::str(std::string(*ptr)));
+        }
+        gap_search_users_free(users);
+    }
+  return users_;
 }
 
 static std::string
@@ -271,6 +312,8 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());
   py::def("_id", &gap_self_id, by_value());
+  py::def("search_users", &_search_users);
+  py::def("get_swaggers", &_get_swaggers);
 
   //- Watchdog ----------------------------------------------------------------
 

@@ -64,6 +64,9 @@ namespace plasma
     struct UserResponse : User, plasma::Response
     {};
 
+    // struct SwaggerResponse : UserResponse
+    // {};
+
     struct SelfResponse : UserResponse
     {
       std::string identity;
@@ -77,6 +80,11 @@ namespace plasma
     struct UsersResponse : plasma::Response
     {
       std::list<std::string> users;
+    };
+
+    struct SwaggersResponse : plasma::Response
+    {
+      std::list<std::string> swaggers;
     };
 
     struct TransactionsResponse : plasma::Response
@@ -221,6 +229,12 @@ namespace plasma
 
       UsersResponse
       search_users(std::string const& key);
+
+      SwaggersResponse
+      get_swaggers();
+
+      // SwaggerResponse
+      // get_swagger(std::string const& id);
 
       CreateDeviceResponse
       create_device(std::string const& name);
