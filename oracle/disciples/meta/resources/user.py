@@ -21,21 +21,40 @@ class Search(Page):
 
     def POST(self):
         text = self.data["text"]
-        if len(text):
-            return self.error(error.UNKNOWN, "Search is not implemented yet.")
+        count = 'count' in self.data and self.data['count'] or 5
+        offset = 'offset' in self.data and self.data['offset'] or 0
 
-        users = database.users().find(fields=["_id"], limit=100)
-        result = list(user['_id'] for user in users)
+        # While not sure it's an email or a fullname, search in both.
+        if not '@' in text:
+            users = database.users().find(
+                {
+                    '$or' : [
+                        {'fullname' : {'$regex' : '^%s' % text}},
+                        {'email' : {'$regex' : '^%s' % text}},
+                    ]
+                },
+                fields=["_id"],
+                limit=count + offset
+            )
+        else:
+            users = database.users().find(
+                {'email' : {'$regex' : '^%s' %text}},
+                fields=["_id"],
+                limit=count + offset
+        )
+
+        result = list(user['_id'] for user in users[offset:])
 
         return self.success({
             'users': result,
         })
 
 class GetSwaggers(Page):
-    __pattern__ =  "/user/get_swaggers"
+    __pattern__ =  "/user/swaggers"
 
     def GET(self):
-            return self.success({"swaggers" : self.user["swaggers"]})
+        self.requireLoggedIn()
+        return self.success({"swaggers" : self.user["swaggers"].keys()})
 
 class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
