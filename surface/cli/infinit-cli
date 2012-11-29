@@ -347,15 +347,11 @@ class InfinitShell(cmd.Cmd):
             return get_candidates_for_path(tok[2], line[begidx:endidx])
 
     ###########################################################################
-    # Send files.
-    _downloadfiles_argument_parser = make_simple_argument_parser(
-        prog = "downloadfiles",
-        description = "Invite a user to exchange a file. If the user doesn't exist, invite him to infinit.",
+    # Set output dir.
+    _set_output_dir_argument_parser = make_simple_argument_parser(
+        prog = "set_output_dir",
+        description = "Set the output directory where the files are going to be downloaded.",
         args = [
-            {
-                'flags': 'transaction_id',
-                'help': 'id of the transaction.',
-            },
             {
                 'flags': 'output_dir',
                 'help': 'the directory to put file on.',
@@ -363,11 +359,11 @@ class InfinitShell(cmd.Cmd):
         ],
     )
 
-    def help_downloadfiles(self):
-        self._downloadfiles_argument_parser.print_help()
+    def help_set_output_dir(self):
+        self._set_output_dir_argument_parser.print_help()
 
-    def do_downloadfiles(self, line):
-        args = self._get_args(self._downloadfiles_argument_parser, line)
+    def do_set_output_dir(self, line):
+        args = self._get_args(self._set_output_dir_argument_parser, line)
         if not args:
             return
 
@@ -375,15 +371,13 @@ class InfinitShell(cmd.Cmd):
         output_dir = args.output_dir
 
         try:
-            self._state.download_files(transaction_id, output_dir)
+            self._state.set_output_dir(output_dir)
         except Exception as e:
             print(e)
 
-    def complete_downloadfiles(self, text, line, begidx, endidx):
+    def complete_set_output_dir(self, text, line, begidx, endidx):
         sp = line.split(" ")
         if len(sp) == 2:
-            return [t for t in self._state.transactions() if t.startswith(text)]
-        if len(sp) == 3:
             return get_candidates_for_path(line, line[begidx:endidx])
 
 
@@ -441,41 +435,34 @@ class InfinitShell(cmd.Cmd):
         self._update_transaction_argument_parser.print_help()
 
     def complete_update_transaction(self, text, line, begidx, endidx):
-        # command_len = len("update_transaction")
-        # transaction_len = 24
-        # if begidx >= command_len + 1 and endidx < command_len + 1 + transaction_len:
         sp = line.split(" ")
         if len(sp) == 2:
             return [t for t in self._state.transactions() if t.startswith(text)]
-        #elif begidx >= command_len + 1 + transaction_len + 1:
         else:
             # XXX: improve that shit.
-            transaction_id = line[command_len+1:command_len + transaction_len + 1]
-            ps = self._state.TransactionStatus
-            # if self._state._id == self._state.transaction_owner(transaction_id):
-            #     possible_status = {
-            #         ps.pending : [ps.canceled],
-            #         ps.rejected : [ps.canceled],
-            #         ps.accepted : [ps.canceled],
-            #         ps.started : [ps.canceled],
-            #         ps.cancelded : [],
-            #         ps.finished : [],
-            #     }
-            # else:
-            #     possible_status = {
-            #         ps.pending : [ps.accepted, ps.rejected)],
-            #         ps.rejected : [],
-            #         ps.accepted : [],
-            #         ps.started : [ps.canceled],
-            #         ps.cancelded : [],
-            #         ps.finished : [],
-            #     }
+            transaction_id = sp[2]
+            ts = self._state.TransactionStatus
+            if self._state._id == self._state.transaction_owner(transaction_id):
+                possible_status = {
+                    ts.pending : [ts.canceled],
+                    ts.rejected : [ts.canceled],
+                    ts.accepted : [ts.canceled],
+                    ts.started : [ts.canceled],
+                    ts.cancelded : [],
+                    ts.finished : [],
+                }
+            else:
+                possible_status = {
+                    ts.pending : [ts.accepted, ts.rejected],
+                    ts.rejected : [],
+                    ts.accepted : [],
+                    ts.started : [ts.canceled],
+                    ts.cancelded : [],
+                    ts.finished : [],
+                }
 
             status = self._state.transaction_status(transaction_id)
-            if self._state._id == self._state.transaction_owner(transaction_id):
-                return [ps.canceled]
-            else:
-                return [ps.accepted, ps.rejected]
+            return possible_status[status]
 
         return []
 
@@ -545,6 +532,16 @@ def start_shell(state, args):
             if not dev_name:
                 dev_name = default_dev_name
             shell.do_create_device(dev_name)
+
+    if not hasattr(state, 'output_dir') or len(state.output_dir) == 0:
+        if args.action == 'shell':
+            print("No output dir found, try 'set_output_dir' command")
+        else:
+            default_output_dir = os.path.expanduser("~")
+            state.output_dir = input("Output dir (defaults to '%s'): " % default_output_dir).strip()
+            if not state.output_dir:
+                state.output_dir = default_output_dir
+            state.set_output_dir(state.output_dir)
 
     if 'shell' in args.action:
         do_shell = True
