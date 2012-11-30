@@ -8,6 +8,7 @@
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Node.hh>
+# include <nucleus/proton/Flags.hh>
 # include <nucleus/proton/Porcupine.hh>
 
 namespace nucleus
@@ -115,7 +116,7 @@ namespace nucleus
       /// XXX
       virtual
       void
-      check(typename Porcupine::Flags const flags = Porcupine::FlagNone) = 0;
+      check(Flags const flags = flags::none) = 0;
       /// XXX
       virtual
       void

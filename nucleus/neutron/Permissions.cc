@@ -8,10 +8,19 @@ namespace nucleus
 {
   namespace neutron
   {
+    /*-------.
+    | Values |
+    `-------*/
+    namespace permissions
+    {
+      Permissions const none = 0;
+      Permissions const read = (1 << 0);
+      Permissions const write = read | (1 << 1);
+    }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,

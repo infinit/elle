@@ -96,11 +96,11 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
-        nucleus::proton::Porcupine::FlagRecursive |
-        nucleus::proton::Porcupine::FlagKey |
-        nucleus::proton::Porcupine::FlagCapacity |
-        nucleus::proton::Porcupine::FlagFootprint |
-        nucleus::proton::Porcupine::FlagState);
+        nucleus::proton::flags::recursive |
+        nucleus::proton::flags::key |
+        nucleus::proton::flags::capacity |
+        nucleus::proton::flags::footprint |
+        nucleus::proton::flags::state);
 #endif
     }
 
@@ -108,11 +108,11 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
   ELLE_ASSERT(porcupine.state() == nucleus::proton::State::dirty);
 
   porcupine.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagRecursive |
-    nucleus::proton::Porcupine::FlagKey |
-    nucleus::proton::Porcupine::FlagCapacity |
-    nucleus::proton::Porcupine::FlagFootprint |
-    nucleus::proton::Porcupine::FlagState);
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
 }
 
 void
@@ -143,20 +143,20 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
-        nucleus::proton::Porcupine::FlagRecursive |
-        nucleus::proton::Porcupine::FlagKey |
-        nucleus::proton::Porcupine::FlagCapacity |
-        nucleus::proton::Porcupine::FlagFootprint |
-        nucleus::proton::Porcupine::FlagState);
+        nucleus::proton::flags::recursive |
+        nucleus::proton::flags::key |
+        nucleus::proton::flags::capacity |
+        nucleus::proton::flags::footprint |
+        nucleus::proton::flags::state);
 #endif
     }
 
   porcupine.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagRecursive |
-    nucleus::proton::Porcupine::FlagKey |
-    nucleus::proton::Porcupine::FlagCapacity |
-    nucleus::proton::Porcupine::FlagFootprint |
-    nucleus::proton::Porcupine::FlagState);
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
 }
 
 void
@@ -168,7 +168,7 @@ test_porcupine_seal(nucleus::proton::Porcupine& porcupine,
   porcupine.seal<nucleus::neutron::Catalog>(secret);
 
   porcupine.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagAll);
+    nucleus::proton::flags::all);
 }
 
 void
@@ -204,11 +204,11 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
-        nucleus::proton::Porcupine::FlagRecursive |
-        nucleus::proton::Porcupine::FlagKey |
-        nucleus::proton::Porcupine::FlagCapacity |
-        nucleus::proton::Porcupine::FlagFootprint |
-        nucleus::proton::Porcupine::FlagState);
+        nucleus::proton::flags::recursive |
+        nucleus::proton::flags::key |
+        nucleus::proton::flags::capacity |
+        nucleus::proton::flags::footprint |
+        nucleus::proton::flags::state);
 #endif
     }
 
@@ -218,7 +218,7 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
   ELLE_ASSERT(s == w);
 
   porcupine.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagAll);
+    nucleus::proton::flags::all);
 }
 
 nucleus::proton::Porcupine
@@ -236,11 +236,13 @@ test_porcupine_serialize(nucleus::proton::Porcupine& input,
   for (auto action: transcript)
     action->apply<etoile::depot::Depot>();
 
+  nucleus::proton::Porcupine output;
+  /* XXX
   elle::Buffer buffer;
   buffer.writer() << input;
-
-  nucleus::proton::Porcupine output;
   buffer.reader() >> output;
+  */
+  ELLE_ASSERT(false);
 
   etoile::nest::Nest* n = new etoile::nest::Nest(input.nest().limits());
   output.nest(*n);
@@ -254,7 +256,7 @@ test_porcupine_serialize(nucleus::proton::Porcupine& input,
   test_porcupine_seek(output, vector);
 
   input.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagAll);
+    nucleus::proton::flags::all);
 
   return (output);
 }
@@ -288,22 +290,22 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check<nucleus::neutron::Catalog>(
-        nucleus::proton::Porcupine::FlagRecursive |
-        nucleus::proton::Porcupine::FlagKey |
-        nucleus::proton::Porcupine::FlagCapacity |
-        nucleus::proton::Porcupine::FlagFootprint |
-        nucleus::proton::Porcupine::FlagState);
+        nucleus::proton::flags::recursive |
+        nucleus::proton::flags::key |
+        nucleus::proton::flags::capacity |
+        nucleus::proton::flags::footprint |
+        nucleus::proton::flags::state);
 #endif
     }
 
   vector.erase(vector.begin() + index, vector.begin() + index + size);
 
   porcupine.check<nucleus::neutron::Catalog>(
-    nucleus::proton::Porcupine::FlagRecursive |
-    nucleus::proton::Porcupine::FlagKey |
-    nucleus::proton::Porcupine::FlagCapacity |
-    nucleus::proton::Porcupine::FlagFootprint |
-    nucleus::proton::Porcupine::FlagState);
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
 
   ELLE_ASSERT(porcupine.state() == nucleus::proton::State::dirty);
 }
@@ -379,12 +381,16 @@ Main(elle::Natural32,
       // XXX
 
 #ifdef PORCUPINE_SERIALIZE_TEST
-      cryptography::KeyPair pair{cryptography::KeyPair::generate(1024)};
-      elle::Authority authority(pair);
+      cryptography::KeyPair pair_authority{
+        cryptography::KeyPair::generate(1024)};
+      elle::Authority authority(pair_authority);
+      cryptography::KeyPair pair_user{
+        cryptography::KeyPair::generate(1024)};
 
-      elle::Passport passport(hole::Label{elle::String{"node"}},
-                              elle::String{"me"});
-      passport.Seal(authority);
+      elle::Passport passport(elle::String{"node"},
+                              elle::String{"me"},
+                              pair_user.K(),
+                              authority);
 
       hole::storage::MainMemory storage;
       hole::Hole* hole{

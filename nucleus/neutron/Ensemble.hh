@@ -91,9 +91,9 @@ namespace nucleus
 
     private:
       Scoutor const
-      _locate(Subject const& subject) const;
+      _locate(Subject const& subject) const; // XXX[_iterator: no more exceptions]
       Iterator const
-      _locate(Subject const& subject);
+      _locate(Subject const& subject); // XXX[_iterator: no more exceptions]
 
       //
       // interfaces

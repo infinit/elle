@@ -41,25 +41,6 @@ namespace nucleus
     }
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    const typename Porcupine::Flags Porcupine::FlagNone = 0;
-    const typename Porcupine::Flags Porcupine::FlagRecursive = (1 << 1);
-    const typename Porcupine::Flags Porcupine::FlagKey = (1 << 2);
-    const typename Porcupine::Flags Porcupine::FlagAddress = (1 << 3);
-    const typename Porcupine::Flags Porcupine::FlagCapacity = (1 << 4);
-    const typename Porcupine::Flags Porcupine::FlagFootprint = (1 << 5);
-    const typename Porcupine::Flags Porcupine::FlagState = (1 << 6);
-    const typename Porcupine::Flags Porcupine::FlagAll =
-      Porcupine::FlagRecursive |
-      Porcupine::FlagKey |
-      Porcupine::FlagAddress |
-      Porcupine::FlagCapacity |
-      Porcupine::FlagFootprint |
-      Porcupine::FlagState;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 

@@ -1,37 +1,33 @@
 #include <nucleus/proton/Statistics.hh>
 
-#include <elle/idiom/Close.hh>
-# include <limits>
-#include <elle/idiom/Open.hh>
+#include <limits>
 
 namespace nucleus
 {
   namespace proton
   {
 
-//
-// ---------- construction ----------------------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-    Statistics::Statistics()
+    Statistics::Statistics():
+      _footprint_minimum(std::numeric_limits<Footprint>::max()),
+      _footprint_average(0),
+      _footprint_maximum(std::numeric_limits<Footprint>::min()),
+      _capacity_minimum(std::numeric_limits<Capacity>::max()),
+      _capacity_average(0),
+      _capacity_maximum(std::numeric_limits<Capacity>::min()),
+      _blocks_clean(0),
+      _blocks_dirty(0),
+      _blocks_consistent(0),
+      _blocks_all(0)
     {
-      this->footprint.minimum = std::numeric_limits<Footprint>::max();
-      this->footprint.average = 0;
-      this->footprint.maximum = std::numeric_limits<Footprint>::min();
-
-      this->capacity.minimum = std::numeric_limits<Capacity>::max();
-      this->capacity.average = 0;
-      this->capacity.maximum = std::numeric_limits<Capacity>::min();
-
-      this->blocks.clean = 0;
-      this->blocks.dirty = 0;
-      this->blocks.consistent = 0;
-      this->blocks.all = 0;
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Statistics::Dump(const elle::Natural32 margin) const
@@ -46,17 +42,17 @@ namespace nucleus
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Minimum] " << std::dec
-                  << this->footprint.minimum << std::endl;
+                  << this->_footprint_minimum << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Average] " << std::dec
-                  << this->footprint.average << std::endl;
+                  << this->_footprint_average << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Maximum] " << std::dec
-                  << this->footprint.maximum << std::endl;
+                  << this->_footprint_maximum << std::endl;
       }
 
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -65,17 +61,17 @@ namespace nucleus
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Minimum] " << std::dec
-                  << this->capacity.minimum << std::endl;
+                  << this->_capacity_minimum << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Average] " << std::dec
-                  << this->capacity.average << std::endl;
+                  << this->_capacity_average << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Maximum] " << std::dec
-                  << this->capacity.maximum << std::endl;
+                  << this->_capacity_maximum << std::endl;
       }
 
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -84,26 +80,25 @@ namespace nucleus
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Clean] " << std::dec
-                  << this->blocks.clean << std::endl;
+                  << this->_blocks_clean << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Dirty] " << std::dec
-                  << this->blocks.dirty << std::endl;
+                  << this->_blocks_dirty << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[Consistent] " << std::dec
-                  << this->blocks.consistent << std::endl;
+                  << this->_blocks_consistent << std::endl;
 
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
                   << "[All] " << std::dec
-                  << this->blocks.all << std::endl;
+                  << this->_blocks_all << std::endl;
       }
 
       return (elle::Status::Ok);
     }
-
   }
 }

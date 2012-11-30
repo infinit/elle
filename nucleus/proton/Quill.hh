@@ -7,6 +7,7 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Nodule.hh>
 # include <nucleus/proton/Inlet.hh>
+# include <nucleus/proton/Flags.hh>
 # include <nucleus/proton/Porcupine.hh>
 
 # include <elle/idiom/Close.hh>
@@ -161,7 +162,7 @@ namespace nucleus
       seek(Capacity const target,
            Capacity& base);
       void
-      check(typename Porcupine::Flags const flags = Porcupine::FlagAll);
+      check(Flags const flags = flags::all);
       void
       seal(cryptography::SecretKey const& secret);
       void

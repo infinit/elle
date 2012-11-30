@@ -28,9 +28,9 @@ namespace nucleus
       return (address);
     }
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Address::Address():
       _valid(nullptr)
@@ -95,9 +95,9 @@ namespace nucleus
     {
     }
 
-//
-// ---------- methosd ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     elle::String const
     Address::unique() const
@@ -143,9 +143,9 @@ namespace nucleus
       return (this->_valid->component());
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Address::operator ==(Address const& other) const
@@ -207,9 +207,9 @@ namespace nucleus
       return (false);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Address::Dump(elle::Natural32           margin) const
@@ -257,9 +257,9 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Address::print(std::ostream& stream) const

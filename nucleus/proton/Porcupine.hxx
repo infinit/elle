@@ -23,111 +23,6 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine::add(typename T::K const& k,
-                   Handle const& v)
-    {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-
-      ELLE_TRACE_SCOPE("add(%s)", k);
-
-      switch (this->_mode)
-        {
-        case Mode::empty:
-          {
-            ELLE_TRACE_SCOPE("Mode::empty");
-
-            // In this case, the tree is empty. therefore, adding a value
-            // consists in setting the porcupine as containing a single value
-            // i.e no hierarchy.
-            this->_create<T>(v);
-
-            break;
-          }
-        case Mode::single:
-          {
-            ELLE_TRACE_SCOPE("Mode::single");
-
-            // In this case, the porcupine already contains a value. A
-            // hierarchy therefore needs to be created.
-            //
-            // A quill (i.e leaf node) is allocated in which the current
-            // value is inserted.
-            //
-            // Finally, the given key/value tuple is also inserted.
-
-            std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
-            Handle handle(this->nest().attach(std::move(contents)));
-
-            ELLE_ASSERT(this->_root != Handle::Null);
-
-            // Load the created quill, insert the existing value,
-            // update the porcupine's characteristics (state, capacity etc.)
-            // and unload the quill.
-            Ambit<T> value(this->_root);
-            typename T::K key;
-
-            value.load();
-            key = value().key();
-            value.unload();
-
-            Ambit<Quill<T>> newroot(this->nest(), handle);
-
-            newroot.load();
-
-            // Note that calling add() is valid because _newroot_
-            // is a quill i.e the call will not be propagated down
-            // to the hierarchy since the quill is the bottom of it!
-            newroot().add(key, this->_root);
-
-            this->_capacity = newroot().capacity();
-            this->_state = newroot().state();
-
-            newroot.unload();
-
-            this->_root = handle;
-            this->_height++;
-            this->_mode = Mode::hierarchy;
-
-            // Finally, proceed to the addition of the given key/value
-            // tuple considering the porcupine as acting as a tree.
-            //
-            // Do not break since the code below perform such an operation.
-          }
-        case Mode::hierarchy:
-          {
-            ELLE_TRACE_SCOPE("Mode::hierarchy");
-
-            // In this case, the porcupine already contains a hierarchy of
-            // nodules though perhaps a single one i.e a quill.
-            //
-            // The code below therefore proceeds in inserting the key/value
-            // tuple in the hierarchy by calling the virtual method add().
-            //
-            // Once added, the porcupine's characteristics are updated.
-            // Besides, since the tree's configuration has changed, the
-            // porcupine is optimised, operation which could result in nodules
-            // being split etc.
-
-            Ambit<Nodule<T>> root(this->nest(), this->_root);
-
-            root.load();
-
-            root().add(k, v);
-
-            this->_capacity = root().capacity();
-            this->_state = root().state();
-
-            root.unload();
-
-            this->_optimize<T>();
-
-            break;
-          }
-        }
-    }
-
-    template <typename T>
-    void
     Porcupine::add(std::unique_ptr<T>&& v)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
@@ -497,7 +392,7 @@ namespace nucleus
             value.load();
 
             // check the address, if required.
-            if (flags & FlagAddress)
+            if (flags & flags::address)
               {
                 // bind the current block.
                 Address address{value.contents().bind()};
@@ -509,7 +404,7 @@ namespace nucleus
               }
 
             // check the capacity.
-            if (flags & FlagCapacity)
+            if (flags & flags::capacity)
               {
                 if (this->_capacity != value().capacity())
                   throw Exception("invalid capacity: this(%s) versus value(%s)",
@@ -517,7 +412,7 @@ namespace nucleus
               }
 
             // check the footprint.
-            if (flags & FlagFootprint)
+            if (flags & flags::footprint)
               {
                 if (value().footprint() == 0)
                   throw Exception("the footprint is null");
@@ -549,7 +444,7 @@ namespace nucleus
             root.load();
 
             // check the address, if required.
-            if (flags & FlagAddress)
+            if (flags & flags::address)
               {
                 ELLE_DEBUG_SCOPE("checking addresses");
 
@@ -563,11 +458,11 @@ namespace nucleus
               }
 
             // trigger the check method on the root nodule.
-            if (flags & FlagRecursive)
+            if (flags & flags::recursive)
               root().check(flags);
 
             // check the capacity, if required.
-            if (flags & FlagCapacity)
+            if (flags & flags::capacity)
               {
                 ELLE_DEBUG_SCOPE("checking capacities");
 
@@ -577,7 +472,7 @@ namespace nucleus
               }
 
             // check the footprint.
-            if (flags & FlagFootprint)
+            if (flags & flags::footprint)
               {
                 ELLE_DEBUG_SCOPE("checking footprints");
 
@@ -597,7 +492,7 @@ namespace nucleus
               }
 
             // check the state.
-            if (flags & Porcupine::FlagState)
+            if (flags & flags::state)
               {
                 ELLE_DEBUG_SCOPE("checking states");
 
@@ -833,25 +728,25 @@ namespace nucleus
 
             value.load();
 
-            stats.blocks.all += 1;
+            stats.blocks_all(stats.blocks_all() + 1);
 
             switch (value().state())
               {
               case State::clean:
                 {
-                  stats.blocks.clean++;
+                  stats.blocks_clean(stats.blocks_clean() + 1);
 
                   break;
                 }
               case State::dirty:
                 {
-                  stats.blocks.dirty++;
+                  stats.blocks_dirty(stats.blocks_dirty() + 1);
 
                   break;
                 }
               case State::consistent:
                 {
-                  stats.blocks.consistent++;
+                  stats.blocks_consistent(stats.blocks_consistent() + 1);
 
                   break;
                 }
@@ -860,23 +755,23 @@ namespace nucleus
             Footprint footprint = elle::serialize::footprint(value());
             Capacity capacity = value().capacity();
 
-            stats.footprint.minimum =
-              footprint < stats.footprint.minimum ?
-              footprint : stats.footprint.minimum;
-            stats.footprint.average =
-              (stats.footprint.average + footprint) / 2;
-            stats.footprint.maximum =
-              footprint > stats.footprint.maximum ?
-              footprint : stats.footprint.maximum;
+            stats.footprint_minimum(
+              footprint < stats.footprint_minimum() ?
+              footprint : stats.footprint_minimum());
+            stats.footprint_average(
+              (stats.footprint_average() + footprint) / 2);
+            stats.footprint_maximum(
+              footprint > stats.footprint_maximum() ?
+              footprint : stats.footprint_maximum());
 
-            stats.capacity.minimum =
-              capacity < stats.capacity.minimum ?
-              capacity : stats.capacity.minimum;
-            stats.capacity.average =
-              (stats.capacity.average + capacity) / 2;
-            stats.capacity.maximum =
-              capacity > stats.capacity.maximum ?
-              capacity : stats.capacity.maximum;
+            stats.capacity_minimum(
+              capacity < stats.capacity_minimum() ?
+              capacity : stats.capacity_minimum());
+            stats.capacity_average(
+              (stats.capacity_average() + capacity) / 2);
+            stats.capacity_maximum(
+              capacity > stats.capacity_maximum() ?
+              capacity : stats.capacity_maximum());
 
             value.unload();
 
@@ -901,6 +796,111 @@ namespace nucleus
         }
 
       return (stats);
+    }
+
+    template <typename T>
+    void
+    Porcupine::_add(typename T::K const& k,
+                    Handle const& v)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+
+      ELLE_TRACE_SCOPE("add(%s)", k);
+
+      switch (this->_mode)
+        {
+        case Mode::empty:
+          {
+            ELLE_TRACE_SCOPE("Mode::empty");
+
+            // In this case, the tree is empty. therefore, adding a value
+            // consists in setting the porcupine as containing a single value
+            // i.e no hierarchy.
+            this->_create<T>(v);
+
+            break;
+          }
+        case Mode::single:
+          {
+            ELLE_TRACE_SCOPE("Mode::single");
+
+            // In this case, the porcupine already contains a value. A
+            // hierarchy therefore needs to be created.
+            //
+            // A quill (i.e leaf node) is allocated in which the current
+            // value is inserted.
+            //
+            // Finally, the given key/value tuple is also inserted.
+
+            std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
+            Handle handle(this->nest().attach(std::move(contents)));
+
+            ELLE_ASSERT(this->_root != Handle::Null);
+
+            // Load the created quill, insert the existing value,
+            // update the porcupine's characteristics (state, capacity etc.)
+            // and unload the quill.
+            Ambit<T> value(this->_root);
+            typename T::K key;
+
+            value.load();
+            key = value().key();
+            value.unload();
+
+            Ambit<Quill<T>> newroot(this->nest(), handle);
+
+            newroot.load();
+
+            // Note that calling add() is valid because _newroot_
+            // is a quill i.e the call will not be propagated down
+            // to the hierarchy since the quill is the bottom of it!
+            newroot().add(key, this->_root);
+
+            this->_capacity = newroot().capacity();
+            this->_state = newroot().state();
+
+            newroot.unload();
+
+            this->_root = handle;
+            this->_height++;
+            this->_mode = Mode::hierarchy;
+
+            // Finally, proceed to the addition of the given key/value
+            // tuple considering the porcupine as acting as a tree.
+            //
+            // Do not break since the code below perform such an operation.
+          }
+        case Mode::hierarchy:
+          {
+            ELLE_TRACE_SCOPE("Mode::hierarchy");
+
+            // In this case, the porcupine already contains a hierarchy of
+            // nodules though perhaps a single one i.e a quill.
+            //
+            // The code below therefore proceeds in inserting the key/value
+            // tuple in the hierarchy by calling the virtual method add().
+            //
+            // Once added, the porcupine's characteristics are updated.
+            // Besides, since the tree's configuration has changed, the
+            // porcupine is optimised, operation which could result in nodules
+            // being split etc.
+
+            Ambit<Nodule<T>> root(this->nest(), this->_root);
+
+            root.load();
+
+            root().add(k, v);
+
+            this->_capacity = root().capacity();
+            this->_state = root().state();
+
+            root.unload();
+
+            this->_optimize<T>();
+
+            break;
+          }
+        }
     }
 
     template <typename T>
@@ -1406,43 +1406,6 @@ namespace nucleus
     }
 
   }
-}
-
-//
-// ---------- serialize -------------------------------------------------------
-//
-
-ELLE_SERIALIZE_SPLIT(nucleus::proton::Porcupine);
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Porcupine,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-
-  archive >> value._mode;
-  archive >> value._height;
-  archive >> value._capacity;
-  archive >> value._root;
-
-  enforce(value._root.secret() == cryptography::SecretKey::Null);
-}
-
-ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Porcupine,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-
-  // XXX[expliquer le fait qu'il ne faut pas avoir de key dans ce handle]
-  enforce(value._root.secret() == cryptography::SecretKey::Null);
-
-  archive << value._mode;
-  archive << value._height;
-  archive << value._capacity;
-  archive << value._root;
 }
 
 #endif

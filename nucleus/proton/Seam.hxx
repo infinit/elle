@@ -710,7 +710,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Seam<T>::check(typename Porcupine::Flags const flags)
+    Seam<T>::check(Flags const flags)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
 
@@ -734,7 +734,7 @@ namespace nucleus
           current.load();
 
           // check the address, if required.
-          if (flags & Porcupine::FlagAddress)
+          if (flags & flags::address)
             {
               ELLE_DEBUG_SCOPE("checking addresses");
 
@@ -748,7 +748,7 @@ namespace nucleus
             }
 
           // check the keys, if required.
-          if (flags & Porcupine::FlagKey)
+          if (flags & flags::key)
             {
               ELLE_DEBUG_SCOPE("checking keys");
 
@@ -765,11 +765,11 @@ namespace nucleus
             }
 
           // trigger the check on the current nodule.
-          if (flags & Porcupine::FlagRecursive)
+          if (flags & flags::recursive)
             current().check(flags);
 
           // check the capacities, if required.
-          if (flags & Porcupine::FlagCapacity)
+          if (flags & flags::capacity)
             {
               ELLE_DEBUG_SCOPE("checking capacities");
 
@@ -782,7 +782,7 @@ namespace nucleus
             }
 
           // check the footprint.
-          if (flags & Porcupine::FlagFootprint)
+          if (flags & flags::footprint)
             {
               ELLE_DEBUG_SCOPE("checking footprints");
 
@@ -803,7 +803,7 @@ namespace nucleus
             }
 
           // check the state.
-          if (flags & Porcupine::FlagState)
+          if (flags & flags::state)
             {
               ELLE_DEBUG_SCOPE("checking states");
 
@@ -846,7 +846,7 @@ namespace nucleus
         }
 
       // compare the seam capacity.
-      if (flags & Porcupine::FlagCapacity)
+      if (flags & flags::capacity)
         {
           ELLE_DEBUG_SCOPE("checking capacities");
 
@@ -857,7 +857,7 @@ namespace nucleus
 
       // Should the quill be dirty, verify that at least on of its
       // inlet is.
-      if (flags & Porcupine::FlagState)
+      if (flags & flags::state)
         {
           ELLE_DEBUG_SCOPE("checking states");
 
@@ -1000,25 +1000,25 @@ namespace nucleus
 
           current().statistics(stats);
 
-          stats.blocks.all += 1;
+          stats.blocks_all(stats.blocks_all() + 1);
 
           switch (current().state())
             {
             case State::clean:
               {
-                stats.blocks.clean++;
+                stats.blocks_clean(stats.blocks_clean() + 1);
 
                 break;
               }
             case State::dirty:
               {
-                stats.blocks.dirty++;
+                stats.blocks_dirty(stats.blocks_dirty() + 1);
 
                 break;
               }
             case State::consistent:
               {
-                stats.blocks.consistent++;
+                stats.blocks_consistent(stats.blocks_consistent() + 1);
 
                 break;
               }
@@ -1026,14 +1026,14 @@ namespace nucleus
 
           Footprint footprint = elle::serialize::footprint(current());
 
-          stats.footprint.minimum =
-            footprint < stats.footprint.minimum ?
-            footprint : stats.footprint.minimum;
-          stats.footprint.average =
-            (stats.footprint.average + footprint) / 2;
-          stats.footprint.maximum =
-            footprint > stats.footprint.maximum ?
-            footprint : stats.footprint.maximum;
+          stats.footprint_minimum(
+            footprint < stats.footprint_minimum() ?
+            footprint : stats.footprint_minimum());
+          stats.footprint_average(
+            (stats.footprint_average() + footprint) / 2);
+          stats.footprint_maximum(
+            footprint > stats.footprint_maximum() ?
+            footprint : stats.footprint_maximum());
 
           current.unload();
         }

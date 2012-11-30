@@ -24,6 +24,8 @@
 namespace horizon
 {
   /// Implementation of the FUSE upcalls.
+  ///
+  /// XXX root of any calls i.e crux
   class Crux
   {
   public:

@@ -32,10 +32,12 @@ namespace nucleus
     class PublicKeyBlock;
     template <typename T>
     class Quill;
+    class Radix;
     template <typename T>
     class Seam;
     class Statistics;
     class Stamp;
+    class Tree;
     class Value;
     class Revision;
   }
@@ -44,6 +46,7 @@ namespace nucleus
 # include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/Extent.hh>
 # include <nucleus/proton/Family.hh>
+# include <nucleus/proton/Flags.hh>
 # include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Height.hh>
 # include <nucleus/proton/State.hh>
