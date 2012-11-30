@@ -444,7 +444,7 @@ namespace network {
     const_iterator first(std::begin(uri_)), last(std::end(uri_));
     bool is_valid = detail::parse(first, last, uri_parts_);
     if (!is_valid) {
-      ec = make_error_code(uri_error::syntax_error);
+      ec = make_error_code(uri_error::invalid_syntax);
       return;
     }
 
@@ -546,7 +546,7 @@ namespace network {
 
   std::string uri_category_impl::message(int ev) const {
     switch (ev) {
-    case uri_error::syntax_error:
+    case uri_error::invalid_syntax:
       return "Unable to parse URI string.";
     default:
       break;
@@ -561,18 +561,5 @@ namespace network {
 
   std::error_code make_error_code(uri_error e) {
     return std::error_code(static_cast<int>(e), uri_category());
-  }
-
-  uri_syntax_error::uri_syntax_error() {
-
-  }
-
-  uri_syntax_error::~uri_syntax_error() {
-
-  }
-
-  const char *uri_syntax_error::what() const {
-    static const char message[] = "Unable to parse URI string.";
-    return message;
   }
 } // namespace network

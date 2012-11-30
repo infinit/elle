@@ -34,7 +34,7 @@ namespace network {
   } // namespace detail
 
   enum class uri_error {
-    syntax_error = 1,
+    invalid_syntax = 1,
   };
 
   class uri_category_impl : public std::error_category {
@@ -49,16 +49,6 @@ namespace network {
   const std::error_category &uri_category();
 
   std::error_code make_error_code(uri_error e);
-
-  class uri_syntax_error : public std::exception {
-
-  public:
-
-    uri_syntax_error();
-    virtual ~uri_syntax_error();
-    virtual const char *what() const;
-
-  };
 
   class uri {
 
@@ -120,7 +110,7 @@ namespace network {
       std::error_code ec;
       parse(ec);
       if (ec) {
-	throw uri_syntax_error();
+	throw std::system_error(ec);
       }
     }
 
@@ -132,7 +122,7 @@ namespace network {
       std::error_code ec;
       parse(ec);
       if (ec) {
-	throw uri_syntax_error();
+	throw std::system_error(ec);
       }
     }
 
