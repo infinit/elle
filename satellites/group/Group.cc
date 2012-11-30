@@ -185,7 +185,7 @@ namespace satellite
     GROUP_FINALLY_ACTION_DISCARD(identifier);
     nucleus::neutron::Range<nucleus::neutron::Fellow> fellows =
       Group::rpcs->groupconsult(identifier, index, size);
-    for (auto& fellow: range)
+    for (auto& fellow: fellows)
       Group::display(*fellow);
   }
 
