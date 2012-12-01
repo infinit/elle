@@ -94,6 +94,31 @@ _hash_password(gap_State* state, std::string email, std::string password)
 }
 
 static
+boost::python::object
+_get_transaction(gap_State* state, std::string transaction_id)
+{
+  boost::python::object transaction = boost::python::class_<gap_Transaction, boost::noncopyable>("Transaction");
+
+  gap_Transaction const* trans = gap_transaction(state, transaction_id.c_str());
+
+  transaction.attr("transaction_id") = trans->transaction_id;
+  transaction.attr("sender_id") = trans->sender_id;
+  transaction.attr("sender_fullname") = trans->sender_fullname;
+  transaction.attr("sender_device_id") = trans->sender_device_id;
+  transaction.attr("recipient_id") = trans->recipient_id;
+  transaction.attr("recipient_fullname") = trans->recipient_fullname;
+  transaction.attr("recipient_device_id") = trans->recipient_device_id;
+  transaction.attr("network_id") = trans->network_id;
+  transaction.attr("first_filename") = trans->first_filename;
+  transaction.attr("files_count") = trans->files_count;
+  transaction.attr("total_size") = trans->total_size;
+  transaction.attr("is_directory") = trans->is_directory;
+  transaction.attr("status") = trans->status;
+
+  return transaction;
+}
+
+static
 gap_Status
 _send_files(gap_State* state,
             std::string const& recipient,
@@ -265,6 +290,23 @@ BOOST_PYTHON_MODULE(_gap)
     .def_readonly("new", &gap_TransactionStatusNotification::is_new)
   ;
 
+  // Transaction.
+  py::object Transaction_t = py::class_<gap_Transaction, boost::noncopyable>("Transaction", py::no_init)
+    .def_readonly("transaction_id", &gap_Transaction::transaction_id)
+    .def_readonly("first_filename", &gap_Transaction::first_filename)
+    .def_readonly("files_count", &gap_Transaction::files_count)
+    .def_readonly("total_size", &gap_Transaction::total_size)
+    .def_readonly("is_directory", &gap_Transaction::is_directory)
+    .def_readonly("network_id", &gap_Transaction::network_id)
+    .def_readonly("sender_id", &gap_Transaction::sender_id)
+    .def_readonly("sender_fullname", &gap_Transaction::sender_fullname)
+    .def_readonly("sender_device_id", &gap_Transaction::sender_device_id)
+    .def_readonly("recipient_id", &gap_Transaction::recipient_id)
+    .def_readonly("recipient_fullname", &gap_Transaction::recipient_fullname)
+    .def_readonly("recipient_device_id", &gap_Transaction::recipient_device_id)
+    .def_readonly("status", &gap_Transaction::status)
+  ;
+
   // Message.
   py::class_<gap_MessageNotification, boost::noncopyable>("MessageNotification", py::no_init)
     .def_readonly("sender_id", &gap_MessageNotification::sender_id)
@@ -339,4 +381,5 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("set_output_dir", &gap_set_output_dir);
   py::def("transaction_status", &gap_transaction_status);
   py::def("transaction_owner", &gap_transaction_owner);
+  py::def("lol", &_get_transaction);
 }

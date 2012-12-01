@@ -167,18 +167,20 @@ extern "C" {
   typedef struct
   {
     char const*           transaction_id;
-    char const*           first_filename;
-    int                   files_count;
-    int                   total_size;
-    gap_Bool              is_directory;
-    char const*           network_id;
     char const*           sender_id;
     char const*           sender_fullname;
     char const*           sender_device_id;
     char const*           recipient_id;
     char const*           recipient_fullname;
     char const*           recipient_device_id;
-    gap_TransactionStatus status;
+    char const*           network_id;
+    char const*           first_filename;
+    int                   files_count;
+    int                   total_size;
+//    gap_Bool              is_directory;
+    int                   is_directory;
+//    gap_TransactionStatus status;
+    int                   status;
   } gap_Transaction;
 
   ////////////////////////////////
@@ -407,6 +409,10 @@ extern "C" {
   char const*
   gap_transaction_owner(gap_State* state,
                         char const* transaction_id);
+
+  gap_Transaction const*
+  gap_transaction(gap_State* state,
+                  char const* transaction_id);
 
 # ifdef __cplusplus
 } // ! extern "C"

@@ -176,6 +176,12 @@ SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
 {
   ar & named("created_network_id", res.created_network_id);
 }
+
+SERIALIZE_RESPONSE(plasma::meta::DeleteNetworkResponse, ar, res)
+{
+  ar & named("deleted_network_id", res.deleted_network_id);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::UpdateNetworkResponse, ar, res)
 {
   ar & named("updated_network_id", res.updated_network_id);
@@ -525,12 +531,21 @@ namespace plasma
     }
 
     CreateNetworkResponse
-    Client::create_network(std::string const& name)
+    Client::create_network(std::string const& network_id)
     {
       json::Dictionary request{std::map<std::string, std::string>{
-          {"name", name},
+          {"name", network_id},
       }};
       return this->_client.post<CreateNetworkResponse>("/network/create", request);
+    }
+
+    DeleteNetworkResponse
+    Client::delete_network(std::string const& network_id)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"name", network_id},
+      }};
+      return this->_client.post<DeleteNetworkResponse>("/network/delete", request);
     }
 
     UpdateNetworkResponse

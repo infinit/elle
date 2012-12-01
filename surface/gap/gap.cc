@@ -786,8 +786,8 @@ extern "C"
 
     try
       {
-        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
-        return (gap_TransactionStatus) transaction.status;
+        auto const* transaction = __TO_CPP(state)->transaction(transaction_id);
+        return (gap_TransactionStatus) transaction->status;
       }
     CATCH_ALL(transaction_status);
 
@@ -805,10 +805,29 @@ extern "C"
     gap_Status ret;
     try
       {
-        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
-        return transaction.sender_id.c_str();
+        auto const* transaction = __TO_CPP(state)->transaction(transaction_id);
+        return transaction->sender_id;
       }
     CATCH_ALL(transaction_owned);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  gap_Transaction const*
+  gap_transaction(gap_State* state,
+                  char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+
+    gap_Status ret;
+    try
+      {
+        auto const transaction = __TO_CPP(state)->transaction(transaction_id);
+        return transaction;
+      }
+    CATCH_ALL(transaction);
 
     (void) ret;
     return nullptr;
