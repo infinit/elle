@@ -109,7 +109,7 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE(Nest&, nest);
       ELLE_ATTRIBUTE(Mode, mode);
-      ELLE_ATTRIBUTE(State, state);
+      ELLE_ATTRIBUTE_R(State, state);
       ELLE_ATTRIBUTE_RX(Handle&, handle);
       ELLE_ATTRIBUTE_R(std::shared_ptr<Contents>, block);
 

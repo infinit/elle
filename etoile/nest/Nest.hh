@@ -100,7 +100,7 @@ namespace etoile
 
       // nest
       nucleus::proton::Handle const
-      attach(std::unique_ptr<nucleus::proton::Contents>&& block);
+      attach(nucleus::proton::Contents* block);
       void
       detach(nucleus::proton::Handle& handle);
       std::shared_ptr<nucleus::proton::Contents>

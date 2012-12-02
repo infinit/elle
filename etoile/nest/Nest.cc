@@ -269,9 +269,11 @@ namespace etoile
 //
 
     nucleus::proton::Handle const
-    Nest::attach(std::unique_ptr<nucleus::proton::Contents>&& block)
+    Nest::attach(nucleus::proton::Contents* block)
     {
-      ELLE_TRACE_SCOPE("attach(%s)", block.get());
+      ELLE_TRACE_METHOD(block);
+
+      ELLE_FINALLY_ACTION_DELETE(block);
 
       nucleus::proton::Placement placement =
         nucleus::proton::Placement::generate();
@@ -279,13 +281,15 @@ namespace etoile
       assert(placement != nucleus::proton::Placement::Null);
 
       // create a new selectionoid.
-      auto pod =
-        std::unique_ptr<Pod>(
-          new Pod(placement, block.release()));
-      // XXX[use finally instead]
+      auto pod = new Pod(placement, block);
+
+      ELLE_FINALLY_ABORT(block);
+      ELLE_FINALLY_ACTION_DELETE(pod);
 
       // insert the pod.
       this->_insert(pod.get()->placement, pod.get());
+
+      ELLE_FINALLY_ABORT(pod);
 
       // XXX[a temporary address for the footprint() to be valid]
       static nucleus::proton::Address some(pod->block->network(),
@@ -293,9 +297,6 @@ namespace etoile
                                            pod->block->component());
 
       nucleus::proton::Handle handle(pod.get()->placement, some);
-
-      // release track.
-      pod.release();
 
       return (handle);
     }

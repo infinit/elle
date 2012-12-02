@@ -13,29 +13,28 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
   enforce(version == 0);
 
   archive & value._mode;
-  archive & value._capacity;
 
   switch (value._mode)
     {
-    case nucleus::proton::Radix::Mode::empty:
+    case nucleus::proton::Mode::empty:
       {
         break;
       }
-    case nucleus::proton::Radix::Mode::value:
+    case nucleus::proton::Mode::value:
       {
         archive & elle::serialize::alive_pointer(value._value);
 
         break;
       }
-    case nucleus::proton::Radix::Mode::block:
+    case nucleus::proton::Mode::block:
       {
-        archive & elle::serialize::alive_pointer(value._block);
+        archive & elle::serialize::alive_pointer(value._address);
 
         break;
       }
-    case nucleus::proton::Radix::Mode::tree:
+    case nucleus::proton::Mode::tree:
       {
-        archive & elle::serialize::alive_pointer(value._tree);
+        archive & elle::serialize::alive_pointer(value._root);
 
         break;
       }

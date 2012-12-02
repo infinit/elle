@@ -5,8 +5,8 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 
-# include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Mode.hh>
 
 namespace nucleus
 {
@@ -27,42 +27,37 @@ namespace nucleus
       public elle::Printable
     {
       /*-------------.
-      | Enumerations |
-      `-------------*/
-    public:
-      /// Define the mode in which the content is represented being
-      /// either empty, directly through a value, through a single
-      /// block of data or via a complete tree of blocks.
-      enum class Mode
-        {
-          empty,
-          value,
-          block,
-          tree
-        };
-
-      /*-------------.
       | Construction |
       `-------------*/
     public:
+      /// Construct an empty radix.
       Radix();
+      /// Construct a value-based radix.
+      Radix(T* value);
+      /// Construct a radix based on a single block whose address is _address_.
+      Radix(Address const& address);
+      /// Construct a tree-based radix given the root _root_.
+      Radix(Root const& root);
+      /// Copy constructor.
       Radix(Radix const& other);
+      /// Destructor.
+      ~Radix();
 
       /*--------.
       | Methods |
       `--------*/
     public:
-      Value const&
+      Value const*
       value() const;
-      Value&
+      Value*
       value();
-      Handle const&
+      Address const&
       block() const;
-      Handle&
+      Address&
       block();
-      Tree const&
+      Root const&
       tree() const;
-      Tree&
+      Root&
       tree();
 
       /*-----------.
@@ -87,7 +82,6 @@ namespace nucleus
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Mode, mode);
-      ELLE_ATTRIBUTE_R(Capacity, capacity);
       union
       {
         /// Represent a value being directly serialized withing the containing
@@ -96,22 +90,15 @@ namespace nucleus
         /// This possibility is extremely interesting for blocks, such as
         /// Object, which could be optimised so as to directly embed a value,
         /// say Data, up to a certain size after which it becomes a block
-        /// which will be referenced in the Object through a handle.
-        Value* _value;
-        /// Represent a single block referenced through a handle.
-        Handle* _block;
-        /// Represent a hierarchy of blocks forming a tree-based data structure.
-        Tree* _tree;
+        /// which will be referenced in the Object through an address.
+        Value* _value; // XXX[shared_ptr?]
+        /// Represent a single block referenced through an address.
+        Address* _address;
+        /// Represent the type-independent root of a hierarchy of blocks
+        /// forming a tree-based data structure.
+        Root* _root;
       };
     };
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Radix::Mode const mode);
   }
 }
 

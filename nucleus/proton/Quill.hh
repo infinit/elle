@@ -110,19 +110,19 @@ namespace nucleus
       exist(typename T::K const& k) const;
       /// XXX
       typename Scoutor::Forward
-      lookup_iterator(typename T::K const& k) const;
+      lookup_iterator(typename T::K const& k) const; // XXX rename
       /// XXX
       typename Iterator::Forward
-      lookup_iterator(typename T::K const& k);
+      lookup_iterator(typename T::K const& k); // XXX rename
       /// XXX
       I*
-      lookup_inlet(typename T::K const& k) const;
+      lookup_inlet(typename T::K const& k) const; // XXX rename
       /// XXX
       Handle
-      lookup_handle(typename T::K const& k) const;
+      lookup_handle(typename T::K const& k) const; // XXX rename
       /// XXX
       typename Scoutor::Forward
-      locate_iterator(typename T::K const& k) const;
+      locate_iterator(typename T::K const& k) const; // XXX rename
       /// XXX
       typename Iterator::Forward
       locate_iterator(typename T::K const& k);

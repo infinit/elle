@@ -1,7 +1,7 @@
 #include <nucleus/proton/Radix.hh>
-#include <nucleus/proton/Handle.hh>
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Value.hh>
-#include <nucleus/proton/Tree.hh>
+#include <nucleus/proton/Root.hh>
 
 namespace nucleus
 {
@@ -17,56 +17,103 @@ namespace nucleus
     {
     }
 
+    Radix::Radix(T* value):
+      _mode(Mode::value),
+      _value(value)
+    {
+    }
+
+    Radix::Radix(Address const& address):
+      _mode(Mode::block),
+      _address(new Address{address})
+    {
+    }
+
+    Radix::Radix(Root const& root):
+      _mode(Mode::tree),
+      _root(new Root{root})
+    {
+    }
+
+    Radix::~Radix()
+    {
+      switch (this->_mode)
+        {
+        case Mode::empty:
+          {
+            break;
+          }
+        case Mode::value:
+          {
+            break;
+          }
+        case Mode::block:
+          {
+            delete this->_address;
+
+            break;
+          }
+        case Mode::tree:
+          {
+            delete this->_root;
+
+            break;
+          }
+        default:
+          throw Exception("unknown radix mode '%s'", this->_mode);
+        }
+    }
+
     /*--------.
     | Methods |
     `--------*/
 
-    Value const&
+    Value const*
     Radix::value() const
     {
       ELLE_ASSERT(this->_value);
 
-      return (*this->_value);
+      return (this->_value);
     }
 
-    Value&
+    Value*
     Radix::value()
     {
       ELLE_ASSERT(this->_value);
 
-      return (*this->_value);
+      return (this->_value);
     }
 
-    Handle const&
+    Address const&
     Radix::block() const
     {
-      ELLE_ASSERT(this->_block);
+      ELLE_ASSERT(this->_address);
 
-      return (*this->_block);
+      return (*this->_address);
     }
 
-    Handle&
+    Address&
     Radix::block()
     {
-      ELLE_ASSERT(this->_block);
+      ELLE_ASSERT(this->_address);
 
-      return (*this->_block);
+      return (*this->_address);
     }
 
-    Tree const&
+    Root const&
     Radix::tree() const
     {
-      ELLE_ASSERT(this->_tree);
+      ELLE_ASSERT(this->_root);
 
-      return (*this->_tree);
+      return (*this->_root);
     }
 
-    Tree&
+    Root&
     Radix::tree()
     {
-      ELLE_ASSERT(this->_tree);
+      ELLE_ASSERT(this->_root);
 
-      return (*this->_tree);
+      return (*this->_root);
     }
 
     /*----------.
@@ -94,62 +141,23 @@ namespace nucleus
           }
         case Mode::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_address != nullptr);
 
-            stream << *this->_block;
+            stream << *this->_address;
 
             break;
           }
         case Mode::tree:
           {
-            ELLE_ASSERT(this->_tree != nullptr);
+            ELLE_ASSERT(this->_root != nullptr);
 
-            stream << *this->_tree;
+            stream << *this->_root;
 
             break;
           }
         default:
           throw Exception("unknown radix mode '%s'", this->_mode);
         }
-    }
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Radix::Mode const mode)
-    {
-      switch (mode)
-        {
-        case Radix::Mode::empty:
-          {
-            stream << "empty";
-            break;
-          }
-        case Radix::Mode::value:
-          {
-            stream << "value";
-            break;
-          }
-        case Radix::Mode::block:
-          {
-            stream << "block";
-            break;
-          }
-        case Radix::Mode::tree:
-          {
-            stream << "tree";
-            break;
-          }
-        default:
-          {
-            throw Exception("unknown mode: '%s'", static_cast<int>(mode));
-          }
-        }
-
-      return (stream);
     }
   }
 }

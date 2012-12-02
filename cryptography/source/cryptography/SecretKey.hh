@@ -48,6 +48,15 @@ namespace infinit
 
       static const SecretKey            Null;
 
+      /*---------------.
+      | Static Methods |
+      `---------------*/
+    public:
+      /// XXX
+      static
+      SecretKey
+      generate(elle::Natural32 const length);
+
       //
       // constructors & destructors
       //

@@ -30,10 +30,10 @@ namespace nucleus
       // methods
       //
     public:
-      /// XXX
+      /// XXX: ownership is transferred
       virtual
       Handle const
-      attach(std::unique_ptr<Contents>&& block) = 0;
+      attach(Contents* block) = 0;
       /// XXX
       virtual
       void

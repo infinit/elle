@@ -12,6 +12,8 @@ namespace nucleus
     class Block;
     class ContentHashBlock;
     class Contents;
+    template <typename T>
+    class Door;
     class Handle;
     class History;
     class ImmutableBlock;
@@ -33,10 +35,12 @@ namespace nucleus
     template <typename T>
     class Quill;
     class Radix;
+    class Root;
     template <typename T>
     class Seam;
     class Statistics;
     class Stamp;
+    template <typename T>
     class Tree;
     class Value;
     class Revision;
@@ -49,6 +53,7 @@ namespace nucleus
 # include <nucleus/proton/Flags.hh>
 # include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Height.hh>
+# include <nucleus/proton/Mode.hh>
 # include <nucleus/proton/State.hh>
 
 #endif

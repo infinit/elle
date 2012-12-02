@@ -2,12 +2,10 @@
 # define NUCLEUS_PROTON_TREE_HH
 
 # include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
 
-# include <nucleus/proton/Height.hh>
 # include <nucleus/proton/Handle.hh>
-# include <nucleus/proton/Flags.hh>
+# include <nucleus/proton/Root.hh>
+# include <nucleus/proton/Nest.hh>
 
 namespace nucleus
 {
@@ -124,6 +122,7 @@ namespace nucleus
     /// of extent limits is more to homogenize the size of the blocks rather
     /// than making sure all the blocks have the exact same size, which is
     /// impossible to guarantee anyway.
+    template <typename T>
     class Tree:
       public elle::Printable
     {
@@ -131,41 +130,59 @@ namespace nucleus
       | Construction |
       `-------------*/
     public:
-      Tree();
+      /// Construct a tree ready to receive key/value tuple.
+      Tree(Nest&);
+      /// Construct a tree based on the given _root_ information.
+      Tree(Root const& root,
+           Nest& nest);
 
       /*--------.
-      | Methods |
+      | Methdos |
       `--------*/
     public:
-      // XXX[put all the tree-related methods in here]
-
-      /*-----------.
-      | Interfaces |
-      `-----------*/
-    public:
-      // printable
-      virtual
+      /// Return true of the given key is associated with a value element.
+      elle::Boolean
+      exist(typename T::K const& k);
+      /// Take a tuple key/value and add it to the porcupine.
       void
-      print(std::ostream& stream) const;
-      // serialize
-      ELLE_SERIALIZE_FRIEND_FOR(Tree);
-
-      /*----------.
-      | Operators |
-      `----------*/
-    public:
-      ELLE_OPERATOR_NO_ASSIGNMENT(Radix);
+      add(typename T::K const& k,
+          Handle const& v);
+      /// Remove the value associated with the given key _k_.
+      void
+      remove(typename T::K const& k);
+      /// Return the handle corresponding to the element associated with the
+      /// given key.
+      Handle
+      lookup(typename T::K const& k);
+      /// Take the target index capacity and return the value responsible
+      /// for it along with its base capacity index i.e the capacity index
+      /// of the first element in the returned value.
+      ///
+      /// This method enables one to look for elements based on an index
+      /// rather than a key, mechanism which is useful in many cases like
+      /// for directories whose entries are often retrieved according to
+      /// a range [index, size].
+      std::pair<Handle, Capacity>
+      seek(Capacity const target);
+      /// Make sure the tree is consistent following the modification of
+      /// the value block responsible for the given key _k_.
+      void
+      update(typename T::K const& k);
 
       /*-----------.
       | Attributes |
       `-----------*/
-    private:
-      ELLE_ATTRIBUTE_RW(Height, height);
-      ELLE_ATTRIBUTE_RX(Handle, root);
+    public:
+      ELLE_ATTRIBUTE_R(Height, height);
+      ELLE_ATTRIBUTE_R(Capacity, capacity);
+      ELLE_ATTRIBUTE(Handle, root);
+
+      ELLE_ATTRIBUTE(Nest&, nest);
+      ELLE_ATTRIBUTE(State, state);
     };
   }
 }
 
-// XXX # include <nucleus/proton/Tree.hxx>
+# include <nucleus/proton/Tree.hxx>
 
 #endif

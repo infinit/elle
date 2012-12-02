@@ -39,6 +39,8 @@ namespace nucleus
       /// XXX
       Handle();
       /// XXX
+      Handle(Address const& address);
+      /// XXX
       Handle(Placement const& placement,
              Address const& address);
       /// XXX

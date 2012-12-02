@@ -44,6 +44,20 @@ namespace infinit
     ///
     const SecretKey             SecretKey::Null;
 
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    SecretKey
+    SecretKey::generate(elle::Natural32 const length)
+    {
+      SecretKey key;
+
+      key.Generate();
+
+      return (key);
+    }
+
 //
 // ---------- constructors & destructors --------------------------------------
 //

@@ -21,13 +21,21 @@ namespace nucleus
 
     namespace flags
     {
+      /// XXX
       extern Flags const none;
+      /// XXX
       extern Flags const recursive;
+      /// XXX
       extern Flags const key;
+      /// XXX
       extern Flags const address;
+      /// XXX
       extern Flags const capacity;
+      /// XXX
       extern Flags const footprint;
+      /// XXX
       extern Flags const state;
+      /// XXX
       extern Flags const all;
     }
 

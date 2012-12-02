@@ -21,6 +21,14 @@ namespace nucleus
     {
     }
 
+    Handle::Handle(Address const& address):
+      _address(address),
+      _secret(Porcupine::secret())
+      // XXX[Porcupine::secret() n'est appelle que de la. il pourrait etre
+      //     specifique dans Nest]
+    {
+    }
+
     Handle::Handle(Placement const& placement,
                    Address const& address):
       _placement(placement),

@@ -17,16 +17,17 @@ add_library(nucleus ${LINK_METHOD}
   proton/ImprintBlock.cc
   proton/Limits.cc
   proton/Location.cc
+  proton/Mode.hh
   proton/MutableBlock.cc
   proton/Nest.cc
   proton/Network.cc
   proton/Node.cc
   proton/OwnerKeyBlock.cc
   proton/Placement.cc
-  proton/Porcupine.cc
   proton/PublicKeyBlock.cc
   proton/Radix.cc
   proton/Revision.cc
+  proton/Root.cc
   proton/Stamp.cc
   proton/State.cc
   proton/Statistics.cc

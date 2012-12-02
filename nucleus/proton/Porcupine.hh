@@ -11,11 +11,11 @@
 # include <nucleus/proton/Handle.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Flags.hh>
+# include <nucleus/proton/Radix.hh>
 
 # include <boost/noncopyable.hpp>
 
 // XXX
-# include <nucleus/proton/Radix.hh>
 # include <nucleus/proton/Handle.hh>
 # include <nucleus/proton/Value.hh>
 # include <nucleus/proton/Tree.hh>
@@ -25,8 +25,10 @@ namespace nucleus
   namespace proton
   {
     /// XXX
+    template <typename T>
     class Porcupine:
       public elle::io::Dumpable
+    // XXX public elle::Printable
       // XXX private boost::noncopyable
     {
       //
@@ -62,10 +64,12 @@ namespace nucleus
       // constructors & destructors
       //
     public:
-      Porcupine(); // XXX[to deserialize]
       /// XXX[here the agent_K represents the current user which will happen to
       ///     be the creator of every new block]
-      Porcupine(/* XXX Network const& network,
+      /// XXX[on pourrait passer la secretkey pour dechiffrer plutot que
+      ///     d'appeler unseal()]
+      Porcupine(Radix const& radix,
+                /* XXX Network const& network,
                    cryptography::PublicKey const& agent_K,*/
                 Nest& nest);
 
@@ -73,95 +77,89 @@ namespace nucleus
       // methods
       //
     public:
-      /// This method returns true if the tree contains no value.
+      /// Return true if the porcupine contains no element.
       elle::Boolean
       empty() const;
-      /// This method takes a value type in its raw format and takes the
-      /// responsibility for attaching it to the porcupine's nest before
-      /// adding it.
-      template <typename T>
-      void
-      add(std::unique_ptr<T>&& value);
-      /// This method returns true of the given key is associated with a
-      /// value.
-      template <typename T>
+      /// Return true of the given key is associated with a value.
       elle::Boolean
       exist(typename T::K const& k);
-      /// XXX
-      template <typename T>
-      Handle
+      /// Return the value associated with the given key _k_.
+      Door<T>
       lookup(typename T::K const& k);
-      /// XXX
-      template <typename T>
-      Handle
-      seek(Capacity const target,
-           Capacity& base);
-      /// XXX
-      template <typename T>
+      /// Take the target index capacity and return the value responsible
+      /// for it along with its base capacity index i.e the capacity index
+      /// of the first element in the returned value.
+      ///
+      /// This method enables one to look for elements based on an index
+      /// rather than a key, mechanism which is useful in many cases like
+      /// for directories whose entries are often retrieved according to
+      /// a range [index, size].
+      std::pair<Door<T>, Capacity>
+      seek(Capacity const target);
+      /// Insert the given tuple key/element in the value responsible for
+      /// the given key _k_.
+      ///
+      /// Note that, should this method be used, the type T must provide
+      /// a method complying with the following prototype:
+      ///
+      ///   void
+      ///   insert(typename T::K const& k,
+      ///          E* e);
+      template <typename E>
+      void
+      insert(typename T::K const& k,
+             E* e);
+      /// Erase the element corresponding to the given key _k_ from the
+      /// value holding it.
+      ///
+      /// Note that, should this method be used, the type T must provide
+      /// a method complying with the following prototype:
+      ///
+      ///   void
+      ///   erase(typename T::K const& k);
+      void
+      erase(typename T::K const& k);
+      /// Make sure the porcupine is consistent following the modification of
+      /// the value responsible for the given key _k_.
       void
       update(typename T::K const& k);
-      /// XXX
-      template <typename T>
-      void
-      remove(typename T::K const& k);
-      /// XXX
-      template <typename T>
+      /// Return the number of elements being stored in the porcupine.
+      elle::Size
+      size() const;
+      /// Check that the porcupine is valid according to some points given by
+      /// _flags_ such that the internal capacity corresponds to the actual
+      /// number of elements being stored, that the block addresses are correct,
+      /// that the major keys are indeed the highest in their value and so on.
+      ///
+      /// This method is obviously provided for debugging purpose and should not
+      /// be used in production considering the amount of computing such a check
+      /// takes: all the blocks are retrieved from the storage layer and loaded
+      /// in memory for checking.
       void
       check(Flags const flags = flags::all);
       /// XXX
-      template <typename T>
       void
       walk(elle::Natural32 const margin = 0);
       /// XXX
-      template <typename T>
       void
       seal(cryptography::SecretKey const& secret);
       /// XXX
       void
       unseal(cryptography::SecretKey const& secret);
       /// XXX
-      template <typename T>
       Statistics
       statistics();
-      /// XXX
-      Height
-      height() const;
-      /// XXX
-      Capacity
-      capacity() const;
-      /// XXX
-      State
-      state() const;
-      /// XXX
-      Nest&
-      nest();
-      /// XXX
-      void
-      nest(Nest& nest);
 
     private:
-      /// This method adds a value to the tree given its key.
-      ///
-      /// Note that the handle must reference a valid value. Besides, the
-      /// added value must have been attached to the porcupine's nest prior
-      /// to its insertion.
-      template <typename T>
-      void
-      _add(typename T::K const& k,
-           Handle const& v);
-      /// XXX
-      template <typename T>
+      /// Transform an empty porcupine into a value-based porcupine so
+      /// as to be able to return the caller a value on which to operate,
+      /// for inserting or exploring for example.
       void
       _create();
-      template <typename T>
-      void
-      _create(Handle& handle);
       /// XXX
-      template <typename T>
       void
       _optimize();
       /// XXX
-      template <typename T>
       Handle
       _search(typename T::K const& k);
 
@@ -176,20 +174,26 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Porcupine);
 
-      //
-      // attributes
-      //
-      // XXX private:
-    public:
-      Mode _mode;
-      Height _height;
-      Capacity _capacity;
-      ELLE_ATTRIBUTE_X(Handle, root); // XXX[remove X}]
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Mode, mode);
+      union
+      {
+        /// XXX
+        T* _value;
+        /// XXX
+        Handle* _block;
+        /// XXX
+        Tree<T>* _tree;
+      };
 
-      ELLE_ATTRIBUTE_R(Network, network);
-      ELLE_ATTRIBUTE_R(cryptography::PublicKey, agent_K);
-      Nest* _nest;
-      State _state;
+      ELLE_ATTRIBUTE(Network, network); // XXX
+      ELLE_ATTRIBUTE(cryptography::PublicKey, agent_K); // XXX
+
+      ELLE_ATTRIBUTE(Nest&, nest);
+      ELLE_ATTRIBUTE(State, state);
     };
 
     /*----------.
