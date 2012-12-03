@@ -76,12 +76,12 @@ namespace surface
         }}
       , _trophonius{nullptr}
       , _users{}
+      , _swaggers_dirty{true}
       , _files_infos{}
       , _networks{}
       , _networks_dirty{true}
       , _networks_status{}
       , _networks_status_dirty{true}
-      , _swaggers_dirty{true}
     {
       this->attach_callback(
         std::function<void (gap_TransactionNotification const*)>(
@@ -189,7 +189,7 @@ namespace surface
       if (!conn.waitForConnected(2000))
         throw Exception{
             gap_internal_error,
-              "Couldn't connect to the watchdog:" + conn.error()
+              "Couldn't connect to the watchdog:" + std::to_string(conn.error())
         };
 
       json::Dictionary req;
