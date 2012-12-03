@@ -1096,42 +1096,36 @@ namespace surface
       (void) this->refresh_networks();
     }
 
-    bool
+    size_t
     State::poll()
     {
       if (!this->_trophonius)
         throw Exception{gap_error, "Trophonius is not connected"};
-      bool continue_ = false;
-      do
+
+      size_t count = 0;
+      while (true)
         {
-          std::unique_ptr<json::Dictionary> dict_ptr{this->_trophonius->poll()};
+          std::unique_ptr<plasma::trophonius::Notification> notif{
+              this->_trophonius->poll()
+          };
 
-          if (!dict_ptr)
-            return continue_;
+          if (!notif)
+            break;
 
-          json::Dictionary const& dict = *dict_ptr;
-          continue_ = this->_handle_dictionnary(dict);
-        } while (continue_);
-      return true;
+          this->_handle_notification(*notif);
+          ++count;
+        }
+
+      return count;
     }
 
     bool
-    State::_handle_dictionnary(json::Dictionary const& dict, bool new_)
+    State::_handle_notification(plasma::trophonius::Notification const& notif,
+                                bool new_)
     {
-      ELLE_DEBUG("Dictionnary '%s'.", dict.repr());
-
-      if(!dict.contains("notification_id"))
-        {
-          ELLE_WARN("Dictionnary doesn't contains 'notification_id' field.");
-          return false;
-        }
-
-      int notification_id = dict["notification_id"].as_integer();
-
-      // XXX: Value of shit written in hard coded.
       // Connexion established.
-      if (notification_id == gap_Notification::gap_notificaiton_connection_enabled)
-        return false;
+      if (notif.notification_type == gap_notification_connection_enabled)
+        return true;
 
       auto handler_list = _notification_handlers.find(notification_id);
 

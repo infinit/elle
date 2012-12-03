@@ -3,6 +3,7 @@
 #include <elle/format/json/Dictionary.hxx>
 #include <elle/format/json/Parser.hh>
 #include <elle/serialize/ListSerializer.hxx>
+#include <elle/serialize/Serializer.hh>
 
 #include "Client.hh"
 
@@ -18,10 +19,58 @@
 
 ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
+//- Notification serializers --------------------------------------------------
+
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::Notification, ar, value, version)
+{
+  enforce(version == 0);
+
+  ar & named("notification_id", value.notification_id);
+}
+
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::UserStatusNotification, ar, value, version)
+{
+  enforce(version == 0);
+
+  ar & base_class<plasma::trophonius::Notification>(value);
+  ar & named("user_id", value.user_id);
+  ar & named("status", value.status);
+}
+
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionNotification, ar, value, version)
+{
+  enforce(version == 0);
+
+  ar & base_class<plasma::trophonius::Notification>(value);
+  ar & named("transaction", value.transaction);
+}
+
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, value, version)
+{
+  enforce(version == 0);
+
+  ar & base_class<plasma::trophonius::Notification>(value);
+  ar & named("transaction_id", value.transaction_id);
+  ar & named("status", value.status);
+}
+
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::MessageNotification, ar, value, version)
+{
+  enforce(version == 0);
+
+  ar & base_class<plasma::trophonius::Notification>(value);
+  ar & named("sender_id", value.sender_id);
+  ar & named("message", value.message);
+}
+
 namespace plasma
 {
   namespace trophonius
   {
+
+
+    //- Implementation --------------------------------------------------------
+
     struct Client::Impl
     {
       boost::asio::io_service io_service;
@@ -158,26 +207,6 @@ namespace plasma
     }
 
 
-    ////////////////////////////////
-    // BiteHandler.
-    void
-    Client::BiteHandler::_call(json::Dictionary const& dic,
-                               std::unique_ptr<Notification>&& notification,
-                               bool _new)
-    {
-
-#ifdef DEBUG
-      // XXX: ensure that every pointers are set to 0, assuming nullptr is 0.
-      memset(notification.get(), 0, sizeof(Notification));
-#endif
-
-      notification->debug = dic["debug"].as_string().value().c_str();
-      notification->is_new = _new;
-
-      // Use callback function.
-      this->callback(notification.get());
-    }
-
     Client::Client(std::string const& server,
                    uint16_t port,
                    bool check_errors)
@@ -220,25 +249,48 @@ namespace plasma
           if (!data)
             throw std::bad_alloc{};
           is.read(data.get(), bytes_transferred);
-          std::stringstream ss{std::string{data.get(), bytes_transferred}};
 
-          ELLE_DEBUG("Stream contains: '%s'.", std::string{data.get(), bytes_transferred});
+          int notification_type = 0; // Invalid notification type.
 
-          // while (!is.eof())
-          // {
-          //   std::string s;
-          //   is >> s;
+          {
+            std::stringstream ss{std::string{data.get(), bytes_transferred}};
+            elle::serialize::InputJsonArchive(ss) >> notification_type;
+          }
 
-          //   ELLE_DEBUG("Stream is '%s'.", s);
 
-          //   ::sleep(1);
-          // }
+          std::unique_ptr<Notification> notification;
 
-          auto tmp = elle::format::json::parse(ss);
+          {
+            std::stringstream ss{std::string{data.get(), bytes_transferred}};
+            elle::serialize::InputJsonArchive ar{ss};
+            switch (notification_type)
+              {
+              case gap_notification_user_status:
+                notification = std::move(ar.construct<UserStatusNotification>());
+                break;
+              case gap_notification_transaction:
+                notification = std::move(ar.construct<TransactionNotification>());
+                break;
+              case gap_notification_transaction_status:
+                notification = std::move(ar.construct<TransactionStatusNotification>());
+                break;
+              case gap_notification_message:
+                notification = std::move(ar.construct<MessageNotification>());
+                break;
+              case gap_notification_connection_enabled:
+                notification = std::move(ar.construct<Notification>());
+                break;
+              default:
+                throw elle::Exception{
+                    "Unknown notification type %s", notification_type
+                };
+              }
+          }
 
-          _notifications.push(&tmp->as_dictionary());
+          ELLE_ASSERT(notification != nullptr);
 
-          tmp.release();
+          this->_notifications.push(std::move(notification));
+
           this->_read_socket();
         }
       catch (std::runtime_error const& err)
@@ -293,7 +345,7 @@ namespace plasma
       return true;
     }
 
-    std::unique_ptr<json::Dictionary>
+    std::unique_ptr<Notification>
     Client::poll()
     {
       // Check socket and insert notification dictionary in the queue if any.
@@ -301,14 +353,14 @@ namespace plasma
 
       _impl->io_service.poll_one();
 
-      std::unique_ptr<json::Dictionary> ret;
+      std::unique_ptr<Notification> ret;
 
       if (!_notifications.empty())
         {
           ELLE_TRACE("Pop notification dictionnary to be handle.");
 
           // Fill dictionary.
-          ret.reset(_notifications.front());
+          ret.reset(_notifications.front().release());
           _notifications.pop();
         }
 
