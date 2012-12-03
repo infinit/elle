@@ -83,44 +83,17 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
-      this->attach_callback(
-        std::function<void (gap_TransactionNotification const*)>(
-          std::bind(
-            static_cast<void (State::*)(gap_TransactionNotification const*)>(
-              &State::_on_notification),
-            this,
-            std::placeholders::_1
-          )
-        )
+      this->transaction_callback(
+        std::bind(&State::_on_transaction, this, std::placeholders::_1)
       );
-
-      this->attach_callback(
-        std::function<void (gap_TransactionStatusNotification const*)>(
-          std::bind(
-            static_cast<void (State::*)(gap_TransactionStatusNotification const*)>(
-              &State::_on_notification),
-            this,
-            std::placeholders::_1
-          )
-        )
+      this->transaction_status_callback(
+        std::bind(&State::_on_transaction_status, this, std::placeholders::_1)
       );
     }
 
     State::State(std::string const& token):
       State{}
     {
-   //   std::ifstream identity_file{common::watchdog::identity_path(user)};
-
-   //   if (identity_file.good())
-   //     {
-   //       std::string str;
-   //       std::getline(identity_file, str);
-   //       this->_meta->token(str);
-   //       std::getline(identity_file, str);
-   //       this->_meta->identity(str);
-   //       std::getline(identity_file, str);
-   //       this->_meta->email(str);
-   //     }
       this->_meta->token(token);
       auto res = this->_meta->self();
       this->_meta->identity(res.identity);
@@ -518,6 +491,8 @@ namespace surface
                                       this->device_id());
     }
 
+    //- Transactions ----------------------------------------------------------
+
     void
     State::_download_files(std::string const& transaction_id)
     {
@@ -584,65 +559,67 @@ namespace surface
     State::update_transaction(std::string const& transaction_id,
                               gap_TransactionStatus status)
     {
-      static std::map<gap_TransactionStatus, std::set<gap_TransactionStatus>>
-      _sender_status_update{
-        {gap_TransactionStatus::gap_transaction_status_pending,
+      typedef
+        std::map<gap_TransactionStatus, std::set<gap_TransactionStatus>>
+        StatusMap;
+
+      static StatusMap _sender_status_update{
+        {gap_transaction_status_pending,
           {
-            gap_TransactionStatus::gap_transaction_status_canceled
+            gap_transaction_status_canceled
           }
         },
-        {gap_TransactionStatus::gap_transaction_status_accepted,
+        {gap_transaction_status_accepted,
           {
-            gap_TransactionStatus::gap_transaction_status_canceled
+            gap_transaction_status_canceled
           }
         },
-        // {gap_TransactionStatus::gap_transaction_status_rejected,
+        // {gap_transaction_status_rejected,
         //   {
         //     // Automaticly canceled.
         //   }
         // },
-        {gap_TransactionStatus::gap_transaction_status_started,
+        {gap_transaction_status_started,
           {
-            gap_TransactionStatus::gap_transaction_status_canceled
+            gap_transaction_status_canceled
           }
         },
-        // {gap_TransactionStatus::gap_transaction_status_canceled,
+        // {gap_transaction_status_canceled,
         //   {
         //   }
         // },
-        // {gap_TransactionStatus::gap_transaction_status_finished,
+        // {gap_transaction_status_finished,
         //   {
         //   }
         //}
       };
 
-      static std::map<gap_TransactionStatus, std::set<gap_TransactionStatus>>
-      _recipient_status_update{
-        {gap_TransactionStatus::gap_transaction_status_pending,
+      static StatusMap _recipient_status_update{
+        {gap_transaction_status_pending,
           {
-            gap_TransactionStatus::gap_transaction_status_accepted,
-            gap_TransactionStatus::gap_transaction_status_rejected
+            gap_transaction_status_accepted,
+            gap_transaction_status_rejected
           }
         },
-        {gap_TransactionStatus::gap_transaction_status_accepted,
+        {gap_transaction_status_accepted,
           {
-            gap_TransactionStatus::gap_transaction_status_canceled
+            gap_transaction_status_canceled
           }
         },
-        // {gap_TransactionStatus::gap_transaction_status_rejected,
+        // {gap_transaction_status_rejected,
         //   {
         //   }
         // },
-        {gap_TransactionStatus::gap_transaction_status_started,
+        {gap_transaction_status_started,
           {
-            gap_TransactionStatus::gap_transaction_status_canceled
+            gap_transaction_status_canceled
           }
         },
-        // {gap_TransactionStatus::gap_transaction_status_canceled,
+        // {gap_transaction_status_canceled,
         //   {
         //   }
         // },
-        // {gap_TransactionStatus::gap_transaction_status_finished,
+        // {gap_transaction_status_finished,
         //   {
         //   }
         // }
@@ -652,17 +629,15 @@ namespace surface
 
       auto pair = State::transactions().find(transaction_id);
 
-      assert(pair != State::transactions().end());
+      ELLE_ASSERT(pair != State::transactions().end());
 
       if (pair == State::transactions().end())
         return;
 
-      gap_Transaction *trans = pair->second;
+      Transaction const& transaction = pair->second;
 
-      assert(trans != nullptr);
-
-      if (this->_me._id != trans->recipient_id &&
-          this->_me._id != trans->sender_id)
+      if (this->_me._id != transaction.recipient_id &&
+          this->_me._id != transaction.sender_id)
       {
         throw Exception{
           gap_error,
@@ -670,70 +645,70 @@ namespace surface
         };
       }
 
-      if (this->_me._id == trans->recipient_id)
+      if (this->_me._id == transaction.recipient_id)
       {
         auto const& status_list = _recipient_status_update.find(
-          (gap_TransactionStatus) trans->status);
+          (gap_TransactionStatus) transaction.status);
 
         if (status_list == _recipient_status_update.end() ||
             status_list->second.find((gap_TransactionStatus) status) == status_list->second.end())
         {
           ELLE_WARN("You are not allowed to change status from %s to %s",
-                    trans->status, status);
+                    transaction.status, status);
           return;
         }
       }
-      else if (this->_me._id == trans->sender_id)
+      else if (this->_me._id == transaction.sender_id)
       {
          auto const& status_list = _sender_status_update.find(
-           (gap_TransactionStatus) trans->status);
+           (gap_TransactionStatus) transaction.status);
 
         if (status_list == _sender_status_update.end() ||
             status_list->second.find((gap_TransactionStatus)status) == status_list->second.end())
         {
           ELLE_WARN("You are not allowed to change status from %s to %s",
-                    trans->status, status);
+                    transaction.status, status);
           return;
         }
       }
 
-      switch((gap_TransactionStatus) status)
+      switch ((gap_TransactionStatus) status)
       {
-        case gap_TransactionStatus::gap_transaction_status_accepted:
-          this->_accept_transaction(trans);
+        case gap_transaction_status_accepted:
+          this->_accept_transaction(transaction);
           break;
-        case gap_TransactionStatus::gap_transaction_status_rejected:
-          this->_deny_transaction(trans);
+        case gap_transaction_status_rejected:
+          this->_deny_transaction(transaction);
           break;
-        case gap_TransactionStatus::gap_transaction_status_started:
-          this->_start_transaction(trans);
+        case gap_transaction_status_started:
+          this->_start_transaction(transaction);
           break;
-        case gap_TransactionStatus::gap_transaction_status_canceled:
-          this->_cancel_transaction(trans);
+        case gap_transaction_status_canceled:
+          this->_cancel_transaction(transaction);
           break;
-        case gap_TransactionStatus::gap_transaction_status_finished:
-          this->_close_transaction(trans);
+        case gap_transaction_status_finished:
+          this->_close_transaction(transaction);
           break;
         default:
           ELLE_WARN("You are not able to change transaction status to '%i'.",
-            status);
+                    status);
           return;
       }
-    }
+    } // !update_transaction()
 
     void
-    State::_accept_transaction(gap_Transaction const* trans)
+    State::_accept_transaction(Transaction const& transaction)
     {
-      ELLE_DEBUG("Accept transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Accept transaction '%s'", transaction.transaction_id);
 
-      if (trans->recipient_id != this->_me._id)
+      if (transaction.recipient_id != this->_me._id)
       {
         throw Exception{gap_error,
             "Only recipient can accept transaction."};
       }
 
-      this->_meta->update_transaction(trans->transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_accepted,
+      this->_meta->update_transaction(transaction.transaction_id,
+                                      gap_transaction_status_accepted,
                                       this->device_id(),
                                       this->device_name());
 
@@ -742,69 +717,69 @@ namespace surface
     }
 
     void
-    State::_deny_transaction(gap_Transaction const* trans)
+    State::_deny_transaction(Transaction const& transaction)
     {
-      ELLE_DEBUG("Deny transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Deny transaction '%s'", transaction.transaction_id);
 
-      if (trans->recipient_id != this->_me._id)
+      if (transaction.recipient_id != this->_me._id)
       {
         throw Exception{gap_error,
             "Only recipient can deny transaction."};
       }
 
-      this->_meta->update_transaction(trans->transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_rejected);
+      this->_meta->update_transaction(transaction.transaction_id,
+                                      gap_transaction_status_rejected);
     }
 
     void
-    State::_start_transaction(gap_Transaction const* trans)
+    State::_start_transaction(Transaction const& transaction)
     {
-      ELLE_DEBUG("Start transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Start transaction '%s'", transaction.transaction_id);
 
-      if (trans->sender_id != this->_me._id)
+      if (transaction.sender_id != this->_me._id)
       {
         throw Exception{gap_error,
             "Only sender can start transaction."};
       }
 
-      this->_meta->update_transaction(trans->transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_started);
+      this->_meta->update_transaction(transaction.transaction_id,
+                                      gap_transaction_status_started);
 
     }
 
     void
-    State::_cancel_transaction(gap_Transaction const* trans)
+    State::_cancel_transaction(Transaction const& transaction)
     {
-      ELLE_DEBUG("Cancel transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Cancel transaction '%s'", transaction.transaction_id);
 
       //XXX: If download has started, cancel it, delete files, ...
-      if (trans->sender_id == this->_me._id)
+      if (transaction.sender_id == this->_me._id)
       {
         //XXX
-        this->_meta->update_transaction(trans->transaction_id,
-                                        gap_TransactionStatus::gap_transaction_status_canceled);
+        this->_meta->update_transaction(transaction.transaction_id,
+                                        gap_transaction_status_canceled);
 
       }
       else
       {
         //XXX
-        this->_meta->update_transaction(trans->transaction_id,
-                                        gap_TransactionStatus::gap_transaction_status_canceled);
+        this->_meta->update_transaction(transaction.transaction_id,
+                                        gap_transaction_status_canceled);
       }
     }
 
     void
-    State::_close_transaction(gap_Transaction const* trans)
+    State::_close_transaction(Transaction const& transaction)
     {
-      ELLE_DEBUG("Close transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Close transaction '%s'", transaction.transaction_id);
 
-      if(trans->recipient_id != this->_me._id)
+      if(transaction.recipient_id != this->_me._id)
       {
         throw Exception{gap_error,
             "Only recipient can close transaction."};
       }
 
-      this->_meta->update_transaction(trans->transaction_id,
+      this->_meta->update_transaction(transaction.transaction_id,
                                       gap_TransactionStatus::gap_transaction_status_finished);
 
     }
@@ -834,27 +809,6 @@ namespace surface
       this->login(email, password);
     }
 
-
-    _REGISTER_CALLBACK_HANDLER(gap_UserStatusNotification,
-                               gap_Notification::gap_notification_user_status,
-                               plasma::trophonius::Client::UserStatusHandler)
-
-    _REGISTER_CALLBACK_HANDLER(gap_TransactionNotification,
-                               gap_Notification::gap_notification_transaction_request,
-                               plasma::trophonius::Client::TransactionHandler)
-
-    _REGISTER_CALLBACK_HANDLER(gap_TransactionStatusNotification,
-                               gap_Notification::gap_notification_transaction_status,
-                               plasma::trophonius::Client::TransactionStatusHandler)
-
-    _REGISTER_CALLBACK_HANDLER(gap_MessageNotification,
-                               gap_Notification::gap_notification_message,
-                               plasma::trophonius::Client::MessageHandler)
-
-    _REGISTER_CALLBACK_HANDLER(gap_BiteNotification,
-                               gap_Notification::gap_notification_debug,
-                               plasma::trophonius::Client::BiteHandler)
-
     State::TransactionsMap const&
     State::transactions()
     {
@@ -867,13 +821,13 @@ namespace surface
       for (auto const& transaction_id: response.transactions)
         {
           auto transaction = this->_meta->transaction(transaction_id);
-          (*this->_transactions)[transaction_id] = new Transaction{transaction};
+          (*this->_transactions)[transaction_id] = transaction;
         }
 
       return *(this->_transactions);
     }
 
-    gap_Transaction const&
+    Transaction const&
     State::transaction(std::string const& id)
     {
       auto it = this->transactions().find(id);
@@ -885,127 +839,6 @@ namespace surface
       return *(it->second);
     }
 
-    void
-    State::_on_notification(Transaction const* notif)
-    {
-      ELLE_ASSERT(notif != nullptr);
-
-      ELLE_TRACE("_on_notification: gap_TransactionNotification");
-
-      if (!notif->is_new)
-        return;
-
-      ELLE_ASSERT(notif->transaction_id != nullptr);
-
-      auto const pair = State::transactions().find(notif->transaction_id);
-
-      if (pair != State::transactions().end())
-      {
-        // Compare notif and see if everything match.
-        ELLE_ASSERT(notif->transaction_id != nullptr);
-        ELLE_ASSERT(notif->sender_id != nullptr);
-        ELLE_ASSERT(notif->sender_device_id != nullptr);
-        ELLE_ASSERT(notif->sender_fullname != nullptr);
-        ELLE_ASSERT(notif->recipient_id != nullptr);
-        ELLE_ASSERT(notif->recipient_fullname != nullptr);
-        ELLE_ASSERT(notif->network_id != nullptr);
-        ELLE_ASSERT(notif->first_filename != nullptr);
-
-#ifdef DEBUG
-        Transaction* trans = pair->second;
-#endif
-
-        ELLE_ASSERT(trans->transaction_id == notif->transaction_id);
-        ELLE_ASSERT(trans->sender_id == notif->sender_id);
-        ELLE_ASSERT(trans->sender_device_id == notif->sender_device_id);
-        ELLE_ASSERT(trans->sender_fullname == notif->sender_fullname);
-        ELLE_ASSERT(trans->recipient_id == notif->recipient_id);
-        ELLE_ASSERT(trans->recipient_fullname == notif->recipient_fullname);
-        ELLE_ASSERT(trans->network_id == notif->network_id);
-        ELLE_ASSERT(trans->first_filename == notif->first_filename);
-        ELLE_ASSERT(trans->files_count == notif->files_count);
-        ELLE_ASSERT(trans->total_size == notif->total_size);
-        ELLE_ASSERT(trans->is_directory == notif->is_directory);
-
-        return;
-      }
-
-      // Normal case, this is a new transaction, store it to match server.
-#ifdef DEBUG
-      printf("transaction_id: %s", trans->transaction_id);
-#endif
-
-      (*this->_transactions)[trans->transaction_id] = trans;
-    }
-
-    void
-    State::_on_notification(TransactionStatusNotification const* notif)
-    {
-      ELLE_TRACE("_on_notification: gap_TransactionStatusNotification");
-
-      ELLE_ASSERT(notif != nullptr);
-
-      if (!notif->is_new)
-        return;
-
-      ELLE_ASSERT(notif->transaction_id != nullptr);
-
-      auto const pair = State::transactions().find(notif->transaction_id);
-
-      gap_Transaction *trans_c;
-
-      if (pair == State::transactions().end())
-      {
-        // Something went wrong.
-        auto response = this->_meta->transaction(notif->transaction_id);
-
-        trans_c = _response_to_transaction(response);
-
-        (*this->_transactions)[notif->transaction_id] = trans_c;
-      }
-      else
-      {
-        trans_c = pair->second;
-
-        ELLE_ASSERT(trans_c != nullptr);
-
-        auto trans_s = this->_meta->transaction(notif->transaction_id);
-
-        delete trans_c->recipient_fullname;
-        delete trans_c->recipient_device_id;
-        //        delete trans_c->recipient_device_name;
-
-        trans_c->recipient_fullname = strdup(trans_s.recipient_fullname.c_str());
-        trans_c->recipient_device_id = strdup(trans_s.recipient_device_id.c_str());
-        //        trans_c->recipient_device_name = strdup(trans_s.recipient_device_name.c_str());
-
-        trans_c->status = trans_s.status;
-      }
-
-      switch(trans_c->status)
-      {
-        case gap_TransactionStatus::gap_transaction_status_accepted:
-          this->_on_transaction_accepted(trans_c);
-          break;
-        case gap_TransactionStatus::gap_transaction_status_rejected:
-          this->_on_transaction_denied(trans_c);
-          break;
-        case gap_TransactionStatus::gap_transaction_status_started:
-          this->_on_transaction_started(trans_c);
-          break;
-        case gap_TransactionStatus::gap_transaction_status_canceled:
-          this->_on_transaction_canceled(trans_c);
-          break;
-        case gap_TransactionStatus::gap_transaction_status_finished:
-          this->_on_transaction_closed(trans_c);
-          break;
-        default:
-          ELLE_WARN("The status '%i' is unknown.",
-                    trans_c->status);
-          return;
-      }
-    }
-
     // Thoose callbacks are used to keep the client and the server as the same
     // state.
     // Both recipient and sender recieve notifications, so some notification
@@ -1014,96 +847,94 @@ namespace surface
     // launching 8transfer, 8acces, 8group.
 
     void
-    State::_on_transaction_accepted(gap_Transaction const* trans)
+    State::_on_transaction_accepted(Transaction const& transaction)
     {
-      ELLE_DEBUG("On transaction accepted '%s'", trans->transaction_id);
+      ELLE_DEBUG("On transaction accepted '%s'", transaction.transaction_id);
 
-      if (trans->sender_id != this->_me._id)
-      {
+
+      if (transaction.sender_id != this->_me._id)
         return;
-      }
 
       ELLE_DEBUG("Giving '%s' acces to the network '%s'.",
-                trans->recipient_id,
-                trans->network_id);
+                transaction.recipient_id,
+                transaction.network_id);
 
-      // add user.
-      this->network_add_user(trans->network_id,
-                             trans->recipient_id);
+      this->network_add_user(transaction.network_id,
+                             transaction.recipient_id);
 
       ELLE_DEBUG("Giving '%s' permissions on the network to '%s'.",
-                trans->recipient_id,
-                trans->network_id);
+                transaction.recipient_id,
+                transaction.network_id);
 
-      this->set_permissions(trans->recipient_id,
-                            trans->network_id,
+      this->set_permissions(transaction.recipient_id,
+                            transaction.network_id,
                             nucleus::neutron::permissions::write);
 
       // When recipient has rights, allow him to start download.
-      this->update_transaction(trans->transaction_id,
-                               gap_TransactionStatus::gap_transaction_status_started);
+      this->update_transaction(transaction.transaction_id,
+                               gap_transaction_status_started);
 
-      // Could be improve.
+      // XXX Could be improved.
       _swaggers_dirty = true;
     }
 
     void
-    State::_on_transaction_denied(gap_Transaction const* trans)
+    State::_on_transaction_denied(Transaction const& transaction)
     {
-      ELLE_DEBUG("Denied transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Denied transaction '%s'", transaction.transaction_id);
 
-      if (trans->sender_id != this->_me._id)
+      if (transaction.sender_id != this->_me._id)
         return;
 
-      this->update_transaction(trans->transaction_id,
+      this->update_transaction(transaction.transaction_id,
                                gap_TransactionStatus::gap_transaction_status_canceled);
       //XXX:
     }
 
     void
-    State::_on_transaction_started(gap_Transaction const* trans)
+    State::_on_transaction_started(Transaction const& transaction)
     {
-      ELLE_DEBUG("Started transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
 
-      if (trans->recipient_id != this->_me._id)
+      if (transaction.recipient_id != this->_me._id)
         return;
 
-      _download_files(trans->transaction_id);
+      _download_files(transaction.transaction_id);
     }
 
     void
-    State::_on_transaction_canceled(gap_Transaction const* trans)
+    State::_on_transaction_canceled(Transaction const& transaction)
     {
-      ELLE_DEBUG("Canceled transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Canceled transaction '%s'", transaction.transaction_id);
 
       // XXX: If some process are launch, such as 8transfer, 8progess for the
       // current transaction, cancel them.
 
       // Delete networks.
-      (void) this->delete_network(trans->network_id);
+      (void) this->delete_network(transaction.network_id);
 
       (void) this->refresh_networks();
     }
 
     void
-    State::_on_transaction_closed(gap_Transaction const* trans)
+    State::_on_transaction_closed(Transaction const& transaction)
     {
-      ELLE_DEBUG("Closed transaction '%s'", trans->transaction_id);
+      ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
 
       // Delete networks.
-      (void) this->delete_network(trans->network_id);
+      (void) this->delete_network(transaction.network_id);
 
       (void) this->refresh_networks();
     }
 
     size_t
-    State::poll()
+    State::poll(size_t max)
     {
       if (!this->_trophonius)
         throw Exception{gap_error, "Trophonius is not connected"};
 
       size_t count = 0;
-      while (true)
+      while (count < max)
         {
           std::unique_ptr<plasma::trophonius::Notification> notif{
               this->_trophonius->poll()
@@ -1119,29 +950,29 @@ namespace surface
       return count;
     }
 
-    bool
-    State::_handle_notification(plasma::trophonius::Notification const& notif,
+    void
+    State::_handle_notification(Notification const& notif,
                                 bool new_)
     {
       // Connexion established.
       if (notif.notification_type == gap_notification_connection_enabled)
-        return true;
+        // XXX set _connection_enabled to true
+        return;
 
-      auto handler_list = _notification_handlers.find(notification_id);
+      auto handler_list = _notification_handlers.find(notif.notification_type);
 
       if (handler_list == _notification_handlers.end())
         {
-          ELLE_WARN("Handler missing for notification '%u'", notification_id);
-          return false;
+          ELLE_WARN("Handler missing for notification '%u'",
+                    notif.notification_type);
+          return;
         }
 
       for (auto& handler : handler_list->second)
         {
           ELLE_ASSERT(handler != nullptr);
-          handler->call(dict, new_);
+          handler->call(notif, new_);
         }
-
-      return true;
     }
 
     bool
@@ -1695,6 +1526,7 @@ namespace surface
 
     // - TROPHONIUS ----------------------------------------------------
     /// Connect to trophonius
+
     void
     State::connect()
     {
@@ -1719,5 +1551,124 @@ namespace surface
       ELLE_DEBUG("Connect to trophonius with 'id': %s and 'token':  %s",
                  this->_meta->identity(), this->_meta->token());
     }
+
+    void
+    State::user_status_callback(UserStatusNotificationCallback const& cb)
+    {
+      using plasma::trophonius;
+
+      auto fn = [=cb] (Notification const& notif, bool) -> void {
+        return cb(dynamic_cast<UserStatusNotification const&>(notif));
+      };
+
+      this->_notification_handlers[gap_notification_user_status].push_back(fn);
+    }
+
+    void
+    State::transaction_callback(TransactionNotificationCallback const& cb)
+    {
+      using plasma::trophonius;
+
+      auto fn = [=cb] (Notification const& notif, bool is_new) -> void {
+        return cb(dynamic_cast<TransactionNotification const&>(notif, is_new));
+      };
+
+      this->_notification_handlers[gap_notification_transaction].push_back(fn);
+    }
+
+    void
+    State::transaction_status_callback(TransactionStatusNotificationCallback const& cb)
+    {
+      using plasma::trophonius;
+
+      auto fn = [=cb] (Notification const& notif, bool) -> void {
+        return cb(dynamic_cast<TransactionStatusNotification const&>(notif));
+      };
+
+      _notification_handlers[gap_notification_transaction_status].push_back(fn);
+    }
+
+    void
+    State::message_callback(MessageNotificationCallback const& cb)
+    {
+      using plasma::trophonius;
+
+      auto fn = [=cb] (Notification const& notif, bool) -> void {
+        return cb(dynamic_cast<MessageNotification const&>(notif));
+      };
+
+      this->_notification_handlers[gap_notification_message].push_back(fn);
+    }
+
+    void
+    State::_on_transaction(TransactionNotification const& notif,
+                           bool is_new)
+    {
+      ELLE_TRACE("_on_notification: gap_TransactionNotification");
+
+      if (!is_new)
+        return;
+
+      auto const& pair = this->transactions().find(notif.transaction_id);
+
+      if (pair != this->transactions().end())
+      {
+
+#ifdef DEBUG
+        Transaction* transaction = pair->second;
+        ELLE_ASSERT(transaction != nullptr);
+        ELLE_ASSERT(*transaction == notif);
+#endif
+        return;
+      }
+
+      // Normal case, this is a new transaction, store it to match server.
+      (*this->_transactions)[notif.transaction_id] = notif;
+    }
+
+    void
+    State::_on_transaction_status(TransactionStatusNotification const& notif)
+    {
+      ELLE_TRACE("_on_notification: gap_TransactionStatusNotification");
+
+      auto const pair = State::transactions().find(notif.transaction_id);
+
+      if (pair == State::transactions().end())
+      {
+        // Something went wrong.
+        auto transaction = this->_meta->transaction(notif.transaction_id);
+
+        (*this->_transactions)[notif.transaction_id] = transaction;
+      }
+
+      auto const& transaction = this->transaction(notif.transaction_id);
+
+      switch(notif.status)
+      {
+        case gap_transaction_status_accepted:
+          // We update the transaction from meta.
+          _transactions[notif.transaction_id] = this->_meta->transaction(
+              notif.transaction_id
+          );
+          this->_on_transaction_accepted(transaction);
+          break;
+        case gap_transaction_status_rejected:
+          this->_on_transaction_denied(transaction);
+          break;
+        case gap_transaction_status_started:
+          this->_on_transaction_started(transaction);
+          break;
+        case gap_transaction_status_canceled:
+          this->_on_transaction_canceled(transaction);
+          break;
+        case gap_transaction_status_finished:
+          this->_on_transaction_closed(transaction);
+          break;
+        default:
+          ELLE_WARN("The status '%s' is unknown.", notif.status);
+          return;
+      }
+    }
+
   }
 }

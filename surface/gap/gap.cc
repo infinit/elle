@@ -614,48 +614,21 @@ extern "C"
   gap_user_status_callback(gap_State* state,
                            gap_user_status_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_UserStatusNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(user_status_callback);
-
-    return ret;
+    WRAP_CPP(state, user_status_callback, cb);
   }
 
   gap_Status
   gap_transaction_callback(gap_State* state,
-                                   gap_transaction_callback_t cb)
+                           gap_transaction_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_TransactionNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(transaction_callback);
-
-    return ret;
+    WRAP_CPP(state, transaction_callback, cb);
   }
 
   gap_Status
   gap_transaction_status_callback(gap_State* state,
                                   gap_transaction_status_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_TransactionStatusNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(transaction_status_callback);
-
-    return ret;
+    WRAP_CPP(state, transaction_status_callback, cb);
   }
 
   /// Transaction getters.
@@ -667,7 +640,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.sender_id;
+      return transaction.sender_id.c_str();
     }
     CATCH_ALL(transaction_sender_id);
 
@@ -682,7 +655,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.sender_fullname;
+      return transaction.sender_fullname.c_str();
     }
     CATCH_ALL(transaction_sender_fullname);
 
@@ -698,7 +671,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.sender_device_id;
+      return transaction.sender_device_id.c_str();
     }
     CATCH_ALL(transaction_device_id);
 
@@ -713,7 +686,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.recipient_id;
+      return transaction.recipient_id.c_str();
     }
     CATCH_ALL(transaction_recipient_id);
 
@@ -728,7 +701,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.recipient_fullname;
+      return transaction.recipient_fullname.c_str();
     }
     CATCH_ALL(transaction_recipient_fullname);
 
@@ -743,7 +716,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.recipient_device_id;
+      return transaction.recipient_device_id.c_str();
     }
     CATCH_ALL(transaction_recipient_device_id);
 
@@ -758,7 +731,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.network_id;
+      return transaction.network_id.c_str();
     }
     CATCH_ALL(transaction_network_id);
 
@@ -773,7 +746,7 @@ extern "C"
     try
     {
       auto const& transaction = __TO_CPP(state)->transaction(_id);
-      return transaction.first_filename;
+      return transaction.first_filename.c_str();
     }
     CATCH_ALL(transaction_first_filename);
 

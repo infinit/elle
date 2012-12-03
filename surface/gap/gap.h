@@ -129,10 +129,10 @@ extern "C" {
   {
     gap_notification_debug = 0,
     gap_notification_user_status = 8,
-    gap_notification_transaction_request = 7,
+    gap_notification_transaction = 7,
     gap_notification_transaction_status = 11,
     gap_notification_message = 217,
-    gap_notificaiton_connection_enabled = -666,
+    gap_notification_connection_enabled = -666,
   } gap_Notification;
 
   /// - Swaggers ------------------------------------------------------------

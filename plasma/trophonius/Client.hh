@@ -11,71 +11,10 @@
 # include <functional>
 # include <queue>
 
-
-// Declare a struct object_nameHandler.
-// Define a type callbackPrototype.
-// Override call from BasicHandler.
-//# define _PLASMA_TROPHONIUS_GENERATE_HANDLERS(__name)                   \
-//  public :                                                              \
-//    struct __name ## Handler:                                           \
-//      public plasma::trophonius::BasicHandler                           \
-//    {                                                                   \
-//    public:                                                             \
-//      typedef std::function<void(type_t const&)> CallbackPrototype;     \
-//                                                                        \
-//    public:                                                             \
-//      struct Notification:                                              \
-//        public plasma::Notification,                                    \
-//        public type_t                                                   \
-//      {};                                                               \
-//                                                                        \
-//    private:                                                            \
-//      CallbackPrototype _callback;                                      \
-//                                                                        \
-//      void callback(Notification const* n)                              \
-//      {                                                                 \
-//        assert(this->_callback);                                        \
-//        this->_callback(n);                                             \
-//      }                                                                 \
-//                                                                        \
-//    public:                                                             \
-//      __name ## Handler(CallbackPrototype const& callback)              \
-//      {                                                                 \
-//        this->_callback = callback;                                     \
-//      }                                                                 \
-//                                                                        \
-//      void                                                              \
-//      call(elle::format::json::Dictionary const& dic, bool _new)        \
-//      {                                                                 \
-//        _call(dic,                                                      \
-//              std::unique_ptr<Notification>(new Notification),          \
-//              _new);                                                    \
-//      }                                                                 \
-//                                                                        \
-//    private:                                                            \
-//      void                                                              \
-//      _call(elle::format::json::Dictionary const& dic,                  \
-//            std::unique_ptr<Notification>&& notification,               \
-//            bool _new);                                                 \
-//    }                                                                   \
-///**/
-//
-
-
 namespace plasma
 {
   namespace trophonius
   {
-    struct BasicHandler
-    {
-      virtual
-      void
-      call(elle::format::json::Dictionary const& dic, bool _new = true) = 0;
-
-      virtual
-      ~BasicHandler()
-      {}
-    };
 
     namespace json = elle::format::json;
 
@@ -95,7 +34,7 @@ namespace plasma
     struct TransactionNotification:
       public Notification
     {
-      meta::Transaction transaction;
+      Transaction transaction;
     };
 
     struct TransactionStatusNotification:
@@ -114,19 +53,6 @@ namespace plasma
 
     class Client
     {
-    public :
-      // Generate: LogoutHandler and LogoutNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(UserStatus);
-
-      // Generate: FileTransferRequestHandler and FileTransferRequestNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Transaction);
-
-      // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(TransactionStatus);
-
-      // Generate: MessageHandler and MessageNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message);
-
     public:
       struct Impl;
       std::unique_ptr<Impl> _impl;
