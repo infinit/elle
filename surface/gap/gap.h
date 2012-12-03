@@ -135,21 +135,20 @@ extern "C" {
     gap_notificaiton_connection_enabled = -666,
   } gap_Notification;
 
-  /// XXX: inherite is_new ?
-  ////////////////////////////////
-  // Login/Logout/AFK/... Notification
-  typedef struct
-  {
-    char const* user_id;
-    int status;
-  } gap_UserStatusNotification;
+  /// - Swaggers ------------------------------------------------------------
 
-  typedef void (*gap_user_status_callback_t)(gap_UserStatusNotification const*);
+  typedef enum
+  {
+    gap_user_status_offline = 0,
+    gap_user_status_online = 1,
+    gap_user_status_busy = 2,
+  } gap_UserStatus;
+
+  typedef void (*gap_user_status_callback_t)(char const*, gap_UserStatus const);
 
   gap_Status
   gap_user_status_callback(gap_State* state,
                            gap_user_status_callback_t cb);
-
 
   /// - Transaction ------------------------------------------------------------
   typedef enum
@@ -164,102 +163,89 @@ extern "C" {
     _gap_transaction_status_count,
   } gap_TransactionStatus;
 
-  typedef struct
-  {
-    char const*           transaction_id;
-    char const*           sender_id;
-    char const*           sender_fullname;
-    char const*           sender_device_id;
-    char const*           recipient_id;
-    char const*           recipient_fullname;
-    char const*           recipient_device_id;
-    char const*           network_id;
-    char const*           first_filename;
-    int                   files_count;
-    int                   total_size;
-//    gap_Bool              is_directory;
-    int                   is_directory;
-//    gap_TransactionStatus status;
-    int                   status;
-  } gap_Transaction;
-
-  ////////////////////////////////
-  // File transfer recieved callback.
-  typedef struct
-  {
-    char const* transaction_id;
-    char const* sender_id;
-    char const* sender_device_id;
-    char const* sender_fullname;
-    char const* recipient_id;
-    char const* recipient_fullname;
-    char const* network_id;
-    char const* first_filename;
-    int files_count;
-    int total_size;
-    int is_directory;
-    int is_new;
-  } gap_TransactionNotification;
-
-  typedef void (*gap_transaction_callback_t)(gap_TransactionNotification const*);
-
+  /// New transaction callback.
+  typedef void (*gap_transaction_callback_t)(char const* transaction_id, int new_);
   gap_Status
   gap_transaction_callback(gap_State* state,
                            gap_transaction_callback_t cb);
 
-
-  ////////////////////////////////
-  // File transfer status callback.
-  typedef struct
-  {
-    char const* transaction_id;
-    int status;
-    int is_new;
-  } gap_TransactionStatusNotification;
-
-  typedef void (*gap_transaction_status_callback_t)(gap_TransactionStatusNotification const*);
-
+  /// Transaction status callback.
+  typedef void (*gap_transaction_status_callback_t)(char const*, int new_);
   gap_Status
   gap_transaction_status_callback(gap_State* state,
                                   gap_transaction_status_callback_t cb);
 
-  ////////////////////////////////
-  // Chat message.
-  typedef struct
-  {
-    char const* sender_id;
-    /* FIXME: remove that shit */
-    char const* recipient_id;
-    char const* message;
-    int is_new;
-  } gap_MessageNotification;
+  /// Transaction getters.
+  char const*
+  gap_transaction_sender_id(gap_State*,
+                            char const*);
 
-  typedef void (*gap_message_callback_t)(gap_MessageNotification const*);
+  char const*
+  gap_transaction_sender_fullname(gap_State*,
+                                  char const*);
 
-  gap_Status
-  gap_message_callback(gap_State* state,
-                       gap_message_callback_t cb);
+  char const*
+  gap_transaction_sender_device_id(gap_State*,
+                                   char const*);
 
-  ////////////////////////////////
-  // Bite callback.
-  typedef struct
-  {
-    char const* debug;
-    int is_new;
-  } gap_BiteNotification;
+  char const*
+  gap_transaction_recipient_id(gap_State*,
+                               char const*);
 
-  // Poll
-  gap_Status
-  gap_poll(gap_State* state);
+  char const*
+  gap_transaction_recipient_fullname(gap_State*,
+                                     char const*);
 
-  gap_Status
-  gap_invite_user(gap_State* state,
-                  char const* email);
+  char const*
+  gap_transaction_recipient_device_id(gap_State*,
+                                      char const*);
 
+  char const*
+  gap_transaction_network_id(gap_State*,
+                             char const*);
+
+  char const*
+  gap_transaction_first_filename(gap_State*,
+                                 char const*);
+
+  int
+  gap_transaction_files_count(gap_State*,
+                              char const*);
+
+  int
+  gap_transaction_total_size(gap_State*,
+                             char const*);
+
+  // gap_Bool
+  int
+  gap_transaction_is_directory(gap_State*,
+                               char const*);
+
+  //  gap_TransactionStatus
+  int
+  gap_transaction_status(gap_State*,
+                         char const*);
+
+
+  /// Message
   gap_Status
   gap_message(gap_State* state,
               char const* recipient_id,
               char const* message);
+
+  typedef void (*gap_message_callback_t)(char const* sender_id, char const* message);
+  gap_Status
+  gap_message_callback(gap_State* state,
+                       gap_message_callback_t cb);
+
+  /// Poll
+  gap_Status
+  gap_poll(gap_State* state);
+
+
+  gap_Status
+  gap_invite_user(gap_State* state,
+                  char const* email);
 
   /// - Device --------------------------------------------------------------
   /// Returns the local device status.
@@ -401,18 +387,6 @@ extern "C" {
   gap_Status
   gap_set_output_dir(gap_State* state,
                      char const* output_path);
-
-  gap_TransactionStatus
-  gap_transaction_status(gap_State* state,
-                         char const* transaction_id);
-
-  char const*
-  gap_transaction_owner(gap_State* state,
-                        char const* transaction_id);
-
-  gap_Transaction const*
-  gap_transaction(gap_State* state,
-                  char const* transaction_id);
 
 # ifdef __cplusplus
 } // ! extern "C"

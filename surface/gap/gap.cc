@@ -658,6 +658,191 @@ extern "C"
     return ret;
   }
 
+  /// Transaction getters.
+  // Macroify all of this.
+  char const*
+  gap_transaction_sender_id(gap_State* state,
+                            char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_id;
+    }
+    CATCH_ALL(transaction_sender_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_sender_fullname(gap_State* state,
+                                  char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_fullname;
+    }
+    CATCH_ALL(transaction_sender_fullname);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_sender_device_id(gap_State* state,
+                                   char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_device_id;
+    }
+    CATCH_ALL(transaction_device_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_id(gap_State* state,
+                               char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_id;
+    }
+    CATCH_ALL(transaction_recipient_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_fullname(gap_State* state,
+                                     char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_fullname;
+    }
+    CATCH_ALL(transaction_recipient_fullname);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_device_id(gap_State* state,
+                                      char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_device_id;
+    }
+    CATCH_ALL(transaction_recipient_device_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_network_id(gap_State* state,
+                             char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.network_id;
+    }
+    CATCH_ALL(transaction_network_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_first_filename(gap_State* state,
+                                 char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.first_filename;
+    }
+    CATCH_ALL(transaction_first_filename);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  int
+  gap_transaction_files_count(gap_State* state,
+                              char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.files_count;
+    }
+    CATCH_ALL(transaction_files_count);
+
+    return ret;
+  }
+
+  int
+  gap_transaction_total_size(gap_State* state,
+                             char const* _id)
+  {
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.total_size;
+    }
+    CATCH_ALL(transaction_total_size);
+
+    return ret;
+  }
+
+  // gap_Bool
+  int
+  gap_transaction_is_directory(gap_State* state,
+                               char const* _id)
+  {
+    gap_Status ret = gap_ok;
+
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.is_directory;
+    }
+    CATCH_ALL(transaction_is_directory);
+
+    return ret;
+  }
+
+  //  gap_TransactionStatus
+  int
+  gap_transaction_status(gap_State* state,
+                         char const* _id)
+  {
+    gap_Status ret = gap_ok;
+
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.status;
+    }
+    CATCH_ALL(transaction_status);
+
+    return ret;
+  }
+
   gap_Status
   gap_message_callback(gap_State* state,
                        gap_message_callback_t cb)

@@ -23,10 +23,8 @@
     struct __name ## Handler:                                           \
       public plasma::trophonius::BasicHandler                           \
     {                                                                   \
-    private:                                                            \
-      typedef gap_ ## __name ## Notification type_t;                    \
     public:                                                             \
-      typedef std::function<void(type_t const*)> CallbackPrototype;     \
+      typedef std::function<void(type_t const&)> CallbackPrototype;     \
                                                                         \
     public:                                                             \
       struct Notification:                                              \
@@ -82,6 +80,29 @@ namespace plasma
 
     namespace json = elle::format::json;
 
+    struct        UserStatus
+    {
+      std::string user_id;
+      int         status;
+    };
+
+    struct        Transaction
+    {
+      std::string transaction_id;
+    };
+
+    struct        TransactionStatus
+    {
+      std::string transaction_id;
+      int         status;
+    };
+
+    struct        Message
+    {
+      std::string sender_id;
+      std::string message;
+    };
+
     class Client
     {
     public :
@@ -96,9 +117,6 @@ namespace plasma
 
       // Generate: MessageHandler and MessageNotification.
       _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Message);
-
-      // Generate: FileTransferStatusHandler and FileTransferStatusNotification.
-      _PLASMA_TROPHONIUS_GENERATE_HANDLERS(Bite);
 
     public:
       struct Impl;

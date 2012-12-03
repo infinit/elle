@@ -866,39 +866,14 @@ namespace surface
       auto response = this->_meta->transactions();
       for (auto const& transaction_id: response.transactions)
         {
-          auto response = this->_meta->transaction(transaction_id);
-          (*this->_transactions)[transaction_id] =
-            _response_to_transaction(response);
+          auto transaction = this->_meta->transaction(transaction_id);
+          (*this->_transactions)[transaction_id] = new Transaction{transaction};
         }
 
       return *(this->_transactions);
     }
 
-    gap_Transaction *
-    State::_response_to_transaction(plasma::meta::TransactionResponse const& res)
-    {
-      ELLE_TRACE("Converting response to transaction.");
-
-      gap_Transaction *ret = new gap_Transaction{
-        strdup(res.transaction_id.c_str()),
-        strdup(res.sender_id.c_str()),
-        strdup(res.sender_fullname.c_str()),
-        strdup(res.sender_device_id.c_str()),
-        strdup(res.recipient_id.c_str()),
-        strdup(res.recipient_fullname.c_str()),
-        strdup(res.recipient_device_id.c_str()),
-        strdup(res.network_id.c_str()),
-        strdup(res.first_filename.c_str()),
-        res.files_count,
-        res.total_size,
-        res.is_directory,
-        res.status
-      };
-
-      return ret;
-    }
-
-    gap_Transaction const*
+    gap_Transaction const&
     State::transaction(std::string const& id)
     {
       auto it = this->transactions().find(id);
@@ -907,11 +882,11 @@ namespace surface
             gap_error,
             "Cannot find any transaction for id '" + id + "'"
         };
-      return it->second;
+      return *(it->second);
     }
 
     void
-    State::_on_notification(gap_TransactionNotification const* notif)
+    State::_on_notification(Transaction const* notif)
     {
       ELLE_ASSERT(notif != nullptr);
 
@@ -937,17 +912,17 @@ namespace surface
         ELLE_ASSERT(notif->first_filename != nullptr);
 
 #ifdef DEBUG
-        gap_Transaction *trans = pair->second;
+        Transaction* trans = pair->second;
 #endif
 
-        ELLE_ASSERT(strcmp(notif->transaction_id, trans->transaction_id) == 0);
-        ELLE_ASSERT(strcmp(notif->sender_id, trans->sender_id) == 0);
-        ELLE_ASSERT(strcmp(notif->sender_device_id, trans->sender_device_id) == 0);
-        ELLE_ASSERT(strcmp(notif->sender_fullname, trans->sender_fullname) == 0);
-        ELLE_ASSERT(strcmp(notif->recipient_id, trans->recipient_id) == 0);
-        ELLE_ASSERT(strcmp(notif->recipient_fullname, trans->recipient_fullname) == 0);
-        ELLE_ASSERT(strcmp(notif->network_id, trans->network_id) == 0);
-        ELLE_ASSERT(strcmp(notif->first_filename, trans->first_filename) == 0);
+        ELLE_ASSERT(trans->transaction_id == notif->transaction_id);
+        ELLE_ASSERT(trans->sender_id == notif->sender_id);
+        ELLE_ASSERT(trans->sender_device_id == notif->sender_device_id);
+        ELLE_ASSERT(trans->sender_fullname == notif->sender_fullname);
+        ELLE_ASSERT(trans->recipient_id == notif->recipient_id);
+        ELLE_ASSERT(trans->recipient_fullname == notif->recipient_fullname);
+        ELLE_ASSERT(trans->network_id == notif->network_id);
+        ELLE_ASSERT(trans->first_filename == notif->first_filename);
         ELLE_ASSERT(trans->files_count == notif->files_count);
         ELLE_ASSERT(trans->total_size == notif->total_size);
         ELLE_ASSERT(trans->is_directory == notif->is_directory);
@@ -956,23 +931,6 @@ namespace surface
       }
 
       // Normal case, this is a new transaction, store it to match server.
-      gap_Transaction *trans = new gap_Transaction{
-        strdup(notif->transaction_id),
-        strdup(notif->sender_id),
-        strdup(notif->sender_fullname),
-        strdup(notif->sender_device_id),
-        strdup(notif->recipient_id),
-        strdup(notif->recipient_fullname),
-        "", // Recipient_device_id
-        strdup(notif->network_id),
-        strdup(notif->first_filename),
-        notif->files_count,
-        notif->total_size,
-        notif->is_directory,
-        gap_TransactionStatus::gap_transaction_status_pending
-//        1
-      };
-
 #ifdef DEBUG
       printf("transaction_id: %s", trans->transaction_id);
 #endif
@@ -981,7 +939,7 @@ namespace surface
     }
 
     void
-    State::_on_notification(gap_TransactionStatusNotification const* notif)
+    State::_on_notification(TransactionStatusNotification const* notif)
     {
       ELLE_TRACE("_on_notification: gap_TransactionStatusNotification");
 

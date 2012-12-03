@@ -145,11 +145,9 @@ namespace surface
 
 
     private:
-      typedef std::map<std::string, gap_Transaction *> TransactionsMap;
+      typedef ::plasma::meta::TransactionResponse Transaction;
+      typedef std::map<std::string, Transaction*> TransactionsMap;
       std::unique_ptr<TransactionsMap> _transactions;
-
-      gap_Transaction *
-      _response_to_transaction(plasma::meta::TransactionResponse const& res);
 
     public:
       /// @brief Pull transactions from serveur.
@@ -157,7 +155,7 @@ namespace surface
       transactions();
 
       /// @brief Get data from a specific transaction.
-      gap_Transaction const*
+      Transaction const&
       transaction(std::string const& transaction_id);
 
     public:
@@ -344,19 +342,16 @@ namespace surface
     public:
 
       void
-      attach_callback(std::function<void(gap_UserStatusNotification const*)> callback);
+      attach_callback(std::function<gap_transaction_callback_t> callback);
 
       void
-      attach_callback(std::function<void(gap_TransactionNotification const*)> callback);
+      attach_callback(std::function<gap_transaction_status_callback_t> callback);
 
       void
-      attach_callback(std::function<void(gap_TransactionStatusNotification const*)> callback);
+      attach_callback(std::function<gap_user_status_callback_t> callback);
 
       void
-      attach_callback(std::function<void(gap_MessageNotification const*)> callback);
-
-      void
-      attach_callback(std::function<void(gap_BiteNotification const*)> callback);
+      attach_callback(std::function<gap_message_callback_t> callback);
 
     private:
       void
