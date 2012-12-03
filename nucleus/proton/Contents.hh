@@ -103,6 +103,9 @@ namespace nucleus
       /// Return the node (in its decrypted form) referenced by the contents.
       Node&
       node();
+      /// XXX cede the ownership on the node.
+      Node*
+      cede();
 
       /*-----------.
       | Interfaces |

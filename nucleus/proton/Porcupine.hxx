@@ -77,7 +77,7 @@ namespace nucleus
           }
         case Nature::block:
           {
-            this->_block = new Handle{radix.block(), secret};
+            this->_handle = new Handle{radix.block(), secret};
 
             break;
           }
@@ -107,7 +107,7 @@ namespace nucleus
           }
         case Nature::block:
           {
-            delete this->_block;
+            delete this->_handle;
 
             break;
           }
@@ -160,9 +160,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -217,9 +217,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            return (Door<T>(*this->_block, this->_nest));
+            return (Door<T>(*this->_handle, this->_nest));
           }
         case Nature::tree:
           {
@@ -274,9 +274,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -291,7 +291,7 @@ namespace nucleus
             // Return a door to the value block along with a capacity index of
             // zero since this is the first and only value.
             return (std::pair<Door<T>, Capacity>{
-              Door<T>(*this->_block, this->_nest), 0});
+              Door<T>(*this->_handle, this->_nest), 0});
           }
         case Nature::tree:
           {
@@ -343,15 +343,15 @@ namespace nucleus
             this->_value->insert(k, e);
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -360,7 +360,7 @@ namespace nucleus
             value.unload();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -381,7 +381,7 @@ namespace nucleus
             value.unload();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -414,15 +414,15 @@ namespace nucleus
             this->_value->erase(k, e);
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -431,7 +431,7 @@ namespace nucleus
             value.unload();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -452,7 +452,7 @@ namespace nucleus
             value.unload();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -485,15 +485,15 @@ namespace nucleus
             this->_state = this->_value->state();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -503,7 +503,7 @@ namespace nucleus
             value.unload();
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -515,7 +515,7 @@ namespace nucleus
             this->_tree->update(k);
 
             // Try to optimize the tree.
-            this->_optimize();
+            this->optimize();
 
             return;
           }
@@ -550,9 +550,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -622,9 +622,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -637,7 +637,7 @@ namespace nucleus
                 Address address{value.contents().bind()};
 
                 // Compare it with the one used as a reference.
-                if (this->_block->address() != address)
+                if (this->_handle->address() != address)
                   throw Exception("invalid address: root(%s) versus bind(%s)",
                                   this->_root.address(), address);
               }
@@ -748,10 +748,10 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
             Statistics stats;
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -849,9 +849,9 @@ namespace nucleus
           }
         case Nature::block:
           {
-            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            Ambit<T> value(this->_nest, *this->_block);
+            Ambit<T> value(this->_nest, *this->_handle);
 
             value.load();
 
@@ -919,9 +919,9 @@ namespace nucleus
                 }
               case Nature::block:
                 {
-                  ELLE_ASSERt(this->_block != nullptr);
+                  ELLE_ASSERt(this->_handle != nullptr);
 
-                  Ambit<T> value(this->_nest, *this->_block);
+                  Ambit<T> value(this->_nest, *this->_handle);
 
                   value.load();
 
@@ -941,7 +941,7 @@ namespace nucleus
                   // Update the porcupine state.
                   this->_state = State::consistent;
 
-                  return (Radix(this->_block.address()));
+                  return (Radix(this->_handle.address()));
                 }
               case Nature::tree:
                 {
@@ -988,7 +988,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine<T>::_optimize()
+    Porcupine<T>::optimize()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
@@ -998,377 +998,202 @@ namespace nucleus
       switch (this->_nature)
         {
         case Nature::empty:
+          throw Exception("unable to optimize an empty porcupine");
+        case Nature::value:
           {
-            throw Exception("unable to optimize an empty porcupine");
+            ELLE_ASSERT(this->_value != nullptr);
+
+            // Check if the value has become too large to be embedeed. If
+            // so, the value is converted into a standalone value block so
+            // as to lighten the containing block.
+            if ((this->_value->footprint()) > this->_nest.limits().extent())
+              {
+                ELLE_TRACE("value's high limit reached: %s > %s",
+                           this->_value->footprint(),
+                           this->_nest.limits().extent());
+
+                // In this case, the value is embedeed in a Contents block.
+                Contents contents{new Contents{this->_value}};
+
+                ELLE_FINALLY_ACTION_DELETE(contents);
+
+                // Finally, the contents is attached to the nest and is set
+                // as the block which the porcupine is operating on.
+                //
+                // Note that the value's ownership has been transferred to
+                // the Contents block. This is why the value is not deleted.
+                this->_handle = new Handle{this->_nest.attach(contents)};
+
+                ELLE_FINALLY_ABORT(contents);
+
+                // And set the new nature.
+                this->_nature = Nature::block;
+
+                // Now that the porcupine is in a valid state, the optimize()
+                // method is called again. Indeed, transforming a value to a
+                // block is not enough as the resulting block may also violate
+                // the block limits.
+                this->optimize();
+              }
+            else if (this->_value->footprint() <
+                     (this->_nest.limits().extent() *
+                      this->_nest.limits().balancing()))
+              {
+                ELLE_TRACE("value's low limit reached: %s < %s",
+                           this->_value->footprint(),
+                           this->_nest.limits().extent() *
+                           this->_nest.limits().balancing());
+
+                // Check if the value is empty.
+                if (this->_value().empty() == true)
+                  {
+                    ELLE_TRACE("the value is empty");
+
+                    // Delete the value and set the nature to empty.
+                    delete this->_value;
+                    this->_nature = Nature::empty;
+
+                    // Update the state.
+                    this->_state = State::dirty;
+                  }
+              }
+            else
+              {
+                ELLE_TRACE("no optimization to perform");
+              }
+
+            return;
           }
         case Nature::block:
           {
-            Ambit<T> value(this->_nest, this->_root);
+            ELLE_ASSERT(this->_handle != nullptr);
 
-            // load the value nodule.
+            Ambit<T> value(this->_nest, *this->_handle);
+
             value.load();
 
-            //
-            // XXX
-            //
+            // Check if the value block has exceeded the extent limit
+            // in which case this block would need to be split, inevitably
+            // leading to the creation of a tree with a root block
+            // referencing two value blocks.
             if ((value().footprint()) > this->_nest.limits().extent())
               {
-                ELLE_TRACE("value's extent high limit reached: "
-                           "%s > %s",
+                ELLE_TRACE("value block extent high limit reached: %s > %s",
                            value().footprint(),
                            this->_nest.limits().extent());
 
-                //
-                // in this case, the value needs to be split.
-                //
-                // in order to re-use the code as much as possible, a quill
-                // is created in which the value is inserted. then the
-                // quill-specific Optimize() method is called so as to
-                // split the values.
-                //
-                typename T::K mayor;
+                // In this case, the value needs to be split. However,
+                // in order to factorize the code as much as possible,
+                // the following steps are performed. First, a tree is
+                // created. Then, the value block is added to the tree.
+                // Finally, since the tree cannot imagine that the added
+                // block violates the limits, a call to update() is performed
+                // so as to force the optimization.
 
-                // retrieve the mayor of the value.
-                mayor = value().mayor();
+                // Retrieve the mayor key from the value block so as to
+                // pinpoint the location where the optimization should take
+                // place.
+                typename T::K mayor{value().mayor()};
 
-                // unload the value.
                 value.unload();
 
-                // allocate a new root quill.
-                std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
-                Handle orphan(this->_nest.attach(std::move(contents)));
-                Ambit<Quill<T>> newroot(this->_nest, orphan);
+                // Create the tree and add the initial value block.
+                Tree<T>* tree(this->_nest);
 
-                // load the newroot.
-                newroot.load();
+                ELLE_FINALLY_ACTION_DELETE(tree);
 
-                // add the current value to the new quill root.
-                //
-                // note that calling add() is valid in this case because
-                // _newroot_ is a quill i.e the last nodule of the hierarchy.
-                newroot().add(mayor, this->_root);
+                tree->add(mayor, value.handle());
 
-                // now that the tree is valid, call the Optimize() method because
-                // the added value is still too large to remain as such and
-                // therefore needs to be split.
-                Nodule<T>::optimize(newroot(), mayor);
+                // Force the tree to optimize itself by specifying the
+                // tree that the value block responsible for the key _mayor_
+                // has been modified.
+                tree->update(mayor);
 
-                // update the capacity and state.
-                this->_capacity = newroot().capacity();
-                this->_state = newroot().state();
+                // Delete the value block handle since this handle has been
+                // copied when the block has been added to the tree.
+                delete this->_handle;
 
-                // unload the newroot.
-                newroot.unload();
-
-                // assign the new root handle.
-                this->_root = orphan;
-
-                // increment the height.
-                this->_height++;
-
-                // set the nature.
+                // Set the new nature and the reference to the tree.
                 this->_nature = Nature::tree;
+                this->_tree = tree;
+
+                ELLE_FINALLY_ABORT(tree);
+
+                // Update the porcupine state.
+                this->_state = this->_tree->state();
               }
             else if (value().footprint() <
                      (this->_nest.limits().extent() *
                       this->_nest.limits().balancing()))
               {
-                ELLE_TRACE("value's extent low limit reached: "
-                           "%s < %s",
+                ELLE_TRACE("value block extent low limit reached: %s < %s",
                            value().footprint(),
                            this->_nest.limits().extent() *
                            this->_nest.limits().balancing());
 
-                // XXX
-                if (value().empty() == true)
+                // Check if the block has become small enough for its value
+                // to be embedded directly in its parent block.
+                if (value().footprint() < 1024) // XXX need limits: low/hight
                   {
-                    ELLE_TRACE("the value is empty");
+                    ELLE_TRACE("the block's value could be embedded");
+
+                    // Ask the value block to cede the ownership on the value
+                    // node.
+                    ELLE_ASSERT(dynamic_cast<T*>(value().cede()) != nullptr);
+                    T* _value{static_cast<T*>(value().cede())};
+
+                    ELLE_FINALLY_ACTION_DELETE(_value);
 
                     value.unload();
 
-                    // detache the value block.
-                    this->_nest.detach(this->_root);
+                    // Detach the value block, leading to the block's
+                    // destruction.
+                    this->_nest.detach(*this->_handle);
 
-                    // reset the root.
-                    this->_root = Handle::Null;
-
-                    // make sure the tree is empty.
-                    ELLE_ASSERT(this->_capacity == 0);
-
-                    // update the state.
-                    this->_state = State::dirty;
-
-                    // set the nature.
+                    // Set the embedded value along with the new nature,
+                    // taking care to delete the handle which is no longer used.
                     this->_nature = Nature::empty;
+
+                    delete this->_handle;
+                    this->_value = _value;
+
+                    ELLE_FINALLY_ABORT(_value);
+
+                    // Update the porcupine state.
+                    this->_state = State::dirty;
                   }
                 else
-                  value.unload();
+                  {
+                    ELLE_TRACE("no optimization to perform");
+
+                    value.unload();
+                  }
               }
             else
-              value.unload();
+              {
+                ELLE_TRACE("no optimization to perform");
 
-            break;
+                value.unload();
+              }
+
+            return;
           }
         case Nature::tree:
           {
-            Ambit<Nodule<T>> root(this->_nest, this->_root);
+            ELLE_ASSERT(this->_tree != nullptr);
 
-            // load the root nodule.
-            root.load();
+            // XXX optimize tree
 
-            ELLE_TRACE("considering the root nodule's footprint: "
-                       "%s < %s",
-                       root().footprint(),
-                       this->_nest.limits().extent());
+            // XXX check if we can go back to a single block
 
-            //
-            // at this point, check whether the add() produced the a nodule
-            // whose size exceed the extent.
-            //
-            // should this happen, the root block is split, creating a new
-            // block. thus, a new root block is created in which both nodules
-            // are inserted.
-            //
-            // check if the future nodule's footprint---i.e should the inlet
-            // be inserted---would exceed the extent.
-            //
-            if ((root().footprint()) > this->_nest.limits().extent())
-              {
-                ELLE_TRACE("root's extent hight limit reached: "
-                           "%s > %s",
-                           root().footprint(),
-                           this->_nest.limits().extent());
-
-                //
-                // in this case, the nodule needs to be split.
-                //
-                Handle orphan;
-
-                // split the current root nodule.
-                orphan = root().split();
-
-                //
-                // at this point, the tree needs to grow in order to welcome
-                // the new right nodule.
-                //
-                struct
-                {
-                  typename T::K root;
-                  typename T::K newright;
-                } mayor;
-                struct
-                {
-                  Capacity root;
-                  Capacity newright;
-                } capacity;
-                struct
-                {
-                  State root;
-                  State  newright;
-                } state;
-
-                // retrieve the mayor key of the current root.
-                mayor.root = root().mayor();
-
-                // retrieve the capacity and state.
-                capacity.root = root().capacity();
-                state.root = root().state();
-
-                // unload the root nodule.
-                root.unload();
-
-                Ambit<Nodule<T>> newright(this->_nest, orphan);
-
-                // load the new right nodule.
-                newright.load();
-
-                // retrieve the mayor key of the newright nodule as this will
-                // be required for the future insertion in the current seam.
-                mayor.newright = newright().mayor();
-
-                // retrieve the capacity and state.
-                capacity.newright = newright().capacity();
-                state.newright = newright().state();
-
-                // unload the new right nodule.
-                newright.unload();
-
-                //
-                // at this point, the new i.e orphan nodule must be inserted
-                // into the current seam.
-                //
-                struct
-                {
-                  Handle root;
-                  Handle newroot;
-                  Handle newright;
-                } handle;
-
-                // keep the new right handle.
-                handle.newright = orphan;
-
-                // copy the current root handle so that no ambit reference
-                // _this->_root_ since this variable is going to change.
-                handle.root = this->_root;
-
-                // allocate a new root seam.
-                std::unique_ptr<Contents> contents(new Contents(new Seam<T>));
-
-                // attach the block to the porcupine.
-                handle.newroot = this->_nest.attach(std::move(contents));
-
-                Ambit<Seam<T>> newroot(this->_nest, handle.newroot);
-
-                // load the newroot.
-                newroot.load();
-
-                // below are manually inserted the nodules because add()
-                // would perform the operation recursively.
-
-                // insert the current root nodule in the new root seam.
-                typename Seam<T>::I* inlet;
-
-                newroot().insert(mayor.root, handle.root);
-                inlet = newroot().locate_inlet(mayor.root);
-                inlet->capacity(capacity.root);
-                inlet->state(state.root);
-
-                newroot().insert(mayor.newright, handle.newright);
-                inlet = newroot().locate_inlet(mayor.newright);
-                inlet->capacity(capacity.newright);
-                inlet->state(state.newright);
-
-                // compute the capacity of the new root seam. note that
-                // the state does not need to be set explicitely because
-                // the insert() methods took care of it.
-                newroot().capacity(capacity.root + capacity.newright);
-
-                // update the capacity and state.
-                this->_capacity = newroot().capacity();
-                this->_state = newroot().state();
-
-                // unload the newroot.
-                newroot.unload();
-
-                // assign the new root handle.
-                this->_root = handle.newroot;
-
-                // increment the height.
-                this->_height++;
-              }
-            else
-              {
-                ELLE_TRACE("root's footprint may be low enough to "
-                           "reorganize the tree");
-
-                ELLE_ASSERT(this->_height != 0);
-
-                if (this->_height == 1)
-                  {
-                    ELLE_TRACE("the tree contains a single level");
-
-                    // unload the root nodule.
-                    root.unload();
-
-                    Ambit<Quill<T>> quill(this->_nest, this->_root);
-
-                    // load the root nodule.
-                    quill.load();
-
-                    // does the quill contain a single value.
-                    if (quill().single() == true)
-                      {
-                        ELLE_TRACE("the root quill contains a single entry");
-
-                        //
-                        // if the root nodules contains a single entry, shrink
-                        // the tree for this entry to become the new root.
-                        //
-                        Handle orphan;
-
-                        // retrieve the handle associated with the maiden key.
-                        orphan = quill().locate_handle(quill().maiden());
-
-                        // detache the root nodule from the porcupine.
-                        this->_nest.detach(quill.handle());
-
-                        // unload the root nodule.
-                        quill.unload();
-
-                        // set the new tree's root handle.
-                        this->_root = orphan;
-
-                        // decrease the tree's height.
-                        this->_height--;
-
-                        // at this point, the tree should have a height of zero.
-                        ELLE_ASSERT(this->_height == 0);
-
-                        // therefore, set the nature as value now that the
-                        // root handle actually references a value.
-                        this->_nature = Nature::block;
-                      }
-                    else
-                      quill.unload();
-                  }
-                else if (this->_height > 1)
-                  {
-                    ELLE_TRACE("the tree contains several levels "
-                               "of hierarchy.");
-
-                    // unload the root nodule.
-                    root.unload();
-
-                    Ambit<Seam<T>> seam(this->_nest, this->_root);
-
-                    // load the root nodule.
-                    seam.load();
-
-                    // check whether the root seam contains a single
-                    // entry in which case this entry could become
-                    // the new root.
-                    if (seam().single() == true)
-                      {
-                        ELLE_TRACE("the root seam contains a single entry.");
-
-                        //
-                        // if the root nodules contains a single entry, shrink
-                        // the tree for this entry to become the new root.
-                        //
-                        // XXX here we are sure the root is a seam since height > 1
-                        //
-                        Handle orphan;
-
-                        // retrieve the handle associated with the maiden key.
-                        orphan = seam().locate_handle(seam().maiden());
-
-                        // detache the root nodule from the porcupine.
-                        this->_nest.detach(seam.handle());
-
-                        // unload the root nodule.
-                        seam.unload();
-
-                        // set the new tree's root handle.
-                        this->_root = orphan;
-
-                        // decrease the tree's height.
-                        this->_height--;
-
-                        ELLE_TRACE("try to optimize further the tree");
-
-                        this->_optimize();
-                      }
-                    else
-                      seam.unload();
-                  }
-              }
-
-            break;
+            return;
           }
         default:
           throw Exception("unknown nature: '%s'",
                           static_cast<int>(this->_nature));
         }
+
+      elle::unreachable();
     }
 
     /*----------.

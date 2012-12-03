@@ -200,6 +200,9 @@ namespace nucleus
       /// out on the tree.
       Root
       seal(cryptography::SecretKey const& secret);
+      /// XXX
+      void
+      optimize();
 
     private:
       /// Return the handle of the quill block responsible for the given key
@@ -219,7 +222,7 @@ namespace nucleus
       ELLE_ATTRIBUTE(Handle, root);
 
       ELLE_ATTRIBUTE(Nest&, nest);
-      ELLE_ATTRIBUTE(State, state);
+      ELLE_ATTRIBUTE_R(State, state);
     };
   }
 }

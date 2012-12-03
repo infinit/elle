@@ -144,13 +144,6 @@ namespace nucleus
       /// out on the porcupine.
       Radix
       seal(cryptography::SecretKey const& secret);
-
-    private:
-      /// Transform an empty porcupine into a value-based porcupine so
-      /// as to be able to return the caller a value on which to operate,
-      /// for inserting or exploring for example.
-      void
-      _create();
       /// Represent the key functionality of the porcupine abstraction. This
       /// method does one fundamental thing: it transforms content from one
       /// nature to another e.g from a direct value to a block-based value
@@ -164,8 +157,18 @@ namespace nucleus
       ///
       /// This mechanism is crucial to transparently adapt the nature of the
       /// content so as to be optimised according to some limits.
+      ///
+      /// Note that this method is used internally and should not be called
+      /// from the outside unless one knows exactly what he is doing.
       void
-      _optimize();
+      optimize();
+
+    private:
+      /// Transform an empty porcupine into a value-based porcupine so
+      /// as to be able to return the caller a value on which to operate,
+      /// for inserting or exploring for example.
+      void
+      _create();
 
       /*-----------.
       | Interfaces |
@@ -186,7 +189,7 @@ namespace nucleus
         /// XXX
         T* _value;
         /// XXX
-        Handle* _block;
+        Handle* _handle;
         /// XXX
         Tree<T>* _tree;
       };
