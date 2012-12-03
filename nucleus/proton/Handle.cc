@@ -7,12 +7,6 @@ namespace nucleus
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    Handle const Handle::Null;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -21,11 +15,10 @@ namespace nucleus
     {
     }
 
-    Handle::Handle(Address const& address):
+    Handle::Handle(Address const& address,
+                   cryptography::SecretKey const& secret):
       _address(address),
-      _secret(Porcupine::secret())
-      // XXX[Porcupine::secret() n'est appelle que de la. il pourrait etre
-      //     specifique dans Nest]
+      _secret(secret)
     {
     }
 

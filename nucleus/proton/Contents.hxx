@@ -19,9 +19,7 @@ namespace nucleus
                        T* node):
       proton::ContentHashBlock(network, neutron::ComponentContents, creator_K),
 
-      _type(T::Constants::type),
-      _node(node),
-      _cipher(nullptr)
+      _shell(node)
     {
     }
 
@@ -33,8 +31,6 @@ namespace nucleus
 //
 
 # include <elle/serialize/Serializer.hh>
-# include <elle/serialize/Pointer.hh>
-# include <cryptography/Cipher.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Contents,
                       archive,
@@ -45,8 +41,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Contents,
 
   archive & base_class<nucleus::proton::ContentHashBlock>(value);
 
-  archive & value._type;
-  archive & elle::serialize::alive_pointer(value._cipher);
+  archive & value._shell;
 }
 
 #endif

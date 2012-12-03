@@ -1,4 +1,3 @@
-
 #include <elle/assert.hh>
 #include <elle/log.hh>
 
@@ -38,7 +37,7 @@ namespace elle
       }
     catch (...)
       {
-        ELLE_WARN("Couldn't build the error string for %s at %s:%s",
+        ELLE_WARN("could not build the error string for %s at %s:%s",
                   condition,
                   file,
                   line);
@@ -51,7 +50,7 @@ namespace elle
     if (_what.size())
       return _what.c_str();
     else
-      return "AssertError (couldn't build the error string)";
+      return "AssertError (could not build the error string)";
   }
 
 }

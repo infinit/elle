@@ -29,7 +29,7 @@ namespace nucleus
       | Enumerations |
       `-------------*/
     public:
-      enum class Type
+      enum class Type // XXX trouver un autre nom car Nodule a egalement un Type
         {
           nodule,
           value

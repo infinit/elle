@@ -4,6 +4,7 @@
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Node.hh>
 # include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Shell.hh>
 
 # include <cryptography/fwd.hh>
 // XXX[temporary: for cryptography]
@@ -19,7 +20,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     ///
     /// XXX[boxes]
     ///
@@ -48,42 +48,6 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Contents>,
       public elle::concept::UniquableMixin<Contents>
     {
-      /*-------------.
-      | Enumerations |
-      `-------------*/
-    public:
-      /// Represent all the nodes which can be embedded in a Contents i.e
-      /// which need to be encrypted.
-      enum class Type
-        {
-          data_seam,
-          data_quill,
-          data_value,
-          catalog_seam,
-          catalog_quill,
-          catalog_value,
-          reference_seam,
-          reference_quill,
-          reference_value
-        };
-
-      /// Define the mode of the contents i.e the state of its embedded node
-      /// being either encrypted or decrypted.
-      enum class Mode
-        {
-          encrypted,
-          decrypted
-        };
-
-      /*---------------.
-      | Static Methods |
-      `---------------*/
-    public:
-      /// Return the factory capable of building inner-contents classes.
-      static
-      elle::utility::Factory<Type> const&
-      factory();
-
       /*----------.
       | Constants |
       `----------*/
@@ -106,7 +70,6 @@ namespace nucleus
       Contents(Network const& network,
                cryptography::PublicKey const& creator_K,
                T* node);
-      ~Contents();
 
       // XXX
       template <typename T>
@@ -116,8 +79,7 @@ namespace nucleus
                                  cryptography::KeyPair::generate(1024).K()),
 
         _type(T::Constants::type),
-        _node(node),
-        _cipher(nullptr)
+        _shell(node)
       {
       }
       // XXX
@@ -161,21 +123,9 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Node*, node);
-      ELLE_ATTRIBUTE(cryptography::Cipher*, cipher);
+      /// XXX
+      ELLE_ATTRIBUTE(Shell, shell);
     };
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Contents::Type const type);
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Contents::Mode const mode);
   }
 }
 

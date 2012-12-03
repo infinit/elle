@@ -16,36 +16,70 @@ ELLE_LOG_COMPONENT("infinit.nucleus");
 
 namespace nucleus
 {
-  /*----------.
-  | Functions |
-  `----------*/
-
-  static
-  elle::utility::Factory<neutron::Component> const*
-  _setup()
+  namespace factory
   {
-    elle::utility::Factory<neutron::Component>* factory =
-      new elle::utility::Factory<neutron::Component>;
+    /*----------.
+    | Functions |
+    `----------*/
 
-    ELLE_TRACE("setting up the nucleus factory");
+    static
+    elle::utility::Factory<neutron::Component> const*
+    _setup_block()
+    {
+      elle::utility::Factory<neutron::Component>* factory =
+        new elle::utility::Factory<neutron::Component>;
 
-    factory->record<neutron::Object>(neutron::ComponentObject);
-    factory->record<proton::Contents>(
-      neutron::ComponentContents); // XXX[should be in neutron?]
-    factory->record<neutron::Access>(neutron::ComponentAccess);
-    factory->record<neutron::Group>(neutron::ComponentGroup);
-    factory->record<neutron::Ensemble>(neutron::ComponentEnsemble);
+      ELLE_TRACE("setting up the nucleus block factory");
 
-    return (factory);
-  }
+      factory->record<neutron::Object>(neutron::ComponentObject);
+      factory->record<proton::Contents>(
+        neutron::ComponentContents); // XXX[should be in neutron?]
+      factory->record<neutron::Access>(neutron::ComponentAccess);
+      factory->record<neutron::Group>(neutron::ComponentGroup);
+      factory->record<neutron::Ensemble>(neutron::ComponentEnsemble);
 
-  elle::utility::Factory<neutron::Component> const&
-  factory()
-  {
-    static elle::utility::Factory<neutron::Component> const* factory = _setup();
+      return (factory);
+    }
 
-    ELLE_ASSERT(factory != nullptr);
+    elle::utility::Factory<neutron::Component> const&
+    block()
+    {
+      static elle::utility::Factory<neutron::Component> const* factory =
+        _setup_block();
 
-    return (*factory);
-  }
+      ELLE_ASSERT(factory != nullptr);
+
+      return (*factory);
+    }
+
+    static
+    elle::utility::Factory<proton::Breed> const*
+    _setup_node()
+    {
+      elle::utility::Factory<proton::Breed>* factory =
+        new elle::utility::Factory<proton::Breed>;
+
+      ELLE_TRACE("setting up the nucleus node factory");
+
+      factory->record<proton::Seam<neutron::Catalog>>(
+        Contents::Type::catalog_seam);
+      factory->record<proton::Quill<neutron::Catalog>>(
+        Contents::Type::catalog_quill);
+      factory->record<neutron::Catalog>(
+        Contents::Type::catalog_value);
+
+      return (factory);
+    }
+
+    elle::utility::Factory<proton::Breed> const&
+    node()
+    {
+      static elle::utility::Factory<proton::Breed> const* factory =
+        _setup_node();
+
+      ELLE_ASSERT(factory != nullptr);
+
+      return (*factory);
+    }
+
 }

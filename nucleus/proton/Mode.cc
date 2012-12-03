@@ -2,7 +2,7 @@
 
 namespace nucleus
 {
-  namespace neutron
+  namespace proton
   {
     /*----------.
     | Operators |
@@ -14,24 +14,14 @@ namespace nucleus
     {
       switch (mode)
         {
-        case Mode::empty:
+        case Mode::encrypted:
           {
-            stream << "empty";
+            stream << "encrypted";
             break;
           }
-        case Mode::value:
+        case Mode::decrypted:
           {
-            stream << "value";
-            break;
-          }
-        case Mode::block:
-          {
-            stream << "block";
-            break;
-          }
-        case Mode::tree:
-          {
-            stream << "tree";
+            stream << "decrypted";
             break;
           }
         default:

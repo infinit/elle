@@ -46,44 +46,82 @@ namespace nucleus
     Porcupine<T>::Porcupine(/* XXX Network const& network,
                                cryptography::PublicKey const& agent_K,*/
                             Radix const& radix,
+                            cryptography::SecretKey const& secret,
                             Nest& nest):
-      _mode(radix.mode()),
-      _value(nullptr),
+      _nature(radix.nature()),
       /* XXX
       _network(network),
       _agent_K(agent_K),
       */
       _nest(nest)
     {
-      switch (this->_mode)
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             break;
           }
-        case Mode::value:
+        case Nature::value:
           {
-            this->_value = &radix.value();
+            ELLE_TRACE("decrypting the radix' cipher with the secret key");
+
+            this->_value = new T;
+
+            if (secret.Decrypt(radix.cipher(),
+                               *this->_value) == elle::Status::Error)
+              throw Exception("unable to decrypt the cipher");
 
             break;
           }
-        case Mode::block:
+        case Nature::block:
           {
-            this->_block = new Handle{radix.block()};
+            this->_block = new Handle{radix.block(), secret};
 
             break;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
-            this->_tree = new Tree{radix.tree(), this->_nest};
+            this->_tree = new Tree{radix.tree(), secret, this->_nest};
 
             break;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
     }
 
+    template <typename T>
+    Porcupine<T>::~Porcupine()
+    {
+      switch (this->_nature)
+        {
+        case Nature::empty:
+        case Nature::value:
+          {
+            delete this->_value;
+
+            break;
+          }
+        case Nature::block:
+          {
+            delete this->_block;
+
+            break;
+          }
+        case Nature::tree:
+          {
+            delete this->_tree;
+
+            break;
+          }
+        default:
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
+        }
+    }
 
     /*--------.
     | Methods |
@@ -93,6 +131,9 @@ namespace nucleus
     elle::Boolean
     Porcupine<T>::empty() const
     {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD("");
+
       return (this->size() == 0);
     }
 
@@ -103,21 +144,21 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             return (false);
           }
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (this->_value->exist(k));
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -132,14 +173,15 @@ namespace nucleus
 
             return (true);
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
             return (this->_tree->exist(k));
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreachable();
@@ -152,34 +194,34 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
       // Note that this method assumes that a single value or block
       // is responsible for any valid key _k_.
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup in a value.
-            ELLE_ASSERT(this->_mode == Mode::block);
+            ELLE_ASSERT(this->_nature == Nature::block);
           }
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (Door<T>(this->_value));
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
             return (Door<T>(*this->_block, this->_nest));
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -187,7 +229,8 @@ namespace nucleus
             return (Door<T>(this->_tree->lookup(k), this->_nest));
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreachable();
@@ -203,19 +246,19 @@ namespace nucleus
       // Note that this method assumes that a single value or block
       // is responsible for any valid key _k_.
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup.
-            ELLE_ASSERT(this->_mode == Mode::block);
+            ELLE_ASSERT(this->_nature == Nature::block);
           }
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -229,7 +272,7 @@ namespace nucleus
             // zero since this is the first and only value.
             return (std::pair<Door<T>, Capacity>{Door<T>(this->_value), 0});
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -250,7 +293,7 @@ namespace nucleus
             return (std::pair<Door<T>, Capacity>{
               Door<T>(*this->_block, this->_nest), 0});
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -263,7 +306,8 @@ namespace nucleus
               Door<T>(pair.first, this->_nest), pair.second});
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreachable();
@@ -280,19 +324,19 @@ namespace nucleus
 
       ELLE_ASSERT(e != nullptr);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup.
-            ELLE_ASSERT(this->_mode == Mode::block);
+            ELLE_ASSERT(this->_nature == Nature::block);
           }
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -303,7 +347,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -320,7 +364,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -342,7 +386,8 @@ namespace nucleus
             return;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreachable();
@@ -355,14 +400,14 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           throw Exception("unable to erase the '%s' element from an empty "
                           "porcupine", k);
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -373,7 +418,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -390,7 +435,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -412,7 +457,8 @@ namespace nucleus
             return;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreachable();
@@ -425,13 +471,13 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           throw Exception("unable to update an empty porcupine");
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -443,7 +489,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -461,7 +507,7 @@ namespace nucleus
 
             return;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -474,7 +520,8 @@ namespace nucleus
             return;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreacable();
@@ -487,21 +534,21 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             return (0);
           }
-        case Mode::value:
+        case Nature::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (static_cast<elle::Size>(this->_value->size()));
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_block != nullptr);
 
@@ -515,7 +562,7 @@ namespace nucleus
 
             return (size);
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -524,7 +571,8 @@ namespace nucleus
             return (size);
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
       elle::unreacable();
@@ -537,44 +585,68 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(flags);
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
-            break;
+            return;
           }
-        case Mode::block:
+        case Nature::value:
           {
-            Ambit<T> value(this->_nest, this->_root);
+            ELLE_ASSERT(this->_value != nullptr);
 
-            // load the value nodule.
+            // Check the footprint.
+            if (flags & flags::footprint)
+              {
+                ELLE_DEBUG_SCOPE("checking footprints");
+
+                if (this->_value->footprint() == 0)
+                  throw Exception("the footprint is null");
+
+                if (this->_value->footprint() !=
+                    elle::serialize::footprint(*this->_value))
+                  throw Exception("the recorded footprint does not match the "
+                                  "instance's: value(%s) versus footprint(%s)",
+                                  this->_value->footprint(),
+                                  elle::serialize::footprint(*this->_value));
+
+                if (this->_value->footprint() > this->_nest.limits().extent())
+                  throw Exception("the footprint '%s' exceeds the extent '%s'",
+                                  this->_value->footprint(),
+                                  this->_nest.limits().extent());
+              }
+
+            return;
+          }
+        case Nature::block:
+          {
+            ELLE_ASSERT(this->_block != nullptr);
+
+            Ambit<T> value(this->_nest, *this->_block);
+
             value.load();
 
-            // check the address, if required.
+            // Check the address.
             if (flags & flags::address)
               {
-                // bind the current block.
+                ELLE_DEBUG_SCOPE("checking addresses");
+
+                // Compute the block's address.
                 Address address{value.contents().bind()};
 
-                // compare the addresses.
-                if (this->_root.address() != address)
+                // Compare it with the one used as a reference.
+                if (this->_block->address() != address)
                   throw Exception("invalid address: root(%s) versus bind(%s)",
                                   this->_root.address(), address);
               }
 
-            // check the capacity.
-            if (flags & flags::capacity)
-              {
-                if (this->_capacity != value().capacity())
-                  throw Exception("invalid capacity: this(%s) versus value(%s)",
-                                  this->_capacity, value().capacity());
-              }
-
-            // check the footprint.
+            // Check the footprint.
             if (flags & flags::footprint)
               {
+                ELLE_DEBUG_SCOPE("checking footprints");
+
                 if (value().footprint() == 0)
                   throw Exception("the footprint is null");
 
@@ -590,286 +662,25 @@ namespace nucleus
                                   this->_nest.limits().extent());
               }
 
-            // unload the value nodule.
             value.unload();
 
-            break;
+            return;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
-            Ambit<Nodule<T>> root(this->_nest, this->_root);
+            ELLE_ASSERT(this->_tree != nullptr);
 
-            // load the root nodule.
-            root.load();
+            // Check the validity of the tree.
+            this->_tree->check(flags);
 
-            // check the address, if required.
-            if (flags & flags::address)
-              {
-                ELLE_DEBUG_SCOPE("checking addresses");
-
-                // bind the current block.
-                Address address{root.contents().bind()};
-
-                // compare the addresses.
-                if (this->_root.address() != address)
-                  throw Exception("invalid address: root(%s) versus bind(%s)",
-                                  this->_root.address(), address);
-              }
-
-            // trigger the check method on the root nodule.
-            if (flags & flags::recursive)
-              root().check(flags);
-
-            // check the capacity, if required.
-            if (flags & flags::capacity)
-              {
-                ELLE_DEBUG_SCOPE("checking capacities");
-
-                if (this->_capacity != root().capacity())
-                  throw Exception("invalid capacity: this(%s) versus root(%s)",
-                                  this->_capacity, root().capacity());
-              }
-
-            // check the footprint.
-            if (flags & flags::footprint)
-              {
-                ELLE_DEBUG_SCOPE("checking footprints");
-
-                if (root().footprint() == 0)
-                  throw Exception("the footprint is null");
-
-                if (root().footprint() != elle::serialize::footprint(root()))
-                  throw Exception("the recorded footprint does not match the "
-                                  "instance's: root(%s) versus footprint(%s)",
-                                  root().footprint(),
-                                  elle::serialize::footprint(root()));
-
-                if (root().footprint() > this->_nest.limits().extent())
-                  throw Exception("the footprint '%s' exceeds the extent '%s'",
-                                  root().footprint(),
-                                  this->_nest.limits().extent());
-              }
-
-            // check the state.
-            if (flags & flags::state)
-              {
-                ELLE_DEBUG_SCOPE("checking states");
-
-                if (this->_state != root().state())
-                  throw Exception("invalid state: this(%s) versus root(%s)",
-                                  this->_state, root().state());
-              }
-
-            // unload the root nodule.
-            root.unload();
-
-            break;
+            return;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
-        }
-    }
-
-    template <typename T>
-    void
-    Porcupine<T>::walk(elle::Natural32 const margin)
-    {
-      elle::String alignment(margin, ' ');
-
-      std::cout << alignment << "[Porcupine]" << std::endl;
-
-      // dump the mode.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Mode] " << std::dec << this->_mode << std::endl;
-
-      // dump the height.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Height] " << std::dec << this->_height << std::endl;
-
-      // dump the capacity.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Capacity] " << std::dec << this->_capacity << std::endl;
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[State] " << std::dec << this->_state << std::endl;
-
-      // proceed if there is a root block.
-      if (this->_root != Handle::Null)
-        {
-          // dump the value.
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Root]" << std::endl;
-
-          switch (this->_mode)
-            {
-            case Mode::empty:
-              {
-                break;
-              }
-            case Mode::block:
-              {
-                Ambit<T> value(this->_nest, this->_root);
-
-                // dump the value.
-                if (this->_root.Dump(margin + 4) == elle::Status::Error)
-                  throw Exception("unable to dump the handle");
-
-                // load the value nodule.
-                value.load();
-
-                // dump the value.
-                if (value.contents().Dump(margin + 4) == elle::Status::Error)
-                  throw Exception("unable to dump the value");
-
-                // unload the value nodule.
-                value.unload();
-
-                break;
-              }
-            case Mode::tree:
-              {
-                Ambit<Nodule<T>> root(this->_nest, this->_root);
-
-                // dump the root.
-                if (this->_root.Dump(margin + 4) == elle::Status::Error)
-                  throw Exception("unable to dump the handle");
-
-                // load the root nodule.
-                root.load();
-
-                // walk through the nodule.
-                root().walk(margin + 4);
-
-                // unload the root nodule.
-                root.unload();
-
-                break;
-              }
-            default:
-              throw Exception("unknown mode: '%s'",
-                              static_cast<int>(this->_mode));
-            }
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Root] " << elle::none << std::endl;
-        }
-    }
-
-    /// XXX
-    /// this method goes through the porcupine in order to seal the
-    /// blocks having been either created or modified.
-    ///
-    /// once complete, the porcupine should be consistent so for its
-    /// constituent blocks to be stored.
-    ///
-    template <typename T>
-    void
-    Porcupine<T>::seal(cryptography::SecretKey const& secret)
-    {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-      ELLE_TRACE_METHOD(secret);
-
-      ELLE_TRACE("state: %s", this->_state);
-
-      switch (this->_state)
-        {
-        case State::clean:
-          {
-            break;
-          }
-        case State::dirty:
-          {
-            ELLE_TRACE("mode: %s", this->_mode);
-
-            switch (this->_mode)
-              {
-              case Mode::empty:
-                {
-                  throw Exception("unable to seal an empty porcupine");
-                }
-              case Mode::block:
-                {
-                  Ambit<T> value(this->_nest, this->_root);
-
-                  // load the value nodule.
-                  value.load();
-
-                  // if the porcupine is dirty, so should be the value.
-                  ELLE_ASSERT(this->_state == value().state());
-
-                  // Encrypt and bind the value.
-                  value.contents().encrypt(secret);
-                  Address address{value.contents().bind()};
-
-                  value().state(State::consistent);
-                  value.contents().state(State::consistent);
-
-                  // unload the value nodule.
-                  value.unload();
-
-                  this->_root.address(address);
-                  this->_state = State::consistent;
-
-                  break;
-                }
-              case Mode::tree:
-                {
-                  Ambit<Nodule<T>> root(this->_nest, this->_root);
-
-                  // load the root nodule.
-                  root.load();
-
-                  // if the porcupine is dirty, so should be the root.
-                  ELLE_ASSERT(this->_state == root().state());
-
-                  // seal recursively.
-                  root().seal(secret);
-
-                  // Encrypt and bind the root block.
-                  root.contents().encrypt(secret);
-                  Address address{root.contents().bind()};
-
-                  root().state(State::consistent);
-                  root.contents().state(State::consistent);
-
-                  // unload the root nodule.
-                  root.unload();
-
-                  this->_root.address(address);
-                  this->_state = State::consistent;
-
-                  break;
-                }
-              default:
-                throw Exception("unknown mode: '%s'",
-                                static_cast<int>(this->_mode));
-              }
-
-            break;
-          }
-        case State::consistent:
-          {
-            throw Exception("unable to seal a consistent porcupine");
-          }
-        default:
-          throw Exception("unknown state: '%s'",
-                          static_cast<int>(this->_state));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
-      // set the secret key as null.
-      this->_root.secret(cryptography::SecretKey::Null);
-    }
-
-    template <typename T>
-    void
-    Porcupine<T>::unseal(cryptography::SecretKey const& secret)
-    {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-      ELLE_TRACE_METHOD(secret);
-
-      this->_root.secret(secret);
+      elle::unreacahable();
     }
 
     template <typename T>
@@ -879,45 +690,70 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      Statistics stats;
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      ELLE_TRACE("mode: %s", this->_mode);
-
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
-            break;
+            Statistics stats;
+
+            // There is no data, hence no statistics.
+            stats.footprint_minimum(0);
+            stats.footprint_average(0);
+            stats.footprint_maximum(0);
+            stats.capacity_minimum(0);
+            stats.capacity_average(0);
+            stats.capacity_maximum(0);
+            stats.blocks_clean(0);
+            stats.blocks_dirty(0);
+            stats.blocks_consistent(0);
+            stats.blocks_all(0);
+
+            return (stats);
           }
-        case Mode::block:
+        case Nature::value:
           {
-            Ambit<T> value(this->_nest, this->_root);
+            ELLE_ASSERT(this->_value != nullptr);
+
+            Statistics stats;
+
+            Footprint footprint = elle::serialize::footprint(*this->_value);
+            Capacity capacity = this->_value->capacity();
+
+            stats.footprint_minimum(
+              footprint < stats.footprint_minimum() ?
+              footprint : stats.footprint_minimum());
+            stats.footprint_average(
+              (stats.footprint_average() + footprint) / 2);
+            stats.footprint_maximum(
+              footprint > stats.footprint_maximum() ?
+              footprint : stats.footprint_maximum());
+
+            stats.capacity_minimum(
+              capacity < stats.capacity_minimum() ?
+              capacity : stats.capacity_minimum());
+            stats.capacity_average(
+              (stats.capacity_average() + capacity) / 2);
+            stats.capacity_maximum(
+              capacity > stats.capacity_maximum() ?
+              capacity : stats.capacity_maximum());
+
+            stats.blocks_clean(0);
+            stats.blocks_dirty(0);
+            stats.blocks_consistent(0);
+            stats.blocks_all(0);
+
+            return (stats);
+          }
+        case Nature::block:
+          {
+            ELLE_ASSERT(this->_block != nullptr);
+
+            Statistics stats;
+            Ambit<T> value(this->_nest, *this->_block);
 
             value.load();
-
-            stats.blocks_all(stats.blocks_all() + 1);
-
-            switch (value().state())
-              {
-              case State::clean:
-                {
-                  stats.blocks_clean(stats.blocks_clean() + 1);
-
-                  break;
-                }
-              case State::dirty:
-                {
-                  stats.blocks_dirty(stats.blocks_dirty() + 1);
-
-                  break;
-                }
-              case State::consistent:
-                {
-                  stats.blocks_consistent(stats.blocks_consistent() + 1);
-
-                  break;
-                }
-              }
 
             Footprint footprint = elle::serialize::footprint(value());
             Capacity capacity = value().capacity();
@@ -940,29 +776,195 @@ namespace nucleus
               capacity > stats.capacity_maximum() ?
               capacity : stats.capacity_maximum());
 
+            stats.blocks_all(1);
+
+            switch (value().state())
+              {
+              case State::clean:
+                {
+                  stats.blocks_clean(1);
+
+                  break;
+                }
+              case State::dirty:
+                {
+                  stats.blocks_dirty(1);
+
+                  break;
+                }
+              case State::consistent:
+                {
+                  stats.blocks_consistent(1);
+
+                  break;
+                }
+              default:
+                throw Exception("unknown state: '%s'",
+                                static_cast<int>(value().state()));
+              }
+
+            value.unload();
+
+            return (stats);
+          }
+        case Nature::tree:
+          {
+            ELLE_ASSERT(this->_tree != nullptr);
+
+            return (this->_tree->statistics());
+          }
+        default:
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    void
+    Porcupine<T>::dump(elle::Natural32 const margin)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD(margin);
+
+      elle::String alignment(margin, ' ');
+      elle::String shift(2, ' ');
+
+      std::cout << alignment << "[Porcupine] " << this->_nature << std::endl;
+
+      switch (this->_nature)
+        {
+        case Nature::empty:
+          {
+            break;
+          }
+        case Nature::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            this->_value.Dump(2);
+
+            break;
+          }
+        case Nature::block:
+          {
+            ELLE_ASSERT(this->_block != nullptr);
+
+            Ambit<T> value(this->_nest, *this->_block);
+
+            value.load();
+
+            value.contents().Dump(2);
+
             value.unload();
 
             break;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
-            Ambit<Nodule<T>> root(this->_nest, this->_root);
+            ELLE_ASSERT(this->_tree != nullptr);
 
-            // load the root nodule.
-            root.load();
-
-            root().statistics(stats);
-
-            // unload the root nodule.
-            root.unload();
+            this->_tree->dump(2);
 
             break;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
 
-      return (stats);
+      std::cout << alignment << shift << "[State] "
+                << this->_state << std::endl;
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    void
+    Porcupine<T>::seal(cryptography::SecretKey const& secret)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD(secret);
+
+      ELLE_TRACE("state: %s", this->_state);
+
+      switch (this->_state)
+        {
+        case State::clean:
+          {
+            // Nothing to do since the porcupine is clean i.e nothing has
+            // changed.
+            return;
+          }
+        case State::dirty:
+          {
+            ELLE_TRACE("nature: %s", this->_nature);
+
+            switch (this->_nature)
+              {
+              case Nature::empty:
+                throw Exception("unable to seal an empty porcupine");
+              case Nature::value:
+                {
+                  ELLE_ASSERT(this->_value != nullptr);
+
+                  cryptography::Cipher cipher;
+
+                  if (secret.Encrypt(*this->_value,
+                                     cipher) == elle::Status::Error)
+                    throw Exception("unable to encrypt the value");
+
+                  return (Radix(cipher));
+                }
+              case Nature::block:
+                {
+                  ELLE_ASSERt(this->_block != nullptr);
+
+                  Ambit<T> value(this->_nest, *this->_block);
+
+                  value.load();
+
+                  // If the porcupine is dirty, so should be the value.
+                  ELLE_ASSERT(this->_state == value().state());
+
+                  // Encrypt and bind the value block.
+                  value.contents().encrypt(secret);
+                  Address address{value.contents().bind()};
+
+                  // Update the node and block states.
+                  value().state(State::consistent);
+                  value.contents().state(State::consistent);
+
+                  value.unload();
+
+                  // Update the porcupine state.
+                  this->_state = State::consistent;
+
+                  return (Radix(this->_block.address()));
+                }
+              case Nature::tree:
+                {
+                  ELLE_ASSERT(this->_tree != nullptr);
+
+                  // Seal the tree and return its root-based radix.
+                  return (Radix(this->_tree->seal(secret)));
+                }
+              default:
+                throw Exception("unknown nature: '%s'",
+                                static_cast<int>(this->_nature));
+              }
+
+            break;
+          }
+        case State::consistent:
+          throw Exception("unable to seal a consistent porcupine");
+        default:
+          throw Exception("unknown state: '%s'",
+                          static_cast<int>(this->_state));
+        }
+
+      elle::unreachable();
     }
 
     template <typename T>
@@ -973,17 +975,15 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Make sure the porcupine is empty.
-      ELLE_ASSERT(this->_mode == Mode::empty);
+      ELLE_ASSERT(this->_nature == Nature::empty);
 
-      // Create a value and set it as the value on which the porcupine
+      // Create a T and set it as the value on which the porcupine
       // is operating.
-
-      ELLE_ASSERT(this->_value == nullptr);
       this->_value = new T;
+      this->_nature = Nature::value;
 
-      // Set the porcupine's state and mode.
+      // Set the porcupine's state.
       this->_state = State::dirty;
-      this->_mode = Mode::value;
     }
 
     template <typename T>
@@ -993,15 +993,15 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE("mode: %s", this->_mode);
+      ELLE_TRACE("nature: %s", this->_nature);
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             throw Exception("unable to optimize an empty porcupine");
           }
-        case Mode::block:
+        case Nature::block:
           {
             Ambit<T> value(this->_nest, this->_root);
 
@@ -1066,8 +1066,8 @@ namespace nucleus
                 // increment the height.
                 this->_height++;
 
-                // set the mode.
-                this->_mode = Mode::tree;
+                // set the nature.
+                this->_nature = Nature::tree;
               }
             else if (value().footprint() <
                      (this->_nest.limits().extent() *
@@ -1098,8 +1098,8 @@ namespace nucleus
                     // update the state.
                     this->_state = State::dirty;
 
-                    // set the mode.
-                    this->_mode = Mode::empty;
+                    // set the nature.
+                    this->_nature = Nature::empty;
                   }
                 else
                   value.unload();
@@ -1109,7 +1109,7 @@ namespace nucleus
 
             break;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             Ambit<Nodule<T>> root(this->_nest, this->_root);
 
@@ -1304,9 +1304,9 @@ namespace nucleus
                         // at this point, the tree should have a height of zero.
                         ELLE_ASSERT(this->_height == 0);
 
-                        // therefore, set the mode as value now that the
+                        // therefore, set the nature as value now that the
                         // root handle actually references a value.
-                        this->_mode = Mode::block;
+                        this->_nature = Nature::block;
                       }
                     else
                       quill.unload();
@@ -1366,78 +1366,16 @@ namespace nucleus
             break;
           }
         default:
-          throw Exception("unknown mode: '%s'", static_cast<int>(this->_mode));
+          throw Exception("unknown nature: '%s'",
+                          static_cast<int>(this->_nature));
         }
     }
 
-    /// XXX
-    /// this method is used for retrieving the handle of the quill
-    /// responsible for the given key.
-    ///
-    /// this method is widely used being for inserting, locating or
-    /// deleting entries.
-    ///
-    template <typename T>
-    Handle
-    Porcupine<T>::_search(typename T::K const& k)
-    {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-      ELLE_TRACE_METHOD(k);
+    /*----------.
+    | Printable |
+    `----------*/
 
-      Handle v;
-
-      // make sure we are operating in tree mode.
-      ELLE_ASSERT(this->_mode == Mode::tree);
-
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
-
-      // load the root nodule.
-      root.load();
-
-      // trigger the search method on the root nodule.
-      v = root().search(k);
-
-      // unload the root nodule.
-      root.unload();
-
-      // first, set the handle as being the root.
-      //
-      // this is required because, should the root be a quill since the
-      // quill search() implementation does nothing.
-      //
-      // therefore, the whole search() mechanism relies on the fact that
-      // the search() method sets the handle temporarily until the child
-      // quill does nothing after which the call returns with the temporary
-      // handle which happens to reference the quill.
-      //
-      if (v == Handle::Null)
-        v = this->_root;
-
-      return (v);
-    }
-
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    template <typename T>
-    elle::Status
-    Porcupine<T>::Dump(const elle::Natural32 margin) const
-    {
-      elle::String alignment(margin, ' ');
-
-      std::cout << alignment << "[Porcupine]" << std::endl;
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Radix] " << std::endl;
-      this->_radix.Dump(margin + 2);
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[State] " << std::dec << this->_state << std::endl;
-
-      return elle::Status::Ok;
-    }
-
+    // XXX
   }
 }
 

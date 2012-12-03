@@ -9,15 +9,12 @@ namespace nucleus
     | Enumerations |
     `-------------*/
 
-    /// Define the mode in which content is generally represented being
-    /// either empty, directly through a value, through a single
-    /// block of data or via a complete tree of blocks.
+    /// Define the mode of the contents i.e the state of its embedded node
+    /// being either encrypted or decrypted.
     enum class Mode
       {
-        empty,
-        value,
-        block,
-        tree
+        encrypted,
+        decrypted
       };
 
     /*----------.

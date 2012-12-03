@@ -5,9 +5,9 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 
+# include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Height.hh>
 # include <nucleus/proton/Capacity.hh>
-# include <nucleus/proton/Handle.hh>
 
 namespace nucleus
 {
@@ -23,6 +23,9 @@ namespace nucleus
       `-------------*/
     public:
       Root(); // XXX[deserialize]
+      Root(Address const& address,
+           Height const& height,
+           Capacity const& capacity);
 
       /*-----------.
       | Interfaces |
@@ -45,9 +48,9 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
+      ELLE_ATTRIBUTE_R(Address, address);
       ELLE_ATTRIBUTE_R(Height, height);
       ELLE_ATTRIBUTE_R(Capacity, capacity);
-      ELLE_ATTRIBUTE_R(Handle, block);
     };
   }
 }

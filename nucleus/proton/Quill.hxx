@@ -551,10 +551,7 @@ namespace nucleus
     Handle
     Quill<T>::search(typename T::K const&)
     {
-      // do nothing as the seam's Search() method will have updated the
-      // handle with the reference to _this_ quill..
-
-      return (Handle::Null);
+      elle::unreachable();
     }
 
     template <typename T>

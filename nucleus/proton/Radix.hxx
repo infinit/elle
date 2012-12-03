@@ -22,7 +22,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
       }
     case nucleus::proton::Mode::value:
       {
-        archive & elle::serialize::alive_pointer(value._value);
+        archive & elle::serialize::alive_pointer(value._cipher);
 
         break;
       }

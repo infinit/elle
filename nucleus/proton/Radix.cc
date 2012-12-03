@@ -1,7 +1,8 @@
 #include <nucleus/proton/Radix.hh>
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Value.hh>
 #include <nucleus/proton/Root.hh>
+
+#include <cryptography/Cipher.hh>
 
 namespace nucleus
 {
@@ -12,55 +13,56 @@ namespace nucleus
     `-------------*/
 
     Radix::Radix():
-      _mode(Mode::empty),
-      _value(nullptr)
+      _nature(Nature::empty),
     {
     }
 
-    Radix::Radix(T* value):
-      _mode(Mode::value),
-      _value(value)
+    Radix::Radix(cryptography::Cipher const& value):
+      _nature(Nature::value),
+      _cipher(new cryptography::Cipher{value})
     {
     }
 
     Radix::Radix(Address const& address):
-      _mode(Mode::block),
+      _nature(Nature::block),
       _address(new Address{address})
     {
     }
 
     Radix::Radix(Root const& root):
-      _mode(Mode::tree),
+      _nature(Nature::tree),
       _root(new Root{root})
     {
     }
 
     Radix::~Radix()
     {
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             break;
           }
-        case Mode::value:
+        case Nature::value:
           {
+            delete this->_cipher;
+
             break;
           }
-        case Mode::block:
+        case Nature::block:
           {
             delete this->_address;
 
             break;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             delete this->_root;
 
             break;
           }
         default:
-          throw Exception("unknown radix mode '%s'", this->_mode);
+          throw Exception("unknown radix nature '%s'", this->_nature);
         }
     }
 
@@ -68,32 +70,16 @@ namespace nucleus
     | Methods |
     `--------*/
 
-    Value const*
+    cryptography::Cipher const&
     Radix::value() const
     {
-      ELLE_ASSERT(this->_value);
+      ELLE_ASSERT(this->_cipher);
 
-      return (this->_value);
-    }
-
-    Value*
-    Radix::value()
-    {
-      ELLE_ASSERT(this->_value);
-
-      return (this->_value);
+      return (*this->_cipher);
     }
 
     Address const&
     Radix::block() const
-    {
-      ELLE_ASSERT(this->_address);
-
-      return (*this->_address);
-    }
-
-    Address&
-    Radix::block()
     {
       ELLE_ASSERT(this->_address);
 
@@ -108,14 +94,6 @@ namespace nucleus
       return (*this->_root);
     }
 
-    Root&
-    Radix::tree()
-    {
-      ELLE_ASSERT(this->_root);
-
-      return (*this->_root);
-    }
-
     /*----------.
     | Printable |
     `----------*/
@@ -123,23 +101,23 @@ namespace nucleus
     void
     Radix::print(std::ostream& stream) const
     {
-      stream << this->_mode << "(";
+      stream << this->_nature << "(";
 
-      switch (this->_mode)
+      switch (this->_nature)
         {
-        case Mode::empty:
+        case Nature::empty:
           {
             break;
           }
-        case Mode::value:
+        case Nature::value:
           {
-            ELLE_ASSERT(this->_value != nullptr);
+            ELLE_ASSERT(this->_cipher != nullptr);
 
-            stream << *this->_value;
+            stream << *this->_cipher;
 
             break;
           }
-        case Mode::block:
+        case Nature::block:
           {
             ELLE_ASSERT(this->_address != nullptr);
 
@@ -147,7 +125,7 @@ namespace nucleus
 
             break;
           }
-        case Mode::tree:
+        case Nature::tree:
           {
             ELLE_ASSERT(this->_root != nullptr);
 
@@ -156,7 +134,7 @@ namespace nucleus
             break;
           }
         default:
-          throw Exception("unknown radix mode '%s'", this->_mode);
+          throw Exception("unknown radix nature '%s'", this->_nature);
         }
     }
   }

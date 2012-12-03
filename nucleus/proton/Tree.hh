@@ -7,6 +7,8 @@
 # include <nucleus/proton/Root.hh>
 # include <nucleus/proton/Nest.hh>
 
+# include <cryptography/fwd.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -134,6 +136,7 @@ namespace nucleus
       Tree(Nest&);
       /// Construct a tree based on the given _root_ information.
       Tree(Root const& root,
+           cryptography::SecretKey const& secret,
            Nest& nest);
 
       /*--------.
@@ -143,7 +146,7 @@ namespace nucleus
       /// Return true of the given key is associated with a value element.
       elle::Boolean
       exist(typename T::K const& k);
-      /// Take a tuple key/value and add it to the porcupine.
+      /// Take a tuple key/value and add it to the tree.
       void
       add(typename T::K const& k,
           Handle const& v);
@@ -168,6 +171,44 @@ namespace nucleus
       /// the value block responsible for the given key _k_.
       void
       update(typename T::K const& k);
+      /// Check that the tree is valid according to some points given by
+      /// _flags_ such that the internal capacity corresponds to the actual
+      /// number of elements being stored, that the block addresses are correct,
+      /// that the major keys are indeed the highest in their value and so on.
+      ///
+      /// This method is obviously provided for debugging purpose and should not
+      /// be used in production considering the amount of computing such a check
+      /// takes: all the blocks are retrieved from the storage layer and loaded
+      /// in memory for checking.
+      void
+      check(Flags const flags = flags::all);
+      /// Return statistics on the tree such as the number of blocks
+      /// composing it, the average footprint, minimum/maximum capacity etc.
+      Statistics
+      statistics();
+      /// Display a detailed state of the porcupine.
+      void
+      dump(elle::Natural32 const margin = 0);
+      /// Return the root of the tree, once encrypted and sealed.
+      ///
+      /// The root could then be serialized or used for instantiate a new
+      /// treer. However, one should be aware of the fact that a root alone
+      /// is useless since the tree's constituing blocks are located in
+      /// the nest.
+      ///
+      /// Note that once sealed, no modifying operating should be carried
+      /// out on the tree.
+      Root
+      seal(cryptography::SecretKey const& secret);
+
+    private:
+      /// Return the handle of the quill block responsible for the given key
+      /// _k_.
+      ///
+      /// This method is widely used for inserting, locating and deleting
+      /// elements from the quill nodes.
+      Handle
+      _search(typename T::K const& k);
 
       /*-----------.
       | Attributes |

@@ -27,11 +27,6 @@ namespace nucleus
     /// referenced block.
     class Handle
     {
-      // XXX
-    public:
-      /// XXX
-      static Handle const Null;
-
       //
       // constructors & destructors
       //
@@ -39,7 +34,8 @@ namespace nucleus
       /// XXX
       Handle();
       /// XXX
-      Handle(Address const& address);
+      Handle(Address const& address,
+             cryptography::SecretKey const& secret);
       /// XXX
       Handle(Placement const& placement,
              Address const& address);

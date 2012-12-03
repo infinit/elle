@@ -641,26 +641,25 @@ namespace nucleus
       // load the current nodule.
       current.load();
 
-      // search in this nodule.
-      v = current().search(k);
+      // Is the child nodule a quill?
+      if (current().type() == Nodule<T>::Type::quill)
+        {
+          current.unload();
 
-      // unload the current nodule.
-      current.unload();
+          return (inlet->value());
+        }
+      else
+        {
+          // search in this nodule.
+          Handle v{current().search(k)};
 
-      // set the handle as being the inlet's value.
-      //
-      // this is required because, should the child be a quill, the Search()
-      // method implementation for Quills does nothing.
-      //
-      // therefore, the whole Search() mechanism relies on the fact that
-      // the seam's Search() method sets the handle temporarily until the
-      // child quill does nothing after which the call returns with the
-      // temporary handle which happens to reference the quill.
-      //
-      if (v == Handle::Null)
-        v = inlet->value();
+          // unload the current nodule.
+          current.unload();
 
-      return (v);
+          return (v);
+        }
+
+      elle::unreachable();
     }
 
     template <typename T>

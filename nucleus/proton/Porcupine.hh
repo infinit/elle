@@ -8,17 +8,13 @@
 # include <cryptography/PublicKey.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Handle.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Flags.hh>
-# include <nucleus/proton/Radix.hh>
+# include <nucleus/proton/Nature.hh>
+# include <nucleus/proton/Handle.hh>
+# include <nucleus/proton/Tree.hh>
 
 # include <boost/noncopyable.hpp>
-
-// XXX
-# include <nucleus/proton/Handle.hh>
-# include <nucleus/proton/Value.hh>
-# include <nucleus/proton/Tree.hh>
 
 namespace nucleus
 {
@@ -27,13 +23,12 @@ namespace nucleus
     /// XXX
     template <typename T>
     class Porcupine:
-      public elle::io::Dumpable
-    // XXX public elle::Printable
-      // XXX private boost::noncopyable
+      public elle::Printable,
+      private boost::noncopyable
     {
-      //
-      // constants
-      //
+      /*----------.
+      | Constants |
+      `----------*/
     public:
       /// This constant represents the hard-coded length of the secrets
       /// used to encrypt the blocks composing porcupines.
@@ -41,18 +36,9 @@ namespace nucleus
       ///     takes place?
       static const elle::Natural32 secret_length;
 
-      // XXX[to remove]
-    public:
-      enum class Mode
-      {
-        empty,
-          single,
-          hierarchy
-          };
-
-      //
-      // static methods
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
       /// This method returns the default secret key to be used whenever
       /// a new handle is created.
@@ -60,22 +46,23 @@ namespace nucleus
       cryptography::SecretKey
       secret();
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       /// XXX[here the agent_K represents the current user which will happen to
       ///     be the creator of every new block]
       /// XXX[on pourrait passer la secretkey pour dechiffrer plutot que
       ///     d'appeler unseal()]
       Porcupine(Radix const& radix,
+                cryptography::SecretKey const& secret,
                 /* XXX Network const& network,
                    cryptography::PublicKey const& agent_K,*/
                 Nest& nest);
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
       /// Return true if the porcupine contains no element.
       elle::Boolean
@@ -137,18 +124,26 @@ namespace nucleus
       /// in memory for checking.
       void
       check(Flags const flags = flags::all);
-      /// XXX
-      void
-      walk(elle::Natural32 const margin = 0);
-      /// XXX
-      void
-      seal(cryptography::SecretKey const& secret);
-      /// XXX
-      void
-      unseal(cryptography::SecretKey const& secret);
-      /// XXX
+      /// Return statistics on the porcupine such as the number of blocks
+      /// composing it, the average footprint, minimum/maximum capacity etc.
       Statistics
       statistics();
+      /// Display a detailed state of the porcupine.
+      void
+      dump(elle::Natural32 const margin = 0);
+      /// Return the radix of the porcupine, once encrypted and sealed.
+      ///
+      /// The radix could then be serialized or used for instantiate a
+      /// porcupine. However, one should be aware of the fact that, depending
+      /// on the nature of the content, a radix alone is useless. Given a block
+      /// or tree nature, the constituing blocks are encrypted and stored in
+      /// the nest. Therefore, while the radix represent the meta descriptor
+      /// of the content, the blocks are actually located in the nest.
+      ///
+      /// Note that once sealed, no modifying operating should be carried
+      /// out on the porcupine.
+      Radix
+      seal(cryptography::SecretKey const& secret);
 
     private:
       /// Transform an empty porcupine into a value-based porcupine so
@@ -156,29 +151,36 @@ namespace nucleus
       /// for inserting or exploring for example.
       void
       _create();
-      /// XXX
+      /// Represent the key functionality of the porcupine abstraction. This
+      /// method does one fundamental thing: it transforms content from one
+      /// nature to another e.g from a direct value to a block-based value
+      /// or to a block to a tree.
+      ///
+      /// Such a decision is made depending on the limits associated with
+      /// every nature. For example, should the value block reach a footprint
+      /// of 1024, it would be transformed into a tree. Likewise, should the
+      /// value block reach a low limit of 256 bytes, it would be transformed
+      /// into a direct value.
+      ///
+      /// This mechanism is crucial to transparently adapt the nature of the
+      /// content so as to be optimised according to some limits.
       void
       _optimize();
-      /// XXX
-      Handle
-      _search(typename T::K const& k);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 margin = 0) const;
-
-      // serialize
-      ELLE_SERIALIZE_FRIEND_FOR(Porcupine);
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       /*-----------.
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Mode, mode);
+      ELLE_ATTRIBUTE_R(Nature, nature);
       union
       {
         /// XXX
@@ -195,14 +197,6 @@ namespace nucleus
       ELLE_ATTRIBUTE(Nest&, nest);
       ELLE_ATTRIBUTE(State, state);
     };
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Porcupine::Mode const mode);
   }
 }
 

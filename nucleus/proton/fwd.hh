@@ -36,6 +36,7 @@ namespace nucleus
     class Quill;
     class Radix;
     class Root;
+    class Shell;
     template <typename T>
     class Seam;
     class Statistics;
@@ -47,6 +48,7 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/Breed.hh>
 # include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/Extent.hh>
 # include <nucleus/proton/Family.hh>

@@ -6,7 +6,9 @@
 # include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Mode.hh>
+# include <nucleus/proton/Nature.hh>
+
+# include <cryptography/fwd.hh>
 
 namespace nucleus
 {
@@ -33,7 +35,7 @@ namespace nucleus
       /// Construct an empty radix.
       Radix();
       /// Construct a value-based radix.
-      Radix(T* value);
+      Radix(cryptography::Cipher const& value);
       /// Construct a radix based on a single block whose address is _address_.
       Radix(Address const& address);
       /// Construct a tree-based radix given the root _root_.
@@ -47,18 +49,12 @@ namespace nucleus
       | Methods |
       `--------*/
     public:
-      Value const*
+      cryptography::Cipher const&
       value() const;
-      Value*
-      value();
       Address const&
       block() const;
-      Address&
-      block();
       Root const&
       tree() const;
-      Root&
-      tree();
 
       /*-----------.
       | Interfaces |
@@ -81,7 +77,7 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Mode, mode);
+      ELLE_ATTRIBUTE_R(Nature, nature);
       union
       {
         /// Represent a value being directly serialized withing the containing
@@ -91,7 +87,10 @@ namespace nucleus
         /// Object, which could be optimised so as to directly embed a value,
         /// say Data, up to a certain size after which it becomes a block
         /// which will be referenced in the Object through an address.
-        Value* _value; // XXX[shared_ptr?]
+        ///
+        /// Note that any block-embedeed value is encrypted for the authorized
+        /// users' eyes only.
+        cryptography::Cipher* _cipher;
         /// Represent a single block referenced through an address.
         Address* _address;
         /// Represent the type-independent root of a hierarchy of blocks
