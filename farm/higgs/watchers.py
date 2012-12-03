@@ -9,6 +9,7 @@ import copy
 import time
 import email
 import runpy
+import psutil
 import pprint
 import argparse
 import datetime
@@ -122,38 +123,32 @@ class Memory(Watcher):
         self.memory_report = report[script_name]["os stats"]
 
     def _watch(self, pid, curr_stat):
-        cmd = "ps -o %cpu,%mem,rss,bsdtime,maj_flt,min_flt,vsz {0}";
+        p = psutil.Process(int(pid))
 
-        out = sp.check_output(cmd.format(pid).split())
-        (header_val, data, *drop) = out.split(b'\n')
-        stats = {}
-        for (type, val) in zip(header_val.split(), data.split()):
-            if val not in curr_stat:
-                dec_type = type.decode("utf8")
-                dec_val = val.decode("utf8")
-                stats[dec_type] = []
-                stats[dec_type].append(dec_val)
+        cpu = []
+        mem = []
+        try:
+            while p.is_running():
+                cpu.append(p.get_cpu_percent(0.5))
+                rss, vms = p.get_memory_info()
+                mem.append((rss, vms))
+        except :
+            pass
+        finally:
+            rss, vms = zip(*mem)
+            rss_avg = sum(rss) / float(len(rss))
+            vms_avg = sum(vms) / float(len(vms))
+            cpu_avg = sum(cpu) / float(len(cpu))
 
-        while True:
-            try:
-                out = sp.check_output(cmd.format(pid).split())
-            except sp.CalledProcessError as e:
-                break
+            curr_stat["avg"] = {}
+            curr_stat["avg"]["rss"] = rss_avg;
+            curr_stat["avg"]["vms"] = vms_avg;
+            curr_stat["avg"]["cpu"] = cpu_avg;
 
-            time.sleep(0.2)
-            (header_val, data, *dump) = out.split(b'\n')
-            for (type, val) in zip(header_val.split(), data.split()):
-                dec_type = type.decode("utf8")
-                dec_val = val.decode("utf8")
-                stats[dec_type].append(dec_val)
-        for key, val in stats.items():
-            if key in ("%CPU", "%MEM", "RSS", "MAJFLT", "MINFLT", "VSZ"):
-                l_tmp = [float(X) for X in stats[key]]
-                curr_stat[key] = "min: {0}, max: {1}, avg: {2:.2}".format(
-                        min(l_tmp),
-                        max(l_tmp),
-                        sum(l_tmp) / len(l_tmp))
-                print(key, curr_stat[key])
+        print(cpu, mem)
+        curr_stat["cpu"] = cpu
+        curr_stat["mem"] = mem
+
 
 
     def pre_run(self, environ={}):
