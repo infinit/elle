@@ -41,8 +41,8 @@
 - (void)_onTransactionStatusNotification:(NSNotification*)n
 {
     NSLog(@"ON TRANSACTION STATUS NOTIFICATION");
-    assert([[n object] isKindOfClass:[IATransactionStatusNotification class]]);
-    IATransactionStatusNotification* notif = [n object];
+    assert([[n object] isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = [n object];
     [self.source updateTransactionStatus:notif];
     [self.table reloadData];
 }

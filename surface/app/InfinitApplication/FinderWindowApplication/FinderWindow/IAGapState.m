@@ -566,7 +566,7 @@ static void on_transaction_status(char const* transaction);
 
 #define TR_STR_WRAP(__attr)                                             \
 - (NSString*)__attr {                                                   \
-    return [NSString stringWithUTF8String:TR_GET(__attr);               \
+    return [NSString stringWithUTF8String:TR_GET(__attr)];              \
 }                                                                       \
 /**/
 
@@ -574,7 +574,7 @@ static void on_transaction_status(char const* transaction);
 TR_WRAP(NSUInteger, files_count)
 TR_WRAP(NSUInteger, total_size)
 TR_WRAP(BOOL, is_directory)
-TR_WRAP(gap_Status, status)
+TR_WRAP(gap_TransactionStatus, status)
 
 TR_STR_WRAP(first_filename)
 TR_STR_WRAP(network_id)
@@ -606,11 +606,11 @@ static void on_transaction(char const* transaction_id,
                                                         object:transaction];
 }
 
-static void on_transaction_status(char const* transaction);
+static void on_transaction_status(char const* transaction_id)
 {
     assert(transaction_id != NULL);
     NSLog(@">>> On transaction status notif");
     IATransaction* transaction = [IATransaction transactionWithId:[NSString stringWithUTF8String:transaction_id]];
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
-                                                        object:[[IATransactionStatusNotification alloc] init:transaction]];
+                                                        object:transaction];
 }
