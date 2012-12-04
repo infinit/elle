@@ -13,7 +13,7 @@ namespace nucleus
 
     template <typename T>
     Tree<T>::Tree(Nest& nest):
-      _height(0),
+      _height(1),
       _capacity(0),
       _root(nest.attach(new Contents(new Quill<T>))),
       _nest(nest),
@@ -31,6 +31,12 @@ namespace nucleus
       _nest(nest),
       _state(State::clean)
     {
+    }
+
+    template <typename T>
+    Tree<T>::~Tree()
+    {
+      // XXX[recursively detach the blocks]
     }
 
     /*--------.

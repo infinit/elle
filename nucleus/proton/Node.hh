@@ -29,7 +29,7 @@ namespace nucleus
       | Enumerations |
       `-------------*/
     public:
-      enum class Type // XXX trouver un autre nom car Nodule a egalement un Type
+      enum class Nature
         {
           nodule,
           value
@@ -39,7 +39,7 @@ namespace nucleus
       | Construction |
       `-------------*/
     public:
-      Node(Type const type);
+      Node(Nature const nature);
 
       //
       // methods
@@ -89,7 +89,7 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE_R(Nature, nature);
       Nest* _nest;
       Footprint _footprint;
       Capacity _capacity;

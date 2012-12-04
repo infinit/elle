@@ -138,6 +138,8 @@ namespace nucleus
       Tree(Root const& root,
            cryptography::SecretKey const& secret,
            Nest& nest);
+      /// Cleans the tree recursively, detaching every remaining block.
+      ~Tree();
 
       /*--------.
       | Methdos |
@@ -200,6 +202,9 @@ namespace nucleus
       /// out on the tree.
       Root
       seal(cryptography::SecretKey const& secret);
+      /// Destroy the tree by detaching the root nodule from the nest.
+      void
+      destroy();
 
     private:
       /// Return the handle of the quill block responsible for the given key
@@ -219,7 +224,7 @@ namespace nucleus
     public:
       ELLE_ATTRIBUTE_R(Height, height);
       ELLE_ATTRIBUTE_R(Capacity, capacity);
-      ELLE_ATTRIBUTE(Handle, root);
+      ELLE_ATTRIBUTE_R(Handle, root);
 
       ELLE_ATTRIBUTE(Nest&, nest);
       ELLE_ATTRIBUTE_R(State, state);

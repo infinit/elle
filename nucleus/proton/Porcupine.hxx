@@ -1197,55 +1197,57 @@ namespace nucleus
             // The following checks if the tree has become small enough to
             // fall back to an easier structure i.e a single block.
 
-            // XXX
-                if (this->_height == 1)
+            // Check if the tree could be transformed back into a single block.
+            //
+            // For that, the tree must have a single level (height of one) and
+            // the root nodule (a quill in this case) should contain a reference
+            // to a single block.
+            if (this->_tree->height() == 1)
+              {
+                ELLE_TRACE("the tree contains a single level");
+
+                // Manually load the root nodule, which in this case, is a
+                // quill.
+                Ambit<Quill<T>> quill(this->_nest, this->_tree->root());
+
+                quill.load();
+
+                // Does the quill contain a single value.
+                if (quill().single() == true)
                   {
-                    ELLE_TRACE("the tree contains a single level");
+                    ELLE_TRACE("the root quill contains a single entry");
 
-                    // unload the root nodule.
-                    root.unload();
+                    // If the root nodule contains a single block, retrieve
+                    // the handle of this block so as to manage it directly
+                    // and destroy the tree.
 
-                    Ambit<Quill<T>> quill(this->_nest, this->_root);
+                    typename T::K maiden{quill().maiden()};
 
-                    // load the root nodule.
-                    quill.load();
+                    // Retrieve the handle associated with the maiden key.
+                    Handle orphan{quill().locate_handle(maiden)};
 
-                    // does the quill contain a single value.
-                    if (quill().single() == true)
-                      {
-                        ELLE_TRACE("the root quill contains a single entry");
+                    // Erase the inlet from the quill so as to make the block
+                    // really an orphan. Otherwise, the block would be destroyed
+                    // when the tree is deleted.
+                    quill().erase(maiden);
 
-                        //
-                        // if the root nodules contains a single entry, shrink
-                        // the tree for this entry to become the new root.
-                        //
-                        Handle orphan;
+                    quill.unload();
 
-                        // retrieve the handle associated with the maiden key.
-                        orphan = quill().locate_handle(quill().maiden());
+                    // Destroy the tree and delete it.
+                    delete this->_tree;
 
-                        // detache the root nodule from the porcupine.
-                        this->_nest.detach(quill.handle());
+                    // Set the new porcupine value block handle and update the
+                    // nature.
+                    this->_handle = new Handle{orphan};
+                    this->_nature = Nature::block;
+                  }
+                else
+                  {
+                    ELLE_TRACE("the tree has too many levels to be transformed "
+                               "back into a single block value");
 
-                        // unload the root nodule.
-                        quill.unload();
-
-                        // set the new tree's root handle.
-                        this->_root = orphan;
-
-                        // decrease the tree's height.
-                        this->_height--;
-
-                        // at this point, the tree should have a height of zero.
-                        ELLE_ASSERT(this->_height == 0);
-
-                        // therefore, set the nature as value now that the
-                        // root handle actually references a value.
-                        this->_nature = Nature::block;
-                      }
-                    else
-                      quill.unload();
-                    // XXX
+                    quill.unload();
+                  }
 
             return;
           }

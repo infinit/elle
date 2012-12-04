@@ -13,63 +13,6 @@ namespace nucleus
   {
 
 //
-// ---------- split -----------------------------------------------------------
-//
-/* XXX
-    /// XXX[describe this struct]
-    template <typename T, typename N>
-    struct Split
-    {
-      Contents*
-      operator ()(N& node)
-      {
-        elle::unreachable();
-      }
-    };
-
-    template <typename T>
-    struct Split<T, Nodule<T>>
-    {
-      Contents*
-      operator ()(Nodule<T>& nodule)
-      {
-        switch (nodule.type())
-          {
-          case Nodule<T>::Type::seam:
-            {
-              ELLE_ASSERT(dynamic_cast<Seam<T>*>(&nodule) != nullptr);
-
-              Seam<T>& seam = static_cast<Seam<T>&>(nodule);
-
-              return (new Contents{seam.split()});
-            }
-          case Nodule<T>::Type::quill:
-            {
-              ELLE_ASSERT(dynamic_cast<Quill<T>*>(&nodule) != nullptr);
-
-              Quill<T>& quill = static_cast<Quill<T>&>(nodule);
-
-              return (new Contents{quill.split()});
-            }
-          default:
-            throw Exception("unknown nodule type '%s'", nodule.type());
-          }
-
-        elle::unreachable();
-      }
-    };
-
-    template <typename T>
-    struct Split<T, T>
-    {
-      Contents*
-      operator ()(T& value)
-      {
-        return (new Contents{value.split()});
-      }
-    };
-*/
-//
 // ---------- static methods --------------------------------------------------
 //
 
