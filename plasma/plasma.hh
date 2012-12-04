@@ -1,52 +1,35 @@
-#ifndef PLASMA_HH
-# define PLASMA_HH
-
-# include <functional>
-# include <elle/serialize/ListSerializer.hxx>
-# include <stdexcept>
-# include <elle/HttpClient.hh>
-
-namespace elle
-{
-  namespace serialize
-  {
-    template<typename T>
-    struct ResponseSerializer
-    {
-      template<typename Archive, typename Value>
-      static void serialize(Archive&, Value&);
-    };
-
-    template<typename T>
-    struct NotificationSerializer
-    {
-      template<typename Archive, typename Value>
-      static void serialize(Archive&, Value&);
-    };
-  }
-}
+#ifndef PLASMA_PLASMA_HH
+# define PLASMA_PLASMA_HH
 
 namespace plasma
 {
-  /// Base class for every response
-  struct Response
-  {
-    bool _success;
-    int response_code;
-    std::string response_details;
 
-    bool success() const
-    {
-      return _success;//response_code < (int) elle::ResponseCode::error;
-    }
+  struct Transaction
+  {
+    std::string           transaction_id;
+    std::string           sender_id;
+    std::string           sender_fullname;
+    std::string           sender_device_id;
+    std::string           recipient_id;
+    std::string           recipient_fullname;
+    std::string           recipient_device_id;
+    std::string           recipient_device_name;
+    std::string           network_id;
+    std::string           first_filename;
+    int                   files_count;
+    int                   total_size;
+    int                   is_directory;
+    int                   status;
   };
 
+  /// Base class for all notifications.
   struct Notification
   {
-    int notification_id; // The type of notification, according to enum.
+    int notification_type;
   };
+
 }
 
-  /**/
+# include "plasma.hxx"
 
 #endif

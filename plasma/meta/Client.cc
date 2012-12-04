@@ -15,12 +15,12 @@ ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \
   ELLE_SERIALIZE_SIMPLE(type, archive, value, version)                        \
   {                                                                           \
-    assert(version == 0);                                                     \
-    archive & named("success", value._success);                              \
+    enforce(version == 0);                                                    \
+    archive & named("success", value._success);                               \
    if (!value.success())                                                      \
       {                                                                       \
-        archive & named("error_code", value.response_code);                      \
-        archive & named("error_details", value.response_details);                \
+        archive & named("error_code", value.response_code);                   \
+        archive & named("error_details", value.response_details);             \
         return;                                                               \
       }                                                                       \
     ResponseSerializer<type>::serialize(archive, value);                      \
@@ -28,7 +28,22 @@ ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
   template<> template<typename Archive, typename Value>                       \
   void elle::serialize::ResponseSerializer<type>::serialize(Archive& archive, \
                                                             Value& value)     \
+/**/
 
+namespace elle
+{
+  namespace serialize
+  {
+    template<typename T>
+    struct ResponseSerializer
+    {
+      ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(T, 0)
+
+      template<typename Archive, typename Value>
+      static void serialize(Archive&, Value&);
+    };
+  }
+}
 
 SERIALIZE_RESPONSE(plasma::meta::DebugResponse, ar, res)
 {
@@ -64,6 +79,7 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("fullname", res.fullname);
   ar & named("email", res.email);
   ar & named("public_key", res.public_key);
+  ar & named("status", res.status);
 }
 
 // SERIALIZE_RESPONSE(plasma::meta::SwaggerResponse, ar, res)
@@ -112,6 +128,7 @@ SERIALIZE_RESPONSE(plasma::meta::InviteUserResponse, ar, res)
 
 SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
 {
+  // XXX see plasma/plasma.hxx
   ar & named("transaction_id", res.transaction_id);
   ar & named("sender_id", res.sender_id);
   ar & named("sender_fullname", res.sender_fullname);

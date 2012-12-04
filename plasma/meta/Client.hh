@@ -21,12 +21,25 @@ namespace plasma
   {
     namespace json = elle::format::json;
 
+    /// Base class for every response
+    struct Response
+    {
+      bool _success;
+      int response_code;
+      std::string response_details;
+
+      bool success() const
+      {
+        return _success;//response_code < (int) elle::ResponseCode::error;
+      }
+    };
+
     /////////////////////////
     struct DebugResponse : Response
     {
     };
 
-    struct LoginResponse : plasma::Response
+    struct LoginResponse : Response
     {
       std::string  token;
       std::string  fullname;
@@ -35,22 +48,22 @@ namespace plasma
       std::string  _id;
     };
 
-    struct LogoutResponse : plasma::Response
+    struct LogoutResponse : Response
     {};
 
-    struct RegisterResponse : plasma::Response
+    struct RegisterResponse : Response
     {};
 
-    struct PullNotificationResponse : plasma::Response
+    struct PullNotificationResponse : Response
     {
       std::list<json::Dictionary> notifs;
       std::list<json::Dictionary> old_notifs;
     };
 
-    struct ReadNotificationResponse : plasma::Response
+    struct ReadNotificationResponse : Response
     {};
 
-    struct MessageResponse : plasma::Response
+    struct MessageResponse : Response
     {};
 
     struct User
@@ -59,9 +72,10 @@ namespace plasma
       std::string fullname;
       std::string email;
       std::string public_key;
+      int         status;
     };
 
-    struct UserResponse : User, plasma::Response
+    struct UserResponse : User, Response
     {};
 
     // struct SwaggerResponse : UserResponse
@@ -72,61 +86,48 @@ namespace plasma
       std::string identity;
     };
 
-    struct InviteUserResponse : plasma::Response
+    struct InviteUserResponse : Response
     {
       std::string _id;
     };
 
-    struct UsersResponse : plasma::Response
+    struct UsersResponse : Response
     {
       std::list<std::string> users;
     };
 
-    struct SwaggersResponse : plasma::Response
+    struct SwaggersResponse : Response
     {
       std::list<std::string> swaggers;
     };
 
-    struct TransactionsResponse : plasma::Response
+    struct TransactionsResponse : Response
     {
       std::list<std::string> transactions;
     };
 
-    struct TransactionResponse : plasma::Response
-    {
-      std::string           transaction_id;
-      std::string           sender_id;
-      std::string           sender_fullname;
-      std::string           sender_device_id;
-      std::string           recipient_id;
-      std::string           recipient_fullname;
-      std::string           recipient_device_id;
-      std::string           recipient_device_name;
-      std::string           network_id;
-      std::string           first_filename;
-      int                   files_count;
-      int                   total_size;
-      int                   is_directory;
-      int                   status;
-    };
+    struct TransactionResponse:
+      public Response,
+      public ::plasma::Transaction
+    {};
 
 
-    struct CreateTransactionResponse : plasma::Response
+    struct CreateTransactionResponse : Response
     {
       std::string created_transaction_id;
     };
 
-    struct UpdateTransactionResponse : plasma::Response
+    struct UpdateTransactionResponse : Response
     {
       std::string updated_transaction_id;
     };
 
-    struct NetworksResponse : plasma::Response
+    struct NetworksResponse : Response
     {
       std::list<std::string> networks;
     };
 
-    struct NetworkResponse : plasma::Response
+    struct NetworkResponse : Response
     {
       std::string              _id;
       std::string              owner;
@@ -142,22 +143,22 @@ namespace plasma
       std::list<std::string>   users;
     };
 
-    struct CreateNetworkResponse : plasma::Response
+    struct CreateNetworkResponse : Response
     {
       std::string             created_network_id;
     };
 
-    struct DeleteNetworkResponse : plasma::Response
+    struct DeleteNetworkResponse : Response
     {
       std::string             deleted_network_id;
     };
 
-    struct UpdateNetworkResponse : plasma::Response
+    struct UpdateNetworkResponse : Response
     {
       std::string             updated_network_id;
     };
 
-    struct NetworkNodesResponse : plasma::Response
+    struct NetworkNodesResponse : Response
     {
       std::string             network_id;
       std::list<std::string>  nodes;

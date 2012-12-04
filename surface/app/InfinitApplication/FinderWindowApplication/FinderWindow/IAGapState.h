@@ -16,40 +16,32 @@
 #define IA_GAP_EVENT_TRANSACTION_NOTIFICATION           @"IA_GAP_EVENT_TRANSACTION_NOTIFICATION"
 #define IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION    @"IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION"
 
-@interface IAUserStatusNotification : NSObject
+@interface IAUser : NSObject
 
-@property (retain) NSString*    user_id;
-@property NSInteger             status;
-
-@end
-
-@interface IATransactionNotification : NSObject
-
-@property (retain) NSString*    first_filename;
-@property NSUInteger            files_count;
-@property NSUInteger            total_size;
-@property BOOL                  is_directory;
-
-@property (retain) NSString*    network_id;
-@property (retain) NSString*    sender_id;
-@property (retain) NSString*    sender_fullname;
-@property (retain) NSString*    transaction_id;
-@property (retain) NSString*    recipient_fullname;
-
-@property gap_TransactionStatus status;
+@property (retain)              NSString*   user_id;
+@property (nonatomic, readonly) NSInteger   status;
 
 @end
 
-@interface IATransactionStatusNotification : NSObject
+@interface IATransaction : NSObject
 
-@property (retain) NSString*    transaction_id;
-@property (retain) NSString*    network_id;
-@property (retain) NSString*    sender_device_id;
-@property (retain) NSString*    recipient_device_id;
-@property (retain) NSString*    recipient_device_name;
-@property gap_TransactionStatus status;
+@property (retain)              NSString*               transaction_id;
+@property                       BOOL                    is_new;
+
+@property (nonatomic, readonly) NSUInteger              files_count;
+@property (nonatomic, readonly) NSUInteger              total_size;
+@property (nonatomic, readonly) BOOL                    is_directory;
+
+@property (nonatomic, readonly) NSString*               first_filename;
+@property (nonatomic, readonly) NSString*               network_id;
+@property (nonatomic, readonly) NSString*               sender_id;
+@property (nonatomic, readonly) NSString*               sender_fullname;
+@property (nonatomic, readonly) NSString*               recipient_fullname;
+
+@property (nonatomic, readonly) gap_TransactionStatus   status;
 
 @end
+
 
 /**
  * @brief An operation return value
@@ -136,7 +128,7 @@
 /**
  * @brief Accept transaction.
  */
-- (void)       acceptTransaction:(IATransactionNotification*)notif
+- (void)       acceptTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object;
 
@@ -144,7 +136,7 @@
 /**
  * @brief Reject transaction (refuse to download a file).
  */
-- (void)       rejectTransaction:(IATransactionNotification*)notif
+- (void)       rejectTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object;
 
@@ -152,7 +144,7 @@
 /**
  * @brief Cancel transaction (stop or cancel a transaction from self).
  */
-- (void)       cancelTransaction:(IATransactionNotification*)notif
+- (void)       cancelTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object;
 

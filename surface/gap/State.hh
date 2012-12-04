@@ -49,7 +49,14 @@ namespace surface
       Exception(gap_Status code, std::string const& msg);
     };
 
-   class State
+    using ::plasma::Transaction;
+    using ::plasma::Notification;
+    using ::plasma::trophonius::TransactionNotification;
+    using ::plasma::trophonius::TransactionStatusNotification;
+    using ::plasma::trophonius::UserStatusNotification;
+    using ::plasma::trophonius::MessageNotification;
+
+    class State
     {
     private:
       std::unique_ptr<plasma::meta::Client>       _meta;
@@ -145,11 +152,8 @@ namespace surface
 
 
     private:
-      typedef std::map<std::string, gap_Transaction *> TransactionsMap;
+      typedef std::map<std::string, plasma::Transaction> TransactionsMap;
       std::unique_ptr<TransactionsMap> _transactions;
-
-      gap_Transaction *
-      _response_to_transaction(plasma::meta::TransactionResponse const& res);
 
     public:
       /// @brief Pull transactions from serveur.
@@ -157,7 +161,7 @@ namespace surface
       transactions();
 
       /// @brief Get data from a specific transaction.
-      gap_Transaction const*
+      Transaction const&
       transaction(std::string const& transaction_id);
 
     public:
@@ -192,43 +196,44 @@ namespace surface
 
       /// @brief Use to accept the transaction for the recipient.
       void
-      _accept_transaction(gap_Transaction const* trans);
+      _accept_transaction(Transaction const& transaction);
 
       /// @brief Use to add rights on network when the recipient accepts.
       void
-      _on_transaction_accepted(gap_Transaction const* trans);
+      _on_transaction_accepted(Transaction const& transaction);
 
       /// @brief Use to deny the transaction for the recipient.
       void
-      _deny_transaction(gap_Transaction const* trans);
+      _deny_transaction(Transaction const& transaction);
 
       /// @brief Use to "delete" the transaction if the recipient denied it.
       void
-      _on_transaction_denied(gap_Transaction const* trans);
+      _on_transaction_denied(Transaction const& transaction);
 
       /// @brief Use to cancel a pending transaction or an unfinished one.
       void
-      _cancel_transaction(gap_Transaction const* trans);
+      _cancel_transaction(Transaction const& transaction);
 
       /// @brief Use to destroy network if transaction has been canceled.
       void
-      _on_transaction_canceled(gap_Transaction const* trans);
+      _on_transaction_canceled(Transaction const& transaction);
 
-      /// @brief Use to inform recipient that everything is ok and he can start downloading.
+      /// @brief Use to inform recipient that everything is ok and he can start
+      /// downloading.
       void
-      _start_transaction(gap_Transaction const* trans);
+      _start_transaction(Transaction const& transaction);
 
       /// @brief Use to .
       void
-      _on_transaction_started(gap_Transaction const* trans);
+      _on_transaction_started(Transaction const& transaction);
 
       /// @brief Use to inform the sender that download is complete.
       void
-      _close_transaction(gap_Transaction const* trans);
+      _close_transaction(Transaction const& transaction);
 
       /// @brief Use to close network.
       void
-      _on_transaction_closed(gap_Transaction const* trans);
+      _on_transaction_closed(Transaction const& transaction);
 
 
     private:
@@ -338,41 +343,58 @@ namespace surface
                        std::string const& user);
 
     private:
-      typedef std::map<int, std::list<plasma::trophonius::BasicHandler*>> HandlerMap;
-      HandlerMap _notification_handlers;
+      typedef
+        std::function<void(Notification const&, bool)>
+        NotificationHandler;
+      std::map<int, std::list<NotificationHandler>> _notification_handlers;
 
     public:
+      typedef
+        std::function<void(UserStatusNotification const&)>
+        UserStatusNotificationCallback;
+
+      typedef
+        std::function<void(TransactionNotification const&, bool)>
+        TransactionNotificationCallback;
+
+
+      typedef
+        std::function<void(TransactionStatusNotification const&, bool)>
+        TransactionStatusNotificationCallback;
+
+      typedef
+        std::function<void(MessageNotification const&)>
+        MessageNotificationCallback;
+
+    public:
+      void
+      user_status_callback(UserStatusNotificationCallback const& cb);
 
       void
-      attach_callback(std::function<void(gap_UserStatusNotification const*)> callback);
+      transaction_callback(TransactionNotificationCallback const& cb);
 
       void
-      attach_callback(std::function<void(gap_TransactionNotification const*)> callback);
+      transaction_status_callback(TransactionStatusNotificationCallback const& cb);
 
       void
-      attach_callback(std::function<void(gap_TransactionStatusNotification const*)> callback);
-
-      void
-      attach_callback(std::function<void(gap_MessageNotification const*)> callback);
-
-      void
-      attach_callback(std::function<void(gap_BiteNotification const*)> callback);
+      message_callback(MessageNotificationCallback const& cb);
 
     private:
       void
-      _on_notification(gap_TransactionNotification const* n);
+      _on_transaction(TransactionNotification const& notif,
+                      bool is_new);
 
       void
-      _on_notification(gap_TransactionStatusNotification const* n);
+      _on_transaction_status(TransactionStatusNotification const& notif);
 
     public:
-      bool
-      poll();
+      size_t
+      poll(size_t max = 10);
 
     private:
-      bool
-      _handle_dictionnary(elle::format::json::Dictionary const& dict,
-                          bool _new = true);
+      void
+      _handle_notification(Notification const& notif,
+                           bool _new = true);
 
     private:
       // Retrieve the current watchdog id.

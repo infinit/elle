@@ -49,7 +49,7 @@ extern "C"
   /**/
 
 // automate cpp wrapping
-# define __WRAP_CPP_RET(_state_, _func_, ...)                                  \
+# define WRAP_CPP_RET(_state_, _func_, ...)                                  \
   assert(_state_ != nullptr);                                                  \
   gap_Status ret;                                                              \
   try                                                                          \
@@ -57,8 +57,8 @@ extern "C"
   CATCH_ALL(_func_)                                                            \
   /**/
 
-# define __WRAP_CPP(...)                                                       \
-  __WRAP_CPP_RET(__VA_ARGS__);                                                 \
+# define WRAP_CPP(...)                                                       \
+  WRAP_CPP_RET(__VA_ARGS__);                                                 \
   return ret                                                                   \
     /**/
 
@@ -166,7 +166,7 @@ extern "C"
   gap_invite_user(gap_State* state,
                   char const* email)
   {
-    __WRAP_CPP(state, invite_user, email);
+    WRAP_CPP(state, invite_user, email);
   }
 
   gap_Status
@@ -176,7 +176,7 @@ extern "C"
   {
     assert(recipient_id != nullptr);
     assert(message != nullptr);
-    __WRAP_CPP(state, send_message, recipient_id, message);
+    WRAP_CPP(state, send_message, recipient_id, message);
   }
 
   /// - Authentication ------------------------------------------------------
@@ -212,12 +212,12 @@ extern "C"
   {
     assert(email != nullptr);
     assert(password != nullptr);
-    __WRAP_CPP(state, login, email, password);
+    WRAP_CPP(state, login, email, password);
   }
 
   gap_Status gap_logout(gap_State* state)
   {
-    __WRAP_CPP(state, logout);
+    WRAP_CPP(state, logout);
   }
 
   gap_Status gap_register(gap_State* state,
@@ -232,12 +232,12 @@ extern "C"
     assert(password != nullptr);
     assert(activation_code != nullptr);
 
-    __WRAP_CPP_RET(state, register_, fullname, email,
+    WRAP_CPP_RET(state, register_, fullname, email,
                    password, activation_code);
 
     if (ret == gap_ok && device_name != nullptr)
       {
-        __WRAP_CPP(state, update_device, device_name, true);
+        WRAP_CPP(state, update_device, device_name, true);
       }
     return ret;
   }
@@ -245,7 +245,7 @@ extern "C"
   gap_Status
   gap_trophonius_connect(gap_State* state)
   {
-    __WRAP_CPP_RET(state, connect);
+    WRAP_CPP_RET(state, connect);
 
     return ret;
   }
@@ -254,7 +254,7 @@ extern "C"
   gap_Status
   gap_poll(gap_State* state)
   {
-    __WRAP_CPP_RET(state, poll);
+    WRAP_CPP_RET(state, poll);
 
     return ret;
   }
@@ -284,7 +284,7 @@ extern "C"
                                  char const* name)
   {
     assert(name != nullptr);
-    __WRAP_CPP(state, update_device, name);
+    WRAP_CPP(state, update_device, name);
   }
 
   /// - Network -------------------------------------------------------------
@@ -372,7 +372,7 @@ extern "C"
   gap_Status gap_create_network(gap_State* state,
                                 char const* name)
   {
-    __WRAP_CPP(state, create_network, name);
+    WRAP_CPP(state, create_network, name);
   }
 
   gap_Status
@@ -382,7 +382,7 @@ extern "C"
   {
     assert(network_id != nullptr);
     assert(user_id != nullptr);
-    __WRAP_CPP(state, network_add_user, network_id, user_id);
+    WRAP_CPP(state, network_add_user, network_id, user_id);
   }
 
 
@@ -493,10 +493,23 @@ extern "C"
     ::free(users);
   }
 
+  gap_UserStatus
+  gap_user_status(gap_State* state, char const* user_id)
+  {
+    gap_Status ret = gap_ok;
+    try
+      {
+        return (gap_UserStatus) __TO_CPP(state)->user(user_id).status;
+      }
+    CATCH_ALL(user_status);
+
+    return (gap_UserStatus) ret;
+  }
+
   char**
   gap_swaggers(gap_State* state)
   {
-  assert(state != nullptr);
+    assert(state != nullptr);
 
     gap_Status ret;
     try
@@ -523,17 +536,17 @@ extern "C"
 
   gap_Status gap_launch_watchdog(gap_State* state)
   {
-    __WRAP_CPP(state, launch_watchdog);
+    WRAP_CPP(state, launch_watchdog);
   }
 
   gap_Status gap_refresh_networks(gap_State* state)
   {
-    __WRAP_CPP(state, refresh_networks);
+    WRAP_CPP(state, refresh_networks);
   }
 
   gap_Status gap_stop_watchdog(gap_State* state)
   {
-    __WRAP_CPP(state, stop_watchdog);
+    WRAP_CPP(state, stop_watchdog);
   }
 
   /// - Permissions ---------------------------------------------------------
@@ -545,7 +558,7 @@ extern "C"
   {
     assert(user_id != nullptr);
     assert(absolute_path != nullptr);
-    __WRAP_CPP(state, deprecated_set_permissions, user_id, absolute_path, permissions);
+    WRAP_CPP(state, deprecated_set_permissions, user_id, absolute_path, permissions);
   }
 
   gap_Status gap_set_permissions_rec(gap_State* state,
@@ -555,7 +568,7 @@ extern "C"
   {
     assert(user_id != nullptr);
     assert(absolute_path != nullptr);
-    __WRAP_CPP(state,
+    WRAP_CPP(state,
                deprecated_set_permissions,
                user_id,
                absolute_path,
@@ -614,62 +627,218 @@ extern "C"
   gap_user_status_callback(gap_State* state,
                            gap_user_status_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_UserStatusNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(user_status_callback);
-
-    return ret;
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (UserStatusNotification const& notif) {
+        cb(notif.user_id.c_str(), (gap_UserStatus) notif.status);
+    };
+    WRAP_CPP(state, user_status_callback, cpp_cb);
   }
 
   gap_Status
   gap_transaction_callback(gap_State* state,
-                                   gap_transaction_callback_t cb)
+                           gap_transaction_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_TransactionNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(transaction_callback);
-
-    return ret;
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (TransactionNotification const& notif, bool is_new) {
+        cb(notif.transaction.transaction_id.c_str(), is_new);
+    };
+    WRAP_CPP(state, transaction_callback, cpp_cb);
   }
 
   gap_Status
   gap_transaction_status_callback(gap_State* state,
                                   gap_transaction_status_callback_t cb)
   {
-    gap_Status ret = gap_ok;
-    try
-      {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_TransactionStatusNotification const*)>(cb)
-        );
-      }
-    CATCH_ALL(transaction_status_callback);
-
-    return ret;
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (TransactionStatusNotification const& notif, bool is_new) {
+        cb(notif.transaction_id.c_str(), is_new);
+    };
+    WRAP_CPP(state, transaction_status_callback, cpp_cb);
   }
 
   gap_Status
   gap_message_callback(gap_State* state,
                        gap_message_callback_t cb)
   {
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (MessageNotification const& notif) {
+        cb(notif.sender_id.c_str(), notif.message.c_str());
+    };
+    WRAP_CPP(state, message_callback, cpp_cb);
+  }
+
+  /// Transaction getters.
+  // Macroify all of this.
+  char const*
+  gap_transaction_sender_id(gap_State* state,
+                            char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_id.c_str();
+    }
+    CATCH_ALL(transaction_sender_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_sender_fullname(gap_State* state,
+                                  char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_fullname.c_str();
+    }
+    CATCH_ALL(transaction_sender_fullname);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_sender_device_id(gap_State* state,
+                                   char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.sender_device_id.c_str();
+    }
+    CATCH_ALL(transaction_device_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_id(gap_State* state,
+                               char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_id.c_str();
+    }
+    CATCH_ALL(transaction_recipient_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_fullname(gap_State* state,
+                                     char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_fullname.c_str();
+    }
+    CATCH_ALL(transaction_recipient_fullname);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_recipient_device_id(gap_State* state,
+                                      char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.recipient_device_id.c_str();
+    }
+    CATCH_ALL(transaction_recipient_device_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_network_id(gap_State* state,
+                             char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.network_id.c_str();
+    }
+    CATCH_ALL(transaction_network_id);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
+  gap_transaction_first_filename(gap_State* state,
+                                 char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.first_filename.c_str();
+    }
+    CATCH_ALL(transaction_first_filename);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  int
+  gap_transaction_files_count(gap_State* state,
+                              char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(_id);
+      return transaction.files_count;
+    }
+    CATCH_ALL(transaction_files_count);
+
+    return ret;
+  }
+
+  int
+  gap_transaction_total_size(gap_State* state,
+                             char const* _id)
+  {
     gap_Status ret = gap_ok;
     try
       {
-        __TO_CPP(state)->attach_callback(
-          std::function<void (gap_MessageNotification const*)>(cb)
-        );
+        auto const& transaction = __TO_CPP(state)->transaction(_id);
+        return transaction.total_size;
       }
-    CATCH_ALL(message_callback);
+    CATCH_ALL(transaction_total_size);
+
+    return ret;
+  }
+
+  // gap_Bool
+  int
+  gap_transaction_is_directory(gap_State* state,
+                               char const* _id)
+  {
+    gap_Status ret = gap_ok;
+    try
+      {
+        auto const& transaction = __TO_CPP(state)->transaction(_id);
+        return transaction.is_directory;
+      }
+    CATCH_ALL(transaction_is_directory);
 
     return ret;
   }
@@ -681,13 +850,13 @@ extern "C"
                          int count,
                          int offset)
   {
-    __WRAP_CPP(state, pull_notifications, count, offset);
+    WRAP_CPP(state, pull_notifications, count, offset);
   }
 
   gap_Status
   gap_notifications_read(gap_State* state)
   {
-    __WRAP_CPP(state, notifications_read);
+    WRAP_CPP(state, notifications_read);
   }
 
  char** gap_transactions(gap_State* state)
@@ -754,7 +923,7 @@ extern "C"
     assert(   status > gap_TransactionStatus::gap_transaction_status_none
            && status < gap_TransactionStatus::_gap_transaction_status_count);
 
-    __WRAP_CPP_RET(state,
+    WRAP_CPP_RET(state,
                    update_transaction,
                    transaction_id,
                    status);
@@ -769,9 +938,9 @@ extern "C"
     assert(state != nullptr);
     assert(output_path != nullptr);
 
-    __WRAP_CPP_RET(state,
-                   output_dir,
-                   output_path);
+    WRAP_CPP_RET(state,
+                 output_dir,
+                 output_path);
 
     return ret;
   }
@@ -786,51 +955,13 @@ extern "C"
 
     try
       {
-        auto const* transaction = __TO_CPP(state)->transaction(transaction_id);
-        return (gap_TransactionStatus) transaction->status;
+        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+        return (gap_TransactionStatus) transaction.status;
       }
     CATCH_ALL(transaction_status);
 
     (void) ret;
     return gap_TransactionStatus::gap_transaction_status_none;
-  }
-
-  char const*
-  gap_transaction_owner(gap_State* state,
-                        char const* transaction_id)
-  {
-    assert(state != nullptr);
-    assert(transaction_id != nullptr);
-
-    gap_Status ret;
-    try
-      {
-        auto const* transaction = __TO_CPP(state)->transaction(transaction_id);
-        return transaction->sender_id;
-      }
-    CATCH_ALL(transaction_owned);
-
-    (void) ret;
-    return nullptr;
-  }
-
-  gap_Transaction const*
-  gap_transaction(gap_State* state,
-                  char const* transaction_id)
-  {
-    assert(state != nullptr);
-    assert(transaction_id != nullptr);
-
-    gap_Status ret;
-    try
-      {
-        auto const transaction = __TO_CPP(state)->transaction(transaction_id);
-        return transaction;
-      }
-    CATCH_ALL(transaction);
-
-    (void) ret;
-    return nullptr;
   }
 
 } // ! extern "C"

@@ -11,7 +11,7 @@
 
 @interface IANotificationListDelegate : NSObject <NSTableViewDelegate/*, NSTableViewDataSource*/>
 
-- (void)addNotification:(id)notification;
+- (void)addTransaction:(id)transaction;
 
 // Number of rows.
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view;
@@ -19,7 +19,7 @@
 /**
  * @brief Update a transaction notification row with a new status.
  */
-- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif;
+- (void)updateTransactionStatus:(IATransaction*)notif;
 
 /**
  * @brief Triggered by a pending transaction notification.

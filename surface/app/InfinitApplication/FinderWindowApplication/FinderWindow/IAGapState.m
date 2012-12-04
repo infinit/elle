@@ -161,9 +161,11 @@ typedef int(^gap_operation_t)(void);
 
 
 
-static void on_user_status(gap_UserStatusNotification const* n);
-static void on_transaction(gap_TransactionNotification const* n);
-static void on_transaction_status(gap_TransactionStatusNotification const* n);
+static void on_user_status(char const* user_id,
+                           gap_UserStatus status);
+static void on_transaction(char const* transaction_id,
+                           int is_new);
+static void on_transaction_status(char const* transaction);
 
 //- Gap state additions -------------------------------------------------------------
 
@@ -338,44 +340,44 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
 
 //- Transaction-------------------------------------------------------------------------------
 
-- (void)       acceptTransaction:(IATransactionNotification*)notif
+- (void)       acceptTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
     [self _addOperation:^(void) {
         gap_Status res;
         res = gap_update_transaction(self.state,
-                                     [notif.transaction_id UTF8String],
+                                     [transaction.transaction_id UTF8String],
                                      gap_transaction_status_accepted);
         return res;
-    } performSelector:selector onObject:object withData:notif];
+    } performSelector:selector onObject:object withData:transaction];
 }
 
 
-- (void)       rejectTransaction:(IATransactionNotification*)notif
+- (void)       rejectTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
     [self _addOperation:^(void) {
         gap_Status res;
         res = gap_update_transaction(self.state,
-                                     [notif.transaction_id UTF8String],
+                                     [transaction.transaction_id UTF8String],
                                      gap_transaction_status_rejected);
         return res;
-    } performSelector:selector onObject:object withData:notif];
+    } performSelector:selector onObject:object withData:transaction];
 }
 
-- (void)       cancelTransaction:(IATransactionNotification*)notif
+- (void)       cancelTransaction:(IATransaction*)transaction
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
     [self _addOperation:^(void) {
         gap_Status res;
         res = gap_update_transaction(self.state,
-                                     [notif.transaction_id UTF8String],
+                                     [transaction.transaction_id UTF8String],
                                      gap_transaction_status_canceled);
         return res;
-    } performSelector:selector onObject:object withData:notif];
+    } performSelector:selector onObject:object withData:transaction];
 }
 
 //- User -------------------------------------------------------------------------------------
@@ -494,110 +496,121 @@ static void on_transaction_status(gap_TransactionStatusNotification const* n);
     self.__name = [[NSString alloc] initWithUTF8String:n->__name];          \
 /**/
 
-@implementation IAUserStatusNotification
+@implementation IAUser
+{
+@private
+    gap_State* _state;
+}
 
-@synthesize user_id;
-@synthesize status;
+@synthesize user_id = _user_id;
 
-- (id) init:(gap_UserStatusNotification const*)n
+- (gap_UserStatus)status
+{
+    return gap_user_status(_state, [_user_id UTF8String]);
+}
+
+- (id) init:(NSString*)user_id
 {
     self = [super init];
     if (self)
     {
-        SET_CSTR(user_id);
-        self.status = n->status;
+        _user_id = user_id;
+        _state = [IAGapState instance].state;
     }
     return self;
+}
+
++ (IAUser*)userWithId:(NSString*)user_id
+{
+    return [[IAUser alloc] init:user_id];
 }
 
 @end
 
 //- Transaction notification implementation -----------------------------------
 
-@implementation IATransactionNotification
-
-@synthesize first_filename;
-@synthesize files_count;
-@synthesize total_size;
-@synthesize is_directory;
-@synthesize network_id;
-@synthesize sender_id;
-@synthesize sender_fullname;
-@synthesize transaction_id;
-@synthesize recipient_fullname;
-@synthesize status;
-
-- (id) init:(gap_TransactionNotification const*)n
+@implementation IATransaction
 {
-    self = [super init];
-    if (self)
-    {        
-        SET_CSTR(first_filename);
-        self.files_count = n->files_count;
-        self.total_size = n->total_size;
-        self.is_directory = n->is_directory;
-        SET_CSTR(network_id);
-        SET_CSTR(sender_id);
-        SET_CSTR(sender_fullname);
-        SET_CSTR(transaction_id);
-        SET_CSTR(recipient_fullname);
-        self.status = gap_transaction_status_pending; // XXX
-    }
-    return self;
+@private
+    gap_State* _state;
 }
 
-@end
 
-//- Transaction status notification implementation ---------------------------
-
-@implementation IATransactionStatusNotification
-
-@synthesize transaction_id;
-@synthesize network_id;
-@synthesize sender_device_id;
-@synthesize recipient_device_id;
-@synthesize recipient_device_name;
-@synthesize status;
-
-- (id) init:(gap_TransactionStatusNotification const*)n
+- (id) init:(NSString*)transaction_id
 {
     self = [super init];
     if (self)
     {
-        SET_CSTR(transaction_id);
-        SET_CSTR(network_id);
-        SET_CSTR(sender_device_id);
-        SET_CSTR(recipient_device_id);
-        SET_CSTR(recipient_device_name);
-        self.status = n->status;
+        _transaction_id = transaction_id;
+        _state = [IAGapState instance].state;
+        _is_new = false;
     }
     return self;
 }
 
++ (IATransaction*)transactionWithId:(NSString*)transaction_id
+{
+    return [[IATransaction alloc] init:transaction_id];
+}
+
+@synthesize transaction_id = _transaction_id;
+@synthesize is_new = _is_new;
+
+#define TR_GET(__attr)                                                  \
+    gap_transaction_ ## __attr(_state, [_transaction_id UTF8String])    \
+/**/
+
+#define TR_WRAP(__ret, __attr)                                          \
+- (__ret)__attr { return TR_GET(__attr); }                              \
+/**/
+
+#define TR_STR_WRAP(__attr)                                             \
+- (NSString*)__attr {                                                   \
+    return [NSString stringWithUTF8String:TR_GET(__attr)];              \
+}                                                                       \
+/**/
+
+
+TR_WRAP(NSUInteger, files_count)
+TR_WRAP(NSUInteger, total_size)
+TR_WRAP(BOOL, is_directory)
+TR_WRAP(gap_TransactionStatus, status)
+
+TR_STR_WRAP(first_filename)
+TR_STR_WRAP(network_id)
+TR_STR_WRAP(sender_fullname)
+TR_STR_WRAP(sender_id)
+TR_STR_WRAP(recipient_fullname);
+
 @end
 
 //- notif callback implementation -----------------------------------------------------------
-
-static void on_user_status(gap_UserStatusNotification const* n)
+static void on_user_status(char const* user_id,
+                           gap_UserStatus status)
 {
-    assert(n != NULL);
+    assert(user_id != NULL);
     NSLog(@">>> on user status notif !");
+    IAUser* user = [IAUser userWithId:[NSString stringWithUTF8String:user_id]];
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_USER_STATUS_NOTIFICATION
-                                                        object:[[IAUserStatusNotification alloc] init:n]];
+                                                        object:user];
 }
 
-static void on_transaction(gap_TransactionNotification const* n)
+static void on_transaction(char const* transaction_id,
+                           int is_new)
 {
-    assert(n != NULL);
+    assert(transaction_id != NULL);
     NSLog(@">>> On transaction notif");
+    IATransaction* transaction = [IATransaction transactionWithId:[NSString stringWithUTF8String:transaction_id]];
+    transaction.is_new = is_new;
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_NOTIFICATION
-                                                        object:[[IATransactionNotification alloc] init:n]];
+                                                        object:transaction];
 }
 
-static void on_transaction_status(gap_TransactionStatusNotification const* n)
+static void on_transaction_status(char const* transaction_id)
 {
-    assert(n != NULL);
+    assert(transaction_id != NULL);
     NSLog(@">>> On transaction status notif");
+    IATransaction* transaction = [IATransaction transactionWithId:[NSString stringWithUTF8String:transaction_id]];
     [[NSNotificationCenter defaultCenter] postNotificationName:IA_GAP_EVENT_TRANSACTION_STATUS_NOTIFICATION
-                                                        object:[[IATransactionStatusNotification alloc] init:n]];
+                                                        object:transaction];
 }

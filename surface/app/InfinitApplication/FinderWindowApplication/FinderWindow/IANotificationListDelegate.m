@@ -18,7 +18,7 @@
 @implementation IANotificationListDelegate
 {
 @private
-    NSMutableArray* _notifications;
+    NSMutableArray* _transactions;
 }
 
 - (id)init
@@ -26,28 +26,28 @@
     self = [super init];
     if (self)
     {
-        _notifications = [[NSMutableArray alloc] init];
+        _transactions = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
-- (void)addNotification:(id)notification
+- (void)addTransactionNotification:(id)transaction
 {
-    IATransactionNotification* tr = notification;
+    IATransaction* tr = transaction;
     if ([self _rowForTransactionId:tr.transaction_id] != -1)
     {
         NSLog(@"Ignoring one more notif for transaction %@", tr.transaction_id);
         return;
     }
-    [_notifications insertObject:notification atIndex:0];
-    NSLog(@"ADD: source %@ size: %lu", tr.transaction_id, [_notifications count]);
+    [_transactions insertObject:transaction atIndex:0];
+    NSLog(@"ADD: source %@ size: %lu", tr.transaction_id, [_transactions count]);
 }
 
 // Number of rows.
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view
 {
-    NSLog(@"GET: source %@ size: %lu", self, [_notifications count]);
-    return [_notifications count];
+    NSLog(@"GET: source %@ size: %lu", self, [_transactions count]);
+    return [_transactions count];
 }
 
 //// Retrieve row value.
@@ -63,27 +63,19 @@
                           row:(NSInteger)row
 {
     IANotificationCellView *result = nil;
-    id item = [_notifications objectAtIndex:row];
+    id item = [_transactions objectAtIndex:row];
     
-    if ([item isKindOfClass:[IATransactionNotification class]])
-    {
-        IATransactionNotification* notif = item;
-        NSLog(@"SELF ID   = %@",[IAClientGapState gap_instance].self_id);
-        NSString* cell_id;
-        if ([notif.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])
-            cell_id = @"TransactionNotificationCellViewFromSelf";
-        else
-            cell_id = @"TransactionNotificationCellView";
-        
-        result = [table_view makeViewWithIdentifier:cell_id owner:self];
-        
-        [result setNotification:notif];
-    }
+    IATransaction* transaction = item;
+    NSLog(@"SELF ID   = %@",[IAClientGapState gap_instance].self_id);
+    NSString* cell_id;
+    if ([transaction.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])
+        cell_id = @"TransactionNotificationCellViewFromSelf";
     else
-    {
-        NSLog(@"WARNING: Unexpected notification type");
-        return nil;
-    }
+        cell_id = @"TransactionNotificationCellView";
+    
+    result = [table_view makeViewWithIdentifier:cell_id owner:self];
+    
+    [result setNotification:transaction];
 
     return result;
 }
@@ -91,11 +83,11 @@
 - (NSInteger)_rowForTransactionId:(NSString*)transaction_id
 {
     NSInteger row = 0;
-    for (id n in _notifications)
+    for (id n in _transactions)
     {
-        if ([n isKindOfClass:[IATransactionNotification class]])
+        if ([n isKindOfClass:[IATransaction class]])
         {
-            IATransactionNotification* tr_n = n;
+            IATransaction* tr_n = n;
             if ([tr_n.transaction_id isEqualToString:transaction_id])
                 return row;
             else
@@ -116,17 +108,17 @@
     return nil;
 }
 
-- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif
+- (void)updateTransactionStatus:(IATransaction*)transaction
 {
     NSLog(@"Updating transaction status");
-    IANotificationCellView* view = [self _viewForTransactionId:notif.transaction_id];
+    IANotificationCellView* view = [self _viewForTransactionId:transaction.transaction_id];
     if (view != nil)
     {
-        [view update:notif];
+        [view update:transaction];
     }
     else
     {
-        NSLog(@"Cannot find view for transaction id = %@", notif.transaction_id);
+        NSLog(@"Cannot find view for transaction id = %@", transaction.transaction_id);
     }
 }
 
@@ -135,9 +127,9 @@
     NSUInteger row = [self.table rowForView:sender];
     IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
     
-    id item = [_notifications objectAtIndex:row];
-    assert([item isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = item;
+    id item = [_transactions objectAtIndex:row];
+    assert([item isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = item;
     NSLog(@"accept for view: %@", view);
     [view freeze];
     [[IAClientGapState gap_instance] acceptTransaction:notif
@@ -160,20 +152,20 @@
     NSUInteger row = [self.table rowForView:sender];
     IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
     
-    id item = [_notifications objectAtIndex:row];
-    assert([item isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = item;
+    id item = [_transactions objectAtIndex:row];
+    assert([item isKindOfClass:[IATransaction class]]);
+    IATransaction* transaction = item;
     NSLog(@"reject for view: %@", view);
     [view freeze];
-    [[IAClientGapState gap_instance] rejectTransaction:notif
+    [[IAClientGapState gap_instance] rejectTransaction:transaction
                                        performSelector:@selector(_on_reject_done:)
                                               onObject:self];
 }
 
 - (void)_on_reject_done:(IAGapOperationResult*)op
 {
-    assert([op.data isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = (IATransactionNotification*)op.data;
+    assert([op.data isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = (IATransaction*)op.data;
     if (op.success)
     {
         NSLog(@"Reject with success");
@@ -187,9 +179,9 @@
     NSUInteger row = [self.table rowForView:sender];
     IANotificationCellView* view = [self.table viewAtColumn:0 row:row makeIfNecessary:NO];
     
-    id item = [_notifications objectAtIndex:row];
-    assert([item isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = item;
+    id item = [_transactions objectAtIndex:row];
+    assert([item isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = item;
     NSLog(@"cancel for view: %@", view);
     [view freeze];
     [[IAClientGapState gap_instance] cancelTransaction:notif
@@ -199,8 +191,8 @@
 
 - (void)_on_cancel_done:(IAGapOperationResult*)op
 {
-    assert([op.data isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = (IATransactionNotification*)op.data;
+    assert([op.data isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = (IATransaction*)op.data;
     if (op.success)
     {
         NSLog(@"Cancel with success");
@@ -217,7 +209,7 @@
     NSInteger row = [self _rowForTransactionId:transaction_id];
     if (row != -1)
     {
-        [_notifications removeObjectAtIndex:row];
+        [_transactions removeObjectAtIndex:row];
         [[self table] reloadData];
     }
     else
