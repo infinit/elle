@@ -286,14 +286,15 @@ extern "C" {
                                   char const* network_id,
                                   char const* user_id);
 
-  /// - Self ----------------------------------------------------------------
+  /// - Self ------------------------------------------------------------------
+
   char const*
   gap_user_token(gap_State* state);
 
   char const*
   gap_self_id(gap_State* state);
 
-  /// - User ----------------------------------------------------------------
+  /// - User ------------------------------------------------------------------
 
   /// Retrieve user fullname.
   char const* gap_user_fullname(gap_State* state, char const* id);
@@ -310,7 +311,11 @@ extern "C" {
   /// Free the search users result.
   void gap_search_users_free(char** users);
 
-  /// - Swaggers ----------------------------------------------------------------
+  /// Retrieve user status.
+  gap_UserStatus
+  gap_user_status(gap_State* state, char const* user_id);
+
+  /// - Swaggers --------------------------------------------------------------
 
   /// Get the list of user's swaggers.
   char**

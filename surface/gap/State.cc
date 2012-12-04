@@ -206,6 +206,7 @@ namespace surface
           response.fullname,
           response.email,
           response.public_key,
+          response.status,
       }};
 
       this->_users[response._id] = user.get();
@@ -238,6 +239,7 @@ namespace surface
           response.fullname,
           response.email,
           response.public_key,
+          response.status,
       }};
 
       this->_users[response._id] = user.get();
@@ -272,6 +274,7 @@ namespace surface
                       response.fullname,
                       response.email,
                       response.public_key,
+                      response.status,
                   };
                 }
             }

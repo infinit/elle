@@ -79,6 +79,7 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("fullname", res.fullname);
   ar & named("email", res.email);
   ar & named("public_key", res.public_key);
+  ar & named("status", res.status);
 }
 
 // SERIALIZE_RESPONSE(plasma::meta::SwaggerResponse, ar, res)

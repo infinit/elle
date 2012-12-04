@@ -72,6 +72,7 @@ namespace plasma
       std::string fullname;
       std::string email;
       std::string public_key;
+      int         status;
     };
 
     struct UserResponse : User, Response

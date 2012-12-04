@@ -493,10 +493,23 @@ extern "C"
     ::free(users);
   }
 
+  gap_UserStatus
+  gap_user_status(gap_State* state, char const* user_id)
+  {
+    gap_Status ret = gap_ok;
+    try
+      {
+        return (gap_UserStatus) __TO_CPP(state)->user(user_id).status;
+      }
+    CATCH_ALL(user_status);
+
+    return (gap_UserStatus) ret;
+  }
+
   char**
   gap_swaggers(gap_State* state)
   {
-  assert(state != nullptr);
+    assert(state != nullptr);
 
     gap_Status ret;
     try
