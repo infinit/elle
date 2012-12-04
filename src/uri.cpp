@@ -345,50 +345,64 @@ namespace network {
     return part_range(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
   }
 
-  uri::part_range uri::user_info() const {
+  boost::optional<uri::part_range> uri::user_info() const {
     return uri_parts_.hier_part.user_info?
       part_range(std::begin(uri_parts_.hier_part.user_info.get()),
 		 std::end(uri_parts_.hier_part.user_info.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::host() const {
+  boost::optional<uri::part_range> uri::host() const {
     return uri_parts_.hier_part.host?
       part_range(std::begin(uri_parts_.hier_part.host.get()),
 		 std::end(uri_parts_.hier_part.host.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::port() const {
+  boost::optional<uri::part_range> uri::port() const {
     return uri_parts_.hier_part.port?
       part_range(std::begin(uri_parts_.hier_part.port.get()),
 		 std::end(uri_parts_.hier_part.port.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::path() const {
+  boost::optional<uri::part_range> uri::path() const {
     return uri_parts_.hier_part.path?
       part_range(std::begin(uri_parts_.hier_part.path.get()),
 		 std::end(uri_parts_.hier_part.path.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::query() const {
+  boost::optional<uri::part_range> uri::query() const {
     return uri_parts_.query ?
       part_range(std::begin(uri_parts_.query.get()),
 		 std::end(uri_parts_.query.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::fragment() const {
+  boost::optional<uri::part_range> uri::fragment() const {
     return uri_parts_.fragment?
       part_range(std::begin(uri_parts_.fragment.get()),
 		 std::end(uri_parts_.fragment.get()))
-      : part_range();
+      : boost::optional<part_range>();
   }
 
-  uri::part_range uri::authority() const {
-    return part_range(user_info().begin(), port().end());
+  boost::optional<uri::part_range> uri::authority() const {
+    auto host = this->host();
+    if (!host) {
+      return boost::optional<part_range>();
+    }
+
+    auto first = std::begin(*host), last = std::end(*host);
+    if (user_info()) {
+      first = std::begin(*user_info());
+    }
+
+    if (port()) {
+      last = std::end(*port());
+    }
+
+    return part_range(first, last);
   }
 
 
@@ -429,11 +443,15 @@ namespace network {
   }
 
   uri uri::relativize(const uri &other) const {
-    return *this;
+    if (opaque() || other.opaque()) {
+      return other;
+    }
+
+    return other;
   }
 
   uri uri::resolve(const uri &other) const {
-    return *this;
+    return other;
   }
 
   void uri::parse(std::error_code &ec) {
@@ -452,7 +470,6 @@ namespace network {
       uri_parts_.scheme = part_range(std::begin(uri_),
 				     std::begin(uri_));
     }
-    uri_parts_.update();
   }
 
   void swap(uri &lhs, uri &rhs) {
@@ -476,6 +493,7 @@ namespace network {
   }
 
   bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level) {
+    return lhs.native() == rhs.native();
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (lhs.empty() && rhs.empty()) {
@@ -490,17 +508,17 @@ namespace network {
     bool equal = boost::iequals(*lhs.scheme(), *rhs.scheme());
     if (equal) {
       // the user info must be case sensitive
-      equal = boost::equals(lhs.user_info(), rhs.user_info());
+      equal = boost::equals(*lhs.user_info(), *rhs.user_info());
     }
 
     if (equal) {
       // the host can be compared insensitive to case
-      equal = boost::iequals(lhs.host(), rhs.host());
+      equal = boost::iequals(*lhs.host(), *rhs.host());
     }
 
     if (equal) {
       if (lhs.port() && rhs.port()) {
-    	equal = boost::equals(lhs.port(), rhs.port());
+    	equal = boost::equals(*lhs.port(), *rhs.port());
       }
      // else if (!lhs.port() && rhs.port()) {
     	//auto port = default_port(lhs.scheme());
@@ -519,7 +537,7 @@ namespace network {
     if (equal) {
       // test normalized paths
       //equal = boost::iequals(normalize_path(lhs.path()), normalize_path(rhs.path()));
-      equal = boost::iequals(lhs.path(), rhs.path());
+      equal = boost::iequals(*lhs.path(), *rhs.path());
 	}
 
     if (equal) {

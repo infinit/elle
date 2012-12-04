@@ -149,19 +149,19 @@ namespace network {
 
     boost::optional<part_range> scheme() const;
 
-    part_range user_info() const;
+    boost::optional<part_range> user_info() const;
 
-    part_range host() const;
+    boost::optional<part_range> host() const;
 
-    part_range port() const;
+    boost::optional<part_range> port() const;
 
-    part_range path() const;
+    boost::optional<part_range> path() const;
 
-    part_range query() const;
+    boost::optional<part_range> query() const;
 
-    part_range fragment() const;
+    boost::optional<part_range> fragment() const;
 
-    part_range authority() const;
+    boost::optional<part_range> authority() const;
 
     string_type native() const;
 

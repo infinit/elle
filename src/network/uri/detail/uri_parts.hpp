@@ -32,34 +32,6 @@ namespace network {
         return std::end(path);
       }
 
-      void update() {
-        if (!user_info) {
-          if (host) {
-            user_info = boost::iterator_range<FwdIter>(std::begin(host.get()),
-                                                       std::begin(host.get()));
-          }
-          else if (path) {
-            user_info = boost::iterator_range<FwdIter>(std::begin(path.get()),
-                                                       std::begin(path.get()));
-          }
-        }
-
-        if (!host) {
-          host = boost::iterator_range<FwdIter>(std::begin(path.get()),
-                                                std::begin(path.get()));
-        }
-
-        if (!port) {
-          port = boost::iterator_range<FwdIter>(std::end(host.get()),
-                                                std::end(host.get()));
-        }
-
-        if (!path) {
-          path = boost::iterator_range<FwdIter>(std::end(port.get()),
-                                                std::end(port.get()));
-        }
-      }
-
     };
 
     template <
@@ -79,20 +51,6 @@ namespace network {
         return std::end(fragment);
       }
 
-      void update() {
-
-        hier_part.update();
-
-        if (!query) {
-          query = boost::iterator_range<FwdIter>(std::end(hier_part.path.get()),
-                                                 std::end(hier_part.path.get()));
-        }
-
-        if (!fragment) {
-          fragment = boost::iterator_range<FwdIter>(std::end(query.get()),
-                                                    std::end(query.get()));
-        }
-      }
     };
   } // namespace detail
 } // namespace network
