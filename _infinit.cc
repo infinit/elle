@@ -155,8 +155,20 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   elle::nat::NAT NAT(elle::concurrency::scheduler());
   std::vector<std::pair<std::string, uint16_t>> public_addresses;
 
-  public_addresses.push_back(NAT.punch(common::longinus::host(),
-                                       common::longinus::port()));
+
+  // By default, try to open a hole in the nat.
+  try
+    {
+      ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
+                       common::longinus::host(),
+                       common::longinus::port());
+      public_addresses.push_back(NAT.punch(common::longinus::host(),
+                                           common::longinus::port()));
+    }
+  catch (elle::Exception &e)
+    {
+      ELLE_WARN("NAT punching error: %s", e.what());
+    }
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
