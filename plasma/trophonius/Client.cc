@@ -24,6 +24,7 @@ ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
 //- Notification serializers --------------------------------------------------
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::Notification);
 ELLE_SERIALIZE_SIMPLE(plasma::Notification, ar, value, version)
 {
   enforce(version == 0);
@@ -31,6 +32,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::Notification, ar, value, version)
   ar & named("notification_type", value.notification_type);
 }
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::UserStatusNotification);
 ELLE_SERIALIZE_SIMPLE(plasma::trophonius::UserStatusNotification, ar, value, version)
 {
   enforce(version == 0);
@@ -41,6 +43,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::UserStatusNotification, ar, value, ver
   ar & named("status", value.status);
 }
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::TransactionNotification);
 ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionNotification, ar, value, version)
 {
   enforce(version == 0);
@@ -50,6 +53,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionNotification, ar, value, ve
   ar & named("transaction", value.transaction);
 }
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::TransactionStatusNotification);
 ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, value, version)
 {
   enforce(version == 0);
@@ -60,6 +64,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, val
   ar & named("status", value.status);
 }
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::MessageNotification);
 ELLE_SERIALIZE_SIMPLE(plasma::trophonius::MessageNotification, ar, value, version)
 {
   enforce(version == 0);

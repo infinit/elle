@@ -6,9 +6,6 @@ namespace elle
   namespace serialize
   {
 
-    template<typename T> struct StoreFormat
-    { static bool const value = true; };
-
     template<typename T> struct StoreFormat<T&>
     { static bool const value = StoreFormat<T>::value; };
 
