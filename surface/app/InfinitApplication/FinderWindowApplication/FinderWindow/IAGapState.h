@@ -18,8 +18,8 @@
 
 @interface IAUser : NSObject
 
-@property (retain)              NSString*   user_id;
-@property (nonatomic, readonly) NSInteger   status;
+@property (retain)              NSString*       user_id;
+@property (nonatomic, readonly) gap_UserStatus  status;
 
 @end
 
