@@ -31,10 +31,10 @@
 
 - (void)_onTransactionNotification:(NSNotification*)n;
 {
-    assert([[n object] isKindOfClass:[IATransactionNotification class]]);
-    IATransactionNotification* notif = [n object];
-    NSLog(@"ON TRANSACTION NOTIFICATION %@", notif.transaction_id);
-    [[self source] addNotification:notif];
+    assert([[n object] isKindOfClass:[IATransaction class]]);
+    IATransaction* transaction = [n object];
+    NSLog(@"ON TRANSACTION NOTIFICATION %@", transaction.transaction_id);
+    [[self source] addTransaction:transaction];
     [self.table reloadData];
 }
 
