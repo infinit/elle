@@ -49,13 +49,15 @@ namespace surface
       Exception(gap_Status code, std::string const& msg);
     };
 
-   class State
-    {
-      using ::plasma::trophonius::TransactionNotification;
-      using ::plasma::trophonius::TransactionStatusNotification;
-      using ::plasma::trophonius::UserStatusNotification;
-      using ::plasma::trophonius::MessageNotification;
+    using ::plasma::Transaction;
+    using ::plasma::Notification;
+    using ::plasma::trophonius::TransactionNotification;
+    using ::plasma::trophonius::TransactionStatusNotification;
+    using ::plasma::trophonius::UserStatusNotification;
+    using ::plasma::trophonius::MessageNotification;
 
+    class State
+    {
     private:
       std::unique_ptr<plasma::meta::Client>       _meta;
       std::unique_ptr<plasma::trophonius::Client> _trophonius;
@@ -342,26 +344,26 @@ namespace surface
 
     private:
       typedef
-        std::function<void(plasma::trophonius::Notification const&, bool)>
+        std::function<void(Notification const&, bool)>
         NotificationHandler;
       std::map<int, std::list<NotificationHandler>> _notification_handlers;
 
     public:
       typedef
-        std::function<void(plasma::trophonius::UserStatusNotification const&)>
+        std::function<void(UserStatusNotification const&)>
         UserStatusNotificationCallback;
 
       typedef
-        std::function<void(plasma::trophonius::TransactionNotification const&, bool)>
+        std::function<void(TransactionNotification const&, bool)>
         TransactionNotificationCallback;
 
 
       typedef
-        std::function<void(plasma::trophonius::TransactionStatusNotification const&)>
+        std::function<void(TransactionStatusNotification const&, bool)>
         TransactionStatusNotificationCallback;
 
       typedef
-        std::function<void(plasma::trophonius::MessageNotification const&)>
+        std::function<void(MessageNotification const&)>
         MessageNotificationCallback;
 
     public:
@@ -379,11 +381,11 @@ namespace surface
 
     private:
       void
-      _on_transaction(plasma::trophonius::TransactionNotification const& notif,
+      _on_transaction(TransactionNotification const& notif,
                       bool is_new);
 
       void
-      _on_transaction_status(plasma::trophonius::TransactionStatusNotification const& notif);
+      _on_transaction_status(TransactionStatusNotification const& notif);
 
     public:
       size_t
@@ -391,8 +393,8 @@ namespace surface
 
     private:
       void
-      _handle_dictionnary(plasma::trophonius::Notification const& notif,
-                          bool _new = true);
+      _handle_notification(Notification const& notif,
+                           bool _new = true);
 
     private:
       // Retrieve the current watchdog id.

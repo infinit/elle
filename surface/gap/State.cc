@@ -83,11 +83,12 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
+      namespace p = std::placeholders;
       this->transaction_callback(
-        std::bind(&State::_on_transaction, this, std::placeholders::_1)
+        std::bind(&State::_on_transaction, this, p::_1, p::_2)
       );
       this->transaction_status_callback(
-        std::bind(&State::_on_transaction_status, this, std::placeholders::_1)
+        std::bind(&State::_on_transaction_status, this, p::_1)
       );
     }
 
@@ -108,13 +109,6 @@ namespace surface
       for (auto& it: this->_networks)
         delete it.second;
       this->_networks.clear();
-
-      if (this->_transactions)
-        {
-          for (auto& it: *this->_transactions)
-            delete it.second;
-          this->_transactions->clear();
-        }
     }
 
     void
@@ -370,6 +364,79 @@ namespace surface
       this->_meta->logout();
     }
 
+    static
+    std::unique_ptr<Notification>
+    _xxx_dict_to_notification(json::Dictionary const& d)
+    {
+      std::unique_ptr<Notification> res;
+      int notification_type = d["notification_type"].as_integer();
+
+      std::unique_ptr<UserStatusNotification> user_status{
+          new UserStatusNotification
+      };
+
+      std::unique_ptr<TransactionNotification> transaction{
+          new TransactionNotification
+      };
+      std::unique_ptr<TransactionStatusNotification> transaction_status{
+          new TransactionStatusNotification
+      };
+      std::unique_ptr<MessageNotification> message{
+          new MessageNotification
+      };
+
+      switch (notification_type)
+        {
+        case gap_notification_user_status:
+          user_status->user_id = d["user_id"].as_string();
+          user_status->status = d["status"].as_integer();
+          res = std::move(user_status);
+          break;
+
+        case gap_notification_transaction:
+          transaction->transaction.transaction_id = d["transaction"]["transaction_id"].as_string();
+          transaction->transaction.sender_id = d["transaction"]["sender_id"].as_string();
+          transaction->transaction.sender_fullname = d["transaction"]["sender_fullname"].as_string();
+          transaction->transaction.sender_device_id = d["transaction"]["sender_device_id"].as_string();
+          transaction->transaction.recipient_id = d["transaction"]["recipient_id"].as_string();
+          transaction->transaction.recipient_fullname = d["transaction"]["recipient_fullname"].as_string();
+          transaction->transaction.recipient_device_id = d["transaction"]["recipient_device_id"].as_string();
+          transaction->transaction.recipient_device_name = d["transaction"]["recipient_device_name"].as_string();
+          transaction->transaction.network_id = d["transaction"]["network_id"].as_string();
+          transaction->transaction.first_filename = d["transaction"]["first_filename"].as_string();
+          transaction->transaction.files_count = d["transaction"]["files_count"].as_integer();
+          transaction->transaction.total_size = d["transaction"]["total_size"].as_integer();
+          transaction->transaction.is_directory = d["transaction"]["is_directory"].as_integer();
+          transaction->transaction.status = d["transaction"]["status"].as_integer();
+          res = std::move(transaction);
+          break;
+
+        case gap_notification_transaction_status:
+          transaction_status->transaction_id = d["transaction_id"].as_string();
+          transaction_status->status = d["status"].as_integer();
+          res = std::move(transaction_status);
+          break;
+
+        case gap_notification_message:
+          message->sender_id = d["sender_id"].as_string();
+          message->message = d["message"].as_string();
+          res = std::move(message);
+          break;
+
+        case gap_notification_connection_enabled:
+          res.reset(new Notification);
+          break;
+
+        default:
+          throw elle::Exception{
+              "Unknown notification type %s", notification_type
+          };
+        }
+      res->notification_type = notification_type;
+      return res;
+    }
+
+
     void
     State::pull_notifications(int count, int offset)
     {
@@ -382,11 +449,11 @@ namespace surface
       auto res = this->_meta->pull_notifications(count, offset);
 
       // Handle old notif first to act like a queue.
-      for (auto dict : res.old_notifs)
-        this->_handle_dictionnary(dict, false);
+      for (auto& dict : res.old_notifs)
+        this->_handle_notification(*_xxx_dict_to_notification(dict), false);
 
-      for (auto dict : res.notifs)
-        this->_handle_dictionnary(dict, true);
+      for (auto& dict : res.notifs)
+        this->_handle_notification(*_xxx_dict_to_notification(dict), true);
     }
 
     void
@@ -505,24 +572,24 @@ namespace surface
       if (pair == State::transactions().end())
         return;
 
-      gap_Transaction *trans = pair->second;
+      Transaction const& trans = pair->second;
 
       (void) this->refresh_networks();
 
       // Ensure the network status is available
-      (void) this->network_status(trans->network_id);
+      (void) this->network_status(trans.network_id);
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
       QStringList arguments;
-      arguments << "-n" << trans->network_id
+      arguments << "-n" << trans.network_id.c_str()
                 << "-u" << this->_me._id.c_str()
                 << "--path" << this->_output_dir.c_str()
                 << "--from"
       ;
       ELLE_DEBUG("LAUNCH: %s %s",
-                      transfer_binary,
-                      arguments.join(" ").toStdString());
+                 transfer_binary,
+                 arguments.join(" ").toStdString());
 
       QProcess p;
       p.start(transfer_binary.c_str(), arguments);
@@ -836,7 +903,7 @@ namespace surface
             gap_error,
             "Cannot find any transaction for id '" + id + "'"
         };
-      return *(it->second);
+      return it->second;
     }
 
     // Thoose callbacks are used to keep the client and the server as the same
@@ -936,7 +1003,7 @@ namespace surface
       size_t count = 0;
       while (count < max)
         {
-          std::unique_ptr<plasma::trophonius::Notification> notif{
+          std::unique_ptr<Notification> notif{
               this->_trophonius->poll()
           };
 
@@ -971,7 +1038,7 @@ namespace surface
       for (auto& handler : handler_list->second)
         {
           ELLE_ASSERT(handler != nullptr);
-          handler->call(notif, new_);
+          handler(notif, new_);
         }
     }
 
@@ -1555,10 +1622,8 @@ namespace surface
     void
     State::user_status_callback(UserStatusNotificationCallback const& cb)
     {
-      using plasma::trophonius;
-
-      auto fn = [=cb] (Notification const& notif, bool) -> void {
-        return cb(dynamic_cast<UserStatusNotification const&>(notif));
+      auto fn = [cb] (Notification const& notif, bool) -> void {
+        return cb(static_cast<UserStatusNotification const&>(notif));
       };
 
       this->_notification_handlers[gap_notification_user_status].push_back(fn);
@@ -1567,10 +1632,8 @@ namespace surface
     void
     State::transaction_callback(TransactionNotificationCallback const& cb)
     {
-      using plasma::trophonius;
-
-      auto fn = [=cb] (Notification const& notif, bool is_new) -> void {
-        return cb(dynamic_cast<TransactionNotification const&>(notif, is_new));
+      auto fn = [cb] (Notification const& notif, bool is_new) -> void {
+        return cb(static_cast<TransactionNotification const&>(notif), is_new);
       };
 
       this->_notification_handlers[gap_notification_transaction].push_back(fn);
@@ -1579,10 +1642,8 @@ namespace surface
     void
     State::transaction_status_callback(TransactionStatusNotificationCallback const& cb)
     {
-      using plasma::trophonius;
-
-      auto fn = [=cb] (Notification const& notif, bool) -> void {
-        return cb(dynamic_cast<TransactionStatusNotification const&>(notif));
+      auto fn = [cb] (Notification const& notif, bool is_new) -> void {
+        return cb(static_cast<TransactionStatusNotification const&>(notif), is_new);
       };
 
       _notification_handlers[gap_notification_transaction_status].push_back(fn);
@@ -1591,10 +1652,8 @@ namespace surface
     void
     State::message_callback(MessageNotificationCallback const& cb)
     {
-      using plasma::trophonius;
-
-      auto fn = [=cb] (Notification const& notif, bool) -> void {
-        return cb(dynamic_cast<MessageNotification const&>(notif));
+      auto fn = [cb] (Notification const& notif, bool) -> void {
+        return cb(static_cast<MessageNotification const&>(notif));
       };
 
       this->_notification_handlers[gap_notification_message].push_back(fn);
@@ -1609,21 +1668,13 @@ namespace surface
       if (!is_new)
         return;
 
-      auto const& pair = this->transactions().find(notif.transaction_id);
+      auto it = this->transactions().find(notif.transaction.transaction_id);
 
-      if (pair != this->transactions().end())
-      {
-
-#ifdef DEBUG
-        Transaction* transaction = pair->second;
-        ELLE_ASSERT(transaction != nullptr);
-        ELLE_ASSERT(*transaction == notif);
-#endif
+      if (it != this->transactions().end())
         return;
-      }
 
       // Normal case, this is a new transaction, store it to match server.
-      (*this->_transactions)[notif.transaction_id] = notif;
+      (*this->_transactions)[notif.transaction.transaction_id] = notif.transaction;
     }
 
     void
@@ -1647,7 +1698,7 @@ namespace surface
       {
         case gap_transaction_status_accepted:
           // We update the transaction from meta.
-          _transactions[notif.transaction_id] = this->_meta->transaction(
+          (*_transactions)[notif.transaction_id] = this->_meta->transaction(
               notif.transaction_id
           );
           this->_on_transaction_accepted(transaction);

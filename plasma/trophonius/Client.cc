@@ -24,7 +24,7 @@ ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
 //- Notification serializers --------------------------------------------------
 
-ELLE_SERIALIZE_SIMPLE(plasma::trophonius::Notification, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(plasma::Notification, ar, value, version)
 {
   enforce(version == 0);
 
@@ -120,6 +120,12 @@ namespace plasma
       ::fcntl(_impl->socket.native_handle(), F_SETFD, 1);
     }
 
+    Client::~Client()
+    {
+      delete _impl;
+      _impl = nullptr;
+    }
+
     void Client::_on_read_socket(boost::system::error_code const& err,
                                  size_t bytes_transferred)
     {
@@ -151,13 +157,13 @@ namespace plasma
           {
             std::stringstream ss{std::string{data.get(), bytes_transferred}};
 
-            elle::serialize::NamedValue<int> val("notification_type", notification_type);
-            elle::serialize::InputJSONArchive ar(ss, val);
+            Notification notification;
+            elle::serialize::InputJSONArchive ar(ss, notification);
+            notification_type = notification.notification_type;
           }
 
 
           std::unique_ptr<Notification> notification;
-
           {
             std::stringstream ss{std::string{data.get(), bytes_transferred}};
             elle::serialize::InputJSONArchive ar{ss};

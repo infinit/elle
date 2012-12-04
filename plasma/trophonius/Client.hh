@@ -18,12 +18,6 @@ namespace plasma
 
     namespace json = elle::format::json;
 
-    /// Base class for all notifications.
-    struct Notification
-    {
-      int notification_type;
-    };
-
     struct UserStatusNotification:
       public Notification
     {
@@ -51,15 +45,18 @@ namespace plasma
       std::string message;
     };
 
-    class Client
+    class Client:
+      private boost::noncopyable
     {
     public:
       struct Impl;
-      std::unique_ptr<Impl> _impl;
+      Impl* _impl;
 
       Client(std::string const& server,
              uint16_t port,
              bool check_error = true);
+
+      ~Client();
 
     public:
       bool

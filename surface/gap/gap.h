@@ -221,8 +221,7 @@ extern "C" {
   gap_transaction_is_directory(gap_State*,
                                char const*);
 
-  //  gap_TransactionStatus
-  int
+  gap_TransactionStatus
   gap_transaction_status(gap_State*,
                          char const*);
 
