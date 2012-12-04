@@ -399,13 +399,12 @@ namespace plasma
                                std::string const& network_id,
                                std::string const& device_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
+      json::Dictionary request{std::map<std::string, std::string>{
           {"recipient_id_or_email", recipient_id_or_email},
           {"first_filename", first_filename},
           {"device_id", device_id},
           {"network_id", network_id},
-        }};
+      }};
       request["total_size"] = size;
       request["is_directory"] = is_dir;
       request["files_count"] = count;
