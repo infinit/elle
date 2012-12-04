@@ -1,6 +1,8 @@
 #ifndef NUCLEUS_PROTON_BREED_HH
 # define NUCLEUS_PROTON_BREED_HH
 
+# include <iosfwd>
+
 namespace nucleus
 {
   namespace proton

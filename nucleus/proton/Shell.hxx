@@ -10,7 +10,7 @@ namespace nucleus
     `-------------*/
 
     template <typename T>
-    Shell<T>::Shell(T* node):
+    Shell::Shell(T* node):
       _breed(T::Constants::breed),
       _node(node),
       _cipher(nullptr)

@@ -342,8 +342,8 @@ namespace nucleus
 
             this->_value->insert(k, e);
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -359,8 +359,8 @@ namespace nucleus
 
             value.unload();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -380,8 +380,12 @@ namespace nucleus
 
             value.unload();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Specify the tree that a value has been modified. This way,
+            // the tree will be able to adapt itself to these modifications.
+            this->_tree->update(k);
+
+            // Finally, try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -413,8 +417,8 @@ namespace nucleus
 
             this->_value->erase(k, e);
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -430,8 +434,8 @@ namespace nucleus
 
             value.unload();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -451,8 +455,12 @@ namespace nucleus
 
             value.unload();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Specify the tree that a value has been modified. This way,
+            // the tree will be able to adapt itself to these modifications.
+            this->_tree->update(k);
+
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -484,8 +492,8 @@ namespace nucleus
             // Update the porcupine attribtes.
             this->_state = this->_value->state();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -502,8 +510,8 @@ namespace nucleus
 
             value.unload();
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -514,8 +522,8 @@ namespace nucleus
             // Update the tree.
             this->_tree->update(k);
 
-            // Try to optimize the tree.
-            this->optimize();
+            // Try to optimize the porcupine.
+            this->_optimize();
 
             return;
           }
@@ -988,7 +996,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine<T>::optimize()
+    Porcupine<T>::_optimize()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
@@ -1029,11 +1037,11 @@ namespace nucleus
                 // And set the new nature.
                 this->_nature = Nature::block;
 
-                // Now that the porcupine is in a valid state, the optimize()
+                // Now that the porcupine is in a valid state, the _optimize()
                 // method is called again. Indeed, transforming a value to a
                 // block is not enough as the resulting block may also violate
                 // the block limits.
-                this->optimize();
+                this->_optimize();
               }
             else if (this->_value->footprint() <
                      (this->_nest.limits().extent() *
@@ -1144,11 +1152,11 @@ namespace nucleus
 
                     ELLE_FINALLY_ACTION_DELETE(_value);
 
-                    value.unload();
-
                     // Detach the value block, leading to the block's
                     // destruction.
                     this->_nest.detach(*this->_handle);
+
+                    value.unload();
 
                     // Set the embedded value along with the new nature,
                     // taking care to delete the handle which is no longer used.
@@ -1182,9 +1190,62 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
-            // XXX optimize tree
+            // At this point, either the tree has been modified through
+            // an operation, in which case it would have been optimizing itself
+            // or it has not changed and there is nothing to do.
+            //
+            // The following checks if the tree has become small enough to
+            // fall back to an easier structure i.e a single block.
 
-            // XXX check if we can go back to a single block
+            // XXX
+                if (this->_height == 1)
+                  {
+                    ELLE_TRACE("the tree contains a single level");
+
+                    // unload the root nodule.
+                    root.unload();
+
+                    Ambit<Quill<T>> quill(this->_nest, this->_root);
+
+                    // load the root nodule.
+                    quill.load();
+
+                    // does the quill contain a single value.
+                    if (quill().single() == true)
+                      {
+                        ELLE_TRACE("the root quill contains a single entry");
+
+                        //
+                        // if the root nodules contains a single entry, shrink
+                        // the tree for this entry to become the new root.
+                        //
+                        Handle orphan;
+
+                        // retrieve the handle associated with the maiden key.
+                        orphan = quill().locate_handle(quill().maiden());
+
+                        // detache the root nodule from the porcupine.
+                        this->_nest.detach(quill.handle());
+
+                        // unload the root nodule.
+                        quill.unload();
+
+                        // set the new tree's root handle.
+                        this->_root = orphan;
+
+                        // decrease the tree's height.
+                        this->_height--;
+
+                        // at this point, the tree should have a height of zero.
+                        ELLE_ASSERT(this->_height == 0);
+
+                        // therefore, set the nature as value now that the
+                        // root handle actually references a value.
+                        this->_nature = Nature::block;
+                      }
+                    else
+                      quill.unload();
+                    // XXX
 
             return;
           }

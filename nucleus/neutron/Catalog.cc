@@ -303,7 +303,7 @@ namespace nucleus
     void
     Catalog::_insert(std::shared_ptr<Entry> const& entry)
     {
-      ELLE_DEBUG_METHOD(entry);
+      ELLE_TRACE_METHOD(entry);
 
       // Inject the entry in the container.
       this->_inject(entry);
@@ -316,7 +316,7 @@ namespace nucleus
     void
     Catalog::_inject(std::shared_ptr<Entry> const& entry)
     {
-      ELLE_DEBUG_METHOD(entry);
+      ELLE_TRACE_METHOD(entry);
 
       // Check if this name has already been recorded.
       if (this->_container.find(entry->name()) != this->_container.end())

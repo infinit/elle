@@ -200,9 +200,6 @@ namespace nucleus
       /// out on the tree.
       Root
       seal(cryptography::SecretKey const& secret);
-      /// XXX
-      void
-      optimize();
 
     private:
       /// Return the handle of the quill block responsible for the given key
@@ -212,6 +209,9 @@ namespace nucleus
       /// elements from the quill nodes.
       Handle
       _search(typename T::K const& k);
+      /// XXX
+      void
+      _optimize();
 
       /*-----------.
       | Attributes |

@@ -1,5 +1,7 @@
 #include <nucleus/proton/Breed.hh>
 
+#include <iostream>
+
 namespace nucleus
 {
   namespace proton

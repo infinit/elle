@@ -94,6 +94,7 @@ namespace nucleus
       //
     private:
       // XXX[il devrait y avoir un type: memory, nest, storage layer]
+      // XXX[et une union? en fait non probablement pas car c'est bien de garder l'addresse]
       Placement _placement;
       Address _address;
       cryptography::SecretKey _secret;

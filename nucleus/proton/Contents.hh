@@ -78,7 +78,6 @@ namespace nucleus
                                  neutron::ComponentContents,
                                  cryptography::KeyPair::generate(1024).K()),
 
-        _type(T::Constants::type),
         _shell(node)
       {
       }

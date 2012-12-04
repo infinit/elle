@@ -1,6 +1,7 @@
 #ifndef NUCLEUS_NUCLEUS_HH
 # define NUCLEUS_NUCLEUS_HH
 
+# include <nucleus/proton/Breed.hh>
 # include <nucleus/neutron/Component.hh>
 
 # include <elle/types.hh>

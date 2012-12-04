@@ -366,257 +366,202 @@ namespace nucleus
     void
     Tree<T>::optimize()
     {
-            Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
+      ELLE_TRACE_METHOD("");
 
-            // load the root nodule.
-            root.load();
+      Ambit<Nodule<T>> root(this->_nest, this->_root);
 
-            ELLE_TRACE("considering the root nodule's footprint: "
-                       "%s < %s",
-                       root().footprint(),
-                       this->_nest.limits().extent());
+      root.load();
 
-            //
-            // at this point, check whether the add() produced the a nodule
-            // whose size exceed the extent.
-            //
-            // should this happen, the root block is split, creating a new
-            // block. thus, a new root block is created in which both nodules
-            // are inserted.
-            //
-            // check if the future nodule's footprint---i.e should the inlet
-            // be inserted---would exceed the extent.
-            //
-            if ((root().footprint()) > this->_nest.limits().extent())
-              {
-                ELLE_TRACE("root's extent hight limit reached: "
-                           "%s > %s",
-                           root().footprint(),
-                           this->_nest.limits().extent());
+      // Check if the root nodule's footprint exceeds the limit.
+      if ((root().footprint()) > this->_nest.limits().extent())
+        {
+          ELLE_TRACE("root nodule extent hight limit reached: %s > %s",
+                     root().footprint(),
+                     this->_nest.limits().extent());
 
-                //
-                // in this case, the nodule needs to be split.
-                //
-                Handle orphan;
+          // In this case, the root nodule needs to be split creating a
+          // brother nodule for which a parent nodule (the future root)
+          // will have to be created.
 
-                // split the current root nodule.
-                orphan = root().split();
+          // Split the root nodule.
+          Handle orphan{root().split()};
 
-                //
-                // at this point, the tree needs to grow in order to welcome
-                // the new right nodule.
-                //
-                struct
+          // At this point, the tree needs to grow in order to welcome
+          // the new right nodule.
+
+          // Retrieve the mayor key of the current root nodule.
+          //
+          // This key will be used for inserting the current root nodule in
+          // the new root.
+          typename T::K mayor_root{root().mayor()};
+
+          // Retrieve the current root nodule's capacity and state.
+          Capacity capacity_root{root().capacity()};
+          State state_root{root().state()};
+
+          // Unload the root nodule so as insert it in the new root.
+          root.unload();
+
+          // Load the new right nodule (result of the split) so as
+          // to retrieve information for inserting it in the new root
+          // nodule.
+          Ambit<Nodule<T>> newright(this->_nest, orphan);
+
+          newright.load();
+
+          // Retrieve the mayor key, capacity and state of the _newright_
+          // nodule.
+          typename T::K mayor_newright{newright().mayor()};
+          Capacity capacity_newright{newright().capacity()};
+          State state_newright{newright().state()};
+
+          newright.unload();
+
+          // At this point, a new root nodule must be created so as to
+          // hold its two future children.
+
+          // Save the new _newright_ handle.
+          Handle handle_newright{orphan};
+
+          // Copy the current root handle so that no ambit references
+          // _this->_root_ since this variable is going to change.
+          Handle handle_root{this->_root};
+
+          // Allocate a new root block: a seam since there was already
+          // a root nodule i.e either a quill or a seam.
+          Contents contents(new Contents(new Seam<T>));
+
+          ELLE_FINALLY_ACTION_DELETE(contents);
+
+          // Attach the block to the nest.
+          Handle handle_newroot{this->_nest.attach(contents)};
+
+          ELLE_FINALLY_ABORT(contents);
+
+          // Let us now proceed to the insertion of the two child
+          // nodules in the new root.
+
+          Ambit<Seam<T>> newroot(this->_nest, handle_newroot);
+
+          newroot.load();
+
+          // The child nodules are manually inserted into the seam
+          // so as to optimize the number of calls.
+
+          // Instanciate a new seam inlet, set its capacity and state
+          // manually before inserting it the new root.
+          typename Seam<T>::I* inlet_left =
+            new typename Seam<T>::I{mayor_root, handle_root);
+
+          ELLE_FINALLY_ACTION_DELETE(inlet_left);
+
+          inlet_left->capacity(capacity_root);
+          inlet_left->state(state_root);
+
+          newroot().insert(inlet_left);
+
+          ELLE_FINALLY_ABORT(inlet_left);
+
+          // Do the same for the right inlet i.e the split _newright_ nodule.
+          typename Seam<T>::I* inlet_right =
+            new typename Seam<T>::I{mayor_newright, handle_newright);
+
+          ELLE_FINALLY_ACTION_DELETE(inlet_right);
+
+          inlet_right->capacity(capacity_newright);
+          inlet_right->state(state_newright);
+
+          newroot().insert(inlet_right);
+
+          ELLE_FINALLY_ABORT(inlet_right);
+
+          // Compute the capacity of the new root seam. Note that
+          // the state does not need to be set explicitely because
+          // the insert() methods took care of updating the nodule's
+          // state to dirty.
+          newroot().capacity(capacity_root + capacity_newright);
+
+          // Update the capacity and state of the tree.
+          this->_capacity = newroot().capacity();
+          this->_state = newroot().state();
+
+          newroot.unload();
+
+          // Finally, assign the new root handle as the root.
+          this->_root = handle_newroot;
+
+          // And increment the height.
+          this->_height++;
+        }
+      else
+        {
+          ELLE_TRACE("root's footprint may be low enough to reorganize "
+                     "the tree");
+
+          ELLE_ASSERT(this->_height != 0);
+
+          // Try to reduce the tree's height.
+          if (this->_height > 1)
+            {
+              ELLE_TRACE("the tree contains several levels of hierarchy");
+
+              // Start by unloading the root nodule so as to reload it as
+              // a seam. Indeed, since the tree's height is higher than 1,
+              // the root nodule must obviously be a seam.
+              root.unload();
+
+              Ambit<Seam<T>> seam(this->_nest, this->_root);
+
+              seam.load();
+
+              // Check whether the root seam contains a single entry in which
+              // case this entry could become the new root.
+              if (seam().single() == true)
                 {
-                  typename T::K root;
-                  typename T::K newright;
-                } mayor;
-                struct
-                {
-                  Capacity root;
-                  Capacity newright;
-                } capacity;
-                struct
-                {
-                  State root;
-                  State  newright;
-                } state;
+                  ELLE_TRACE("the root seam contains a single entry");
 
-                // retrieve the mayor key of the current root.
-                mayor.root = root().mayor();
+                  // Retrieve the handle associated with the maiden key.
+                  Handle orphan{seam().locate_handle(seam().maiden())};
 
-                // retrieve the capacity and state.
-                capacity.root = root().capacity();
-                state.root = root().state();
+                  // Detach the root nodule from the porcupine.
+                  this->_nest.detach(this->_root);
 
-                // unload the root nodule.
-                root.unload();
+                  seam.unload();
 
-                Ambit<Nodule<T>> newright(this->_nest, orphan);
+                  // Set the new tree's root handle as being the one of the
+                  // block which happens to be alone.
+                  this->_root = orphan;
 
-                // load the new right nodule.
-                newright.load();
+                  // Decrease the tree's height.
+                  this->_height--;
 
-                // retrieve the mayor key of the newright nodule as this will
-                // be required for the future insertion in the current seam.
-                mayor.newright = newright().mayor();
+                  ELLE_TRACE("try to optimize further the tree");
 
-                // retrieve the capacity and state.
-                capacity.newright = newright().capacity();
-                state.newright = newright().state();
+                  // Note that it may be possible to optimize the tree further.
+                  // For example, the tree, following a removal for instance,
+                  // may have lost a block on every level of its hierarchy,
+                  // leaving every level with a single inlet.
+                  //
+                  // Although the tree has been shrunk by one level, the new
+                  // root may in turn have a single inlet and could therefore
+                  // be optimized as well.
+                  //
+                  // The most extreme case could led to successive shrinking
+                  // operations leaving the tree with a single block.
+                  this->_optimize();
+                }
+              else
+                seam.unload();
+            }
+          else
+            {
+              ELLE_TRACE("the tree contains a single level of hierarchy and "
+                         "cannot be optimized further");
+            }
 
-                // unload the new right nodule.
-                newright.unload();
-
-                //
-                // at this point, the new i.e orphan nodule must be inserted
-                // into the current seam.
-                //
-                struct
-                {
-                  Handle root;
-                  Handle newroot;
-                  Handle newright;
-                } handle;
-
-                // keep the new right handle.
-                handle.newright = orphan;
-
-                // copy the current root handle so that no ambit reference
-                // _this->_root_ since this variable is going to change.
-                handle.root = this->_root;
-
-                // allocate a new root seam.
-                std::unique_ptr<Contents> contents(new Contents(new Seam<T>));
-
-                // attach the block to the porcupine.
-                handle.newroot = this->_nest.attach(std::move(contents));
-
-                Ambit<Seam<T>> newroot(this->_nest, handle.newroot);
-
-                // load the newroot.
-                newroot.load();
-
-                // below are manually inserted the nodules because add()
-                // would perform the operation recursively.
-
-                // insert the current root nodule in the new root seam.
-                typename Seam<T>::I* inlet;
-
-                newroot().insert(mayor.root, handle.root);
-                inlet = newroot().locate_inlet(mayor.root);
-                inlet->capacity(capacity.root);
-                inlet->state(state.root);
-
-                newroot().insert(mayor.newright, handle.newright);
-                inlet = newroot().locate_inlet(mayor.newright);
-                inlet->capacity(capacity.newright);
-                inlet->state(state.newright);
-
-                // compute the capacity of the new root seam. note that
-                // the state does not need to be set explicitely because
-                // the insert() methods took care of it.
-                newroot().capacity(capacity.root + capacity.newright);
-
-                // update the capacity and state.
-                this->_capacity = newroot().capacity();
-                this->_state = newroot().state();
-
-                // unload the newroot.
-                newroot.unload();
-
-                // assign the new root handle.
-                this->_root = handle.newroot;
-
-                // increment the height.
-                this->_height++;
-              }
-            else
-              {
-                ELLE_TRACE("root's footprint may be low enough to "
-                           "reorganize the tree");
-
-                ELLE_ASSERT(this->_height != 0);
-
-                if (this->_height == 1)
-                  {
-                    ELLE_TRACE("the tree contains a single level");
-
-                    // unload the root nodule.
-                    root.unload();
-
-                    Ambit<Quill<T>> quill(this->_nest, this->_root);
-
-                    // load the root nodule.
-                    quill.load();
-
-                    // does the quill contain a single value.
-                    if (quill().single() == true)
-                      {
-                        ELLE_TRACE("the root quill contains a single entry");
-
-                        //
-                        // if the root nodules contains a single entry, shrink
-                        // the tree for this entry to become the new root.
-                        //
-                        Handle orphan;
-
-                        // retrieve the handle associated with the maiden key.
-                        orphan = quill().locate_handle(quill().maiden());
-
-                        // detache the root nodule from the porcupine.
-                        this->_nest.detach(quill.handle());
-
-                        // unload the root nodule.
-                        quill.unload();
-
-                        // set the new tree's root handle.
-                        this->_root = orphan;
-
-                        // decrease the tree's height.
-                        this->_height--;
-
-                        // at this point, the tree should have a height of zero.
-                        ELLE_ASSERT(this->_height == 0);
-
-                        // therefore, set the nature as value now that the
-                        // root handle actually references a value.
-                        this->_nature = Nature::block;
-                      }
-                    else
-                      quill.unload();
-                  }
-                else if (this->_height > 1)
-                  {
-                    ELLE_TRACE("the tree contains several levels "
-                               "of hierarchy.");
-
-                    // unload the root nodule.
-                    root.unload();
-
-                    Ambit<Seam<T>> seam(this->_nest, this->_root);
-
-                    // load the root nodule.
-                    seam.load();
-
-                    // check whether the root seam contains a single
-                    // entry in which case this entry could become
-                    // the new root.
-                    if (seam().single() == true)
-                      {
-                        ELLE_TRACE("the root seam contains a single entry.");
-
-                        //
-                        // if the root nodules contains a single entry, shrink
-                        // the tree for this entry to become the new root.
-                        //
-                        // XXX here we are sure the root is a seam since height > 1
-                        //
-                        Handle orphan;
-
-                        // retrieve the handle associated with the maiden key.
-                        orphan = seam().locate_handle(seam().maiden());
-
-                        // detache the root nodule from the porcupine.
-                        this->_nest.detach(seam.handle());
-
-                        // unload the root nodule.
-                        seam.unload();
-
-                        // set the new tree's root handle.
-                        this->_root = orphan;
-
-                        // decrease the tree's height.
-                        this->_height--;
-
-                        ELLE_TRACE("try to optimize further the tree");
-
-                        this->_optimize();
-                      }
-                    else
-                      seam.unload();
-                  }
-              }
+          root.unload();
+        }
     }
   }
 }
