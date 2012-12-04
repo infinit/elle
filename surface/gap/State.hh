@@ -145,8 +145,11 @@ namespace surface
 
 
     private:
-      typedef std::map<std::string, plasma::meta::TransactionResponse*> TransactionsMap;
+      typedef std::map<std::string, gap_Transaction *> TransactionsMap;
       std::unique_ptr<TransactionsMap> _transactions;
+
+      gap_Transaction *
+      _response_to_transaction(plasma::meta::TransactionResponse const& res);
 
     public:
       /// @brief Pull transactions from serveur.
@@ -154,7 +157,7 @@ namespace surface
       transactions();
 
       /// @brief Get data from a specific transaction.
-      plasma::meta::TransactionResponse const&
+      gap_Transaction const*
       transaction(std::string const& transaction_id);
 
     public:
@@ -189,43 +192,43 @@ namespace surface
 
       /// @brief Use to accept the transaction for the recipient.
       void
-      _accept_transaction(std::string const& transaction_id);
+      _accept_transaction(gap_Transaction const* trans);
 
       /// @brief Use to add rights on network when the recipient accepts.
       void
-      _on_transaction_accepted(std::string const& transaction_id);
+      _on_transaction_accepted(gap_Transaction const* trans);
 
       /// @brief Use to deny the transaction for the recipient.
       void
-      _deny_transaction(std::string const& transaction_id);
+      _deny_transaction(gap_Transaction const* trans);
 
       /// @brief Use to "delete" the transaction if the recipient denied it.
       void
-      _on_transaction_denied(std::string const& transaction_id);
+      _on_transaction_denied(gap_Transaction const* trans);
 
       /// @brief Use to cancel a pending transaction or an unfinished one.
       void
-      _cancel_transaction(std::string const& transaction_id);
+      _cancel_transaction(gap_Transaction const* trans);
 
       /// @brief Use to destroy network if transaction has been canceled.
       void
-      _on_transaction_canceled(std::string const& transaction_id);
+      _on_transaction_canceled(gap_Transaction const* trans);
 
       /// @brief Use to inform recipient that everything is ok and he can start downloading.
       void
-      _start_transaction(std::string const& transaction_id);
+      _start_transaction(gap_Transaction const* trans);
 
       /// @brief Use to .
       void
-      _on_transaction_started(std::string const& transaction_id);
+      _on_transaction_started(gap_Transaction const* trans);
 
       /// @brief Use to inform the sender that download is complete.
       void
-      _close_transaction(std::string const& transaction_id);
+      _close_transaction(gap_Transaction const* trans);
 
       /// @brief Use to close network.
       void
-      _on_transaction_closed(std::string const& transaction_id);
+      _on_transaction_closed(gap_Transaction const* trans);
 
 
     private:
@@ -308,6 +311,10 @@ namespace surface
       /// Create a new network.
       std::string
       create_network(std::string const& name);
+
+      /// Delete a new network.
+      std::string
+      delete_network(std::string const& name);
 
       /// Force the watchdog to check for new networks.
       void

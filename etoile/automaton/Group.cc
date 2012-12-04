@@ -27,7 +27,7 @@ namespace etoile
                   elle::String const& description,
                   typename nucleus::neutron::Group::Identity& identity)
     {
-      ELLE_TRACE_FUNCTION(context, description, identity);
+      ELLE_TRACE_FUNCTION(context, description);
 
       context.group =
         new nucleus::neutron::Group(nucleus::proton::Network(Infinit::Network),

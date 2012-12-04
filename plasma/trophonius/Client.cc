@@ -102,7 +102,7 @@ namespace plasma
       notification->first_filename = dic["first_filename"].as_string().value().c_str();
       notification->files_count = dic["files_count"].as_integer();
       notification->total_size = dic["total_size"].as_integer();
-      notification->is_directory = dic["is_directory"].as_bool();
+      notification->is_directory = dic["is_directory"].as_integer();
 
       notification->is_new = _new;
 

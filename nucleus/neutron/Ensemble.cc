@@ -69,7 +69,7 @@ namespace nucleus
         {
           scoutor = this->_locate(subject);
         }
-      catch (...)
+      catch (Exception const& e)
         {
           return (false);
         }

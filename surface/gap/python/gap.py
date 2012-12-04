@@ -29,7 +29,7 @@ class State:
         self.email = ''
 
         directly_exported_methods = [
-
+            'lol',
             'enable_debug',
             'set_permissions',
             'set_device_name',

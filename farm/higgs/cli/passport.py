@@ -16,7 +16,7 @@ class Passport:
         p = run_cmd([
             "8passport", "-c",
             "-u", user.name,
-            "-n", user.name
+            "-n", "{}.ppt".format(user.name),
             ],
             stdin=subprocess.PIPE)
         p.communicate("{auth}\n".format(auth=auth.passphrase).encode("ascii"))

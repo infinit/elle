@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 def run_cmd(cmd, stdin=None):
     p = None
-    print(cmd)
+    print("run", cmd)
     if stdin == None:
         return sp.check_call(cmd)
     else:
@@ -28,7 +28,7 @@ def patch_satellites_path(dir=None):
         bin_name = "8{0}".format(i)
         bin_path = os.path.join(base_path, "bin", bin_name)
         if os.path.exists(bin_path):
-            new_paths.append(os.path.join(base_path, "bin"))
+            new_paths.append(os.path.join(base_path, "bin/"))
     os.environ["PATH"]= ":".join(new_paths)
 
 def render_mail_template(stats, templatefile):

@@ -5,6 +5,7 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Unique.hh>
+#include <elle/finally.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -37,38 +38,20 @@
 
 ELLE_LOG_COMPONENT("infinit.8group");
 
+# define GROUP_FINALLY_ACTION_DISCARD(_variable_)                       \
+  ELLE_FINALLY_LAMBDA(                                                  \
+    _variable_,                                                         \
+    [] (etoile::gear::Identifier const& id)                             \
+    {                                                                   \
+      Group::rpcs->groupdiscard(id);                                    \
+    });
+
 namespace satellite
 {
   reactor::network::TCPSocket* Group::socket = nullptr;
   infinit::protocol::Serializer* Group::serializer = nullptr;
   infinit::protocol::ChanneledStream* Group::channels = nullptr;
   etoile::portal::RPC* Group::rpcs = nullptr;
-
-  /// Ward helper to make sure groups are discarded on errors.
-  /// XXX[use finally!]
-  class Ward
-  {
-  public:
-    Ward(etoile::gear::Identifier const& id):
-      _id(id),
-      _clean(true)
-    {}
-
-    ~Ward()
-    {
-      if (_clean && Group::socket != nullptr)
-        Group::rpcs->groupdiscard(this->_id);
-    }
-
-    void release()
-    {
-      _clean = false;
-    }
-
-  private:
-    etoile::gear::Identifier _id;
-    bool _clean;
-  };
 
   void
   Group::display(nucleus::neutron::Fellow const& fellow)
@@ -146,7 +129,7 @@ namespace satellite
   {
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     etoile::abstract::Group abstract = Group::rpcs->groupinformation(identifier);
     abstract.Dump();
   }
@@ -164,7 +147,6 @@ namespace satellite
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to save the identity");
     std::cout << unique << std::endl;
-
   }
 
   void
@@ -173,10 +155,10 @@ namespace satellite
   {
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     Group::rpcs->groupadd(identifier, subject);
     Group::rpcs->groupstore(identifier);
-    ward.release();
+    ELLE_FINALLY_ABORT(identifier);;
   }
 
   void
@@ -185,7 +167,7 @@ namespace satellite
   {
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     nucleus::neutron::Fellow fellow(
       Group::rpcs->grouplookup(identifier, subject));
     Group::display(fellow);
@@ -199,7 +181,7 @@ namespace satellite
 
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     nucleus::neutron::Range<nucleus::neutron::Fellow> fellows =
       Group::rpcs->groupconsult(identifier, index, size);
     for (auto fellow: fellows.container)
@@ -212,10 +194,10 @@ namespace satellite
   {
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     Group::rpcs->groupremove(identifier, subject);
     Group::rpcs->groupstore(identifier);
-    ward.release();
+    ELLE_FINALLY_ABORT(identifier);;
   }
 
   void
@@ -223,9 +205,9 @@ namespace satellite
   {
     Group::connect();
     etoile::gear::Identifier identifier = Group::rpcs->groupload(identity);
-    Ward ward(identifier);
+    GROUP_FINALLY_ACTION_DISCARD(identifier);
     Group::rpcs->groupdestroy(identifier);
-    ward.release();
+    ELLE_FINALLY_ABORT(identifier);;
   }
 
 //

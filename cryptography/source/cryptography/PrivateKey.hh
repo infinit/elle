@@ -9,6 +9,7 @@
 # include <elle/operator.hh>
 # include <elle/io/Dumpable.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <openssl/bn.h>
 # include <openssl/evp.h>
@@ -22,6 +23,7 @@ namespace infinit
   {
     /// Represent a private key in a given cryptosystem, RSA for instance.
     class PrivateKey:
+      public elle::concept::MakeUniquable<PrivateKey>,
       public elle::io::Dumpable,
       public elle::Printable
     {

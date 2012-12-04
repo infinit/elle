@@ -106,7 +106,7 @@ namespace plasma
       std::string           first_filename;
       int                   files_count;
       int                   total_size;
-      bool                  is_directory;
+      int                   is_directory;
       int                   status;
     };
 
@@ -145,6 +145,11 @@ namespace plasma
     struct CreateNetworkResponse : plasma::Response
     {
       std::string             created_network_id;
+    };
+
+    struct DeleteNetworkResponse : plasma::Response
+    {
+      std::string             deleted_network_id;
     };
 
     struct UpdateNetworkResponse : plasma::Response
@@ -285,7 +290,10 @@ namespace plasma
       networks();
 
       CreateNetworkResponse
-      create_network(std::string const& name);
+      create_network(std::string const& network_id);
+
+      DeleteNetworkResponse
+      delete_network(std::string const& network_id);
 
       NetworkNodesResponse
       network_nodes(std::string const& network_id);
