@@ -13,9 +13,14 @@ namespace elle
     /// itself. To change this behavior, you just have to define a
     /// specialization for each type that doesn't need to store its version.
     /// The specialization has to define a constant boolean named `value'.
+    ///
     /// @see ELLE_SERIALIZE_NO_FORMAT for the macro shorcut.
     ///
-    template<typename T> struct StoreFormat;
+    template <typename T>
+    struct StoreFormat
+    {
+      static bool const value = true;
+    };
 
   }
 }
@@ -32,4 +37,3 @@ namespace elle
 # include "StoreFormat.hxx"
 
 #endif
-
