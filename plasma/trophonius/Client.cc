@@ -156,11 +156,13 @@ namespace plasma
           if (!data)
             throw std::bad_alloc{};
           is.read(data.get(), bytes_transferred);
+          std::string msg{data.get(), bytes_transferred};
+          ELLE_DEBUG("Got message: %s", msg);
 
           int notification_type = 0; // Invalid notification type.
 
           {
-            std::stringstream ss{std::string{data.get(), bytes_transferred}};
+            std::stringstream ss{msg};
 
             Notification notification;
             elle::serialize::InputJSONArchive ar(ss, notification);
@@ -170,7 +172,7 @@ namespace plasma
 
           std::unique_ptr<Notification> notification;
           {
-            std::stringstream ss{std::string{data.get(), bytes_transferred}};
+            std::stringstream ss{msg};
             elle::serialize::InputJSONArchive ar{ss};
             switch (notification_type)
               {
