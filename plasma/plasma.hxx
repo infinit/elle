@@ -4,6 +4,8 @@
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/NamedValue.hh>
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::Transaction);
+
 ELLE_SERIALIZE_SIMPLE(plasma::Transaction, ar, res, version)
 {
   enforce(version == 0);
