@@ -10,6 +10,7 @@
 #define NETWORK_URI_INC
 
 #include <network/uri/detail/uri_parts.hpp>
+#include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
 #include <cstring>
@@ -146,7 +147,7 @@ namespace network {
 
     const_iterator end() const;
 
-    part_range scheme() const;
+    boost::optional<part_range> scheme() const;
 
     part_range user_info() const;
 

@@ -341,7 +341,7 @@ namespace network {
     return uri_.end();
   }
 
-  uri::part_range uri::scheme() const {
+  boost::optional<uri::part_range> uri::scheme() const {
     return part_range(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
   }
 
@@ -417,7 +417,7 @@ namespace network {
   }
 
   bool uri::absolute() const {
-    return !scheme().empty();
+    return !scheme();
   }
 
   bool uri::opaque() const {
@@ -487,7 +487,7 @@ namespace network {
     }
 
     // the scheme can be compared insensitive to case
-    bool equal = boost::iequals(lhs.scheme(), rhs.scheme());
+    bool equal = boost::iequals(*lhs.scheme(), *rhs.scheme());
     if (equal) {
       // the user info must be case sensitive
       equal = boost::equals(lhs.user_info(), rhs.user_info());
