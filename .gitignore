@@ -15,3 +15,7 @@ dependencies/environment.sh
 releases/
 work/
 .drake
+xcuserdata
+xcdebugger
+*.xcuserdatad
+*.xcuserstate
