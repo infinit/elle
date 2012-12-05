@@ -49,6 +49,21 @@ class Search(Page):
             'users': result,
         })
 
+class Message(Page):
+    __pattern__ = "/debug"
+
+    def POST(self):
+        self.notifier.notify_one(
+            notifier.MESSAGE,
+            self.data["recipient_id"],
+            {
+                'sender_id' : self.data['sender_id'],
+                'message': self.data['message'],
+            }
+        )
+
+        return self.success({})
+
 class GetSwaggers(Page):
     __pattern__ =  "/user/swaggers"
 
@@ -59,10 +74,10 @@ class GetSwaggers(Page):
 class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
 
-    _validators = {
-        'email' : regexp.EmailValidator,
-        'fullname': regexp.HandleValidator,
-    }
+    _validators = (
+        ('email', regexp.EmailValidator),
+        ('fullname', regexp.HandleValidator),
+    )
 
     def POST(self):
         import pymongo
@@ -237,6 +252,8 @@ class One(Page):
             'email': user['email'],
             'public_key': user['public_key'],
             'fullname': user['fullname'],
+            # XXX: user['connected']
+            'status': 1, #user['status']
         })
 
 class Register(Page):
@@ -252,11 +269,11 @@ class Register(Page):
 
     __pattern__ = "/user/register"
 
-    _validators = {
-        'email': regexp.EmailValidator,
-        'fullname': regexp.HandleValidator,
-        'password': regexp.PasswordValidator,
-    }
+    _validators = (
+        ('email', regexp.EmailValidator),
+        ('fullname', regexp.HandleValidator),
+        ('password', regexp.PasswordValidator),
+    )
 
     def POST(self):
         if self.user is not None:
@@ -337,10 +354,10 @@ class Login(Page):
     """
     __pattern__ = "/user/login"
 
-    _validators = {
-        'email': regexp.EmailValidator,
-        'password': regexp.PasswordValidator,
-    }
+    _validators = (
+        ('email', regexp.EmailValidator),
+        ('password', regexp.PasswordValidator),
+    )
 
     def POST(self):
         if self.user is not None:
@@ -376,9 +393,9 @@ class Disconnection(Page):
 
     __pattern__ = "/user/disconnected"
 
-    _validators = {
-        'user_id': regexp.UserIDValidator,
-    }
+    _validators = (
+        ('user_id', regexp.UserIDValidator),
+    )
 
     def POST(self):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:

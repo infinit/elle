@@ -47,8 +47,9 @@ class Create(Page):
               'is_directory': bool
               'device_id': The device from where the file is get
               'network_id': "The network name", #required
+              'message': 'a message to the recipient'
          }
-         -> {t
+         -> {
                 'created_transaction_id'
             }
 
@@ -59,12 +60,19 @@ class Create(Page):
     """
     __pattern__ = "/transaction/create"
 
-    _validators = {
-        'recipient_id_or_email': regexp.NonEmptyValidator,
-        'first_filename': regexp.FilenameValidator,
-        'network_id': regexp.NetworkValidator,
-        'device_id': regexp.DeviceIDValidator,
-    }
+    _validators = (
+        ('recipient_id_or_email', regexp.NonEmptyValidator),
+        ('first_filename', regexp.FilenameValidator),
+        ('network_id', regexp.NetworkValidator),
+        ('device_id', regexp.DeviceIDValidator),
+    )
+
+    _mendatory_fields = (
+        ('files_count', int),
+        ('total_size', int),
+        ('is_directory', int),
+#        ('message', str)
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -73,20 +81,19 @@ class Create(Page):
         if status:
             return self.error(*status)
 
+        message = 'message' in self.data and self.data['message'] or "bite"
+
         id_or_email = self.data['recipient_id_or_email'].strip()
         first_filename = self.data['first_filename'].strip()
         network_id = self.data['network_id'].strip()
         device_id = self.data['device_id'].strip()
-        files_count = int(self.data['files_count'])
-        total_size = int(self.data['total_size'])
-        is_dir = bool(self.data['is_directory'])
 
         new_user = False
         is_ghost = False
         invitee = 0
 
         # Determine if user sent a mail or an id.
-        if re.match(regexp.Email, id_or_email):
+        if re.match(regexp.Email, id_or_email): # email case.
             invitee_email = id_or_email
             # Check is user is in database.
             recipient = database.users().find_one({'email': id_or_email})
@@ -105,33 +112,37 @@ class Create(Page):
             else:
                 recipient_id = recipient['_id']
                 recipient_fullname = recipient['register_status'] == 'ghost' and recipient['email'] or recipient['fullname']
-        elif not re.match(regexp.ID, id_or_email):
-            return self.error(error.USER_ID_NOT_VALID)
-        else:
+        elif re.match(regexp.ID, id_or_email): # id case.
              recipient_id = database.ObjectId(id_or_email)
              recipient = database.users().find_one(recipient_id)
+             if recipient is None:
+                 return self.error(error.USER_ID_NOT_VALID)
              recipient_fullname = recipient['register_status'] == 'ghost' and recipient['email'] or recipient['fullname']
+        else:
+            return self.error(error.USER_ID_NOT_VALID)
 
         _id = self.user['_id']
 
         req = {
             'sender_id': database.ObjectId(_id),
-            'sender_fullname' : self.user['fullname'],
+            'sender_fullname': self.user['fullname'],
             'sender_device_id': database.ObjectId(device_id),
 
             'recipient_id': database.ObjectId(recipient_id),
-            'recipient_fullname' : recipient_fullname,
+            'recipient_fullname': recipient_fullname,
 
             # Empty while accepted.
-            'recipient_device_id' : '',
-            'recipient_device_name' : '',
+            'recipient_device_id': '',
+            'recipient_device_name': '',
 
             'network_id': database.ObjectId(network_id),
 
-            'first_filename' : first_filename,
-            'files_count' : files_count,
-            'total_size' : total_size,
-            'is_directory' : is_dir,
+            'message': message,
+
+            'first_filename': first_filename,
+            'files_count': self.data['files_count'],
+            'total_size': self.data['total_size'],
+            'is_directory': self.data['is_directory'],
 
             'status': PENDING,
         }
@@ -139,7 +150,9 @@ class Create(Page):
         if not database.transactions().find_one(req):
             transaction_id = database.transactions().insert(req)
 
-        sent = first_filename + (files_count == 1 and "" or " and %i other files" % (files_count - 1))
+        sent = first_filename;
+        if self.data['files_count'] > 1:
+            sent +=  " and %i other files" % (self.data['files_count'] - 1)
 
         if not self.connected(recipient_id):
             if not invitee_email:
@@ -161,25 +174,34 @@ class Create(Page):
             notifier.FILE_TRANSFER,
             [database.ObjectId(recipient_id), database.ObjectId(_id)], # sender and recipient.
             {
-                'transaction_id' : transaction_id,
+                'transaction': {
+                    'transaction_id': str(transaction_id),
 
-                # Sender.
-                'sender_id' : _id,
-                'sender_fullname' : self.user['fullname'],
-                'sender_device_id': device_id,
+                    # Sender.
+                    'sender_id': str(_id),
+                    'sender_fullname': self.user['fullname'],
+                    'sender_device_id': str(device_id),
 
-                # Recipient.
-                'recipient_id': recipient_id,
-                'recipient_fullname': recipient_fullname,
+                    # Recipient.
+                    'recipient_id': str(recipient_id),
+                    'recipient_fullname': recipient_fullname,
+                    'recipient_device_id': '',
+                    'recipient_device_name': '',
 
-                # Network.
-                'network_id' : network_id,
+                    # Network.
+                    'network_id': str(network_id),
 
-                # File info.
-                'first_filename': first_filename,
-                'files_count': files_count,
-                'total_size': total_size,
-                'is_directory': is_dir,
+                    'message': message,
+
+                    # File info.
+                    'first_filename': first_filename,
+                    'files_count': self.data['files_count'],
+                    'total_size': self.data['total_size'],
+                    'is_directory': int(self.data['is_directory']),
+
+
+                    'status': int(PENDING),
+                }
             }
         )
 
@@ -207,11 +229,11 @@ class Accept(Page):
     """
     __pattern__ = "/transaction/accept"
 
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-        'device_id': regexp.DeviceIDValidator,
-        'device_name': regexp.NonEmptyValidator,
-    }
+    _validators = (
+        ('transaction_id', regexp.TransactionValidator),
+        ('device_id', regexp.DeviceIDValidator),
+        ('device_name', regexp.NonEmptyValidator),
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -295,9 +317,9 @@ class Deny(Page):
     """
     __pattern__ = "/transaction/deny"
 
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-    }
+    _validators = (
+        ('transaction_id', regexp.TransactionValidator),
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -363,9 +385,9 @@ class Start(Page):
     """
     __pattern__ = "/transaction/start"
 
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-    }
+    _validators = (
+        ('transaction_id', regexp.TransactionValidator),
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -427,9 +449,9 @@ class Finish(Page):
     """
     __pattern__ = "/transaction/finish"
 
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-    }
+    _validators = (
+        ('transaction_id', regexp.TransactionValidator)
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -494,9 +516,9 @@ class Cancel(Page):
     """
     __pattern__ = "/transaction/cancel"
 
-    _validators = {
-        'transaction_id': regexp.TransactionValidator,
-    }
+    _validators = (
+        ('transaction_id', regexp.TransactionValidator)
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -621,21 +643,28 @@ class One(Page):
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
         res = {
-            'transaction_id' : str(transaction['_id']),
+#            'transaction': {
+                'transaction_id': str(transaction['_id']),
 
-            'first_filename' : transaction['first_filename'],
-            'files_count' : transaction['files_count'],
-            'total_size' : transaction['total_size'],
-            'is_directory' : transaction['is_directory'],
-            'network_id' : str(transaction['network_id']),
-            'sender_id' : str(transaction['sender_id']),
-            'sender_fullname' : transaction['sender_fullname'],
-            'sender_device_id' : str(transaction['sender_device_id']),
-            'recipient_id' : str(transaction['recipient_id']),
-            'recipient_fullname' : transaction['recipient_fullname'],
-            'recipient_device_id' : str(transaction['recipient_device_id']),
-            'recipient_device_name' : str(transaction['recipient_device_name']),
-            'status' : int(transaction['status']),
+                'sender_id': str(transaction['sender_id']),
+                'sender_fullname': transaction['sender_fullname'],
+                'sender_device_id': str(transaction['sender_device_id']),
+
+                'recipient_id': str(transaction['recipient_id']),
+                'recipient_fullname': transaction['recipient_fullname'],
+                'recipient_device_id': str(transaction['recipient_device_id']),
+                'recipient_device_name': transaction['recipient_device_name'],
+
+                'network_id': str(transaction['network_id']),
+
+                'first_filename': transaction['first_filename'],
+                'files_count': transaction['files_count'],
+                'total_size': transaction['total_size'],
+                'is_directory': int(transaction['is_directory']),
+
+                'status': int(transaction['status']),
+                'message': transaction['message'],
+ #           }
         }
 
         return self.success(res)

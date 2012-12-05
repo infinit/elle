@@ -80,10 +80,10 @@ class AddUser(_Page):
 
     __pattern__ = "/network/add_user"
 
-    _validators = {
-        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
-        'user_id': regexp.Validator(regexp.ID, error.USER_ID_NOT_VALID),
-    }
+    _validators = (
+        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('user_id', regexp.Validator(regexp.ID, error.USER_ID_NOT_VALID)),
+    )
 
     def POST(self):
 
@@ -91,14 +91,15 @@ class AddUser(_Page):
         if status:
             return self.error(*status)
 
-        to_add_user_id = database.ObjectId(self.data['user_id'])
         network = self.network(self.data['_id'])
         if network['owner'] != self.user['_id']:
             raise web.Forbidden("You cannot add a user in a network that does "
                                 "not belong to you")
+
+        to_add_user_id = database.ObjectId(self.data['user_id'])
         #XXX users should invited instead of added
         if to_add_user_id in network['users']:
-            return self.error(error.ALREADY_LOGGED_IN)
+            return self.error(error.USER_ALREADY_IN_NETWORK)
         to_add_user = database.byId(database.users(), to_add_user_id)
         if '@' in to_add_user['email']:
             infos = {
@@ -213,9 +214,9 @@ class Update(_Page):
             }
     """
 
-    _validators = {
-        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)
-    }
+    _validators = (
+        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+    )
 
     __pattern__ = "/network/update"
 
@@ -312,10 +313,10 @@ class AddDevice(_Page):
     """
     __pattern__ = '/network/add_device'
 
-    _validators = {
-        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
-        'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
-    }
+    _validators = (
+        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('device_id', regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID)),
+    )
 
     def POST(self):
         # XXX What are security check requirement ?
@@ -362,10 +363,10 @@ class ConnectDevice(_Page):
     """
     __pattern__ = '/network/connect_device'
 
-    _validators = {
-        '_id': regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID),
-        'device_id': regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID),
-    }
+    _validators = (
+        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('device_id', regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID)),
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -429,9 +430,9 @@ class Create(_Page):
 
     __pattern__ = "/network/create"
 
-    _validators = {
-        'name': regexp.Validator(regexp.NotNull, error.DEVICE_NOT_VALID),
-    }
+    _validators = (
+        ('name', regexp.Validator(regexp.NotNull, error.DEVICE_NOT_VALID)),
+    )
 
     def POST(self):
         self.requireLoggedIn()
@@ -483,6 +484,7 @@ class Delete(_Page):
     Delete a network
         DELETE {
             '_id': "id",
+            'force': bool # Disable error if network doesn't exist.
         } -> {
                 'success': True,
                 'deleted_network_id': "id",
@@ -491,25 +493,36 @@ class Delete(_Page):
 
     __pattern__ = "/network/delete"
 
-    _validators = {
-        '_id': regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID)
-    }
+    _validators = (
+        ('_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
+    )
 
     def DELETE(self):
         self.requireLoggedIn()
 
-        _id = database.ObjectId(_id)
-        try:
-            networks = self.user['devices']
-            idx = networks.index(_id)
-            networks.pop(idx)
-        except:
-            return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
-        database.users().save(self.user)
-        database.networks().find_and_modify({
-            '_id': _id,
-            'owner': self.user['_id'], #not required
-        }, remove=True)
+        _id = database.ObjectId(self.data['_id'])
+
+        network = database.networks().find_one(_id)
+
+        if network is None:
+            if self.data['force']:
+                return self.succes({
+                    'deleted_network_id': self.data['_id']
+                });
+            else:
+                return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
+
+        # for each user in network, remove this network from his network list.
+        for user_id in network['users']:
+            database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
+
+        database.networks().find_and_modify(
+            {
+                '_id': _id,
+            },
+            remove=True
+        )
+
         return  self.success({
             'deleted_network_id': _id,
         })

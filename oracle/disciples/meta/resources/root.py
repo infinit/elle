@@ -23,19 +23,19 @@ class Root(Page):
             'logged_in': self.user is not None,
         })
 
-class Debug(Page):
-    """
-    This class is for debug purpose only
-    """
-    __pattern__ = "/debug"
+# class Debug(Page):
+#     """
+#     This class is for debug purpose only
+#     """
+#     __pattern__ = "/debug"
 
-    def POST(self):
-        msg = self.data
-        if self.notifier is not None:
-            self.notifier.send_notification(msg)
-        else:
-            return self.error(error.UNKNOWN, "Notifier is not ready.")
-        return self.success({})
+#     def POST(self):
+#         msg = self.data
+#         if self.notifier is not None:
+#             self.notifier.send_notification(msg)
+#         else:
+#             return self.error(error.UNKNOWN, "Notifier is not ready.")
+#         return self.success({})
 
 # XXX : Remove that cheat
 class ScratchDB(Page):
