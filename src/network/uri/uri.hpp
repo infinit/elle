@@ -35,7 +35,17 @@ namespace network {
   } // namespace detail
 
   enum class uri_error {
+    // parser errors
     invalid_syntax = 1,
+
+    // builder errors
+    invalid_scheme,
+    invalid_user_info,
+    invalid_host,
+    invalid_port,
+    invalid_path,
+    invalid_query,
+    invalid_fragment,
   };
 
   class uri_category_impl : public std::error_category {

@@ -443,6 +443,11 @@ TEST(uri_test, partial_authority_test) {
   ASSERT_EQ(instance.authority()->string(), "www.example.com");
 }
 
+TEST(uri_test, DISABLED_mailto_has_no_authority) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_FALSE(instance.authority());
+}
+
 TEST(uri_test, range_test) {
   const std::string url("http://www.example.com/");
   network::uri instance(url);
@@ -470,4 +475,29 @@ TEST(uri_test, uri_unordered_set_test) {
   uri_set.insert(network::uri("http://www.example.com/"));
   ASSERT_FALSE(uri_set.empty());
   ASSERT_EQ((*std::begin(uri_set)), network::uri("http://www.example.com/"));
+}
+
+TEST(uri_test, http_is_absolute) {
+  network::uri instance("http://www.example.com/");
+  ASSERT_TRUE(instance.absolute());
+}
+
+TEST(uri_test, mailto_is_absolute) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_TRUE(instance.absolute());
+}
+
+TEST(uri_test, http_is_hierarchical) {
+  network::uri instance("http://www.example.com/");
+  ASSERT_TRUE(!instance.opaque());
+}
+
+TEST(uri_test, DISABLED_mailto_is_opaque) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_TRUE(instance.opaque());
+}
+
+TEST(uri_test, DISABLED_whitespace_test) {
+  // todo trim whitespace in parser.
+  network::uri instance(" http://www.example.com/");
 }

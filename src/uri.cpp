@@ -15,6 +15,9 @@
 #include <functional>
 #include <map>
 
+#include <iostream>
+
+
 BOOST_FUSION_ADAPT_TPL_STRUCT
 (
  (FwdIter),
@@ -431,11 +434,11 @@ namespace network {
   }
 
   bool uri::absolute() const {
-    return !scheme();
+    return static_cast<bool>(scheme());
   }
 
   bool uri::opaque() const {
-    return absolute();
+    return (absolute() && !authority());
   }
 
   uri uri::normalize() const {
@@ -451,6 +454,12 @@ namespace network {
   }
 
   uri uri::resolve(const uri &other) const {
+    // http://tools.ietf.org/html/rfc3986#section-5.2
+
+
+    //if (!other.absolute() && !other.opaque()) {
+    //
+    //}
     return other;
   }
 
