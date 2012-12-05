@@ -23,6 +23,8 @@ namespace network {
     uri_builder(); // = default;
     ~uri_builder(); // = default;
 
+    uri_builder &base_uri(const network::uri &base);
+
     template <typename Source>
     uri_builder &scheme(const Source &scheme) {
       //set_scheme(detail::translate(scheme));
@@ -71,7 +73,7 @@ namespace network {
     void set_query(const string_type &query);
     void set_fragment(const string_type &fragment);
 
-    string_type scheme_, user_info_, host_, port_, path_, query_, fragment_;
+    boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
 } // namespace network
