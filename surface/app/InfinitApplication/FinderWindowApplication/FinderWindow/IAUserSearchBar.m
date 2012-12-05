@@ -37,9 +37,17 @@
     return [self stringValue];
 }
 
-- (void)textDidChange:(NSNotification *)aNotification
+- (void)textDidChange:(NSNotification *)notification
 {
     [self.main_controller refresh];
+    static BOOL completing = false;
+    if (!completing)
+    {
+        NSTextView * fieldEditor = [[notification userInfo] objectForKey:@"NSFieldEditor"];
+        completing = true;
+        [fieldEditor complete:nil];
+        completing = false;
+    }
 }
 
 - (BOOL)_isValidEmail
@@ -60,6 +68,17 @@
 - (BOOL)isValid
 {
     return [self _isValidEmail];
+}
+
+- (void) controlTextDidChange: (NSNotification *)note {
+    NSLog(@"BIETIBIETIBIET");
+    //    NSTextView * fieldEditor = [[note userInfo] objectForKey:@"NSFieldEditor"];
+    //
+    //    if (!isCompleting) {
+    //        isCompleting = YES;
+    //        [fieldEditor complete:nil];
+    //        isCompleting = NO;
+    //    }
 }
 
 @end

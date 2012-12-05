@@ -38,9 +38,20 @@
 
 - (void)awakeFromNib
 {
+    NSLog(@"INIT %@", self.search_bar);
     [self.search_bar setFocusRingType:NSFocusRingTypeNone];
+    [[self.search_bar cell] setPlaceholderString:@"Find friend or send via email"];
+    [[self.search_bar cell] setSendsWholeSearchString:NO];
+    [self.search_bar setTarget:self];
+    [self.search_bar setAction:@selector(bitebite2:)];
     [self refresh];
 }
+
+-(IBAction)bitebite2:(id)sender
+{
+    NSLog(@"PIFPIF");
+}
+
 
 -(IBAction) sendFile:(id)sender
 {
@@ -66,7 +77,6 @@
     
     if (!_locked && [[self drop_box] hasPendingFiles])
     {
-        [[self.search_bar cell] setPlaceholderString:@"Find friend or send via email"];
         if ([self.search_bar isValid])
         {
             [self.send_button setEnabled:true];
@@ -80,10 +90,14 @@
     }
     else
     {
-        [[self.search_bar cell] setPlaceholderString:@"Drop files to share!"];
-        [self.search_bar setEnabled:false];
+        [self.search_bar setEnabled:true];
         [self.send_button setEnabled:false];
     }
+}
+
+- (IBAction)bitebite:(id)sender
+{
+    NSLog(@"BITEBITE %d", [self.search_bar.cell sendsWholeSearchString]);
 }
 
 @end

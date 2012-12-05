@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface IAUserSearchBar : NSTextField
+@interface IAUserSearchBar : NSSearchField
 
 - (NSString*)getUser;
 - (BOOL)isValid;
