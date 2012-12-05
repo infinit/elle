@@ -23,7 +23,9 @@ class Page(object):
 
     __notifier = None
 
-    _validators = {}
+    _validators = ()
+
+    _mendatory_fields = ()
 
     def __init__(self):
         self._input = None
@@ -63,14 +65,17 @@ class Page(object):
         return self._input
 
     def validate(self):
-        for k, v in self._validators.items():
-            if not k in self.data:
-                return {error.BAD_REQUEST, "Field '%s' is mandatory" % k}
+        for (field, validator) in self._validators:
+            if not field in self.data.keys():
+                return (error.BAD_REQUEST, "Field %s is mandatory" % field)
             else:
-                error_code = v(self.data[k])
+                error_code = validator(self.data[field])
                 if error_code:
                     return {error_code}
-        return {}
+        for (field, type_) in self._mendatory_fields:
+            if not field in self.data.keys() or not isinstance(self.data[field], type_):
+                return (error.BAD_REQUEST, "Field %s is mandatory and must be an %s" % (field, type_))
+        return ()
 
     def logout(self):
         self.session.kill()
@@ -136,8 +141,11 @@ class Page(object):
                                   d)
 
     def error(self, err=error.UNKNOWN, msg=""):
+        assert isinstance(err, int)
+        assert isinstance(msg, str)
         if not msg and err in error.error_details:
             msg = error.error_details[err]
+
         return json.dumps({
             'success': False,
             'error_code': err,

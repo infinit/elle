@@ -29,7 +29,7 @@
 @implementation IATransactionNotificationCellView
 {
 @private
-    IATransactionNotification* _notification;
+    IATransaction* _notification;
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -117,15 +117,15 @@
 - (void) update:(id)status_notif
 {
     assert(status_notif != nil);
-    assert([status_notif isKindOfClass:[IATransactionStatusNotification class]]);
-    IATransactionStatusNotification* notif = status_notif;
+    assert([status_notif isKindOfClass:[IATransaction class]]);
+    IATransaction* notif = status_notif;
     [self _update:notif.status];
 }
 
 - (void) setNotification:(id)notif
 {
     assert(notif != nil);
-    assert([notif isKindOfClass:[IATransactionNotification class]]);
+    assert([notif isKindOfClass:[IATransaction class]]);
     _notification = notif;
     NSString* str;
     if ([_notification.sender_id isEqualToString:[IAClientGapState gap_instance].self_id])

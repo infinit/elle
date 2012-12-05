@@ -492,10 +492,6 @@ static void on_transaction_status(char const* transaction);
 
 //- User status notification implementation ---------------------------------
 
-#define SET_CSTR(__name)                                                    \
-    self.__name = [[NSString alloc] initWithUTF8String:n->__name];          \
-/**/
-
 @implementation IAUser
 {
 @private

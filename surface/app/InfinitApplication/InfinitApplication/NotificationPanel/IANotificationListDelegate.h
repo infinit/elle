@@ -16,7 +16,7 @@
 // Number of rows.
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view;
 
-- (void)updateTransactionStatus:(IATransactionStatusNotification*)notif;
+- (void)updateTransactionStatus:(IATransaction*)notif;
 - (IBAction)on_accept:(id)sender;
 - (IBAction)on_reject:(id)sender;
 

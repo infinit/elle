@@ -406,6 +406,7 @@ namespace surface
           transaction->transaction.recipient_device_id = d["transaction"]["recipient_device_id"].as_string();
           transaction->transaction.recipient_device_name = d["transaction"]["recipient_device_name"].as_string();
           transaction->transaction.network_id = d["transaction"]["network_id"].as_string();
+          transaction->transaction.message = d["transaction"]["message"].as_string();
           transaction->transaction.first_filename = d["transaction"]["first_filename"].as_string();
           transaction->transaction.files_count = d["transaction"]["files_count"].as_integer();
           transaction->transaction.total_size = d["transaction"]["total_size"].as_integer();
