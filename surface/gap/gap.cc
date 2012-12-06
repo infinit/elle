@@ -843,6 +843,41 @@ extern "C"
     return ret;
   }
 
+  gap_TransactionStatus
+  gap_transaction_status(gap_State* state,
+                         char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+    gap_Status ret;
+
+    try
+      {
+        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+        return (gap_TransactionStatus) transaction.status;
+      }
+    CATCH_ALL(transaction_status);
+
+    (void) ret;
+    return gap_TransactionStatus::gap_transaction_status_none;
+  }
+
+  char const*
+  gap_transaction_message(gap_State* state,
+                          char const* transaction_id)
+  {
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+      return transaction.message.c_str();
+    }
+    CATCH_ALL(transaction_message);
+
+    (void) ret;
+    return nullptr;
+  }
+
   // - Notifications -----------------------------------------------------------
 
   gap_Status
@@ -943,25 +978,6 @@ extern "C"
                  output_path);
 
     return ret;
-  }
-
-  gap_TransactionStatus
-  gap_transaction_status(gap_State* state,
-                         char const* transaction_id)
-  {
-    assert(state != nullptr);
-    assert(transaction_id != nullptr);
-    gap_Status ret;
-
-    try
-      {
-        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
-        return (gap_TransactionStatus) transaction.status;
-      }
-    CATCH_ALL(transaction_status);
-
-    (void) ret;
-    return gap_TransactionStatus::gap_transaction_status_none;
   }
 
 } // ! extern "C"

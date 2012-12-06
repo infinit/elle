@@ -225,6 +225,10 @@ extern "C" {
   gap_transaction_status(gap_State*,
                          char const*);
 
+  char const*
+  gap_transaction_message(gap_State*,
+                          char const*);
+
 
   /// Message
   gap_Status

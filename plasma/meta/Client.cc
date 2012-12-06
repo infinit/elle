@@ -143,6 +143,7 @@ SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
   ar & named("total_size", res.total_size);
   ar & named("is_directory", res.is_directory);
   ar & named("status", res.status);
+  ar & named("message", res.message);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::TransactionsResponse, ar, res)

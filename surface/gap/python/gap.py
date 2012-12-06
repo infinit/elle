@@ -29,7 +29,6 @@ class State:
         self.email = ''
 
         directly_exported_methods = [
-            'lol',
             'enable_debug',
             'set_permissions',
             'set_device_name',
@@ -59,18 +58,28 @@ class State:
             'set_output_dir',
             'update_transaction',
             'transactions',
+            'transaction_sender_id',
+            'transaction_sender_fullname',
+            'transaction_sender_device_id',
+            'transaction_recipient_id',
+            'transaction_recipient_fullname',
+            'transaction_recipient_device_id',
+            'transaction_network_id',
+            'transaction_first_filename',
+            'transaction_files_count',
+            'transaction_total_size',
+            'transaction_is_directory',
+            'transaction_status',
 
             # Notifications
             'poll',
             'pull_notifications',
             'notifications_read',
-            'transaction_status',
-            'transaction_owner',
 
             # Callback.
-            'on_transaction',
-            'on_transaction_status',
-            'on_message',
+            'transaction_callback',
+            'transaction_status_callback',
+            'message_callback',
         ]
 
         def make_method(m):
@@ -85,8 +94,6 @@ class State:
 
         self.Status = getattr(_gap, "Status")
         self.TransactionStatus = getattr(_gap, "TransactionStatus")
-        self.TransferNotification = getattr(_gap, "TransferNotification")
-        self.TransferStatusNotification = getattr(_gap, "TransferStatusNotification")
 
     def __del__(self):
         _gap.free(self._state)

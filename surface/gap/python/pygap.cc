@@ -132,19 +132,53 @@ namespace
     }
   };
 
-#define WRAP_ATTACH_CALLBACK(__for)                                           \
-  void                                                                        \
-  _gap_ ## __for ## _callback(gap_State* state,                               \
-                            boost::python::object obj)                        \
-  {                                                                           \
-    assert(state != nullptr);                                                 \
-    reinterpret_cast<surface::gap::State*>(state)->__for ## _callback(obj);   \
-  }                                                                           \
-/**/
-  WRAP_ATTACH_CALLBACK(transaction);
-  WRAP_ATTACH_CALLBACK(transaction_status);
-  WRAP_ATTACH_CALLBACK(user_status);
-  WRAP_ATTACH_CALLBACK(message);
+  void
+  _gap_user_status_callback(gap_State* state,
+                           boost::python::object cb)
+  {
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (UserStatusNotification const& notif) {
+        cb(notif.user_id.c_str(), (gap_UserStatus) notif.status);
+    };
+
+    reinterpret_cast<surface::gap::State*>(state)->user_status_callback(cpp_cb);
+  }
+
+  void
+  _gap_transaction_callback(gap_State* state,
+                           boost::python::object cb)
+  {
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (TransactionNotification const& notif, bool is_new) {
+        cb(notif.transaction.transaction_id.c_str(), is_new);
+    };
+
+    reinterpret_cast<surface::gap::State*>(state)->transaction_callback(cpp_cb);
+  }
+
+  void
+  _gap_transaction_status_callback(gap_State* state,
+                                  boost::python::object cb)
+  {
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (TransactionStatusNotification const& notif, bool is_new) {
+        cb(notif.transaction_id.c_str(), is_new);
+    };
+
+    reinterpret_cast<surface::gap::State*>(state)->transaction_status_callback(cpp_cb);
+  }
+
+  void
+  _gap_message_callback(gap_State* state,
+                        boost::python::object cb)
+  {
+    using namespace plasma::trophonius;
+    auto cpp_cb = [cb] (MessageNotification const& notif) {
+        cb(notif.sender_id.c_str(), notif.message.c_str());
+    };
+
+    reinterpret_cast<surface::gap::State*>(state)->message_callback(cpp_cb);
+  }
 }
 
 extern "C"
@@ -307,6 +341,17 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("send_files", &_send_files);
   py::def("update_transaction", &gap_update_transaction);
   py::def("set_output_dir", &gap_set_output_dir);
+  py::def("transaction_sender_id", &gap_transaction_sender_id);
+  py::def("transaction_sender_fullname", &gap_transaction_sender_fullname);
+  py::def("transaction_sender_device_id", &gap_transaction_sender_device_id);
+  py::def("transaction_recipient_id", &gap_transaction_recipient_id);
+  py::def("transaction_recipient_fullname", &gap_transaction_recipient_fullname);
+  py::def("transaction_recipient_device_id", &gap_transaction_recipient_device_id);
+  py::def("transaction_network_id", &gap_transaction_network_id);
+  py::def("transaction_first_filename", &gap_transaction_first_filename);
+  py::def("transaction_files_count", &gap_transaction_files_count);
+  py::def("transaction_total_size", &gap_transaction_total_size);
+  py::def("transaction_is_directory", &gap_transaction_is_directory);
   py::def("transaction_status", &gap_transaction_status);
-  py::def("transaction_sender", &gap_transaction_sender_id);
+  py::def("transaction_message", &gap_transaction_message);
 }
