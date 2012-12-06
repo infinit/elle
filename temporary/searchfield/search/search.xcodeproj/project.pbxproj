@@ -15,6 +15,7 @@
 		BDAEDA32166F8A4E007C7F02 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BDAEDA30166F8A4E007C7F02 /* MainMenu.xib */; };
 		BDAEDA3D166F9949007C7F02 /* ITSearchDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BDAEDA3C166F9949007C7F02 /* ITSearchDelegate.m */; };
 		BDAEDA40166FA9CE007C7F02 /* ITSearchWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BDAEDA3F166FA9CE007C7F02 /* ITSearchWindow.m */; };
+		F4469E651670F430009B5DDE /* ITSearchResults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4469E641670F430009B5DDE /* ITSearchResults.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,8 @@
 		BDAEDA3C166F9949007C7F02 /* ITSearchDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSearchDelegate.m; sourceTree = "<group>"; };
 		BDAEDA3E166FA9CD007C7F02 /* ITSearchWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITSearchWindow.h; sourceTree = "<group>"; };
 		BDAEDA3F166FA9CE007C7F02 /* ITSearchWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSearchWindow.m; sourceTree = "<group>"; };
+		F4469E631670F430009B5DDE /* ITSearchResults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITSearchResults.h; sourceTree = "<group>"; };
+		F4469E641670F430009B5DDE /* ITSearchResults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSearchResults.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +58,7 @@
 				BDAEDA21166F8A4E007C7F02 /* search */,
 				BDAEDA1A166F8A4E007C7F02 /* Frameworks */,
 				BDAEDA18166F8A4E007C7F02 /* Products */,
+				BDAEDA22166F8A4E007C7F02 /* Supporting Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,14 +92,15 @@
 		BDAEDA21166F8A4E007C7F02 /* search */ = {
 			isa = PBXGroup;
 			children = (
+				BDAEDA30166F8A4E007C7F02 /* MainMenu.xib */,
 				BDAEDA2D166F8A4E007C7F02 /* ITAppDelegate.h */,
 				BDAEDA2E166F8A4E007C7F02 /* ITAppDelegate.m */,
-				BDAEDA30166F8A4E007C7F02 /* MainMenu.xib */,
-				BDAEDA22166F8A4E007C7F02 /* Supporting Files */,
 				BDAEDA3B166F9949007C7F02 /* ITSearchDelegate.h */,
 				BDAEDA3C166F9949007C7F02 /* ITSearchDelegate.m */,
 				BDAEDA3E166FA9CD007C7F02 /* ITSearchWindow.h */,
 				BDAEDA3F166FA9CE007C7F02 /* ITSearchWindow.m */,
+				F4469E631670F430009B5DDE /* ITSearchResults.h */,
+				F4469E641670F430009B5DDE /* ITSearchResults.m */,
 			);
 			path = search;
 			sourceTree = "<group>";
@@ -110,6 +115,7 @@
 				BDAEDA2A166F8A4E007C7F02 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			path = search;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,6 +187,7 @@
 				BDAEDA2F166F8A4E007C7F02 /* ITAppDelegate.m in Sources */,
 				BDAEDA3D166F9949007C7F02 /* ITSearchDelegate.m in Sources */,
 				BDAEDA40166FA9CE007C7F02 /* ITSearchWindow.m in Sources */,
+				F4469E651670F430009B5DDE /* ITSearchResults.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +317,7 @@
 				BDAEDA37166F8A4E007C7F02 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

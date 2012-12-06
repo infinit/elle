@@ -1,19 +1,19 @@
 //
-//  ITSearchWindow.m
-//  search
+//  IASearchResultsWindow.m
+//  FinderWindow
 //
-//  Created by infinit on 12/5/12.
+//  Created by Patrick Perlmutter on 12/6/12.
 //  Copyright (c) 2012 infinit. All rights reserved.
 //
 
-#import "ITSearchWindow.h"
-#import "ITSearchResults.h"
+#import "IASearchResultsWindow.h"
+#import "IASearchResultsTableView.h"
 
-@implementation ITSearchWindow
+@implementation IASearchResultsWindow
 {
 @private
-    NSWindow*           _parent;
-    ITSearchResults*    _table_view;
+    NSWindow*                   _parent;
+    IASearchResultsTableView*   _table_view;
 }
 
 @synthesize hidden = _hidden;
@@ -43,27 +43,13 @@
         [self setHidesOnDeactivate:YES];
         [self setOpaque:NO];
         _hidden = YES;
-        _table_view = [[ITSearchResults alloc] initWithFrame:contentRect];
+        _table_view = [[IASearchResultsTableView alloc] initWithFrame:contentRect];
         [self setContentView:_table_view];
     }
     
     return self;
 }
 
-- (void)showWithPosition:(NSRect)pos
-{
-    [self setFrame:NSMakeRect(pos.origin.x, pos.origin.y - pos.size.height, pos.size.width, pos.size.height) display:YES];
-   // [self makeKeyAndOrderFront:self];
-    [self orderWindow:NSWindowAbove relativeTo:[self.parentWindow windowNumber]];
-    if (_hidden)
-    {
-        [self setOpaque:YES];
-        [self setAlphaValue:0.9];
-        [self setIsVisible:YES];
- //       [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
-        _hidden = NO;
-    }
-}
 
 - (void)updatePosition:(NSRect)pos
 {
@@ -78,8 +64,6 @@
 {
     [self orderOut:nil];
     [_parent removeChildWindow:self];
-//    [self setHidesOnDeactivate:YES];
-//    [self setIsVisible:NO];
     _hidden = YES;
 }
 
@@ -102,6 +86,5 @@
 - (BOOL)acceptsFirstResponder { return NO; }
 - (BOOL)becomeFirstResponder { return NO; }
 - (BOOL)resignFirstResponder { return YES; }
-
 
 @end

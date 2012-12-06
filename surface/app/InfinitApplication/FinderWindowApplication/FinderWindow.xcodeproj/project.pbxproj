@@ -41,6 +41,12 @@
 		BDBAEE49163ED235001B2FD1 /* IALoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */; };
 		F4446944166670D50041896C /* IASwaggersView.h in Headers */ = {isa = PBXBuildFile; fileRef = F4446942166670D50041896C /* IASwaggersView.h */; };
 		F4446945166670D50041896C /* IASwaggersView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4446943166670D50041896C /* IASwaggersView.m */; };
+		F48A02621671006E0040A7C7 /* IASearchResultsWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F48A02601671006E0040A7C7 /* IASearchResultsWindow.h */; };
+		F48A02631671006E0040A7C7 /* IASearchResultsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F48A02611671006E0040A7C7 /* IASearchResultsWindow.m */; };
+		F48A0267167100F80040A7C7 /* IASearchResultsTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = F48A0265167100F80040A7C7 /* IASearchResultsTableView.h */; };
+		F48A0268167100F80040A7C7 /* IASearchResultsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48A0266167100F80040A7C7 /* IASearchResultsTableView.m */; };
+		F48A026B167113AE0040A7C7 /* IAUserSearchDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F48A0269167113AD0040A7C7 /* IAUserSearchDelegate.h */; };
+		F48A026C167113AE0040A7C7 /* IAUserSearchDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F48A026A167113AD0040A7C7 /* IAUserSearchDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -96,6 +102,12 @@
 		BDBAEE47163ED234001B2FD1 /* IALoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IALoginViewController.m; sourceTree = "<group>"; };
 		F4446942166670D50041896C /* IASwaggersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASwaggersView.h; sourceTree = "<group>"; };
 		F4446943166670D50041896C /* IASwaggersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASwaggersView.m; sourceTree = "<group>"; };
+		F48A02601671006E0040A7C7 /* IASearchResultsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASearchResultsWindow.h; sourceTree = "<group>"; };
+		F48A02611671006E0040A7C7 /* IASearchResultsWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASearchResultsWindow.m; sourceTree = "<group>"; };
+		F48A0265167100F80040A7C7 /* IASearchResultsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASearchResultsTableView.h; sourceTree = "<group>"; };
+		F48A0266167100F80040A7C7 /* IASearchResultsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASearchResultsTableView.m; sourceTree = "<group>"; };
+		F48A0269167113AD0040A7C7 /* IAUserSearchDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchDelegate.h; sourceTree = "<group>"; };
+		F48A026A167113AD0040A7C7 /* IAUserSearchDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAUserSearchDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,6 +261,12 @@
 				BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */,
 				F4446942166670D50041896C /* IASwaggersView.h */,
 				F4446943166670D50041896C /* IASwaggersView.m */,
+				F48A02601671006E0040A7C7 /* IASearchResultsWindow.h */,
+				F48A02611671006E0040A7C7 /* IASearchResultsWindow.m */,
+				F48A0265167100F80040A7C7 /* IASearchResultsTableView.h */,
+				F48A0266167100F80040A7C7 /* IASearchResultsTableView.m */,
+				F48A0269167113AD0040A7C7 /* IAUserSearchDelegate.h */,
+				F48A026A167113AD0040A7C7 /* IAUserSearchDelegate.m */,
 			);
 			name = MainView;
 			sourceTree = "<group>";
@@ -273,6 +291,9 @@
 				BDBAEE48163ED235001B2FD1 /* IALoginViewController.h in Headers */,
 				BD5954301655561300B3317E /* IAAppIPCClient.h in Headers */,
 				F4446944166670D50041896C /* IASwaggersView.h in Headers */,
+				F48A02621671006E0040A7C7 /* IASearchResultsWindow.h in Headers */,
+				F48A0267167100F80040A7C7 /* IASearchResultsTableView.h in Headers */,
+				F48A026B167113AE0040A7C7 /* IAUserSearchDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,6 +380,9 @@
 				BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */,
 				BD5954311655561300B3317E /* IAAppIPCClient.m in Sources */,
 				F4446945166670D50041896C /* IASwaggersView.m in Sources */,
+				F48A02631671006E0040A7C7 /* IASearchResultsWindow.m in Sources */,
+				F48A0268167100F80040A7C7 /* IASearchResultsTableView.m in Sources */,
+				F48A026C167113AE0040A7C7 /* IAUserSearchDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

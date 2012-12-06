@@ -31,7 +31,7 @@
     return self;
 }
 
-- (void)addTransactionNotification:(id)transaction
+- (void)addTransaction:(id)transaction
 {
     IATransaction* tr = transaction;
     if ([self _rowForTransactionId:tr.transaction_id] != -1)

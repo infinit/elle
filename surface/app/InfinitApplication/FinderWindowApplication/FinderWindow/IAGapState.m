@@ -562,7 +562,9 @@ static void on_transaction_status(char const* transaction);
 
 #define TR_STR_WRAP(__attr)                                             \
 - (NSString*)__attr {                                                   \
-    return [NSString stringWithUTF8String:TR_GET(__attr)];              \
+    if (TR_GET(__attr) != NULL)                                         \
+        return [NSString stringWithUTF8String:TR_GET(__attr)];          \
+    return [NSString stringWithFormat:@"invalid %s", #__attr];          \
 }                                                                       \
 /**/
 

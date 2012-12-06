@@ -9,23 +9,20 @@
 #import "IAUserSearchBar.h"
 #import "IAMainViewController.h"
 
-@interface IAUserSearchBar ()
-
-@property(retain) IBOutlet IAMainViewController* main_controller;
-
-@end
-
 @implementation IAUserSearchBar
 
 - (id)initWithFrame:(NSRect)frame
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
+    NSLog(@"INIT search bar");
+    if ((self = [super initWithFrame:frame]))
+    {
+
     }
     
     return self;
 }
+
+
 
 //- (void)drawRect:(NSRect)dirtyRect
 //{
@@ -35,19 +32,6 @@
 - (NSString*)getUser
 {
     return [self stringValue];
-}
-
-- (void)textDidChange:(NSNotification *)notification
-{
-    [self.main_controller refresh];
-    static BOOL completing = false;
-    if (!completing)
-    {
-        NSTextView * fieldEditor = [[notification userInfo] objectForKey:@"NSFieldEditor"];
-        completing = true;
-        [fieldEditor complete:nil];
-        completing = false;
-    }
 }
 
 - (BOOL)_isValidEmail
@@ -67,18 +51,8 @@
 
 - (BOOL)isValid
 {
+//    NSLog(@"is %@ valid : %d", self.stringValue, [self _isValidEmail]);
     return [self _isValidEmail];
-}
-
-- (void) controlTextDidChange: (NSNotification *)note {
-    NSLog(@"BIETIBIETIBIET");
-    //    NSTextView * fieldEditor = [[note userInfo] objectForKey:@"NSFieldEditor"];
-    //
-    //    if (!isCompleting) {
-    //        isCompleting = YES;
-    //        [fieldEditor complete:nil];
-    //        isCompleting = NO;
-    //    }
 }
 
 @end
