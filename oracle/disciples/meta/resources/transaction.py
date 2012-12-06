@@ -60,19 +60,19 @@ class Create(Page):
     """
     __pattern__ = "/transaction/create"
 
-    _validators = (
+    _validators = [
         ('recipient_id_or_email', regexp.NonEmptyValidator),
         ('first_filename', regexp.FilenameValidator),
         ('network_id', regexp.NetworkValidator),
         ('device_id', regexp.DeviceIDValidator),
-    )
+    ]
 
-    _mendatory_fields = (
+    _mendatory_fields = [
         ('files_count', int),
         ('total_size', int),
         ('is_directory', int),
 #        ('message', str)
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -229,11 +229,11 @@ class Accept(Page):
     """
     __pattern__ = "/transaction/accept"
 
-    _validators = (
+    _validators = [
         ('transaction_id', regexp.TransactionValidator),
         ('device_id', regexp.DeviceIDValidator),
         ('device_name', regexp.NonEmptyValidator),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -317,9 +317,9 @@ class Deny(Page):
     """
     __pattern__ = "/transaction/deny"
 
-    _validators = (
+    _validators = [
         ('transaction_id', regexp.TransactionValidator),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -385,9 +385,9 @@ class Start(Page):
     """
     __pattern__ = "/transaction/start"
 
-    _validators = (
+    _validators = [
         ('transaction_id', regexp.TransactionValidator),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -449,9 +449,9 @@ class Finish(Page):
     """
     __pattern__ = "/transaction/finish"
 
-    _validators = (
+    _validators = [
         ('transaction_id', regexp.TransactionValidator)
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -516,9 +516,9 @@ class Cancel(Page):
     """
     __pattern__ = "/transaction/cancel"
 
-    _validators = (
+    _validators = [
         ('transaction_id', regexp.TransactionValidator)
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()

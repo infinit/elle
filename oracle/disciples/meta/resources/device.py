@@ -65,9 +65,9 @@ class Create(Page):
     """
     __pattern__ = "/device/create"
 
-    _validators = (
+    _validators = [
         ('name', regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -124,10 +124,10 @@ class Update(Page):
 
     __pattern__ = "/device/update"
 
-    _validators = (
+    _validators = [
         ('name', regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)),
         ('_id', regexp.Validator(regexp.NetworkID, error.DEVICE_ID_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -166,9 +166,9 @@ class Delete(Page):
 
     __pattern__ = "/device/delete"
 
-    _validators = (
+    _validators = [
         ('_id', regexp.Validator(regexp.NotNull, error.DEVICE_ID_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()

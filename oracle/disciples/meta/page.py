@@ -23,9 +23,9 @@ class Page(object):
 
     __notifier = None
 
-    _validators = ()
+    _validators = []
 
-    _mendatory_fields = ()
+    _mendatory_fields = []
 
     def __init__(self):
         self._input = None

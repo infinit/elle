@@ -74,10 +74,10 @@ class GetSwaggers(Page):
 class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
 
-    _validators = (
+    _validators = [
         ('email', regexp.EmailValidator),
         ('fullname', regexp.HandleValidator),
-    )
+    ]
 
     def POST(self):
         import pymongo
@@ -269,11 +269,11 @@ class Register(Page):
 
     __pattern__ = "/user/register"
 
-    _validators = (
+    _validators = [
         ('email', regexp.EmailValidator),
         ('fullname', regexp.HandleValidator),
         ('password', regexp.PasswordValidator),
-    )
+    ]
 
     def POST(self):
         if self.user is not None:
@@ -354,10 +354,10 @@ class Login(Page):
     """
     __pattern__ = "/user/login"
 
-    _validators = (
+    _validators = [
         ('email', regexp.EmailValidator),
         ('password', regexp.PasswordValidator),
-    )
+    ]
 
     def POST(self):
         if self.user is not None:
@@ -393,9 +393,9 @@ class Disconnection(Page):
 
     __pattern__ = "/user/disconnected"
 
-    _validators = (
+    _validators = [
         ('user_id', regexp.UserIDValidator),
-    )
+    ]
 
     def POST(self):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:

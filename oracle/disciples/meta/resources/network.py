@@ -80,10 +80,10 @@ class AddUser(_Page):
 
     __pattern__ = "/network/add_user"
 
-    _validators = (
+    _validators = [
         ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
         ('user_id', regexp.Validator(regexp.ID, error.USER_ID_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
 
@@ -214,9 +214,9 @@ class Update(_Page):
             }
     """
 
-    _validators = (
+    _validators = [
         ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
-    )
+    ]
 
     __pattern__ = "/network/update"
 
@@ -313,10 +313,10 @@ class AddDevice(_Page):
     """
     __pattern__ = '/network/add_device'
 
-    _validators = (
+    _validators = [
         ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
         ('device_id', regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         # XXX What are security check requirement ?
@@ -363,10 +363,10 @@ class ConnectDevice(_Page):
     """
     __pattern__ = '/network/connect_device'
 
-    _validators = (
+    _validators = [
         ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
         ('device_id', regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -430,9 +430,9 @@ class Create(_Page):
 
     __pattern__ = "/network/create"
 
-    _validators = (
+    _validators = [
         ('name', regexp.Validator(regexp.NotNull, error.DEVICE_NOT_VALID)),
-    )
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -483,7 +483,7 @@ class Delete(_Page):
     """
     Delete a network
         DELETE {
-            '_id': "id",
+            'transaction_id': "id",
             'force': bool # Disable error if network doesn't exist.
         } -> {
                 'success': True,
@@ -493,14 +493,19 @@ class Delete(_Page):
 
     __pattern__ = "/network/delete"
 
-    _validators = (
-        ('_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
-    )
+    _validators = [
+        ('transaction_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
+    ]
 
-    def DELETE(self):
+    def POST(self):
         self.requireLoggedIn()
 
-        _id = database.ObjectId(self.data['_id'])
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
+        _id = database.ObjectId(self.data['transaction_id'])
 
         network = database.networks().find_one(_id)
 
