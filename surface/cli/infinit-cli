@@ -132,9 +132,9 @@ class InfinitShell(cmd.Cmd):
         super(InfinitShell, self).__init__()
 
     def _attach_callbacks(self):
-        self._state.on_transaction(self._incomming_transfer_handler)
-        self._state.on_transaction_status(self._file_transfer_status_handler)
-        self._state.on_message(self._message_handler)
+        self._state.transaction_callback(self._incomming_transfer_handler)
+        self._state.transaction_status_callback(self._file_transfer_status_handler)
+        self._state.message_callback(self._message_handler)
 
     @property
     def prompt(self):
@@ -456,7 +456,6 @@ class InfinitShell(cmd.Cmd):
 
     ###########################################################################
     # Update transactions
-
     _update_transaction_argument_parser = make_simple_argument_parser(
         prog = "update_transaction",
         description = "update a specific transaction.",
@@ -556,16 +555,16 @@ class InfinitShell(cmd.Cmd):
 
     ###########################################################################
     # Callbacks.
-    def _incomming_transfer_handler(self, transfer):
-        assert isinstance(transfer, self._state.TransferNotification)
+    def _incomming_transfer_handler(self, transfer, new):
+        print("_incomming_transfer_handler")
         self._notifs.append(transfer)
-        if transfer.new:
+        if new:
             self._notif_count += 1
 
-    def _file_transfer_status_handler(self, status):
-        assert isinstance(status, self._state.TransferStatusNotification)
+    def _file_transfer_status_handler(self, status, new):
+        print("_file_transfer_status_handler")
         self._notifs.append(status)
-        if status.new:
+        if new:
             self._notif_count += 1
 
     def _message_handler(self, message):
