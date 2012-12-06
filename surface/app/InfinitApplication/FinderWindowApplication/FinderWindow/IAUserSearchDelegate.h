@@ -11,12 +11,14 @@
 #import "IAUserSearchBar.h"
 #import "IASearchResultsWindow.h"
 #import "IAMainViewController.h"
+#import "IASearchResultsTableView.h"
 
-@interface IAUserSearchDelegate : NSObject
+@interface IAUserSearchDelegate : NSObject <NSTableViewDelegate, NSTableViewDataSource>
 
-@property (assign) IBOutlet IAUserSearchBar*        search_bar;
-@property (assign) IBOutlet NSWindow*               main_window;
-@property (assign) IBOutlet IAMainViewController*   main_view_controller;
-@property (retain) IASearchResultsWindow*           search_window;
+@property (retain) IBOutlet IAUserSearchBar*            search_bar;
+@property (retain) IBOutlet NSWindow*                   main_window;
+@property (retain) IBOutlet IAMainViewController*       main_view_controller;
+@property (retain) IASearchResultsWindow*               search_window;
+@property (retain) IBOutlet IASearchResultsTableView*   table_view;
 
 @end

@@ -7,10 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "IASearchResultsTableView.h"
 
 @interface IASearchResultsWindow : NSWindow
 
-- (id)initWithParent:(NSWindow*)parent;
+- (id)initWithParent:(NSWindow*)parent
+        andTableView:(IASearchResultsTableView*)table_view;
 
 - (void)updatePosition:(NSRect)pos;
 
