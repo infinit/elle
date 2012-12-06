@@ -16,7 +16,8 @@ namespace network {
 
   }
 
-  uri_builder &uri_builder::base_uri(const network::uri &base) {
+  uri_builder &uri_builder::base_uri(const network::uri &base_uri) {
+    base_uri_ = base_uri;
     return *this;
   }
 

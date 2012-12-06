@@ -23,41 +23,47 @@ namespace network {
     uri_builder(); // = default;
     ~uri_builder(); // = default;
 
-    uri_builder &base_uri(const network::uri &base);
+    uri_builder &base_uri(const network::uri &base_uri);
 
     template <typename Source>
     uri_builder &scheme(const Source &scheme) {
-      //set_scheme(detail::translate(scheme));
+      set_scheme(detail::translate(scheme));
       return *this;
     }
 
     template <typename Source>
     uri_builder &user_info(const Source &user_info) {
+      set_user_info(detail::translate(user_info));
       return *this;
     }
 
     template <typename Source>
     uri_builder &host(const Source &host) {
+      set_host(detail::translate(host));
       return *this;
     }
 
     template <typename Source>
     uri_builder &port(const Source &port) {
+      set_port(detail::translate(port));
       return *this;
     }
 
     template <typename Source>
     uri_builder &path(const Source &path) {
+      set_path(detail::translate(path));
       return *this;
     }
 
     template <typename Source>
     uri_builder &query(const Source &query) {
+      set_query(detail::translate(query));
       return *this;
     }
 
     template <typename Source>
     uri_builder &fragment(const Source &fragment) {
+      set_fragment(detail::translate(fragment));
       return *this;
     }
 
@@ -73,6 +79,7 @@ namespace network {
     void set_query(const string_type &query);
     void set_fragment(const string_type &fragment);
 
+    boost::optional<network::uri> base_uri_;
     boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
