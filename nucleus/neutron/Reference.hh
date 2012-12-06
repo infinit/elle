@@ -35,10 +35,10 @@ namespace nucleus
     public:
       struct Constants
       {
-        static proton::Contents::Type const seam;
-        static proton::Contents::Type const quill;
-        static proton::Contents::Type const value;
-        static proton::Contents::Type const type;
+        static proton::Nature const seam;
+        static proton::Nature const quill;
+        static proton::Nature const value;
+        static proton::Nature const nature;
       };
 
       //

@@ -1,6 +1,11 @@
 #ifndef NUCLEUS_PROTON_TREE_HXX
 # define NUCLEUS_PROTON_TREE_HXX
 
+# include <nucleus/proton/Nest.hh>
+# include <nucleus/proton/Seam.hh>
+# include <nucleus/proton/Quill.hh>
+# include <nucleus/proton/Contents.hh>
+
 # include <cryptography/SecretKey.hh>
 
 namespace nucleus
@@ -13,9 +18,9 @@ namespace nucleus
 
     template <typename T>
     Tree<T>::Tree(Nest& nest):
+      _root(new Handle{nest.attach(new Contents(new Quill<T>))}),
       _height(1),
       _capacity(0),
-      _root(nest.attach(new Contents(new Quill<T>))),
       _nest(nest),
       _state(State::dirty)
     {
@@ -25,9 +30,9 @@ namespace nucleus
     Tree<T>::Tree(Root const& root,
                   cryptography::SecretKey const& secret,
                   Nest& nest):
+      _root(new Handle{root.address(), secret}),
       _height(root.height()),
       _capacity(root.capacity()),
-      _root(root.block(), secret),
       _nest(nest),
       _state(State::clean)
     {
@@ -78,7 +83,9 @@ namespace nucleus
       // since the tree's configuration has changed, the tree is optimised,
       // operation which could result in nodules being split etc.
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -90,16 +97,19 @@ namespace nucleus
       root.unload();
 
       // Try to optimize the tree.
-      this->optimize();
+      this->_optimize();
     }
 
     template <typename T>
+    void
     Tree<T>::remove(typename T::K const& k)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(k);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -113,7 +123,7 @@ namespace nucleus
       root.unload();
 
       // Try to optimize the tree.
-      this->optimize();
+      this->_optimize();
     }
 
     template <typename T>
@@ -148,7 +158,9 @@ namespace nucleus
       // Initialize the base.
       Capacity base(0);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -157,7 +169,7 @@ namespace nucleus
 
       root.unload();
 
-      return (v, base);
+      return (std::pair<Handle, Capacity>(v, base));
     }
 
     template <typename T>
@@ -167,7 +179,9 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(k);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -181,7 +195,7 @@ namespace nucleus
       root.unload();
 
       // Try to optimize the tree.
-      this->optimize();
+      this->_optimize();
     }
 
     template <typename T>
@@ -191,7 +205,9 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(flags);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -204,9 +220,9 @@ namespace nucleus
           Address address{root.contents().bind()};
 
           // Compare this address with the one recorded as reference.
-          if (this->_root.address() != address)
+          if (this->_root->address() != address)
             throw Exception("invalid address: root(%s) versus bind(%s)",
-                            this->_root.address(), address);
+                            this->_root->address(), address);
         }
 
       // Recursively check the tree's validity.
@@ -263,7 +279,9 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD("");
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -287,12 +305,14 @@ namespace nucleus
       elle::String alignment(margin, ' ');
       elle::String shift(2, ' ');
 
+      ELLE_ASSERT(this->_root != nullptr);
+
       std::cout << alignment << "[Tree] "
                 << "height(" << this->_height << ") "
                 << "capacity(" << this->_capacity << ") "
-                << "root(" << this->_root << ")" << std::endl;
+                << "root(" << *this->_root << ")" << std::endl;
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -309,31 +329,70 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(secret);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      switch (this->_state)
+        {
+        case State::clean:
+          throw Exception("unable to seal a clean porcupine");
+        case State::dirty:
+          {
+            ELLE_ASSERT(this->_root != nullptr);
 
-      root.load();
+            Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
-      // If the tree is dirty, so should be the root.
-      ELLE_ASSERT(this->_state == root().state());
+            root.load();
 
-      // Recursively seal the tree blocks.
-      root().seal(secret);
+            // Recursively seal the tree blocks.
+            root().seal(secret);
 
-      // Encrypt and bind the root block.
-      root.contents().encrypt(secret);
-      Address address{root.contents().bind()};
+            // Encrypt and bind the root block.
+            root.contents().encrypt(secret);
+            Address address{root.contents().bind()};
 
-      // Update the node and block.
-      root().state(State::consistent);
-      root.contents().state(State::consistent);
+            // Update the node and block.
+            root().state(State::consistent);
+            root.contents().state(State::consistent);
 
-      root.unload();
+            // Update the tree state.
+            this->_state = root().state();
 
-      // Update the tree state.
-      this->_state = State::consistent;
+            root.unload();
 
-      // Return the type-independent tree's root.
-      return (Root(this->_root.address(), this->_height, this->_capacity));
+            // Regenerate the handle based on the new address and the secret.
+            Handle* handle = new Handle{this->_root->placement(),
+                                        address,
+                                        secret};
+            delete this->_root;
+            this->_root = handle;
+
+            // Return the type-independent tree's root.
+            return (Root(this->_root->address(),
+                         this->_height,
+                         this->_capacity));
+          }
+        case State::consistent:
+          throw Exception("unable to seal a consistent porcupine");
+        default:
+          throw Exception("unknown state: '%s'",
+                          static_cast<int>(this->_state));
+        }
+    }
+
+    template <typename T>
+    Handle const&
+    Tree<T>::root() const
+    {
+      ELLE_ASSERT(this->_root != nullptr);
+
+      return (*this->_root);
+    }
+
+    template <typename T>
+    Handle&
+    Tree<T>::root()
+    {
+      ELLE_ASSERT(this->_root != nullptr);
+
+      return (*this->_root);
     }
 
     template <typename T>
@@ -343,7 +402,9 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(k);
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -353,7 +414,7 @@ namespace nucleus
         {
           root.unload();
 
-          return (this->_root);
+          return (*this->_root);
         }
       else
         {
@@ -370,12 +431,14 @@ namespace nucleus
 
     template <typename T>
     void
-    Tree<T>::optimize()
+    Tree<T>::_optimize()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD("");
 
-      Ambit<Nodule<T>> root(this->_nest, this->_root);
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
 
       root.load();
 
@@ -432,11 +495,11 @@ namespace nucleus
 
           // Copy the current root handle so that no ambit references
           // _this->_root_ since this variable is going to change.
-          Handle handle_root{this->_root};
+          Handle handle_root{*this->_root};
 
           // Allocate a new root block: a seam since there was already
           // a root nodule i.e either a quill or a seam.
-          Contents contents(new Contents(new Seam<T>));
+          Contents* contents(new Contents(new Seam<T>));
 
           ELLE_FINALLY_ACTION_DELETE(contents);
 
@@ -458,7 +521,7 @@ namespace nucleus
           // Instanciate a new seam inlet, set its capacity and state
           // manually before inserting it the new root.
           typename Seam<T>::I* inlet_left =
-            new typename Seam<T>::I{mayor_root, handle_root);
+            new typename Seam<T>::I{mayor_root, handle_root};
 
           ELLE_FINALLY_ACTION_DELETE(inlet_left);
 
@@ -471,7 +534,7 @@ namespace nucleus
 
           // Do the same for the right inlet i.e the split _newright_ nodule.
           typename Seam<T>::I* inlet_right =
-            new typename Seam<T>::I{mayor_newright, handle_newright);
+            new typename Seam<T>::I{mayor_newright, handle_newright};
 
           ELLE_FINALLY_ACTION_DELETE(inlet_right);
 
@@ -495,16 +558,14 @@ namespace nucleus
           newroot.unload();
 
           // Finally, assign the new root handle as the root.
-          this->_root = handle_newroot;
+          delete this->_root;
+          this->_root = new Handle{handle_newroot};
 
           // And increment the height.
           this->_height++;
         }
       else
         {
-          ELLE_TRACE("root's footprint may be low enough to reorganize "
-                     "the tree");
-
           ELLE_ASSERT(this->_height != 0);
 
           // Try to reduce the tree's height.
@@ -517,7 +578,7 @@ namespace nucleus
               // the root nodule must obviously be a seam.
               root.unload();
 
-              Ambit<Seam<T>> seam(this->_nest, this->_root);
+              Ambit<Seam<T>> seam(this->_nest, *this->_root);
 
               seam.load();
 
@@ -531,13 +592,14 @@ namespace nucleus
                   Handle orphan{seam().locate_handle(seam().maiden())};
 
                   // Detach the root nodule from the porcupine.
-                  this->_nest.detach(this->_root);
+                  this->_nest.detach(*this->_root);
 
                   seam.unload();
 
                   // Set the new tree's root handle as being the one of the
                   // block which happens to be alone.
-                  this->_root = orphan;
+                  delete this->_root;
+                  this->_root = new Handle{orphan};
 
                   // Decrease the tree's height.
                   this->_height--;
@@ -564,10 +626,29 @@ namespace nucleus
             {
               ELLE_TRACE("the tree contains a single level of hierarchy and "
                          "cannot be optimized further");
-            }
 
-          root.unload();
+              root.unload();
+            }
         }
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Tree<T>::print(std::ostream& stream) const
+    {
+      ELLE_ASSERT(this->_root != nullptr);
+
+      stream << "("
+             << *this->_root
+             << ", "
+             << this->_height
+             << ", "
+             << this->_capacity
+             << ")";
     }
   }
 }

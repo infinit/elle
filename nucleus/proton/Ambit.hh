@@ -25,7 +25,7 @@ namespace nucleus
       /*-------------.
       | Enumerations |
       `-------------*/
-
+    public:
       /// Define the way the referenced node block is loaded and unloaded.
       ///
       /// The _manual_ mode does nothing and let the caller manually load/unload
@@ -54,6 +54,10 @@ namespace nucleus
       /// block referenced by _handle_.
       ///
       /// Note that through these operations the _handle_ may be changed.
+      ///
+      /// The corollary is that the reference to the handle must remain valid
+      /// throughout the life of the ambit. One must therefore take care not
+      /// to unload the block containing the given handle.
       Ambit(Nest& nest,
             Handle& handle,
             Mode const mode = Mode::automatic);
@@ -107,7 +111,7 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(Nest&, nest);
+      ELLE_ATTRIBUTE_X(Nest&, nest);
       ELLE_ATTRIBUTE(Mode, mode);
       ELLE_ATTRIBUTE_R(State, state);
       ELLE_ATTRIBUTE_RX(Handle&, handle);

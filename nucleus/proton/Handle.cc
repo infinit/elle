@@ -6,6 +6,35 @@ namespace nucleus
   namespace proton
   {
 
+    /*----------.
+    | Functions |
+    `----------*/
+
+    /// This method returns the default secret key to be used whenever
+    /// a new handle is created.
+    static
+    cryptography::SecretKey
+    generate_secret()
+    {
+      /// This constant represents the hard-coded length of the secrets
+      /// used to encrypt the blocks composing porcupines.
+      /// XXX in bytes & to move in Contents where the encryption actually
+      ///     takes place?
+      static const elle::Natural32 secret_length = 256;
+      // XXX[pass info so as to parameter the future size of the key]
+      static cryptography::SecretKey secret{
+        cryptography::SecretKey::generate(secret_length)};
+
+      return (secret);
+    }
+
+    /*--------.
+    | Globals |
+    `--------*/
+
+    // XXX[box]
+    Handle Handle::Null; // XXX[use a Valid section]
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -23,10 +52,19 @@ namespace nucleus
     }
 
     Handle::Handle(Placement const& placement,
+                   Address const& address,
+                   cryptography::SecretKey const& secret):
+      _placement(placement),
+      _address(address),
+      _secret(secret)
+    {
+    }
+
+    Handle::Handle(Placement const& placement,
                    Address const& address):
       _placement(placement),
       _address(address),
-      _secret(Porcupine::secret())
+      _secret(generate_secret())
       // XXX[Porcupine::secret() n'est appelle que de la. il pourrait etre
       //     specifique dans Nest]
     {
@@ -188,16 +226,19 @@ namespace nucleus
     }
 
     /*----------.
-    | Operators |
+    | Printable |
     `----------*/
 
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Handle const& handle)
+    void
+    Handle::print(std::ostream& stream) const
     {
-      // XXX
-
-      return (stream);
+      stream << "("
+        // XXX << this->_placement ???
+        // XXX << ", "
+             << this->_address
+        // XXX << ", "
+        // XXX ??? << this->_secret
+             << ")";
     }
   }
 }

@@ -4,6 +4,7 @@
 #include <etoile/depot/Depot.hh>
 
 #include <elle/concurrency/Scheduler.hh>
+#include <elle/finally.hh>
 
 #include <cryptography/SecretKey.hh>
 
@@ -287,7 +288,7 @@ namespace etoile
       ELLE_FINALLY_ACTION_DELETE(pod);
 
       // insert the pod.
-      this->_insert(pod.get()->placement, pod.get());
+      this->_insert(pod->placement, pod);
 
       ELLE_FINALLY_ABORT(pod);
 
@@ -296,7 +297,7 @@ namespace etoile
                                            pod->block->family(),
                                            pod->block->component());
 
-      nucleus::proton::Handle handle(pod.get()->placement, some);
+      nucleus::proton::Handle handle(pod->placement, some);
 
       return (handle);
     }
@@ -337,7 +338,7 @@ namespace etoile
         {
           Pod* pod;
 
-          ELLE_TRACE("Placement present in handle");
+          ELLE_TRACE("placement present in handle");
 
           pod = this->_retrieve(handle.placement());
 
@@ -345,7 +346,7 @@ namespace etoile
         }
       else if (handle.address() != nucleus::proton::Address::null())
         {
-          ELLE_TRACE("Address present in handle");
+          ELLE_TRACE("address present in handle");
 
           if (this->exists(handle.address()) == false)
             {
@@ -361,16 +362,20 @@ namespace etoile
                 5) H1.placement(H2.placement());
               */
 
-              std::unique_ptr<nucleus::proton::Contents> contents =
+              nucleus::proton::Contents* contents =
                 depot::Depot::pull<nucleus::proton::Contents>(
                   handle.address(),
-                  nucleus::proton::Revision::Last);
+                  nucleus::proton::Revision::Last).release();
+
+              ELLE_FINALLY_ACTION_DELETE(contents);
 
               assert(handle.secret() != cryptography::SecretKey::Null);
 
               contents->decrypt(handle.secret());
 
-              nucleus::proton::Handle h = this->attach(std::move(contents));
+              nucleus::proton::Handle h{this->attach(contents)};
+
+              ELLE_FINALLY_ABORT(contents);
 
               handle.placement(h.placement()); // XXX[to change]
 

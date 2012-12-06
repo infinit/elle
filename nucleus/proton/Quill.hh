@@ -33,6 +33,8 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Quill<T>>,
       public elle::concept::UniquableMixin<Quill<T>>
     {
+      friend class Nodule<T>;
+
       //
       // types
       //
@@ -48,7 +50,7 @@ namespace nucleus
     public:
       struct Constants
       {
-        static Contents::Type const type;
+        static Nature const nature;
       };
 
       //
@@ -151,7 +153,7 @@ namespace nucleus
       Handle
       split();
       void
-      merge(Handle& handle);
+      merge(Handle& other);
       elle::Boolean
       empty() const;
       elle::Boolean

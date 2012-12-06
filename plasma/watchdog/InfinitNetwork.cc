@@ -170,11 +170,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   //- access-------------------------------------------------------------------
   nucleus::neutron::Access access(network, identity.pair.K());
-  if (access.Add(new nucleus::neutron::Record{
-        subject,
-        permissions
-        }) == elle::Status::Error)
-    throw std::runtime_error("unable to add the record to the access");
+  access.insert(new nucleus::neutron::Record{subject, permissions});
 
   //- access address ----------------------------------------------------------
   nucleus::proton::Address      access_address(access.bind());
@@ -198,6 +194,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   nucleus::proton::Address      directory_address(directory.bind());
 
   {
+    assert(false);
+    /* XXX[to improve: contact Raphael]
     elle::io::Unique root_block_;
     directory.Save(root_block_);
     elle::io::Unique root_address_;
@@ -223,6 +221,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
                                &group_block_,
                                &group_address_
                                ));
+    */
   }
 }
 

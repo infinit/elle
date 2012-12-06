@@ -1,4 +1,4 @@
-#include <hole/storage/MainMemory.hh>
+#include <hole/storage/Memory.hh>
 
 #include <elle/log.hh>
 #include <elle/finally.hh>
@@ -6,14 +6,14 @@
 #include <elle/serialize/Serializable.hh>
 #include <elle/io/Unique.hh>
 
-#include <nucleus/nucleus.hh>
+#include <nucleus/factory.hh>
 #include <nucleus/fwd.hh>
 
 #include <boost/format.hpp>
 
 #include <sstream>
 
-ELLE_LOG_COMPONENT("infinit.hole.storage.MainMemory");
+ELLE_LOG_COMPONENT("infinit.hole.storage.Memory");
 
 namespace hole
 {
@@ -23,11 +23,11 @@ namespace hole
     | Construction |
     `-------------*/
 
-    MainMemory::MainMemory():
+    Memory::Memory():
       Storage()
     {}
 
-    MainMemory::~MainMemory()
+    Memory::~Memory()
     {
       this->_container.clear();
     }
@@ -37,9 +37,9 @@ namespace hole
     `----------*/
 
     void
-    MainMemory::dump() const
+    Memory::dump() const
     {
-      std::cout << "MainMemory #" << this->_container.size() << std::endl;
+      std::cout << "Memory #" << this->_container.size() << std::endl;
 
       for (auto& pair: this->_container)
         {
@@ -48,9 +48,9 @@ namespace hole
     }
 
     void
-    MainMemory::print(std::ostream& stream) const
+    Memory::print(std::ostream& stream) const
     {
-      stream << "MainMemory #" << this->_container.size();
+      stream << "Memory #" << this->_container.size();
     }
 
     /*--------.
@@ -58,7 +58,7 @@ namespace hole
     `--------*/
 
     bool
-    MainMemory::_exist(std::string const& identifier) const
+    Memory::_exist(std::string const& identifier) const
     {
       ELLE_TRACE_METHOD(identifier);
 
@@ -66,8 +66,8 @@ namespace hole
     }
 
     void
-    MainMemory::_store(const nucleus::proton::Address& address,
-                       const nucleus::proton::ImmutableBlock& block)
+    Memory::_store(const nucleus::proton::Address& address,
+                   const nucleus::proton::ImmutableBlock& block)
     {
       ELLE_TRACE_METHOD(address, block);
 
@@ -90,8 +90,8 @@ namespace hole
     }
 
     void
-    MainMemory::_store(const nucleus::proton::Address& address,
-                       const nucleus::proton::MutableBlock& block)
+    Memory::_store(const nucleus::proton::Address& address,
+                   const nucleus::proton::MutableBlock& block)
     {
       ELLE_TRACE_METHOD(address, block);
 
@@ -114,7 +114,7 @@ namespace hole
     }
 
     std::unique_ptr<nucleus::proton::Block>
-    MainMemory::_load(nucleus::proton::Address const& address) const
+    Memory::_load(nucleus::proton::Address const& address) const
     {
       ELLE_TRACE_METHOD(address);
 
@@ -123,7 +123,7 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
       ELLE_FINALLY_ACTION_DELETE(block);
@@ -142,8 +142,8 @@ namespace hole
     }
 
     std::unique_ptr<nucleus::proton::Block>
-    MainMemory::_load(nucleus::proton::Address const& address,
-                      nucleus::proton::Revision const& revision) const
+    Memory::_load(nucleus::proton::Address const& address,
+                  nucleus::proton::Revision const& revision) const
     {
       ELLE_TRACE_METHOD(address, revision);
 
@@ -157,7 +157,7 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
       ELLE_FINALLY_ACTION_DELETE(block);
@@ -176,7 +176,7 @@ namespace hole
     }
 
     void
-    MainMemory::_erase(nucleus::proton::Address const& address)
+    Memory::_erase(nucleus::proton::Address const& address)
     {
       ELLE_TRACE_METHOD(address);
 

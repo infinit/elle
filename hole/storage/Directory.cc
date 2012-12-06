@@ -7,7 +7,7 @@
 
 #include <hole/storage/Directory.hh>
 
-#include <nucleus/nucleus.hh>
+#include <nucleus/factory.hh>
 #include <nucleus/fwd.hh>
 
 ELLE_LOG_COMPONENT("infinit.hole.storage.Directory");
@@ -115,7 +115,7 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
       ELLE_FINALLY_ACTION_DELETE(block);
@@ -146,7 +146,7 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::MutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::MutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::MutableBlock>(
           address.component())};
 
       ELLE_FINALLY_ACTION_DELETE(block);

@@ -1,7 +1,7 @@
 project(Nucleus CXX)
 
 add_library(nucleus ${LINK_METHOD}
-  nucleus.cc
+  factory.cc
   Derivable.cc
 
   proton/Address.cc
@@ -19,6 +19,7 @@ add_library(nucleus ${LINK_METHOD}
   proton/Location.cc
   proton/Mode.hh
   proton/MutableBlock.cc
+  proton/Nature.cc
   proton/Nest.cc
   proton/Network.cc
   proton/Node.cc
@@ -31,6 +32,7 @@ add_library(nucleus ${LINK_METHOD}
   proton/Stamp.cc
   proton/State.cc
   proton/Statistics.cc
+  proton/Strategy.cc
   proton/Value.cc
 
   neutron/Access.cc

@@ -30,13 +30,13 @@ namespace nucleus
     class Nodule;
     class OwnerKeyBlock;
     class Placement;
+    template <typename T>
     class Porcupine;
     class PublicKeyBlock;
     template <typename T>
     class Quill;
     class Radix;
     class Root;
-    class Shell;
     template <typename T>
     class Seam;
     class Statistics;
@@ -48,7 +48,6 @@ namespace nucleus
   }
 }
 
-# include <nucleus/proton/Breed.hh>
 # include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/Extent.hh>
 # include <nucleus/proton/Family.hh>
@@ -56,6 +55,8 @@ namespace nucleus
 # include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Height.hh>
 # include <nucleus/proton/Mode.hh>
+# include <nucleus/proton/Nature.hh>
 # include <nucleus/proton/State.hh>
+# include <nucleus/proton/Strategy.hh>
 
 #endif

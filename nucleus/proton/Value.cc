@@ -4,15 +4,6 @@ namespace nucleus
 {
   namespace proton
   {
-    /*-------------.
-    | Construction |
-    `-------------*/
-
-    Value::Value():
-      Node(Node::Type::value)
-    {
-    }
-
     /*---------.
     | Dumpable |
     `---------*/

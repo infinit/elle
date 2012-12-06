@@ -4,10 +4,16 @@
 # include <elle/types.hh>
 
 # include <nucleus/proton/Handle.hh>
+# include <nucleus/proton/Capacity.hh>
+# include <nucleus/proton/Height.hh>
 # include <nucleus/proton/Root.hh>
-# include <nucleus/proton/Nest.hh>
+# include <nucleus/proton/Flags.hh>
+# include <nucleus/proton/State.hh>
+# include <nucleus/proton/Statistics.hh>
 
 # include <cryptography/fwd.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -126,7 +132,8 @@ namespace nucleus
     /// impossible to guarantee anyway.
     template <typename T>
     class Tree:
-      public elle::Printable
+      public elle::Printable,
+      private boost::noncopyable
     {
       /*-------------.
       | Construction |
@@ -157,6 +164,9 @@ namespace nucleus
       remove(typename T::K const& k);
       /// Return the handle corresponding to the element associated with the
       /// given key.
+      ///
+      /// Note that a copy is returned because the block containing this handle
+      /// not not be loaded in main memory once the handle is returned.
       Handle
       lookup(typename T::K const& k);
       /// Take the target index capacity and return the value responsible
@@ -202,9 +212,12 @@ namespace nucleus
       /// out on the tree.
       Root
       seal(cryptography::SecretKey const& secret);
-      /// Destroy the tree by detaching the root nodule from the nest.
-      void
-      destroy();
+      /// Return the root block handle.
+      Handle const&
+      root() const;
+      /// Return the root block handle.
+      Handle&
+      root();
 
     private:
       /// Return the handle of the quill block responsible for the given key
@@ -219,12 +232,21 @@ namespace nucleus
       _optimize();
 
       /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+
+      /*-----------.
       | Attributes |
       `-----------*/
     public:
+      ELLE_ATTRIBUTE(Handle*, root);
       ELLE_ATTRIBUTE_R(Height, height);
       ELLE_ATTRIBUTE_R(Capacity, capacity);
-      ELLE_ATTRIBUTE_R(Handle, root);
 
       ELLE_ATTRIBUTE(Nest&, nest);
       ELLE_ATTRIBUTE_R(State, state);

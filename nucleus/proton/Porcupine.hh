@@ -10,9 +10,10 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Flags.hh>
-# include <nucleus/proton/Nature.hh>
+# include <nucleus/proton/Strategy.hh>
 # include <nucleus/proton/Handle.hh>
 # include <nucleus/proton/Tree.hh>
+# include <nucleus/proton/Radix.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -26,30 +27,12 @@ namespace nucleus
       public elle::Printable,
       private boost::noncopyable
     {
-      /*----------.
-      | Constants |
-      `----------*/
-    public:
-      /// This constant represents the hard-coded length of the secrets
-      /// used to encrypt the blocks composing porcupines.
-      /// XXX in bytes & to move in Contents where the encryption actually
-      ///     takes place?
-      static const elle::Natural32 secret_length;
-
-      /*---------------.
-      | Static Methods |
-      `---------------*/
-    public:
-      /// This method returns the default secret key to be used whenever
-      /// a new handle is created.
-      static
-      cryptography::SecretKey
-      secret();
-
       /*-------------.
       | Construction |
       `-------------*/
     public:
+      /// Construct an empty porcupine.
+      Porcupine(Nest& nest);
       /// XXX[here the agent_K represents the current user which will happen to
       ///     be the creator of every new block]
       /// XXX[on pourrait passer la secretkey pour dechiffrer plutot que
@@ -59,6 +42,7 @@ namespace nucleus
                 /* XXX Network const& network,
                    cryptography::PublicKey const& agent_K,*/
                 Nest& nest);
+      ~Porcupine();
 
       /*--------.
       | Methods |
@@ -135,8 +119,8 @@ namespace nucleus
       ///
       /// The radix could then be serialized or used for instantiate a
       /// porcupine. However, one should be aware of the fact that, depending
-      /// on the nature of the content, a radix alone is useless. Given a block
-      /// or tree nature, the constituing blocks are encrypted and stored in
+      /// on the strategy, a radix alone is useless. Given a block or tree
+      /// strategy, the constituing blocks are encrypted and stored in
       /// the nest. Therefore, while the radix represent the meta descriptor
       /// of the content, the blocks are actually located in the nest.
       ///
@@ -144,7 +128,21 @@ namespace nucleus
       /// out on the porcupine.
       Radix
       seal(cryptography::SecretKey const& secret);
-
+      /// Return the embedded value, should the strategy comply.
+      ///
+      /// !WARNING! For debugging purposes only.
+      T const&
+      value() const;
+      /// Return the value block's handle, should the strategy comply.
+      ///
+      /// !WARNING! For debugging purposes only.
+      Handle const&
+      block() const;
+      /// Return the tree, should the strategy comply.
+      ///
+      /// !WARNING! For debugging purposes only.
+      Tree<T> const&
+      tree() const;
     private:
       /// Transform an empty porcupine into a value-based porcupine so
       /// as to be able to return the caller a value on which to operate,
@@ -153,16 +151,16 @@ namespace nucleus
       _create();
       /// Represent the key functionality of the porcupine abstraction. This
       /// method does one fundamental thing: it transforms content from one
-      /// nature to another e.g from a direct value to a block-based value
+      /// strategy to another e.g from a direct value to a block-based value
       /// or to a block to a tree.
       ///
       /// Such a decision is made depending on the limits associated with
-      /// every nature. For example, should the value block reach a footprint
+      /// every strategy. For example, should the value block reach a footprint
       /// of 1024, it would be transformed into a tree. Likewise, should the
       /// value block reach a low limit of 256 bytes, it would be transformed
       /// into a direct value.
       ///
-      /// This mechanism is crucial to transparently adapt the nature of the
+      /// This mechanism is crucial to transparently adapt the strategy of the
       /// content so as to be optimised according to some limits.
       void
       _optimize();
@@ -180,22 +178,26 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Nature, nature);
+      ELLE_ATTRIBUTE_R(Strategy, strategy);
       union
       {
-        /// XXX
+        /// Represent the directly embedded value when in evolving in
+        /// the strategy 'value'.
         T* _value;
-        /// XXX
+        /// When evolving in strategy 'block', this handle reference the
+        /// block which actually holds the data.
         Handle* _handle;
-        /// XXX
+        /// Represent the hierachical data structure used when evolving
+        /// in strategy 'tree' so as to provide a flexible mechanism for
+        /// handling large amount of data.
         Tree<T>* _tree;
       };
 
       ELLE_ATTRIBUTE(Network, network); // XXX
       ELLE_ATTRIBUTE(cryptography::PublicKey, agent_K); // XXX
 
-      ELLE_ATTRIBUTE(Nest&, nest);
-      ELLE_ATTRIBUTE(State, state);
+      ELLE_ATTRIBUTE_X(Nest&, nest);
+      ELLE_ATTRIBUTE_R(State, state);
     };
   }
 }

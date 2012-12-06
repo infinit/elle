@@ -21,13 +21,13 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    proton::Contents::Type const Catalog::Constants::seam =
-      proton::Contents::Type::catalog_seam;
-    proton::Contents::Type const Catalog::Constants::quill =
-      proton::Contents::Type::catalog_quill;
-    proton::Contents::Type const Catalog::Constants::value =
-      proton::Contents::Type::catalog_value;
-    proton::Contents::Type const Catalog::Constants::type =
+    proton::Nature const Catalog::Constants::seam =
+      proton::Nature::catalog_seam;
+    proton::Nature const Catalog::Constants::quill =
+      proton::Nature::catalog_quill;
+    proton::Nature const Catalog::Constants::value =
+      proton::Nature::catalog_value;
+    proton::Nature const Catalog::Constants::nature =
       Catalog::Constants::value;
 
     /*---------------.
@@ -55,7 +55,7 @@ namespace nucleus
 
       // Go through the left catalog's entries until the future size is
       // reached after which all the remaining entries will be moved to
-      // the right range.
+      // the right catalog.
       for (; i != end; ++i)
         {
           auto& entry = i->second;
@@ -64,9 +64,7 @@ namespace nucleus
           if (footprint >= size)
             break;
 
-          //
           // Otherwise, leave this item in the left entry.
-          //
 
           // Note however that another check is performed in order to make
           // sure that adding this entry will not make the container too large.
@@ -384,10 +382,9 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new right catalog.
-      std::unique_ptr<proton::Contents> contents{
-        new proton::Contents(new Catalog)};
-      proton::Handle orphan(this->nest().attach(std::move(contents)));
-      proton::Ambit<Catalog> right(this->nest(), orphan);
+      proton::Contents* contents{new proton::Contents{new Catalog}};
+      proton::Handle orphan{this->nest().attach(contents)};
+      proton::Ambit<Catalog> right{this->nest(), orphan};
 
       // Load the new right catalog.
       right.load();
@@ -409,17 +406,17 @@ namespace nucleus
     }
 
     void
-    Catalog::merge(proton::Handle& handle)
+    Catalog::merge(proton::Handle& other)
     {
-      ELLE_TRACE_METHOD(handle);
+      ELLE_TRACE_METHOD(other);
 
-      proton::Ambit<Catalog> other(this->nest(), handle);
+      proton::Ambit<Catalog> catalog(this->nest(), other);
 
       // Load the other catalog.
-      other.load();
+      catalog.load();
 
       // Check which value has the lowest keys.
-      if (other().mayor() < this->mayor())
+      if (catalog().mayor() < this->mayor())
         {
           // In this case, export the entries from the given catalog
           // into the current's since these entries happen to have
@@ -427,7 +424,7 @@ namespace nucleus
           //
           // Note that the footprint-based number of entries to keep in
           // the left catalog is zero i.e transfer all entries.
-          Catalog::transfer_right(other(), *this, 0);
+          Catalog::transfer_right(catalog(), *this, 0);
         }
       else
         {
@@ -436,17 +433,17 @@ namespace nucleus
           //
           // Note that the footprint-based number of entries to keep in
           // the right catalog is zero i.e transfer all entries.
-          Catalog::transfer_left(*this, other(), 0);
+          Catalog::transfer_left(*this, catalog(), 0);
         }
 
       // Set both values' state as dirty.
       this->state(proton::State::dirty);
-      other().state(proton::State::dirty);
+      catalog().state(proton::State::dirty);
 
-      ELLE_ASSERT(other()._container.size() == 0);
+      ELLE_ASSERT(catalog()._container.size() == 0);
 
       // Unload the given catalog.
-      other.unload();
+      catalog.unload();
     }
 
     /*---------.

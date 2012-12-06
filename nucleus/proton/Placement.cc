@@ -112,5 +112,14 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Placement::print(std::ostream& stream) const
+    {
+      stream << this->_number;
+    }
   }
 }

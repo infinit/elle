@@ -7,8 +7,6 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 
-# include <boost/noncopyable.hpp>
-
 namespace nucleus
 {
   namespace proton
@@ -20,8 +18,7 @@ namespace nucleus
     template <typename T>
     class Door:
       public elle::io::Dumpable,
-      public elle::Printable,
-      private boost::noncopyable
+      public elle::Printable
     {
       /*-------------.
       | Enumerations |
@@ -42,8 +39,18 @@ namespace nucleus
       /// Construct a door for access to an in-main-memory value.
       Door(T* value);
       /// Construct a door for access to a nest-based value block.
-      Door(Handle& handle,
+      ///
+      /// Note that the given handle is copied so that the block
+      /// holding it can be unloaded.
+      Door(Handle const& handle,
            Nest& nest);
+      /// Note that the copy constructor does not take a const reference.
+      ///
+      /// This is required because, should the door reference a nest-based
+      /// block, the new door would have to retrieve the nest so as to load
+      /// and unload from it, operations which obviously can alterate the
+      /// nest's state.
+      Door(Door&& other);
       /// Destruct the door, making sure to unload the value block, should it
       /// be necessary and nest-based.
       ~Door();
@@ -89,6 +96,42 @@ namespace nucleus
       print(std::ostream& stream) const;
 
       /*-----------.
+      | Structures |
+      `-----------*/
+    public:
+      struct Block:
+        public elle::Printable
+      {
+        // construction
+      public:
+        Block(Handle const& handle,
+              Nest& nest);
+        ~Block();
+
+        // methods
+      public:
+        void
+        open();
+        void
+        close();
+        T const&
+        access() const;
+        T&
+        access();
+
+        // interfaces
+      public:
+        virtual
+        void
+        print(std::ostream& stream) const;
+
+        // attributes
+      private:
+        ELLE_ATTRIBUTE(Handle, handle);
+        ELLE_ATTRIBUTE(Ambit<T>, ambit);
+      };
+
+      /*-----------.
       | Attributes |
       `-----------*/
     private:
@@ -96,7 +139,7 @@ namespace nucleus
       union
       {
         T* _value;
-        Ambit<T>* _ambit;
+        Block* _block;
       };
 
       /*----------.

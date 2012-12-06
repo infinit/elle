@@ -6,9 +6,11 @@
 # include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Nature.hh>
+# include <nucleus/proton/Strategy.hh>
 
 # include <cryptography/fwd.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace nucleus
 {
@@ -77,7 +79,10 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Nature, nature);
+      /// The strategy used for manipulating content.
+      ///
+      /// Depending on the strategy, one of the attributes below is used.
+      ELLE_ATTRIBUTE_R(Strategy, strategy);
       union
       {
         /// Represent a value being directly serialized withing the containing

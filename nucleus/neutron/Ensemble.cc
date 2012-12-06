@@ -139,30 +139,25 @@ namespace nucleus
     Ensemble::consult(Index const& index,
                       Size const& size) const
     {
-      /* XXX
-      Ensemble::Scoutor scoutor;
       Range<Fellow> range;
       Index i(0);
 
-      ELLE_TRACE_SCOPE("consult(%s, %s)", index, size);
+      ELLE_TRACE_METHOD(index, size);
 
-      for (scoutor = this->_container.begin();
-           scoutor != this->_container.end();
-           ++scoutor)
+      for (auto& fellow: this->_container)
         {
-          Fellow* fellow = *scoutor;
-
-          // If this record lies in the selected range [index, index + size[.
+          // If this fellow lies in the selected range [index, index + size[.
           if ((i >= index) && (i < (index + size)))
             {
-              if (range.Add(fellow) == elle::Status::Error)
-                throw Exception("unable to add the record to the given range");
-                // XXX[to remove in the future]
+              // Insert the entry to the range.
+              // XXX[need shared_ptr] range.insert(fellow);
+              ELLE_ASSERT(false);
             }
+
+          i++;
         }
 
       return (range);
-      */
     }
 
     void

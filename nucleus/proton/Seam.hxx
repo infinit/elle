@@ -23,7 +23,7 @@ namespace nucleus
     `----------*/
 
     template <typename T>
-    Contents::Type const Seam<T>::Constants::type = T::Constants::seam;
+    Nature const Seam<T>::Constants::nature = T::Constants::seam;
 
     /*-------------.
     | Construction |
@@ -310,13 +310,6 @@ namespace nucleus
       return (inlet->value());
     }
 
-    template <typename T>
-    typename Seam<T>::Container&
-    Seam<T>::container()
-    {
-      return (this->_container);
-    }
-
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -542,9 +535,9 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new seam.
-      std::unique_ptr<Contents> contents(new Contents(new Seam<T>));
-      Handle orphan(this->nest().attach(std::move(contents)));
-      Ambit<Seam<T>> newright(this->nest(), orphan);
+      Contents* contents{new Contents{new Seam<T>}};
+      Handle orphan{this->nest().attach(contents)};
+      Ambit<Seam<T>> newright{this->nest(), orphan};
 
       // Load the new right nodule.
       newright.load();
@@ -567,13 +560,13 @@ namespace nucleus
 
     template <typename T>
     void
-    Seam<T>::merge(Handle& handle)
+    Seam<T>::merge(Handle& other)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
 
-      Ambit<Seam<T>> seam(this->nest(), handle);
+      Ambit<Seam<T>> seam(this->nest(), other);
 
-      ELLE_TRACE_SCOPE("merge(%s)", handle);
+      ELLE_TRACE_SCOPE("merge(%s)", other);
 
       // load the given seam.
       seam.load();

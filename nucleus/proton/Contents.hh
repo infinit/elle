@@ -4,7 +4,6 @@
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Node.hh>
 # include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Shell.hh>
 
 # include <cryptography/fwd.hh>
 // XXX[temporary: for cryptography]
@@ -20,29 +19,21 @@ namespace nucleus
 {
   namespace proton
   {
+    /// The Contents block has for only purpose to abstract the fact that
+    /// Nodes (Quill, Seam and Value instances such as Catalog etc.) must
+    /// be serialized in a block in an encrypted form.
     ///
-    /// XXX[boxes]
+    /// This class therefore provides nothing more than a shell for protecting
+    /// a node through encryption.
     ///
-    /// this class abstracts the data, catalog or reference by embedding
-    /// it since the contents is always encrypted. XXX[will soon be overwritten
-    /// by the porcupine code]
+    /// Thus, the set of methods provided is quite obvious, enabling one to
+    /// encrypt and decrypt the embedded node.
     ///
-    /// therefore, once a contents is retrieved from the storage, the Extract()
-    /// method is called which basically extracts an archive i.e the encrypted
-    /// version of the embedded block. Then the Decrypt() method can be called
-    /// in order to (i) decrypt the embedded archive (ii) extract it (iii)
-    /// build the embedded unencrypted object.
-    ///
-    /// the _cipher_ attribute contains the data once encrypted, often
-    /// just before being stored in the storage layer since there is no
-    /// benefit in encrypting the data for fun.
-    ///
-    /// XXX expliquer que contents ca represente un block de donnee chiffree
-    ///     qui peut potentiellement depasser la taille (extent) et qui sera
-    ///     donc split ou merge si trop petit.
-    ///     pour cette raison cette classe contient des methodes communes
-    ///     a beaucoup de sous-classes: Seam, Quill, Catalog etc.
-    ///
+    /// Such a class is used as follows. Whenever a Contents block is retrieved
+    /// from the storage layer, it is deserialized leaving the Contents block
+    /// with a ciphered version of the final node. The decrypt() method can then
+    /// be called with the proper secret key so as to decrypt and deserialized
+    /// the final node.
     class Contents:
       public proton::ContentHashBlock,
       public elle::serialize::SerializableMixin<Contents>,
@@ -62,7 +53,9 @@ namespace nucleus
       `-------------*/
     public:
       Contents(); // XXX[to deserialize]
-      /// Construct a contents based on the given node.
+      /// Construct a contents based on the given node which will thus be
+      /// embedded. In order to ensure the privacy of the node's data, one
+      /// must however call the encrypt() method.
       ///
       /// Note that the ownership of the given node is transferred to the
       /// contents.
@@ -70,6 +63,8 @@ namespace nucleus
       Contents(Network const& network,
                cryptography::PublicKey const& creator_K,
                T* node);
+      /// Destructor.
+      ~Contents();
 
       // XXX
       template <typename T>
@@ -78,7 +73,9 @@ namespace nucleus
                                  neutron::ComponentContents,
                                  cryptography::KeyPair::generate(1024).K()),
 
-        _shell(node)
+        _nature(T::Constants::nature),
+        _node(node),
+        _cipher(nullptr)
       {
       }
       // XXX
@@ -87,10 +84,10 @@ namespace nucleus
       | Methods |
       `--------*/
     public:
-      /// Encrypt the contents with the given key.
+      /// Encrypt the embedded node with the given key.
       void
       encrypt(cryptography::SecretKey const& key);
-      /// Decrypt the contents with the given key.
+      /// Decrypt the embedded node with the given key.
       void
       decrypt(cryptography::SecretKey const& key);
       /// Return the mode of the contents i.e either encrypted or decrypted.
@@ -102,7 +99,7 @@ namespace nucleus
       /// Return the node (in its decrypted form) referenced by the contents.
       Node&
       node();
-      /// XXX cede the ownership on the node.
+      /// Cede the ownership on the node to the caller.
       Node*
       cede();
 
@@ -125,8 +122,16 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      /// XXX
-      ELLE_ATTRIBUTE(Shell, shell);
+      /// Define the nature of the node embedeed in the contents.
+      ///
+      /// This value is particularly important for dynamically allocating
+      /// a final node (i.e with the proper type) given its nature only.
+      ELLE_ATTRIBUTE(Nature, nature);
+      /// The node having been either dynamically allocated for decrypting
+      /// or passed at construction for encrypting.
+      ELLE_ATTRIBUTE(Node*, node);
+      /// The encrypted form of the node created through the encrypt() method.
+      ELLE_ATTRIBUTE(cryptography::Cipher*, cipher);
     };
   }
 }

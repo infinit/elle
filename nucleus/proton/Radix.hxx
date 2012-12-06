@@ -12,34 +12,39 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
 {
   enforce(version == 0);
 
-  archive & value._mode;
+  archive & value._strategy;
 
-  switch (value._mode)
+  switch (value._strategy)
     {
-    case nucleus::proton::Mode::empty:
+    case nucleus::proton::Strategy::none:
       {
         break;
       }
-    case nucleus::proton::Mode::value:
+    case nucleus::proton::Strategy::value:
       {
         archive & elle::serialize::alive_pointer(value._cipher);
 
         break;
       }
-    case nucleus::proton::Mode::block:
+    case nucleus::proton::Strategy::block:
       {
         archive & elle::serialize::alive_pointer(value._address);
 
         break;
       }
-    case nucleus::proton::Mode::tree:
+    case nucleus::proton::Strategy::tree:
       {
+        /* XXX
+        XXX demander a raph: on a une union donc on ne peut pas l'init (aucune garantie)
+XXX faire gaffe partout ou il y a une union
+        */
+
         archive & elle::serialize::alive_pointer(value._root);
 
         break;
       }
     default:
-      throw Exception("unknown radix mode '%s'", value._mode);
+      throw Exception("unknown radix strategy '%s'", value._strategy);
     }
 }
 

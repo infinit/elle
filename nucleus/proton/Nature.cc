@@ -1,8 +1,11 @@
 #include <nucleus/proton/Nature.hh>
+#include <nucleus/Exception.hh>
+
+#include <iostream>
 
 namespace nucleus
 {
-  namespace neutron
+  namespace proton
   {
     /*----------.
     | Operators |
@@ -14,24 +17,49 @@ namespace nucleus
     {
       switch (nature)
         {
-        case Nature::empty:
+        case Nature::data_seam:
           {
-            stream << "empty";
+            stream << "data(seam)";
             break;
           }
-        case Nature::value:
+        case Nature::data_quill:
           {
-            stream << "value";
+            stream << "data(quill)";
             break;
           }
-        case Nature::block:
+        case Nature::data_value:
           {
-            stream << "block";
+            stream << "data(value)";
             break;
           }
-        case Nature::tree:
+        case Nature::catalog_seam:
           {
-            stream << "tree";
+            stream << "catalog(seam)";
+            break;
+          }
+        case Nature::catalog_quill:
+          {
+            stream << "catalog(quill))";
+            break;
+          }
+        case Nature::catalog_value:
+          {
+            stream << "catalog(value)";
+            break;
+          }
+        case Nature::reference_seam:
+          {
+            stream << "reference(seam)";
+            break;
+          }
+        case Nature::reference_quill:
+          {
+            stream << "reference(quill)";
+            break;
+          }
+        case Nature::reference_value:
+          {
+            stream << "reference(value)";
             break;
           }
         default:

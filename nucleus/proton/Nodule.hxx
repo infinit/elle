@@ -11,23 +11,10 @@ namespace nucleus
 {
   namespace proton
   {
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method takes a given seam _right_ and moves inlets from the _left_
-    /// seam in order to transfer an amount equal or greater that _size_
-    /// bytes.
-    ///
-    /// note that the _right_ seam is supposed to contain higher keys
-    /// so that the inlets from the _left_ seam with the highest keys
-    /// are moved to _right_ in order to maintain consistency.
-    ///
-    /// XXX comments -seam +nodule
-    /// XXX redundant with Value::Export (Catalog etc.)
-    ///
     template <typename T>
     template <typename X>
     void
@@ -35,58 +22,58 @@ namespace nucleus
                               X& right,
                               Extent const size)
     {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
-
       static Footprint const initial = elle::serialize::footprint<X>();
-      auto end = left.container().end();
-      auto i = left.container().begin();
+
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
+      ELLE_TRACE_FUNCTION(left, right, size);
+
       Extent const extent = left.nest().limits().extent();
       Footprint footprint(initial);
-
-      ELLE_TRACE_SCOPE("transfer_right(%s, %s, %s)",
-                       left, right, size);
 
       ELLE_ASSERT(left.nest().limits().extent() ==
                   right.nest().limits().extent());
 
-      // go through the left seam's inlets until the future size is reached
+      auto end = left._container.end();
+      auto i = left._container.begin();
+
+      // Go through the left nodule's inlets until the future size is reached
       // after which all the remaining inlets will be moved to the right
-      // seam.
+      // nodule.
       for (; i != end; ++i)
         {
-          typename X::I* inlet = i->second;
+          auto& inlet = i->second;
 
-          // check whether the container's size has been reached.
+          // Check whether the container's size has been reached.
           if (footprint >= size)
             break;
 
-          //
-          // otherwise, leave this inlet in the left seam.
-          //
+          // Otherwise, leave this inlet in the left seam.
 
-          // note however that another check is performed in order to make
+          // Note however that another check is performed in order to make
           // sure that adding this inlet will not make the container too large.
           if ((footprint + inlet->footprint()) > extent)
             break;
 
-          // add the inlet's footprint to the footprint.
+          // Add the inlet's footprint to the local _footprint_ variable.
           footprint += inlet->footprint();
         }
 
-      // go through the remaining inlets in order to move them to
-      // the right seam.
+      // Go through the remaining inlets in order to move them to
+      // the right nodule.
       for (auto j = i; j != end; ++j)
         {
-          typename X::I* inlet = j->second;
+          auto& inlet = j->second;
 
-          // substract the inlet's footprint from the left seam since
+          // Substract the inlet's footprint from the left nodule since
           // it is getting moved to the right one.
           left.footprint(left.footprint() - inlet->footprint());
 
-          // insert the inlet into the right seam.
+          // Insert the inlet into the right seam.
           right.insert(inlet);
 
-          // make sure the operation is valid.
+          // XXX make it like Catalog.cc
+
+          // Make sure the operation is valid.
           ELLE_ASSERT(inlet->capacity() <= left.capacity());
 
           // adjust the capacities.
@@ -95,7 +82,7 @@ namespace nucleus
         }
 
       // remove the moved inlets from the this seam.
-      left.container().erase(i, end);
+      left._container.erase(i, end);
     }
 
     ///
@@ -117,8 +104,8 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Nodule");
 
       static Footprint const initial = elle::serialize::footprint<X>();
-      auto rend = right.container().rend();
-      auto i = right.container().rbegin();
+      auto rend = right._container.rend();
+      auto i = right._container.rbegin();
       Extent const extent = left.nest().limits().extent();
       Footprint footprint(initial);
 
@@ -173,7 +160,7 @@ namespace nucleus
         }
 
       // remove the moved inlets from the right nodule.
-      right.container().erase(right.container().begin(), i.base());
+      right._container.erase(right._container.begin(), i.base());
     }
 
     ///
@@ -351,11 +338,11 @@ namespace nucleus
               Handle l;
               Handle r;
 
-              if ((iterator != nodule.container().begin()) &&
-                  (previous != nodule.container().end()))
+              if ((iterator != nodule._container.begin()) &&
+                  (previous != nodule._container.end()))
                 l = previous->second->value();
 
-              if (next != nodule.container().end())
+              if (next != nodule._container.end())
                 r = next->second->value();
 
               //
@@ -536,27 +523,12 @@ namespace nucleus
         current.unload();
     }
 
-    /* XXX
-    template <typename T>
-    template <typename N>
-    Contents*
-    Nodule<T>::split(N& node)
-    {
-      // XXX[do we really need to put that in another method which simple
-      //     instanciate Split?]
-
-      return (Split<T, N>()(node));
-    }
-    */
-
     /*-------------.
     | Construction |
     `-------------*/
 
     template <typename T>
     Nodule<T>::Nodule(Type const type):
-      Node(Node::Type::nodule),
-
       _type(type)
     {
     }

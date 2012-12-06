@@ -2,6 +2,10 @@
 # define NUCLEUS_PROTON_HANDLE_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Printable.hh>
+
 # include <cryptography/SecretKey.hh>
 
 # include <nucleus/proton/fwd.hh>
@@ -25,8 +29,14 @@ namespace nucleus
     ///
     /// Note that a _secret_ is also kept which enable one to decrypt the
     /// referenced block.
-    class Handle
+    class Handle:
+      public elle::Printable
     {
+      // XXX
+    public:
+      /// XXX
+      static Handle Null;
+
       //
       // constructors & destructors
       //
@@ -35,6 +45,10 @@ namespace nucleus
       Handle();
       /// XXX
       Handle(Address const& address,
+             cryptography::SecretKey const& secret);
+      /// XXX
+      Handle(Placement const& placement,
+             Address const& address,
              cryptography::SecretKey const& secret);
       /// XXX
       Handle(Placement const& placement,
@@ -73,7 +87,7 @@ namespace nucleus
       //
     public:
       Handle&
-      operator=(Handle const&);
+      operator=(Handle const&); // XXX? to remove
       elle::Boolean
       operator!=(Handle const&) const;
       elle::Boolean
@@ -84,8 +98,12 @@ namespace nucleus
       //
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Handle);
 
@@ -99,14 +117,6 @@ namespace nucleus
       Address _address;
       cryptography::SecretKey _secret;
     };
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    std::ostream&
-    operator <<(std::ostream& stream,
-                Handle const& handle);
   }
 }
 

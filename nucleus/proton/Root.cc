@@ -20,5 +20,21 @@ namespace nucleus
       _capacity(capacity)
     {
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Root::print(std::ostream& stream) const
+    {
+      stream << "("
+             << this->_address
+             << ", "
+             << this->_height
+             << ", "
+             << this->_capacity
+             << ")";
+    }
   }
 }

@@ -9,6 +9,10 @@ namespace nucleus
 {
   namespace proton
   {
+//
+// ---------- Address ---------------------------------------------------------
+//
+
     /*----------.
     | Constants |
     `----------*/
@@ -78,21 +82,6 @@ namespace nucleus
     Address::~Address()
     {
       delete this->_valid;
-    }
-
-    Address::Valid::Valid()
-    {
-    }
-
-    Address::Valid::Valid(Network const& network,
-                          Family const& family,
-                          neutron::Component const& component,
-                          cryptography::Digest const& digest):
-      _network(network),
-      _family(family),
-      _component(component),
-      _digest(digest)
-    {
     }
 
     /*--------.
@@ -268,14 +257,14 @@ namespace nucleus
         {
         case Type::null:
           {
-            stream << "address(null)";
+            stream << "null";
             break;
           }
         case Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            stream << "address{"
+            stream << "{"
                    << this->_valid->network()
                    << ", "
                    << this->_valid->family()
@@ -291,9 +280,32 @@ namespace nucleus
         }
     }
 
-    /*----------.
-    | Operators |
-    `----------*/
+//
+// ---------- Valid -----------------------------------------------------------
+//
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Address::Valid::Valid()
+    {
+    }
+
+    Address::Valid::Valid(Network const& network,
+                          Family const& family,
+                          neutron::Component const& component,
+                          cryptography::Digest const& digest):
+      _network(network),
+      _family(family),
+      _component(component),
+      _digest(digest)
+    {
+    }
+
+//
+// ---------- Operators -------------------------------------------------------
+//
 
     std::ostream&
     operator <<(std::ostream& stream,

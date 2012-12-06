@@ -85,9 +85,8 @@ namespace nucleus
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
+        throw Exception("the address %s does not seem to represent the given "
+                        "block", address);
 
       // Make sure the block has not be tampered and correspond to the
       // given original address. In order to do that, the address is

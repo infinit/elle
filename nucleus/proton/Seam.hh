@@ -32,6 +32,8 @@ namespace nucleus
       public elle::serialize::SerializableMixin<Seam<T>>,
       public elle::concept::UniquableMixin<Seam<T>>
     {
+      friend class Nodule<T>;
+
       //
       // types
       //
@@ -47,7 +49,7 @@ namespace nucleus
     public:
       struct Constants
       {
-        static Contents::Type const type;
+        static Nature const nature;
       };
 
       //
@@ -131,9 +133,6 @@ namespace nucleus
       /// XXX
       Handle
       locate_handle(typename T::K const& k) const;
-      /// XXX
-      Container&
-      container();
 
       //
       // interfaces
@@ -150,7 +149,7 @@ namespace nucleus
       Handle
       split();
       void
-      merge(Handle& handle);
+      merge(Handle& other);
       elle::Boolean
       empty() const;
       elle::Boolean

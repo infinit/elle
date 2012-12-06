@@ -41,12 +41,6 @@ namespace nucleus
     class Value:
       public Node
     {
-      /*-------------.
-      | Construction |
-      `-------------*/
-    public:
-      Value();
-
       /*-----------.
       | Interfaces |
       `-----------*/

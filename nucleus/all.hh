@@ -3,6 +3,7 @@
 
 # include <nucleus/Derivable.hh>
 # include <nucleus/Exception.hh>
+# include <nucleus/factory.hh>
 # include <nucleus/nucleus.hh>
 
 # include <nucleus/proton/all.hh>

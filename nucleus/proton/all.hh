@@ -6,7 +6,6 @@
 # include <nucleus/proton/Balancing.hh>
 # include <nucleus/proton/Base.hh>
 # include <nucleus/proton/Block.hh>
-# include <nucleus/proton/Breed.hh>
 # include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Contention.hh>
@@ -40,10 +39,10 @@
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/proton/Root.hh>
 # include <nucleus/proton/Seam.hh>
-# include <nucleus/proton/Shell.hh>
 # include <nucleus/proton/Stamp.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Statistics.hh>
+# include <nucleus/proton/Strategy.hh>
 # include <nucleus/proton/Tree.hh>
 # include <nucleus/proton/Value.hh>
 

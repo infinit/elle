@@ -3,8 +3,8 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 # include <elle/io/Dumpable.hh>
-
 # include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -78,6 +78,10 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
       //
       // attributes

@@ -11,6 +11,7 @@
 #include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/Nest.hh>
+#include <nucleus/proton/Door.hh>
 #include <nucleus/proton/Limits.hh>
 #include <nucleus/proton/Statistics.hh>
 #include <nucleus/neutron/Catalog.hh>
@@ -25,7 +26,7 @@
 #include <lune/Lune.hh>
 
 #include <hole/Hole.hh>
-#include <hole/storage/MainMemory.hh>
+#include <hole/storage/Memory.hh>
 #include <hole/implementations/local/Implementation.hh>
 
 #include <Infinit.hh>
@@ -66,23 +67,18 @@ test_porcupine_prepare(elle::Natural32 const n)
 }
 
 void
-test_porcupine_add(nucleus::proton::Porcupine& porcupine,
-                   std::vector<elle::String>& vector)
+test_porcupine_add(
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
+  std::vector<elle::String>& vector)
 {
   ELLE_TRACE_FUNCTION(porcupine, vector);
 
   for (elle::Natural32 i = 0; i < vector.size(); i++)
     {
-      nucleus::proton::Handle handle;
-
       ELLE_TRACE_SCOPE("[%s] add(%s)", i, vector[i]);
 
-      handle = porcupine.lookup<nucleus::neutron::Catalog>(vector[i]);
-
-      nucleus::proton::Ambit<nucleus::neutron::Catalog> catalog(
-        porcupine.nest(), handle);
-
-      catalog.load();
+      nucleus::proton::Door<nucleus::neutron::Catalog> catalog{
+        porcupine.lookup(vector[i])};
 
       nucleus::neutron::Entry* entry{
         new nucleus::neutron::Entry(vector[i],
@@ -90,12 +86,10 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 
       catalog().insert(entry);
 
-      catalog.unload();
-
-      porcupine.update<nucleus::neutron::Catalog>(vector[i]);
+      porcupine.update(vector[i]);
 
 #ifdef PORCUPINE_THOROUGH_CHECK
-      porcupine.check<nucleus::neutron::Catalog>(
+      porcupine.check(
         nucleus::proton::flags::recursive |
         nucleus::proton::flags::key |
         nucleus::proton::flags::capacity |
@@ -104,10 +98,10 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 #endif
     }
 
-  ELLE_ASSERT(porcupine.capacity() == vector.size());
+  ELLE_ASSERT(porcupine.size() == vector.size());
   ELLE_ASSERT(porcupine.state() == nucleus::proton::State::dirty);
 
-  porcupine.check<nucleus::neutron::Catalog>(
+  porcupine.check(
     nucleus::proton::flags::recursive |
     nucleus::proton::flags::key |
     nucleus::proton::flags::capacity |
@@ -116,33 +110,26 @@ test_porcupine_add(nucleus::proton::Porcupine& porcupine,
 }
 
 void
-test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
-                      std::vector<elle::String>& vector)
+test_porcupine_lookup(
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
+  std::vector<elle::String>& vector)
 {
   ELLE_TRACE_FUNCTION(porcupine, vector);
 
   for (elle::Natural32 i = 0; i < vector.size(); i++)
     {
-      nucleus::proton::Handle handle;
-
       ELLE_TRACE_SCOPE("[%s] lookup(%s)", i, vector[i]);
 
-      handle = porcupine.lookup<nucleus::neutron::Catalog>(vector[i]);
-
-      nucleus::proton::Ambit<nucleus::neutron::Catalog> catalog(
-        porcupine.nest(), handle);
-
-      catalog.load();
+      nucleus::proton::Door<nucleus::neutron::Catalog> catalog{
+        porcupine.lookup(vector[i])};
 
       ELLE_ASSERT(catalog().exist(vector[i]) == true);
 
-      catalog.unload();
-
       ELLE_ASSERT(
-        porcupine.exist<nucleus::neutron::Catalog>(vector[i]) == true);
+        porcupine.exist(vector[i]) == true);
 
 #ifdef PORCUPINE_THOROUGH_CHECK
-      porcupine.check<nucleus::neutron::Catalog>(
+      porcupine.check(
         nucleus::proton::flags::recursive |
         nucleus::proton::flags::key |
         nucleus::proton::flags::capacity |
@@ -151,7 +138,7 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
 #endif
     }
 
-  porcupine.check<nucleus::neutron::Catalog>(
+  porcupine.check(
     nucleus::proton::flags::recursive |
     nucleus::proton::flags::key |
     nucleus::proton::flags::capacity |
@@ -159,21 +146,25 @@ test_porcupine_lookup(nucleus::proton::Porcupine& porcupine,
     nucleus::proton::flags::state);
 }
 
-void
-test_porcupine_seal(nucleus::proton::Porcupine& porcupine,
-                    cryptography::SecretKey& secret)
+nucleus::proton::Radix
+test_porcupine_seal(
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
+  cryptography::SecretKey& secret)
 {
   ELLE_TRACE_FUNCTION(porcupine, secret);
 
-  porcupine.seal<nucleus::neutron::Catalog>(secret);
+  nucleus::proton::Radix radix{porcupine.seal(secret)};
 
-  porcupine.check<nucleus::neutron::Catalog>(
+  porcupine.check(
     nucleus::proton::flags::all);
+
+  return (radix);
 }
 
 void
-test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
-                    std::vector<elle::String>& vector)
+test_porcupine_seek(
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
+  std::vector<elle::String>& vector)
 {
   ELLE_TRACE_FUNCTION(porcupine, vector);
 
@@ -181,17 +172,11 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
 
   for (elle::Natural32 i = 0; i < vector.size();)
     {
-      nucleus::proton::Handle handle;
-      elle::Natural64 base;
-
       ELLE_TRACE_SCOPE("[%s] seek(%s)", i, i);
 
-      handle = porcupine.seek<nucleus::neutron::Catalog>(i, base);
-
-      nucleus::proton::Ambit<nucleus::neutron::Catalog> catalog(
-        porcupine.nest(), handle);
-
-      catalog.load();
+      auto pair = porcupine.seek(i);
+      auto& catalog = pair.first;
+      auto& base = pair.second;
 
       nucleus::neutron::Range<nucleus::neutron::Entry> range{
         catalog().consult(i - base,
@@ -200,10 +185,8 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
       for (auto& entry: range)
         w[i++] = entry->name();
 
-      catalog.unload();
-
 #ifdef PORCUPINE_THOROUGH_CHECK
-      porcupine.check<nucleus::neutron::Catalog>(
+      porcupine.check(
         nucleus::proton::flags::recursive |
         nucleus::proton::flags::key |
         nucleus::proton::flags::capacity |
@@ -217,79 +200,87 @@ test_porcupine_seek(nucleus::proton::Porcupine& porcupine,
 
   ELLE_ASSERT(s == w);
 
-  porcupine.check<nucleus::neutron::Catalog>(
+  porcupine.check(
     nucleus::proton::flags::all);
 }
 
-nucleus::proton::Porcupine
-test_porcupine_serialize(nucleus::proton::Porcupine& input,
-                         cryptography::SecretKey& secret,
-                         std::vector<elle::String>& vector)
+nucleus::proton::Porcupine<nucleus::neutron::Catalog>*
+test_porcupine_serialize(
+  nucleus::proton::Radix radix1,
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine1,
+  cryptography::SecretKey& secret1,
+  std::vector<elle::String>& vector)
 {
   etoile::gear::Transcript transcript;
-  etoile::nest::Nest* nest = static_cast<etoile::nest::Nest*>(&input.nest());
+  etoile::nest::Nest* nest1 =
+    static_cast<etoile::nest::Nest*>(&porcupine1.nest());
 
-  ELLE_TRACE_FUNCTION(input, secret, vector);
+  ELLE_TRACE_FUNCTION(radix1, porcupine1, secret1, vector);
 
-  nest->record(transcript);
+  nest1->record(transcript);
 
   for (auto action: transcript)
     action->apply<etoile::depot::Depot>();
 
-  nucleus::proton::Porcupine output;
-  /* XXX
   elle::Buffer buffer;
-  buffer.writer() << input;
-  buffer.reader() >> output;
+
+  // XXX
+  std::cout << radix1 << std::endl;
+
+  buffer.writer() << radix1;
+  nucleus::proton::Radix radix2;
+  buffer.reader() >> radix2;
+
+  exit(0); /// XXX
+
+  // XXX
+  //std::cout << radix2 << std::endl;
+
+  /* XXX
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
+    XXX
+
+  etoile::nest::Nest* nest2 = new etoile::nest::Nest(porcupin1.nest().limits());
+  porcupine2.nest(*n);
+  porcupine2.unseal(secret);
   */
-  ELLE_ASSERT(false);
-
-  etoile::nest::Nest* n = new etoile::nest::Nest(input.nest().limits());
-  output.nest(*n);
-  output.unseal(secret);
-
   // This first lookup phase is going to be slower than when the
   // porcupine has been created because blocks needed to be fetched
   // from the storage layer.
-  test_porcupine_lookup(output, vector);
+  //test_porcupine_lookup(output, vector);
 
-  test_porcupine_seek(output, vector);
+  //test_porcupine_seek(output, vector);
 
-  input.check<nucleus::neutron::Catalog>(
+  /*
+  input.check(
     nucleus::proton::flags::all);
+  */
 
-  return (output);
+  //return (output);
 }
 
 void
-test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
-                      std::vector<elle::String>& vector,
-                      elle::Natural32 const index,
-                      elle::Natural32 const size)
+test_porcupine_remove(
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
+  std::vector<elle::String>& vector,
+  elle::Natural32 const index,
+  elle::Natural32 const size)
 {
   ELLE_TRACE_FUNCTION(porcupine, vector, index, size);
 
   for (elle::Natural32 i = index; i < (index + size); i++)
     {
-      nucleus::proton::Handle handle;
-
       ELLE_TRACE_SCOPE("[%s] remove(%s)", i, vector[i]);
 
-      handle = porcupine.lookup<nucleus::neutron::Catalog>(vector[i]);
-
-      nucleus::proton::Ambit<nucleus::neutron::Catalog> catalog(
-        porcupine.nest(), handle);
-
-      catalog.load();
+      nucleus::proton::Door<nucleus::neutron::Catalog> catalog{
+        porcupine.lookup(vector[i])};
 
       catalog().erase(vector[i]);
 
-      catalog.unload();
-
-      porcupine.update<nucleus::neutron::Catalog>(vector[i]);
+      porcupine.update(vector[i]);
 
 #ifdef PORCUPINE_THOROUGH_CHECK
-      porcupine.check<nucleus::neutron::Catalog>(
+      porcupine.check(
         nucleus::proton::flags::recursive |
         nucleus::proton::flags::key |
         nucleus::proton::flags::capacity |
@@ -300,7 +291,7 @@ test_porcupine_remove(nucleus::proton::Porcupine& porcupine,
 
   vector.erase(vector.begin() + index, vector.begin() + index + size);
 
-  porcupine.check<nucleus::neutron::Catalog>(
+  porcupine.check(
     nucleus::proton::flags::recursive |
     nucleus::proton::flags::key |
     nucleus::proton::flags::capacity |
@@ -327,41 +318,42 @@ test_porcupine_catalog()
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2})};
-  nucleus::proton::Porcupine porcupine1(nest1);
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog> porcupine1(nest1);
 
   test_porcupine_add(porcupine1, vector);
 
-  ELLE_ASSERT(porcupine1.height() >= 1);
-  ELLE_ASSERT(porcupine1.height() <= 10);
+  ELLE_ASSERT(porcupine1.strategy() == nucleus::proton::Strategy::tree);
+  ELLE_ASSERT(porcupine1.tree().height() >= 1);
+  ELLE_ASSERT(porcupine1.tree().height() <= 10);
 
   test_porcupine_lookup(porcupine1, vector);
 
 #ifdef PORCUPINE_STATISTICS
   nucleus::proton::Statistics stats =
-    porcupine1.statistics<nucleus::neutron::Catalog>();
+    porcupine1.statistics();
   stats.Dump();
 #endif
 
   cryptography::SecretKey secret1;
-  secret1.Generate(nucleus::proton::Porcupine::secret_length);
+  secret1.Generate(256);
 
-  test_porcupine_seal(porcupine1, secret1);
+  nucleus::proton::Radix radix1{test_porcupine_seal(porcupine1, secret1)};
 
   test_porcupine_seek(porcupine1, vector);
 
 #ifdef PORCUPINE_SERIALIZE_TEST
-  nucleus::proton::Porcupine porcupine2 =
-    test_porcupine_serialize(porcupine1, secret1, vector);
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
+    test_porcupine_serialize(radix1, porcupine1, secret1, vector);
   /* XXX
   test_porcupine_remove(porcupine2, vector, N / 3, N / 3);
 
   cryptography::SecretKey secret2;
-  secret2.Generate(nucleus::proton::Porcupine::secret_length);
+  secret2.Generate(256);
 
-  test_porcupine_seal(porcupine2, secret2);
+  nucleus::proton::Radix radix2{test_porcupine_seal(porcupine2, secret2)};
 
-  nucleus::proton::Porcupine porcupine3 =
-    test_porcupine_serialize(porcupine2, secret2, vector);
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog> porcupine3 =
+    test_porcupine_serialize(radix2, porcupine2, secret2, vector);
   */
 #endif
 
@@ -392,7 +384,7 @@ Main(elle::Natural32,
                               pair_user.K(),
                               authority);
 
-      hole::storage::MainMemory storage;
+      hole::storage::Memory storage;
       hole::Hole* hole{
         new hole::implementations::local::Implementation(
           storage, passport, authority)};

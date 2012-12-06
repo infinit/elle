@@ -13,56 +13,94 @@ namespace nucleus
     `-------------*/
 
     Radix::Radix():
-      _nature(Nature::empty),
+      _strategy(Strategy::none)
     {
     }
 
     Radix::Radix(cryptography::Cipher const& value):
-      _nature(Nature::value),
+      _strategy(Strategy::value),
       _cipher(new cryptography::Cipher{value})
     {
     }
 
     Radix::Radix(Address const& address):
-      _nature(Nature::block),
+      _strategy(Strategy::block),
       _address(new Address{address})
     {
     }
 
     Radix::Radix(Root const& root):
-      _nature(Nature::tree),
+      _strategy(Strategy::tree),
       _root(new Root{root})
     {
     }
 
-    Radix::~Radix()
+    Radix::Radix(Radix const& other):
+      _strategy(other._strategy)
     {
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             break;
           }
-        case Nature::value:
+        case Strategy::value:
+          {
+            ELLE_ASSERT(other._cipher != nullptr);
+
+            this->_cipher = new cryptography::Cipher{*other._cipher};
+
+            break;
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(other._address != nullptr);
+
+            this->_address = new Address{*other._address};
+
+            break;
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(other._root != nullptr);
+
+            this->_root = new Root{*other._root};
+
+            break;
+          }
+        default:
+          throw Exception("unknown radix strategy '%s'", this->_strategy);
+        }
+    }
+
+    Radix::~Radix()
+    {
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+          {
+            break;
+          }
+        case Strategy::value:
           {
             delete this->_cipher;
 
             break;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             delete this->_address;
 
             break;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             delete this->_root;
 
             break;
           }
         default:
-          throw Exception("unknown radix nature '%s'", this->_nature);
+          throw Exception("unknown radix strategy '%s'", this->_strategy);
         }
     }
 
@@ -101,15 +139,15 @@ namespace nucleus
     void
     Radix::print(std::ostream& stream) const
     {
-      stream << this->_nature << "(";
+      stream << this->_strategy << "(";
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             break;
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_cipher != nullptr);
 
@@ -117,7 +155,7 @@ namespace nucleus
 
             break;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_address != nullptr);
 
@@ -125,7 +163,7 @@ namespace nucleus
 
             break;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_root != nullptr);
 
@@ -134,7 +172,7 @@ namespace nucleus
             break;
           }
         default:
-          throw Exception("unknown radix nature '%s'", this->_nature);
+          throw Exception("unknown radix strategy '%s'", this->_strategy);
         }
     }
   }

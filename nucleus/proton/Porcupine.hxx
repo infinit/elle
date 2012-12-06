@@ -8,6 +8,7 @@
 # include <nucleus/proton/Nest.hh>
 # include <nucleus/proton/Contents.hh>
 # include <nucleus/proton/Statistics.hh>
+# include <nucleus/proton/Tree.hh>
 
 # include <elle/assert.hh>
 # include <elle/log.hh>
@@ -16,31 +17,16 @@ namespace nucleus
 {
   namespace proton
   {
-    /*----------.
-    | Constants |
-    `----------*/
-
-    template <typename T>
-    const elle::Natural32 Porcupine<T>::secret_length = 256;
-
-    /*-----------------.
-    | Static Functions |
-    `-----------------*/
-
-    template <typename T>
-    cryptography::SecretKey
-    Porcupine<T>::secret()
-    {
-      // XXX[use a keylength function of T]
-      static cryptography::SecretKey secret{
-        cryptography::SecretKey::generate(Porcupine<T>::secret_length)};
-
-      return (secret);
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
+
+    template <typename T>
+    Porcupine<T>::Porcupine(Nest& nest):
+      _strategy(Strategy::none),
+      _nest(nest)
+    {
+    }
 
     template <typename T>
     Porcupine<T>::Porcupine(/* XXX Network const& network,
@@ -48,7 +34,7 @@ namespace nucleus
                             Radix const& radix,
                             cryptography::SecretKey const& secret,
                             Nest& nest):
-      _nature(radix.nature()),
+      _strategy(radix.strategy()),
       /* XXX
       _network(network),
       _agent_K(agent_K),
@@ -57,69 +43,69 @@ namespace nucleus
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
-            break;
+            return;
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_TRACE("decrypting the radix' cipher with the secret key");
 
             this->_value = new T;
 
-            if (secret.Decrypt(radix.cipher(),
+            if (secret.Decrypt(radix.value(),
                                *this->_value) == elle::Status::Error)
               throw Exception("unable to decrypt the cipher");
 
-            break;
+            return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             this->_handle = new Handle{radix.block(), secret};
 
-            break;
+            return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
-            this->_tree = new Tree{radix.tree(), secret, this->_nest};
+            this->_tree = new Tree<T>{radix.tree(), secret, this->_nest};
 
-            break;
+            return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
     }
 
     template <typename T>
     Porcupine<T>::~Porcupine()
     {
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
-        case Nature::value:
+        case Strategy::none:
+        case Strategy::value:
           {
             delete this->_value;
 
-            break;
+            return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             delete this->_handle;
 
-            break;
+            return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             delete this->_tree;
 
-            break;
+            return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
     }
 
@@ -144,21 +130,21 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             return (false);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (this->_value->exist(k));
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -173,15 +159,15 @@ namespace nucleus
 
             return (true);
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
             return (this->_tree->exist(k));
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -194,34 +180,34 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
       // Note that this method assumes that a single value or block
       // is responsible for any valid key _k_.
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup in a value.
-            ELLE_ASSERT(this->_nature == Nature::block);
+            ELLE_ASSERT(this->_strategy == Strategy::value);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (Door<T>(this->_value));
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
             return (Door<T>(*this->_handle, this->_nest));
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -229,8 +215,8 @@ namespace nucleus
             return (Door<T>(this->_tree->lookup(k), this->_nest));
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -246,19 +232,19 @@ namespace nucleus
       // Note that this method assumes that a single value or block
       // is responsible for any valid key _k_.
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup.
-            ELLE_ASSERT(this->_nature == Nature::block);
+            ELLE_ASSERT(this->_strategy == Strategy::value);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -270,9 +256,11 @@ namespace nucleus
 
             // Return a door to the value along with a capacity index of
             // zero since this is the first and only value.
-            return (std::pair<Door<T>, Capacity>{Door<T>(this->_value), 0});
+            Door<T> door{this->_value};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), 0});
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -281,19 +269,20 @@ namespace nucleus
             value.load();
 
             // Verify the validity of the target index.
-            if (target >= value()->capacity())
+            if (target >= value().capacity())
               throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
-                              target, value()->capacity());
+                              target, value().capacity());
 
             value.unload();
 
             // Return a door to the value block along with a capacity index of
             // zero since this is the first and only value.
-            return (std::pair<Door<T>, Capacity>{
-              Door<T>(*this->_handle, this->_nest), 0});
+            Door<T> door{*this->_handle, this->_nest};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), 0});
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -302,19 +291,20 @@ namespace nucleus
 
             // Return a door to the value block responsible for the given
             // capacity index along with the base capacity index of this value.
-            return (std::pair<Door<T>, Capacity>{
-              Door<T>(pair.first, this->_nest), pair.second});
+            Door<T> door{pair.first, this->_nest};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), pair.second});
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
     }
 
     template <typename T>
-    template <typename >
+    template <typename E>
     void
     Porcupine<T>::insert(typename T::K const& k,
                          E* e)
@@ -324,30 +314,33 @@ namespace nucleus
 
       ELLE_ASSERT(e != nullptr);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             // Create a value.
             this->_create();
 
             // Do not break and proceed with the lookup.
-            ELLE_ASSERT(this->_nature == Nature::block);
+            ELLE_ASSERT(this->_strategy == Strategy::value);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             this->_value->insert(k, e);
+
+            // Update the porcupine state.
+            this->_state = this->_value->state();
 
             // Try to optimize the porcupine.
             this->_optimize();
 
             return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -355,7 +348,10 @@ namespace nucleus
 
             value.load();
 
-            value()->insert(k, e);
+            value().insert(k, e);
+
+            // Update the porcupine state.
+            this->_state = value().state();
 
             value.unload();
 
@@ -364,7 +360,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -376,7 +372,7 @@ namespace nucleus
             value.load();
 
             // Insert the tuple key/element in the value block.
-            value()->insert(k, e);
+            value().insert(k, e);
 
             value.unload();
 
@@ -384,14 +380,17 @@ namespace nucleus
             // the tree will be able to adapt itself to these modifications.
             this->_tree->update(k);
 
+            // Update the porcupine state.
+            this->_state = this->_tree->state();
+
             // Finally, try to optimize the porcupine.
             this->_optimize();
 
             return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -404,25 +403,28 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           throw Exception("unable to erase the '%s' element from an empty "
                           "porcupine", k);
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
-            this->_value->erase(k, e);
+            this->_value->erase(k);
+
+            // Update the porcuine state.
+            this->_state = this->_value->state();
 
             // Try to optimize the porcupine.
             this->_optimize();
 
             return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -430,7 +432,10 @@ namespace nucleus
 
             value.load();
 
-            value()->erase(k);
+            value().erase(k);
+
+            // Update the porcupine state.
+            this->_state = value().state();
 
             value.unload();
 
@@ -439,7 +444,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -451,7 +456,7 @@ namespace nucleus
             value.load();
 
             // Erase the tuple key/element from the value block.
-            value()->erase(k);
+            value().erase(k);
 
             value.unload();
 
@@ -459,14 +464,17 @@ namespace nucleus
             // the tree will be able to adapt itself to these modifications.
             this->_tree->update(k);
 
+            // Update the porcupine state.
+            this->_state = this->_tree->state();
+
             // Try to optimize the porcupine.
             this->_optimize();
 
             return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -479,17 +487,17 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           throw Exception("unable to update an empty porcupine");
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
-            // Update the porcupine attribtes.
+            // Update the porcupine state.
             this->_state = this->_value->state();
 
             // Try to optimize the porcupine.
@@ -497,7 +505,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -505,7 +513,7 @@ namespace nucleus
 
             value.load();
 
-            // Update the capacity state.
+            // Update the porcupine state.
             this->_state = value().state();
 
             value.unload();
@@ -515,12 +523,15 @@ namespace nucleus
 
             return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
             // Update the tree.
             this->_tree->update(k);
+
+            // Update the porcupine state.
+            this->_state = this->_tree->state();
 
             // Try to optimize the porcupine.
             this->_optimize();
@@ -528,11 +539,11 @@ namespace nucleus
             return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
-      elle::unreacable();
+      elle::unreachable();
     }
 
     template <typename T>
@@ -542,21 +553,21 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             return (0);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             return (static_cast<elle::Size>(this->_value->size()));
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -564,13 +575,13 @@ namespace nucleus
 
             value.load();
 
-            elle::Size size{static_cast<elle::Size>(value()->size())};
+            elle::Size size{static_cast<elle::Size>(value().size())};
 
             value.unload();
 
             return (size);
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -579,11 +590,11 @@ namespace nucleus
             return (size);
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
-      elle::unreacable();
+      elle::unreachable();
     }
 
     template <typename T>
@@ -593,15 +604,15 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(flags);
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             return;
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -628,7 +639,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -647,7 +658,7 @@ namespace nucleus
                 // Compare it with the one used as a reference.
                 if (this->_handle->address() != address)
                   throw Exception("invalid address: root(%s) versus bind(%s)",
-                                  this->_root.address(), address);
+                                  this->_handle->address(), address);
               }
 
             // Check the footprint.
@@ -674,7 +685,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -684,11 +695,11 @@ namespace nucleus
             return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
-      elle::unreacahable();
+      elle::unreachable();
     }
 
     template <typename T>
@@ -698,11 +709,11 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
             Statistics stats;
 
@@ -720,7 +731,7 @@ namespace nucleus
 
             return (stats);
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -754,7 +765,7 @@ namespace nucleus
 
             return (stats);
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -815,15 +826,15 @@ namespace nucleus
 
             return (stats);
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
             return (this->_tree->statistics());
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -839,23 +850,26 @@ namespace nucleus
       elle::String alignment(margin, ' ');
       elle::String shift(2, ' ');
 
-      std::cout << alignment << "[Porcupine] " << this->_nature << std::endl;
+      std::cout << alignment << "[Porcupine] " << this->_strategy << std::endl;
 
-      switch (this->_nature)
+      std::cout << alignment << shift << "[State] "
+                << this->_state << std::endl;
+
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           {
-            break;
+            return;
           }
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
             this->_value.Dump(2);
 
-            break;
+            return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -867,29 +881,26 @@ namespace nucleus
 
             value.unload();
 
-            break;
+            return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
             this->_tree->dump(2);
 
-            break;
+            return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
-
-      std::cout << alignment << shift << "[State] "
-                << this->_state << std::endl;
 
       elle::unreachable();
     }
 
     template <typename T>
-    void
+    Radix
     Porcupine<T>::seal(cryptography::SecretKey const& secret)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
@@ -900,41 +911,41 @@ namespace nucleus
       switch (this->_state)
         {
         case State::clean:
-          {
-            // Nothing to do since the porcupine is clean i.e nothing has
-            // changed.
-            return;
-          }
+          throw Exception("unable to seal a clean porcupine");
         case State::dirty:
           {
-            ELLE_TRACE("nature: %s", this->_nature);
+            ELLE_TRACE("strategy: %s", this->_strategy);
 
-            switch (this->_nature)
+            switch (this->_strategy)
               {
-              case Nature::empty:
+              case Strategy::none:
                 throw Exception("unable to seal an empty porcupine");
-              case Nature::value:
+              case Strategy::value:
                 {
                   ELLE_ASSERT(this->_value != nullptr);
 
+                  // Encrypt the value.
                   cryptography::Cipher cipher;
 
                   if (secret.Encrypt(*this->_value,
                                      cipher) == elle::Status::Error)
                     throw Exception("unable to encrypt the value");
 
+                  // Update the value state.
+                  this->_value->state(State::consistent);
+
+                  // Update the porcupine state.
+                  this->_state = this->_value->state();
+
                   return (Radix(cipher));
                 }
-              case Nature::block:
+              case Strategy::block:
                 {
-                  ELLE_ASSERt(this->_handle != nullptr);
+                  ELLE_ASSERT(this->_handle != nullptr);
 
                   Ambit<T> value(this->_nest, *this->_handle);
 
                   value.load();
-
-                  // If the porcupine is dirty, so should be the value.
-                  ELLE_ASSERT(this->_state == value().state());
 
                   // Encrypt and bind the value block.
                   value.contents().encrypt(secret);
@@ -944,26 +955,31 @@ namespace nucleus
                   value().state(State::consistent);
                   value.contents().state(State::consistent);
 
+                  // Update the porcupine state.
+                  this->_state = value().state();
+
                   value.unload();
 
-                  // Update the porcupine state.
-                  this->_state = State::consistent;
-
-                  return (Radix(this->_handle.address()));
+                  return (Radix(this->_handle->address()));
                 }
-              case Nature::tree:
+              case Strategy::tree:
                 {
                   ELLE_ASSERT(this->_tree != nullptr);
 
                   // Seal the tree and return its root-based radix.
-                  return (Radix(this->_tree->seal(secret)));
+                  Radix radix{this->_tree->seal(secret)};
+
+                  // Update the porcupine state.
+                  this->_state = this->_tree->state();
+
+                  return (radix);
                 }
               default:
-                throw Exception("unknown nature: '%s'",
-                                static_cast<int>(this->_nature));
+                throw Exception("unknown strategy: '%s'",
+                                static_cast<int>(this->_strategy));
               }
 
-            break;
+            elle::unreachable();
           }
         case State::consistent:
           throw Exception("unable to seal a consistent porcupine");
@@ -976,19 +992,49 @@ namespace nucleus
     }
 
     template <typename T>
+    T const&
+    Porcupine<T>::value() const
+    {
+      ELLE_ASSERT(this->_strategy == Strategy::value);
+      ELLE_ASSERT(this->_value != nullptr);
+
+      return (*this->_value);
+    }
+
+    template <typename T>
+    Handle const&
+    Porcupine<T>::block() const
+    {
+      ELLE_ASSERT(this->_strategy == Strategy::block);
+      ELLE_ASSERT(this->_handle != nullptr);
+
+      return (*this->_handle);
+    }
+
+    template <typename T>
+    Tree<T> const&
+    Porcupine<T>::tree() const
+    {
+      ELLE_ASSERT(this->_strategy == Strategy::tree);
+      ELLE_ASSERT(this->_tree != nullptr);
+
+      return (*this->_tree);
+    }
+
+    template <typename T>
     void
     Porcupine<T>::_create()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      // Make sure the porcupine is empty.
-      ELLE_ASSERT(this->_nature == Nature::empty);
+      // Make sure the porcupine is none.
+      ELLE_ASSERT(this->_strategy == Strategy::none);
 
       // Create a T and set it as the value on which the porcupine
       // is operating.
       this->_value = new T;
-      this->_nature = Nature::value;
+      this->_strategy = Strategy::value;
 
       // Set the porcupine's state.
       this->_state = State::dirty;
@@ -1001,13 +1047,13 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
 
-      ELLE_TRACE("nature: %s", this->_nature);
+      ELLE_TRACE("strategy: %s", this->_strategy);
 
-      switch (this->_nature)
+      switch (this->_strategy)
         {
-        case Nature::empty:
+        case Strategy::none:
           throw Exception("unable to optimize an empty porcupine");
-        case Nature::value:
+        case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
 
@@ -1021,21 +1067,17 @@ namespace nucleus
                            this->_nest.limits().extent());
 
                 // In this case, the value is embedeed in a Contents block.
-                Contents contents{new Contents{this->_value}};
-
-                ELLE_FINALLY_ACTION_DELETE(contents);
-
+                //
                 // Finally, the contents is attached to the nest and is set
                 // as the block which the porcupine is operating on.
                 //
                 // Note that the value's ownership has been transferred to
                 // the Contents block. This is why the value is not deleted.
+                Contents* contents{new Contents{this->_value}};
                 this->_handle = new Handle{this->_nest.attach(contents)};
 
-                ELLE_FINALLY_ABORT(contents);
-
-                // And set the new nature.
-                this->_nature = Nature::block;
+                // And set the new strategy.
+                this->_strategy = Strategy::block;
 
                 // Now that the porcupine is in a valid state, the _optimize()
                 // method is called again. Indeed, transforming a value to a
@@ -1053,13 +1095,13 @@ namespace nucleus
                            this->_nest.limits().balancing());
 
                 // Check if the value is empty.
-                if (this->_value().empty() == true)
+                if (this->_value->empty() == true)
                   {
                     ELLE_TRACE("the value is empty");
 
-                    // Delete the value and set the nature to empty.
+                    // Delete the value and set the strategy to none.
                     delete this->_value;
-                    this->_nature = Nature::empty;
+                    this->_strategy = Strategy::none;
 
                     // Update the state.
                     this->_state = State::dirty;
@@ -1072,7 +1114,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::block:
+        case Strategy::block:
           {
             ELLE_ASSERT(this->_handle != nullptr);
 
@@ -1106,7 +1148,7 @@ namespace nucleus
                 value.unload();
 
                 // Create the tree and add the initial value block.
-                Tree<T>* tree(this->_nest);
+                Tree<T>* tree = new Tree<T>(this->_nest);
 
                 ELLE_FINALLY_ACTION_DELETE(tree);
 
@@ -1121,8 +1163,8 @@ namespace nucleus
                 // copied when the block has been added to the tree.
                 delete this->_handle;
 
-                // Set the new nature and the reference to the tree.
-                this->_nature = Nature::tree;
+                // Set the new strategy and the reference to the tree.
+                this->_strategy = Strategy::tree;
                 this->_tree = tree;
 
                 ELLE_FINALLY_ABORT(tree);
@@ -1147,8 +1189,9 @@ namespace nucleus
 
                     // Ask the value block to cede the ownership on the value
                     // node.
-                    ELLE_ASSERT(dynamic_cast<T*>(value().cede()) != nullptr);
-                    T* _value{static_cast<T*>(value().cede())};
+                    ELLE_ASSERT(dynamic_cast<T*>(value.contents().cede()) !=
+                                nullptr);
+                    T* _value{static_cast<T*>(value.contents().cede())};
 
                     ELLE_FINALLY_ACTION_DELETE(_value);
 
@@ -1158,9 +1201,9 @@ namespace nucleus
 
                     value.unload();
 
-                    // Set the embedded value along with the new nature,
+                    // Set the embedded value along with the new strategy,
                     // taking care to delete the handle which is no longer used.
-                    this->_nature = Nature::empty;
+                    this->_strategy = Strategy::none;
 
                     delete this->_handle;
                     this->_value = _value;
@@ -1186,7 +1229,7 @@ namespace nucleus
 
             return;
           }
-        case Nature::tree:
+        case Strategy::tree:
           {
             ELLE_ASSERT(this->_tree != nullptr);
 
@@ -1237,23 +1280,29 @@ namespace nucleus
                     delete this->_tree;
 
                     // Set the new porcupine value block handle and update the
-                    // nature.
+                    // strategy.
                     this->_handle = new Handle{orphan};
-                    this->_nature = Nature::block;
+                    this->_strategy = Strategy::block;
                   }
                 else
                   {
-                    ELLE_TRACE("the tree has too many levels to be transformed "
+                    ELLE_TRACE("the root has too many inlets to be transformed "
                                "back into a single block value");
 
                     quill.unload();
                   }
+              }
+            else
+              {
+                ELLE_TRACE("the tree has too many levels to be transformed "
+                           "back into a single block value");
+              }
 
             return;
           }
         default:
-          throw Exception("unknown nature: '%s'",
-                          static_cast<int>(this->_nature));
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
         }
 
       elle::unreachable();
@@ -1263,7 +1312,49 @@ namespace nucleus
     | Printable |
     `----------*/
 
-    // XXX
+    template <typename T>
+    void
+    Porcupine<T>::print(std::ostream& stream) const
+    {
+      stream << this->_strategy;
+
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+          {
+            return;
+          }
+        case Strategy::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            stream << "(" << *this->_value << ")";
+
+            return;
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(this->_handle != nullptr);
+
+            stream << "(" << *this->_handle << ")";
+
+            return;
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            stream << "(" << *this->_tree << ")";
+
+            return;
+          }
+        default:
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
+        }
+
+      elle::unreachable();
+    }
   }
 }
 

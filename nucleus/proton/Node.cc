@@ -17,8 +17,7 @@ namespace nucleus
     | Construction |
     `-------------*/
 
-    Node::Node(Type const type):
-      _type(type),
+    Node::Node():
       _nest(nullptr),
       _footprint(0),
       _capacity(0),

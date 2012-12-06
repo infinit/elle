@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Height.hh>

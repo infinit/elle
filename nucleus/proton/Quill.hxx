@@ -21,7 +21,7 @@ namespace nucleus
     `----------*/
 
     template <typename T>
-    Contents::Type const Quill<T>::Constants::type = T::Constants::quill;
+    Nature const Quill<T>::Constants::nature = T::Constants::quill;
 
     /*-------------.
     | Construction |
@@ -472,9 +472,9 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new quill.
-      std::unique_ptr<Contents> contents(new Contents(new Quill<T>));
-      Handle orphan(this->nest().attach(std::move(contents)));
-      Ambit<Quill<T>> newright(this->nest(), orphan);
+      Contents* contents{new Contents{new Quill<T>}};
+      Handle orphan{this->nest().attach(contents)};
+      Ambit<Quill<T>> newright{this->nest(), orphan};
 
       // Load the new right nodule.
       newright.load();
@@ -497,13 +497,13 @@ namespace nucleus
 
     template <typename T>
     void
-    Quill<T>::merge(Handle& handle)
+    Quill<T>::merge(Handle& other)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
 
-      Ambit<Quill<T>> quill(this->nest(), handle);
+      Ambit<Quill<T>> quill(this->nest(), other);
 
-      ELLE_TRACE_SCOPE("merge(%s)", handle);
+      ELLE_TRACE_SCOPE("merge(%s)", other);
 
       // load the given quill.
       quill.load();
@@ -769,9 +769,9 @@ namespace nucleus
               {
                 ELLE_TRACE_SCOPE("State::dirty");
 
-                // set the secret.
+                // Set the secret.
                 ELLE_ASSERT(inlet->value().secret() !=
-                       cryptography::SecretKey::Null);
+                            cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
                 // Encrypt and bind the value block.
@@ -1032,11 +1032,12 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::proton::Quill,
 
   archive << static_cast<elle::Natural32>(value._container.size());
 
-  auto it = value._container.begin();
-  auto end = value._container.end();
+  for (auto& pair: value._container)
+    {
+      auto& inlet = pair.second;
 
-  for (; it != end; ++it)
-    archive << *(it->second);
+      archive << *inlet;
+    }
 }
 
 #endif

@@ -11,13 +11,13 @@ namespace nucleus
 // ---------- definitions -----------------------------------------------------
 //
 
-    proton::Contents::Type const Data::Constants::seam =
-      proton::Contents::Type::data_seam;
-    proton::Contents::Type const Data::Constants::quill =
-      proton::Contents::Type::data_quill;
-    proton::Contents::Type const Data::Constants::value =
-      proton::Contents::Type::data_value;
-    proton::Contents::Type const Data::Constants::type =
+    proton::Nature const Data::Constants::seam =
+      proton::Nature::data_seam;
+    proton::Nature const Data::Constants::quill =
+      proton::Nature::data_quill;
+    proton::Nature const Data::Constants::value =
+      proton::Nature::data_value;
+    proton::Nature const Data::Constants::nature =
       Data::Constants::value;
 
 //

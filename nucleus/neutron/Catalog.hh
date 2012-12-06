@@ -44,10 +44,10 @@ namespace nucleus
     public:
       struct Constants
       {
-        static proton::Contents::Type const seam;
-        static proton::Contents::Type const quill;
-        static proton::Contents::Type const value;
-        static proton::Contents::Type const type;
+        static proton::Nature const seam;
+        static proton::Nature const quill;
+        static proton::Nature const value;
+        static proton::Nature const nature;
       };
 
       /*---------------.
@@ -55,7 +55,7 @@ namespace nucleus
       `---------------*/
     public:
       /// Transfer a number of entries from the _left_ catalog to the _right_.
-      /// The process stops the _left_ catalog is left with _size_ bytes of
+      /// The process stops when the _left_ catalog is left with _size_ bytes of
       /// entries i.e footprint.
       ///
       /// Note that the _right_ catalog is supposed to contain higher names
@@ -149,7 +149,7 @@ namespace nucleus
       proton::Handle
       split();
       void
-      merge(proton::Handle& handle);
+      merge(proton::Handle& other);
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Catalog);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Catalog);

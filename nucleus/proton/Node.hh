@@ -26,20 +26,10 @@ namespace nucleus
       private boost::noncopyable
     {
       /*-------------.
-      | Enumerations |
-      `-------------*/
-    public:
-      enum class Nature
-        {
-          nodule,
-          value
-        };
-
-      /*-------------.
       | Construction |
       `-------------*/
     public:
-      Node(Nature const nature);
+      Node();
 
       //
       // methods
@@ -89,7 +79,6 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_R(Nature, nature);
       Nest* _nest;
       Footprint _footprint;
       Capacity _capacity;

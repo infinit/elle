@@ -9,6 +9,10 @@ namespace nucleus
 {
   namespace proton
   {
+//
+// ---------- Door ------------------------------------------------------------
+//
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -21,18 +25,45 @@ namespace nucleus
     }
 
     template <typename T>
-    Door<T>::Door(Handle& handle,
-                  Nest& nest)
+    Door<T>::Door(Handle const& handle,
+                  Nest& nest):
       _location(Location::nest),
-      _ambit(new Ambit<T>(nest, handle, Ambit<T>::Mode::automatic))
+      _block(new Block{handle, nest})
     {
+    }
+
+    template <typename T>
+    Door<T>::Door(Door&& other):
+      _location(other._location)
+    {
+      switch (this->_location)
+        {
+        case Location::memory:
+          {
+            ELLE_ASSERT(other._value != nullptr);
+
+            this->_value = other._value;
+            other._value = nullptr;
+
+            break;
+          }
+        case Location::nest:
+          {
+            ELLE_ASSERT(other._block != nullptr);
+
+            this->_block = other._block;
+            other._block = nullptr;
+
+            break;
+          }
+        default:
+          throw Exception("unknown location '%s'", this->_location);
+        }
     }
 
     template <typename T>
     Door<T>::~Door()
     {
-      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Door");
-
       switch (this->_location)
         {
         case Location::memory:
@@ -41,10 +72,7 @@ namespace nucleus
           }
         case Location::nest:
           {
-            if (this->_ambit->state() == Ambit<T>::State::loaded)
-              this->_ambit->unload();
-
-            delete this->_ambit;
+            delete this->_block;
 
             break;
           }
@@ -72,7 +100,9 @@ namespace nucleus
           }
         case Location::nest:
           {
-            this->_ambit->load();
+            ELLE_ASSERT(this->_block != nullptr);
+
+            this->_block->open();
 
             break;
           }
@@ -96,7 +126,9 @@ namespace nucleus
           }
         case Location::nest:
           {
-            this->_ambit->unload();
+            ELLE_ASSERT(this->_block != nullptr);
+
+            this->_block->close();
 
             break;
           }
@@ -117,14 +149,15 @@ namespace nucleus
         {
         case Location::memory:
           {
+            ELLE_ASSERT(this->_value != nullptr);
+
             return (*this->_value);
           }
         case Location::nest:
           {
-            if (this->_ambit->state != Ambit<T>::State::loaded)
-              this->open();
+            ELLE_ASSERT(this->_block != nullptr);
 
-            return (this->_ambit());
+            return (this->_block->access());
           }
         default:
           throw Exception("unknown location '%s'", this->_location);
@@ -141,14 +174,15 @@ namespace nucleus
         {
         case Location::memory:
           {
+            ELLE_ASSERT(this->_value != nullptr);
+
             return (*this->_value);
           }
         case Location::nest:
           {
-            if (this->_ambit->state != Ambit<T>::State::loaded)
-              this->open();
+            ELLE_ASSERT(this->_block != nullptr);
 
-            return (this->_ambit());
+            return (this->_block->access());
           }
         default:
           throw Exception("unknown location '%s'", this->_location);
@@ -185,7 +219,7 @@ namespace nucleus
           }
         case Location::nest:
           {
-            this->_ambit->Dump(margin + 4);
+            // XXX
 
             break;
           }
@@ -212,13 +246,17 @@ namespace nucleus
         {
         case Location::memory:
           {
+            ELLE_ASSERT(this->_value != nullptr);
+
             stream << *this->_value;
 
             break;
           }
         case Location::nest:
           {
-            stream << *this->_ambit;
+            ELLE_ASSERT(this->_block != nullptr);
+
+            stream << *this->_block;
 
             break;
           }
@@ -227,6 +265,78 @@ namespace nucleus
         }
 
       stream << ")";
+    }
+
+//
+// ---------- Block -----------------------------------------------------------
+//
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    template <typename T>
+    Door<T>::Block::Block(Handle const& handle,
+                          Nest& nest):
+      _handle(handle),
+      _ambit(nest, this->_handle, Ambit<T>::Mode::automatic)
+    {
+    }
+
+    template <typename T>
+    Door<T>::Block::~Block()
+    {
+      if (this->_ambit.state() == Ambit<T>::State::loaded)
+        this->_ambit.unload();
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    template <typename T>
+    void
+    Door<T>::Block::open()
+    {
+      this->_ambit.load();
+    }
+
+    template <typename T>
+    void
+    Door<T>::Block::close()
+    {
+      this->_ambit.unload();
+    }
+
+    template <typename T>
+    T const&
+    Door<T>::Block::access() const
+    {
+      if (this->_ambit.state() != Ambit<T>::State::loaded)
+        this->open();
+
+      return (this->_ambit());
+    }
+
+    template <typename T>
+    T&
+    Door<T>::Block::access()
+    {
+      if (this->_ambit.state() != Ambit<T>::State::loaded)
+        this->open();
+
+      return (this->_ambit());
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Door<T>::Block::print(std::ostream& stream) const
+    {
+      stream << this->_ambit;
     }
   }
 }

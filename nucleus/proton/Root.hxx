@@ -12,7 +12,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Root,
 {
   enforce(version == 0);
 
-  archive & value._block;
+  archive & value._address;
   archive & value._height;
   archive & value._capacity;
 }

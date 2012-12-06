@@ -8,7 +8,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -19,16 +18,17 @@ namespace nucleus
                        T* node):
       proton::ContentHashBlock(network, neutron::ComponentContents, creator_K),
 
-      _shell(node)
+      _nature(T::Constants::nature),
+      _node(node),
+      _cipher(nullptr)
     {
     }
-
   }
 }
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
@@ -41,7 +41,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Contents,
 
   archive & base_class<nucleus::proton::ContentHashBlock>(value);
 
-  archive & value._shell;
+  archive & value._nature;
+  archive & elle::serialize::alive_pointer(value._cipher);
 }
 
 #endif

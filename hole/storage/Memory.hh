@@ -1,5 +1,5 @@
-#ifndef HOLE_STORAGE_MAINMEMORY_HH
-# define HOLE_STORAGE_MAINMEMORY_HH
+#ifndef HOLE_STORAGE_MEMORY_HH
+# define HOLE_STORAGE_MEMORY_HH
 
 # include <elle/Printable.hh>
 # include <elle/attribute.hh>
@@ -16,7 +16,7 @@ namespace hole
   namespace storage
   {
     /// Storage that holds blocks in a map located in main memory.
-    class MainMemory:
+    class Memory:
       public Storage,
       public elle::Printable
     {
@@ -33,9 +33,9 @@ namespace hole
       `-------------*/
     public:
       /// Create a main-memory-basedstorage.
-      MainMemory();
+      Memory();
       /// Delete a directory.
-      ~MainMemory();
+      ~Memory();
     private:
       ELLE_ATTRIBUTE(Container, container);
 

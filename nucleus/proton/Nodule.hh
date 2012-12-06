@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 
 # include <cryptography/fwd.hh>
 
@@ -15,13 +16,9 @@ namespace nucleus
 {
   namespace proton
   {
-
+    /// Abstract the notion of tree node in a Nodule.
     ///
-    /// this class abstract the notion of tree node in a nodule.
-    ///
-    /// every nodule therefore encapsulates the type i.e seam or quill
-    /// along with common information such as the addresses of the parent
-    /// and neighbour nodules.
+    /// Every nodule must comply with the interface defined below.
     template <typename T>
     class Nodule:
       public Node
@@ -30,72 +27,99 @@ namespace nucleus
       | Enumerations |
       `-------------*/
     public:
+      /// Define the type of nodule. A seam is an internal tree node
+      /// while a quill is a leaf node.
       enum class Type
         {
           seam,
           quill
         };
 
-      //
-      // static methods
-      //
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      /// XXX
+      /// Transfer a number of inlets from the _left_ nodule to the _right_.
+      /// The process stops when the _left_ nodule is left with _size_ bytes of
+      /// inlets i.e footprint.
+      ///
+      /// Note that the _right_ nodule is supposed to contain higher names
+      /// so that the inlets from the _left_ nodule with the highest names
+      /// are moved to _right_ in order to maintain consistency.
       template <typename X>
       static
       void
       transfer_right(X& left,
                      X& right,
                      Extent const size);
-      /// XXX
+      /// Does the same as transfer_right() by moving inlets from the _right_
+      /// nodule to the _left_.
       template <typename X>
       static
       void
       transfer_left(X& left,
                     X& right,
                     Extent const size);
-      /// XXX
+      /// Optimize a given nodule _nodule_ given the fact that the the child
+      /// nodule responsible for the key _k_ has been modified.
+      ///
+      /// In other words, _nodule_ is not the nodule which has been modified:
+      /// its child (i.e the one responsible for the given key) has been.
       template <typename X>
       static
       void
       optimize(X& nodule,
                typename T::K const& k);
-      /// XXX[a mettre dans Node?]
-      template <typename N>
-      static
-      Contents*
-      split(N& node);
 
       /*-------------.
       | Construction |
       `-------------*/
     public:
+      /// Construct a nodule given its final type i.e seam or quill.
       Nodule(Type const type);
 
-      //
-      // virtual methods
-      //
-      /// XXX
+      /*----------------.
+      | Virtual Methods |
+      `----------------*/
+    public:
+      /// Recursively add the tuple key/value to the nodule.
+      ///
+      /// Thus, only the final nodule---i.e quill---should be responsible
+      /// for inserting the tuple. However all the nodules on the way should
+      /// make sure to adapt to the fact that the impacted child nodule may
+      /// have changed to a point where a limit is reached.
+      ///
+      /// Note that 'recursively' means that the nodule must 'route' the call
+      /// to the child nodule responsible for the given key.
       virtual
       void
       add(typename T::K const& k,
           Handle const& v) = 0;
-      /// XXX
+      /// Similar to the add() method but for removing a key/value tuple.
       virtual
       void
       remove(typename T::K const& k) = 0;
-      /// XXX
+      /// Recursively indicate the nodules that the value block (i.e referenced
+      /// by a quill) responsible for the given key _k_ has been modified.
+      ///
+      /// The nodules on the way down to the quill should make sure no limit
+      /// has been reached. Otherwise, the tree structure should be adapted
+      /// accordingly.
       virtual
       void
       update(typename T::K const& k) = 0;
-      /// XXX
+      /// Split the current nodule and return the handle on the new nodule.
+      ///
+      /// Note that the nodule returned is supposed to contain the inlets with
+      /// the highest keys.
       virtual
       Handle
       split() = 0;
-      /// XXX
+      /// Merge the current nodule with the nodule reference by its handle
+      /// _other_.
       virtual
       void
-      merge(Handle& handle) = 0;
+      merge(Handle& other) = 0;
       /// XXX
       virtual
       elle::Boolean
@@ -138,25 +162,58 @@ namespace nucleus
       typename T::K const&
       maiden() const = 0;
 
-      //
-      // interfaces
-      //
-
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Nodule);
+
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_NO_ASSIGNMENT(Nodule);
 
       /*-----------.
       | Attributes |
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Type, type);
-    };
 
-    // XXX operator << for Type
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      friend
+      std::ostream&
+      operator <<(std::ostream& stream,
+                  Type const type)
+      {
+        switch (type)
+          {
+          case Type::seam:
+            {
+              stream << "seam";
+              break;
+            }
+          case Type::quill:
+            {
+              stream << "quill";
+              break;
+            }
+          default:
+            {
+              throw Exception("unknown type: '%s'", static_cast<int>(type));
+            }
+          }
+
+        return (stream);
+      }
+    };
   }
 }
 
