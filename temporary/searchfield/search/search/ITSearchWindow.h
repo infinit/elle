@@ -10,11 +10,12 @@
 
 @interface ITSearchWindow : NSWindow
 
-- (void)showWithPosition:(NSRect)pos;
+- (id)initWithParent:(NSWindow*)parent;
 
 - (void)updatePosition:(NSRect)pos;
 
 - (void)hide;
+- (void)show;
 
 @property (nonatomic, readonly) BOOL hidden;
 

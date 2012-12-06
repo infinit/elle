@@ -22,7 +22,10 @@
     [self.search_field.cell setSendsWholeSearchString:NO];
     [self.search_field.cell setTarget:self];
     [self.search_field.cell setAction:@selector(updateFilter:)];
-    self.search_window = [[ITSearchWindow alloc] init];
+    self.search_window = [[ITSearchWindow alloc] initWithParent:self.window];
+    
+    // Initialize with the right position, further updates are made by windowDidMove event.
+    [self.search_window updatePosition:[self _getWindowPosition]];
 }
 
 - (void)updateFilter:(id)sender
@@ -30,10 +33,7 @@
     NSLog(@"search for %@", [self.search_field.cell stringValue]);
     NSString* str = [self.search_field.cell stringValue];
     if (str && [str length])
-    {
-
-        [self.search_window showWithPosition:[self _getWindowPosition]];
-    }
+        [self.search_window show];
     else
         [self.search_window hide];
 }
@@ -49,16 +49,10 @@
     return pos;
 }
 
--(void)windowWillMove:(NSNotification*)notification
-{
-    assert(self.window == notification.object);
-    [self.search_window hide];
-}
-
 -(void)windowDidMove:(NSNotification*)notification
 {
     assert(self.window == notification.object);
-    [self updateFilter:self];
+    [self.search_window updatePosition:[self _getWindowPosition]];
 }
 
 @end
