@@ -642,6 +642,7 @@ namespace surface
         },
         {gap_transaction_status_accepted,
           {
+            gap_transaction_status_started,
             gap_transaction_status_canceled
           }
         },
@@ -683,7 +684,8 @@ namespace surface
         // },
         {gap_transaction_status_started,
           {
-            gap_transaction_status_canceled
+            gap_transaction_status_canceled,
+            gap_transaction_status_finished
           }
         },
         // {gap_transaction_status_canceled,
