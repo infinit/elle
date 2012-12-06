@@ -53,7 +53,7 @@ namespace infinit
     {
       SecretKey key;
 
-      key.Generate();
+      key.Generate(length);
 
       return (key);
     }
