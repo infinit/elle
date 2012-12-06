@@ -10,6 +10,7 @@
 #define NETWORK_URI_INC
 
 #include <network/uri/detail/uri_parts.hpp>
+#include <network/uri/detail/translate.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
@@ -21,17 +22,6 @@ namespace network {
     bool parse(std::string::const_iterator first,
                std::string::const_iterator last,
                uri_parts<std::string::const_iterator> &parts);
-
-    inline
-    std::string translate(const std::string &source) {
-      return source;
-    }
-
-    inline
-    std::string translate(const std::wstring &source) {
-      return std::string(std::begin(source), std::end(source));
-    }
-
   } // namespace detail
 
   enum class uri_error {
