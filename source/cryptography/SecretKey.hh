@@ -22,7 +22,6 @@ namespace infinit
 {
   namespace cryptography
   {
-
     ///
     /// this class represents a secret key for symmetric encryption.
     ///
