@@ -560,7 +560,7 @@ namespace plasma
     Client::delete_network(std::string const& network_id)
     {
       json::Dictionary request{std::map<std::string, std::string>{
-          {"name", network_id},
+          {"network_id", network_id},
       }};
       return this->_client.post<DeleteNetworkResponse>("/network/delete", request);
     }
