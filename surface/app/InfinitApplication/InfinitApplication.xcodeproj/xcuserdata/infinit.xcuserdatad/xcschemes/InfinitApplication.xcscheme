@@ -60,7 +60,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "ELLE_LOG_COMPONENTS"
-            value = "*infinit*,*plasma*,*"
+            value = "*infinit*,*plasma*"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

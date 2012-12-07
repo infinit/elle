@@ -202,6 +202,11 @@ static void on_transaction_status(char const* transaction);
     return instance;
 }
 
++ (NSString*)_downloadDirectory
+{
+    return [NSHomeDirectory() stringByAppendingPathComponent:@"Downloads"];
+}
+
 - (id) initWithToken:(NSString*)token
 {
     gap_State* state = gap_new_with_token([token UTF8String]);
@@ -210,6 +215,8 @@ static void on_transaction_status(char const* transaction);
         NSLog(@"ERROR: Cannot initialize gap with token");
         return nil;
     }
+    
+    gap_set_output_dir(state, [[IAGapState _downloadDirectory] UTF8String]);
     
     self = [super init];
     if (self == nil)
@@ -253,6 +260,8 @@ static void on_transaction_status(char const* transaction);
         gap_free(state);
         return nil;
     }
+    
+    gap_set_output_dir(state, [[IAGapState _downloadDirectory] UTF8String]);
     
     _state = state;
     _logged_in = FALSE;

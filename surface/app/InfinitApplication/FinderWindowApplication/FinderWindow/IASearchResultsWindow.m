@@ -36,18 +36,18 @@
                     defer:(BOOL)flag
 {
     if ((self = [super initWithContentRect:contentRect
-								 styleMask:NSBorderlessWindowMask
+								 styleMask:aStyle//NSBorderlessWindowMask
 								   backing:bufferingType
 									 defer:flag]))
     {
-		[self setBackgroundColor:[NSColor clearColor]];
+		[self setBackgroundColor:[NSColor greenColor]];
 		[self setLevel:NSPopUpMenuWindowLevel+1];
         [self setHidesOnDeactivate:YES];
-        [self setOpaque:NO];
+        [self setOpaque:YES];
         _hidden = YES;
         _table_view = [[IASearchResultsTableView alloc] initWithFrame:contentRect];
         [self setContentView:_table_view];
-        [_table_view setBackgroundColor:[NSColor redColor]];
+        [_table_view setBackgroundColor:[NSColor orangeColor]];
     }
     
     return self;
@@ -58,11 +58,15 @@
 {
     NSRect frame = NSMakeRect(pos.origin.x,
                               pos.origin.y - pos.size.height,
-                              pos.size.width,
-                              pos.size.height);
+                              pos.size.width+200,
+                              pos.size.height+200);
     [self setFrame:frame
            display:_hidden];
- //   [_table_view setFrame:frame];
+    frame.size.width -= 10;
+    frame.size.height -= 10;
+    frame.origin.x += 5;
+    frame.origin.y += 5;
+   // [_table_view setFrame:frame];
 }
 
 - (void) hide
@@ -75,7 +79,6 @@
 - (void)show
 {
     [self setIsVisible:YES];
-    [self setOpaque:YES];
     [self setAlphaValue:0.9];
     [self makeKeyAndOrderFront:self];
     [self setLevel:NSPopUpMenuWindowLevel+1];

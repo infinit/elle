@@ -24,8 +24,8 @@
     self.search_window = [[IASearchResultsWindow alloc] initWithParent:self.main_window
                                                           andTableView:self.table_view];
     [self.search_window updatePosition:[self _getWindowPosition]];
-//    [self.table_view setDataSource:self];
-//    [self.table_view setDelegate:self];
+    [self.table_view setDataSource:self];
+    [self.table_view setDelegate:self];
 }
 
 - (NSRect)_getWindowPosition
@@ -45,22 +45,23 @@
     NSLog(@"search for %@", [self.search_bar.cell stringValue]);
     NSString* str = [self.search_bar.cell stringValue];
 
-    [self.main_view_controller refresh];
+
     if (str && [str length])
     {
-        [self.table_view reloadData];
         [self.search_window updatePosition:[self _getWindowPosition]];
         [self.search_window show];
-        [self.table_view setNeedsDisplay:YES];
+        [self.table_view reloadData];
+//        [self.table_view setNeedsDisplay:YES];
     }
     else
         [self.search_window hide];
+    [self.main_view_controller refresh];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view
 {
     NSLog(@"COUNT!");
-    return 200;
+    return 2;
     return [_users count];
 }
 
@@ -80,9 +81,23 @@
     // TODO set user here
     [result.textField setStringValue:[NSString stringWithFormat:@"row %li", row]];
     
+    [result.textField setBackgroundColor:[NSColor redColor]];
     NSLog(@"Return row %@", result);
     return result;
 }
 
+-(id)           tableView:(NSTableView *)aTableView
+objectValueForTableColumn:(NSTableColumn *)aTableColumn
+                      row:(NSInteger)rowIndex
+{
+    NSLog(@"OBJECT VALUE");
+    return @"toto";
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    NSLog(@"Row view");
+    return nil;
+}
 
 @end
