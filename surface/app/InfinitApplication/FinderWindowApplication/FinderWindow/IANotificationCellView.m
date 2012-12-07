@@ -95,10 +95,10 @@
             [self _hideActions];
             break;
 
-        case gap_transaction_status_rejected:
-            str = @"transaction rejected.";
-            [self _hideActions];
-            break;
+//        case gap_transaction_status_canceled:
+//            str = @"transaction rejected.";
+//            [self _hideActions];
+//            break;
 
         case gap_transaction_status_started:
             str = @"transaction started.";

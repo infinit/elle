@@ -10,6 +10,11 @@
 
 @implementation IASearchResultsTableView
 
+- (void) awakeFromNib
+{
+    NSLog(@"TABLEVIEW awake from nib");    
+}
+
 - (id)initWithFrame:(NSRect)frame
 {
     self = [super initWithFrame:frame];

@@ -24,8 +24,8 @@
     self.search_window = [[IASearchResultsWindow alloc] initWithParent:self.main_window
                                                           andTableView:self.table_view];
     [self.search_window updatePosition:[self _getWindowPosition]];
-    [self.table_view setDataSource:self];
-    [self.table_view setDelegate:self];
+  //  [self.table_view setDataSource:self];
+  //  [self.table_view setDelegate:self];
 }
 
 - (NSRect)_getWindowPosition
@@ -35,7 +35,8 @@
     pos.origin.x += self.search_bar.frame.origin.x;
     pos.origin.y += self.search_bar.frame.origin.y;
     pos.size = self.search_bar.frame.size;
-    pos.size.height = 200;
+    pos.size.height = 400;
+    pos.size.width = 600;
     return pos;
 }
 
@@ -44,18 +45,18 @@
 
     NSLog(@"search for %@", [self.search_bar.cell stringValue]);
     NSString* str = [self.search_bar.cell stringValue];
-
+    
+    [self.main_view_controller refresh];
 
     if (str && [str length])
     {
         [self.search_window updatePosition:[self _getWindowPosition]];
         [self.search_window show];
         [self.table_view reloadData];
-//        [self.table_view setNeedsDisplay:YES];
+        [self.table_view setNeedsDisplay:YES];
     }
     else
         [self.search_window hide];
-    [self.main_view_controller refresh];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view

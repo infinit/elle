@@ -26,6 +26,7 @@
     {
         _parent = parent;
         _table_view = table_view;
+        NSLog(@"init window with tableview %@", table_view);
     }
     return self;
 }
@@ -46,8 +47,10 @@
         [self setOpaque:YES];
         _hidden = YES;
         _table_view = [[IASearchResultsTableView alloc] initWithFrame:contentRect];
-        [self setContentView:_table_view];
-        [_table_view setBackgroundColor:[NSColor orangeColor]];
+      //  [_table_view setFrame:NSMakeRect(0, 0, 200, 200)];
+        [self setContentView:_table_view.enclosingScrollView];
+        [_table_view setHidden:NO];
+       // [_table_view setBackgroundColor:[NSColor orangeColor]];
     }
     
     return self;
@@ -58,15 +61,14 @@
 {
     NSRect frame = NSMakeRect(pos.origin.x,
                               pos.origin.y - pos.size.height,
-                              pos.size.width+200,
-                              pos.size.height+200);
+                              pos.size.width,
+                              pos.size.height);
     [self setFrame:frame
            display:_hidden];
-    frame.size.width -= 10;
-    frame.size.height -= 10;
-    frame.origin.x += 5;
-    frame.origin.y += 5;
-   // [_table_view setFrame:frame];
+   // [_table_view.enclosingScrollView setFrame:NSMakeRect(10, 10, 100, 100)];//[NSWindow contentRectForFrameRect:frame
+                               //                   styleMask:NSBorderlessWindowMask]];
+    [_table_view setNeedsDisplay:!_hidden];
+    [_table_view setNeedsLayout:!_hidden];
 }
 
 - (void) hide
@@ -82,7 +84,7 @@
     [self setAlphaValue:0.9];
     [self makeKeyAndOrderFront:self];
     [self setLevel:NSPopUpMenuWindowLevel+1];
-    //[_table_view setNeedsDisplay:YES];
+    [_table_view setNeedsDisplay:YES];
     // This is needed, because after one call to orderOut:, the
     // child window stops to be positioned relatively to its parent...
     [ _parent addChildWindow:self ordered:NSWindowAbove];
