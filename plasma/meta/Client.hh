@@ -294,7 +294,8 @@ namespace plasma
       create_network(std::string const& network_id);
 
       DeleteNetworkResponse
-      delete_network(std::string const& network_id);
+      delete_network(std::string const& network_id,
+                     bool force = false);
 
       NetworkNodesResponse
       network_nodes(std::string const& network_id);

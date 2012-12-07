@@ -77,6 +77,7 @@ namespace surface
       , _trophonius{nullptr}
       , _users{}
       , _swaggers_dirty{true}
+      , _output_dir{common::system::home_directory()}
       , _files_infos{}
       , _networks{}
       , _networks_dirty{true}
@@ -626,6 +627,12 @@ namespace surface
       this->_output_dir = dir;
     }
 
+    std::string
+    State::output_dir()
+    {
+      return this->_output_dir;
+    }
+
     void
     State::update_transaction(std::string const& transaction_id,
                               gap_TransactionStatus status)
@@ -646,11 +653,6 @@ namespace surface
             gap_transaction_status_canceled
           }
         },
-        // {gap_transaction_status_rejected,
-        //   {
-        //     // Automaticly canceled.
-        //   }
-        // },
         {gap_transaction_status_started,
           {
             gap_transaction_status_canceled
@@ -670,7 +672,7 @@ namespace surface
         {gap_transaction_status_pending,
           {
             gap_transaction_status_accepted,
-            gap_transaction_status_rejected
+            gap_transaction_status_canceled
           }
         },
         {gap_transaction_status_accepted,
@@ -678,10 +680,6 @@ namespace surface
             gap_transaction_status_canceled
           }
         },
-        // {gap_transaction_status_rejected,
-        //   {
-        //   }
-        // },
         {gap_transaction_status_started,
           {
             gap_transaction_status_canceled,
@@ -750,9 +748,6 @@ namespace surface
         case gap_transaction_status_accepted:
           this->_accept_transaction(transaction);
           break;
-        case gap_transaction_status_rejected:
-          this->_deny_transaction(transaction);
-          break;
         case gap_transaction_status_started:
           this->_start_transaction(transaction);
           break;
@@ -787,21 +782,6 @@ namespace surface
 
       // Could be improve.
       _swaggers_dirty = true;
-    }
-
-    void
-    State::_deny_transaction(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Deny transaction '%s'", transaction.transaction_id);
-
-      if (transaction.recipient_id != this->_me._id)
-      {
-        throw Exception{gap_error,
-            "Only recipient can deny transaction."};
-      }
-
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_transaction_status_rejected);
     }
 
     void
@@ -952,19 +932,6 @@ namespace surface
     }
 
     void
-    State::_on_transaction_denied(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Denied transaction '%s'", transaction.transaction_id);
-
-      if (transaction.sender_id != this->_me._id)
-        return;
-
-      this->update_transaction(transaction.transaction_id,
-                               gap_TransactionStatus::gap_transaction_status_canceled);
-      //XXX:
-    }
-
-    void
     State::_on_transaction_started(Transaction const& transaction)
     {
       ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
@@ -984,7 +951,7 @@ namespace surface
       // current transaction, cancel them.
 
       // Delete networks.
-      (void) this->delete_network(transaction.network_id);
+      (void) this->delete_network(transaction.network_id, true);
 
       (void) this->refresh_networks();
     }
@@ -1136,7 +1103,7 @@ namespace surface
     }
 
     std::string
-    State::delete_network(std::string const& network_id)
+    State::delete_network(std::string const& network_id, bool force)
     {
       auto const& net = this->_networks.find(network_id);
 
@@ -1146,7 +1113,7 @@ namespace surface
         this->_networks.erase(net);
       }
 
-      auto response = this->_meta->delete_network(network_id);
+      auto response = this->_meta->delete_network(network_id, force);
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
       this->refresh_networks(); //XXX not optimal
@@ -1698,6 +1665,8 @@ namespace surface
         (*this->_transactions)[notif.transaction_id] = transaction;
       }
 
+      (*this->_transactions)[notif.transaction_id].status = notif.status;
+
       auto const& transaction = this->transaction(notif.transaction_id);
 
       switch(notif.status)
@@ -1708,9 +1677,6 @@ namespace surface
               notif.transaction_id
           );
           this->_on_transaction_accepted(transaction);
-          break;
-        case gap_transaction_status_rejected:
-          this->_on_transaction_denied(transaction);
           break;
         case gap_transaction_status_started:
           this->_on_transaction_started(transaction);

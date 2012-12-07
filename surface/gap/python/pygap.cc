@@ -235,7 +235,6 @@ BOOST_PYTHON_MODULE(_gap)
   py::enum_<gap_TransactionStatus>("TransactionStatus")
     .value("none", gap_transaction_status_none)
     .value("pending", gap_transaction_status_pending)
-    .value("rejected", gap_transaction_status_rejected)
     .value("accepted", gap_transaction_status_accepted)
     .value("started", gap_transaction_status_started)
     .value("canceled", gap_transaction_status_canceled)
@@ -341,6 +340,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("send_files", &_send_files);
   py::def("update_transaction", &gap_update_transaction);
   py::def("set_output_dir", &gap_set_output_dir);
+  py::def("get_output_dir", &gap_get_output_dir);
   py::def("transaction_sender_id", &gap_transaction_sender_id);
   py::def("transaction_sender_fullname", &gap_transaction_sender_fullname);
   py::def("transaction_sender_device_id", &gap_transaction_sender_device_id);

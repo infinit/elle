@@ -955,8 +955,12 @@ extern "C"
                          gap_TransactionStatus status)
   {
     assert(transaction_id != nullptr);
-    assert(   status > gap_TransactionStatus::gap_transaction_status_none
-           && status < gap_TransactionStatus::_gap_transaction_status_count);
+    // assert(   status > gap_TransactionStatus::gap_transaction_status_none
+    //        && status < gap_TransactionStatus::_gap_transaction_status_count);
+
+    if(status <= gap_TransactionStatus::gap_transaction_status_none
+       || status >= gap_TransactionStatus::_gap_transaction_status_count)
+      return gap_error;
 
     WRAP_CPP_RET(state,
                    update_transaction,
@@ -978,6 +982,23 @@ extern "C"
                  output_path);
 
     return ret;
+  }
+
+  char const*
+  gap_get_output_dir(gap_State* state)
+  {
+    assert(state != nullptr);
+
+    gap_Status ret = gap_ok;
+    try
+    {
+      auto const& directory = __TO_CPP(state)->output_dir();
+      return directory.c_str();
+    }
+    CATCH_ALL(get_output_directory);
+
+    (void) ret;
+    return nullptr;
   }
 
 } // ! extern "C"

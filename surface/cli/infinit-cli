@@ -447,7 +447,8 @@ class InfinitShell(cmd.Cmd):
         args = self._get_args(self._transactions_argument_parser, line)
         try:
             transactions = self._state.transactions()
-            print(", ".join(transactions))
+            transactions = [(t, self._state.transaction_status(t)) for t in transactions]
+            print(", ".join('%s(%s)' % trans for trans in transactions))
         except Exception as e:
             print(e)
 
@@ -588,7 +589,7 @@ def start_shell(state, args):
         if args.action == 'shell':
             print("No output dir found, try 'set_output_dir' command")
         else:
-            default_output_dir = os.path.expanduser("~")
+            default_output_dir = state.get_output_dir()
             state.output_dir = input("Output dir (defaults to '%s'): " % default_output_dir).strip()
             if not state.output_dir:
                 state.output_dir = default_output_dir

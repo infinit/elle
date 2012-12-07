@@ -444,9 +444,6 @@ namespace plasma
         case gap_TransactionStatus::gap_transaction_status_accepted:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/accept", request);
           break;
-        case gap_TransactionStatus::gap_transaction_status_rejected:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/deny", request);
-          break;
         case gap_TransactionStatus::gap_transaction_status_started:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
           break;
@@ -557,11 +554,13 @@ namespace plasma
     }
 
     DeleteNetworkResponse
-    Client::delete_network(std::string const& network_id)
+    Client::delete_network(std::string const& network_id,
+                           bool force)
     {
       json::Dictionary request{std::map<std::string, std::string>{
           {"network_id", network_id},
       }};
+      request["force"] = force;
       return this->_client.post<DeleteNetworkResponse>("/network/delete", request);
     }
 

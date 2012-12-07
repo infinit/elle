@@ -155,7 +155,6 @@ extern "C" {
   {
     gap_transaction_status_none = 0,
     gap_transaction_status_pending,   // Waiting for the recipient to accept.
-    gap_transaction_status_rejected,  // The recipient refused the file transfer.
     gap_transaction_status_accepted,  // The recipient accepted the file transfer.
     gap_transaction_status_started,   // The sender has set writes and the recipient can start 8transfer.
     gap_transaction_status_canceled,  // The sender or the recipient cancel transaciton (before it start or while downloading).
@@ -395,6 +394,9 @@ extern "C" {
   gap_Status
   gap_set_output_dir(gap_State* state,
                      char const* output_path);
+
+  char const*
+  gap_get_output_dir(gap_State* state);
 
 # ifdef __cplusplus
 } // ! extern "C"

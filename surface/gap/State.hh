@@ -191,6 +191,9 @@ namespace surface
       void
       output_dir(std::string const& dir);
 
+      std::string
+      output_dir();
+
     private:
       // Functions callback on each status (set and get).
 
@@ -319,7 +322,8 @@ namespace surface
 
       /// Delete a new network.
       std::string
-      delete_network(std::string const& name);
+      delete_network(std::string const& name,
+                     bool force = false);
 
       /// Force the watchdog to check for new networks.
       void

@@ -56,6 +56,7 @@ class State:
             # Transaction
             'send_files',
             'set_output_dir',
+            'get_output_dir',
             'update_transaction',
             'transactions',
             'transaction_sender_id',
