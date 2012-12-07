@@ -17,32 +17,16 @@ namespace network {
       typename CharT
       >
     CharT letter_to_hex(CharT in) {
-      switch (in) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        return in - '0';
-      case 'a':
-      case 'b':
-      case 'c':
-      case 'd':
-      case 'e':
-      case 'f':
+      if ((in >= '0') && (in <= '9')) {
+	return in - '0';
+      }
+
+      if ((in >= 'a') && (in <= 'f')) {
         return in + 10 - 'a';
-      case 'A':
-      case 'B':
-      case 'C':
-      case 'D':
-      case 'E':
-      case 'F':
-        return in + 10 - 'A';
+      }
+
+      if ((in >= 'A') && (in <= 'F')) {
+	return in + 10 - 'A';
       }
       return CharT();
     }
@@ -52,29 +36,35 @@ namespace network {
     class InputIterator,
     class OutputIterator
     >
-  OutputIterator decode(const InputIterator &in_begin,
-			const InputIterator &in_end,
-			const OutputIterator &out_begin) {
-    typedef typename std::iterator_traits<InputIterator>::value_type value_type;
-
-    InputIterator it = in_begin;
-    OutputIterator out = out_begin;
+  OutputIterator decode(InputIterator in_begin,
+			InputIterator in_end,
+			OutputIterator out_begin) {
+    auto it = in_begin;
+    auto out = out_begin;
     while (it != in_end) {
-      if (*it == '%')
-        {
-	  ++it;
-	  value_type v0 = detail::letter_to_hex(*it);
-	  ++it;
-	  value_type v1 = detail::letter_to_hex(*it);
-	  ++it;
-	  *out++ = 0x10 * v0 + v1;
-        }
-      else
-        {
-	  *out++ = *it++;
-        }
+      if (*it == '%') {
+	++it;
+	auto v0 = detail::letter_to_hex(*it);
+	++it;
+	auto v1 = detail::letter_to_hex(*it);
+	++it;
+	*out++ = 0x10 * v0 + v1;
+      }
+      else {
+	*out++ = *it++;
+      }
     }
     return out;
+  }
+
+  template <
+    class String
+    >
+  String decode(const String &source) {
+    String unencoded;
+    decode(std::begin(source), std::end(source),
+	   std::back_inserter(unencoded));
+    return std::move(unencoded);
   }
 } // namespace network
 

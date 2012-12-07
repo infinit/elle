@@ -15,8 +15,30 @@
 #include <functional>
 #include <map>
 
-#include <iostream>
+namespace network {
+  const char *uri_category_impl::name() const {
+    return "uri_error";
+  }
 
+  std::string uri_category_impl::message(int ev) const {
+    switch (ev) {
+    case uri_error::invalid_syntax:
+      return "Unable to parse URI string.";
+    default:
+      break;
+    }
+    return std::string("Unknown URI error.");
+  }
+
+  const std::error_category &uri_category() {
+    static uri_category_impl uri_category;
+    return uri_category;
+  }
+
+  std::error_code make_error_code(uri_error e) {
+    return std::error_code(static_cast<int>(e), uri_category());
+  }
+} // namespace network
 
 BOOST_FUSION_ADAPT_TPL_STRUCT
 (
@@ -441,7 +463,7 @@ namespace network {
     return (absolute() && !authority());
   }
 
-  uri uri::normalize() const {
+  uri uri::normalize(uri_comparison_level comparison_level) const {
     return *this;
   }
 
@@ -559,34 +581,12 @@ namespace network {
   }
 
   bool operator == (const uri &lhs, const uri &rhs) {
-    return equals(lhs, rhs, path_segment_normalization);
+    return equals(lhs, rhs, uri_comparison_level::path_segment_normalization);
   }
 
   bool operator < (const uri &lhs, const uri &rhs) {
-    return lhs.normalize().native() < rhs.normalize().native();
-  }
-
-
-  const char *uri_category_impl::name() const {
-    return "uri_error";
-  }
-
-  std::string uri_category_impl::message(int ev) const {
-    switch (ev) {
-    case uri_error::invalid_syntax:
-      return "Unable to parse URI string.";
-    default:
-      break;
-    }
-    return std::string("Unknown URI error.");
-  }
-
-  const std::error_category &uri_category() {
-    static uri_category_impl uri_category;
-    return uri_category;
-  }
-
-  std::error_code make_error_code(uri_error e) {
-    return std::error_code(static_cast<int>(e), uri_category());
+    return
+      lhs.normalize(uri_comparison_level::path_segment_normalization).native() <
+      rhs.normalize(uri_comparison_level::path_segment_normalization).native();
   }
 } // namespace network

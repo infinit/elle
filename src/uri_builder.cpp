@@ -52,6 +52,7 @@ namespace network {
 
   network::uri uri_builder::uri() const {
     std::string uri_;
+
     if (scheme_) {
       uri_.append(*scheme_);
     }

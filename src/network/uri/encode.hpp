@@ -18,26 +18,14 @@ namespace network {
       >
     inline
     CharT hex_to_letter(CharT in) {
-      switch (in) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-      case 9:
-        return in + '0';
-      case 10:
-      case 11:
-      case 12:
-      case 13:
-      case 14:
-      default:
-        return in - 10 + 'A';
+      if ((in >= 0) && (in < 10)) {
+	return in + '0';
       }
+
+      if ((in >= 10) && (in < 16)) {
+	return in - 10 + 'A';
+      }
+
       return CharT();
     }
 
@@ -45,83 +33,29 @@ namespace network {
       typename CharT,
       class OutputIterator
       >
-    void encode_char(CharT in, OutputIterator &out) {
-      switch (in)
-	{
-	case 'a':
-	case 'A':
-	case 'b':
-	case 'B':
-	case 'c':
-	case 'C':
-	case 'd':
-	case 'D':
-	case 'e':
-	case 'E':
-	case 'f':
-	case 'F':
-	case 'g':
-	case 'G':
-	case 'h':
-	case 'H':
-	case 'i':
-	case 'I':
-	case 'j':
-	case 'J':
-	case 'k':
-	case 'K':
-	case 'l':
-	case 'L':
-	case 'm':
-	case 'M':
-	case 'n':
-	case 'N':
-	case 'o':
-	case 'O':
-	case 'p':
-	case 'P':
-	case 'q':
-	case 'Q':
-	case 'r':
-	case 'R':
-	case 's':
-	case 'S':
-	case 't':
-	case 'T':
-	case 'u':
-	case 'U':
-	case 'v':
-	case 'V':
-	case 'w':
-	case 'W':
-	case 'x':
-	case 'X':
-	case 'y':
-	case 'Y':
-	case 'z':
-	case 'Z':
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	case '-':
-	case '.':
-	case '_':
-	case '~':
+    void encode_char(CharT in, OutputIterator &out, const char *ignore = "") {
+      if (((in >= 'a') && (in <= 'z')) ||
+	  ((in >= 'A') && (in <= 'Z')) ||
+	  ((in >= '0') && (in <= '9')) ||
+	  (in == '-') ||
+	  (in == '.') ||
+	  (in == '_') ||
+	  (in == '~')) {
+	out++ = in;
+      }
+      else {
+	auto it = ignore, end = ignore + std::strlen(ignore);
+	for (; (it != end) && (*it != in); ++it) ;
+
+	if (it != end) {
 	  out++ = in;
-	  break;
-	default:
+	}
+	else {
 	  out++ = '%';
 	  out++ = hex_to_letter(in >> 4);
 	  out++ = hex_to_letter(in & 0x0f);
-	  ;
 	}
+      }
     }
   } // namespace detail
 
@@ -129,96 +63,139 @@ namespace network {
     typename InputIterator,
     typename OutputIterator
     >
-   OutputIterator encode_user_info(InputIterator first,
-				   InputIterator last,
-				   OutputIterator out) {
-    auto it = first;
-    while (it != last) {
-      detail::encode_char(*it, out);
-      ++it;
-    }
-    return out;
-  }
-
-  template <
-    typename InputIterator,
-    typename OutputIterator
-    >
-   OutputIterator encode_host(InputIterator first,
-			      InputIterator last,
-			      OutputIterator out) {
-    auto it = first;
-    while (it != last) {
-      ++it;
-    }
-    return out;
-  }
-
-  template <
-    typename InputIterator,
-    typename OutputIterator
-    >
-   OutputIterator encode_port(InputIterator first,
-			      InputIterator last,
-			      OutputIterator out) {
-    return out;
-  }
-
-  template <
-    typename InputIterator,
-    typename OutputIterator
-    >
-   OutputIterator encode_path(InputIterator first,
-			      InputIterator last,
-			      OutputIterator out) {
-    return out;
-  }
-
-  template <
-    typename InputIterator,
-    typename OutputIterator
-    >
-   OutputIterator encode_query(InputIterator first,
-			       InputIterator last,
-			       OutputIterator out) {
-    return out;
-  }
-
-  template <
-    typename InputIterator,
-    typename OutputIterator
-    >
-   OutputIterator encode_fragment(InputIterator first,
+  OutputIterator encode_user_info(InputIterator first,
 				  InputIterator last,
 				  OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out, ":");
+      ++it;
+    }
     return out;
   }
 
   template <
-    class InputIterator,
-    class OutputIterator
+    typename InputIterator,
+    typename OutputIterator
     >
-  OutputIterator encode(const InputIterator &in_begin,
-			const InputIterator &in_end,
-			const OutputIterator &out_begin) {
-    typedef typename std::iterator_traits<InputIterator>::value_type value_type;
-
-    InputIterator it = in_begin;
-    OutputIterator out = out_begin;
-    while (it != in_end) {
+  OutputIterator encode_host(InputIterator first,
+			     InputIterator last,
+			     OutputIterator out) {
+    auto it = first;
+    while (it != last) {
       detail::encode_char(*it, out);
       ++it;
     }
     return out;
   }
 
-   template <class String>
-   String encode_user_info(const String &user_info) {
-     String encoded;
-     encode_user_info(std::begin(user_info), std::end(user_info),
-		      std::back_inserter(encoded));
-     return std::move(encoded);
-   }
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+  OutputIterator encode_port(InputIterator first,
+			     InputIterator last,
+			     OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out);
+      ++it;
+    }
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+  OutputIterator encode_path(InputIterator first,
+			     InputIterator last,
+			     OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out, "/");
+      ++it;
+    }
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+  OutputIterator encode_query(InputIterator first,
+			      InputIterator last,
+			      OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out, "&;=");
+      ++it;
+    }
+    return out;
+  }
+
+  template <
+    typename InputIterator,
+    typename OutputIterator
+    >
+  OutputIterator encode_fragment(InputIterator first,
+				 InputIterator last,
+				 OutputIterator out) {
+    auto it = first;
+    while (it != last) {
+      detail::encode_char(*it, out);
+      ++it;
+    }
+    return out;
+  }
+
+  template <class String>
+  String encode_user_info(const String &user_info) {
+    String encoded;
+    encode_user_info(std::begin(user_info), std::end(user_info),
+		     std::back_inserter(encoded));
+    return std::move(encoded);
+  }
+
+  template <class String>
+  String encode_host(const String &host) {
+    String encoded;
+    encode_host(std::begin(host), std::end(host),
+		std::back_inserter(encoded));
+    return std::move(encoded);
+  }
+
+  template <class String>
+  String encode_port(const String &port) {
+    String encoded;
+    encode_port(std::begin(port), std::end(port),
+		std::back_inserter(encoded));
+    return std::move(encoded);
+  }
+
+  template <class String>
+  String encode_path(const String &path) {
+    String encoded;
+    encode_path(std::begin(path), std::end(path),
+		std::back_inserter(encoded));
+    return std::move(encoded);
+  }
+
+  template <class String>
+  String encode_query(const String &query) {
+    String encoded;
+    encode_query(std::begin(query), std::end(query),
+		 std::back_inserter(encoded));
+    return std::move(encoded);
+  }
+
+  template <class String>
+  String encode_fragment(const String &fragment) {
+    String encoded;
+    encode_fragment(std::begin(fragment), std::end(fragment),
+		    std::back_inserter(encoded));
+    return std::move(encoded);
+  }
 } // namespace network
 
 #endif // NETWORK_URI_ENCODE_INC

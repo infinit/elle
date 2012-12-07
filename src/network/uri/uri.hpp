@@ -18,12 +18,6 @@
 
 
 namespace network {
-  namespace detail {
-    bool parse(std::string::const_iterator first,
-               std::string::const_iterator last,
-               uri_parts<std::string::const_iterator> &parts);
-  } // namespace detail
-
   enum class uri_error {
     // parser errors
     invalid_syntax = 1,
@@ -50,6 +44,13 @@ namespace network {
   const std::error_category &uri_category();
 
   std::error_code make_error_code(uri_error e);
+
+  enum class uri_comparison_level {
+    string_comparison,
+    case_normalization,
+    percent_encoding_normalization,
+    path_segment_normalization,
+  };
 
   class uri {
 
@@ -179,7 +180,7 @@ namespace network {
 
     bool opaque() const;
 
-    uri normalize() const;
+    uri normalize(uri_comparison_level comparison_level) const;
 
     uri relativize(const uri &other) const;
 
@@ -205,13 +206,6 @@ namespace network {
   void swap(uri &lhs, uri &rhs);
 
   std::size_t hash_value(const uri &uri_);
-
-  enum uri_comparison_level {
-    string_comparison,
-    case_normalization,
-    percent_encoding_normalization,
-    path_segment_normalization,
-  };
 
   bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level);
 

@@ -50,6 +50,12 @@ namespace network {
     }
 
     template <typename Source>
+    uri_builder &authority(const Source &authority) {
+      set_authority(detail::translate(authority));
+      return *this;
+    }
+
+    template <typename Source>
     uri_builder &path(const Source &path) {
       set_path(detail::translate(path));
       return *this;
