@@ -20,7 +20,7 @@ TEST(builder_test, empty_uri) {
   ASSERT_TRUE(instance.empty());
 }
 
-TEST(builder_test, DISABLED_simple_uri) {
+TEST(builder_test, simple_uri_doesnt_throw) {
   network::uri_builder builder;
   builder
     .scheme("http")
@@ -28,32 +28,119 @@ TEST(builder_test, DISABLED_simple_uri) {
     .path("/")
     ;
   ASSERT_NO_THROW(builder.uri());
-  //BOOST_CHECK_EQUAL("http://www.example.com/", instance.string());
 }
 
-//BOOST_AUTO_TEST_CASE(full_uri_builder_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
+TEST(builder_test, simple_uri) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", builder.uri().string());
+}
+
+TEST(builder_test, simple_opaque_uri_doesnt_throw) {
+  network::uri_builder builder;
+  builder
+    .scheme("mailto")
+    .path("john.doe@example.com")
+    ;
+  ASSERT_NO_THROW(builder.uri());
+}
+
+TEST(builder_test, simple_opaque_uri) {
+  network::uri_builder builder;
+  builder
+    .scheme("mailto")
+    .path("john.doe@example.com")
+    ;
+  ASSERT_EQ("mailto:john.doe@example.com", builder.uri().string());
+}
+
+TEST(builder_test, relative_hierarchical_uri_doesnt_throw) {
+  network::uri_builder builder;
+  builder
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_NO_THROW(builder.uri());
+}
+
+TEST(builder_test, relative_hierarchical_uri) {
+  network::uri_builder builder;
+  builder
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_EQ("www.example.com/", builder.uri().string());
+}
+
+TEST(builder_test, relative_opaque_uri_doesnt_throw) {
+  network::uri_builder builder;
+  builder
+    .path("john.doe@example.com")
+    ;
+  ASSERT_NO_THROW(builder.uri());
+}
+
+TEST(builder_test, relative_opaque_uri) {
+  network::uri_builder builder;
+  builder
+    .path("john.doe@example.com")
+    ;
+  ASSERT_EQ("john.doe@example.com", builder.uri().string());
+}
+
+TEST(builder_test, full_uri_doesnt_throw) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .user_info("user:password")
+    .host("www.example.com")
+    .port("80")
+    .path("/path")
+    .query("query")
+    .fragment("fragment")
+    ;
+  ASSERT_NO_THROW(builder.uri());
+}
+
+TEST(builder_test, full_uri) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .user_info("user:password")
+    .host("www.example.com")
+    .port("80")
+    .path("/path")
+    .query("query")
+    .fragment("fragment")
+    ;
+  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", builder.uri().string());
+}
+
+//TEST(builder_test, simple_port) {
+//  network::uri_builder builder;
 //  builder
 //    .scheme("http")
-//    .user_info("user:password")
 //    .host("www.example.com")
-//    .port("80")
-//    .path("/path")
-//    .query("query")
-//    .fragment("fragment")
+//    .port(8000)
+//    .path("/")
 //    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://user:password@www.example.com:80/path?query#fragment", instance.string());
+//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
 //}
-//
-//BOOST_AUTO_TEST_CASE(port_test) {
-//  network::uri instance;
-//  network::builder(instance).scheme("http").host("www.example.com").port(8000).path("/");
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com:8000/", instance.string());
+
+//TEST(builder_test, simple_port_us) {
+//  network::uri_builder builder;
+//  builder
+//    .scheme("http")
+//    .host("www.example.com")
+//    .port(unsigned short(8000))
+//    .path("/")
+//    ;
+//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
 //}
-//
 //BOOST_AUTO_TEST_CASE(encoded_path_test) {
 //  network::uri instance;
 //  network::builder builder(instance);

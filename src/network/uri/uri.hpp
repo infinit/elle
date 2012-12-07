@@ -102,6 +102,18 @@ namespace network {
 
     };
 
+  private:
+
+    uri(const boost::optional<string_type> &scheme,
+	const boost::optional<string_type> &user_info,
+	const boost::optional<string_type> &host,
+	const boost::optional<string_type> &port,
+	const boost::optional<string_type> &path,
+	const boost::optional<string_type> &query,
+	const boost::optional<string_type> &fragment);
+
+  public:
+
     uri();
 
     template <

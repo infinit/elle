@@ -15,6 +15,8 @@
 #include <functional>
 #include <map>
 
+#include <iostream>
+
 namespace network {
   const char *uri_category_impl::name() const {
     return "uri_error";
@@ -328,6 +330,61 @@ namespace network {
 
   std::u32string uri::part_range::u32string() const {
     return std::u32string(first_, last_);
+  }
+
+  uri::uri(const boost::optional<string_type> &scheme,
+	   const boost::optional<string_type> &user_info,
+	   const boost::optional<string_type> &host,
+	   const boost::optional<string_type> &port,
+	   const boost::optional<string_type> &path,
+	   const boost::optional<string_type> &query,
+	   const boost::optional<string_type> &fragment) {
+    if (scheme) {
+      uri_.append(*scheme);
+    }
+
+    if (user_info || host || port) {
+      if (scheme) {
+	uri_.append("://");
+      }
+
+      if (user_info) {
+	uri_.append(*user_info);
+	uri_.append("@");
+      }
+
+      if (host) {
+	uri_.append(*host);
+      }
+      else {
+	std::error_code ec = make_error_code(uri_error::invalid_host);
+	throw std::system_error(ec);
+      }
+
+      if (port) {
+	uri_.append(":");
+	uri_.append(*port);
+      }
+    }
+    else {
+      if (scheme && (path || query || fragment)) {
+	uri_.append(":");
+      }
+    }
+
+    if (path) {
+      uri_.append(*path);
+    }
+
+    if (query) {
+      uri_.append("?");
+      uri_.append(*query);
+    }
+
+    if (fragment) {
+      uri_.append("#");
+      uri_.append(*fragment);
+    }
   }
 
   uri::uri() {
