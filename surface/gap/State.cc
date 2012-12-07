@@ -71,9 +71,9 @@ namespace surface
       : _meta{
       new plasma::meta::Client{
         common::meta::host(),
-          common::meta::port(),
-          true,
-        }}
+        common::meta::port(),
+        true,
+      }}
       , _trophonius{nullptr}
       , _users{}
       , _swaggers_dirty{true}
@@ -567,11 +567,11 @@ namespace surface
     void
     State::_download_files(std::string const& transaction_id)
     {
-      assert(this->_output_dir.length() != 0);
+      ELLE_ASSERT(this->_output_dir.length() != 0);
 
       auto pair = State::transactions().find(transaction_id);
 
-      assert(pair != State::transactions().end());
+      ELLE_ASSERT(pair != State::transactions().end());
 
       if (pair == State::transactions().end())
         return;
@@ -1051,7 +1051,7 @@ namespace surface
     bool
     State::has_device() const
     {
-      assert(this->_me._id.size() > 0 && "not properly initialized");
+      ELLE_ASSERT(this->_me._id.size() > 0 && "not properly initialized");
       ELLE_DEBUG("Check for '%s' device existence at '%s'",
                  this->_me._id,
                  common::passport_path(this->_me._id));
@@ -1191,9 +1191,9 @@ namespace surface
       // makes user we have an id
       std::string user_id = this->user(user)._id;
       auto it = this->networks().find(network_id);
-      assert(it != this->networks().end());
+      ELLE_ASSERT(it != this->networks().end());
       Network* network = it->second;
-      assert(network != nullptr);
+      ELLE_ASSERT(network != nullptr);
 
       std::string const& group_binary = common::infinit::binary_path("8group");
 
@@ -1253,7 +1253,7 @@ namespace surface
                 {
                   status = it->second;
                 }
-              assert(status != nullptr);
+              ELLE_ASSERT(status != nullptr);
               *status = NetworkStatus{
                   network_id,
                   mount_point,
