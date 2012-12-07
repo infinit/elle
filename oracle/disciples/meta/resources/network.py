@@ -500,7 +500,6 @@ class Delete(_Page):
     def POST(self):
         self.requireLoggedIn()
 
-
         status = self.validate()
         if status:
             return self.error(*status)
@@ -512,7 +511,7 @@ class Delete(_Page):
         if network is None:
             if self.data['force']:
                 return self.succes({
-                    'deleted_network_id': self.data['_id']
+                    'deleted_network_id': self.data['transaction_id']
                 });
             else:
                 return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
@@ -529,5 +528,5 @@ class Delete(_Page):
         )
 
         return  self.success({
-            'deleted_network_id': _id,
+            'deleted_network_id': self.data['transaction_id'],
         })
