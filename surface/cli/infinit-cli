@@ -475,10 +475,18 @@ class InfinitShell(cmd.Cmd):
     def do_update_transaction(self, line):
         args = self._get_args(self._update_transaction_argument_parser, line)
 
-        transaction = args.transaction_id;
-        status = args.status;
-
         try:
+            transaction = args.transaction_id;
+            status = args.status;
+
+            if status == 'accept':
+                status = self._state.TransactionStatus.accepted
+            elif status == 'cancel':
+                status = self._state.TransactionStatus.canceled
+            else:
+                print('unknown status')
+                return
+
             self._state.update_transaction(transaction, self._state.TransactionStatus(status))
         except Exception as e:
             print(e)
@@ -491,34 +499,7 @@ class InfinitShell(cmd.Cmd):
         if len(sp) == 2:
             return [t for t in self._state.transactions() if t.startswith(text)]
         else:
-            # XXX: improve that shit.
-            transaction_id = sp[2]
-            ts = self._state.TransactionStatus
-            if self._state._id == self._state.transaction_owner(transaction_id):
-                possible_status = {
-                    ts.pending : [ts.canceled],
-                    ts.rejected : [ts.canceled],
-                    ts.accepted : [ts.canceled],
-                    ts.started : [ts.canceled],
-                    ts.cancelded : [],
-                    ts.finished : [],
-                }
-            else:
-                possible_status = {
-                    ts.pending : [ts.accepted, ts.rejected],
-                    ts.rejected : [],
-                    ts.accepted : [],
-                    ts.started : [ts.canceled],
-                    ts.cancelded : [],
-                    ts.finished : [],
-                }
-
-            status = self._state.transaction_status(transaction_id)
-            return possible_status[status]
-
-        return []
-
-
+            return [s for s in ['accept', 'cancel'] if s.startswith(text)]
 
     ###########################################################################
     # Notifications.
