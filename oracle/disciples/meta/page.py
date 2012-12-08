@@ -71,7 +71,7 @@ class Page(object):
             else:
                 error_code = validator(self.data[field])
                 if error_code:
-                    return (error_code)
+                    return (error_code, str())
         for (field, type_) in self._mendatory_fields:
             if not field in self.data.keys() or not isinstance(self.data[field], type_):
                 return (error.BAD_REQUEST, "Field %s is mandatory and must be an %s" % (field, type_))
@@ -115,7 +115,6 @@ class Page(object):
 
     def forbidden(self, msg):
         raise web.HTTPError("403 {}".format(msg))
-
     def requireLoggedIn(self):
         if not self.user:
             self.forbidden("Authentication required.")
@@ -133,7 +132,7 @@ class Page(object):
                 if not self.connected(database.ObjectId(s)):
                     swgs.remove(s)
         d = {
-                "sender_id" : self.user["_id"],
+                "user_id" : self.user["_id"],
             }
         d.update(data)
         self.notifier.notify_some(notification_id,

@@ -183,12 +183,12 @@ class Nodes(_Page):
                     continue
                 for a in node[addr_kind]:
                     if a and a["ip"] and a["port"]:
-                        print("Append", addr_kind, a)
+                        #print("Append", addr_kind, a)
                         addrs[addr_kind].add(
                             a["ip"] + ':' + str(a["port"]),
                         )
         res['nodes'] = list(addrs['locals'].union(addrs['externals']))
-        print("Find nodes of %s: " % network['name'], res['nodes'])
+        #print("Find nodes of %s: " % network['name'], res['nodes'])
         return self.success(res)
 
 
@@ -483,7 +483,7 @@ class Delete(_Page):
     """
     Delete a network
         DELETE {
-            'transaction_id': "id",
+            'network_id': "id",
             'force': bool # Disable error if network doesn't exist.
         } -> {
                 'success': True,
@@ -494,7 +494,7 @@ class Delete(_Page):
     __pattern__ = "/network/delete"
 
     _validators = [
-        ('transaction_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
+        ('network_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
     ]
 
     def POST(self):
@@ -504,14 +504,14 @@ class Delete(_Page):
         if status:
             return self.error(*status)
 
-        _id = database.ObjectId(self.data['transaction_id'])
+        _id = database.ObjectId(self.data['network_id'])
 
         network = database.networks().find_one(_id)
 
         if network is None:
             if self.data['force']:
-                return self.succes({
-                    'deleted_network_id': self.data['transaction_id']
+                return self.success({
+                    'deleted_network_id': self.data['network_id']
                 });
             else:
                 return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
@@ -528,5 +528,5 @@ class Delete(_Page):
         )
 
         return  self.success({
-            'deleted_network_id': self.data['transaction_id'],
+            'deleted_network_id': self.data['network_id'],
         })

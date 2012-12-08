@@ -17,16 +17,14 @@ import metalib
 # XXX: Should also be defined in metalib.
 NONE = 0
 PENDING = 1
-REJECTED = 2
-ACCEPTED = 3
-STARTED = 4
-CANCELED = 5
-FINISHED = 6
+ACCEPTED = 2
+STARTED = 3
+CANCELED = 4
+FINISHED = 5
 
 _status_to_string = {
     NONE:     "none",
     PENDING:  "pending",
-    REJECTED: "rejected",
     ACCEPTED: "accepted",
     STARTED:  "started",
     CANCELED: "canceled",
@@ -81,7 +79,7 @@ class Create(Page):
         if status:
             return self.error(*status)
 
-        message = 'message' in self.data and self.data['message'] or "bite"
+        message = 'message' in self.data and self.data['message'] or ""
 
         id_or_email = self.data['recipient_id_or_email'].strip()
         first_filename = self.data['first_filename'].strip()
@@ -157,18 +155,19 @@ class Create(Page):
         if not self.connected(recipient_id):
             if not invitee_email:
                 invitee_email = database.users().find_one({'_id': database.ObjectId(id_or_email)})['email']
-            inviter_mail = self.user['email']
 
             subject = mail.USER_INVITATION_SUBJECT % {
-                'inviter_mail': inviter_mail,
+                'inviter_mail': self.user['email'],
             }
 
             content = (new_user and mail.USER_INVITATION_CONTENT or mail.USER_NEW_FILE_CONTENT) % {
-                'inviter_mail': inviter_mail,
+                'inviter_mail': self.user['email'],
+                'inviter_fulname': self.user['fullname'],
+                'message': message,
                 'file_name': sent,
             }
 
-            mail.send(invitee_email, subject, content)
+            mail.send(invitee_email, subject, content, reply_to=self.user['email'])
 
         self.notifier.notify_some(
             notifier.FILE_TRANSFER,
@@ -298,75 +297,6 @@ class Accept(Page):
         return self.success({
             'updated_transaction_id': str(updated_transaction_id),
         })
-
-class Deny(Page):
-    """
-    Use to deny or deny a file transfer.
-    Maybe more in the future but be careful, for the moment, user MUST be the recipient.
-    POST {
-           'transaction_id' : the id of the transaction.
-         }
-         -> {
-                 'updated_transaction_id': the network id or empty string if refused.
-            }
-
-    Errors:
-        The transaction doesn't exists.
-        The use is not the recipient.
-        Recipient and sender devices are the same.
-    """
-    __pattern__ = "/transaction/deny"
-
-    _validators = [
-        ('transaction_id', regexp.TransactionValidator),
-    ]
-
-    def POST(self):
-        self.requireLoggedIn()
-
-        status = self.validate()
-        if status:
-            return self.error(*status)
-
-        transaction =  database.transactions().find_one(
-            database.ObjectId(self.data['transaction_id'].strip()))
-
-        if not transaction:
-            return self.error(error.TRANSACTION_DOESNT_EXIST)
-
-        if self.user['_id'] != transaction['recipient_id']:
-            return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
-
-        if self.data['device_id'] == transaction['sender_device_id']:
-            return self.error(error.TRANSACTION_CANT_BE_ACCEPTED, "Sender and recipient devices are the same.")
-
-        if transaction['status'] != PENDING :
-            return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
-                              "This transaction can't be %s. Current status : %s"
-                              % (_status_to_string[DENIED], _status_to_string[transaction['status']])
-            )
-        transaction.update({
-            'status': DENIED,
-        })
-
-        updated_transaction_id = database.transactions().save(transaction);
-
-        self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
-            [transaction['sender_id'], transaction['recipient_id']],
-            {
-                'transaction_id': str(updated_transaction_id),
-
-                # Status.
-                'status': DENIED,
-            }
-        )
-
-
-        return self.success({
-            'updated_transaction_id': str(updated_transaction_id),
-        })
-
 
 class Start(Page):
     """
@@ -536,7 +466,7 @@ class Cancel(Page):
         if self.user['_id'] != transaction['sender_id']:
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
-        if not transaction['status'] in (REJECTED, PENDING, STARTED) :
+        if not transaction['status'] in (PENDING, STARTED) :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
                               "This transaction can't be %s. Current status : %s"
                               % (_status_to_string[CANCELED], _status_to_string[transaction['status']])
