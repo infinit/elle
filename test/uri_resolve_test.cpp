@@ -9,6 +9,10 @@
 
 const network::uri base_uri("http://a/b/c/d;p?q");
 
+TEST(uri_resolve_test, default_) {
+  FAIL();
+}
+
 
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1

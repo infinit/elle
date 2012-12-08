@@ -26,6 +26,15 @@ namespace network {
     };
 
     template <int N>
+    struct translate_impl<char[N]> {
+
+      std::string operator () (const char *source) const {
+	return source;
+      }
+
+    };
+
+    template <int N>
     struct translate_impl<const char[N]> {
 
       std::string operator () (const char *source) const {
@@ -45,6 +54,16 @@ namespace network {
 
     template <int N>
     struct translate_impl<const wchar_t[N]> {
+
+      std::string operator () (const wchar_t *source) const {
+	translate_impl<std::wstring> impl;
+	return impl(source);
+      }
+
+    };
+
+    template <int N>
+    struct translate_impl<wchar_t[N]> {
 
       std::string operator () (const wchar_t *source) const {
 	translate_impl<std::wstring> impl;

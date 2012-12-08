@@ -9,6 +9,7 @@
 #define NETWORK_URI_ENCODE_INC
 
 #include <iterator>
+#include <cstring>
 #include <cassert>
 
 namespace network {

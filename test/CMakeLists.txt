@@ -20,6 +20,7 @@ foreach (test ${TESTS})
   add_dependencies(${test} uri)
   target_link_libraries(${test}
     ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} uri)
+  message(STATUS ${CMAKE_THREAD_LIBS_INIT})
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()

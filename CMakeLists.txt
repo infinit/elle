@@ -7,6 +7,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Uri)
 
+find_package(Threads REQUIRED)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.5.3 REQUIRED)

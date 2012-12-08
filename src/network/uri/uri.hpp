@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
+#include <system_error>
 #include <cstring>
 
 
@@ -36,7 +37,11 @@ namespace network {
 
   public:
 
+#if defined(BOOST_WINDOWS)
     virtual const char *name() const;
+#else
+    virtual const char *name() const noexcept;
+#endif // defined(BOOST_WINDOWS)
     virtual std::string message(int ev) const;
 
   };

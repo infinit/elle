@@ -18,12 +18,16 @@
 #include <iostream>
 
 namespace network {
+#if defined(BOOST_WINDOWS)
   const char *uri_category_impl::name() const {
+#else
+  const char *uri_category_impl::name() const noexcept {
+#endif // defined(BOOST_WINDOWS)
     return "uri_error";
   }
 
   std::string uri_category_impl::message(int ev) const {
-    switch (ev) {
+    switch (uri_error(ev)) {
     case uri_error::invalid_syntax:
       return "Unable to parse URI string.";
     default:

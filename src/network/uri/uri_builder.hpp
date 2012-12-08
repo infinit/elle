@@ -18,7 +18,7 @@ namespace network {
 
   public:
 
-    typedef uri::string_type string_type;
+    typedef network::uri::string_type string_type;
 
     uri_builder(); // = default;
     ~uri_builder(); // = default;

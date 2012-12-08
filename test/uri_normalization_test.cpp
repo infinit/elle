@@ -6,3 +6,8 @@
 
 #include <gtest/gtest.h>
 #include <network/uri.hpp>
+
+
+TEST(uri_normalization_test, default_) {
+  FAIL();
+}
