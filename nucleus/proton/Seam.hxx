@@ -934,7 +934,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Seam<T>::walk(elle::Natural32 const margin)
+    Seam<T>::dump(elle::Natural32 const margin)
     {
       elle::String alignment(margin, ' ');
       auto iterator = this->_container.begin();
@@ -965,7 +965,7 @@ namespace nucleus
           current.load();
 
           // walk through the nodule.
-          current().walk(margin + 6);
+          current().dump(margin + 6);
 
           // unload the value block.
           current.unload();

@@ -805,7 +805,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Quill<T>::walk(elle::Natural32 const margin)
+    Quill<T>::dump(elle::Natural32 const margin)
     {
       elle::String alignment(margin, ' ');
       auto scoutor = this->_container.begin();

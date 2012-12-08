@@ -164,7 +164,7 @@ namespace nucleus
       void
       seal(cryptography::SecretKey const& secret);
       void
-      walk(elle::Natural32 const margin = 0);
+      dump(elle::Natural32 const margin = 0);
       void
       statistics(Statistics& stats);
       typename T::K const&

@@ -50,8 +50,10 @@ namespace nucleus
       ELLE_TRACE_METHOD(key);
 
       ELLE_ASSERT(this->_node != nullptr);
-      ELLE_ASSERT(this->_cipher == nullptr);
 
+      // Delete the previous cipher: the contents may have been deserialized
+      // then modified and re-encrypted.
+      delete this->_cipher;
       this->_cipher = new cryptography::Cipher;
 
       if (key.Encrypt(*this->_node, *this->_cipher) == elle::Status::Error)
@@ -122,10 +124,22 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       if (this->_node != nullptr)
-        this->_node->Dump(margin + 2);
+        {
+          std::cout << "[Node]" << std::endl;
+
+          this->_node->Dump(margin + 2);
+        }
+      else
+        std::cout << "[Node] none" << std::endl;
 
       if (this->_cipher != nullptr)
-        this->_cipher->Dump(margin + 2);
+        {
+          std::cout << "[Cipher]" << std::endl;
+
+          this->_cipher->Dump(margin + 2);
+        }
+      else
+        std::cout << "[Cipher] none" << std::endl;
 
       return elle::Status::Ok;
     }

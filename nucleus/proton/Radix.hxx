@@ -34,11 +34,6 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
       }
     case nucleus::proton::Strategy::tree:
       {
-        /* XXX
-        XXX demander a raph: on a une union donc on ne peut pas l'init (aucune garantie)
-XXX faire gaffe partout ou il y a une union
-        */
-
         archive & elle::serialize::alive_pointer(value._root);
 
         break;

@@ -105,7 +105,14 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
+          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
           BaseSerializer<Pointer<T1>>::enforce(version == 0);
+
+          if (value._ptr != nullptr)
+            {
+              ELLE_WARN("deleting the previous pointed value");
+            }
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -156,7 +163,14 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
+          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
           BaseSerializer<AlivePointer<T1>>::enforce(version == 0);
+
+          if (value._ptr != nullptr)
+            {
+              ELLE_WARN("deleting the previous pointed value");
+            }
 
           delete value._ptr;
           value._ptr = nullptr;

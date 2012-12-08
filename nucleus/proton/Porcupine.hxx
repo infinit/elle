@@ -85,6 +85,9 @@ namespace nucleus
       switch (this->_strategy)
         {
         case Strategy::none:
+          {
+            return;
+          }
         case Strategy::value:
           {
             delete this->_value;
@@ -865,7 +868,7 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_value != nullptr);
 
-            this->_value.Dump(2);
+            this->_value->Dump(2);
 
             return;
           }
@@ -1183,15 +1186,16 @@ namespace nucleus
 
                 // Check if the block has become small enough for its value
                 // to be embedded directly in its parent block.
-                if (value().footprint() < 1024) // XXX need limits: low/hight
+                if (value().footprint() < 1024) // XXX need limits: low/high
                   {
                     ELLE_TRACE("the block's value could be embedded");
 
                     // Ask the value block to cede the ownership on the value
                     // node.
-                    ELLE_ASSERT(dynamic_cast<T*>(value.contents().cede()) !=
-                                nullptr);
-                    T* _value{static_cast<T*>(value.contents().cede())};
+                    Node* node = value.contents().cede();
+
+                    ELLE_ASSERT(dynamic_cast<T*>(node) != nullptr);
+                    T* _value = static_cast<T*>(node);
 
                     ELLE_FINALLY_ACTION_DELETE(_value);
 
@@ -1203,7 +1207,7 @@ namespace nucleus
 
                     // Set the embedded value along with the new strategy,
                     // taking care to delete the handle which is no longer used.
-                    this->_strategy = Strategy::none;
+                    this->_strategy = Strategy::value;
 
                     delete this->_handle;
                     this->_value = _value;

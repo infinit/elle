@@ -38,13 +38,13 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
 // To define in order to make the checks stronger and so as to
 // detect inconsistencies early on.
-#undef PORCUPINE_THOROUGH_CHECK
+#define PORCUPINE_THOROUGH_CHECK
 
 // To define to test the serialization mechanism with porcupines.
 #define PORCUPINE_SERIALIZE_TEST
 
 // To define to dump the porcupine's statistcs.
-#undef PORCUPINE_STATISTICS
+#define PORCUPINE_STATISTICS
 
 std::vector<elle::String>
 test_porcupine_prepare(elle::Natural32 const n)
@@ -208,14 +208,14 @@ nucleus::proton::Porcupine<nucleus::neutron::Catalog>*
 test_porcupine_serialize(
   nucleus::proton::Radix radix1,
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine1,
-  cryptography::SecretKey& secret1,
+  cryptography::SecretKey& secret,
   std::vector<elle::String>& vector)
 {
   etoile::gear::Transcript transcript;
   etoile::nest::Nest* nest1 =
     static_cast<etoile::nest::Nest*>(&porcupine1.nest());
 
-  ELLE_TRACE_FUNCTION(radix1, porcupine1, secret1, vector);
+  ELLE_TRACE_FUNCTION(radix1, porcupine1, secret, vector);
 
   nest1->record(transcript);
 
@@ -224,39 +224,28 @@ test_porcupine_serialize(
 
   elle::Buffer buffer;
 
-  // XXX
-  std::cout << radix1 << std::endl;
-
   buffer.writer() << radix1;
   nucleus::proton::Radix radix2;
   buffer.reader() >> radix2;
 
-  exit(0); /// XXX
-
-  // XXX
-  //std::cout << radix2 << std::endl;
-
-  /* XXX
+  etoile::nest::Nest* nest2 =
+    new etoile::nest::Nest(porcupine1.nest().limits());
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
-    XXX
+    new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix2,
+                                                              secret,
+                                                              *nest2);
 
-  etoile::nest::Nest* nest2 = new etoile::nest::Nest(porcupin1.nest().limits());
-  porcupine2.nest(*n);
-  porcupine2.unseal(secret);
-  */
   // This first lookup phase is going to be slower than when the
   // porcupine has been created because blocks needed to be fetched
   // from the storage layer.
-  //test_porcupine_lookup(output, vector);
+  test_porcupine_lookup(*porcupine2, vector);
 
-  //test_porcupine_seek(output, vector);
+  test_porcupine_seek(*porcupine2, vector);
 
-  /*
-  input.check(
+  porcupine2->check(
     nucleus::proton::flags::all);
-  */
 
-  //return (output);
+  return (porcupine2);
 }
 
 void
@@ -318,46 +307,48 @@ test_porcupine_catalog()
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2})};
-  nucleus::proton::Porcupine<nucleus::neutron::Catalog> porcupine1(nest1);
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine1 =
+    new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(nest1);
 
-  test_porcupine_add(porcupine1, vector);
+  test_porcupine_add(*porcupine1, vector);
 
-  ELLE_ASSERT(porcupine1.strategy() == nucleus::proton::Strategy::tree);
-  ELLE_ASSERT(porcupine1.tree().height() >= 1);
-  ELLE_ASSERT(porcupine1.tree().height() <= 10);
+  ELLE_ASSERT(porcupine1->strategy() == nucleus::proton::Strategy::tree);
+  ELLE_ASSERT(porcupine1->tree().height() >= 1);
+  ELLE_ASSERT(porcupine1->tree().height() <= 10);
 
-  test_porcupine_lookup(porcupine1, vector);
+  test_porcupine_lookup(*porcupine1, vector);
 
 #ifdef PORCUPINE_STATISTICS
   nucleus::proton::Statistics stats =
-    porcupine1.statistics();
+    porcupine1->statistics();
   stats.Dump();
 #endif
 
   cryptography::SecretKey secret1;
   secret1.Generate(256);
 
-  nucleus::proton::Radix radix1{test_porcupine_seal(porcupine1, secret1)};
+  nucleus::proton::Radix radix1{test_porcupine_seal(*porcupine1, secret1)};
 
-  test_porcupine_seek(porcupine1, vector);
+  test_porcupine_seek(*porcupine1, vector);
 
 #ifdef PORCUPINE_SERIALIZE_TEST
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
-    test_porcupine_serialize(radix1, porcupine1, secret1, vector);
-  /* XXX
-  test_porcupine_remove(porcupine2, vector, N / 3, N / 3);
+    test_porcupine_serialize(radix1, *porcupine1, secret1, vector);
+
+  test_porcupine_remove(*porcupine2, vector, N / 3, N / 3);
 
   cryptography::SecretKey secret2;
   secret2.Generate(256);
 
-  nucleus::proton::Radix radix2{test_porcupine_seal(porcupine2, secret2)};
+  nucleus::proton::Radix radix2{test_porcupine_seal(*porcupine2, secret2)};
 
-  nucleus::proton::Porcupine<nucleus::neutron::Catalog> porcupine3 =
-    test_porcupine_serialize(radix2, porcupine2, secret2, vector);
-  */
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine3 =
+    test_porcupine_serialize(radix2, *porcupine2, secret2, vector);
 #endif
 
-  test_porcupine_remove(porcupine1, vector, 0, vector.size());
+  test_porcupine_remove(*porcupine1, vector, 0, vector.size());
+
+  delete porcupine1;
 }
 
 int

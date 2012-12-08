@@ -148,7 +148,7 @@ namespace nucleus
       /// XXX
       virtual
       void
-      walk(elle::Natural32 const margin = 0) = 0;
+      dump(elle::Natural32 const margin = 0) = 0;
       /// XXX
       virtual
       void

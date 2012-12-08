@@ -15,6 +15,11 @@ namespace nucleus
     Radix::Radix():
       _strategy(Strategy::none)
     {
+      // Manually set all the union pointers to null so as to make all
+      // the cases are handled.
+      this->_cipher = nullptr;
+      this->_address = nullptr;
+      this->_root = nullptr;
     }
 
     Radix::Radix(cryptography::Cipher const& value):
@@ -111,6 +116,7 @@ namespace nucleus
     cryptography::Cipher const&
     Radix::value() const
     {
+      ELLE_ASSERT(this->_strategy == Strategy::value);
       ELLE_ASSERT(this->_cipher);
 
       return (*this->_cipher);
@@ -119,6 +125,7 @@ namespace nucleus
     Address const&
     Radix::block() const
     {
+      ELLE_ASSERT(this->_strategy == Strategy::block);
       ELLE_ASSERT(this->_address);
 
       return (*this->_address);
@@ -127,6 +134,7 @@ namespace nucleus
     Root const&
     Radix::tree() const
     {
+      ELLE_ASSERT(this->_strategy == Strategy::tree);
       ELLE_ASSERT(this->_root);
 
       return (*this->_root);
