@@ -11,8 +11,7 @@
 
 @interface IASearchResultsWindow : NSWindow
 
-- (id)initWithParent:(NSWindow*)parent
-        andTableView:(IASearchResultsTableView*)table_view;
+- (id)initWithParent:(NSWindow*)parent;
 
 - (void)updatePosition:(NSRect)pos;
 
@@ -20,5 +19,5 @@
 - (void)show;
 
 @property (nonatomic, readonly) BOOL hidden;
-
+@property (nonatomic, readonly) IASearchResultsTableView* table_view;
 @end

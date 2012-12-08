@@ -18,17 +18,21 @@
 
 @synthesize hidden = _hidden;
 
-- (id)initWithParent:(NSWindow*)parent
-        andTableView:(IASearchResultsTableView*)table_view;
+- (IASearchResultsTableView*)table_view
 {
-    self = [super init];
+    return _table_view;
+}
+
+- (id)initWithParent:(NSWindow*)parent
+{
+    _table_view = nil;
+
     if (self)
     {
         _parent = parent;
-        _table_view = table_view;
-        NSLog(@"init window with tableview %@", table_view);
+        _table_view = nil;
     }
-    return self;
+    return (self = [super init]); // This will call initWithContentRect ...
 }
 
 - (id)initWithContentRect:(NSRect)contentRect
@@ -39,18 +43,26 @@
     if ((self = [super initWithContentRect:contentRect
 								 styleMask:aStyle//NSBorderlessWindowMask
 								   backing:bufferingType
-									 defer:flag]))
+									 defer:NO]))
     {
 		[self setBackgroundColor:[NSColor greenColor]];
 		[self setLevel:NSPopUpMenuWindowLevel+1];
         [self setHidesOnDeactivate:YES];
         [self setOpaque:YES];
         _hidden = YES;
+        
+        NSScrollView* container = [[NSScrollView alloc] initWithFrame:contentRect];
         _table_view = [[IASearchResultsTableView alloc] initWithFrame:contentRect];
-      //  [_table_view setFrame:NSMakeRect(0, 0, 200, 200)];
-        [self setContentView:_table_view.enclosingScrollView];
-        [_table_view setHidden:NO];
-       // [_table_view setBackgroundColor:[NSColor orangeColor]];
+        NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"SearchUserResult"];
+        [column setWidth:200];
+        [_table_view addTableColumn:column];
+        [container setDocumentView:_table_view];
+        [container setHasVerticalScroller:YES];
+       // [[self contentView] addSubview:container];
+        [self setContentView:container];
+//        [_table_view setFrame:NSMakeRect(0, 0, 100, 100)];
+        [container setBackgroundColor:[NSColor redColor]];
+        [self show];
     }
     
     return self;
@@ -65,10 +77,11 @@
                               pos.size.height);
     [self setFrame:frame
            display:_hidden];
-   // [_table_view.enclosingScrollView setFrame:NSMakeRect(10, 10, 100, 100)];//[NSWindow contentRectForFrameRect:frame
-                               //                   styleMask:NSBorderlessWindowMask]];
-    [_table_view setNeedsDisplay:!_hidden];
-    [_table_view setNeedsLayout:!_hidden];
+    
+  //  [_table_view setFrame:[NSWindow contentRectForFrameRect:frame
+  //                                                styleMask:NSBorderlessWindowMask]];
+//    [_table_view setNeedsDisplay:!_hidden];
+//    [_table_view setNeedsLayout:!_hidden];
 }
 
 - (void) hide
@@ -84,7 +97,6 @@
     [self setAlphaValue:0.9];
     [self makeKeyAndOrderFront:self];
     [self setLevel:NSPopUpMenuWindowLevel+1];
-    [_table_view setNeedsDisplay:YES];
     // This is needed, because after one call to orderOut:, the
     // child window stops to be positioned relatively to its parent...
     [ _parent addChildWindow:self ordered:NSWindowAbove];

@@ -15,17 +15,24 @@
     NSMutableArray* _users;
 }
 
+- (IASearchResultsTableView*)table_view
+{
+    return self.search_window.table_view;
+}
+
 - (void)awakeFromNib
 {
     NSLog(@"Awake from nib, cell: %@, window: %@", self.search_bar.cell, self.main_window);
     [self.search_bar.cell setSendsWholeSearchString:NO];
     [self.search_bar.cell setTarget:self];
     [self.search_bar.cell setAction:@selector(updateFilter:)];
-    self.search_window = [[IASearchResultsWindow alloc] initWithParent:self.main_window
-                                                          andTableView:self.table_view];
+    NSLog(@"CREATINGSEARCHRESULTSWINDOW");
+    self.search_window = [[IASearchResultsWindow alloc] initWithParent:self.main_window];
     [self.search_window updatePosition:[self _getWindowPosition]];
-  //  [self.table_view setDataSource:self];
-  //  [self.table_view setDelegate:self];
+    NSLog(@"window: %@, Tableview: %@", self.search_window, self.search_window.table_view);
+    [self.table_view setDataSource:self];
+    [self.table_view setDelegate:self];
+    [self.table_view reloadData];
 }
 
 - (NSRect)_getWindowPosition
@@ -71,29 +78,38 @@
            viewForTableColumn:(NSTableColumn*)table_column
                           row:(NSInteger)row
 {
-        NSLog(@"Fetch view !");
+        NSLog(@"Fetch view for table view %@", table_view);
 //    IAUser* user = [_users objectAtIndex:row];
 //    if (user  == nil)
 //        return nil;
     
-    NSString* cell_id = @"IAUserSearchTableCellView";
-    NSTableCellView *result = [table_view makeViewWithIdentifier:cell_id owner:self];
+    NSString* cell_id = [table_column identifier];
+    NSLog(@"Column identifier: %@", cell_id);
+    NSTextField *result = [table_view makeViewWithIdentifier:cell_id owner:self];
+    
+    if (result == nil)
+    {
+        NSLog(@"Creating a table cell template for identifier %@", cell_id);
+        result = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
+        result.identifier = cell_id;
+    }
+    
     
     // TODO set user here
-    [result.textField setStringValue:[NSString stringWithFormat:@"row %li", row]];
+    [result setStringValue:[NSString stringWithFormat:@"row %li", row]];
     
-    [result.textField setBackgroundColor:[NSColor redColor]];
+    [result setBackgroundColor:[NSColor redColor]];
     NSLog(@"Return row %@", result);
     return result;
 }
 
--(id)           tableView:(NSTableView *)aTableView
-objectValueForTableColumn:(NSTableColumn *)aTableColumn
-                      row:(NSInteger)rowIndex
-{
-    NSLog(@"OBJECT VALUE");
-    return @"toto";
-}
+//-(id)           tableView:(NSTableView *)aTableView
+//objectValueForTableColumn:(NSTableColumn *)aTableColumn
+//                      row:(NSInteger)rowIndex
+//{
+//    NSLog(@"OBJECT VALUE");
+//    return @"toto";
+//}
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
 {

@@ -19,6 +19,6 @@
 @property (retain) IBOutlet NSWindow*                   main_window;
 @property (retain) IBOutlet IAMainViewController*       main_view_controller;
 @property (retain) IASearchResultsWindow*               search_window;
-@property (retain) IBOutlet IASearchResultsTableView*   table_view;
+@property (nonatomic, readonly) IASearchResultsTableView*   table_view;
 
 @end

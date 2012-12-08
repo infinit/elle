@@ -20,9 +20,14 @@
     return self;
 }
 
-//- (void)drawRect:(NSRect)dirtyRect
-//{
-//    // Drawing code here.
-//}
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [super drawRect:dirtyRect];
+    NSLog(@"SearchResults.drawRect:(%f,%f, %f, %f)",
+          dirtyRect.origin.x,
+          dirtyRect.origin.y,
+          dirtyRect.size.width,
+          dirtyRect.size.height);
+}
 
 @end
