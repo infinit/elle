@@ -554,13 +554,25 @@ namespace surface
       if (p.exitCode())
         throw Exception(gap_internal_error, "8transfer binary exited with errors");
 
-      this->_meta->create_transaction(recipient_id_or_email,
-                                      first_filename,
-                                      files.size(),
-                                      size,
-                                      fs::is_directory(first_filename),
-                                      network_id,
-                                      this->device_id());
+      try
+      {
+        this->_meta->create_transaction(recipient_id_or_email,
+                                        first_filename,
+                                        files.size(),
+                                        size,
+                                        fs::is_directory(first_filename),
+                                        network_id,
+                                        this->device_id());
+      }
+      catch (elle::Exception const&)
+      {
+        // Something went wrong, we need to destroy the network.
+        this->delete_network(network_id,
+                             false);
+
+        throw;
+      }
+
     }
 
     //- Transactions ----------------------------------------------------------
