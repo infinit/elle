@@ -5,6 +5,11 @@
 // ---------- serialize -------------------------------------------------------
 //
 
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Root.hh>
+
+# include <cryptography/Cipher.hh>
+
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
                       archive,
                       value,

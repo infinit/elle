@@ -50,7 +50,7 @@ namespace lune
                network, this->_path(user, network));
     if (Descriptor::exists(user, network) == false)
       throw elle::Exception("this network does not seem to exist");
-    this->load(this->_path(user, network));
+    this->load(user, network);
     this->validate(Infinit::authority());
   }
 
@@ -127,21 +127,23 @@ namespace lune
   Descriptor::load(elle::String const& user,
                    elle::String const& network)
   {
-    this->load(Descriptor::_path(user, network));
+    this->load(elle::io::Path{Descriptor::_path(user, network)});
   }
 
   void
   Descriptor::store(Identity const& identity) const
   {
     ELLE_TRACE("store descriptor with %s", identity);
-    this->store(Descriptor::_path(identity.id(), this->meta().id()));
+    this->store(elle::io::Path{Descriptor::_path(identity.id(),
+                                                 this->meta().id())});
   }
 
   void
   Descriptor::erase(elle::String const& user,
                     elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Descriptor::_path(user, network));
+    elle::concept::Fileable<>::erase(
+      elle::io::Path{Descriptor::_path(user, network)});
   }
 
   elle::Boolean

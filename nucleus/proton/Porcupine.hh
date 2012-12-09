@@ -14,6 +14,7 @@
 # include <nucleus/proton/Handle.hh>
 # include <nucleus/proton/Tree.hh>
 # include <nucleus/proton/Radix.hh>
+# include <nucleus/proton/Door.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -67,8 +68,8 @@ namespace nucleus
       /// a range [index, size].
       std::pair<Door<T>, Capacity>
       seek(Capacity const target);
-      /// Insert the given tuple key/element in the value responsible for
-      /// the given key _k_.
+      /// Insert the given element E in the value responsible for the
+      /// given key _k_.
       ///
       /// Note that, should this method be used, the type T must provide
       /// a method complying with the following prototype:

@@ -173,6 +173,7 @@ namespace etoile
                                 // otherwise, compute it base on the key which
                                 // has been extracted from the owner's token
                                 // i.e rights.key.
+                                /* XXX[porcupine]
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
                                   nucleus::proton::Address::null() ?
@@ -185,6 +186,7 @@ namespace etoile
 
                                 record.permissions(permissions);
                                 record.token(token);
+                                */
                               }
                           }
                         catch (std::exception const& e)
@@ -213,6 +215,7 @@ namespace etoile
 
                             ELLE_TRACE("update the Access group record")
                               {
+                                /* XXX[porcupine]
                                 nucleus::neutron::Token token =
                                   context.object->contents() ==
                                   nucleus::proton::Address::null() ?
@@ -225,6 +228,7 @@ namespace etoile
 
                                 record.permissions(permissions);
                                 record.token(token);
+                                */
                               }
                           }
                         catch (std::exception const& e)
@@ -257,6 +261,7 @@ namespace etoile
                       {
                         ELLE_TRACE("generate a new user record")
                           {
+                            /* XXX[porcupine]
                             nucleus::neutron::Token token =
                               context.object->contents() ==
                               nucleus::proton::Address::null() ?
@@ -269,6 +274,7 @@ namespace etoile
                               new nucleus::neutron::Record(subject,
                                                            permissions,
                                                            token));
+                            */
                           }
                       }
                     catch (std::exception const& e)
@@ -297,6 +303,7 @@ namespace etoile
 
                         ELLE_TRACE("generate a new group record")
                           {
+                            /* XXX[porcupine]
                             nucleus::neutron::Token token =
                               context.object->contents() ==
                               nucleus::proton::Address::null() ?
@@ -309,6 +316,7 @@ namespace etoile
                               new nucleus::neutron::Record(subject,
                                                            permissions,
                                                            token));
+                            */
                           }
                       }
                     catch (std::exception const& e)

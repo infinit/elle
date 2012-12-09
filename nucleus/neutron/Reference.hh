@@ -28,7 +28,12 @@ namespace nucleus
       public proton::Value,
       public elle::serialize::SerializableMixin<Reference>
     {
+      //
+      // types
+      //
     public:
+      typedef Offset            K; // XXX[???]
+
       //
       // constants
       //
@@ -55,6 +60,13 @@ namespace nucleus
       elle::Status      Resolve(elle::String&) const;
 
       elle::Status      Capacity(Size&) const;
+      // XXX
+      Size
+      size() const
+      {
+        // XXX
+        return (0);
+      }
 
       //
       // interfaces

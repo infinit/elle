@@ -5,10 +5,8 @@ namespace etoile
 {
   namespace nest
   {
-
     class Nest;
     class Pod;
-
   }
 }
 

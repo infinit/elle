@@ -69,7 +69,8 @@ namespace nucleus
       /// Insert an item to the range.
       void
       insert(std::shared_ptr<T const> const& item);
-      /// XXX[is it really used?]
+      /// Add the _other_'s elements into the current range i.e perform
+      /// a merging process.
       void
       add(Range<T> const& other);
       /// Return true if the given symbol exists.

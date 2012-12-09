@@ -90,9 +90,17 @@ namespace nucleus
       /// catalog which will therefore be responsible for deleting it.
       void
       insert(Entry* entry);
+      /// Insert the given entry and updates accordingly the catalog's
+      /// capacity and state.
+      void
+      insert(std::shared_ptr<Entry> const& entry);
       /// Return true if the catalog contains an entry with the given name.
       elle::Boolean
       exist(elle::String const& name) const;
+      /// Rename an entry.
+      void
+      rename(elle::String const& from,
+             elle::String const& to);
       /// Return the entry associated with the given name.
       Entry const&
       locate(elle::String const& name) const;
@@ -103,17 +111,19 @@ namespace nucleus
       Range<Entry>
       consult(Index const& index,
               Size const& size) const;
-      /// Remove the entry associated with the given name from the catalog.
+      /// Remove and release the entry associated with the given name from
+      /// the catalog.
       void
       erase(elle::String const& name);
+      /// Remove the entry associated with the given name and return the entry.
+      ///
+      /// This method is especially useful when moving entries between catalogs.
+      std::shared_ptr<Entry>
+      takeout(elle::String const& name);
       /// Return the size of the catalog i.e the number of entries.
       Size
       size() const;
     private:
-      /// Insert the given entry and updates accordingly the catalog's
-      /// capacity and state.
-      void
-      _insert(std::shared_ptr<Entry> const& entry);
       /// Take the give entry and inject it into the catalog's container.
       ///
       /// Note that this method does not update the other catalog attributes

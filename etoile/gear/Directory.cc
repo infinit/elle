@@ -1,7 +1,10 @@
 #include <etoile/gear/Directory.hh>
 #include <etoile/gear/Nature.hh>
 
-#include <agent/Agent.hh>
+#include <etoile/nest/Nest.hh>
+
+#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/neutron/Catalog.hh>
 
 namespace etoile
 {
@@ -18,7 +21,8 @@ namespace etoile
     Directory::Directory():
       Object(NatureDirectory),
 
-      contents(nullptr)
+      porcupine(nullptr),
+      nest(nullptr)
     {
     }
 
@@ -27,9 +31,8 @@ namespace etoile
     ///
     Directory::~Directory()
     {
-      // release the contents.
-      if (this->contents != nullptr)
-        delete this->contents;
+      delete this->porcupine;
+      delete this->nest;
     }
 
 //
@@ -49,16 +52,16 @@ namespace etoile
       if (Object::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the inherited object");
 
-      // dump the contents.
-      if (this->contents != nullptr)
+      // dump the porcupine.
+      if (this->porcupine != nullptr)
         {
-          if (this->contents->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the contents");
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Porcupine] " << *this->porcupine << std::endl;
         }
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Contents] " << elle::none << std::endl;
+                    << "[Porcupine] " << elle::none << std::endl;
         }
 
       return elle::Status::Ok;

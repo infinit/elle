@@ -182,6 +182,8 @@ namespace nucleus
         default:
           throw Exception("unknown radix strategy '%s'", this->_strategy);
         }
+
+      stream << ")";
     }
   }
 }

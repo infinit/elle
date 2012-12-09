@@ -74,7 +74,7 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_R(elle::String, name);
+      ELLE_ATTRIBUTE_RW(elle::String, name);
       ELLE_ATTRIBUTE_R(proton::Address, address);
       ELLE_ATTRIBUTE_RW(proton::Footprint, footprint);
     };

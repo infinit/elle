@@ -95,37 +95,35 @@ namespace etoile
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
-      // allocate a new directory entry.
-      std::unique_ptr<nucleus::neutron::Entry> entry(
-        new nucleus::neutron::Entry(name, address));
-
-      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
-      // add the entry in the directory.
-      if (context.contents->content->Add(entry.get()) == elle::Status::Error)
-        escape("unable to add the entry in the directory");
+      // Retrieve a door on the catalog.
+      nucleus::proton::Door<nucleus::neutron::Catalog> door{
+        context.porcupine->lookup(name)};
 
-      // stop tracking since the entry has been properly added to the catalog.
-      entry.release();
+      door.open();
 
-      // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the contents's size");
+      // Add the entry to the catalog.
+      door().insert(new nucleus::neutron::Entry{name, address});
+
+      door.close();
+
+      // Update the porcupine.
+      context.porcupine->update(name);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            size,
+            context.porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-      */
+
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -160,18 +158,23 @@ namespace etoile
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
-      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
-      // look up the entry.
-      if (context.contents->content->Lookup(name,
-                                            entry) == elle::Status::Error)
-        escape("unable to find the entry in the directory");
-      */
+      // Retrieve a door on the catalog.
+      nucleus::proton::Door<nucleus::neutron::Catalog> door{
+        context.porcupine->lookup(name)};
+
+      door.open();
+
+      // Look up the entry.
+      // XXX[we take the address of the reference: wrong]
+      entry = &(door().locate(name));
+
+      door.close();
 
       return elle::Status::Ok;
     }
@@ -203,19 +206,47 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-      /* XXX[porcupine]
+
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
-      // consult the directory catalog.
-      if (context.contents->content->Consult(index,
-                                             size,
-                                             range) == elle::Status::Error)
-        escape("unable to consult the directory");
-      */
+      // Seek the catalog responsible for the given index.
+      auto _index = static_cast<nucleus::proton::Capacity>(index);
+      auto _size = size;
+
+      while (_size > 0)
+        {
+          auto pair = context.porcupine->seek(_index);
+          auto& door = pair.first;
+          auto& base = pair.second;
+
+          door.open();
+
+          auto start = _index - base;
+          auto length = _size > door().size() - start ?
+            door().size() - start :
+            _size;
+
+          // Retrieve the directory entries falling in the requested
+          // range [index, index + size[.
+          nucleus::neutron::Range<nucleus::neutron::Entry> subrange{
+            door().consult(start, length)};
+
+          door.close();
+
+          // Inject/merge the retrieved entries into the main range.
+          range.add(subrange);
+
+          // Update the variables _index and _size.
+          _index += length;
+          _size -= length;
+        }
+
+      ELLE_ASSERT(range.size() == size);
+
       return elle::Status::Ok;
     }
 
@@ -244,31 +275,115 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-      /* XXX[porcupine]
+
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
-      // rename the entry.
-      if (context.contents->content->Rename(from, to) == elle::Status::Error)
-        escape("unable to rename the directory's entry");
+      // Perform an optimization here: if the porcupine is evolving in the value
+      // or block strategy, just rename the entry within the only present
+      // catalog.
+      //
+      // Otherwise, the catalogs have to be located in the tree.
+      switch (context.porcupine->strategy())
+        {
+        case nucleus::proton::Strategy::none:
+          throw elle::Exception("invalid 'none' strategy");
+        case nucleus::proton::Strategy::value:
+        case nucleus::proton::Strategy::block:
+          {
+            nucleus::proton::Door<nucleus::neutron::Catalog> door{
+              context.porcupine->lookup(from)};
 
-      // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the contents's size");
+            door.open();
+
+            // Directly rename the entry in the catalog block.
+            door().rename(from, to);
+
+            door.close();
+
+            break;
+          }
+        case nucleus::proton::Strategy::tree:
+          {
+            // Retrieve a doors on the catalogs containing the _from_ entry
+            // and the one responsible for the range in which the _to_ lies.
+            nucleus::proton::Door<nucleus::neutron::Catalog> door_from{
+              context.porcupine->lookup(from)};
+            nucleus::proton::Door<nucleus::neutron::Catalog> door_to{
+              context.porcupine->lookup(to)};
+
+            if (door_from == door_to)
+              {
+                door_from.open();
+
+                // In this case, the renamed entry will be located in the
+                // same catalog block. Therefore, the entry is directly
+                // renamed within the catalog.
+                door_from().rename(from, to);
+
+                door_from.close();
+
+                // Note however that the major key or else may have changed.
+                //
+                // Thus, the porcupine needs to be updated. However, a single
+                // call is required because we know both keys lies in the same
+                // catalog block.
+                //
+                // Caution is however taken by using the highest key for the
+                // updated call. We never know how the tree may be optimized
+                // to perform special operations with the mayor key (which
+                // the highest of both may actually be).
+                context.porcupine->update(from > to ? from : to);
+              }
+            else
+              {
+                // Otherwise, the entry must be relocated in the appropriate
+                // block i.e 'removed and re-inserted'.
+
+                door_from.open();
+
+                // Take the entry out of the original catalog block.
+                std::shared_ptr<nucleus::neutron::Entry> entry =
+                  door_from().takeout(from);
+
+                door_from.close();
+                door_to.open();
+
+                // Re-insert the entry in its new catalog block so as to
+                // keep the tree sorting consistent.
+                door_to().insert(entry);
+
+                door_to.close();
+
+                // Update the porcupine twice because two blocks have been
+                // modified.
+                //
+                // Note that both optimizations are requested at the end and
+                // not after each operation: takeout/insert.
+                context.porcupine->update(from);
+                context.porcupine->update(to);
+              }
+
+            break;
+          }
+        default:
+          throw elle::Exception("unknown strategy '%s'",
+                                context.porcupine->strategy());
+        }
 
       // update the object though renaming an entry may not impact
       // the object's data size.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            size,
+            context.porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-      */
+
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -299,30 +414,36 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-      /* XXX[porcupine]
+
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
-      // remove the entry.
-      if (context.contents->content->Remove(name) == elle::Status::Error)
-        escape("unable to remove the directory's entry");
+      // Retrieve a door on the catalog.
+      nucleus::proton::Door<nucleus::neutron::Catalog> door{
+        context.porcupine->lookup(name)};
 
-      // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the contents's size");
+      door.open();
+
+      // Remove the entry from the catalog.
+      door().erase(name);
+
+      door.close();
+
+      // Update the porcupine.
+      context.porcupine->update(name);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            size,
+            context.porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-      */
+
       // set the context's state.
       context.state = gear::Context::StateModified;
 

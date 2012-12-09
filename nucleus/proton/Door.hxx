@@ -142,6 +142,41 @@ namespace nucleus
     `----------*/
 
     template <typename T>
+    elle::Boolean
+    Door<T>::operator ==(Door<T> const& other) const
+    {
+      if (this == &other)
+        return (true);
+
+      if (this->_location != other._location)
+        return (false);
+
+      switch (this->_location)
+        {
+        case Location::memory:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+            ELLE_ASSERT(other._value != nullptr);
+
+            // Compare the value pointers.
+            return (this->_value == other._value);
+          }
+        case Location::nest:
+          {
+            ELLE_ASSERT(this->_block != nullptr);
+            ELLE_ASSERT(other._block != nullptr);
+
+            // Compare the handles.
+            return (this->_block->handle() == other._block->handle());
+          }
+        default:
+          throw Exception("unknown location '%s'", this->_location);
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
     T const&
     Door<T>::operator ()() const
     {

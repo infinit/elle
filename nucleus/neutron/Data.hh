@@ -63,6 +63,13 @@ namespace nucleus
       elle::Status      Adjust(const Size&);
 
       elle::Status      Capacity(Size&) const;
+      // XXX
+      Size
+      size() const
+      {
+        // XXX
+        return (0);
+      }
 
       //
       // interfaces

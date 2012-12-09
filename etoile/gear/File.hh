@@ -4,10 +4,11 @@
 # include <elle/types.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/neutron/Data.hh>
 
 # include <etoile/gear/Object.hh>
 # include <etoile/gear/Nature.hh>
+
+# include <etoile/nest/fwd.hh>
 
 # include <etoile/automaton/File.hh>
 
@@ -57,12 +58,11 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::proton::Contents* contents;
+      nucleus::proton::Porcupine<nucleus::neutron::Data>* porcupine;
+      etoile::nest::Nest* nest;
     };
 
   }
 }
-
-# include <etoile/gear/File.hxx>
 
 #endif

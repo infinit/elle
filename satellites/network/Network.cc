@@ -59,7 +59,7 @@ namespace satellite
     //
     {
       // does the network already exist.
-      if (lune::Descriptor::exists(name) == true)
+      if (lune::Descriptor::exists(administrator, name) == true)
         escape("this network seems to already exist");
 
       // check the model.

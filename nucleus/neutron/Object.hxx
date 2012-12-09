@@ -3,6 +3,7 @@
 
 # include <elle/serialize/Serializer.hh>
 
+# include <nucleus/proton/Radix.hh>
 # include <nucleus/neutron/Author.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
@@ -25,7 +26,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
   archive & value._meta.revision;
   archive & value._meta.signature;
 
-  archive & value._data.contents;
+  archive & elle::serialize::alive_pointer(value._data.contents);
   archive & value._data.size;
   archive & value._data.modification_timestamp;
   archive & value._data.revision;

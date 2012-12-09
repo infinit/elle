@@ -234,24 +234,20 @@ namespace lune
   void
   Identity::load(elle::String const& user_id)
   {
-    elle::io::Path path{
-        Identity::_path(user_id)
-    };
-
-    this->load(path);
+    this->load(elle::io::Path{Identity::_path(user_id)});
   }
 
   void
   Identity::store() const
   {
     ELLE_TRACE("store identity %s", *this);
-    this->store(Identity::_path(this->_id));
+    this->store(elle::io::Path{Identity::_path(this->_id)});
   }
 
   void
   Identity::erase(elle::String const& user_id)
   {
-    elle::concept::Fileable<>::erase(Identity::_path(user_id));
+    elle::concept::Fileable<>::erase(elle::io::Path{Identity::_path(user_id)});
   }
 
   elle::Boolean

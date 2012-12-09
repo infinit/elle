@@ -1,5 +1,6 @@
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Radix.hh>
 #include <nucleus/neutron/Attributes.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Component.hh>
@@ -38,6 +39,7 @@ namespace nucleus
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 
+      this->_data.contents = nullptr;
       this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
@@ -73,6 +75,7 @@ namespace nucleus
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
 
+      this->_data.contents = nullptr;
       this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
@@ -92,8 +95,8 @@ namespace nucleus
       // (ii)
       {
         // Set the initial data with no contents and the owner as the author.
-        if (this->Update(Author(),
-                         proton::Address::null(),
+        if (this->Update(Author{},
+                         proton::Radix{},
                          0,
                          proton::Address::null(),
                          this->_meta.owner.token) == elle::Status::Error)
@@ -115,7 +118,7 @@ namespace nucleus
     /// this method updates the data section.
     ///
     elle::Status        Object::Update(const Author&            author,
-                                       const proton::Address&   contents,
+                                       const proton::Radix&   contents,
                                        const Size&              size,
                                        const proton::Address&   access,
                                        const Token&             token)
@@ -133,7 +136,11 @@ namespace nucleus
           escape("unable to set the last update time");
 
         // set the address.
-        this->_data.contents = contents;
+        if (this->_data.contents != &contents) // XXX[hack to prevent to much allocations]
+          {
+            delete this->_data.contents;
+            this->_data.contents = new proton::Radix{contents};
+          }
 
         // set the size.
         this->_data.size = size;
@@ -213,7 +220,7 @@ namespace nucleus
           // sign the archive with the author key.
           this->_data.signature =
             k.sign(elle::serialize::make_tuple(
-                     this->_data.contents,
+                     *this->_data.contents,
                      this->_data.size,
                      this->_data.modification_timestamp,
                      this->_data.revision,
@@ -335,10 +342,12 @@ namespace nucleus
       return (*this->_author);
     }
 
-    proton::Address const&
+    proton::Radix const&
     Object::contents() const
     {
-      return (this->_data.contents);
+      ELLE_ASSERT(this->_data.contents);
+
+      return (*this->_data.contents);
     }
 
     Attributes const&
@@ -549,7 +558,7 @@ namespace nucleus
         // verify the signature.
         if (author.Verify(this->_data.signature,
                           elle::serialize::make_tuple(
-                            this->_data.contents,
+                            *this->_data.contents,
                             this->_data.size,
                             this->_data.modification_timestamp,
                             this->_data.revision,
@@ -643,9 +652,7 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Contents]" << std::endl;
-      if (this->_data.contents.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the contents' address");
+                << "[Contents] " << *this->_data.contents << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift

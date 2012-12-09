@@ -10,7 +10,8 @@
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Address.hh> // XXX
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -93,6 +94,7 @@ namespace nucleus
       {
         this->_author = nullptr;
         this->_meta.owner.record = nullptr;
+        this->_data.contents = nullptr;
       }
 
       ~Object();
@@ -102,7 +104,7 @@ namespace nucleus
       //
     public:
       elle::Status      Update(const Author& author,
-                               const proton::Address& contents,
+                               const proton::Radix& contents,
                                const Size& size,
                                const proton::Address& access,
                                const Token& owner_token);
@@ -133,7 +135,7 @@ namespace nucleus
       Author const&
       author() const;
       /// Returns the address of the contents block.
-      proton::Address const&
+      proton::Radix const&
       contents() const;
       /// Returns the attributes associated with the object.
       Attributes const&
@@ -218,7 +220,7 @@ namespace nucleus
       {
         // XXX to implement: proton::Base               base;
 
-        proton::Address contents;
+        proton::Radix* contents;
 
         Size size;
         elle::utility::Time modification_timestamp;

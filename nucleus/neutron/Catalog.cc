@@ -86,10 +86,10 @@ namespace nucleus
           left.footprint(left.footprint() - entry->footprint());
 
           // Insert the entry into the right catalog.
-          right._insert(entry);
+          right.insert(entry);
 
           // Needless to update the capacities: the right's is updated
-          // by calling _insert() while the left's is updated at the
+          // by calling insert() while the left's is updated at the
           // end.
         }
 
@@ -157,10 +157,10 @@ namespace nucleus
           right.footprint(right.footprint() - entry->footprint());
 
           // Insert the entry into the left catalog.
-          left._insert(entry);
+          left.insert(entry);
 
           // Needless to update the capacities: the left's is updated
-          // by calling _insert() while the right's is updated at the
+          // by calling insert() while the right's is updated at the
           // end.
         }
 
@@ -200,7 +200,20 @@ namespace nucleus
 
       std::shared_ptr<Entry> pointer{entry};
 
-      this->_insert(pointer);
+      this->insert(pointer);
+    }
+
+    void
+    Catalog::insert(std::shared_ptr<Entry> const& entry)
+    {
+      ELLE_TRACE_METHOD(entry);
+
+      // Inject the entry in the container.
+      this->_inject(entry);
+
+      // Update the capacity and state.
+      this->capacity(this->capacity() + 1);
+      this->state(proton::State::dirty);
     }
 
     elle::Boolean
@@ -209,6 +222,40 @@ namespace nucleus
       ELLE_TRACE_METHOD(name);
 
       return (this->_container.find(name) != this->_container.end());
+    }
+
+    void
+    Catalog::rename(elle::String const& from,
+                    elle::String const& to)
+    {
+      ELLE_TRACE_METHOD(from, to);
+
+      // Check if this name has already been recorded.
+      if (this->_container.find(to) != this->_container.end())
+        throw Exception("the name '%s' seems to have already been recorded",
+                        to);
+
+      // Locate the entry for the _from_ name.
+      auto iterator = this->_iterator(from);
+
+      // Retrieve the entry.
+      std::shared_ptr<Entry> entry = iterator->second;
+
+      // Rename the entry.
+      entry->name(to);
+
+      // Remove the entry from the container.
+      this->_container.erase(iterator);
+
+      // Re-insert the entry in the container.
+      auto result =
+        this->_container.insert(
+          std::pair<const elle::String, std::shared_ptr<Entry>>(
+            entry->name(), entry));
+
+      // Check if the insertion was successful.
+      if (result.second == false)
+        throw Exception("unable to re-insert the entry in the container");
     }
 
     Entry const&
@@ -274,11 +321,21 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(name);
 
+      // Call take out and forget about the returned
+      // entry, hence (possibly) deleting it.
+      this->takeout(name);
+    }
+
+    std::shared_ptr<Entry>
+    Catalog::takeout(elle::String const& name)
+    {
+      ELLE_TRACE_METHOD(name);
+
       // Locate the entry for the given name.
       auto iterator = this->_iterator(name);
 
       // Retrieve the entry.
-      auto& entry = iterator->second;
+      std::shared_ptr<Entry> entry = iterator->second;
 
       // Substract the entry footprint from the catalog's.
       ELLE_ASSERT(entry->footprint() != 0);
@@ -288,27 +345,17 @@ namespace nucleus
       this->capacity(this->capacity() - 1);
       this->state(proton::State::dirty);
 
-      // Finally, erase (and possibly delete) the entry.
+      // Remove the entry from the container.
       this->_container.erase(iterator);
+
+      // And finally return the pointer.
+      return (entry);
     }
 
     Size
     Catalog::size() const
     {
       return (static_cast<Size>(this->_container.size()));
-    }
-
-    void
-    Catalog::_insert(std::shared_ptr<Entry> const& entry)
-    {
-      ELLE_TRACE_METHOD(entry);
-
-      // Inject the entry in the container.
-      this->_inject(entry);
-
-      // Update the capacity and state.
-      this->capacity(this->capacity() + 1);
-      this->state(proton::State::dirty);
     }
 
     void

@@ -333,7 +333,7 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_value != nullptr);
 
-            this->_value->insert(k, e);
+            this->_value->insert(e);
 
             // Update the porcupine state.
             this->_state = this->_value->state();
@@ -351,7 +351,7 @@ namespace nucleus
 
             value.load();
 
-            value().insert(k, e);
+            value().insert(e);
 
             // Update the porcupine state.
             this->_state = value().state();
@@ -375,7 +375,7 @@ namespace nucleus
             value.load();
 
             // Insert the tuple key/element in the value block.
-            value().insert(k, e);
+            value().insert(e);
 
             value.unload();
 

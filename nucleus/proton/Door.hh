@@ -7,6 +7,9 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
+
 namespace nucleus
 {
   namespace proton
@@ -70,6 +73,9 @@ namespace nucleus
       | Operators |
       `----------*/
     public:
+      /// Return true if both doors reference the same object.
+      elle::Boolean
+      operator ==(Door<T> const& other) const;
       ELLE_OPERATOR_NO_ASSIGNMENT(Door<T>);
 
       /// Return the value of type T.
@@ -127,7 +133,7 @@ namespace nucleus
 
         // attributes
       private:
-        ELLE_ATTRIBUTE(Handle, handle);
+        ELLE_ATTRIBUTE_R(Handle, handle);
         ELLE_ATTRIBUTE(Ambit<T>, ambit);
       };
 

@@ -77,6 +77,4 @@ namespace etoile
   }
 }
 
-# include <etoile/gear/Context.hxx>
-
 #endif

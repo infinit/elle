@@ -106,7 +106,8 @@ namespace lune
     elle::String element;
 
     // read the file's content.
-    if (elle::io::File::Read(Set::_path(user, network), region) == elle::Status::Error)
+    if (elle::io::File::Read(elle::io::Path{Set::_path(user, network)},
+                             region) == elle::Status::Error)
       throw std::runtime_error("unable to read the file's content");
 
     // set up the stream.
@@ -161,14 +162,16 @@ namespace lune
   Set::erase(elle::String const& user,
              elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Set::_path(user, network));
+    elle::concept::Fileable<>::erase(
+      elle::io::Path{Set::_path(user, network)});
   }
 
   elle::Boolean
   Set::exists(elle::String const& user,
               elle::String const& network)
   {
-    return (elle::concept::Fileable<>::exists(Set::_path(user, network)));
+    return (elle::concept::Fileable<>::exists(
+      elle::io::Path{Set::_path(user, network)}));
   }
 
 }
