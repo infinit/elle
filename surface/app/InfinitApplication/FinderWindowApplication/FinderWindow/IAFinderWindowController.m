@@ -77,7 +77,6 @@
 
 - (void)_updateCurrentView
 {
-    NSLog(@"BIET Updating current view");
     if ([IAGapState instance] == nil)
     {
         return;

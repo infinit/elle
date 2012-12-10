@@ -102,7 +102,7 @@
 //- operation function bloc -----------------------------------------------------
 
 // Block type to queue gap operation
-typedef int(^gap_operation_t)(void);
+typedef int(^gap_operation_t)(NSOperation*);
 
 //- Operation result ------------------------------------------------------------
 
@@ -328,7 +328,7 @@ static void on_transaction_status(char const* transaction);
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
-    [self _addOperation:^gap_Status(void) {
+    [self _addOperation:^gap_Status(NSOperation* op) {
         if (![files count])
         {
             return gap_error;
@@ -353,7 +353,7 @@ static void on_transaction_status(char const* transaction);
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
-    [self _addOperation:^(void) {
+    [self _addOperation:^(NSOperation* op) {
         gap_Status res;
         res = gap_update_transaction(self.state,
                                      [transaction.transaction_id UTF8String],
@@ -367,7 +367,7 @@ static void on_transaction_status(char const* transaction);
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
-    [self _addOperation:^(void) {
+    [self _addOperation:^(NSOperation* op) {
         gap_Status res;
         res = gap_update_transaction(self.state,
                                      [transaction.transaction_id UTF8String],
@@ -380,7 +380,7 @@ static void on_transaction_status(char const* transaction);
                  performSelector:(SEL)selector
                         onObject:(id)object
 {
-    [self _addOperation:^(void) {
+    [self _addOperation:^(NSOperation* op) {
         gap_Status res;
         res = gap_update_transaction(self.state,
                                      [transaction.transaction_id UTF8String],
@@ -401,7 +401,7 @@ static void on_transaction_status(char const* transaction);
 {
     NSLog(@"Calling login method");
 //    __weak id this = self;
-    [self _addOperation:^(void) {
+    [self _addOperation:^(NSOperation* op) {
         NSLog(@"Starting LOGIN");
         char* hash_password = gap_hash_password(self.state,
                                                 [login UTF8String],
@@ -444,7 +444,7 @@ static void on_transaction_status(char const* transaction);
                          onObject:(id)object
 {
 //    __weak id this = self;
-    [self _addOperation:^(void) {
+    [self _addOperation:^(NSOperation* op) {
         gap_Status res;
         char* hash_password = gap_hash_password(self.state,
                                                 [login UTF8String],
@@ -468,32 +468,62 @@ static void on_transaction_status(char const* transaction);
 }
 
 
+- (NSOperation*)searchUsers:(NSString*)str
+            performSelector:(SEL)selector
+                   onObject:(id)object
+{
+    NSMutableArray* user_array = [NSMutableArray array];
+    return [self _addOperation:^(NSOperation* op) {
+        char** users = gap_search_users(self.state, [str UTF8String]);
+        if (users == NULL)
+            return gap_error;
+        if (user_array == nil)
+            return gap_error;
+        for (char** user = users; *user != NULL; ++user)
+        {
+            IAUser* full_user = [IAUser userWithId:[NSString stringWithUTF8String:*user]];
+            [user_array addObject:full_user];
+        }
+        return gap_ok;
+    }   performSelector:selector
+               onObject:object
+               withData:user_array];
+}
 
 
 // Wrap any operation in a block and execute it in the mail thread
--(void) _addOperation:(gap_operation_t)operation
+-(NSOperation*) _addOperation:(gap_operation_t)operation
       performSelector:(SEL)selector
              onObject:(id)object
 {
-    [self addOperationWithBlock:^(void) {
-        int result = operation();
-        [object performSelectorOnMainThread:selector
-                                 withObject:[[IAGapOperationResult alloc] initWithStatusCode:result]
-                              waitUntilDone:NO];
-    }];
+    return [self _addOperation:operation
+               performSelector:selector
+                      onObject:object
+                      withData:nil];
 }
 
--(void) _addOperation:(gap_operation_t)operation
+-(NSOperation*) _addOperation:(gap_operation_t)operation
       performSelector:(SEL)selector
              onObject:(id)object
              withData:(id)data
 {
-    [self addOperationWithBlock:^(void) {
-        int result = operation();
+    __block NSBlockOperation* block_operation =
+    [NSBlockOperation blockOperationWithBlock:^(void) {
+        int result = operation(block_operation);
+        if ([block_operation isCancelled])
+            return;
+        id operation_result = [[IAGapOperationResult alloc] initWithStatusCode:result
+                                                                       andData:data];
+        if ([block_operation isCancelled])
+            return;
+        NSLog(@"Calling %@.%@", object, NSStringFromSelector(selector));
         [object performSelectorOnMainThread:selector
-                                 withObject:[[IAGapOperationResult alloc] initWithStatusCode:result andData:data]
+                                 withObject:operation_result
                               waitUntilDone:NO];
     }];
+    
+    [self addOperation:block_operation];
+    return block_operation;
 }
 
 

@@ -83,10 +83,8 @@ static void* _context_for_active_panel_event_unique_identifier = (void*)"hasActi
 #ifdef DEBUG_WITHOUT_FINDER
     self._window_controller = [[IAFinderWindowController alloc] initFromNib];
     
-    NSPoint p;
-    p.x = 400;
-    p.y = 400;
-    [[self._window_controller window] setFrameOrigin:p];
+    NSRect frame = NSMakeRect(400, 200, 1000, 800);
+    [[self._window_controller window] setFrame:frame display:YES];
     [self._window_controller showWindow:self];
 #else
     [self doInject:self];

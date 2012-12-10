@@ -14,4 +14,9 @@
 
 # define INFINIT_FINDER_PLUGIN_NAME     @"FinderPlugin"
 # define INFINIT_MACH_BUNBLE_STUB_NAME  @"mach_inject_bundle_stub"
+
+// When defined, the window is shown on its own
+// Otherwise, it is injected into the Finder
+#define DEBUG_WITHOUT_FINDER
+
 #endif

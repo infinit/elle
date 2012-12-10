@@ -37,4 +37,31 @@
           dirtyRect.size.height);
 }
 
+- (void)moveSelectionDown
+{
+    NSUInteger row = [self selectedRow] + 1;
+    if (row == [self numberOfRows])
+        row = 0;
+    [self selectRow:row];
+}
+
+- (void)selectRow:(NSUInteger)row
+{
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:row];
+    [self selectRowIndexes:indexSet byExtendingSelection:NO];
+}
+
+- (void)moveSelectionUp
+{
+    NSUInteger row = [self selectedRow];
+    if (row == 0)
+        row = [self numberOfRows];
+    [self selectRow:row - 1];
+}
+
+- (void)selectFirstRow
+{
+    [self selectRow:0];
+}
+
 @end

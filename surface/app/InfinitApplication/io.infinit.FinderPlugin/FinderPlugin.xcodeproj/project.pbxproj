@@ -10,17 +10,19 @@
 		BD7212BD16317BEC00B2AB22 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD7212BB16317BEC00B2AB22 /* InfoPlist.strings */; };
 		BD7212C816317CBD00B2AB22 /* Test.m in Sources */ = {isa = PBXBuildFile; fileRef = BD7212C316317BF600B2AB22 /* Test.m */; };
 		BD7212C916317CD700B2AB22 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F97CD16314A4500C1BD49 /* Cocoa.framework */; };
+		BD9107A11675E5540064176A /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9107A01675E5540064176A /* FinderWindow.framework */; };
+		BD9107A31675E5BE0064176A /* FinderWindow.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD9107A01675E5540064176A /* FinderWindow.framework */; };
 		BDC694791638214F001A64A0 /* 18px-sidebar-active.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC694781638214F001A64A0 /* 18px-sidebar-active.png */; };
-		F4446940166640260041896C /* FinderWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F444693F166640260041896C /* FinderWindow.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		BD4B49A6163A9BAB00EFC714 /* CopyFiles */ = {
+		BD9107A21675E5AB0064176A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				BD9107A31675E5BE0064176A /* FinderWindow.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,13 +37,13 @@
 		BD7212C216317BF600B2AB22 /* Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
 		BD7212C316317BF600B2AB22 /* Test.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Test.m; sourceTree = "<group>"; };
 		BD740F3F1630333C0093157A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		BD9107A01675E5540064176A /* FinderWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderWindow.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-dtzukbvgtzihoudnbhcipbjpuyfn/Build/Products/Debug/FinderWindow.framework"; sourceTree = "<group>"; };
 		BDC6947616380FE2001A64A0 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../InfinitDaemon/InfinitDaemon/config.h; sourceTree = "<group>"; };
 		BDC6947716381255001A64A0 /* IPCInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPCInterface.h; path = ../../InfinitDaemon/InfinitDaemon/IPCInterface.h; sourceTree = "<group>"; };
 		BDC694781638214F001A64A0 /* 18px-sidebar-active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18px-sidebar-active.png"; sourceTree = "<group>"; };
 		BDD9D630163167D8007B941A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		BDD9D631163167D8007B941A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		BDD9D632163167D8007B941A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F444693F166640260041896C /* FinderWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderWindow.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/InfinitWorkspace-codluknbkinfcybrnmkqdlovaccr/Build/Products/Debug/FinderWindow.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4446940166640260041896C /* FinderWindow.framework in Frameworks */,
+				BD9107A11675E5540064176A /* FinderWindow.framework in Frameworks */,
 				BD7212C916317CD700B2AB22 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,7 +85,7 @@
 		BD740F311630333C0093157A = {
 			isa = PBXGroup;
 			children = (
-				F444693F166640260041896C /* FinderWindow.framework */,
+				BD9107A01675E5540064176A /* FinderWindow.framework */,
 				BD7212B816317BEC00B2AB22 /* FinderPlugin */,
 				BD740F3E1630333C0093157A /* Frameworks */,
 				BD740F3D1630333C0093157A /* Products */,
@@ -128,7 +130,7 @@
 				BD7212B216317BEC00B2AB22 /* Sources */,
 				BD7212B316317BEC00B2AB22 /* Frameworks */,
 				BD7212B416317BEC00B2AB22 /* Resources */,
-				BD4B49A6163A9BAB00EFC714 /* CopyFiles */,
+				BD9107A21675E5AB0064176A /* CopyFiles */,
 			);
 			buildRules = (
 			);

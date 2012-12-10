@@ -18,6 +18,9 @@
 - (void)hide;
 - (void)show;
 
+- (void)moveSelectionDown;
+- (void)moveSelectionUp;
+
 @property (nonatomic, readonly) BOOL hidden;
 @property (nonatomic, readonly) IASearchResultsTableView* table_view;
 @end

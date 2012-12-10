@@ -41,7 +41,7 @@
                     defer:(BOOL)flag
 {
     if ((self = [super initWithContentRect:contentRect
-								 styleMask:aStyle//NSBorderlessWindowMask
+								 styleMask:NSBorderlessWindowMask
 								   backing:bufferingType
 									 defer:NO]))
     {
@@ -56,13 +56,14 @@
         NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"SearchUserResult"];
         [column setWidth:200];
         [_table_view addTableColumn:column];
+        [_table_view setAllowsMultipleSelection:NO];
+        [_table_view setAllowsEmptySelection:NO];
+        [_table_view setHeaderView:nil];
+        [_table_view setRowHeight:20];
         [container setDocumentView:_table_view];
         [container setHasVerticalScroller:YES];
-       // [[self contentView] addSubview:container];
+        [container setAutohidesScrollers:YES];
         [self setContentView:container];
-//        [_table_view setFrame:NSMakeRect(0, 0, 100, 100)];
-        [container setBackgroundColor:[NSColor redColor]];
-        [self show];
     }
     
     return self;
@@ -108,5 +109,6 @@
 - (BOOL)acceptsFirstResponder { return NO; }
 - (BOOL)becomeFirstResponder { return NO; }
 - (BOOL)resignFirstResponder { return YES; }
+
 
 @end

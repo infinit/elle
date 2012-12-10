@@ -10,4 +10,9 @@
 
 @interface IASearchResultsTableView : NSTableView
 
+- (void)selectRow:(NSUInteger)row;
+- (void)selectFirstRow;
+- (void)moveSelectionDown;
+- (void)moveSelectionUp;
+
 @end

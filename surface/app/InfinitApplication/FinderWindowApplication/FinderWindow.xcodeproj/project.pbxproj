@@ -32,6 +32,8 @@
 		BD8409D41641A248004C9C97 /* IARegisterView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD8409D21641A247004C9C97 /* IARegisterView.m */; };
 		BD8C3F70164AC7C600BED07C /* active_status_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BD8C3F6B164AC5B600BED07C /* active_status_icon.png */; };
 		BD8C3F76164BC8F700BED07C /* IAUserSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FCF1648163A008FCDAB /* IAUserSearchBar.m */; };
+		BD91079E1675E47C0064176A /* libgap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD6C0D481663A2CC00A3065A /* libgap.dylib */; };
+		BD9107A516763EFC0064176A /* Kitten.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BD9107A416763EFC0064176A /* Kitten.jpg */; };
 		BDAED99E16650437007C7F02 /* Logo-big.png in Resources */ = {isa = PBXBuildFile; fileRef = BDB63FD116481FCE008FCDAB /* Logo-big.png */; };
 		BDB63FC31647D14C008FCDAB /* IADropFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB63FC11647D14C008FCDAB /* IADropFileView.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BDB63FC41647D14C008FCDAB /* IADropFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB63FC21647D14C008FCDAB /* IADropFileView.m */; };
@@ -54,8 +56,9 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolderSpec = 1;
 			files = (
+				BD91079E1675E47C0064176A /* libgap.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +94,7 @@
 		BD8409D11641A247004C9C97 /* IARegisterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IARegisterView.h; sourceTree = "<group>"; };
 		BD8409D21641A247004C9C97 /* IARegisterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IARegisterView.m; sourceTree = "<group>"; };
 		BD8C3F6B164AC5B600BED07C /* active_status_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = active_status_icon.png; sourceTree = "<group>"; };
+		BD9107A416763EFC0064176A /* Kitten.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Kitten.jpg; sourceTree = "<group>"; };
 		BDB63FC11647D14C008FCDAB /* IADropFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IADropFileView.h; sourceTree = "<group>"; };
 		BDB63FC21647D14C008FCDAB /* IADropFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IADropFileView.m; sourceTree = "<group>"; };
 		BDB63FCE1648163A008FCDAB /* IAUserSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAUserSearchBar.h; sourceTree = "<group>"; };
@@ -211,6 +215,7 @@
 		BDB63FC81647D3F2008FCDAB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BD9107A416763EFC0064176A /* Kitten.jpg */,
 				BD8C3F6B164AC5B600BED07C /* active_status_icon.png */,
 				BDB63FD116481FCE008FCDAB /* Logo-big.png */,
 				BD1BE37D164426FC004810F9 /* Logo-Complet-bichromie.png */,
@@ -357,6 +362,7 @@
 				BD1A1C2C163946A500186C48 /* InfoPlist.strings in Resources */,
 				BD1A1C36163947E000186C48 /* FinderWindow.xib in Resources */,
 				BD1BE37E164426FC004810F9 /* Logo-Complet-bichromie.png in Resources */,
+				BD9107A516763EFC0064176A /* Kitten.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

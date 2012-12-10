@@ -18,6 +18,8 @@
 
 @interface IAUser : NSObject
 
++ (IAUser*)userWithId:(NSString*)user_id;
+
 @property (retain)              NSString*       user_id;
 @property (nonatomic, readonly) gap_UserStatus  status;
 
@@ -124,6 +126,14 @@
                         onObject:(id)object;
 
 #endif
+
+
+/**
+ * @brief Search users that match a string.
+ */
+- (NSOperation*)searchUsers:(NSString*)str
+            performSelector:(SEL)selector
+                   onObject:(id)object;
 
 /**
  * @brief Accept transaction.

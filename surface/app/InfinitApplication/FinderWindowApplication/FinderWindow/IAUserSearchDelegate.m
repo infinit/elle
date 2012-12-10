@@ -13,6 +13,7 @@
 {
 @private
     NSMutableArray* _users;
+    NSOperation*    _current_search;
 }
 
 - (IASearchResultsTableView*)table_view
@@ -20,6 +21,15 @@
     return self.search_window.table_view;
 }
 
+-(id)init
+{
+    if (self = [super init])
+    {
+        _users = nil;
+        _current_search = nil;
+    }
+    return self;
+}
 - (void)awakeFromNib
 {
     NSLog(@"Awake from nib, cell: %@, window: %@", self.search_bar.cell, self.main_window);
@@ -43,7 +53,7 @@
     pos.origin.y += self.search_bar.frame.origin.y;
     pos.size = self.search_bar.frame.size;
     pos.size.height = 400;
-    pos.size.width = 600;
+//    pos.size.width = 600;
     return pos;
 }
 
@@ -52,11 +62,19 @@
 
     NSLog(@"search for %@", [self.search_bar.cell stringValue]);
     NSString* str = [self.search_bar.cell stringValue];
+    if (_current_search != nil)
+    {
+        [_current_search cancel];
+        _current_search = nil;
+    }
     
     [self.main_view_controller refresh];
 
     if (str && [str length])
     {
+        _current_search = [[IAGapState instance] searchUsers:str
+                                             performSelector:@selector(_onUserResults:)
+                                                    onObject:self];
         [self.search_window updatePosition:[self _getWindowPosition]];
         [self.search_window show];
         [self.table_view reloadData];
@@ -66,10 +84,28 @@
         [self.search_window hide];
 }
 
+- (void)_onUserResults:(IAGapOperationResult*)result
+{
+    _current_search = nil;
+    if (result.error)
+    {
+        NSLog(@"Couldn't search users: %d", result.status);
+    }
+    NSString* str = [self.search_bar.cell stringValue];
+    if (str && [str length])
+    {
+        assert([result.data isKindOfClass:[NSMutableArray class]]);
+        _users = (NSMutableArray*)result.data;
+        [self.table_view reloadData];
+        [self.table_view selectFirstRow];
+    }
+    else
+        [self.search_window hide];
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view
 {
-    NSLog(@"COUNT!");
-    return 2;
+    return 3;
     return [_users count];
 }
 
@@ -93,14 +129,40 @@
         result = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
         result.identifier = cell_id;
     }
+
+    [result setStringValue:[NSString stringWithFormat:@"row: %ld", row]];
+//    IAUser* user = [_users objectAtIndex:row];
+//    [result setStringValue:[NSString stringWithFormat:@"user_id: %@", user.user_id]];
     
-    
-    // TODO set user here
-    [result setStringValue:[NSString stringWithFormat:@"row %li", row]];
-    
-    [result setBackgroundColor:[NSColor redColor]];
+    [result setBackgroundColor:[NSColor clearColor]];
     NSLog(@"Return row %@", result);
     return result;
+}
+
+- (BOOL)        control:(NSControl *)control
+               textView:(NSTextView*)text_view
+    doCommandBySelector:(SEL)command
+{
+    if (control != self.search_bar)
+        return NO;
+    
+    if (command == @selector(moveUp:))
+    {
+        [self.table_view moveSelectionUp];
+    }
+    else if (command == @selector(moveDown:))
+    {
+        [self.table_view moveSelectionDown];
+    }
+    else if (command == @selector(insertNewline:))
+    {
+        [self.search_window hide];
+    }
+    else
+    {
+        return NO;
+    }
+    return YES;
 }
 
 //-(id)           tableView:(NSTableView *)aTableView
