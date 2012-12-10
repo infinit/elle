@@ -2,6 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <elle/radix/Object.hh>
 
@@ -26,6 +27,7 @@ namespace infinit
     /// this class represents a secret key for symmetric encryption.
     ///
     class SecretKey:
+      public elle::Printable,
       public elle::radix::Object
     {
     public:
@@ -111,9 +113,12 @@ namespace infinit
       // object
       declare(SecretKey);
       elle::Boolean           operator==(const SecretKey&) const;
-
       // dumpable
       elle::Status            Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
     public:
       elle::standalone::Region region;
