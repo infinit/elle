@@ -307,13 +307,17 @@ namespace satellite
                         elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      // clear the network directory content.
-      if (elle::io::Directory::Clear(path) == elle::Status::Error)
-        escape("unable to clear the directory");
+      // if the network exists, clear it and remove it.
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
+        {
+          // clear the network directory content.
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
+            escape("unable to clear the directory");
 
-      // remove the directory.
-      if (elle::io::Directory::Remove(path) == elle::Status::Error)
-        escape("unable to remove the directory");
+          // remove the directory.
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
+            escape("unable to remove the directory");
+        }
     }
 
     return elle::Status::Ok;

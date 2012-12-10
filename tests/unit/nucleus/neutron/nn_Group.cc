@@ -40,7 +40,7 @@ void test1()
                       new nucleus::neutron::Fellow(
                         subject, nucleus::neutron::Token::null()))));
 
-        assert(group.state() == nucleus::proton::StateDirty);
+        assert(group.state() == nucleus::proton::State::dirty);
       }
 
   ELLE_TRACE("Update the ensemble with the private pass")
@@ -57,14 +57,14 @@ void test1()
 
       group.upgrade(ensemble_address, pass.K(), manager_token);
 
-      assert(group.state() == nucleus::proton::StateDirty);
+      assert(group.state() == nucleus::proton::State::dirty);
     }
 
   ELLE_TRACE("Seal the group")
     {
       group.seal(owner.k());
 
-      assert(group.state() == nucleus::proton::StateConsistent);
+      assert(group.state() == nucleus::proton::State::consistent);
     }
 
   ELLE_TRACE("Bind the group block");

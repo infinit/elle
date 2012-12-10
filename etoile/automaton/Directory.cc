@@ -25,10 +25,12 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
-      context.object =
+      ELLE_ASSERT(context.object == nullptr);
+
+      context.object.reset(
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
                                      agent::Agent::Identity.pair.K(),
-                                     nucleus::neutron::Genre::directory);
+                                     nucleus::neutron::Genre::directory));
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -79,8 +81,6 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, name, address);
 
-      nucleus::neutron::Size size;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -110,7 +110,15 @@ namespace etoile
       // Add the entry to the catalog.
       door().insert(new nucleus::neutron::Entry{name, address});
 
+      // XXX
+      printf("INSERTED\n");
+      door().Dump();
+
       door.close();
+
+      // XXX
+      printf("DUMP\n");
+      context.porcupine->dump();
 
       // Update the porcupine.
       context.porcupine->update(name);
@@ -148,11 +156,9 @@ namespace etoile
       // check if the current user has the right the read the catalog.
       if ((context.rights.permissions & nucleus::neutron::permissions::read) !=
           nucleus::neutron::permissions::read)
-        escape("%s", (
-            "the user does not seem to have the permission to read "
-            "this directory (permissions=" +
-            elle::sprint(context.rights.permissions) + ")"
-        ).c_str());
+        throw elle::Exception("the user does not seem to have the permission "
+                              "(%s) to read this directory",
+                              context.rights.permissions);
 
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
@@ -170,9 +176,17 @@ namespace etoile
 
       door.open();
 
-      // Look up the entry.
-      // XXX[we take the address of the reference: wrong]
-      entry = &(door().locate(name));
+      // XXX[does the entry exist: if not, return a null pointer]
+      if (door().exist(name) == false)
+        {
+          entry = nullptr;
+        }
+      else
+        {
+          // Look up the entry.
+          // XXX[we take the address of the reference: wrong]
+          entry = &(door().locate(name));
+        }
 
       door.close();
 
@@ -213,6 +227,10 @@ namespace etoile
         escape("the user does not seem to be able to operate on this "
                "directory");
 
+      // Check if the index is out of range.
+      if (index >= context.porcupine->size())
+        return elle::Status::Ok;
+
       // Seek the catalog responsible for the given index.
       auto _index = static_cast<nucleus::proton::Capacity>(index);
       auto _size = size;
@@ -226,9 +244,14 @@ namespace etoile
           door.open();
 
           auto start = _index - base;
-          auto length = _size > door().size() - start ?
-            door().size() - start :
-            _size;
+          auto length = _size > (door().size() - start) ?
+            (door().size() - start) : _size;
+
+          // If the length is null, this means that there is not enough
+          // information to fill the range i.e there are less entries than
+          // the requested _size_.
+          if (length == 0)
+            break;
 
           // Retrieve the directory entries falling in the requested
           // range [index, index + size[.
@@ -237,15 +260,13 @@ namespace etoile
 
           door.close();
 
-          // Inject/merge the retrieved entries into the main range.
+          // Inject the retrieved entries into the main range.
           range.add(subrange);
 
           // Update the variables _index and _size.
           _index += length;
           _size -= length;
         }
-
-      ELLE_ASSERT(range.size() == size);
 
       return elle::Status::Ok;
     }
@@ -259,8 +280,6 @@ namespace etoile
                           const path::Slice&                    to)
     {
       ELLE_TRACE_FUNCTION(context, from, to);
-
-      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -399,8 +418,6 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, name);
 
-      nucleus::neutron::Size size;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -460,8 +477,8 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // discard the object-related information.
-      if (Object::Destroy(context) == elle::Status::Error)
-        escape("unable to destroy the object");
+      if (Object::Discard(context) == elle::Status::Error)
+        escape("unable to discard the object");
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;

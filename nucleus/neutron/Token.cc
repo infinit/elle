@@ -125,7 +125,9 @@ namespace nucleus
             std::cout << alignment << "[Token] " << std::endl;
 
             if (this->_valid->code().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the parent Code class");
+              escape("unable to dump the code");
+
+            break;
           }
         default:
           throw Exception("unknown token type '%s'", this->_type);

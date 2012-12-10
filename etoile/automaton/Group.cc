@@ -6,6 +6,7 @@
 #include <etoile/abstract/Group.hh>
 
 #include <nucleus/neutron/Group.hh>
+#include <nucleus/neutron/Ensemble.hh>
 
 #include <agent/Agent.hh>
 
@@ -29,10 +30,12 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, description);
 
-      context.group =
+      ELLE_ASSERT(context.group == nullptr);
+
+      context.group.reset(
         new nucleus::neutron::Group(nucleus::proton::Network(Infinit::Network),
                                     agent::Agent::Subject.user(),
-                                    description);
+                                    description));
 
       // Manually set the group as dirty for the automata to consider it
       // new and ready to be serialized. Otherwise, the group would be ignored.
@@ -66,18 +69,12 @@ namespace etoile
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
 
-      // XXX[remove try/catch later]
-      try
-        {
-          context.group =
-            depot::Depot::pull_group(
-              context.location.address(),
-              context.location.revision()).release();
-        }
-      catch (std::exception const& e)
-        {
-          escape("%s", e.what());
-        }
+      ELLE_ASSERT(context.group == nullptr);
+
+      context.group.reset(
+        depot::Depot::pull_group(
+          context.location.address(),
+          context.location.revision()).release());
 
       // compute the base in order to seal the block's original state.
       context.group->base(nucleus::proton::Base(*context.group));
@@ -134,22 +131,14 @@ namespace etoile
           if (Ensemble::Open(context) == elle::Status::Error)
             escape("unable to open the ensemble block");
 
-          // XXX[remove try/catch]
-          try
-            {
-              /// Deliberately provide a null token because the right token
-              /// will be generated when the group is closed. This improves
-              /// the performance by delaying the cryptographic operations.
-              context.ensemble->add(
-                std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-                            new nucleus::neutron::Fellow(
-                              subject,
-                              nucleus::neutron::Token::null()))));
-            }
-          catch (...)
-            {
-              escape("unable to add the subject to the ensemble");
-            }
+          /// Deliberately provide a null token because the right token
+          /// will be generated when the group is closed. This improves
+          /// the performance by delaying the cryptographic operations.
+          context.ensemble->add(
+            std::move(std::unique_ptr<nucleus::neutron::Fellow>(
+                        new nucleus::neutron::Fellow(
+                          subject,
+                          nucleus::neutron::Token::null()))));
         }
 
       // is the target subject the user i.e the group manager in this case.
@@ -215,15 +204,7 @@ namespace etoile
               if (Ensemble::Open(context) == elle::Status::Error)
                 escape("unable to open the ensemble block");
 
-              // XXX[remove try/catch]
-              try
-                {
-                  fellow = &context.ensemble->locate(subject);
-                }
-              catch (...)
-                {
-                  escape("unable to lookup the subject in the ensemble");
-                }
+              fellow = &context.ensemble->locate(subject);
             }
         }
 
@@ -253,20 +234,11 @@ namespace etoile
           // Consult the ensemble by taking care of consulting one fellow
           // less i.e the manager's.
 
-          // XXX[remove try/catch]
-          try
-            {
-              nucleus::neutron::Range<nucleus::neutron::Fellow> r;
+          nucleus::neutron::Range<nucleus::neutron::Fellow> subrange{
+            context.ensemble->consult(index, size - 1)};
 
-              r = context.ensemble->consult(index, size - 1);
-
-              // XXX[this is not optimised: insert the manager afterwards]
-              range.add(r);
-            }
-          catch (...)
-            {
-              escape("unable to consult the ensemble");
-            }
+          // XXX[this is not optimised: insert the manager afterwards]
+          range.add(subrange);
         }
       else
         {
@@ -274,15 +246,7 @@ namespace etoile
           // one index before since the manager's fellow, which is not located
           // in the ensemble block, counts as one fellow.
 
-          // XXX[remove try/catch]
-          try
-            {
-              range = context.ensemble->consult(index - 1, size);
-            }
-          catch (...)
-            {
-              escape("unable to consult the ensemble");
-            }
+          range = context.ensemble->consult(index - 1, size);
         }
 
       return elle::Status::Ok;
@@ -321,15 +285,7 @@ namespace etoile
           if (Ensemble::Open(context) == elle::Status::Error)
             escape("unable to open the ensemble block");
 
-          // XXX[remove try/catch]
-          try
-            {
-              context.ensemble->remove(subject);
-            }
-          catch (...)
-            {
-              escape("unable to remove the subject from the ensemble");
-            }
+          context.ensemble->remove(subject);
         }
 
       // is the target subject the user i.e the group manager in this case.
@@ -378,10 +334,9 @@ namespace etoile
       if (Ensemble::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the ensemble");
 
-      /* XXX[porcupine]
       // mark the group as needing to be removed.
-      context.transcript.wipe(context.location.address());
-      */
+      context.transcript.record(
+        new gear::action::Wipe(context.location.address()));
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -416,10 +371,9 @@ namespace etoile
 
           context.group->seal(agent::Agent::Identity.pair.k());
 
-          /* XXX[porcupine]
           // mark the block as needing to be stored.
-          context.transcript.push(context.location.address(), context.group);
-          */
+          context.transcript.record(
+            new gear::action::Push(context.location.address(), context.group));
         }
 
       // set the context's state.

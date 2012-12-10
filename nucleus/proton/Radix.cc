@@ -113,6 +113,12 @@ namespace nucleus
     | Methods |
     `--------*/
 
+    elle::Boolean
+    Radix::empty() const
+    {
+      return (this->_strategy == Strategy::none);
+    }
+
     cryptography::Cipher const&
     Radix::value() const
     {

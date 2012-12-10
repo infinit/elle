@@ -29,11 +29,11 @@ namespace etoile
                     elle::String const& name,
                     elle::String const& value)
     {
+      ELLE_TRACE_FUNCTION(identifier, name, value);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_SCOPE("Set()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -66,11 +66,11 @@ namespace etoile
     Attributes::get(gear::Identifier const& identifier,
                     elle::String const& name)
     {
+      ELLE_TRACE_FUNCTION(identifier, name);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_SCOPE("Get()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -106,11 +106,11 @@ namespace etoile
     nucleus::neutron::Range<nucleus::neutron::Trait>
     Attributes::fetch(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_SCOPE("Fetch()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -145,11 +145,11 @@ namespace etoile
                           const gear::Identifier&               identifier,
                           const elle::String&                   name)
     {
+      ELLE_TRACE_FUNCTION(identifier, name);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ELLE_TRACE_SCOPE("Omit()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

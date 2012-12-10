@@ -67,10 +67,12 @@ namespace etoile
           if (context.object->owner_token() != nucleus::neutron::Token::null())
             {
               // extract the secret key from the token.
+              delete context.rights.key;
               context.rights.key =
-                context.object->owner_token().
-                  extract<cryptography::SecretKey>(
-                    agent::Agent::Identity.pair.k());
+                new cryptography::SecretKey{
+                  context.object->owner_token().
+                    extract<cryptography::SecretKey>(
+                      agent::Agent::Identity.pair.k())};
             }
 
           // set the record for ease purpose.
@@ -122,10 +124,12 @@ namespace etoile
               if (context.rights.record->token() != nullptr)
                 {
                   // extract the secret key from the token.
+                  delete context.rights.key;
                   context.rights.key =
-                    context.rights.record->token()->
-                      extract<cryptography::SecretKey>(
-                        agent::Agent::Identity.pair.k());
+                    new cryptography::SecretKey{
+                      context.rights.record->token()->
+                        extract<cryptography::SecretKey>(
+                          agent::Agent::Identity.pair.k())};
                 }
             }
           else
@@ -218,9 +222,11 @@ namespace etoile
 
                               // With the private pass, one can decrypt the
                               // access token associated with the group.
+                              delete context.rights.key;
                               context.rights.key =
-                                context.rights.record->token()->extract<cryptography::SecretKey>(
-                                  pass_k);
+                                new cryptography::SecretKey{
+                                  context.rights.record->token()->extract<cryptography::SecretKey>(
+                                    pass_k)};
                             }
                           else
                             {
@@ -304,8 +310,10 @@ namespace etoile
                                       // With the private pass, one can decrypt
                                       // the access token associated with the
                                       // group.
+                                      delete context.rights.key;
                                       context.rights.key =
-                                        context.rights.record->token()->extract<cryptography::SecretKey>(pass_k);
+                                        new cryptography::SecretKey{
+                                          context.rights.record->token()->extract<cryptography::SecretKey>(pass_k)};
                                     }
                                   else
                                     {

@@ -54,6 +54,9 @@ namespace nucleus
           {
             if (this->_state == State::loaded)
               {
+                // XXX
+                ELLE_ASSERT(false && "should not be called: in an ideal world");
+
                 ELLE_TRACE("unloading on destruction");
 
                 this->unload();

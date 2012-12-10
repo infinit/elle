@@ -5,7 +5,6 @@
 
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
-# include <nucleus/neutron/Group.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
@@ -41,7 +40,6 @@ namespace etoile
       // constructors & destructors
       //
       Group();
-      ~Group();
 
       //
       // interfaces
@@ -55,8 +53,8 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      nucleus::neutron::Group* group;
-      nucleus::neutron::Ensemble* ensemble;
+      std::shared_ptr<nucleus::neutron::Group> group;
+      std::shared_ptr<nucleus::neutron::Ensemble> ensemble;
 
       struct
       {
@@ -66,7 +64,5 @@ namespace etoile
 
   }
 }
-
-# include <etoile/gear/Group.hxx>
 
 #endif

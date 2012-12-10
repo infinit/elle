@@ -58,17 +58,17 @@ namespace elle
 # define ELLE_TRACE_FUNCTION(...)                                       \
   ELLE_TRACE_SCOPE("%s(%s)",                                            \
                    __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(','),          \
+                   elle::sprint(elle::iomanip::Separator(", "),         \
                                 ##__VA_ARGS__))
 # define ELLE_DEBUG_FUNCTION(...)                                       \
   ELLE_DEBUG_SCOPE("%s(%s)",                                            \
                    __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(','),          \
+                   elle::sprint(elle::iomanip::Separator(", "),         \
                                 ##__VA_ARGS__))
 # define ELLE_DUMP_FUNCTION(...)                                        \
   ELLE_DUMP_SCOPE("%s(%s)",                                             \
                   __FUNCTION__,                                         \
-                  elle::sprint(elle::iomanip::Separator(','),           \
+                  elle::sprint(elle::iomanip::Separator(", "),          \
                                ##__VA_ARGS__))
 
 /// Shortcut to trace a method name, the instance and its arguments.
@@ -76,20 +76,23 @@ namespace elle
 /// @param  the list of arguments
 /// XXX does not work with empty call
 # define ELLE_TRACE_METHOD(...)                                         \
-  ELLE_TRACE_SCOPE("#%s %s(%s)",                                        \
-                   this, __FUNCTION__,                                  \
-                   elle::sprint(elle::iomanip::Separator(','),          \
-                                ##__VA_ARGS__))
+  ELLE_TRACE_SCOPE("%s(%s) <at %s>",                                    \
+                   __FUNCTION__,                                        \
+                   elle::sprint(elle::iomanip::Separator(", "),         \
+                                ##__VA_ARGS__),                         \
+                   this)
 # define ELLE_DEBUG_METHOD(...)                                         \
-  ELLE_DEBUG_SCOPE("#%s %s(%s)",                                        \
-                   this, __FUNCTION__,                                  \
-                   elle::sprint(elle::iomanip::Separator(','),          \
-                                ##__VA_ARGS__))
+  ELLE_DEBUG_SCOPE("%s(%s) <at %s>",                                    \
+                   __FUNCTION__,                                        \
+                   elle::sprint(elle::iomanip::Separator(", "),         \
+                                ##__VA_ARGS__),                         \
+                   this)
 # define ELLE_DUMP_METHOD(...)                                          \
-  ELLE_DUMP_SCOPE("#%s %s(%s)",                                         \
-                  this, __FUNCTION__,                                   \
-                  elle::sprint(elle::iomanip::Separator(','),           \
-                               ##__VA_ARGS__))
+  ELLE_DUMP_SCOPE("%s(%s) <at %s>",                                     \
+                   __FUNCTION__,                                        \
+                   elle::sprint(elle::iomanip::Separator(", "),         \
+                                ##__VA_ARGS__),                         \
+                   this)
 
     /// @brief Retreive a logger by its name.
     Logger&

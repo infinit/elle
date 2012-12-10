@@ -24,7 +24,8 @@ namespace nucleus
     template <typename T>
     Porcupine<T>::Porcupine(Nest& nest):
       _strategy(Strategy::none),
-      _nest(nest)
+      _nest(nest),
+      _state(State::clean)
     {
     }
 
@@ -39,7 +40,8 @@ namespace nucleus
       _network(network),
       _agent_K(agent_K),
       */
-      _nest(nest)
+      _nest(nest),
+      _state(State::clean)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
 
@@ -252,7 +254,7 @@ namespace nucleus
             ELLE_ASSERT(this->_value != nullptr);
 
             // Verify the validity of the target index.
-            if (target >= this->_value->capacity())
+            if (target > this->_value->capacity())
               throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
                               target, this->_value->capacity());
@@ -272,7 +274,7 @@ namespace nucleus
             value.load();
 
             // Verify the validity of the target index.
-            if (target >= value().capacity())
+            if (target > value().capacity())
               throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
                               target, value().capacity());
@@ -1039,8 +1041,8 @@ namespace nucleus
       this->_value = new T;
       this->_strategy = Strategy::value;
 
-      // Set the porcupine's state.
-      this->_state = State::dirty;
+      // Note that the porcupine's state is not set to dirty
+      // because nothing has been added/removed/updated yet.
     }
 
     template <typename T>

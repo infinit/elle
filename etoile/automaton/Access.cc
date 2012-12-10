@@ -4,6 +4,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Action.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Revision.hh>
@@ -50,26 +51,20 @@ namespace etoile
                      context.object->access());
 
           // retrieve the access block.
-          try
-            {
-              // XXX[the context should make use of unique_ptr instead
-              //     of releasing here.]
-              context.access =
-                depot::Depot::pull_access(context.object->access()).release();
-            }
-          catch (std::runtime_error& e)
-            {
-              escape("unable to retrieve the access block: %s", e.what());
-            }
+          // XXX[the context should make use of unique_ptr instead
+          //     of releasing here.]
+          context.access.reset(
+            depot::Depot::pull_access(context.object->access()).release());
         }
       else
         {
           ELLE_TRACE("the Object does _not_ reference an Access block: "
                      "allocate one");
 
-          context.access =
-            new nucleus::neutron::Access(nucleus::proton::Network(Infinit::Network),
-                                         agent::Agent::Identity.pair.K());
+          context.access.reset(
+            new nucleus::neutron::Access(
+              nucleus::proton::Network(Infinit::Network),
+              agent::Agent::Identity.pair.K()));
         }
 
       return elle::Status::Ok;
@@ -161,93 +156,69 @@ namespace etoile
                     {
                     case nucleus::neutron::Subject::TypeUser:
                       {
-                        // XXX[remove try/catch later]
-                        try
-                          {
-                            ELLE_TRACE("update the Access user record")
-                              {
-                                // Create a token based on the fact that
-                                // the object does or does not have content.
-                                //
-                                // If there is no data, set the token as null,
-                                // otherwise, compute it base on the key which
-                                // has been extracted from the owner's token
-                                // i.e rights.key.
-                                /* XXX[porcupine]
-                                nucleus::neutron::Token token =
-                                  context.object->contents() ==
-                                  nucleus::proton::Address::null() ?
-                                  nucleus::neutron::Token::null() :
-                                  nucleus::neutron::Token(context.rights.key,
-                                                          subject.user());
+                        ELLE_TRACE("update the Access user record");
 
-                                nucleus::neutron::Record& record =
-                                  context.access->locate(subject);
+                        // Create a token based on the fact that
+                        // the object does or does not have content.
+                        //
+                        // If there is no data, set the token as null,
+                        // otherwise, compute it base on the key which
+                        // has been extracted from the owner's token
+                        // i.e rights.key.
+                        nucleus::neutron::Token token =
+                          context.object->contents().empty() == true ?
+                          nucleus::neutron::Token::null() :
+                          nucleus::neutron::Token(*context.rights.key,
+                                                  subject.user());
 
-                                record.permissions(permissions);
-                                record.token(token);
-                                */
-                              }
-                          }
-                        catch (std::exception const& e)
-                          {
-                            escape("%s", e.what());
-                          }
+                        nucleus::neutron::Record& record =
+                          context.access->locate(subject);
+
+                        record.permissions(permissions);
+                        record.token(token);
+
                         break;
                       }
                     case nucleus::neutron::Subject::TypeGroup:
                       {
                         std::unique_ptr<nucleus::neutron::Group> group;
 
-                        // XXX[remove try/catch later]
-                        try
-                          {
-                            ELLE_TRACE("fetch the Group block from the "
-                                       "storage layer")
-                              {
-                                // XXX[the context should make use of unique_ptr instead
-                                //     of releasing here.]
-                                group =
-                                  depot::Depot::pull_group(
-                                    subject.group(),
-                                    nucleus::proton::Revision::Last);
-                              }
+                        ELLE_TRACE("fetch the Group block from the storage");
 
-                            ELLE_TRACE("update the Access group record")
-                              {
-                                /* XXX[porcupine]
-                                nucleus::neutron::Token token =
-                                  context.object->contents() ==
-                                  nucleus::proton::Address::null() ?
-                                  nucleus::neutron::Token::null() :
-                                  nucleus::neutron::Token(context.rights.key,
-                                                          group->pass_K());
+                        // XXX[the context should make use of unique_ptr instead
+                        //     of releasing here.]
+                        group =
+                          depot::Depot::pull_group(
+                            subject.group(),
+                            nucleus::proton::Revision::Last);
 
-                                nucleus::neutron::Record& record =
-                                  context.access->locate(subject);
+                        ELLE_TRACE("update the Access group record");
 
-                                record.permissions(permissions);
-                                record.token(token);
-                                */
-                              }
-                          }
-                        catch (std::exception const& e)
-                          {
-                            escape("%s", e.what());
-                          }
+                        nucleus::neutron::Token token =
+                          context.object->contents().empty() == true ?
+                          nucleus::neutron::Token::null() :
+                          nucleus::neutron::Token(*context.rights.key,
+                                                  group->pass_K());
+
+                        nucleus::neutron::Record& record =
+                          context.access->locate(subject);
+
+                        record.permissions(permissions);
+                        record.token(token);
 
                         break;
                       }
                     default:
-                      {
-                        escape("invalid subject type '%u'", subject.type());
-                      }
+                      throw elle::Exception("invalid subject type '%u'",
+                                            subject.type());
                     }
                 }
             }
           else
             {
-              std::unique_ptr<nucleus::neutron::Record> record;
+              nucleus::neutron::Record* record = nullptr;
+
+              ELLE_FINALLY_ACTION_DELETE(record);
 
               ELLE_TRACE("the target subject is _not_ present in the "
                          "Access block");
@@ -256,31 +227,18 @@ namespace etoile
                 {
                 case nucleus::neutron::Subject::TypeUser:
                   {
-                    // XXX[remove try/catch later]
-                    try
-                      {
-                        ELLE_TRACE("generate a new user record")
-                          {
-                            /* XXX[porcupine]
-                            nucleus::neutron::Token token =
-                              context.object->contents() ==
-                              nucleus::proton::Address::null() ?
-                              nucleus::neutron::Token::null() :
-                              nucleus::neutron::Token(context.rights.key,
-                                                      subject.user());
+                    ELLE_TRACE("generate a new user record");
 
-                            // allocate a new record.
-                            record.reset(
-                              new nucleus::neutron::Record(subject,
-                                                           permissions,
-                                                           token));
-                            */
-                          }
-                      }
-                    catch (std::exception const& e)
-                      {
-                        escape("%s", e.what());
-                      }
+                    nucleus::neutron::Token token =
+                      context.object->contents().empty() == true ?
+                      nucleus::neutron::Token::null() :
+                      nucleus::neutron::Token(*context.rights.key,
+                                              subject.user());
+
+                    // allocate a new record.
+                    record = new nucleus::neutron::Record{subject,
+                                                          permissions,
+                                                          token};
 
                     break;
                   }
@@ -288,55 +246,41 @@ namespace etoile
                   {
                     std::unique_ptr<nucleus::neutron::Group> group;
 
-                    // XXX[remove try/catch later]
-                    try
-                      {
-                        ELLE_TRACE("fetch the Group block")
-                          {
-                            // XXX[the context should make use of unique_ptr instead
-                            //     of releasing here.]
-                            group =
-                              depot::Depot::pull_group(
-                                subject.group(),
-                                nucleus::proton::Revision::Last);
-                          }
+                    ELLE_TRACE("fetch the Group block");
 
-                        ELLE_TRACE("generate a new group record")
-                          {
-                            /* XXX[porcupine]
-                            nucleus::neutron::Token token =
-                              context.object->contents() ==
-                              nucleus::proton::Address::null() ?
-                              nucleus::neutron::Token::null() :
-                              nucleus::neutron::Token(context.rights.key,
-                                                      group->pass_K());
+                    // XXX[the context should make use of unique_ptr instead
+                    //     of releasing here.]
+                    group =
+                      depot::Depot::pull_group(
+                        subject.group(),
+                        nucleus::proton::Revision::Last);
 
-                            // allocate a new record.
-                            record.reset(
-                              new nucleus::neutron::Record(subject,
-                                                           permissions,
-                                                           token));
-                            */
-                          }
-                      }
-                    catch (std::exception const& e)
-                      {
-                        escape("%s", e.what());
-                      }
+                    ELLE_TRACE("generate a new group record");
+
+                    nucleus::neutron::Token token =
+                      context.object->contents().empty() == true ?
+                      nucleus::neutron::Token::null() :
+                      nucleus::neutron::Token(*context.rights.key,
+                                              group->pass_K());
+
+                    // allocate a new record.
+                    record = new nucleus::neutron::Record{subject,
+                                                          permissions,
+                                                          token};
 
                     break;
                   }
                 default:
-                  {
-                    escape("invalid subject type '%u'", subject.type());
-                  }
+                  throw elle::Exception("invalid subject type '%u'",
+                                        subject.type());
                 }
 
-              ELLE_TRACE("add the record to the Access block");
-              context.access->insert(record.get());
+              ELLE_ASSERT(record != nullptr);
 
-              // stop tracking record.
-              record.release();
+              ELLE_TRACE("add the record to the Access block");
+              context.access->insert(record);
+
+              ELLE_FINALLY_ABORT(record);
             }
 
           ELLE_TRACE("administrate the Object so as to mark it as dirty")
@@ -470,12 +414,6 @@ namespace etoile
       if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
-      /* XXX[porcupine: now useless]
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-      */
-
       // if the index starts with 0, include the owner by creating
       // a record for him.
       if (index == 0)
@@ -487,12 +425,13 @@ namespace etoile
 
           // consult the access object by taking care of consulting one
           // record less.
-          nucleus::neutron::Range<nucleus::neutron::Record> range_access{
+          nucleus::neutron::Range<nucleus::neutron::Record> subrange{
             context.access->consult(index, size - 1)};
 
           // XXX merge both ranges OR better:
           //       range = consult() and then insert(owner)
-          assert(false);
+          assert(false && "better way to do it: read above");
+          range.add(subrange);
         }
       else
         {
@@ -629,16 +568,8 @@ namespace etoile
                 // user's public key so that she will be the only one
                 // capable of decrypting it.
 
-                // XXX[remove try/catch later]
-                try
-                  {
-                    record->token(
-                      nucleus::neutron::Token(key, record->subject().user()));
-                  }
-                catch (std::exception const& e)
-                  {
-                    escape("%s", e.what());
-                  }
+                record->token(
+                  nucleus::neutron::Token(key, record->subject().user()));
 
                 break;
               }
@@ -651,23 +582,15 @@ namespace etoile
 
                 std::unique_ptr<nucleus::neutron::Group> group;
 
-                // XXX[remove try/catch later]
-                try
-                  {
-                    // XXX[the context should make use of unique_ptr instead
-                    //     of releasing here.]
-                    group =
-                      depot::Depot::pull_group(
-                        record->subject().group(),
-                        nucleus::proton::Revision::Last);
+                // XXX[the context should make use of unique_ptr instead
+                //     of releasing here.]
+                group =
+                  depot::Depot::pull_group(
+                    record->subject().group(),
+                    nucleus::proton::Revision::Last);
 
-                    record->token(
-                      nucleus::neutron::Token(key, group->pass_K()));
-                  }
-                catch (std::exception const& e)
-                  {
-                    escape("%s", e.what());
-                  }
+                record->token(
+                  nucleus::neutron::Token(key, group->pass_K()));
 
                 break;
               }
@@ -814,11 +737,11 @@ namespace etoile
       // if the block is present.
       if (context.object->access() != nucleus::proton::Address::null())
         {
-          /* XXX[porcupine]
           ELLE_TRACE("record the Access block '%s' for removal",
-                     context.object->access())
-            context.transcript.wipe(context.object->access());
-          */
+                     context.object->access());
+
+          context.transcript.record(
+            new gear::action::Wipe(context.object->access()));
         }
 
       return elle::Status::Ok;
@@ -936,10 +859,10 @@ namespace etoile
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
-          /* XXX[porcupine]
-          ELLE_TRACE("record the Access block '%s' for storing", address)
-            context.transcript.push(address, context.access);
-          */
+          ELLE_TRACE("record the Access block '%s' for storing", address);
+
+          context.transcript.record(
+            new gear::action::Push(address, context.access));
         }
 
       return elle::Status::Ok;

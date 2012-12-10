@@ -350,5 +350,15 @@ namespace infinit
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    SecretKey::print(std::ostream& stream) const
+    {
+      stream << "XXX";
+    }
+
   }
 }

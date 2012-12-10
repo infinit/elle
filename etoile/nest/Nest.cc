@@ -178,9 +178,9 @@ namespace etoile
     Pod*
     Nest::_retrieve(nucleus::proton::Placement const& placement) const
     {
-      Nest::P::Scoutor scoutor;
+      ELLE_TRACE_METHOD(placement);
 
-      ELLE_TRACE_SCOPE("_retrieve(placement)");
+      Nest::P::Scoutor scoutor;
 
       if ((scoutor = this->_placements.find(placement)) == this->_placements.end())
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -193,9 +193,9 @@ namespace etoile
     Pod*
     Nest::_retrieve(nucleus::proton::Address const& address) const
     {
-      Nest::A::Scoutor scoutor;
+      ELLE_TRACE_METHOD(address);
 
-      ELLE_TRACE_SCOPE("_retrieve(address)");
+      Nest::A::Scoutor scoutor;
 
       if ((scoutor = this->_addresses.find(address)) == this->_addresses.end())
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -209,9 +209,9 @@ namespace etoile
     void
     Nest::_delete(nucleus::proton::Placement const& placement)
     {
-      Pod* pod;
+      ELLE_TRACE_METHOD(placement);
 
-      ELLE_TRACE_SCOPE("_delete(placement)");
+      Pod* pod;
 
       //
       // retrieve the pod.
@@ -238,9 +238,9 @@ namespace etoile
     void
     Nest::_delete(nucleus::proton::Address const& address)
     {
-      Pod* pod;
+      ELLE_TRACE_METHOD(address);
 
-      ELLE_TRACE_SCOPE("_delete(address)");
+      Pod* pod;
 
       //
       // retrieve the pod.
@@ -306,15 +306,13 @@ namespace etoile
     void
     Nest::detach(nucleus::proton::Handle& handle)
     {
-      ELLE_TRACE_SCOPE("detach(%s)", &handle);
-
-      Pod* pod;
+      ELLE_TRACE_METHOD(handle);
 
       // make sure placement is non-null.
       assert(handle.placement() != nucleus::proton::Placement::Null);
 
       // retrieve the pod.
-      pod = this->_retrieve(handle.placement());
+      Pod* pod = this->_retrieve(handle.placement());
 
       // update the pod's nature.
       pod->nature = Pod::NatureOrphan;
@@ -327,20 +325,18 @@ namespace etoile
     std::shared_ptr<nucleus::proton::Contents>
     Nest::load(nucleus::proton::Handle& handle)
     {
-      std::shared_ptr<nucleus::proton::Contents> block;
+      ELLE_TRACE_METHOD(handle);
 
-      ELLE_TRACE_SCOPE("load(%s)", &handle);
+      std::shared_ptr<nucleus::proton::Contents> block;
 
       // make sure the given handle is valid.
       assert(handle != nucleus::proton::Handle::Null);
 
       if (handle.placement() != nucleus::proton::Placement::Null)
         {
-          Pod* pod;
-
           ELLE_TRACE("placement present in handle");
 
-          pod = this->_retrieve(handle.placement());
+          Pod* pod = this->_retrieve(handle.placement());
 
           block = pod->load(handle);
         }
@@ -350,7 +346,7 @@ namespace etoile
 
           if (this->exists(handle.address()) == false)
             {
-              ELLE_TRACE("No pod for this address: the block needs "
+              ELLE_TRACE("no pod for this address: the block needs "
                          "to be loaded from the depot");
 
               /* XXX
@@ -389,7 +385,7 @@ namespace etoile
               /* XXX
               Pod* pod;
 
-              ELLE_TRACEE("A pod exists for this address");
+              ELLE_TRACEE("a pod exists for this address");
 
               pod = this->_retrieve(handle.address());
 
@@ -413,7 +409,7 @@ namespace etoile
     void
     Nest::unload(nucleus::proton::Handle& handle)
     {
-      ELLE_TRACE_SCOPE("unload(%s)", &handle);
+      ELLE_TRACE_METHOD(handle);
 
       Pod* pod;
 

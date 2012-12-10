@@ -42,13 +42,14 @@ namespace etoile
       // XXX[the context should make use of unique_ptr instead
       //     of releasing here.]
 
-      ELLE_TRACE("pull the object from depot")
-        {
-          assert(context.object == nullptr);
-          context.object = depot::Depot::pull_object(
-            context.location.address(),
-            context.location.revision()).release();
-        }
+      ELLE_TRACE("pull the object from depot");
+
+      ELLE_ASSERT(context.object == nullptr);
+
+      context.object.reset(
+        depot::Depot::pull_object(
+          context.location.address(),
+          context.location.revision()).release());
 
       // Compute the block base.
       context.object->base(nucleus::proton::Base(*context.object));
@@ -123,10 +124,9 @@ namespace etoile
       if (Access::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the access");
 
-      /* XXX[porcupine]
       // mark the object as needing to be removed.
-      context.transcript.wipe(context.location.address());
-      */
+      context.transcript.record(
+        new gear::action::Wipe(context.location.address()));
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -150,33 +150,20 @@ namespace etoile
       // if the object has been modified i.e is dirty.
       if (context.object->state() == nucleus::proton::State::dirty)
         {
-          // seal the object, depending on the presence of a referenced
-          // access block.
-          if (context.object->access() != nucleus::proton::Address::null())
-            {
-              // make sure the access block is loaded.
-              if (Access::Open(context) == elle::Status::Error)
-                escape("unable to open the access");
+          // make sure the access block is loaded.
+          if (Access::Open(context) == elle::Status::Error)
+            escape("unable to open the access");
 
-              // seal the object alone with the access block.
-              if (context.object->Seal(
-                    agent::Agent::Identity.pair.k(),
-                    context.access) == elle::Status::Error)
-                escape("unable to seal the object");
-            }
-          else
-            {
-              // seal the object alone i.e without passing an access block.
-              if (context.object->Seal(
-                    agent::Agent::Identity.pair.k(),
-                    nullptr) == elle::Status::Error)
-                escape("unable to seal the object");
-            }
+          // seal the object alone with the access block.
+          if (context.object->Seal(
+                agent::Agent::Identity.pair.k(),
+                context.access.get()) == elle::Status::Error)
+            escape("unable to seal the object");
 
-          /* XXX[porcupine]
           // mark the block as needing to be stored.
-          context.transcript.push(context.location.address(), context.object);
-          */
+          context.transcript.record(
+            new gear::action::Push(context.location.address(),
+                                   context.object));
         }
 
       // set the context's state.

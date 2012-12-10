@@ -35,10 +35,10 @@ namespace etoile
     gear::Identifier
     Directory::create()
     {
+      ELLE_TRACE_FUNCTION("");
+
       gear::Scope* scope;
       gear::Directory* context;
-
-      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -82,10 +82,10 @@ namespace etoile
     gear::Identifier
     Directory::load(path::Chemin const& chemin)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope* scope;
       gear::Directory* context;
-
-      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -139,13 +139,13 @@ namespace etoile
                    path::Slab const& name,
                    gear::Identifier const& child)
     {
+      ELLE_TRACE_FUNCTION(parent, name, child);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Directory* directory;
       gear::Object* object;
       nucleus::proton::Address address;
-
-      ELLE_TRACE_FUNCTION(parent, name, child);
 
       // select the actor.
       if (gear::Actor::Select(child, actor) == elle::Status::Error)
@@ -201,11 +201,11 @@ namespace etoile
                           const path::Slab&                     name,
                           nucleus::neutron::Entry const*& entry)
     {
+      ELLE_TRACE_FUNCTION(identifier, name);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Directory*  context;
-
-      ELLE_TRACE_FUNCTION(identifier, name);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -237,11 +237,11 @@ namespace etoile
                        nucleus::neutron::Index const& index,
                        nucleus::neutron::Index const& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, index, size);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Directory* context;
-
-      ELLE_TRACE_FUNCTION(identifier, index, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -395,12 +395,12 @@ namespace etoile
                           const gear::Identifier&               identifier,
                           const path::Slab&                     name)
     {
+      ELLE_TRACE_FUNCTION(identifier, name);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Directory*  context;
       path::Route       route;
-
-      ELLE_TRACE_FUNCTION(identifier, name);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -446,11 +446,11 @@ namespace etoile
     void
     Directory::discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Directory* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -533,11 +533,11 @@ namespace etoile
     void
     Directory::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Directory* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -623,11 +623,11 @@ namespace etoile
     elle::Status        Directory::Destroy(
                           const gear::Identifier&               identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor*              actor;
       gear::Scope*              scope;
       gear::Directory*          context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -708,20 +708,5 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-    ///
-    /// this method purges a directory i.e removes all the blocks of all
-    /// the revisions associated with this directory.
-    ///
-    elle::Status        Directory::Purge(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Purge()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
   }
 }

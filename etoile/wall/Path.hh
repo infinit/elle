@@ -26,7 +26,7 @@ namespace etoile
       resolve(const path::Way&);
     };
 
-    // XXX[move somewhere else!]
+    // XXX[to move somewhere else]
     class NoSuchFileOrDirectory: public reactor::Exception
     {
     public:

@@ -69,10 +69,6 @@ namespace etoile
       static
       void
       Destroy(gear::Identifier const& identifier);
-      /// XXX
-      static
-      elle::Status
-      Purge(gear::Identifier const& identifier);
     };
 
   }

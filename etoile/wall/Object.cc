@@ -31,15 +31,15 @@ namespace etoile
   {
 
     gear::Identifier
-    Object::load(const path::Chemin& chemin_)
+    Object::load(const path::Chemin& chemin)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope* scope;
       gear::Object* context;
 
-      ELLE_TRACE_FUNCTION(chemin_);
-
       // acquire the scope.
-      if (gear::Scope::Acquire(chemin_, scope) == elle::Status::Error)
+      if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
         throw elle::Exception("unable to acquire the scope");
 
       gear::Guard guard(scope);
@@ -57,7 +57,6 @@ namespace etoile
           if (scope->chemin.Locate(location) == elle::Status::Error)
             throw elle::Exception("unable to locate the object");
 
-          // XXX[remove try/catch later]
           try
             {
               object = depot::Depot::pull_object(location.address(),
@@ -93,7 +92,7 @@ namespace etoile
           // for the scope.
           switch (object->genre())
             {
-              case nucleus::neutron::Genre::file:
+            case nucleus::neutron::Genre::file:
               {
                 gear::File* context;
 
@@ -102,7 +101,7 @@ namespace etoile
 
                 break;
               }
-              case nucleus::neutron::Genre::directory:
+            case nucleus::neutron::Genre::directory:
               {
                 gear::Directory* context;
 
@@ -111,7 +110,7 @@ namespace etoile
 
                 break;
               }
-              case nucleus::neutron::Genre::link:
+            case nucleus::neutron::Genre::link:
               {
                 gear::Link* context;
 
@@ -120,7 +119,7 @@ namespace etoile
 
                 break;
               }
-              default:
+            default:
               {
                 // XXX[this whole code should probably be put within the
                 //     critical section?]
@@ -134,7 +133,7 @@ namespace etoile
           // At this point, the context represents the real object so
           // that, assuming it is a directory, both Object::* and
           // Directory::* methods could be used.
-          assert(scope->context != nullptr);
+          ELLE_ASSERT(scope->context != nullptr);
         }
 
       // declare a critical section.
@@ -164,7 +163,8 @@ namespace etoile
           }
         catch (std::exception const& e)
           {
-            assert(scope != nullptr);
+            ELLE_ASSERT(scope != nullptr);
+
             Object::reload<gear::Object>(*scope);
           }
 
@@ -173,18 +173,19 @@ namespace etoile
           throw elle::Exception("unable to release the guard");
 
         ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
-        return identifier;
+
+        return (identifier);
       }
     }
 
     abstract::Object
     Object::information(const gear::Identifier& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -215,11 +216,11 @@ namespace etoile
     void
     Object::discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -305,11 +306,11 @@ namespace etoile
     void
     Object::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -392,11 +393,11 @@ namespace etoile
     void
     Object::destroy(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -475,14 +476,5 @@ namespace etoile
           }
         }
     }
-
-    void
-    Object::purge(gear::Identifier const&)
-    {
-      ELLE_TRACE_SCOPE("Purge()");
-
-      // XXX to implement.
-    }
-
   }
 }

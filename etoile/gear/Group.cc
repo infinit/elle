@@ -1,6 +1,7 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/gear/Nature.hh>
 
+# include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
 #include <elle/idiom/Open.hh>
@@ -18,22 +19,10 @@ namespace etoile
     /// the default constructor.
     ///
     Group::Group():
-      Context(NatureGroup),
-
-      group(nullptr),
-      ensemble(nullptr)
+      Context(NatureGroup)
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Group::RoleUnknown;
-    }
-
-    ///
-    /// the destructor.
-    ///
-    Group::~Group()
-    {
-      delete this->group;
-      delete this->ensemble;
     }
 
 //

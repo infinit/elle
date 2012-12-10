@@ -33,10 +33,10 @@ namespace etoile
     std::pair<nucleus::neutron::Group::Identity, gear::Identifier>
     Group::Create(elle::String const& description)
     {
+      ELLE_TRACE_FUNCTION(description);
+
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Create()");
 
       std::pair<nucleus::neutron::Group::Identity, gear::Identifier> res;
 
@@ -80,10 +80,10 @@ namespace etoile
     gear::Identifier
     Group::Load(typename nucleus::neutron::Group::Identity const& identity)
     {
+      ELLE_TRACE_FUNCTION(identity);
+
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Load()");
 
       // XXX[change this so as to scope the groups i.e in order for the groups
       //     to be opened by multiple actors concurrently]
@@ -128,11 +128,11 @@ namespace etoile
     abstract::Group
     Group::Information(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Information()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -164,11 +164,11 @@ namespace etoile
     Group::Add(gear::Identifier const& identifier,
                nucleus::neutron::Subject const& subject)
     {
+      ELLE_TRACE_FUNCTION(identifier, subject);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Add()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -200,11 +200,11 @@ namespace etoile
     Group::Lookup(gear::Identifier const& identifier,
                   nucleus::neutron::Subject const& subject)
     {
+      ELLE_TRACE_FUNCTION(identifier, subject);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Lookup()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -242,12 +242,11 @@ namespace etoile
                    nucleus::neutron::Index const& index,
                    nucleus::neutron::Size const& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, index, size);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Consult(%s, %s, %s)",
-                       identifier, index, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -282,11 +281,11 @@ namespace etoile
     Group::Remove(gear::Identifier const& identifier,
                   nucleus::neutron::Subject const& subject)
     {
+      ELLE_TRACE_FUNCTION(identifier, subject);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Remove()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -317,11 +316,11 @@ namespace etoile
     void
     Group::Discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Discard()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -410,11 +409,11 @@ namespace etoile
     void
     Group::Store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Store()");
 
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -503,11 +502,11 @@ namespace etoile
     void
     Group::Destroy(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Group* context;
-
-      ELLE_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -593,16 +592,5 @@ namespace etoile
           }
         }
     }
-
-    elle::Status
-    Group::Purge(gear::Identifier const&)
-    {
-      ELLE_TRACE_SCOPE("Purge()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
   }
 }

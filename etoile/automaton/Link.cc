@@ -28,10 +28,12 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
-      context.object =
+      ELLE_ASSERT(context.object == nullptr);
+
+      context.object.reset(
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
                                      agent::Agent::Identity.pair.K(),
-                                     nucleus::neutron::Genre::link);
+                                     nucleus::neutron::Genre::link));
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -172,8 +174,8 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // discard the object-related information.
-      if (Object::Destroy(context) == elle::Status::Error)
-        escape("unable to destroy the object");
+      if (Object::Discard(context) == elle::Status::Error)
+        escape("unable to discard the object");
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;

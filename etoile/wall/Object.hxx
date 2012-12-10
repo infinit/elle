@@ -18,51 +18,43 @@ namespace etoile
       Object::reload(gear::Scope& scope)
       {
         ELLE_LOG_COMPONENT("etoile.wall.Object");
-        ELLE_TRACE_SCOPE("reload(%s)", scope);
+        ELLE_TRACE_FUNCTION(scope);
 
         ELLE_TRACE("clearing the cache in order to evict %s",
-                   scope.chemin.route)
-          shrub::Shrub::clear();
+                   scope.chemin.route);
 
-        ELLE_TRACE("try to resolve the route now that the cache was cleaned")
-        {
-          path::Venue venue;
-          if (path::Path::Resolve(scope.chemin.route,
-                                  venue) == elle::Status::Error)
-            throw reactor::Exception{
-                elle::concurrency::scheduler(),
-                elle::sprintf("unable to resolve the route %s",
-                              scope.chemin.route)
-            };
-          scope.chemin = path::Chemin(scope.chemin.route, venue);
-        }
+        shrub::Shrub::clear();
+
+        ELLE_TRACE("try to resolve the route now that the cache was cleaned");
+
+        path::Venue venue;
+        if (path::Path::Resolve(scope.chemin.route,
+                                venue) == elle::Status::Error)
+          throw elle::Exception("unable to resolve the route %s",
+                                scope.chemin.route);
+        scope.chemin = path::Chemin(scope.chemin.route, venue);
 
         ELLE_DEBUG("route was successfully resolved into %s",
                    scope.chemin.route);
 
-        ELLE_TRACE("loading object ")
-          {
-            T* context = nullptr;
-            if (scope.Use(context) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to use the context");
+        ELLE_TRACE("loading object");
 
-            // Reset location
-            nucleus::proton::Location location;
-            if (scope.chemin.Locate(location) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to locate the object");
+        T* context = nullptr;
+        if (scope.Use(context) == elle::Status::Error)
+          throw elle::Exception("unable to use the context");
 
-            context->location = location;
-            // XXX We force the loading.
-            delete context->object;
-            context->object = nullptr;
-            context->state = gear::Context::StateUnknown;
+        // Reset location
+        nucleus::proton::Location location;
+        if (scope.chemin.Locate(location) == elle::Status::Error)
+          throw elle::Exception("unable to locate the object");
 
-            if (T::A::Load(*context) == elle::Status::Error)
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unable to load the object");
-          }
+        context->location = location;
+        // Force the loading.
+        context->object.reset();
+        context->state = gear::Context::StateUnknown;
+
+        if (T::A::Load(*context) == elle::Status::Error)
+          throw elle::Exception("unable to load the object");
       }
 
   }

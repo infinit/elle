@@ -49,8 +49,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // Check if there exists a contents. if so, instanciate a porcupine.
-      if (context.object->contents().strategy() !=
-          nucleus::proton::Strategy::none)
+      if (context.object->contents().empty() == false)
         {
           // determine the rights the current user has on this object.
           if (Rights::Determine(context) == elle::Status::Error)
@@ -74,7 +73,7 @@ namespace etoile
               context.porcupine =
                 new nucleus::proton::Porcupine<typename T::C>{
                   context.object->contents(),
-                  context.rights.key,
+                  *context.rights.key,
                   *context.nest};
             }
           else
@@ -114,8 +113,7 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // If the object holds some content, mark the blocks as needing removal.
-      if (context.object->contents().strategy() !=
-          nucleus::proton::Strategy::none)
+      if (context.object->contents().empty() == false)
         {
           /* XXX[porcupine: make a destroy call which would make all the blocks
              for deletion]

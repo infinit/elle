@@ -89,14 +89,14 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      nucleus::neutron::Object* object;
-      nucleus::neutron::Access* access;
+      std::shared_ptr<nucleus::neutron::Object> object;
+      std::shared_ptr<nucleus::neutron::Access> access;
 
       struct
       {
         nucleus::neutron::Object::Role role;
         nucleus::neutron::Permissions permissions;
-        cryptography::SecretKey key;
+        cryptography::SecretKey* key;
 
         // XXX[use a shared_ptr<> instead. cf: automaton::Access::lookup()]
         nucleus::neutron::Record* record;

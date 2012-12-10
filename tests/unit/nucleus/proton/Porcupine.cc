@@ -344,6 +344,9 @@ test_porcupine_catalog()
 
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine3 =
     test_porcupine_serialize(radix2, *porcupine2, secret2, vector);
+
+  delete porcupine3;
+  delete porcupine2;
 #endif
 
   test_porcupine_remove(*porcupine1, vector, 0, vector.size());

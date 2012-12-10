@@ -84,8 +84,10 @@ namespace etoile
     std::shared_ptr<nucleus::proton::Contents>
     Pod::load(nucleus::proton::Handle& handle)
     {
-      ELLE_TRACE_SCOPE("load() this(%s) handle(%s) [%s -> %s]",
-                       this, &handle, this->counter, this->counter + 1);
+      ELLE_TRACE_METHOD(handle);
+
+      ELLE_TRACE("counter: %s -> %s",
+                 this->counter, this->counter + 1);
 
       assert(this->placement == handle.placement());
       assert(this->nature != Pod::NatureOrphan);
@@ -145,8 +147,10 @@ namespace etoile
     void
     Pod::unload(nucleus::proton::Handle& handle)
     {
-      ELLE_TRACE_SCOPE("unload() this(%s) handle(%s) [%s -> %s]",
-                       this, &handle, this->counter, this->counter - 1);
+      ELLE_TRACE_METHOD(handle);
+
+      ELLE_TRACE("counter: %s -> %s",
+                 this->counter, this->counter - 1);
 
       assert(this->placement == handle.placement());
       assert(this->counter > 0);
@@ -163,8 +167,7 @@ namespace etoile
     void
     Pod::release()
     {
-      ELLE_TRACE_SCOPE("release() this(%s)",
-                       this);
+      ELLE_TRACE_METHOD("");
 
       assert(this->counter == 0);
 

@@ -212,7 +212,7 @@ namespace nucleus
     void
     Group::print(std::ostream& stream) const
     {
-      stream << "group()";
+      stream << "{" << this->_description << ", " << this->_size << "}";
     }
 
   }

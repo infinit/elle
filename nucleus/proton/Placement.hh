@@ -16,6 +16,7 @@ namespace nucleus
     /// XXX
     ///
     class Placement:
+      public elle::Printable,
       public elle::io::Dumpable
     {
     public:

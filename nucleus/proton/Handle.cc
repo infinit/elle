@@ -232,12 +232,17 @@ namespace nucleus
     void
     Handle::print(std::ostream& stream) const
     {
+      // XXX
+      std::cerr << typeid(this->_secret).name() << std::endl;
+      this->_secret.region.Dump();
+      std::cerr << typeid(this->_secret).name() << std::endl;
+
       stream << "("
-        // XXX << this->_placement ???
-        // XXX << ", "
+             << this->_placement
+             << ", "
              << this->_address
-        // XXX << ", "
-        // XXX ??? << this->_secret
+             << ", "
+             << this->_secret
              << ")";
     }
   }

@@ -327,14 +327,14 @@ namespace nucleus
         case TypeUser:
           {
             stream << "user("
-                   << this->_user
+                   << *this->_user
                    << ")";
             break;
           }
         case TypeGroup:
           {
             stream << "group("
-                   << this->_group
+                   << *this->_group
                    << ")";
             break;
           }

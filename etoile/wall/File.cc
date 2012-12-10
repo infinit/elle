@@ -30,10 +30,10 @@ namespace etoile
     gear::Identifier
     File::create()
     {
+      ELLE_TRACE_FUNCTION("");
+
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -77,10 +77,10 @@ namespace etoile
     gear::Identifier
     File::load(path::Chemin const& chemin)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -135,11 +135,11 @@ namespace etoile
                 nucleus::neutron::Offset const& offset,
                 elle::standalone::Region const& data)
     {
+      ELLE_TRACE_FUNCTION(identifier, offset, data);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier, offset, data);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -173,11 +173,11 @@ namespace etoile
                nucleus::neutron::Offset const& offset,
                nucleus::neutron::Size const& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, offset, size);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier, offset, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -214,11 +214,11 @@ namespace etoile
                           const gear::Identifier&               identifier,
                           const nucleus::neutron::Size& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, size);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      ELLE_TRACE_FUNCTION(identifier, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -251,11 +251,11 @@ namespace etoile
     void
     File::discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -338,11 +338,11 @@ namespace etoile
     void
     File::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -428,11 +428,11 @@ namespace etoile
     elle::Status        File::Destroy(
                           const gear::Identifier&               identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -513,20 +513,5 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-    ///
-    /// this method purges a file i.e removes all the blocks of all
-    /// the revisions associated with this file.
-    ///
-    elle::Status        File::Purge(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_FUNCTION("");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
   }
 }

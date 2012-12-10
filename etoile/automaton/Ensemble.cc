@@ -39,30 +39,23 @@ namespace etoile
         {
           ELLE_TRACE_SCOPE("pull the ensemble block from the storage layer");
 
-          // XXX[remove try/catch later]
-          try
-            {
-              // XXX[the context should make use of unique_ptr instead
-              //     of releasing here.]
-              context.ensemble =
-                depot::Depot::pull_ensemble(
-                  context.group->ensemble()).release();
-            }
-          catch (std::exception const& e)
-            {
-              escape("%s", e.what());
-            }
+          // XXX[the context should make use of unique_ptr instead
+          //     of releasing here.]
+          context.ensemble.reset(
+            depot::Depot::pull_ensemble(
+              context.group->ensemble()).release());
         }
       else
         {
           ELLE_TRACE_SCOPE("the group does not reference an ensemble");
 
-          context.ensemble =
-            new nucleus::neutron::Ensemble(nucleus::proton::Network(Infinit::Network),
-                                           agent::Agent::Identity.pair.K());
+          context.ensemble.reset(
+            new nucleus::neutron::Ensemble(
+              nucleus::proton::Network(Infinit::Network),
+              agent::Agent::Identity.pair.K()));
         }
 
-      assert(context.ensemble);
+      ELLE_ASSERT(context.ensemble != nullptr);
 
       return elle::Status::Ok;
     }
@@ -74,14 +67,14 @@ namespace etoile
 
       assert(context.group != nullptr);
 
-      /* XXX[porcupine]
       // if a block is referenced by the object, mark it as needing removal.
       if (context.group->ensemble() != nucleus::proton::Address::null())
         {
-          ELLE_TRACE("record the ensemble block in the transcript")
-            context.transcript.wipe(context.group->ensemble());
+          ELLE_TRACE("record the ensemble block in the transcript");
+
+          context.transcript.record(
+            new gear::action::Wipe(context.group->ensemble()));
         }
-      */
 
       return elle::Status::Ok;
     }
@@ -139,19 +132,12 @@ namespace etoile
 
           // downgrade the group since it no longer reference an ensemble
           // of fellows.
-          // XXX[remove try/catch]
-          try
-            {
-              // The group size equals one i.e the group manager in this
-              // case since no ensemble is referenced.
-              context.group->size(1);
 
-              context.group->downgrade();
-            }
-          catch (...)
-            {
-              escape("unable to downdate the group");
-            }
+          // The group size equals one i.e the group manager in this
+          // case since no ensemble is referenced.
+          context.group->size(1);
+
+          context.group->downgrade();
         }
       else
         {
@@ -208,46 +194,30 @@ namespace etoile
           // upgrade the ensemble's tokens with the new pass.
           // besides, update the group's size with the number
           // of elements in the ensemble.
-          // XXX[remove try/catch]
-          try
-            {
-              context.ensemble->update(pass->k());
-            }
-          catch (...)
-            {
-              escape("unable to upgrade the ensemble with a new pass");
-            }
+          context.ensemble->update(pass->k());
 
           nucleus::proton::Address address(context.ensemble->bind());
 
           // set the content as consistent.
           context.ensemble->state(nucleus::proton::State::consistent);
 
-          /* XXX[porcupine]
           // mark the block as needing to be stored.
-          context.transcript.push(address, context.ensemble);
-          */
+          context.transcript.record(
+            new gear::action::Push(address, context.ensemble));
 
           // ugrade the group.
-          // XXX[remove try/catch]
-          try
-            {
-              // The group size equals the number of fellows in the
-              // ensemble plus the group manager. This is why one is
-              // added to the size.
-              context.group->size(context.ensemble->size() + 1);
 
-              // Regenerate the group manager's token.
-              nucleus::neutron::Token manager_token(
-                pass->K(),
-                context.group->manager_subject().user());
+          // The group size equals the number of fellows in the
+          // ensemble plus the group manager. This is why one is
+          // added to the size.
+          context.group->size(context.ensemble->size() + 1);
 
-              context.group->upgrade(address, pass->K(), manager_token);
-            }
-          catch (...)
-            {
-              escape("unable to upgrade the group");
-            }
+          // Regenerate the group manager's token.
+          nucleus::neutron::Token manager_token(
+            pass->K(),
+            context.group->manager_subject().user());
+
+          context.group->upgrade(address, pass->K(), manager_token);
 
           ELLE_FINALLY_ABORT(pass);
 

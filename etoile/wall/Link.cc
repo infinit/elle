@@ -28,10 +28,10 @@ namespace etoile
     gear::Identifier
     Link::create()
     {
+      ELLE_TRACE_FUNCTION("");
+
       gear::Scope* scope;
       gear::Link* context;
-
-      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -82,10 +82,10 @@ namespace etoile
                           const path::Chemin&                   chemin,
                           gear::Identifier&                     identifier)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope*      scope;
       gear::Link*       context;
-
-      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -138,11 +138,11 @@ namespace etoile
     Link::bind(gear::Identifier const& identifier,
                path::Way const& target)
     {
+      ELLE_TRACE_FUNCTION(identifier, target);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Link* context;
-
-      ELLE_TRACE_SCOPE("Bind(%s, %s)", identifier, target);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -172,11 +172,11 @@ namespace etoile
     path::Way
     Link::resolve(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Link* context;
-
-      ELLE_TRACE_SCOPE("Resolve()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -211,11 +211,11 @@ namespace etoile
     elle::Status        Link::Discard(
                           const gear::Identifier&               identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Link*       context;
-
-      ELLE_TRACE_SCOPE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -300,11 +300,11 @@ namespace etoile
     void
     Link::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Link* context;
-
-      ELLE_TRACE_SCOPE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -390,11 +390,11 @@ namespace etoile
     elle::Status        Link::Destroy(
                           const gear::Identifier&               identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Link*       context;
-
-      ELLE_TRACE_SCOPE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -475,20 +475,5 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-    ///
-    /// this method purges a link i.e removes all the blocks of all
-    /// the revisions associated with this link.
-    ///
-    elle::Status        Link::Purge(
-                          const gear::Identifier&)
-    {
-      ELLE_TRACE_SCOPE("Purge()");
-
-      // XXX to implement.
-
-      return elle::Status::Ok;
-    }
-
   }
 }

@@ -211,7 +211,8 @@ namespace nucleus
 
             if (this->_valid->token() != nullptr)
               {
-                if (this->_valid->token()->Dump(margin + 2) == elle::Status::Error)
+                if (this->_valid->token()->Dump(margin + 2) ==
+                    elle::Status::Error)
                   escape("unable to dump the token");
               }
             else

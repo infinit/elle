@@ -51,10 +51,16 @@ namespace nucleus
       | Methods |
       `--------*/
     public:
+      /// Helper method returning true if there is no content.
+      elle::Boolean
+      empty() const;
+      /// Return the cipher should the radix represent an embedded value.
       cryptography::Cipher const&
       value() const;
+      /// Return the address of the block representing the content.
       Address const&
       block() const;
+      /// Return the root of the tree of blocks used to represent the content.
       Root const&
       tree() const;
 
