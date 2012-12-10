@@ -64,7 +64,7 @@ namespace network {
     String unencoded;
     decode(std::begin(source), std::end(source),
 	   std::back_inserter(unencoded));
-    return std::move(unencoded);
+    return unencoded;
   }
 } // namespace network
 

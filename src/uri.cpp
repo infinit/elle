@@ -15,14 +15,12 @@
 #include <functional>
 #include <map>
 
-#include <iostream>
-
 namespace network {
-#if defined(BOOST_WINDOWS)
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
   const char *uri_category_impl::name() const {
 #else
   const char *uri_category_impl::name() const noexcept {
-#endif // defined(BOOST_WINDOWS)
+#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
     return "uri_error";
   }
 

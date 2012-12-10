@@ -155,7 +155,7 @@ namespace network {
     String encoded;
     encode_user_info(std::begin(user_info), std::end(user_info),
 		     std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 
   template <class String>
@@ -163,7 +163,7 @@ namespace network {
     String encoded;
     encode_host(std::begin(host), std::end(host),
 		std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 
   template <class String>
@@ -171,7 +171,7 @@ namespace network {
     String encoded;
     encode_port(std::begin(port), std::end(port),
 		std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 
   template <class String>
@@ -179,7 +179,7 @@ namespace network {
     String encoded;
     encode_path(std::begin(path), std::end(path),
 		std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 
   template <class String>
@@ -187,7 +187,7 @@ namespace network {
     String encoded;
     encode_query(std::begin(query), std::end(query),
 		 std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 
   template <class String>
@@ -195,7 +195,7 @@ namespace network {
     String encoded;
     encode_fragment(std::begin(fragment), std::end(fragment),
 		    std::back_inserter(encoded));
-    return std::move(encoded);
+    return encoded;
   }
 } // namespace network
 

@@ -37,11 +37,11 @@ namespace network {
 
   public:
 
-#if defined(BOOST_WINDOWS)
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
     virtual const char *name() const;
 #else
     virtual const char *name() const noexcept;
-#endif // defined(BOOST_WINDOWS)
+#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
     virtual std::string message(int ev) const;
 
   };
