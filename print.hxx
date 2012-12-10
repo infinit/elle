@@ -147,7 +147,6 @@ namespace elle
            T&&                                      value,
            U&&...                                   values)
     {
-
       is_first = fprint_value(out, flags, is_first, std::forward<T>(value));
       fprint(out, flags, is_first, std::forward<U>(values)...);
     }
