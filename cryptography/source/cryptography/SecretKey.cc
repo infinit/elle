@@ -11,38 +11,16 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*----------.
+    | Constants |
+    `----------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    elle::Character const SecretKey::magic[] = "Salted__";
 
-    ///
-    /// this magic is recorded in encrypted text so that the decryption process
-    /// can know that it has been salted.
-    ///
-    const elle::Character             SecretKey::Magic[] = "Salted__";
-
-    ///
-    /// this is the default length used when generating passwords, in bits.
-    ///
-    const elle::Natural32             SecretKey::Default::Length = 512;
-
-    ///
-    /// this is the encryption algorithm used by the SecretKey class.
-    ///
-    const ::EVP_CIPHER*         SecretKey::Algorithms::Cipher =
+    ::EVP_CIPHER const* SecretKey::Algorithms::Cipher =
       ::EVP_aes_256_cbc();
-
-    ///
-    /// this is the hash algorithm used by the encryption process.
-    ///
-    const ::EVP_MD*             SecretKey::Algorithms::Digest =
+    ::EVP_MD const* SecretKey::Algorithms::Digest =
       ::EVP_md5();
-
-    ///
-    /// this defines a null secret key.
-    ///
-    const SecretKey             SecretKey::Null;
 
     /*---------------.
     | Static Methods |
@@ -51,80 +29,38 @@ namespace infinit
     SecretKey
     SecretKey::generate(elle::Natural32 const length)
     {
-      SecretKey key;
+      // Convert the length in a byte-specific size.
+      elle::Natural32 size = length / 8;
 
-      key.Generate(length);
+      // Generate a buffer-based password.
+      elle::Buffer password{random::generate<elle::Buffer>(size)};
 
-      return (key);
+      // Return a new secret key.
+      return (SecretKey{std::move(password)});
     }
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-    ///
-    /// default constructor.
-    ///
-    SecretKey::SecretKey()
+    SecretKey::SecretKey(elle::String const& password):
+      _buffer(password.c_str(), password.length())
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method builds a key based on the given password.
-    ///
-    elle::Status              SecretKey::Create(const elle::String&         password)
+    SecretKey::SecretKey(elle::Buffer&& buffer):
+      _buffer(std::move(buffer))
     {
-      // assign the password to the internal key object.
-      if (this->region.Duplicate(
-            reinterpret_cast<const elle::Byte*>(password.c_str()),
-            password.length()) == elle::Status::Error)
-        escape("unable to assign the given password to the key");
-
-      return elle::Status::Ok;
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
     }
 
-    ///
-    /// this method generates a key with the default length.
-    ///
-    elle::Status              SecretKey::Generate()
-    {
-      return (this->Generate(SecretKey::Default::Length));
-    }
+    /*--------.
+    | Methods |
+    `--------*/
 
-    ///
-    /// this method generates a key by generating a password.
-    ///
-    /// the argument length represents the length of the key, in bits.
-    ///
-    elle::Status              SecretKey::Generate(const elle::Natural32     length)
-    {
-      elle::Natural32         size;
-
-      // convert the length in a byte-specific size.
-      size = length / 8;
-
-      // prepare the password.
-      if (this->region.Prepare(size) == elle::Status::Error)
-        escape("unable to prepare the key");
-
-      // generate the key.
-      // XXX[change the attribute to a buffer]
-      elle::Buffer buffer(random::generate<elle::Buffer>(size));
-      if (this->region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
-        escape("XXX");
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method encrypts the given plain text.
-    ///
     elle::Status SecretKey::Encrypt(elle::WeakBuffer const&  in,
                               Cipher&                           cipher) const
     {
