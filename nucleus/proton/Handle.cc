@@ -232,17 +232,13 @@ namespace nucleus
     void
     Handle::print(std::ostream& stream) const
     {
-      // XXX
-      std::cerr << typeid(this->_secret).name() << std::endl;
-      this->_secret.region.Dump();
-      std::cerr << typeid(this->_secret).name() << std::endl;
-
       stream << "("
              << this->_placement
              << ", "
              << this->_address
              << ", "
              << this->_secret
+        // XXX[leads to 'pure virtual method called']
              << ")";
     }
   }

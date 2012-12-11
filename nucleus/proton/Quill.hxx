@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_QUILL_HXX
 # define NUCLEUS_PROTON_QUILL_HXX
 
-# include <nucleus/Nucleus.hh>
 # include <nucleus/Exception.hh>
 # include <nucleus/proton/Ambit.hh>
 # include <nucleus/proton/Nest.hh>
@@ -741,6 +740,11 @@ namespace nucleus
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
 
+      // XXX
+      printf("--- QUILL 0\n");
+      std::cout << secret << std::endl;
+      printf("--- QUILL 0\n");
+
       auto iterator = this->_container.begin();
       auto end = this->_container.end();
 
@@ -798,8 +802,14 @@ namespace nucleus
               }
             }
 
+          // XXX
+          printf("--- QUILL 1\n");
+
           // unload the value block.
           value.unload();
+
+          // XXX
+          printf("--- QUILL 2\n");
         }
     }
 

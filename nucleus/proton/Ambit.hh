@@ -30,7 +30,7 @@ namespace nucleus
       ///
       /// The _manual_ mode does nothing and let the caller manually load/unload
       /// the block. The _automatic_ mode makes sure the block is unloaded is
-      /// the caller forgets to do it manually i.e when the scope is leaved./
+      /// the caller forgets to do it manually i.e when the scope is leaved.
       /// Finally, the _transparent_ mode loads and unloads the node block
       /// without the caller having to do anything.
       enum class Mode

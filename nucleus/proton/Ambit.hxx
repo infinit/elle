@@ -29,6 +29,9 @@ namespace nucleus
         {
         case Mode::transparent:
           {
+            // XXX
+            ELLE_ASSERT(false && "should not be called: in an ideal world");
+
             ELLE_TRACE("loading on construction");
 
             this->load();

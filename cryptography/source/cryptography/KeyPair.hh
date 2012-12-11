@@ -58,7 +58,7 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      KeyPair();
+      KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
       KeyPair(KeyPair const& pair);

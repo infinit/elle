@@ -28,9 +28,10 @@ namespace etoile
       ELLE_ASSERT(context.object == nullptr);
 
       context.object.reset(
-        new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
-                                     agent::Agent::Identity.pair.K(),
-                                     nucleus::neutron::Genre::directory));
+        new nucleus::neutron::Object(
+          nucleus::proton::Network(Infinit::Network),
+          agent::Agent::Identity.pair.K(),
+          nucleus::neutron::Genre::directory));
 
       nucleus::proton::Address address(context.object->bind());
 

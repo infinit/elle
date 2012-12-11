@@ -1,7 +1,6 @@
 #ifndef NUCLEUS_PROTON_SEAM_HXX
 # define NUCLEUS_PROTON_SEAM_HXX
 
-# include <nucleus/Nucleus.hh>
 # include <nucleus/Exception.hh>
 # include <nucleus/proton/Ambit.hh>
 # include <nucleus/proton/Nest.hh>
@@ -866,16 +865,16 @@ namespace nucleus
     Seam<T>::seal(cryptography::SecretKey const& secret)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
+      ELLE_TRACE_METHOD(secret);
 
       auto iterator = this->_container.begin();
       auto end = this->_container.end();
-
-      ELLE_TRACE_SCOPE("seal(%s)", secret);
 
       // go through the container.
       for (; iterator != end; ++iterator)
         {
           Seam<T>::I* inlet = iterator->second;
+
           Ambit<Nodule<T>> current(this->nest(), inlet->value());
 
           // load the value block.
@@ -895,13 +894,42 @@ namespace nucleus
               {
                 ELLE_TRACE_SCOPE("State::dirty");
 
+          // XXX
+          printf("--- SEAM -2\n");
+          std::cout << inlet->value() << std::endl;
+          printf("--- SEAM -2\n");
+          std::cout << inlet->value().secret() << std::endl;
+          printf("--- SEAM -2\n");
+
                 // set the secret key.
                 ELLE_ASSERT(inlet->value().secret() !=
-                       cryptography::SecretKey::Null);
+                            cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
+          // XXX
+          printf("--- SEAM -1\n");
+          std::cout << inlet->value() << std::endl;
+          printf("--- SEAM -1\n");
+          std::cout << inlet->value().secret() << std::endl;
+          printf("--- SEAM -1\n");
+
+                // XXX
+                printf("--- SEAM 0\n");
+
+                auto _s = inlet->value().secret();
+
+                // XXX
+                printf("--- SEAM 1 %s\n", typeid(_s).name());
+                std::cout << inlet->value().secret();
+                printf("--- SEAM 1\n");
+                std::cout << _s << std::endl;
+                printf("--- SEAM 1\n");
+
                 // seal recursively.
-                current().seal(inlet->value().secret());
+                current().seal(_s);
+
+                // XXX
+                printf("--- SEAM 2\n");
 
                 // Encrypt and bind the block.
                 current.contents().encrypt(secret);

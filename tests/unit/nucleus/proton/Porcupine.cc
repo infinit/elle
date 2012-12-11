@@ -5,10 +5,9 @@
 #include <elle/format/hexadecimal.hh>
 
 #include <cryptography/Digest.hh>
-#include <cryptography/OneWay.hh>
-#include <cryptography/Random.hh>
+#include <cryptography/oneway.hh>
+#include <cryptography/random.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Door.hh>
@@ -38,13 +37,13 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
 // To define in order to make the checks stronger and so as to
 // detect inconsistencies early on.
-#define PORCUPINE_THOROUGH_CHECK
+#undef PORCUPINE_THOROUGH_CHECK
 
 // To define to test the serialization mechanism with porcupines.
-#define PORCUPINE_SERIALIZE_TEST
+#undef PORCUPINE_SERIALIZE_TEST
 
 // To define to dump the porcupine's statistcs.
-#define PORCUPINE_STATISTICS
+#undef PORCUPINE_STATISTICS
 
 std::vector<elle::String>
 test_porcupine_prepare(elle::Natural32 const n)
@@ -293,10 +292,10 @@ test_porcupine_remove(
 void
 test_porcupine_catalog()
 {
-  // A test with N = 20000 and an extent of 1024 leads to a porcupine
+  // A test with N = 1000 and an extent of 1024 leads to a porcupine
   // with 6 levels which is enough to test all cases.
 
-  elle::Natural32 const N = 2000;
+  elle::Natural32 const N = 200;
   std::vector<elle::String> vector;
 
   vector = test_porcupine_prepare(N);

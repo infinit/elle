@@ -2,7 +2,6 @@
 
 #include <etoile/depot/Depot.hh>
 
-#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/proton/Placement.hh>
 #include <nucleus/proton/Address.hh>
