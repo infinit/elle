@@ -72,7 +72,8 @@ namespace hole
         std::vector<Host*> hosts();
       private:
         friend class Host;
-        std::unordered_map<elle::network::Locus, Host*> _hosts;
+        typedef std::unordered_map<elle::network::Locus, Host*> Hosts;
+        Hosts _hosts;
         void _connect(elle::network::Locus const& locus);
         void _connect(std::unique_ptr<reactor::network::Socket> socket,
                       elle::network::Locus const& locus, bool opener);

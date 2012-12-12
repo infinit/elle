@@ -72,6 +72,7 @@ namespace hole
       {
         std::unique_ptr<Host> host(new Host(*this, locus,
                                             std::move(socket), opener));
+        ELLE_TRACE("%s: authenticate to host: %s", *this, locus);
         auto loci = host->authenticate(this->_hole.passport());
         if (this->_state == State::detached)
           {
@@ -161,6 +162,7 @@ namespace hole
           elle::network::Host host(elle::network::Host::TypeAny);
           try
             {
+              ELLE_TRACE("listen on port %s", this->_port)
               _server->listen(this->_port);
               // In case we asked for a random port to be picked up
               // (by using 0), retrieve the actual listening port.
@@ -181,6 +183,9 @@ namespace hole
 
       Machine::~Machine()
       {
+        for (auto host: Hosts(_hosts))
+          this->_remove(host.second);
+
         // Stop serving; we may not be listening, since bind errors are
         // considered warnings (see constructor), in which case we have no
         // acceptor.
