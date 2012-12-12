@@ -22,6 +22,8 @@
 
 @property (retain)              NSString*       user_id;
 @property (nonatomic, readonly) gap_UserStatus  status;
+@property (nonatomic, readonly) NSString*       fullname;
+@property (nonatomic, readonly) NSString*       email;
 
 @end
 

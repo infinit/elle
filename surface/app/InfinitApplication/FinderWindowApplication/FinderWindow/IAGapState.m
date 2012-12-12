@@ -544,11 +544,22 @@ static void on_transaction_status(char const* transaction);
     return gap_user_status(_state, [_user_id UTF8String]);
 }
 
+- (NSString*)fullname
+{
+    return [NSString stringWithUTF8String:gap_user_fullname(_state, [_user_id UTF8String])];
+}
+
+- (NSString*)email
+{
+    return [NSString stringWithUTF8String:gap_user_email(_state, [_user_id UTF8String])];
+}
+
 - (id) init:(NSString*)user_id
 {
     self = [super init];
     if (self)
     {
+        NSLog(@"BUILD USER WITH %@", user_id);
         _user_id = user_id;
         _state = [IAGapState instance].state;
     }

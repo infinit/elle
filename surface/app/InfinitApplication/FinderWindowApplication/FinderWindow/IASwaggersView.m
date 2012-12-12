@@ -107,15 +107,16 @@
     int nb_swag = 300; //xXX
     NSMutableArray* swaggers_circles = [NSMutableArray arrayWithCapacity:nb_swag];
     int arc = 1;
-    double alpha = 20.0;
-    double alpha_incr = 15.0;
+    double alpha_start = 40.0;
+    double alpha = alpha_start;
+    double alpha_incr = 52.0;
     for (int i = 0; i < nb_swag; ++i)
     {
         double radius = (arc) * CIRCLE_OFFSET + CIRCLE_INITIAL_OFFSET;
         double x = origin.x + cos(alpha * 3.14159265 / 180.0) * radius;
         double y = origin.y - CIRCLE_VERTICAL_OFFSET + sin(alpha * 3.14159265 / 180.0) * radius * CIRCLE_HEIGHT_RATIO;
         //NSLog(@"SWAG at %f %f", x, y);
-        NSRect rect = NSMakeRect(x - SELF_RADIUS / 2.0, y - SELF_RADIUS / 2.0, SELF_RADIUS, SELF_RADIUS);
+        NSRect rect = NSMakeRect(x - SELF_RADIUS, y - SELF_RADIUS, SELF_RADIUS * 2, SELF_RADIUS * 2);
         NSBezierPath* path = [NSBezierPath bezierPath];
         [path appendBezierPathWithOvalInRect:rect];
         
@@ -124,10 +125,15 @@
         alpha += alpha_incr;
         //NSLog(@"Swag %d, alpha = %f", i, alpha);
         
-        if (alpha > (180 - alpha_incr))
+        if (alpha > 180 - alpha_start / 2)
         {
-            alpha = 20;
+            alpha_incr *= .8;
+            alpha_start *= .8;
+            alpha = alpha_start;
+
             arc += 1;
+            if (arc > _circle_count)
+                break;
         }
         
     }

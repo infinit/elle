@@ -105,7 +105,6 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)table_view
 {
-    return 3;
     return [_users count];
 }
 
@@ -115,9 +114,9 @@
                           row:(NSInteger)row
 {
         NSLog(@"Fetch view for table view %@", table_view);
-//    IAUser* user = [_users objectAtIndex:row];
-//    if (user  == nil)
-//        return nil;
+    IAUser* user = [_users objectAtIndex:row];
+    if (user  == nil)
+        return nil;
     
     NSString* cell_id = [table_column identifier];
     NSLog(@"Column identifier: %@", cell_id);
@@ -130,9 +129,8 @@
         result.identifier = cell_id;
     }
 
-    [result setStringValue:[NSString stringWithFormat:@"row: %ld", row]];
-//    IAUser* user = [_users objectAtIndex:row];
-//    [result setStringValue:[NSString stringWithFormat:@"user_id: %@", user.user_id]];
+//    [result setStringValue:[NSString stringWithFormat:@"row: %ld", row]];
+    [result setStringValue:[NSString stringWithFormat:@"%@ (%@)", user.fullname, user.email]];
     
     [result setBackgroundColor:[NSColor clearColor]];
     NSLog(@"Return row %@", result);
