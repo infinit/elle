@@ -110,7 +110,7 @@ typedef int(^gap_operation_t)(NSOperation*);
 
 - (id)initWithStatusCode:(gap_Status)status_code;
 - (id)initWithStatusCode:(gap_Status)status_code
-             andData:(NSString*)object_id;
+                 andData:(id)data;
 @end
 
 
@@ -131,7 +131,7 @@ typedef int(^gap_operation_t)(NSOperation*);
 }
 
 - (id)initWithStatusCode:(gap_Status)status_code
-             andData:(NSString*)data
+                 andData:(id)data
 {
     self = [super init];
     if (self)
@@ -467,6 +467,23 @@ static void on_transaction_status(char const* transaction);
     } performSelector:selector onObject:object];
 }
 
+- (NSOperation*)getSwaggersAndPerformSelector:(SEL)selector
+                                     onObject:(id)object
+{
+    NSMutableArray* user_array = [NSMutableArray array];
+    return [self _addOperation:^(NSOperation* op) {
+        char** swaggers = gap_swaggers(self.state);
+        if (swaggers == NULL)
+            return gap_error;
+        for (char** user = swaggers; *user != NULL; ++user)
+        {
+            IAUser* full_user = [IAUser userWithId:[NSString stringWithUTF8String:*user]];
+            [user_array addObject:full_user];
+        }
+        gap_swaggers_free(swaggers);
+        return gap_ok;
+    } performSelector:selector onObject:object withData:user_array];
+}
 
 - (NSOperation*)searchUsers:(NSString*)str
             performSelector:(SEL)selector
@@ -484,6 +501,7 @@ static void on_transaction_status(char const* transaction);
             IAUser* full_user = [IAUser userWithId:[NSString stringWithUTF8String:*user]];
             [user_array addObject:full_user];
         }
+        gap_search_users_free(users);
         return gap_ok;
     }   performSelector:selector
                onObject:object

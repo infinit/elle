@@ -42,6 +42,12 @@
     [self.search_bar setFocusRingType:NSFocusRingTypeNone];
     [[self.search_bar cell] setPlaceholderString:@"Find friend or send via email"];
     [self refresh];
+    [[IAGapState instance] getSwaggersAndPerformSelector:@selector(_onSwaggers:) onObject:self];
+}
+
+- (void)_onSwaggers:(IAGapOperationResult*)op
+{
+    [self.swaggers_view updateSwaggers:op.data];
 }
 
 -(IBAction) sendFile:(id)sender

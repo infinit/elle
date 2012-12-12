@@ -8,8 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "IASwaggersView.h"
 
 @interface IAMainViewController : NSViewController
+
+@property (retain) IBOutlet IASwaggersView* swaggers_view;
 
 - (void)refresh;
 

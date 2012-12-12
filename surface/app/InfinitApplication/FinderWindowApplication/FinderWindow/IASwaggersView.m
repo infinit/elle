@@ -26,6 +26,7 @@
     NSImage*        _self_image;
     NSMutableArray* _circles;
     unsigned int    _circle_count;
+    NSMutableArray* _swaggers_circles;
     NSMutableArray* _swaggers;
 }
 
@@ -62,9 +63,9 @@
                    fraction:1];
     [NSGraphicsContext restoreGraphicsState];
     
-    for (int i = 0; i < [_swaggers count]; ++i)
+    for (int i = 0; i < [_swaggers_circles count]; ++i)
     {
-        [[_swaggers objectAtIndex:i] stroke];
+        [[_swaggers_circles objectAtIndex:i] stroke];
     }
 //    [COLOR(clear) set];
 //    [_self fill];
@@ -74,6 +75,12 @@
 {
     [self refreshWithFrame:frameRect];
     [super setFrame:frameRect];
+}
+
+- (void)updateSwaggers:(NSMutableArray*)swaggers
+{
+    _swaggers = swaggers;
+    [self refreshWithFrame:self.bounds];
 }
 
 - (void)refreshWithFrame:(NSRect)frame
@@ -104,7 +111,7 @@
                                   startAngle:0
                                     endAngle:360];
     
-    int nb_swag = 300; //xXX
+    NSUInteger nb_swag = [_swaggers count];
     NSMutableArray* swaggers_circles = [NSMutableArray arrayWithCapacity:nb_swag];
     int arc = 1;
     double alpha_start = 40.0;
@@ -137,7 +144,7 @@
         }
         
     }
-    _swaggers = swaggers_circles;
+    _swaggers_circles = swaggers_circles;
 }
 
 - (void)_computeCircleCountForFrame:(NSRect)frame

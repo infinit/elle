@@ -10,4 +10,6 @@
 
 @interface IASwaggersView : NSView
 
+- (void)updateSwaggers:(NSMutableArray*)swaggers;
+
 @end

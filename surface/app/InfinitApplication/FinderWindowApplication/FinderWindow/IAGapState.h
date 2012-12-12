@@ -52,7 +52,7 @@
  */
 @interface IAGapOperationResult : NSObject
 
-@property (retain) NSString* data;
+@property (retain) id data;
 @property (nonatomic, readonly) gap_Status status;
 @property (nonatomic, readonly) BOOL success;
 @property (nonatomic, readonly) BOOL error;
@@ -128,6 +128,10 @@
                         onObject:(id)object;
 
 #endif
+
+
+- (NSOperation*)getSwaggersAndPerformSelector:(SEL)selector
+                                     onObject:(id)object;
 
 
 /**
