@@ -38,7 +38,7 @@ class Search(Page):
             )
         else:
             users = database.users().find(
-                {'email' : {'$regex' : '^%s' %text}},
+                {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
                 fields=["_id"],
                 limit=count + offset
         )
