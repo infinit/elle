@@ -1,3 +1,6 @@
 [submodule "oracle/disciples/troll"]
 	path = oracle/disciples/troll
 	url = git://github.com/hotgloupi/troll.git
+[submodule "surface/macosx"]
+	path = surface/macosx
+	url = git@development.infinit.io:infinit-macosx
