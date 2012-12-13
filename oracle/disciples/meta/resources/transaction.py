@@ -463,7 +463,7 @@ class Cancel(Page):
         if not transaction:
             return self.error(error.TRANSACTION_DOESNT_EXIST)
 
-        if self.user['_id'] != transaction['sender_id']:
+        if self.user['_id'] not in (transaction['sender_id'], transaction['recipient_id']):
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
         if not transaction['status'] in (PENDING, STARTED) :
