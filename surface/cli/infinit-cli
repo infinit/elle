@@ -89,6 +89,12 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument(
+    '--user',
+    help="Set default user.",
+    dest="user"
+)
+
 def make_simple_argument_parser(prog=None,
                                 description=None,
                                 add_help=False,
@@ -114,12 +120,12 @@ def get_candidates_for_path(path, magic):
     if os.path.isdir(path):
         path = path + "*"
         candidates = [p[len(save):] for p in glob.glob(path)]
-    #else:
-        #path = path + "*"
-        #_candidates = [p for p in glob.glob(path)]
-        #if len(_candidates) > 0:
-        #    candidates = [p[len(os.path.dirname(p)  + magic + os.path.basename(save)):] for p in _candidates]
-        #    candidates = [magic + p for p in candidates]
+    # else:
+    #     path = path + "*"
+    #     _candidates = [p for p in glob.glob(path)]
+    #     if len(_candidates) > 0:
+    #        candidates = [p[len(os.path.dirname(p)  + magic + os.path.basename(save)):] for p in _candidates]
+    #        candidates = [magic + p for p in candidates]
     return candidates
 
 class InfinitShell(cmd.Cmd):
@@ -127,7 +133,7 @@ class InfinitShell(cmd.Cmd):
         self._state = state
         self._args = args
         self._notifs = []
-        self._notif_count = 0
+        self._notifs_old = []
         self._attach_callbacks()
         super(InfinitShell, self).__init__()
 
@@ -138,7 +144,7 @@ class InfinitShell(cmd.Cmd):
 
     @property
     def prompt(self):
-      return self._state.email + '(' + str(self._notif_count) + ') $ '
+      return self._state.email + '(' + str(len(self._notifs)) + ') $ '
 
     def default(self, line):
         if line == 'EOF':
@@ -167,6 +173,10 @@ class InfinitShell(cmd.Cmd):
     def do_networks(self, line):
         """Print networks."""
         args = self._get_args(self._networks_argument_parser, line)
+
+        if not args:
+            return
+
         try:
             networks = self._state.networks()
             for network_id in networks:
@@ -201,8 +211,10 @@ class InfinitShell(cmd.Cmd):
 
     def do_create_network(self, line):
         args = self._get_args(self._create_network_argument_parser, line)
+
         if not args:
             return
+
         try:
             self._state.create_network(args.name)
         except Exception as e:
@@ -271,9 +283,12 @@ class InfinitShell(cmd.Cmd):
         """Print search_users."""
         args = self._get_args(self._search_users_argument_parser, line)
 
-        search_ = args.search
+        if not args:
+            return
 
         try:
+            search_ = args.search
+
             users = self._state.search_users(search_)
             for user_id in users:
                 print(user_id, ":", self._state.user_fullname(user_id), "-", self._state.user_email(user_id))
@@ -295,6 +310,10 @@ class InfinitShell(cmd.Cmd):
     def do_swaggers(self, line):
         """Print swaggers."""
         args = self._get_args(self._swaggers_argument_parser, line)
+
+        if not args:
+            return
+
         try:
             users = self._state.get_swaggers()
             for user_id in users:
@@ -328,6 +347,7 @@ class InfinitShell(cmd.Cmd):
 
     def do_invite(self, line):
         args = self._get_args(self._invite_argument_parser, line)
+
         if not args:
             return
 
@@ -381,25 +401,26 @@ class InfinitShell(cmd.Cmd):
 
     def do_sendfiles(self, line):
         args = self._get_args(self._sendfiles_argument_parser, line)
+
         if not args:
             return
 
-        recipient = args.user
-        files = args.files
-
         try:
+            recipient = args.user
+            files = args.files
+
             self._state.send_files(recipient, files)
         except Exception as e:
             print(e)
 
     def complete_sendfiles(self, text, line, begidx, endidx):
-        # XXX: Finish completion.
         tok = shlex.split(line)
         if len(tok) > 2:
-            return get_candidates_for_path(tok[2], line[begidx:endidx])
+            return get_candidates_for_path(tok[len(tok) - 1], line[begidx:endidx])
 
     ###########################################################################
     # Set output dir.
+
     _set_output_dir_argument_parser = make_simple_argument_parser(
         prog = "set_output_dir",
         description = "Set the output directory where the files are going to be downloaded.",
@@ -416,13 +437,13 @@ class InfinitShell(cmd.Cmd):
 
     def do_set_output_dir(self, line):
         args = self._get_args(self._set_output_dir_argument_parser, line)
+
         if not args:
             return
 
-        transaction_id = args.transaction_id
-        output_dir = args.output_dir
-
         try:
+            output_dir = args.output_dir
+
             self._state.set_output_dir(output_dir)
         except Exception as e:
             print(e)
@@ -456,6 +477,49 @@ class InfinitShell(cmd.Cmd):
         self._transactions_argument_parser.print_help()
 
     ###########################################################################
+    # Transaction.
+
+    _transaction_argument_parser = make_simple_argument_parser(
+        prog = "transaction",
+        description = "Print all human readeable informations relative to a transaction.",
+        args = [
+            {
+                'flags': 'id',
+                'help': 'The id of the transaction.',
+            }
+        ],
+    )
+
+    def do_transaction(self, line):
+        """Print transaction."""
+        args = self._get_args(self._transaction_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            id_ = args.id
+
+            if not self._state.transaction_sender_fullname(id_):
+                return
+
+            print("Sender:        ", self._state.transaction_sender_fullname(id_))
+            print("First filename:", self._state.transaction_first_filename(id_))
+            print("Files count:   ", self._state.transaction_files_count(id_))
+            print("Total size:    ", self._state.transaction_total_size(id_))
+            print("Network:       ", self._state.transaction_network_id(id_))
+            print("Status:        ", self._state.transaction_status(id_))
+
+        except Exception as e:
+            print(e)
+
+    def help_transaction(self):
+        self._transaction_argument_parser.print_help()
+
+    def complete_transaction(self, text, line, begidx, endidx):
+        return [t for t in self._state.transactions() if t.startswith(text)]
+
+    ###########################################################################
     # Update transactions
     _update_transaction_argument_parser = make_simple_argument_parser(
         prog = "update_transaction",
@@ -474,6 +538,9 @@ class InfinitShell(cmd.Cmd):
 
     def do_update_transaction(self, line):
         args = self._get_args(self._update_transaction_argument_parser, line)
+
+        if not args:
+            return
 
         try:
             transaction = args.transaction_id;
@@ -510,10 +577,16 @@ class InfinitShell(cmd.Cmd):
             {
                 'flags': 'count',
                 'help': 'number of notifications you want to display. Default: 10.',
+                'nargs': '?',
+                'default': 10,
+                'type': int,
             },
             {
                'flags': 'offset',
                'help': 'offset of notifications to display. Default: 0.',
+               'nargs': '?',
+               'default': 0,
+               'type': int,
             }
         ],
     )
@@ -523,9 +596,24 @@ class InfinitShell(cmd.Cmd):
 
     def do_notifications(self, line):
         args = self._get_args(self._notifications_argument_parser, line)
-        for notif in self._notifs:
-            print(notif)
-        self._state.notifications_read()
+
+        if not args:
+            return
+
+        try:
+            count = args.count
+            offset = args.offset
+
+            for notif in self._notifs:
+                print(notif)
+            for notif in self._notifs_old:
+                print(notif)
+
+            self._notifs_old += self._notifs
+            self._notifs = []
+            self._state.notifications_read()
+        except Exception as e:
+            print(e)
 
     ###########################################################################
     # Default.
@@ -537,17 +625,30 @@ class InfinitShell(cmd.Cmd):
 
     ###########################################################################
     # Callbacks.
-    def _incomming_transfer_handler(self, transfer, new):
-        print("_incomming_transfer_handler")
-        self._notifs.append(transfer)
+    def _incomming_transfer_handler(self, transaction_id, new):
         if new:
-            self._notif_count += 1
+            recipient = self._notifs
+        else:
+            recipient = self._notifs_old
 
-    def _file_transfer_status_handler(self, status, new):
-        print("_file_transfer_status_handler")
-        self._notifs.append(status)
+        recipient.append("New transaction %s from %s [(%s file(s)) %s %sB]" % (
+                         transaction_id,
+                         self._state.transaction_sender_fullname(transaction_id),
+                         self._state.transaction_files_count(transaction_id),
+                         self._state.transaction_first_filename(transaction_id),
+                         self._state.transaction_total_size(transaction_id))
+        )
+
+    def _file_transfer_status_handler(self, transaction_id, new):
         if new:
-            self._notif_count += 1
+            recipient = self._notifs
+        else:
+            recipient = self._notifs_old
+
+        recipient.append("Notification %s status changed to %s" % (
+                         transaction_id,
+                         self._state.TransactionStatus(self._state.transaction_status(transaction_id)))
+        )
 
     def _message_handler(self, message):
         print("Message")
@@ -631,8 +732,7 @@ def register(state):
         else:
           break
 
-def login(state):
-    email=None
+def login(state, email = None):
     while True:
         email = re_input("email", regexp=EMAIL_REGEXP, default=email)
         password = getpass.getpass("password: ").strip()
@@ -730,7 +830,7 @@ def main():
         register(state)
     else:
         print("Authentication required (if you don't have an account, try -r)")
-        login(state)
+        login(state, args.user)
 
     start_shell(state, args)
 
@@ -757,5 +857,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         if thread:
             thread.close()
-            time.sleep(0.05)
+            time.sleep(0.1)
         pass
