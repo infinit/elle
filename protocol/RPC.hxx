@@ -422,6 +422,7 @@ namespace infinit
         }
       catch (reactor::network::ConnectionClosed const& e)
         {
+          ELLE_TRACE("%s: end of RPCs: connection closed", *this);
           return;
         }
     }
