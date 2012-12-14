@@ -1,7 +1,8 @@
-#include <cstdlib>
-#include <stdexcept>
-
 #include "getenv.hh"
+
+#include <elle/Exception.hh>
+
+#include <cstdlib>
 
 namespace elle
 {
@@ -9,11 +10,11 @@ namespace elle
   {
 
     class KeyError:
-      public std::runtime_error
+      public elle::Exception
     {
     public:
       KeyError(std::string const& key):
-        std::runtime_error("KeyError '" + key + "'")
+        elle::Exception("KeyError '" + key + "'")
       {}
     };
 

@@ -13,15 +13,15 @@ namespace elle
   {
     /// Returns the associated environment value or throw when the key is not
     /// found.
-    std::string getenv(std::string const& key);
+    std::string
+    getenv(std::string const& key);
 
     /// Return the associated environment value or the provided default value
     /// when the key is not found.
-    std::string getenv(std::string const& key,
-                       std::string const& default_);
-
+    std::string
+    getenv(std::string const& key,
+           std::string const& default_);
   }
 }
 
 #endif
-
