@@ -62,6 +62,10 @@ namespace common
     std::string const&
     home_directory();
 
+    /// Returns download directory at {HOME}/Downloads if exists else home directory.
+    std::string const&
+    download_directory();
+
     /// Returns the platform name (linux, macosx or windows)
     std::string const&
     platform();

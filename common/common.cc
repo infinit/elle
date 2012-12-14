@@ -35,6 +35,22 @@ namespace
   }
 
   std::string
+  _download_directory()
+  {
+    std::string download_dir = elle::os::getenv("INFINIT_DOWNLOAD_DIR", "");
+    if (download_dir.length() > 0 && path::exists(download_dir) && path::is_directory(download_dir))
+      return download_dir;
+
+    std::string home_dir = _home_directory();
+    std::string probable_download_dir = path::join(home_dir, "/Downloads");
+
+    if (path::exists(probable_download_dir) && path::is_directory(probable_download_dir))
+      return probable_download_dir;
+
+    return home_dir;
+  }
+
+  std::string
   _infinit_home()
   {
     return elle::os::getenv(
@@ -193,6 +209,13 @@ namespace common
     architecture()
     {
       return sizeof(void*) * 8;
+    }
+
+    std::string const&
+    download_directory()
+    {
+      static std::string download_dir = _download_directory();
+      return download_dir;
     }
 
   } //!system
