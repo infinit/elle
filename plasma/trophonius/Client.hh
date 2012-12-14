@@ -15,6 +15,21 @@ namespace plasma
 {
   namespace trophonius
   {
+    enum class NotificationType
+    {
+      none = 0,
+      user_status = 8,
+      transaction = 7,
+      transaction_status = 11,
+      message = 217,
+      connection_enabled = -666,
+    };
+
+    /// Base class for all notifications.
+    struct Notification
+    {
+      NotificationType notification_type;
+    };
 
     namespace json = elle::format::json;
 

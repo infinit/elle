@@ -22,13 +22,6 @@ namespace plasma
     int                   is_directory;
     int                   status;
   };
-
-  /// Base class for all notifications.
-  struct Notification
-  {
-    int notification_type;
-  };
-
 }
 
 # include "plasma.hxx"

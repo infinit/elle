@@ -106,6 +106,10 @@ extern "C" {
                        char const* email,
                        char const* hash_password);
 
+  /// Check is user is already logged.
+  int
+  gap_logged(gap_State* state);
+
   /// Logout from meta.
   gap_Status gap_logout(gap_State* state);
 
@@ -122,18 +126,6 @@ extern "C" {
   /// Login to trophonius
   gap_Status
   gap_trophonius_connect(gap_State* state);
-
-  /// - Trophonius ----------------------------------------------------------
-
-  typedef enum
-  {
-    gap_notification_debug = 0,
-    gap_notification_user_status = 8,
-    gap_notification_transaction = 7,
-    gap_notification_transaction_status = 11,
-    gap_notification_message = 217,
-    gap_notification_connection_enabled = -666,
-  } gap_Notification;
 
   /// - Swaggers ------------------------------------------------------------
 

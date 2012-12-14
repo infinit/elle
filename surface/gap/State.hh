@@ -50,11 +50,12 @@ namespace surface
     };
 
     using ::plasma::Transaction;
-    using ::plasma::Notification;
+    using ::plasma::trophonius::Notification;
     using ::plasma::trophonius::TransactionNotification;
     using ::plasma::trophonius::TransactionStatusNotification;
     using ::plasma::trophonius::UserStatusNotification;
     using ::plasma::trophonius::MessageNotification;
+    using ::plasma::trophonius::NotificationType;
 
     class State
     {
@@ -82,6 +83,14 @@ namespace surface
       void
       login(std::string const& email,
             std::string const& password);
+
+
+    private:
+      bool
+      _logged;
+    public:
+      bool
+      is_logged() { return this->_logged; }
 
       /// Logout from meta.
       void
@@ -350,7 +359,7 @@ namespace surface
       typedef
         std::function<void(Notification const&, bool)>
         NotificationHandler;
-      std::map<int, std::list<NotificationHandler>> _notification_handlers;
+      std::map<NotificationType, std::list<NotificationHandler>> _notification_handlers;
 
     public:
       typedef
@@ -415,6 +424,7 @@ namespace surface
 
       void
       _reload_networks();
+
     };
 
   }

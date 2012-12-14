@@ -212,7 +212,27 @@ extern "C"
   {
     assert(email != nullptr);
     assert(password != nullptr);
+
+    if (gap_logged(state) == 1)
+      return gap_ok; // Already logged in.
+
     WRAP_CPP(state, login, email, password);
+  }
+
+  int
+  gap_logged(gap_State* state)
+  {
+    assert(state != nullptr);
+    gap_Status ret;
+    try
+      {
+        int logged = __TO_CPP(state)->is_logged();
+        return logged;
+      }
+    CATCH_ALL(logged);
+
+    (void) ret;
+    return 0;
   }
 
   gap_Status gap_logout(gap_State* state)

@@ -19,11 +19,13 @@
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
 #include <elle/os/path.hh>
+#include <elle/os/getenv.hh>
 #include <elle/Passport.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
 #include <elle/utility/Time.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
+#include <elle/HttpClient.hh>
 
 #include <common/common.hh>
 #include <elle/os/path.hh>
@@ -74,10 +76,11 @@ namespace surface
         common::meta::port(),
         true,
       }}
+      , _logged{false}
       , _trophonius{nullptr}
       , _users{}
       , _swaggers_dirty{true}
-      , _output_dir{common::system::home_directory()}
+      , _output_dir{common::system::download_directory()}
       , _files_infos{}
       , _networks{}
       , _networks_dirty{true}
@@ -91,6 +94,42 @@ namespace surface
       this->transaction_status_callback(
         std::bind(&State::_on_transaction_status, this, p::_1)
       );
+
+      std::string user = elle::os::getenv("INFINIT_USER", "");
+
+      if (user.length() > 0)
+      {
+        std::string identity_path = common::watchdog::identity_path(user);
+
+        if (identity_path.length() > 0 && fs::exists(identity_path))
+        {
+          std::ifstream identity;
+          identity.open(identity_path);
+
+          if (!identity.good())
+            return;
+
+          std::string token;
+          std::getline(identity, token);
+
+          std::string ident;
+          std::getline(identity, ident);
+
+          std::string mail;
+          std::getline(identity, mail);
+
+          std::string id;
+          std::getline(identity, id);
+
+          this->_meta->token(token);
+          this->_meta->identity(ident);
+          this->_meta->email(mail);
+
+          this->_me = static_cast<User const&>(this->_meta->self());
+
+          this->_logged = true;
+        }
+      }
     }
 
     State::State(std::string const& token):
@@ -102,6 +141,8 @@ namespace surface
       this->_meta->email(res.email);
       //XXX factorize that shit
       this->_me = static_cast<User const&>(res);
+
+      this->_logged = true;
     }
 
 
@@ -360,6 +401,8 @@ namespace surface
 
           dictionary.store(res._id);
         }
+
+        this->_logged = true;
     }
 
     void
@@ -373,7 +416,7 @@ namespace surface
     _xxx_dict_to_notification(json::Dictionary const& d)
     {
       std::unique_ptr<Notification> res;
-      int notification_type = d["notification_type"].as_integer();
+      NotificationType notification_type = (NotificationType) d["notification_type"].as_integer().value();
 
       std::unique_ptr<UserStatusNotification> user_status{
           new UserStatusNotification
@@ -391,13 +434,13 @@ namespace surface
 
       switch (notification_type)
         {
-        case gap_notification_user_status:
+        case NotificationType::user_status:
           user_status->user_id = d["user_id"].as_string();
           user_status->status = d["status"].as_integer();
           res = std::move(user_status);
           break;
 
-        case gap_notification_transaction:
+        case NotificationType::transaction:
           transaction->transaction.transaction_id = d["transaction"]["transaction_id"].as_string();
           transaction->transaction.sender_id = d["transaction"]["sender_id"].as_string();
           transaction->transaction.sender_fullname = d["transaction"]["sender_fullname"].as_string();
@@ -416,19 +459,19 @@ namespace surface
           res = std::move(transaction);
           break;
 
-        case gap_notification_transaction_status:
+        case NotificationType::transaction_status:
           transaction_status->transaction_id = d["transaction_id"].as_string();
           transaction_status->status = d["status"].as_integer();
           res = std::move(transaction_status);
           break;
 
-        case gap_notification_message:
+        case NotificationType::message:
           message->sender_id = d["sender_id"].as_string();
           message->message = d["message"].as_string();
           res = std::move(message);
           break;
 
-        case gap_notification_connection_enabled:
+        case NotificationType::connection_enabled:
           res.reset(new Notification);
           break;
 
@@ -1007,7 +1050,7 @@ namespace surface
                                 bool new_)
     {
       // Connexion established.
-      if (notif.notification_type == gap_notification_connection_enabled)
+      if (notif.notification_type == NotificationType::connection_enabled)
         // XXX set _connection_enabled to true
         return;
 
@@ -1187,9 +1230,6 @@ namespace surface
                       group_binary,
                       arguments.join(" ").toStdString());
       QProcess p;
-      p.setStandardOutputFile("/tmp/grospenis.txt");
-      p.setStandardErrorFile("/tmp/grospenis2.txt");
-
       p.start(group_binary.c_str(), arguments);
       if (!p.waitForFinished())
         throw Exception(gap_internal_error, "8group binary failed");
@@ -1611,7 +1651,7 @@ namespace surface
         return cb(static_cast<UserStatusNotification const&>(notif));
       };
 
-      this->_notification_handlers[gap_notification_user_status].push_back(fn);
+      this->_notification_handlers[NotificationType::user_status].push_back(fn);
     }
 
     void
@@ -1621,7 +1661,7 @@ namespace surface
         return cb(static_cast<TransactionNotification const&>(notif), is_new);
       };
 
-      this->_notification_handlers[gap_notification_transaction].push_back(fn);
+      this->_notification_handlers[NotificationType::transaction].push_back(fn);
     }
 
     void
@@ -1631,7 +1671,7 @@ namespace surface
         return cb(static_cast<TransactionStatusNotification const&>(notif), is_new);
       };
 
-      _notification_handlers[gap_notification_transaction_status].push_back(fn);
+      _notification_handlers[NotificationType::transaction_status].push_back(fn);
     }
 
     void
@@ -1641,7 +1681,7 @@ namespace surface
         return cb(static_cast<MessageNotification const&>(notif));
       };
 
-      this->_notification_handlers[gap_notification_message].push_back(fn);
+      this->_notification_handlers[NotificationType::message].push_back(fn);
     }
 
     void

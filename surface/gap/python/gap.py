@@ -126,6 +126,10 @@ class State:
         pw_hash = self._call('hash_password', email, password)
         self._call('login', email, pw_hash)
 
+    @property
+    def logged(self):
+        return self._call('is_logged')
+
     def register(self, fullname, email, password, dev_name, activation_code):
         self.email = email
         pw_hash = self._call('hash_password', email, password)

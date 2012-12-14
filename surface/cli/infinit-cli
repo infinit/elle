@@ -42,6 +42,7 @@ INFINIT_DEFAULT_HOME = os.path.join(
 )
 
 INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
+INFINIT_KEY_PATH = os.environ.get('INFINIT_KEY_PATH')
 
 if 'darwin' in sys.platform.lower():
     INFINIT_PLATFORM = 'macosx'
@@ -78,7 +79,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--no-update', '-n',
+    '--update', '-n',
     help="Skip the update process",
     action="store_true",
 )
@@ -90,9 +91,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--user',
-    help="Set default user.",
-    dest="user"
+    '--auto-start',
+    help="Enable debug mode",
+    action="store_true",
 )
 
 def make_simple_argument_parser(prog=None,
@@ -809,7 +810,7 @@ def update_binaries():
 def main():
     args = parser.parse_args()
 
-    if not args.no_update:
+    if args.update:
         update_binaries()
 
     file_dir = os.path.abspath(os.path.dirname(__file__))
@@ -829,8 +830,9 @@ def main():
         args.action.remove('register')
         register(state)
     else:
-        print("Authentication required (if you don't have an account, try -r)")
-        login(state, args.user)
+        if state.logged != True:
+            print("Authentication required (if you don't have an account, try -r)")
+            login(state)
 
     start_shell(state, args)
 

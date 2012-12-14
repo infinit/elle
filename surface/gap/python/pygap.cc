@@ -1,5 +1,5 @@
 
-#include <surface/gap/python/python.hh>
+#include <wrappers/boost/python.hh>
 
 #include <surface/gap/gap.h>
 
@@ -257,6 +257,7 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("hash_password", &_hash_password, by_value());
   py::def("login", &gap_login);
+  py::def("is_logged", &gap_logged);
   py::def("logout", &gap_logout);
   py::def("register", &gap_register);
 

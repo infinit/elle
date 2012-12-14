@@ -24,12 +24,17 @@ ELLE_LOG_COMPONENT("infinit.plasma.trophonius.Client");
 
 //- Notification serializers --------------------------------------------------
 
-ELLE_SERIALIZE_NO_FORMAT(plasma::Notification);
-ELLE_SERIALIZE_SIMPLE(plasma::Notification, ar, value, version)
+#define XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE()      \
+  int* n = (int*) &value;                                   \
+  ar & named("notification_type", *n)                       \
+  /**/
+
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::Notification);
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::Notification, ar, value, version)
 {
   enforce(version == 0);
 
-  ar & named("notification_type", value.notification_type);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
 }
 
 ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::UserStatusNotification);
@@ -38,7 +43,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::UserStatusNotification, ar, value, ver
   enforce(version == 0);
 
   //ar & base_class<plasma::trophonius::Notification>(value);
-  ar & named("notification_type", value.notification_type);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
   ar & named("user_id", value.user_id);
   ar & named("status", value.status);
 }
@@ -49,7 +54,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionNotification, ar, value, ve
   enforce(version == 0);
 
   //ar & base_class<plasma::trophonius::Notification>(value);
-  ar & named("notification_type", value.notification_type);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
   ar & named("transaction", value.transaction);
 }
 
@@ -59,7 +64,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, val
   enforce(version == 0);
 
   //ar & base_class<plasma::trophonius::Notification>(value);
-  ar & named("notification_type", value.notification_type);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
   ar & named("transaction_id", value.transaction_id);
   ar & named("status", value.status);
 }
@@ -70,7 +75,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::MessageNotification, ar, value, versio
   enforce(version == 0);
 
   //ar & base_class<plasma::trophonius::Notification>(value);
-  ar & named("notification_type", value.notification_type);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
   ar & named("sender_id", value.sender_id);
   ar & named("message", value.message);
 }
@@ -80,9 +85,7 @@ namespace plasma
   namespace trophonius
   {
 
-
     //- Implementation --------------------------------------------------------
-
     struct Client::Impl
     {
       boost::asio::io_service io_service;
@@ -159,7 +162,8 @@ namespace plasma
           std::string msg{data.get(), bytes_transferred};
           ELLE_DEBUG("Got message: %s", msg);
 
-          int notification_type = 0; // Invalid notification type.
+          plasma::trophonius::NotificationType notification_type =
+            plasma::trophonius::NotificationType::none; // Invalid notification type.
 
           {
             std::stringstream ss{msg};
@@ -169,26 +173,25 @@ namespace plasma
             notification_type = notification.notification_type;
           }
 
-
           std::unique_ptr<Notification> notification;
           {
             std::stringstream ss{msg};
             elle::serialize::InputJSONArchive ar{ss};
             switch (notification_type)
               {
-              case gap_notification_user_status:
+              case NotificationType::user_status:
                 notification = std::move(ar.Construct<UserStatusNotification>());
                 break;
-              case gap_notification_transaction:
+              case NotificationType::transaction:
                 notification = std::move(ar.Construct<TransactionNotification>());
                 break;
-              case gap_notification_transaction_status:
+              case NotificationType::transaction_status:
                 notification = std::move(ar.Construct<TransactionStatusNotification>());
                 break;
-              case gap_notification_message:
+              case NotificationType::message:
                 notification = std::move(ar.Construct<MessageNotification>());
                 break;
-              case gap_notification_connection_enabled:
+              case NotificationType::connection_enabled:
                 notification = std::move(ar.Construct<Notification>());
                 break;
               default:

@@ -1,5 +1,5 @@
-#ifndef  SURFACE_GAP_PYTHON_PYTHON_HH
-# define SURFACE_GAP_PYTHON_PYTHON_HH
+#ifndef  WRAPPERS_BOOST_PYTHON_HH
+# define WRAPPERS_BOOST_PYTHON_HH
 
 // Wrapper for boost/python
 
