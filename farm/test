@@ -140,6 +140,7 @@ def launch_script(engine, script_report, script_path, script_name, nb_instance):
             script_report["Reason"] = str(e)
             print("\033[31mtest", script_name, "failed\033[0m")
         finally:
+            print(out, end='', file=sys.stderr)
             import html
             if "std" not in script_report:
                 script_report["std"] = OrderedDict()

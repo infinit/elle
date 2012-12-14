@@ -36,17 +36,19 @@ class Infinit:
         self.environ["INFINIT_HOME"] = home.home
         self.pid = None
 
+    @property
+    def cmd(self):
+        return [
+            "8infinit",
+            "-u", self.user,
+            "-n", self.network,
+            "-m", self.mountpoint,
+        ]
 
     def launch(self):
-        cmd = [
-                "8infinit",
-                "-u", self.user,
-                "-n", self.network,
-                "-m", self.mountpoint
-        ]
-        print(cmd)
+        print("Launch infinit:", ' '.join(self.cmd))
         self._infinit = subprocess.Popen(
-            cmd,
+            self.cmd,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             env=self.environ
@@ -71,13 +73,15 @@ class Infinit:
             i += 1
             if i == 10:
                 break
-
         print("Finished polling")
         if self._infinit.returncode == None:
             print("Sending SIGKILL to", self.pid)
             self._infinit.kill()
             print("Waiting... (", self.pid, ")")
             self.wait()
+        print("=== Output of", ' '.join(self.cmd), "command:")
+        print(self.stderr.read().decode('utf8'))
+
 
     def wait(self):
         self._infinit.wait()
