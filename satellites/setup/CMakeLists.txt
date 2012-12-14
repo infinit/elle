@@ -6,4 +6,5 @@ add_executable(8setup
 target_link_libraries(
 	8setup
 	${INFINIT_LIBRARIES}
+	readline
 )

@@ -6,4 +6,5 @@ add_executable(8shell
 target_link_libraries(
 	8shell
 	${INFINIT_LIBRARIES}
+	readline
 )
