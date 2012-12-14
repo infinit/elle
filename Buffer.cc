@@ -1,5 +1,6 @@
 #include "Buffer.hh"
 
+#include <elle/assert.hh>
 #include <elle/Exception.hh>
 #include <elle/IOStream.hh>
 #include <elle/log.hh>
@@ -8,10 +9,10 @@
 
 #include <iomanip>
 #include <iostream>
-#include <memory>
-#include <stdexcept>
 
 ELLE_LOG_COMPONENT("elle.Buffer");
+
+# define ELLE_BUFFER_INITIAL_SIZE (sizeof(void*))
 
 namespace elle
 {
@@ -21,17 +22,20 @@ namespace elle
   }
 
   Buffer::Buffer()
-    : _contents(nullptr)
-    , _size(0)
-    , _buffer_size(0)
-  {}
+    : _contents{static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE))}
+    , _size{0}
+    , _buffer_size{ELLE_BUFFER_INITIAL_SIZE}
+  {
+    if (this->_contents == nullptr)
+      throw std::bad_alloc();
+  }
 
   Buffer::Buffer(size_t size)
     : _contents(nullptr)
     , _size(size)
     , _buffer_size(Buffer::_next_size(size))
   {
-    this->_contents = static_cast<elle::Byte*>(::malloc(_buffer_size));
+    this->_contents = static_cast<Byte*>(::malloc(_buffer_size));
     if (this->_contents == nullptr)
       throw std::bad_alloc();
   }
@@ -56,7 +60,7 @@ namespace elle
     , _buffer_size(other._buffer_size)
   {
     other._contents = nullptr;
-#ifdef DEBUG // XXX[is this macro documented somewhere?]
+#ifdef DEBUG
     other._size = 0;
     other._buffer_size = 0;
 #endif
@@ -69,7 +73,7 @@ namespace elle
 
   void Buffer::append(void const* data, size_t size)
   {
-    assert(data != nullptr || size == 0);
+    ELLE_ASSERT(data != nullptr || size == 0);
 
     size_t old_size = this->_size;
     this->size(this->_size + size);
@@ -99,10 +103,15 @@ namespace elle
   Buffer::ContentPair
   Buffer::release()
   {
-    ContentPair res(ContentPtr(this->_contents), this->_size);
-    this->_contents = nullptr;
+    Byte* new_contents = static_cast<Byte*>(::malloc(ELLE_BUFFER_INITIAL_SIZE));
+    if (new_contents == nullptr)
+        throw std::bad_alloc{};
+
+    ContentPair res{ContentPtr{this->_contents}, this->_size};
+
+    this->_contents = new_contents;
     this->_size = 0;
-    this->_buffer_size = 0;
+    this->_buffer_size = ELLE_BUFFER_INITIAL_SIZE;
     return res;
   }
 
