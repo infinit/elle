@@ -9,9 +9,10 @@
 #ifndef NETWORK_URI_BUILDER_INC
 #define NETWORK_URI_BUILDER_INC
 
+#include <memory>
 
 namespace network {
-  class uri_builder {
+  class NETWORK_URI_DECL uri_builder {
 
     uri_builder(const uri_builder &); // = delete;
     uri_builder &operator = (const uri_builder &); // = delete;
@@ -85,8 +86,8 @@ namespace network {
     void set_query(const string_type &query);
     void set_fragment(const string_type &fragment);
 
-    boost::optional<network::uri> base_uri_;
-    boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
+    struct impl;
+    std::unique_ptr<impl> pimpl_;
 
   };
 } // namespace network

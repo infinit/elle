@@ -322,18 +322,6 @@ namespace network {
     return std::string(first_, last_);
   }
 
-  std::wstring uri::part_range::wstring() const {
-    return std::wstring(first_, last_);
-  }
-
-  std::u16string uri::part_range::u16string() const {
-    return std::u16string(first_, last_);
-  }
-
-  std::u32string uri::part_range::u32string() const {
-    return std::u32string(first_, last_);
-  }
-
   uri::uri(const boost::optional<string_type> &scheme,
 	   const boost::optional<string_type> &user_info,
 	   const boost::optional<string_type> &host,
@@ -562,28 +550,7 @@ namespace network {
     }
   }
 
-  void swap(uri &lhs, uri &rhs) {
-    lhs.swap(rhs);
-  }
-
-  namespace {
-    template <class T>
-    inline
-    void hash_combine(std::size_t& seed, const T& v) {
-      std::hash<T> hasher;
-      seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-    }
-  } // namespace
-
-  std::size_t hash_value(const uri &uri_) {
-    std::size_t seed = 0;
-    std::for_each(std::begin(uri_), std::end(uri_),
-                  [&seed] (uri::value_type c) { hash_combine(seed, c); });
-    return seed;
-  }
-
   bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level) {
-    return lhs.native() == rhs.native();
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (lhs.empty() && rhs.empty()) {
@@ -594,58 +561,6 @@ namespace network {
       return false;
     }
 
-    // the scheme can be compared insensitive to case
-    bool equal = boost::iequals(*lhs.scheme(), *rhs.scheme());
-    if (equal) {
-      // the user info must be case sensitive
-      equal = boost::equals(*lhs.user_info(), *rhs.user_info());
-    }
-
-    if (equal) {
-      // the host can be compared insensitive to case
-      equal = boost::iequals(*lhs.host(), *rhs.host());
-    }
-
-    if (equal) {
-      if (lhs.port() && rhs.port()) {
-    	equal = boost::equals(*lhs.port(), *rhs.port());
-      }
-     // else if (!lhs.port() && rhs.port()) {
-    	//auto port = default_port(lhs.scheme());
-    	//if (port) {
-    	//  equal = boost::equals(*port, rhs.port());
-    	//}
-     // }
-     // else if (lhs.port() && !rhs.port()) {
-    	//auto port = default_port(rhs.scheme());
-    	//if (port) {
-    	//  equal = boost::equals(lhs.port(), *port);
-    	//}
-     // }
-    }
-
-    if (equal) {
-      // test normalized paths
-      //equal = boost::iequals(normalize_path(lhs.path()), normalize_path(rhs.path()));
-      equal = boost::iequals(*lhs.path(), *rhs.path());
-	}
-
-    if (equal) {
-      // test query, independent of order
-      //std::map<uri::string_type, uri::string_type> lhs_query_params, rhs_query_params;
-      //equal = (query_map(lhs, lhs_query_params) == query_map(rhs, rhs_query_params));
-    }
-
-    return equal;
-  }
-
-  bool operator == (const uri &lhs, const uri &rhs) {
-    return equals(lhs, rhs, uri_comparison_level::path_segment_normalization);
-  }
-
-  bool operator < (const uri &lhs, const uri &rhs) {
-    return
-      lhs.normalize(uri_comparison_level::path_segment_normalization).native() <
-      rhs.normalize(uri_comparison_level::path_segment_normalization).native();
+    return lhs.normalize(level).native() == rhs.normalize(level).native();
   }
 } // namespace network

@@ -9,13 +9,15 @@
 #ifndef NETWORK_URI_INC
 #define NETWORK_URI_INC
 
+#include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/translate.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
 #include <system_error>
-#include <cstring>
+#include <algorithm>
+#include <functional>
 
 
 namespace network {
@@ -33,7 +35,7 @@ namespace network {
     invalid_fragment,
   };
 
-  class uri_category_impl : public std::error_category {
+  class NETWORK_URI_DECL uri_category_impl : public std::error_category {
 
   public:
 
@@ -46,9 +48,9 @@ namespace network {
 
   };
 
-  const std::error_category &uri_category();
+  NETWORK_URI_DECL const std::error_category &uri_category();
 
-  std::error_code make_error_code(uri_error e);
+  NETWORK_URI_DECL std::error_code make_error_code(uri_error e);
 
   enum class uri_comparison_level {
     string_comparison,
@@ -57,7 +59,7 @@ namespace network {
     path_segment_normalization,
   };
 
-  class uri {
+  class NETWORK_URI_DECL uri {
 
     friend class uri_builder;
 
@@ -94,12 +96,6 @@ namespace network {
       string_type native() const;
 
       std::string string() const;
-
-      std::wstring wstring() const;
-
-      std::u16string u16string() const;
-
-      std::u32string u32string() const;
 
     private:
 
@@ -207,7 +203,17 @@ namespace network {
 
     void parse(std::error_code &ec);
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif // defined(_MSC_VER)
+
     string_type uri_;
+
+#if defined(_MSC_VER)
+#pragma warning(push)
+#endif // defined(_MSC_VER)
+
     detail::uri_parts<const_iterator> uri_parts_;
 
   };
@@ -220,20 +226,29 @@ namespace network {
     return uri(source, ec);
   }
 
-  void swap(uri &lhs, uri &rhs);
+  inline
+  void swap(uri &lhs, uri &rhs) {
+    lhs.swap(rhs);
+  }
 
-  std::size_t hash_value(const uri &uri_);
+  NETWORK_URI_DECL bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level);
 
-  bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level);
-
-  bool operator == (const uri &lhs, const uri &rhs);
+  inline
+  bool operator == (const uri &lhs, const uri &rhs) {
+    return equals(lhs, rhs, uri_comparison_level::path_segment_normalization);
+  }
 
   inline
   bool operator != (const uri &lhs, const uri &rhs) {
     return !(lhs == rhs);
   }
 
-  bool operator < (const uri &lhs, const uri &rhs);
+  inline
+  bool operator < (const uri &lhs, const uri &rhs) {
+    return
+      lhs.normalize(uri_comparison_level::path_segment_normalization).native() <
+      rhs.normalize(uri_comparison_level::path_segment_normalization).native();
+  }
 
   inline
   bool operator > (const uri &lhs, const uri &rhs) {
@@ -261,7 +276,13 @@ namespace std {
   struct hash<network::uri> {
 
     std::size_t operator () (const network::uri &uri_) const {
-      return network::hash_value(uri_);
+      std::size_t seed = 0;
+      std::for_each(std::begin(uri_), std::end(uri_),
+		    [&seed] (network::uri::value_type v) {
+		      std::hash<network::uri::value_type> hasher;
+		      seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+		    });
+      return seed;
     }
 
   };

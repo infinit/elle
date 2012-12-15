@@ -8,7 +8,15 @@
 
 
 namespace network {
-  uri_builder::uri_builder() {
+  struct uri_builder::impl {
+
+    boost::optional<network::uri> base_uri_;
+    boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
+
+  };
+
+  uri_builder::uri_builder()
+    : pimpl_(new impl) {
 
   }
 
@@ -17,46 +25,46 @@ namespace network {
   }
 
   uri_builder &uri_builder::base_uri(const network::uri &base_uri) {
-    base_uri_ = base_uri;
+    pimpl_->base_uri_ = base_uri;
     return *this;
   }
 
   void uri_builder::set_scheme(const string_type &scheme) {
     // validate scheme is valid
-    scheme_ = scheme;
+    pimpl_->scheme_ = scheme;
   }
 
   void uri_builder::set_user_info(const string_type &user_info) {
-    user_info_ = user_info;
+    pimpl_->user_info_ = user_info;
   }
 
   void uri_builder::set_host(const string_type &host) {
-    host_ = host;
+    pimpl_->host_ = host;
   }
 
   void uri_builder::set_port(const string_type &port) {
-    port_ = port;
+    pimpl_->port_ = port;
   }
 
   void uri_builder::set_path(const string_type &path) {
-    path_ = path;
+    pimpl_->path_ = path;
   }
 
   void uri_builder::set_query(const string_type &query) {
-    query_ = query;
+    pimpl_->query_ = query;
   }
 
   void uri_builder::set_fragment(const string_type &fragment) {
-    fragment_ = fragment;
+    pimpl_->fragment_ = fragment;
   }
 
   network::uri uri_builder::uri() const {
-    return network::uri(scheme_,
-			user_info_,
-			host_,
-			port_,
-			path_,
-			query_,
-			fragment_);
+    return network::uri(pimpl_->scheme_,
+			pimpl_->user_info_,
+			pimpl_->host_,
+			pimpl_->port_,
+			pimpl_->path_,
+			pimpl_->query_,
+			pimpl_->fragment_);
   }
 } // namespace network
