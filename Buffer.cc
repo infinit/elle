@@ -46,12 +46,21 @@ namespace elle
     , _buffer_size(pair.second)
   {}
 
-  Buffer::Buffer(elle::Byte const* data, size_t size)
+  Buffer::Buffer(Byte const* data,
+                 size_t size)
     : _contents(nullptr)
     , _size(0)
     , _buffer_size(0)
   {
-    this->append(data, size);
+    if (size == 0)
+      {
+        this->_buffer_size = ELLE_BUFFER_INITIAL_SIZE;
+        this->_contents = static_cast<Byte*>(::malloc(_buffer_size));
+        if (this->_contents == nullptr)
+          throw std::bad_alloc();
+      }
+    else
+      this->append(data, size);
   }
 
   Buffer::Buffer(Buffer&& other)
