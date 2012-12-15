@@ -184,22 +184,13 @@ namespace infinit
     elle::Status  PublicKey::Encrypt(elle::WeakBuffer const& buffer,
                                Code&                            code) const
     {
-      SecretKey         secret;
       Code              key; // XXX[allocate later]
-      Cipher            data;
 
-      // (i)
-      {
-        if (secret.Generate() == elle::Status::Error)
-          escape("unable to generate the secret key");
-      }
+      // (i) Generate a temporary secret key.
+      SecretKey secret{SecretKey::generate(512)}; // XXX[should not be static like that
 
-      // (ii)
-      {
-        // cipher the plain text with the secret key.
-        if (secret.Encrypt(buffer, data) == elle::Status::Error)
-          escape("unable to cipher the plain text with the secret key");
-      }
+      // (ii) Cipher the plain text with the secret key.
+      Cipher data{secret.encrypt(Plain{buffer})}; // XXX[remove plain]
 
       // (iii)
       {
@@ -282,8 +273,7 @@ namespace infinit
 
     elle::Status PublicKey::Decrypt(Code const& in, elle::Buffer& out) const
     {
-      SecretKey         secret;
-
+      SecretKey secret;
       Code              key;
       Cipher            data;
 
@@ -328,8 +318,13 @@ namespace infinit
       // (iii)
       {
         // finally, decrypt the data with the secret key.
-        if (secret.Decrypt(data, out) == elle::Status::Error)
-          escape("unable to decrypt the data with the secret key");
+        Clear clear{secret.decrypt(data)};
+
+        // XXX[to remove]
+        out.size(clear.buffer().size());
+        ::memcpy(out.mutable_contents(),
+                 clear.buffer().contents(),
+                 clear.buffer().size());
       }
 
       return elle::Status::Ok;
@@ -430,8 +425,11 @@ namespace infinit
     void
     PublicKey::print(std::ostream& stream) const
     {
-      stream << "public key(XXX)";
+      stream << "K{"
+             << *this->_key->pkey.rsa->n
+             << ", "
+             << *this->_key->pkey.rsa->e
+             << "}";
     }
-
   }
 }

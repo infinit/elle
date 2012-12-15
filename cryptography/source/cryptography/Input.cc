@@ -1,7 +1,5 @@
 #include <cryptography/Input.hh>
 
-#include <elle/format/hexadecimal.hh>
-
 namespace infinit
 {
   namespace cryptography
@@ -87,10 +85,7 @@ namespace infinit
     void
     Input::print(std::ostream& stream) const
     {
-      stream <<
-        elle::format::hexadecimal::encode(
-          reinterpret_cast<const char*>(this->_buffer.contents()),
-          this->_buffer.size());
+      stream << this->_buffer;
     }
   }
 }

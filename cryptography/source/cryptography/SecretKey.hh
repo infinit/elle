@@ -1,6 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 # define INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 
+# include <elle/fwd.hh>
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
@@ -11,7 +12,9 @@
 # include <openssl/evp.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
-# include <fcntl.h>
+
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace infinit
 {
@@ -25,10 +28,13 @@ namespace infinit
       | Constants |
       `----------*/
     public:
-      /// Define the magic salt which is embedded in every encrypted
-      /// text so for the decryption process to know that the text
-      /// has been salted.
-      static elle::Character const magic[];
+      struct Constants
+      {
+        /// Define the magic which is embedded in every encrypted
+        /// text so for the decryption process to know that the text
+        /// has been salted.
+        static elle::Character const magic[];
+      };
 
       /// XXX[use enums and/or rename]
       struct Algorithms
@@ -52,7 +58,10 @@ namespace infinit
     public:
       SecretKey(); // XXX[to deserialize]
       /// Construct a secret key based on a string-based password.
+      explicit
       SecretKey(elle::String const& password);
+      /// Copy constructor.
+      SecretKey(SecretKey const& other);
     private:
       /// Construct a secret key based on a given buffer.
       SecretKey(elle::Buffer&& buffer);
@@ -79,27 +88,41 @@ namespace infinit
       T
       decrypt(Cipher const& cipher) const;
 
-      /// XXX
-      template<typename T>
-        elle::Status Decrypt(Cipher const& in,
-                       elle::serialize::Polymorphic<T> const& out) const
-        {
-          return this->Decrypt<elle::serialize::Polymorphic<T> const>(in, out);
-        }
+      /// XXX[temporary until the nucleus node factory is set to handle this
+      //      case]
+      template <typename T>
+      void
+      decrypt(Cipher const& cipher,
+              T& object) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+        ELLE_TRACE_METHOD(cipher);
 
-      //
-      // interfaces
-      //
+        // Decrypt the cipher leading to a clear containing an archive.
+        Clear clear{this->decrypt(cipher)};
 
-      // object
-      declare(SecretKey);
-      elle::Boolean           operator==(const SecretKey&) const;
-      // dumpable
-      elle::Status            Dump(const elle::Natural32 = 0) const;
+        // Deserialize the object from the clear.
+        clear.buffer().reader() >> object;
+      }
+
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      elle::Boolean
+      operator ==(SecretKey const&) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(SecretKey);
+
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
       // printable
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
 
       /*-----------.
       | Attributes |

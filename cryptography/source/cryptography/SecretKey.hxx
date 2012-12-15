@@ -9,56 +9,47 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*--------.
+    | Methods |
+    `--------*/
 
-    template<typename T> elle::Status
-      SecretKey::Encrypt(T const& in, Cipher& out) const
-      {
-        static_assert(
-            !std::is_same<T, elle::Buffer>::value,
-            "Explicitly cast to WeakBuffer needed"
-        );
+    template <typename T>
+    Cipher
+    SecretKey::encrypt(T const& plain) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+      ELLE_TRACE_METHOD(plain);
 
-        elle::Buffer buf;
-        try
-          {
-            buf.writer() << in;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
+      // Serialize the plain object.
+      elle::Buffer buffer;
+      buffer.writer() << plain;
 
-        return this->Encrypt(
-            elle::WeakBuffer(buf),
-            out
-        );
-      }
+      // Encrypt the archive.
+      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+    }
 
-    template<typename T> elle::Status
-      SecretKey::Decrypt(Cipher const& in, T& out) const
-      {
-        elle::Buffer buffer;
+    template <typename T>
+    T
+    SecretKey::decrypt(Cipher const& cipher) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+      ELLE_TRACE_METHOD(cipher);
 
-        if (this->Decrypt(in, buffer) == elle::Status::Error)
-          escape("Cannot decrypt cipher");
+      // Decrypt the cipher leading to a clear containing an archive.
+      Clear clear{this->decrypt(cipher)};
 
-        try
-          {
-            buffer.reader() >> out;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot decode object: %s", err.what());
-          }
+      // Deserialize the object from the clear.
+      T value;
+      clear.buffer().reader() >> value;
 
-        return elle::Status::Ok;
-      }
+      return (value);
+    }
   }
 }
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
@@ -69,7 +60,7 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::SecretKey,
 {
   enforce(version == 0);
 
-  archive & value.region;
+  archive & value._buffer;
 }
 
 #endif

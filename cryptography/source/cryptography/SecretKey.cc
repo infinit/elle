@@ -3,9 +3,11 @@
 #include <cryptography/random.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
+#include <cryptography/finally.hh>
 
 #include <elle/log.hh>
-#include <elle/idiom/Open.hh>
+
+ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
 
 namespace infinit
 {
@@ -15,7 +17,7 @@ namespace infinit
     | Constants |
     `----------*/
 
-    elle::Character const SecretKey::magic[] = "Salted__";
+    elle::Character const SecretKey::Constants::magic[] = "Salted__";
 
     ::EVP_CIPHER const* SecretKey::Algorithms::Cipher =
       ::EVP_aes_256_cbc();
@@ -29,6 +31,8 @@ namespace infinit
     SecretKey
     SecretKey::generate(elle::Natural32 const length)
     {
+      ELLE_TRACE_FUNCTION(length);
+
       // Convert the length in a byte-specific size.
       elle::Natural32 size = length / 8;
 
@@ -43,8 +47,22 @@ namespace infinit
     | Construction |
     `-------------*/
 
+    SecretKey::SecretKey()
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
     SecretKey::SecretKey(elle::String const& password):
-      _buffer(password.c_str(), password.length())
+      _buffer(reinterpret_cast<elle::Byte const*>(password.c_str()),
+              password.length())
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    SecretKey::SecretKey(SecretKey const& other):
+      _buffer(other._buffer.contents(), other._buffer.size())
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -61,229 +79,216 @@ namespace infinit
     | Methods |
     `--------*/
 
-    elle::Status SecretKey::Encrypt(elle::WeakBuffer const&  in,
-                              Cipher&                           cipher) const
+    Cipher
+    SecretKey::encrypt(Plain const& plain) const
     {
-      unsigned char     key[EVP_MAX_KEY_LENGTH];
-      unsigned char     iv[EVP_MAX_IV_LENGTH];
-      unsigned char     salt[PKCS5_SALT_LEN];
-      elle::Natural32         capacity;
+      ELLE_TRACE_METHOD(plain);
 
-      // generate a salt.
+      // Generate a salt.
+      unsigned char salt[PKCS5_SALT_LEN];
+
       ::RAND_pseudo_bytes(salt, sizeof (salt));
 
-      size_t bytes_to_key = ::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                                             SecretKey::Algorithms::Digest,
-                                             salt,
-                                             this->region.contents,
-                                             this->region.size,
-                                             1,
-                                             key,
-                                             iv);
-      // generate the key and IV based on the salt and password.
-      // XXX the test was bytes_to_key != sizeof(key)
-      // XXX[test EVP_BytesToKey rather than using a local variable]
-      if (bytes_to_key > sizeof (key))
-        escape("the generated key's size does not match the one expected");
+      // Check that the secret key's buffer has a non-null address.
+      //
+      // Otherwise, EVP_BytesToKey() is non-deterministic :(
+      ELLE_ASSERT(this->_buffer.contents() != nullptr);
 
-      struct Scope
-      {
-        ::EVP_CIPHER_CTX  context;
+      // Generate a key/IV tuple based on the salt.
+      unsigned char key[EVP_MAX_KEY_LENGTH];
+      unsigned char iv[EVP_MAX_IV_LENGTH];
 
-        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
-        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
-      } scope;
+      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
+                           SecretKey::Algorithms::Digest,
+                           salt,
+                           this->_buffer.contents(),
+                           this->_buffer.size(),
+                           1,
+                           key,
+                           iv) > static_cast<int>(sizeof(key)))
+        throw elle::Exception("the generated key size is too large");
 
-      // initialise the ciphering process.
-      if (::EVP_EncryptInit_ex(&scope.context,
+      // Initialize the cipher context.
+      ::EVP_CIPHER_CTX context;
+
+      ::EVP_CIPHER_CTX_init(&context);
+
+      CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+
+      // Initialise the ciphering process.
+      if (::EVP_EncryptInit_ex(&context,
                                SecretKey::Algorithms::Cipher,
                                nullptr,
                                key,
                                iv) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // retreive the cipher-specific block size.
-      capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
+      // Retreive the cipher-specific block size.
+      elle::Natural32 block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
-      // allocate the cipher.
-      cipher.buffer().size(sizeof (SecretKey::Magic) -
-                           1 +
-                           sizeof (salt) +
-                           in.size() +
-                           capacity);
+      // Allocate the cipher.
+      Cipher cipher(sizeof (Constants::magic) -
+                    1 +
+                    sizeof (salt) +
+                    plain.buffer().size() +
+                    block_size);
 
-      // push the magic string directly into the cipher.
+      // Embed the magic directly into the cipher.
       ::memcpy(cipher.buffer().mutable_contents(),
-               SecretKey::Magic,
-               sizeof (SecretKey::Magic) - 1);
+               Constants::magic,
+               sizeof (Constants::magic) - 1);
 
-      // push the salt directly into the cipher.
+      // Copy the salt directly into the cipher.
       ::memcpy(cipher.buffer().mutable_contents() +
-               sizeof (SecretKey::Magic) - 1,
+               sizeof (Constants::magic) - 1,
                salt,
                sizeof (salt));
 
-      // initialise the cipher's size.
-      int size_header(sizeof (SecretKey::Magic) - 1 + sizeof (salt));
+      // Initialise the cipher's size.
+      int size_header(sizeof (Constants::magic) - 1 + sizeof (salt));
 
+      // Cipher the plain text.
       int size_update(0);
 
-      // cipher the plain text.
-      if (::EVP_EncryptUpdate(&scope.context,
+      if (::EVP_EncryptUpdate(&context,
                               cipher.buffer().mutable_contents() +
                               size_header,
                               &size_update,
-                              in.contents(),
-                              in.size()) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+                              plain.buffer().contents(),
+                              plain.buffer().size()) == 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
+      // Finialise the ciphering process.
       int size_finalize(0);
 
-      // finialise the ciphering process.
-      if (::EVP_EncryptFinal_ex(&scope.context,
+      if (::EVP_EncryptFinal_ex(&context,
                                 cipher.buffer().mutable_contents() +
                                 size_header + size_update,
                                 &size_finalize) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // update the cipher size.
+      // Update the cipher size with the actual size of the generated data.
       cipher.buffer().size(size_header + size_update + size_finalize);
 
-      return elle::Status::Ok;
+      // Clean up the cipher context.
+      ::EVP_CIPHER_CTX_cleanup(&context);
+
+      CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+      return (cipher);
     }
 
-    ///
-    /// this method decrypts the given cipher.
-    ///
-    elle::Status SecretKey::Decrypt(const Cipher&             cipher,
-                              elle::Buffer&    out) const
+    Clear
+    SecretKey::decrypt(Cipher const& cipher) const
     {
-      unsigned char     key[EVP_MAX_KEY_LENGTH];
-      unsigned char     iv[EVP_MAX_IV_LENGTH];
-      unsigned char     salt[PKCS5_SALT_LEN];
-      elle::Natural32         capacity;
+      ELLE_TRACE_METHOD(cipher);
 
-      // check whether the cipher was produced with a salt.
-      if (::memcmp(SecretKey::Magic,
+      // Check whether the cipher was produced with a salt.
+      if (::memcmp(Constants::magic,
                    cipher.buffer().contents(),
-                   sizeof (SecretKey::Magic) - 1) != 0)
-        escape("this encrypted information was produced without any salt");
+                   sizeof (Constants::magic) - 1) != 0)
+        throw elle::Exception("the cipher was produced without any salt");
 
-      // copy the salt for the sack of clarity.
+      // Copy the salt for the sack of clarity.
+      unsigned char salt[PKCS5_SALT_LEN];
+
       ::memcpy(salt,
-               cipher.buffer().contents() + sizeof (Magic) - 1,
+               cipher.buffer().contents() + sizeof (Constants::magic) - 1,
                sizeof (salt));
 
-      size_t bytes_to_key = ::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                                             SecretKey::Algorithms::Digest,
-                                             salt,
-                                             this->region.contents,
-                                             this->region.size,
-                                             1,
-                                             key,
-                                             iv);
-      // generate the key and IV based on the salt and password.
-      if (bytes_to_key > sizeof (key)) // XXX the test was bytes_to_key != sizeof(key)
-          escape("the generated key's size does not match the one expected");
+      // Check that the secret key's buffer has a non-null address.
+      //
+      // Otherwise, EVP_BytesToKey() is non-deterministic :(
+      ELLE_ASSERT(this->_buffer.contents() != nullptr);
 
-      struct Scope
-      {
-        ::EVP_CIPHER_CTX  context;
-        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
-        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
-      } scope;
+      // Generate the key/IV tuple based on the salt.
+      unsigned char key[EVP_MAX_KEY_LENGTH];
+      unsigned char iv[EVP_MAX_IV_LENGTH];
 
-      // initialise the ciphering process.
-      if (::EVP_DecryptInit_ex(&scope.context,
+      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
+                           SecretKey::Algorithms::Digest,
+                           salt,
+                           this->_buffer.contents(),
+                           this->_buffer.size(),
+                           1,
+                           key,
+                           iv) > static_cast<int>(sizeof(key)))
+        throw elle::Exception("the generated key size is too large");
+
+      // Initialize the cipher context.
+      ::EVP_CIPHER_CTX context;
+
+      ::EVP_CIPHER_CTX_init(&context);
+
+      CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+
+      // Initialise the ciphering process.
+      if (::EVP_DecryptInit_ex(&context,
                                SecretKey::Algorithms::Cipher,
                                nullptr,
                                key,
                                iv) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // retreive the cipher-specific block size.
-      capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
+      // Retreive the cipher-specific block size.
+      elle::Natural32 block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
-      // allocate the out buffer.
-      out.size(cipher.buffer().size() -
-               (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
-               capacity);
+      // Allocate the clear;
+      Clear clear(cipher.buffer().size() -
+                  (sizeof (Constants::magic) - 1 + sizeof (salt)) +
+                  block_size);
 
+      // Decipher the cipher text.
       int size_update(0);
 
-      if (::EVP_DecryptUpdate(&scope.context,
-                              out.mutable_contents(),
+      if (::EVP_DecryptUpdate(&context,
+                              clear.buffer().mutable_contents(),
                               &size_update,
                               cipher.buffer().contents() +
-                              sizeof (SecretKey::Magic) - 1 +
+                              sizeof (Constants::magic) - 1 +
                               sizeof (salt),
                               cipher.buffer().size() -
-                              (sizeof (SecretKey::Magic) - 1 +
+                              (sizeof (Constants::magic) - 1 +
                                sizeof (salt))) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
+      // Finalise the ciphering process.
       int size_final(0);
 
-      // finalise the ciphering process.
-      if (::EVP_DecryptFinal_ex(&scope.context,
-                                out.mutable_contents() + size_update,
+      if (::EVP_DecryptFinal_ex(&context,
+                                clear.buffer().mutable_contents() + size_update,
                                 &size_final) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // update the clear size.
-      out.size(size_update + size_final);
+      // Update the clear size with the actual size of the data decrypted.
+      clear.buffer().size(size_update + size_final);
 
-      return elle::Status::Ok;
+      // Clean up the cipher context.
+      ::EVP_CIPHER_CTX_cleanup(&context);
+
+      CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+      return (clear);
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
-    ///
-    /// this method check if two objects match.
-    ///
-    elle::Boolean             SecretKey::operator==(const SecretKey&  element) const
+    elle::Boolean
+    SecretKey::operator ==(SecretKey const& other) const
     {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
+      if (this == &other)
+        return (true);
 
-      // compare the internal region.
-      return (this->region == element.region);
-    }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(SecretKey, _());
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this method dumps the secret key internals.
-    ///
-    elle::Status              SecretKey::Dump(const elle::Natural32         margin) const
-    {
-      elle::String            alignment(margin, ' ');
-
-      // display the key depending on its value.
-      if (*this == SecretKey::Null)
-        {
-          std::cout << alignment << "[SecretKey] " << elle::none << std::endl;
-        }
-      else
-        {
-          std::cout << alignment << "[SecretKey] " << std::endl;
-
-          // dump the region.
-          if (this->region.Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the secret key");
-        }
-
-      return elle::Status::Ok;
+      // Compare the internal buffers.
+      return (this->_buffer == other._buffer);
     }
 
     /*----------.
@@ -293,8 +298,7 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      stream << "XXX";
+      stream << this->_buffer;
     }
-
   }
 }
