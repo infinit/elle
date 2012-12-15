@@ -139,8 +139,6 @@ namespace etoile
       ELLE_LOG_COMPONENT("infinit.etoile.automaton.Contents");
       ELLE_TRACE_FUNCTION(context);
 
-      cryptography::SecretKey   key;
-
       //
       // first, check if the block has been modified i.e exists and is dirty.
       //
@@ -250,9 +248,8 @@ namespace etoile
                 escape("unable to destroy the contents block");
             }
 
-          // generate a secret key.
-          if (key.Generate() == elle::Status::Error) // XXX[should provide a len]
-            escape("unable to generate the secret key");
+          // XXX[should provide a len but with a static const value]
+          cryptography::SecretKey key{cryptography::SecretKey::generate(256)};
 
           // update the object.
           if (context.object->Update(

@@ -55,11 +55,8 @@ namespace nucleus
           {
             ELLE_TRACE("decrypting the radix' cipher with the secret key");
 
-            this->_value = new T;
-
-            if (secret.Decrypt(radix.value(),
-                               *this->_value) == elle::Status::Error)
-              throw Exception("unable to decrypt the cipher");
+            this->_value = new T{
+              secret.decrypt<T>(radix.value())};
 
             return;
           }
@@ -930,11 +927,8 @@ namespace nucleus
                   ELLE_ASSERT(this->_value != nullptr);
 
                   // Encrypt the value.
-                  cryptography::Cipher cipher;
-
-                  if (secret.Encrypt(*this->_value,
-                                     cipher) == elle::Status::Error)
-                    throw Exception("unable to encrypt the value");
+                  cryptography::Cipher cipher{
+                    secret.encrypt(*this->_value)};
 
                   // Update the value state.
                   this->_value->state(State::consistent);

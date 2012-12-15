@@ -55,9 +55,7 @@ test_porcupine_prepare(elle::Natural32 const n)
       cryptography::Digest digest{
         cryptography::oneway::hash(i, cryptography::oneway::Algorithm::sha1)};
 
-      elle::String string =
-        elle::format::hexadecimal::encode(
-          (const char*)digest.buffer().contents(), digest.buffer().size());
+      elle::String string = elle::format::hexadecimal::encode(digest.buffer());
 
       vector[i] = string;
     }
@@ -323,8 +321,7 @@ test_porcupine_catalog()
   stats.Dump();
 #endif
 
-  cryptography::SecretKey secret1;
-  secret1.Generate(256);
+  cryptography::SecretKey secret1{cryptography::SecretKey::generate(256)};
 
   nucleus::proton::Radix radix1{test_porcupine_seal(*porcupine1, secret1)};
 
@@ -336,8 +333,7 @@ test_porcupine_catalog()
 
   test_porcupine_remove(*porcupine2, vector, N / 3, N / 3);
 
-  cryptography::SecretKey secret2;
-  secret2.Generate(256);
+  cryptography::SecretKey secret2{cryptography::SecretKey::generate(256)};
 
   nucleus::proton::Radix radix2{test_porcupine_seal(*porcupine2, secret2)};
 

@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_CONTENTS_HXX
 
 # include <cryptography/Cipher.hh>
-# include <cryptography/SecretKey.hh>
 
 namespace nucleus
 {

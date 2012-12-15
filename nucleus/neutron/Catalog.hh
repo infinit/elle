@@ -79,6 +79,7 @@ namespace nucleus
       `-------------*/
     public:
       Catalog();
+      Catalog(Catalog const&) = default;
 
       /*--------.
       | Methods |

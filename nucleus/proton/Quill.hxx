@@ -740,11 +740,6 @@ namespace nucleus
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
 
-      // XXX
-      printf("--- QUILL 0\n");
-      std::cout << secret << std::endl;
-      printf("--- QUILL 0\n");
-
       auto iterator = this->_container.begin();
       auto end = this->_container.end();
 
@@ -774,8 +769,6 @@ namespace nucleus
                 ELLE_TRACE_SCOPE("State::dirty");
 
                 // Set the secret.
-                ELLE_ASSERT(inlet->value().secret() !=
-                            cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
                 // Encrypt and bind the value block.
@@ -802,14 +795,8 @@ namespace nucleus
               }
             }
 
-          // XXX
-          printf("--- QUILL 1\n");
-
           // unload the value block.
           value.unload();
-
-          // XXX
-          printf("--- QUILL 2\n");
         }
     }
 

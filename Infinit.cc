@@ -13,18 +13,7 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String              Infinit::Key{
-    "AAAAAAACtdQhPIswro5dUmN7mgacsdxvYhRKXoi9D72nC9cUieMT9FtwP7eqVyeCVV+FMBTZD"
-    "GSxVrh7f9b0TeYqAu8sUbSCkQY+Qcbd2DOoOpuJztINuF2+2nP1LlMFYICeomUKj8wfDSoYo3"
-    "Y7FEuSy2AeJzHnrV+DUjGcJGu02WswraqqQbf/6wNwcXBg0hcvegwuLTjyzmA9TzwT7lHvF3s"
-    "Q2olxjOwk3+leRpiYHwV1yjlU+fR0cQeK+ouNmmIXaDbkM+BhoQDCmzD1nefNucf5J5cSRPHt"
-    "kJiB9LU+Cz226e+Js91zrKEzxhLfaiVNrhIL5PSSz/jD+t7MpA8kTtT002JFOJTDhkuoAVSSN"
-    "5By+/BTQa0609XRQ6+pEvyyZunRYkaZzciYHsg6PxfiURKyeWklK9ltqB2s/bmGLks5Bkblhk"
-    "0ms/V5y2950oc6tUOur/FgnDLGegssriZQpxZ6rwx77/Y1jB8yg+MKu4u7/R/uMfkqrkEbUbY"
-    "bUNRaIvhLOMTXCXKfMA8LrBDmzLiawozl0pVoMPqd1HQCZbl37hEh4afHf3Coivn0uZopdL+/"
-    "xthQTYzR8eTQmyV89lVY/bA4dou2SHtx/potV3a+w3yF8NHzZ0y+Zzfukfs1eY15vTVFn4KHm"
-    "p0npuc430bSNUoWB9KFgw+SOLZL83oTI8cAAAMAAQAB"
-};
+const elle::String              Infinit::Key{"AAAAAAACthRb4Cv4wLbwxOmkPrDrK/h7nuZYJB16Uv2m5jIKq355Seo72ijEGqS1gHjgJMO8twz+L+RoIoQiedO0vnH8HZZjPOWV756pn4+PxVQiG76fPhwXzJ7Ix2bcUP7Em56gpp4sP/Z6xBRH4mldbd49nRWoqEVm07og5twO9KW6h5Zc/ZbVAbjlyzoC4KuECgt6EFtw/uW6sANvR1YkflQKuOPAM4WFpSD7mOMSGJ6yKeeiYp8RULFy0q3lKVqy1v4W5iVUQsLHOtSR3yojGwuFUfhV9C9jmDnq5OrvifIzLwu40kUDyxChF7EOiy6d6qJzDDL9sUpSPoz3xQajiH0Q/oiUaFDP0tula1Xph4vvZHcf7ojcBPSKij8mJdyLNnPCvfMZap6cg8wSBLVrAde8/RRxjnsKjrd7L/0y6C6MYC95SXVvmNrX71NBgl2XXEr1oEdDrXtQy/4pTXQxIlS4/gtU6VOlfAzDY2kz9eeKapK1QsO1fbEw304kO+6HaIvjZhudp6ByV71bNm+ph7lrjH46xT81dfFEzFv3kWuQQu/1A9Y5jLMhyoiCktZ0s81zUw6OKwfHwk6BEeP4M57k8fNPb9jG4Lh4xsExG4s3kOYEV5QtKI4RRhKm/JqhTDQpqawJeWdAONtg3PKHAog7qRYchhTSjmiQCLXC7vDJLoUAAAMAAQAB"};
 
 ///
 /// this constant contains the version of the current Infinit software.

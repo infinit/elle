@@ -3,6 +3,8 @@
 
 # include <cryptography/SecretKey.hh>
 
+# include <elle/serialize/Pointer.hh>
+
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Handle,
                       archive,
                       value,
@@ -11,7 +13,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Handle,
   enforce(version == 0);
 
   archive & value._address;
-  archive & value._secret;
+  archive & elle::serialize::alive_pointer(value._secret);
 }
 
 #endif

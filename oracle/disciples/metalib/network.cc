@@ -79,7 +79,7 @@ generate_network_descriptor(elle::String const& id,
     throw std::runtime_error("Unable to restore the identity");
 
   lune::Descriptor descriptor(id,
-                              identity.pair.K(),
+                              identity.pair().K(),
                               model,
                               directory_address,
                               group_address,
@@ -91,7 +91,7 @@ generate_network_descriptor(elle::String const& id,
                               Infinit::version,
                               authority);
 
-  descriptor.seal(identity.pair.k());
+  descriptor.seal(identity.pair().k());
 
   descriptor.Dump();
 

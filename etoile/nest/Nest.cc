@@ -365,8 +365,6 @@ namespace etoile
 
               ELLE_FINALLY_ACTION_DELETE(contents);
 
-              assert(handle.secret() != cryptography::SecretKey::Null);
-
               contents->decrypt(handle.secret());
 
               nucleus::proton::Handle h{this->attach(contents)};

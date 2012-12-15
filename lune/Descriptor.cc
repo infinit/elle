@@ -198,7 +198,7 @@ namespace lune
   void
   Descriptor::Meta::validate(elle::Authority const& authority) const
   {
-    if (authority.K.Verify(
+    if (authority.K().Verify(
           this->_signature,
           elle::serialize::make_tuple(
             this->_id,

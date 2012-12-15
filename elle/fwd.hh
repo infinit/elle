@@ -15,7 +15,9 @@
 namespace elle
 {
   class Authority;
+  class Buffer;
   class Passport;
+  class WeakBuffer;
 }
 
 #endif

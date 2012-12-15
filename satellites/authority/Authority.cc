@@ -11,6 +11,9 @@ using namespace infinit;
 
 #include <satellites/authority/Authority.hh>
 
+// XXX
+#include <cryptography/all.hh>
+
 namespace satellite
 {
 
@@ -96,7 +99,7 @@ namespace satellite
       escape("unable to dump the authority");
 
     // retrive the public key's unique.
-    if (authority.K.Save(unique) == elle::Status::Error)
+    if (authority.K().Save(unique) == elle::Status::Error)
       escape("unable to save the authority's public key");
 
     // dump the public key's unique so that it can be easily hard-coded in the

@@ -43,9 +43,21 @@ namespace lune
     ELLE_ATTRIBUTE_R(elle::String, id);
   public: // XXX
     elle::String                name;
-    cryptography::KeyPair       pair;
+  private: // XXX
+    cryptography::KeyPair* _pair;
+  public: // XXX
     cryptography::Signature     signature;
     cryptography::Cipher*       cipher;
+
+  public:
+    // XXX
+    cryptography::KeyPair const&
+    pair() const
+    {
+      ELLE_ASSERT(this->_pair != nullptr);
+
+      return (*this->_pair);
+    }
 
   public:
     Identity();

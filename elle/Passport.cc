@@ -38,7 +38,7 @@ namespace elle
   bool
   Passport::validate(elle::Authority const& authority) const
   {
-    auto res = authority.K.Verify(
+    auto res = authority.K().Verify(
         this->_signature,
         elle::serialize::make_tuple(_id, _owner_K)
     );

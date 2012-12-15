@@ -79,14 +79,11 @@ namespace satellite
       identity.load(user);
 
       elle::Passport passport{
-        id, passport_name, identity.pair.K(), authority
+        id, passport_name, identity.pair().K(), authority
       };
 
       elle::io::Path passport_path(lune::Lune::Passport);
       passport_path.Complete(elle::io::Piece{"%USER%", user});
-
-      // XXX
-      passport_path.Dump();
 
       // store the passport.
       passport.store(passport_path);

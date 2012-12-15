@@ -113,17 +113,13 @@ namespace etoile
                 << std::endl;
 
       // dump the key.
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
+                << "[Key] ";
       if (this->rights.key != nullptr)
-        {
-          if (this->rights.key->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the key");
-        }
+        std::cout << *this->rights.key << std::endl;
       else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << elle::io::Dumpable::Shift
-                    << "[Key] none" << std::endl;
-        }
+        std::cout << "null" << std::endl;
 
       // dump the record.
       if (this->rights.record != nullptr)

@@ -100,9 +100,7 @@ namespace nucleus
       // therefore, this method simply returns a string representation of
       // the digest.
       return (elle::format::hexadecimal::encode(
-                reinterpret_cast<const char*>(
-                  this->_valid->digest().buffer().contents()),
-                this->_valid->digest().buffer().size()));
+        this->_valid->digest().buffer()));
     }
 
     Network const&

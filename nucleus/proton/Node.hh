@@ -10,8 +10,6 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Component.hh>
 
-# include <boost/noncopyable.hpp>
-
 namespace nucleus
 {
   namespace proton
@@ -22,8 +20,7 @@ namespace nucleus
     class Node:
       public elle::serialize::Serializable<>,
       public elle::io::Dumpable,
-      public elle::Printable,
-      private boost::noncopyable
+      public elle::Printable
     {
       /*-------------.
       | Construction |

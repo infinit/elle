@@ -52,7 +52,7 @@ namespace etoile
           context.ensemble.reset(
             new nucleus::neutron::Ensemble(
               nucleus::proton::Network(Infinit::Network),
-              agent::Agent::Identity.pair.K()));
+              agent::Agent::Identity.pair().K()));
         }
 
       ELLE_ASSERT(context.ensemble != nullptr);
@@ -185,7 +185,7 @@ namespace etoile
 
             cryptography::PrivateKey k(
               token.extract<cryptography::PrivateKey>(
-                agent::Agent::Identity.pair.k()));
+                agent::Agent::Identity.pair().k()));
 
             pass = new cryptography::KeyPair(context.group->pass_K(), k);
           }

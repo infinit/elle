@@ -54,10 +54,8 @@ namespace nucleus
       // Delete the previous cipher: the contents may have been deserialized
       // then modified and re-encrypted.
       delete this->_cipher;
-      this->_cipher = new cryptography::Cipher;
-
-      if (key.Encrypt(*this->_node, *this->_cipher) == elle::Status::Error)
-        throw Exception("unable to encrypt the archived block");
+      this->_cipher = new cryptography::Cipher{
+        key.encrypt(*this->_node)};
     }
 
     void
@@ -68,12 +66,26 @@ namespace nucleus
       ELLE_ASSERT(this->_node == nullptr);
       ELLE_ASSERT(this->_cipher != nullptr);
 
-      this->_node = factory::node().allocate<Node>(this->_nature);
-
       ELLE_TRACE("decrypting the cipher with the secret key");
 
-      if (key.Decrypt(*this->_cipher, *this->_node) == elle::Status::Error)
-        throw Exception("unable to decrypt the cipher");
+      this->_node = factory::node().allocate<Node>(this->_nature);
+      // XXX[below, the decrypt<T> decrypts an archive and then constructs
+      //     a T through the deserialize constructor. everything is good
+      //     except that an object is still instanciated through the
+      //     default constructor and we do not want that. we could pass a
+      //     lambda which, in this case, would call key.decrypt() and return
+      //     a T which would be used at the construction by the factory.
+      //     another way would be for decrypt to return a pointer but this
+      //     is less generic.
+      //     unfortunately, the problem here is that we do not know the final
+      //     type. thus, we cannot call decrypt<T> because do not know T.
+      //     for deserialization the final type, can have no choice but to do
+      //     it directly in the factory. therefore, a specific nucleus factory
+      //     could be the solution.
+      //     for example, the block factory would take a single argument: the
+      //     archive while the node factory would take a cipher and a key
+      //     which would be decrypted.]
+      key.decrypt(*this->_cipher, *this->_node);
     }
 
     Mode

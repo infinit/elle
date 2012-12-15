@@ -1,39 +1,55 @@
+#include <elle/assert.hh>
+
 #include <cryptography/SecretKey.hh>
+#include <cryptography/KeyPair.hh>
 #include <cryptography/Cipher.hh>
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
 #include <iostream>
 
-#define ASSERT(test) \
-  if (!(test)) \
-  { \
-    assert(false); \
-  } \
- /**/
-
 struct A
 {
-  double d;
-  std::string s;
-  float f;
+public:
+  A(): // XXX[to remove: instead use a load constructor]
+    _d(0.0),
+    _f(0.0)
+  {
+  }
+
+  A(double const d,
+    std::string const& s,
+    float const f):
+    _d(d),
+    _s(s),
+    _f(f)
+  {
+  }
+
+  A(A const&) = default;
+
   bool operator == (A const& other) const
   {
-    return (
-        this->d == other.d &&
-        this->s == other.s &&
-        this->f == other.f
-    );
+    return (this->_d == other._d &&
+            this->_s == other._s &&
+            this->_f == other._f);
   }
+
+  ELLE_SERIALIZE_FRIEND_FOR(A);
+
+private:
+  double _d;
+  std::string _s;
+  float _f;
 };
 
 ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
 {
   assert(version == 0);
 
-  archive & value.d;
-  archive & value.s;
-  archive & value.f;
+  archive & value._d;
+  archive & value._s;
+  archive & value._f;
 }
 
 
@@ -67,12 +83,6 @@ ELLE_SERIALIZE_SIMPLE(Implem, ar, value, version)
 
 int main()
 {
-  cryptography::SecretKey secret_key;
-
-  ASSERT(secret_key.Generate() == elle::Status::Ok);
-
-  cryptography::Cipher cipher;
-
   std::string const secret_string =
     "Nobody should read this, it's only here for testing purposes."
     "Nobody should read this, it's only here for testing purposes."
@@ -146,54 +156,65 @@ int main()
     "Nobody should read this, it's only here for testing purposes."
   ;
 
-  ASSERT(secret_key.Encrypt(secret_string, cipher) == elle::Status::Ok);
+  cryptography::SecretKey secret_key{cryptography::SecretKey::generate(256)};
 
-    {
-      std::string res;
-      ASSERT(secret_key.Decrypt(cipher, res) == elle::Status::Ok);
+  cryptography::Cipher cipher{secret_key.encrypt(secret_string)};
 
-      ASSERT(res == secret_string);
-    }
+  {
+    std::string res = secret_key.decrypt<std::string>(cipher);
 
-    {
-      A a{42.0, "hey ho", 12.2f};
-      cryptography::Cipher cipher;
-      ASSERT(secret_key.Encrypt(a, cipher) == elle::Status::Ok);
+    ELLE_ASSERT(res == secret_string);
+  }
 
-      A res;
-      ASSERT(secret_key.Decrypt(cipher, res) == elle::Status::Ok);
+  {
+    A a{42.0, "hey ho", 12.2f};
 
-      ASSERT(res == a);
-    }
+    cryptography::Cipher cipher{secret_key.encrypt(a)};
 
-    {
-      Implem impl;
-      impl.base = "paf";
-      impl.impl = "pif";
-      Virtual& virt = impl;
+    A res{secret_key.decrypt<A>(cipher)};
 
-      cryptography::Cipher c1, c2, c3, c4;
-      ASSERT(secret_key.Encrypt(impl, c1) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(impl, c2) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(virt, c3) == elle::Status::Ok);
-      ASSERT(secret_key.Encrypt(virt, c4) == elle::Status::Ok);
+    ELLE_ASSERT(res == a);
+  }
 
-      Implem res1, res2, res3, res4;
-      Virtual& res4_ref = res4;
-      ASSERT(secret_key.Decrypt(c1, res1) == elle::Status::Ok);
-      ASSERT(secret_key.Decrypt(c2, res2) == elle::Status::Ok);
-      ASSERT(secret_key.Decrypt(c3, res3) == elle::Status::Ok);
+  {
+    Implem impl;
+    impl.base = "paf";
+    impl.impl = "pif";
+    Virtual& virt = impl;
 
-      ASSERT(secret_key.Decrypt(c4, res4_ref) == elle::Status::Ok);
+    cryptography::Cipher c1{secret_key.encrypt(impl)};
+    cryptography::Cipher c2{secret_key.encrypt(impl)};
+    cryptography::Cipher c3{secret_key.encrypt(virt)};
+    cryptography::Cipher c4{secret_key.encrypt(virt)};
 
-      ASSERT(res1.base == "paf" && res1.impl == "pif");
-      ASSERT(res2.base == "paf" && res2.impl == "pif");
-      ASSERT(res3.base == "paf" && res3.impl == "pif");
-      ASSERT(res4.base == "paf" && res4.impl == "pif");
-    }
+    Implem res1{secret_key.decrypt<Implem>(c1)};
+    Implem res2{secret_key.decrypt<Implem>(c2)};
+    Implem res3{secret_key.decrypt<Implem>(c3)};
+    Implem res4{secret_key.decrypt<Implem>(c4)};
+
+    Virtual& res4_ref = res4;
+
+    res4_ref = secret_key.decrypt<Implem>(c4);
+
+    ELLE_ASSERT(res1.base == "paf" && res1.impl == "pif");
+    ELLE_ASSERT(res2.base == "paf" && res2.impl == "pif");
+    ELLE_ASSERT(res3.base == "paf" && res3.impl == "pif");
+    ELLE_ASSERT(res4.base == "paf" && res4.impl == "pif");
+  }
+
+  {
+    cryptography::SecretKey key{elle::String("")};
+    cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+    cryptography::Cipher* cipher =
+      new cryptography::Cipher{key.encrypt(kp.k())};
+    cryptography::PrivateKey* k =
+      new cryptography::PrivateKey{
+        key.decrypt<cryptography::PrivateKey>(*cipher)};
+
+    ELLE_ASSERT(*k == kp.k());
+  }
 
   std::cout << "tests done.\n";
 
-  return 0;
-
+  return (0);
 }

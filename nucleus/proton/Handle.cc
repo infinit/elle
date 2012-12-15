@@ -1,11 +1,12 @@
 #include <nucleus/proton/Handle.hh>
 #include <nucleus/proton/Porcupine.hh>
 
+#include <cryptography/SecretKey.hh>
+
 namespace nucleus
 {
   namespace proton
   {
-
     /*----------.
     | Functions |
     `----------*/
@@ -40,14 +41,15 @@ namespace nucleus
 //
 
     Handle::Handle():
-      _address(Address::null())
+      _address(Address::null()),
+      _secret(nullptr)
     {
     }
 
     Handle::Handle(Address const& address,
                    cryptography::SecretKey const& secret):
       _address(address),
-      _secret(secret)
+      _secret(new cryptography::SecretKey{secret})
     {
     }
 
@@ -56,7 +58,7 @@ namespace nucleus
                    cryptography::SecretKey const& secret):
       _placement(placement),
       _address(address),
-      _secret(secret)
+      _secret(new cryptography::SecretKey{secret})
     {
     }
 
@@ -64,7 +66,7 @@ namespace nucleus
                    Address const& address):
       _placement(placement),
       _address(address),
-      _secret(generate_secret())
+      _secret(new cryptography::SecretKey{generate_secret()})
       // XXX[Porcupine::secret() n'est appelle que de la. il pourrait etre
       //     specifique dans Nest]
     {
@@ -77,10 +79,13 @@ namespace nucleus
     /// to force the cloned handle to be loaded before being used.
     ///
     Handle::Handle(Handle const& other):
-      _placement(other.placement()),
-      _address(other.address()),
-      _secret(other.secret())
+      _placement(other._placement),
+      _address(other._address),
+      _secret(nullptr)
     {
+      ELLE_ASSERT(other._secret != nullptr);
+
+      this->_secret = new cryptography::SecretKey{*other._secret};
     }
 
 //
@@ -110,13 +115,16 @@ namespace nucleus
     cryptography::SecretKey const&
     Handle::secret() const
     {
-      return (this->_secret);
+      ELLE_ASSERT(this->_secret != nullptr);
+
+      return (*this->_secret);
     }
 
     void
     Handle::secret(cryptography::SecretKey const& secret)
     {
-      this->_secret = secret;
+      delete this->_secret;
+      this->_secret = new cryptography::SecretKey{secret};
     }
 
 //
@@ -219,8 +227,12 @@ namespace nucleus
         escape("unable to dump the address");
 
       // dump the secret.
-      if (this->_secret.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the secret");
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Secret] ";
+      if (this->_secret != nullptr)
+        std::cout << *this->_secret << std::endl;
+      else
+        std::cout << "null" << std::endl;
 
       return elle::Status::Ok;
     }
@@ -235,11 +247,15 @@ namespace nucleus
       stream << "("
              << this->_placement
              << ", "
-             << this->_address
-             << ", "
-             << this->_secret
-        // XXX[leads to 'pure virtual method called']
-             << ")";
+             << this->_address;
+
+      if (this->_secret != nullptr)
+        stream << ", "
+               << *this->_secret;
+      else
+        stream << ", null";
+
+      stream << ")";
     }
   }
 }

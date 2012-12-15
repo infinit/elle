@@ -27,6 +27,7 @@ namespace lune
   /// default constructor.
   ///
   Identity::Identity():
+    _pair(nullptr),
     cipher(nullptr)
   {
   }
@@ -36,9 +37,8 @@ namespace lune
   ///
   Identity::~Identity()
   {
-    // release the cipher.
-    if (this->cipher != nullptr)
-      delete this->cipher;
+    delete this->_pair;
+    delete this->cipher;
   }
 
 //
@@ -59,10 +59,12 @@ namespace lune
 
     this->_id = user_id;
     this->name = user_name;
-    this->pair = pair;
 
-    assert(this->pair.k().key() != nullptr);
-    assert(this->pair.K().key() != nullptr);
+    delete this->_pair;
+    this->_pair = new cryptography::KeyPair{pair};
+
+    assert(this->_pair->k().key() != nullptr);
+    assert(this->_pair->K().key() != nullptr);
 
     return elle::Status::Ok;
   }
@@ -72,19 +74,13 @@ namespace lune
   ///
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    cryptography::SecretKey     key;
+    cryptography::SecretKey key(pass);
 
-    // create a secret key with this pass.
-    if (key.Create(pass) == elle::Status::Error)
-      escape("unable to create the secret key");
+    ELLE_ASSERT(this->_pair != nullptr);
 
     // allocate the cipher.
-    this->cipher = new cryptography::Cipher;
-
-    // encrypt the authority.
-    if (key.Encrypt(this->pair,
-                    *this->cipher) == elle::Status::Error)
-      escape("unable to encrypt the key pair");
+    this->cipher = new cryptography::Cipher{
+      key.encrypt(*this->_pair)};
 
     return elle::Status::Ok;
   }
@@ -94,20 +90,16 @@ namespace lune
   ///
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    cryptography::SecretKey     key;
-
     // check the cipher.
     if (this->cipher == nullptr)
       escape("unable to decrypt an unencrypted identity");
 
-    // create a secret key with this pass.
-    if (key.Create(pass) == elle::Status::Error)
-      escape("unable to create the secret key");
+    cryptography::SecretKey key{pass};
 
     // decrypt the authority.
-    if (key.Decrypt(*this->cipher,
-                    this->pair) == elle::Status::Error)
-      escape("unable to decrypt the key pair");
+    delete this->_pair;
+    this->_pair = new cryptography::KeyPair{
+      key.decrypt<cryptography::KeyPair>(*this->cipher)};
 
     return elle::Status::Ok;
   }
@@ -140,7 +132,7 @@ namespace lune
     if (this->cipher == nullptr)
       escape("unable to seal an unencrypted identity");
 
-    // sign the pair with the authority.
+    // sign with the authority.
     this->signature =
       authority.k->sign(
         elle::serialize::make_tuple(this->_id, this->name, *this->cipher));
@@ -160,7 +152,7 @@ namespace lune
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
-    if (authority.K.Verify(
+    if (authority.K().Verify(
           this->signature,
           elle::serialize::make_tuple(this->_id,
                                       this->name,
@@ -210,8 +202,11 @@ namespace lune
               << "[Name] " << this->name << std::endl;
 
     // dump the pair.
-    if (this->pair.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the pair");
+    if (this->_pair != nullptr)
+      {
+        if (this->_pair->Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the pair");
+      }
 
     // dump the signature.
     if (this->signature.Dump(margin + 2) == elle::Status::Error)

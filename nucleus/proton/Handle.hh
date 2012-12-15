@@ -6,7 +6,7 @@
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
 
-# include <cryptography/SecretKey.hh>
+# include <cryptography/fwd.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Address.hh>
@@ -115,7 +115,7 @@ namespace nucleus
       // XXX[et une union? en fait non probablement pas car c'est bien de garder l'addresse]
       Placement _placement;
       Address _address;
-      cryptography::SecretKey _secret;
+      cryptography::SecretKey* _secret;
     };
   }
 }

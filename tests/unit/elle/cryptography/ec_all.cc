@@ -79,18 +79,14 @@ void test_signature()
 
 void test_cipher()
 {
-  cryptography::SecretKey secret;
-  cryptography::Cipher cipher;
-  cryptography::Clear clear;
-
   elle::Buffer buffer{cryptography::random::generate<elle::Buffer>(512)};
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
 
-  CHECK(secret.Generate(256));
+  cryptography::SecretKey secret{cryptography::SecretKey::generate(256)};
 
-  CHECK(secret.Encrypt(plain, cipher));
+  cryptography::Cipher cipher{secret.encrypt(plain)};
 
-  CHECK(secret.Decrypt(cipher, clear));
+  cryptography::Clear clear{secret.decrypt(cipher)};
 
   assert(plain == clear);
 }

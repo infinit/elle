@@ -894,42 +894,11 @@ namespace nucleus
               {
                 ELLE_TRACE_SCOPE("State::dirty");
 
-          // XXX
-          printf("--- SEAM -2\n");
-          std::cout << inlet->value() << std::endl;
-          printf("--- SEAM -2\n");
-          std::cout << inlet->value().secret() << std::endl;
-          printf("--- SEAM -2\n");
-
                 // set the secret key.
-                ELLE_ASSERT(inlet->value().secret() !=
-                            cryptography::SecretKey::Null);
                 inlet->value().secret(secret);
 
-          // XXX
-          printf("--- SEAM -1\n");
-          std::cout << inlet->value() << std::endl;
-          printf("--- SEAM -1\n");
-          std::cout << inlet->value().secret() << std::endl;
-          printf("--- SEAM -1\n");
-
-                // XXX
-                printf("--- SEAM 0\n");
-
-                auto _s = inlet->value().secret();
-
-                // XXX
-                printf("--- SEAM 1 %s\n", typeid(_s).name());
-                std::cout << inlet->value().secret();
-                printf("--- SEAM 1\n");
-                std::cout << _s << std::endl;
-                printf("--- SEAM 1\n");
-
                 // seal recursively.
-                current().seal(_s);
-
-                // XXX
-                printf("--- SEAM 2\n");
+                current().seal(inlet->value().secret());
 
                 // Encrypt and bind the block.
                 current.contents().encrypt(secret);

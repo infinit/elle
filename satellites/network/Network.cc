@@ -121,7 +121,7 @@ namespace satellite
     // create an "everybody" group.
     //
     nucleus::neutron::Group group(network,
-                                  identity.pair.K(),
+                                  identity.pair().K(),
                                   "everybody");
 
     elle::io::Path shelter_path(lune::Lune::Shelter);
@@ -129,13 +129,13 @@ namespace satellite
                           elle::io::Piece{"%NETWORK%", name});
     hole::storage::Directory storage(shelter_path.string());
 
-    group.seal(identity.pair.k());
+    group.seal(identity.pair().k());
 
     nucleus::proton::Address group_address(group.bind());
 
     storage.store(group_address, group);
 
-    nucleus::neutron::Access access(network, identity.pair.K());
+    nucleus::neutron::Access access(network, identity.pair().K());
     nucleus::proton::Address* access_address(nullptr);
 
     // depending on the policy.
@@ -204,7 +204,7 @@ namespace satellite
     // create the root directory.
     //
     nucleus::neutron::Object directory(network,
-                                       identity.pair.K(),
+                                       identity.pair().K(),
                                        nucleus::neutron::Genre::directory);
 
     if (directory.Update(directory.author(),
@@ -215,7 +215,7 @@ namespace satellite
       escape("unable to update the directory");
 
     // seal the directory.
-    if (directory.Seal(identity.pair.k(), &access) == elle::Status::Error)
+    if (directory.Seal(identity.pair().k(), &access) == elle::Status::Error)
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());
@@ -227,7 +227,7 @@ namespace satellite
     //
     {
       lune::Descriptor    descriptor(identifier,
-                                     identity.pair.K(),
+                                     identity.pair().K(),
                                      model,
                                      directory_address,
                                      group_address,
@@ -239,7 +239,7 @@ namespace satellite
                                      Infinit::version,
                                      authority);
 
-      descriptor.seal(identity.pair.k());
+      descriptor.seal(identity.pair().k());
 
       descriptor.store(identity);
     }
