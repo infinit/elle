@@ -1,5 +1,5 @@
 set(SERIALIZE_LIB
-    ${INFINIT_LIBRARIES} comet lune #Fuck
+    ${INFINIT_LIBRARIES} comet cryptography # XXX Fuck
 )
 
 simple_test(NAME all_archives PASS_REGEX "tests done." LIB ${SERIALIZE_LIB})
