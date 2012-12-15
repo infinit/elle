@@ -48,7 +48,7 @@ ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 namespace horizon
 {
   /// The number of directory entries to fetch from etoile when
-  /// performing a Readdir().
+  /// performing a readdir().
   const nucleus::neutron::Size Crux::Range = 128;
 
   /// General-purpose information on the file system object

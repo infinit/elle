@@ -112,14 +112,14 @@ namespace etoile
       door().insert(new nucleus::neutron::Entry{name, address});
 
       // XXX
-      printf("INSERTED\n");
-      door().Dump();
+      //printf("INSERTED\n");
+      //door().Dump();
 
       door.close();
 
       // XXX
-      printf("DUMP\n");
-      context.porcupine->dump();
+      //printf("DUMP\n");
+      //context.porcupine->dump();
 
       // Update the porcupine.
       context.porcupine->update(name);
@@ -234,7 +234,8 @@ namespace etoile
 
       // Seek the catalog responsible for the given index.
       auto _index = static_cast<nucleus::proton::Capacity>(index);
-      auto _size = size;
+      auto _size = size > context.porcupine->size() ?
+        context.porcupine->size() : size;
 
       while (_size > 0)
         {
@@ -248,11 +249,7 @@ namespace etoile
           auto length = _size > (door().size() - start) ?
             (door().size() - start) : _size;
 
-          // If the length is null, this means that there is not enough
-          // information to fill the range i.e there are less entries than
-          // the requested _size_.
-          if (length == 0)
-            break;
+          ELLE_ASSERT(length != 0);
 
           // Retrieve the directory entries falling in the requested
           // range [index, index + size[.

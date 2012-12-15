@@ -663,7 +663,6 @@ namespace nucleus
 
       auto end = this->_container.end();
       auto iterator = this->_container.begin();
-      Handle v;
 
       ELLE_TRACE_SCOPE("seek(%s)", target);
 
@@ -684,19 +683,19 @@ namespace nucleus
               current.load();
 
               // seek the target in this nodule.
-              v = current().seek(target, base);
+              Handle v{current().seek(target, base)};
 
               // unload the current nodule.
               current.unload();
 
-              break;
+              return (v);
             }
 
           // increases the base.
           base += inlet->capacity();
         }
 
-      return (v);
+      elle::unreachable();
     }
 
     template <typename T>

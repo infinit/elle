@@ -344,19 +344,16 @@ namespace etoile
         {
           ELLE_TRACE("address present in handle");
 
+          // XXX
+          printf("LOOKING FOR ADDRESS\n");
+          handle.address().Dump();
+          printf("DUMP NEST (BEFORE)\n");
+          this->Dump();
+
           if (this->exists(handle.address()) == false)
             {
               ELLE_TRACE("no pod for this address: the block needs "
                          "to be loaded from the depot");
-
-              /* XXX
-                input: H1
-                1) allocate contents
-                2) load from depot
-                3) decrypt with key => will use factory to allocate the correct node
-                4) attach block to this nest -> handle H2
-                5) H1.placement(H2.placement());
-              */
 
               nucleus::proton::Contents* contents =
                 depot::Depot::pull<nucleus::proton::Contents>(
@@ -367,30 +364,42 @@ namespace etoile
 
               contents->decrypt(handle.secret());
 
-              nucleus::proton::Handle h{this->attach(contents)};
+              nucleus::proton::Placement placement =
+                nucleus::proton::Placement::generate();
+
+              assert(placement != nucleus::proton::Placement::Null);
+
+              // create a new selectionoid.
+              auto pod = new Pod(placement, handle.address(), contents);
 
               ELLE_FINALLY_ABORT(contents);
+              ELLE_FINALLY_ACTION_DELETE(pod);
 
-              handle.placement(h.placement()); // XXX[to change]
+              // insert the pod.
+              this->_insert(pod->placement, pod->address, pod);
 
-              Pod* pod = this->_retrieve(handle.placement());
+              ELLE_FINALLY_ABORT(pod);
+
+              handle.placement(pod->placement); // XXX[to change]
 
               block = pod->load(handle);
             }
           else
             {
-              assert(false);
-              /* XXX
-              Pod* pod;
+              ELLE_TRACE("a pod exists for this address");
 
-              ELLE_TRACEE("a pod exists for this address");
+              Pod* pod;
 
               pod = this->_retrieve(handle.address());
 
+              handle.placement(pod->placement); // XXX[to change]
+
               block = pod->load(handle);
-              */
-              // XXX here the handle should reference the pod's placement: handle.placement(pod.placement());
             }
+
+          // XXX
+          printf("DUMP NEST (AFTER)\n");
+          this->Dump();
         }
       else
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -418,9 +427,11 @@ namespace etoile
 
       pod->unload(handle);
 
+      /* XXX
       if ((pod->nature == Pod::NatureOrphan) &&
           (pod->counter == 0))
         pod->release();
+      */
     }
 
 //

@@ -503,7 +503,7 @@ namespace nucleus
       elle::String alignment(margin, ' ');
       Catalog::Scoutor scoutor;
 
-      std::cout << alignment << "[Catalog]" << std::endl;
+      std::cout << alignment << "[Catalog] " << std::hex << this << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the value");

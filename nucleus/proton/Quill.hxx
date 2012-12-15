@@ -562,7 +562,6 @@ namespace nucleus
 
       auto end = this->_container.end();
       auto scoutor = this->_container.begin();
-      Handle value;
 
       ELLE_TRACE_SCOPE("seek(%s)", target);
 
@@ -575,16 +574,14 @@ namespace nucleus
           if (target < (base + inlet->capacity()))
             {
               // return the value.
-              value = inlet->value();
-
-              break;
+              return (inlet->value());
             }
 
           // increases the base.
           base += inlet->capacity();
         }
 
-      return (value);
+      elle::unreachable();
     }
 
     template <typename T>

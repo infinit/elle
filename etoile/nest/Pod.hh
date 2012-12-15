@@ -47,7 +47,8 @@ namespace etoile
       Pod(const nucleus::proton::Placement&,
           nucleus::proton::Contents*);
       Pod(const nucleus::proton::Placement&,
-          const nucleus::proton::Address&);
+          const nucleus::proton::Address&,
+          nucleus::proton::Contents*);
       Pod(const Pod&);
 
       //

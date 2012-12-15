@@ -47,12 +47,13 @@ namespace etoile
     /// XXX
     ///
     Pod::Pod(const nucleus::proton::Placement& placement,
-             const nucleus::proton::Address& address):
+             const nucleus::proton::Address& address,
+             nucleus::proton::Contents* block):
       nature(NaturePersistent),
       state(StateUnloaded),
       placement(placement),
       address(address),
-      block(nullptr),
+      block(block),
       counter(0)
     {
     }
@@ -208,17 +209,8 @@ namespace etoile
       if (this->address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the address");
 
-      if (this->block != nullptr)
-        {
-          // XXX
-          //if (this->block->Dump(margin + 2) == elle::Status::Error)
-          //escape("unable to dump the block");
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift << "[Block] "
-                    << elle::none << std::endl;
-        }
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Block] "
+                << this->block.get() << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift << "[Counter] "
                 << std::dec << this->counter << std::endl;

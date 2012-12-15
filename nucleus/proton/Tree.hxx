@@ -159,6 +159,7 @@ namespace nucleus
       Capacity base(0);
 
       ELLE_ASSERT(this->_root != nullptr);
+      ELLE_ASSERT(target < this->_capacity);
 
       Ambit<Nodule<T>> root(this->_nest, *this->_root);
 

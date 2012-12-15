@@ -39,7 +39,7 @@ namespace nucleus
           }
         case Nature::catalog_quill:
           {
-            stream << "catalog(quill))";
+            stream << "catalog(quill)";
             break;
           }
         case Nature::catalog_value:

@@ -241,20 +241,25 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Location] " << this->_location << std::endl;
 
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Value]" << std::endl;
-
       switch (this->_location)
         {
         case Location::memory:
           {
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Value]" << std::endl;
+
             this->_value->Dump(margin + 4);
 
             break;
           }
         case Location::nest:
           {
-            // XXX
+            ELLE_ASSERT(this->_block != nullptr);
+
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Block]" << std::endl;
+
+            this->_block->handle().Dump(margin + 4);
 
             break;
           }
