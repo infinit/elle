@@ -6,9 +6,10 @@
 
 # include <elle/types.hh>
 # include <elle/Printable.hh>
-# include <elle/serialize/fwd.hh>
 # include <elle/operator.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -62,6 +63,8 @@ namespace infinit
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
       KeyPair(KeyPair const& pair);
+      // XXX
+      ELLE_SERIALIZE_CONSTRUCT(KeyPair) {}
     private:
       KeyPair(::EVP_PKEY const* key);
 
