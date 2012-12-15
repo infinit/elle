@@ -219,13 +219,14 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, index, size);
 
-      if (Ensemble::Open(context) == elle::Status::Error)
-        escape("unable to open the ensemble");
-
       // If the index starts with 0, include the manager by creating
       // a record for him.
       if (index == 0)
         {
+          // XXX Optimize so as to open only if size > 1.
+          if (Ensemble::Open(context) == elle::Status::Error)
+            escape("unable to open the ensemble");
+
           // Add the manager's fellow to the range.
           range.insert(
             std::shared_ptr<nucleus::neutron::Fellow>{
@@ -242,6 +243,9 @@ namespace etoile
         }
       else
         {
+          if (Ensemble::Open(context) == elle::Status::Error)
+            escape("unable to open the ensemble");
+
           // Consult the ensemble by taking care of starting the consultation
           // one index before since the manager's fellow, which is not located
           // in the ensemble block, counts as one fellow.
@@ -325,10 +329,6 @@ namespace etoile
       // check if the current user is the group manager.
       if (context.rights.role != nucleus::neutron::Group::RoleManager)
         escape("the user does not seem to be the group manager");
-
-      // open the ensemble.
-      if (Ensemble::Open(context) == elle::Status::Error)
-        escape("unable to open the ensemble");
 
       // destroy the ensemble.
       if (Ensemble::Destroy(context) == elle::Status::Error)

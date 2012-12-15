@@ -410,14 +410,14 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, index, size);
 
-      // open the access.
-      if (Access::Open(context) == elle::Status::Error)
-        escape("unable to open the access block");
-
       // if the index starts with 0, include the owner by creating
       // a record for him.
       if (index == 0)
         {
+          // XXX optimize so as not to open if size == 1
+          if (Access::Open(context) == elle::Status::Error)
+            escape("unable to open the access block");
+
           // add the record to the range.
           range.insert(
             std::shared_ptr<nucleus::neutron::Record>{
@@ -435,6 +435,9 @@ namespace etoile
         }
       else
         {
+          if (Access::Open(context) == elle::Status::Error)
+            escape("unable to open the access block");
+
           // consult the access object by taking care of starting the
           // consultation one index before since the owner record, which
           // is not located in the access block, counts as one record.

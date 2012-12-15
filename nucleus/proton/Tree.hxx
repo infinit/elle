@@ -379,6 +379,31 @@ namespace nucleus
     }
 
     template <typename T>
+    void
+    Tree<T>::destroy()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
+
+      root.load();
+
+      // Recursively destroy the blocks.
+      root().destroy();
+
+      // Detach the root nodule from the nest.
+      this->_nest.detach(root.handle());
+
+      root.unload();
+
+      delete this->_root;
+      this->_root = nullptr;
+    }
+
+    template <typename T>
     Handle const&
     Tree<T>::root() const
     {

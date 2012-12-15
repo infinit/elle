@@ -115,12 +115,42 @@ namespace etoile
       // If the object holds some content, mark the blocks as needing removal.
       if (context.object->contents().empty() == false)
         {
-          /* XXX[porcupine: make a destroy call which would make all the blocks
-             for deletion]
-          ELLE_TRACE("record the Contents block '%s' for removal",
-                     context.object->contents())
-            context.transcript.wipe(context.object->contents());
-          */
+          // Optimisation: only proceed if the content strategy is block-based:
+          switch (context.object->contents().strategy())
+            {
+            case nucleus::proton::Strategy::none:
+              throw elle::Exception("unable to destroy an empty content");
+            case nucleus::proton::Strategy::value:
+              {
+                // Nothing to do in this case since there is no block for
+                // holding the content.
+                //
+                // The optimization makes us save some time since the content
+                // is neither deserialized nor decrypted.
+
+                break;
+              }
+            case nucleus::proton::Strategy::block:
+            case nucleus::proton::Strategy::tree:
+              {
+                // open the contents.
+                if (Contents::Open(context) == elle::Status::Error)
+                  escape("unable to open the contents");
+
+                ELLE_TRACE("record the content blocks for removal");
+                ELLE_ASSERT(context.porcupine != nullptr);
+                context.porcupine->destroy();
+
+                ELLE_TRACE("mark the destroyed blocks as needed to be "
+                           "removed from the storage layer");
+                context.nest->record(context.transcript);
+
+                break;
+              }
+            default:
+              throw elle::Exception("unknown strategy '%s'",
+                                    context.object->contents().strategy());
+            }
         }
 
       return elle::Status::Ok;
@@ -242,11 +272,14 @@ namespace etoile
           // does the network support the history?
           // XXX: restore history handling
           // if (depot::hole().descriptor().meta().history() == false)
+          /* XXX[porcupine: now the ancien blocks are not removed but replaced
+                 and everything is handled by porcupine/nest]
             {
               // destroy the contents block.
               if (Contents::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the contents block");
             }
+          */
 
           // XXX[should provide a len but with a static const value]
           cryptography::SecretKey key{cryptography::SecretKey::generate(256)};

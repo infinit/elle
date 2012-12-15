@@ -111,15 +111,7 @@ namespace etoile
       // Add the entry to the catalog.
       door().insert(new nucleus::neutron::Entry{name, address});
 
-      // XXX
-      //printf("INSERTED\n");
-      //door().Dump();
-
       door.close();
-
-      // XXX
-      //printf("DUMP\n");
-      //context.porcupine->dump();
 
       // Update the porcupine.
       context.porcupine->update(name);
@@ -501,10 +493,6 @@ namespace etoile
       if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this directory");
-
-      // open the contents.
-      if (Contents::Open(context) == elle::Status::Error)
-        escape("unable to open the contents");
 
       // destroy the contents.
       if (Contents::Destroy(context) == elle::Status::Error)

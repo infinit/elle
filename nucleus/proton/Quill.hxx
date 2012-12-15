@@ -208,7 +208,7 @@ namespace nucleus
           Quill<T>::I* inlet = scoutor->second;
 
           // check if this inlet is responsible for the given key or
-          // the end of the seam has been reached.
+          // the end of the quill has been reached.
           if ((k <= scoutor->first) || (inlet == rbegin->second))
             return (scoutor);
         }
@@ -231,7 +231,7 @@ namespace nucleus
           Quill<T>::I* inlet = iterator->second;
 
           // check if this inlet is responsible for the given key or
-          // the end of the seam has been reached.
+          // the end of the quill has been reached.
           if ((k <= iterator->first) || (inlet == rbegin->second))
             return (iterator);
         }
@@ -794,6 +794,22 @@ namespace nucleus
 
           // unload the value block.
           value.unload();
+        }
+    }
+
+    template <typename T>
+    void
+    Quill<T>::destroy()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
+      ELLE_TRACE_METHOD("");
+
+      for (auto& pair: this->_container)
+        {
+          auto& inlet = pair.second;
+
+          // Detach the value block from the nest.
+          this->nest().detach(inlet->value());
         }
     }
 

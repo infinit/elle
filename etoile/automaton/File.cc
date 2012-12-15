@@ -268,10 +268,6 @@ namespace etoile
         escape("the user does not seem to have the permission to destroy "
                "this file");
 
-      // open the contents.
-      if (Contents::Open(context) == elle::Status::Error)
-        escape("unable to open the contents");
-
       // destroy the contents.
       if (Contents::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the contents");

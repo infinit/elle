@@ -19,47 +19,47 @@ namespace nucleus
         {
         case Nature::data_seam:
           {
-            stream << "data(seam)";
+            stream << "seam<data>";
             break;
           }
         case Nature::data_quill:
           {
-            stream << "data(quill)";
+            stream << "quill<data>";
             break;
           }
         case Nature::data_value:
           {
-            stream << "data(value)";
+            stream << "value<data>";
             break;
           }
         case Nature::catalog_seam:
           {
-            stream << "catalog(seam)";
+            stream << "seam<catalog>";
             break;
           }
         case Nature::catalog_quill:
           {
-            stream << "catalog(quill)";
+            stream << "quill<catalog>";
             break;
           }
         case Nature::catalog_value:
           {
-            stream << "catalog(value)";
+            stream << "value<catalog>";
             break;
           }
         case Nature::reference_seam:
           {
-            stream << "reference(seam)";
+            stream << "seam<reference>";
             break;
           }
         case Nature::reference_quill:
           {
-            stream << "reference(quill)";
+            stream << "quill<reference>";
             break;
           }
         case Nature::reference_value:
           {
-            stream << "reference(value)";
+            stream << "value<reference>";
             break;
           }
         default:

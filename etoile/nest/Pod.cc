@@ -71,7 +71,7 @@ namespace etoile
       block(element.block),
       counter(element.counter)
     {
-      assert(false && "XXX is this necessary?");
+      ELLE_ASSERT(false && "XXX is this necessary?");
     }
 
 //
@@ -89,22 +89,17 @@ namespace etoile
       ELLE_TRACE("counter: %s -> %s",
                  this->counter, this->counter + 1);
 
-      assert(this->placement == handle.placement());
-      assert(this->nature != Pod::NatureOrphan);
-
-      // XXX
-      if (this->nature == Pod::NatureOrphan)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "XXX");
+      ELLE_ASSERT(this->placement == handle.placement());
+      ELLE_ASSERT(this->nature != Pod::NatureOrphan);
 
       if (this->block == nullptr)
         {
           /* XXX
-          assert(false);
+          ELLE_ASSERT(false);
 
           // XXX depend on the nature: local or network => probablement en local via placement
 
-          assert(this->address != nucleus::proton::Address::Null);
+          ELLE_ASSERT(this->address != nucleus::proton::Address::Null);
 
           nucleus::proton::Contents* block;
 
@@ -136,7 +131,7 @@ namespace etoile
 
       this->state = Pod::StateLoaded;
 
-      assert(this->block != nullptr);
+      ELLE_ASSERT(this->block != nullptr);
 
       return (this->block);
     }
@@ -152,8 +147,8 @@ namespace etoile
       ELLE_TRACE("counter: %s -> %s",
                  this->counter, this->counter - 1);
 
-      assert(this->placement == handle.placement());
-      assert(this->counter > 0);
+      ELLE_ASSERT(this->placement == handle.placement());
+      ELLE_ASSERT(this->counter > 0);
 
       this->counter--;
 
@@ -169,7 +164,7 @@ namespace etoile
     {
       ELLE_TRACE_METHOD("");
 
-      assert(this->counter == 0);
+      ELLE_ASSERT(this->counter == 0);
 
       if (this->block.unique())
         this->block.reset();

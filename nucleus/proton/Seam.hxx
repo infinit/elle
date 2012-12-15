@@ -877,7 +877,7 @@ namespace nucleus
           Ambit<Nodule<T>> current(this->nest(), inlet->value());
 
           // load the value block.
-          current.load();
+          current.load(); // XXX load only if dirty!
 
           // ignore nodules which have not been created or modified
           // i.e is not dirty.
@@ -924,6 +924,30 @@ namespace nucleus
             }
 
           // unload the value block.
+          current.unload();
+        }
+    }
+
+    template <typename T>
+    void
+    Seam<T>::destroy()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
+      ELLE_TRACE_METHOD("");
+
+      for (auto& pair: this->_container)
+        {
+          auto& inlet = pair.second;
+          Ambit<Nodule<T>> current(this->nest(), inlet->value());
+
+          current.load();
+
+          // Destroy recursively.
+          current().destroy();
+
+          // Detach the child nodule block from the nest.
+          this->nest().detach(current.handle());
+
           current.unload();
         }
     }

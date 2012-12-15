@@ -116,10 +116,6 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
-      // open the access.
-      if (Access::Open(context) == elle::Status::Error)
-        escape("unable to open the access block");
-
       // destroy the access.
       if (Access::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the access");

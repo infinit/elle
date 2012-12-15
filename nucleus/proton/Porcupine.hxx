@@ -991,6 +991,60 @@ namespace nucleus
     }
 
     template <typename T>
+    void
+    Porcupine<T>::destroy()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_TRACE("strategy: %s", this->_strategy);
+
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+        case Strategy::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            delete this->_value;
+            this->_value = nullptr;
+
+            break;
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(this->_handle != nullptr);
+
+            // Detach the value block, leading to the block's
+            // destruction.
+            this->_nest.detach(*this->_handle);
+
+            delete this->_handle;
+            this->_handle = nullptr;
+
+            break;
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(this->_tree != nullptr);
+
+            this->_tree->destroy();
+
+            delete this->_tree;
+            this->_tree = nullptr;
+
+            break;
+          }
+        default:
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
+        }
+
+      // Set the strategy to none.
+      this->_strategy = Strategy::none;
+    }
+
+    template <typename T>
     T const&
     Porcupine<T>::value() const
     {

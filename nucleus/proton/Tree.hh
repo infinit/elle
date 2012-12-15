@@ -212,6 +212,20 @@ namespace nucleus
       /// out on the tree.
       Root
       seal(cryptography::SecretKey const& secret);
+      /// Detach from the nest all the blocks consituing the tree.
+      ///
+      /// This method is useful whenever one want to prepare the removal
+      /// of all the content blocks.
+      ///
+      /// Note that this call is final, as for seal(), meaning that the
+      /// porcupine cannot be used once destroyed.
+      ///
+      /// This method is an alternative to erasing all the elements from
+      /// the tree, in which case all the blocks would also be destroyed.
+      /// This method is however straightforward and therefore far more
+      /// efficient.
+      void
+      destroy();
       /// Return the root block handle.
       Handle const&
       root() const;

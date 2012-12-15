@@ -164,6 +164,8 @@ namespace nucleus
       void
       seal(cryptography::SecretKey const& secret);
       void
+      destroy();
+      void
       dump(elle::Natural32 const margin = 0);
       void
       statistics(Statistics& stats);

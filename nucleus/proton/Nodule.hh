@@ -148,6 +148,10 @@ namespace nucleus
       /// XXX
       virtual
       void
+      destroy() = 0;
+      /// XXX
+      virtual
+      void
       dump(elle::Natural32 const margin = 0) = 0;
       /// XXX
       virtual

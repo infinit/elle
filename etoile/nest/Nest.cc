@@ -84,9 +84,37 @@ namespace etoile
           switch (pod->nature)
             {
             case Pod::NatureVolatile:
+              {
+                switch (pod->block->state())
+                  {
+                  case nucleus::proton::State::clean:
+                    {
+                      // nothing to do: the block has not been modified.
+                      //
+                      // weird though! a block has been created and nothing has
+                      // been inserted! perhaps show a warning?
+                      break;
+                    }
+                  case nucleus::proton::State::dirty:
+                    {
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               "The block is dirty but has not"
+                                               "been sealed.");
+                    }
+                  case nucleus::proton::State::consistent:
+                    {
+                      pod->address = pod->block->bind();
+
+                      transcript.record(new gear::action::Push(pod->address,
+                                                               pod->block));
+                    }
+                  }
+
+                break;
+              }
             case Pod::NaturePersistent:
               {
-                switch (pod->block.get()->state())
+                switch (pod->block->state())
                   {
                   case nucleus::proton::State::clean:
                     {
@@ -101,9 +129,14 @@ namespace etoile
                     }
                   case nucleus::proton::State::consistent:
                     {
-                      pod->address = pod->block.get()->bind();
+                      ELLE_ASSERT(pod->address !=
+                                  nucleus::proton::Address::null());
 
-                      transcript.record(new gear::action::Push(pod->address,
+                      transcript.record(new gear::action::Wipe(pod->address));
+
+                      nucleus::proton::Address address = pod->block->bind();
+
+                      transcript.record(new gear::action::Push(address,
                                                                pod->block));
                     }
                   }
@@ -113,7 +146,9 @@ namespace etoile
             case Pod::NatureOrphan:
               {
                 if (pod->address != nucleus::proton::Address::null())
-                  transcript.record(new gear::action::Wipe(pod->address));
+                  {
+                    transcript.record(new gear::action::Wipe(pod->address));
+                  }
 
                 break;
               }
@@ -317,9 +352,11 @@ namespace etoile
       // update the pod's nature.
       pod->nature = Pod::NatureOrphan;
 
+      /* XXX[???]
       if ((pod->nature == Pod::NatureOrphan) &&
           (pod->counter == 0))
         pod->release();
+      */
     }
 
     std::shared_ptr<nucleus::proton::Contents>
@@ -343,12 +380,6 @@ namespace etoile
       else if (handle.address() != nucleus::proton::Address::null())
         {
           ELLE_TRACE("address present in handle");
-
-          // XXX
-          printf("LOOKING FOR ADDRESS\n");
-          handle.address().Dump();
-          printf("DUMP NEST (BEFORE)\n");
-          this->Dump();
 
           if (this->exists(handle.address()) == false)
             {
@@ -396,10 +427,6 @@ namespace etoile
 
               block = pod->load(handle);
             }
-
-          // XXX
-          printf("DUMP NEST (AFTER)\n");
-          this->Dump();
         }
       else
         throw reactor::Exception(elle::concurrency::scheduler(),
@@ -427,7 +454,7 @@ namespace etoile
 
       pod->unload(handle);
 
-      /* XXX
+      /* XXX[to do only with blocks which have not been modified]
       if ((pod->nature == Pod::NatureOrphan) &&
           (pod->counter == 0))
         pod->release();
