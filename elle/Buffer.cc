@@ -45,6 +45,7 @@ namespace elle
   {
     if ((this->_contents =
          static_cast<Byte*>(::malloc(this->_buffer_size))) == nullptr)
+      throw std::bad_alloc();
   }
 
   Buffer::Buffer(ContentPair&& pair)
