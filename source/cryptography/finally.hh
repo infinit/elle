@@ -28,6 +28,15 @@
     _variable_,                                                         \
     [] (void* pointer) { ::OPENSSL_free(pointer); });
 
+/// Make it easy to clean up a cipher context.
+# define CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(_variable_) \
+  ELLE_FINALLY_LAMBDA(                                                  \
+    _variable_,                                                         \
+    [] (::EVP_CIPHER_CTX& context)                                      \
+    {                                                                   \
+      ::EVP_CIPHER_CTX_cleanup(&context);                               \
+    });
+
 /// Make it super easy to abort the final action based on the name of
 /// the variable it relates to.
 # define CRYPTOGRAPHY_FINALLY_ABORT(_variable_)                         \

@@ -24,6 +24,9 @@ namespace infinit
         ELLE_LOG_COMPONENT("cryptography.oneway");
         ELLE_TRACE_FUNCTION(value);
 
+        static_assert(!std::is_same<T, Plain>::value,
+                      "please use the Plain type for hashin");
+
         elle::Buffer buffer;
         buffer.writer() << value;
 

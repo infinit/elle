@@ -266,14 +266,10 @@ namespace infinit
 
       // Finally extract the secret key since decrypted.
       SecretKey secret;
-
       buffer.reader() >> secret;
 
       // 3) Decrypt the data with the secret key.
-      Clear clear;
-
-      if (secret.Decrypt(data, clear.buffer()) == elle::Status::Error)
-        throw elle::Exception("unable to decrypt the data with the secret key");
+      Clear clear{secret.decrypt(data)};
 
       return (clear);
     }
@@ -322,23 +318,13 @@ namespace infinit
     elle::Status PrivateKey::Encrypt(elle::WeakBuffer const& in,
                                Code&                            out) const
     {
-      SecretKey         secret;
-      Cipher            data;
       Code key; // XXX[allocate later]
 
-      // (i)
-      {
-        // generate a secret key.
-        if (secret.Generate() == elle::Status::Error)
-          escape("unable to generate the secret key");
-      }
+      // (i) Generate a temporary secret key.
+      SecretKey secret{SecretKey::generate(512)}; // XXX[should not be static like that
 
-      // (ii)
-      {
-        // cipher the plain text with the secret key.
-        if (secret.Encrypt(in, data) == elle::Status::Error)
-          escape("unable to cipher the plain text with the secret key");
-      }
+      // (ii) Cipher the plain text with the temporary secret key.
+      Cipher data{secret.encrypt(Plain{in})}; // XXX[remove plain]
 
       // (iii)
       {
@@ -492,7 +478,11 @@ namespace infinit
     void
     PrivateKey::print(std::ostream& stream) const
     {
-      stream << "XXX";
+      stream << "k{"
+             << *this->_key->pkey.rsa->n
+             << ", "
+             << *this->_key->pkey.rsa->d
+             << "}";
     }
   }
 }
