@@ -272,7 +272,7 @@ namespace etoile
           // does the network support the history?
           // XXX: restore history handling
           // if (depot::hole().descriptor().meta().history() == false)
-          /* XXX[porcupine: now the ancien blocks are not removed but replaced
+          /* XXX[porcupine: now the ancient blocks are not removed but replaced
                  and everything is handled by porcupine/nest]
             {
               // destroy the contents block.
@@ -295,10 +295,6 @@ namespace etoile
 
           // mark the new/modified blocks as needing to be stored.
           context.nest->record(context.transcript);
-
-          // XXX
-          printf("TRANSCRIPT\n");
-          context.transcript.Dump();
 
           //
           // finally, since the data has been re-encrypted, the key must be
