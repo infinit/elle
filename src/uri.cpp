@@ -310,9 +310,15 @@ namespace network {
     return (first_ == last_);
   }
 
+#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
   uri::part_range::operator unspecified_bool_type () const {
     return !empty()? &part_range::empty : nullptr;
   }
+#else
+  uri::part_range::operator bool () const {
+    return !empty();
+  }
+#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
 
   uri::part_range::string_type uri::part_range::native() const {
     return string_type(first_, last_);

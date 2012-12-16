@@ -12,6 +12,7 @@
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/translate.hpp>
+#include <boost/algorithm/string_ref.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
@@ -67,7 +68,7 @@ namespace network {
 
     typedef std::string string_type;
     typedef string_type::const_iterator const_iterator;
-    typedef string_type::iterator iterator;
+    typedef const_iterator iterator;
     typedef std::iterator_traits<iterator>::value_type value_type;
 
     class part_range {
@@ -79,7 +80,9 @@ namespace network {
       typedef uri::iterator iterator;
       typedef uri::value_type value_type;
 
+#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
       typedef bool (part_range::*unspecified_bool_type)() const;
+#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
 
       part_range();
 
@@ -91,7 +94,15 @@ namespace network {
 
       bool empty() const;
 
+#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
       operator unspecified_bool_type () const;
+#else
+      explicit operator bool () const;
+#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
+
+#if !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
+      explicit operator string_type () const;
+#endif // !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
 
       string_type native() const;
 
