@@ -153,7 +153,7 @@ namespace nucleus
     void
     Radix::print(std::ostream& stream) const
     {
-      stream << this->_strategy << "(";
+      stream << this->_strategy;
 
       switch (this->_strategy)
         {
@@ -165,7 +165,7 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_cipher != nullptr);
 
-            stream << *this->_cipher;
+            stream << "(" << *this->_cipher << ")";
 
             break;
           }
@@ -173,7 +173,7 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_address != nullptr);
 
-            stream << *this->_address;
+            stream << "(" << *this->_address << ")";
 
             break;
           }
@@ -181,15 +181,13 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_root != nullptr);
 
-            stream << *this->_root;
+            stream << "(" << *this->_root << ")";
 
             break;
           }
         default:
           throw Exception("unknown radix strategy '%s'", this->_strategy);
         }
-
-      stream << ")";
     }
   }
 }

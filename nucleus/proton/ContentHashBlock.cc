@@ -4,6 +4,9 @@
 #include <nucleus/Exception.hh>
 
 #include <elle/idiom/Open.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.ContentHashBlock");
 
 namespace nucleus
 {
@@ -34,6 +37,8 @@ namespace nucleus
     Address
     ContentHashBlock::bind() const
     {
+      ELLE_TRACE_METHOD("");
+
       Address address(this->network(), this->family(), this->component(),
                       *this);
 
@@ -43,6 +48,8 @@ namespace nucleus
     void
     ContentHashBlock::validate(Address const& address) const
     {
+      ELLE_TRACE_METHOD(address);
+
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))

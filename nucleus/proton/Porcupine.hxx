@@ -959,7 +959,7 @@ namespace nucleus
 
                   value.unload();
 
-                  return (Radix(this->_handle->address()));
+                  return (Radix(address));
                 }
               case Strategy::tree:
                 {
@@ -1323,14 +1323,18 @@ namespace nucleus
                     // Retrieve the handle associated with the maiden key.
                     Handle orphan{quill().locate_handle(maiden)};
 
-                    // Erase the inlet from the quill so as to make the block
-                    // really an orphan. Otherwise, the block would be destroyed
-                    // when the tree is deleted.
+                    // Manually erase the inlet from the quill so as to make the
+                    // block really an orphan. Otherwise, the block would be
+                    // destroyed when the tree is deleted.
                     quill().erase(maiden);
 
                     quill.unload();
 
-                    // Destroy the tree and delete it.
+                    // Destroy the blocks constituing the tree. In this case
+                    // the quill is the only remaining block.
+                    this->_tree->destroy();
+
+                    // Finally, delete the tree data structure.
                     delete this->_tree;
 
                     // Set the new porcupine value block handle and update the

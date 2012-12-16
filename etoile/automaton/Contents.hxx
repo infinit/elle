@@ -296,6 +296,10 @@ namespace etoile
           // mark the new/modified blocks as needing to be stored.
           context.nest->record(context.transcript);
 
+          // XXX
+          printf("TRANSCRIPT\n");
+          context.transcript.Dump();
+
           //
           // finally, since the data has been re-encrypted, the key must be
           // distributed to the users having been granted the read

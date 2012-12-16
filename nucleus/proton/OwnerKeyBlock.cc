@@ -5,6 +5,10 @@
 
 #include <cryptography/KeyPair.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.OwnerKeyBlock");
+
 namespace nucleus
 {
   namespace proton
@@ -63,6 +67,8 @@ namespace nucleus
     Address
     OwnerKeyBlock::bind() const
     {
+      ELLE_TRACE_METHOD("");
+
       // Note that the address computation of an owner key block is similar
       // to the one of a pubilc key block: the block's public key K is hashed
       // while the creation timestamp and salt do not need to be included
@@ -76,6 +82,8 @@ namespace nucleus
     void
     OwnerKeyBlock::validate(Address const& address) const
     {
+      ELLE_TRACE_METHOD(address);
+
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))

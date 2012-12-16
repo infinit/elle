@@ -145,7 +145,11 @@ namespace nucleus
       Tree(Root const& root,
            cryptography::SecretKey const& secret,
            Nest& nest);
-      /// Cleans the tree recursively, detaching every remaining block.
+      /// Destruct the tree.
+      ///
+      /// Note that the representation is destructed, not its constutent
+      /// blocks. For these blocks to be destroyed, one must manually call
+      /// the destroy() method.
       ~Tree();
 
       /*--------.

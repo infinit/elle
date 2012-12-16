@@ -107,6 +107,8 @@ namespace etoile
 
                       transcript.record(new gear::action::Push(pod->address,
                                                                pod->block));
+
+                      break;
                     }
                   }
 
@@ -138,6 +140,8 @@ namespace etoile
 
                       transcript.record(new gear::action::Push(address,
                                                                pod->block));
+
+                      break;
                     }
                   }
 
@@ -146,9 +150,7 @@ namespace etoile
             case Pod::NatureOrphan:
               {
                 if (pod->address != nucleus::proton::Address::null())
-                  {
-                    transcript.record(new gear::action::Wipe(pod->address));
-                  }
+                  transcript.record(new gear::action::Wipe(pod->address));
 
                 break;
               }

@@ -41,7 +41,7 @@ namespace nucleus
     template <typename T>
     Tree<T>::~Tree()
     {
-      // XXX[recursively detach the blocks]
+      delete this->_root;
     }
 
     /*--------.

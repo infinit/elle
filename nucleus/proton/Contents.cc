@@ -137,21 +137,25 @@ namespace nucleus
 
       if (this->_node != nullptr)
         {
-          std::cout << "[Node]" << std::endl;
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Node]" << std::endl;
 
-          this->_node->Dump(margin + 2);
+          this->_node->Dump(margin + 4);
         }
       else
-        std::cout << "[Node] none" << std::endl;
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Node] none" << std::endl;
 
       if (this->_cipher != nullptr)
         {
-          std::cout << "[Cipher]" << std::endl;
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Cipher]" << std::endl;
 
-          this->_cipher->Dump(margin + 2);
+          this->_cipher->Dump(margin + 4);
         }
       else
-        std::cout << "[Cipher] none" << std::endl;
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Cipher] none" << std::endl;
 
       return elle::Status::Ok;
     }
