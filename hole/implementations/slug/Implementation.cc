@@ -24,10 +24,12 @@ namespace hole
         hole::storage::Storage& storage,
         elle::Passport const& passport,
         elle::Authority const& authority,
+        reactor::network::Protocol protocol,
         std::vector<elle::network::Locus> const& members,
         int port,
         reactor::Duration connection_timeout):
         Hole(storage, passport, authority),
+        _protocol(protocol),
         _members(members),
         _connection_timeout(connection_timeout),
         _port(port)

@@ -1,26 +1,25 @@
-#ifndef INFINIT_REACTOR_NETWORK_TCP_SERVER_HH
-# define INFINIT_REACTOR_NETWORK_TCP_SERVER_HH
+#ifndef INFINIT_REACTOR_NETWORK_UDT_SERVER_HH
+# define INFINIT_REACTOR_NETWORK_UDT_SERVER_HH
 
 # include <reactor/network/server.hh>
-# include <reactor/network/tcp-socket.hh>
+# include <reactor/network/udt-socket.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class TCPServer: public Server, public ProtoServer<TCPSocket>
+    class UDTServer: public Server, public ProtoServer<UDTSocket>
     {
       public:
         typedef Server Super;
-        TCPServer(Scheduler& sched);
-        virtual ~TCPServer();
+        UDTServer(Scheduler& sched);
+        virtual ~UDTServer();
 
       /*----------.
       | Listening |
       `----------*/
       public:
         void listen(int port = 0);
-        void listen(const EndPoint& end_point);
 
       public:
         /// The locally bound port.
@@ -32,10 +31,10 @@ namespace reactor
       | Accepting |
       `----------*/
       public:
-        TCPSocket* accept();
+        UDTSocket* accept();
 
       private:
-        boost::asio::ip::tcp::acceptor* _acceptor;
+        boost::asio::ip::udt::acceptor* _acceptor;
     };
   }
 }

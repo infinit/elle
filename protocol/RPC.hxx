@@ -243,12 +243,13 @@ namespace infinit
       R
       call(Input& input,
            S const& f,
-           Given... args)
+           Given&&... args)
       {
         typename std::remove_const<
           typename std::remove_reference<First>::type>::type a;
         input >> a;
-        return Call<Input, R, Types...>::call(input, f, args..., a);
+        return Call<Input, R, Types...>::call(input, f,
+                                              std::forward<Given>(args)..., a);
       }
     };
 
@@ -421,6 +422,7 @@ namespace infinit
         }
       catch (reactor::network::ConnectionClosed const& e)
         {
+          ELLE_TRACE("%s: end of RPCs: connection closed", *this);
           return;
         }
     }

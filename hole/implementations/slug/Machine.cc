@@ -1,5 +1,5 @@
 #include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
+#include <reactor/network/udt-server.hh>
 
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
@@ -57,10 +57,12 @@ namespace hole
       void
       Machine::_connect(elle::network::Locus const& locus)
       {
+        ELLE_TRACE_SCOPE("try connecting to %s", locus);
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
-          new reactor::network::TCPSocket(
+          reactor::network::Socket::create(
+            this->hole().protocol(),
             elle::concurrency::scheduler(),
             hostname, locus.port, _connection_timeout));
         _connect(std::move(socket), locus, true);
@@ -72,6 +74,7 @@ namespace hole
       {
         std::unique_ptr<Host> host(new Host(*this, locus,
                                             std::move(socket), opener));
+        ELLE_TRACE("%s: authenticate to host: %s", *this, locus);
         auto loci = host->authenticate(this->_hole.passport());
         if (this->_state == State::detached)
           {
@@ -80,7 +83,7 @@ namespace hole
           }
         for (auto locus: loci)
           if (_hosts.find(locus) == _hosts.end())
-            _connect(locus);
+            _connect_try(locus);
         ELLE_LOG("%s: add host: %s", *this, *host);
         _hosts[locus] = host.release();
       }
@@ -90,8 +93,7 @@ namespace hole
       {
         try
           {
-            ELLE_TRACE("try connecting to %s", locus)
-              _connect(locus);
+            _connect(locus);
           }
         catch (reactor::network::Exception& err)
           {
@@ -116,8 +118,8 @@ namespace hole
         , _connection_timeout(connection_timeout)
         , _state(State::detached)
         , _port(port)
-        , _server(new reactor::network::TCPServer
-                  (elle::concurrency::scheduler()))
+        , _server(reactor::network::Server::create
+                  (hole.protocol(), elle::concurrency::scheduler()))
         , _acceptor()
       {
         elle::network::Locus     locus;
@@ -161,10 +163,11 @@ namespace hole
           elle::network::Host host(elle::network::Host::TypeAny);
           try
             {
+              ELLE_TRACE("listen on port %s", this->_port)
               _server->listen(this->_port);
               // In case we asked for a random port to be picked up
               // (by using 0), retrieve the actual listening port.
-              this->_port = _server->local_endpoint().port();
+              this->_port = _server->port();
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
                                                   boost::bind(&Machine::_accept, this)));
@@ -181,6 +184,9 @@ namespace hole
 
       Machine::~Machine()
       {
+        for (auto host: Hosts(_hosts))
+          this->_remove(host.second);
+
         // Stop serving; we may not be listening, since bind errors are
         // considered warnings (see constructor), in which case we have no
         // acceptor.
@@ -225,9 +231,10 @@ namespace hole
       {
         while (true)
           {
-            std::unique_ptr<reactor::network::TCPSocket> socket(_server->accept());
+            std::unique_ptr<reactor::network::Socket> socket(_server->accept());
 
-            ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
+            ELLE_TRACE_SCOPE("accept connection from %s",
+                             socket->remote_locus());
 
 #ifdef CACHE
             {
@@ -258,16 +265,13 @@ namespace hole
                   // FIXME: handling via loci is very wrong. IPs are
                   // not uniques, and this reconstruction is lame and
                   // non-injective.
-                  elle::network::Locus locus(
-                    socket->peer().address().to_string(),
-                    socket->peer().port());
-                  _connect(std::move(socket), locus, false);
+                  _connect(std::move(socket), socket->remote_locus(), false);
                   break;
                 }
                 default:
                 {
                   // FIXME: Why not listening only when we're attached ?
-                  ELLE_TRACE("not attached, ignore %s", socket->peer());
+                  ELLE_TRACE("not attached, ignore %s", socket->remote_locus());
                   break;
                 }
               }

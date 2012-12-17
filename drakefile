@@ -1,15 +1,16 @@
 import drake.cxx
 import drake.cxx.boost
-import drake.cxx.qt
 
-def configure(cxx_toolkit, cxx_config, enable_horizon = True):
+def configure(cxx_toolkit, cxx_config, enable_horizon = True,
+              optimization = True):
+
+  asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config)
+  asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
+  udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
 
   cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config += asio_udt.config
   cxx_config.enable_debug_symbols()
-  # Qt
-  qt = drake.cxx.qt.Qt()
-  cxx_config.define('QT_NO_KEYWORDS')
-  cxx_config += qt.cfg + qt.cfg_network + qt.cfg_gui
   # Boost
   boost = drake.cxx.boost.Boost()
   cxx_config += boost.config_signals()
@@ -22,12 +23,15 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   cxx_config.lib('crypto')
   # Includes
   cxx_config.add_local_include_path('.')
-  cxx_config.add_system_include_path('cryptography/source')
+  cxx_config.add_local_include_path('cryptography/source')
   cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
+  reactor_lib = drake.copy(reactor.lib_dynamic, '', 'elle/reactor')
   cxx_config += reactor.config
   # Elle
   elle = drake.include('elle', cxx_toolkit, cxx_config)
+  elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
+
   # Fuse
   if enable_horizon:
     cxx_config.define('_FILE_OFFSET_BITS', 64) # FIXME: only needed for horizon
@@ -529,8 +533,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
       'horizon/Handle.hh',
       'horizon/Horizon.cc',
       'horizon/Horizon.hh',
-      'horizon/Ward.cc',
-      'horizon/Ward.hh',
       'horizon/linux/FUSE.cc',
       'horizon/linux/FUSE.hh',
       'horizon/linux/FUker.cc',
@@ -576,8 +578,8 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
     plasma_lib,
     cryptography_lib,
     protocol_lib,
-    reactor.lib_dynamic,
-    elle.lib_dynamic,
+    reactor_lib,
+    elle_lib,
     ]
   if enable_horizon:
     infinit_libs.append(horizon_slib)
@@ -585,10 +587,13 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True):
   # 8infinit
   infinit_bin_config = drake.cxx.Config(cxx_config)
   infinit_bin_config += boost.config_thread()
+  infinit_bin_config.lib_path_runtime('../lib')
   if enable_horizon:
     infinit_bin_config.lib('fuse')
   infinit_bin = drake.cxx.Executable('bin/8infinit',
-                                     drake.nodes('_infinit.cc') + infinit_libs,
+                                     drake.nodes('_infinit.cc') +
+                                     infinit_libs +
+                                     [asio_udt_lib, udt_lib], # FIXME: no need to depend on UDT
                                      cxx_toolkit, infinit_bin_config)
 
   # 8hole
