@@ -282,8 +282,8 @@ namespace reactor
 
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;
-    // template
-    // class PlainSocket<boost::asio::ip::udp::socket>;
+    template
+    class PlainSocket<boost::asio::ip::udp::socket>;
     template
     class PlainSocket<boost::asio::ip::udt::socket>;
   }
