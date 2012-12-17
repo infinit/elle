@@ -58,6 +58,26 @@ namespace reactor
     Socket::~Socket()
     {}
 
+    std::unique_ptr<Socket>
+    Socket::create(Protocol protocol,
+                   Scheduler& sched,
+                   const std::string& hostname,
+                   int port,
+                   DurationOpt timeout)
+    {
+      switch (protocol)
+        {
+          case Protocol::tcp:
+            return std::unique_ptr<Socket>
+              (new TCPSocket(sched, hostname, port, timeout));
+          case Protocol::udt:
+            return std::unique_ptr<Socket>
+              (new UDTSocket(sched, hostname, port, timeout));
+          default:
+            elle::unreachable();
+        }
+    }
+
     /*----------------.
     | Pretty printing |
     `----------------*/

@@ -7,6 +7,7 @@
 
 # include <reactor/duration.hh>
 # include <reactor/network/fwd.hh>
+# include <reactor/network/Protocol.hh>
 
 namespace reactor
 {
@@ -32,6 +33,17 @@ namespace reactor
         Socket(Scheduler& sched);
         /// Destroy a socket.
         virtual ~Socket();
+        /** Create a socket for the given protocol.
+         *  @param protocol The transport protocl to use.
+         *  @param sched The underlying scheduler.
+         */
+        static
+        std::unique_ptr<Socket>
+        create(Protocol protocol,
+               Scheduler& sched,
+               const std::string& hostname,
+               int port,
+               DurationOpt connection_timeout);
 
       /*------.
       | Write |
