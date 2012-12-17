@@ -89,7 +89,7 @@ namespace hole
       private:
         elle::network::Port _port;
         void _accept();
-        std::unique_ptr<reactor::network::UDTServer> _server;
+        std::unique_ptr<reactor::network::Server> _server;
         std::unique_ptr<reactor::Thread> _acceptor;
 
       /*----.

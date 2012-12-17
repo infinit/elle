@@ -166,7 +166,7 @@ namespace hole
               _server->listen(this->_port);
               // In case we asked for a random port to be picked up
               // (by using 0), retrieve the actual listening port.
-              this->_port = _server->local_endpoint().port();
+              this->_port = _server->port();
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
                                                   boost::bind(&Machine::_accept, this)));
@@ -230,9 +230,10 @@ namespace hole
       {
         while (true)
           {
-            std::unique_ptr<reactor::network::UDTSocket> socket(_server->accept());
+            std::unique_ptr<reactor::network::Socket> socket(_server->accept());
 
-            ELLE_TRACE_SCOPE("accept connection from %s", socket->peer());
+            ELLE_TRACE_SCOPE("accept connection from %s",
+                             socket->remote_locus());
 
 #ifdef CACHE
             {
@@ -263,16 +264,13 @@ namespace hole
                   // FIXME: handling via loci is very wrong. IPs are
                   // not uniques, and this reconstruction is lame and
                   // non-injective.
-                  elle::network::Locus locus(
-                    socket->peer().address().to_string(),
-                    socket->peer().port());
-                  _connect(std::move(socket), locus, false);
+                  _connect(std::move(socket), socket->remote_locus(), false);
                   break;
                 }
                 default:
                 {
                   // FIXME: Why not listening only when we're attached ?
-                  ELLE_TRACE("not attached, ignore %s", socket->peer());
+                  ELLE_TRACE("not attached, ignore %s", socket->remote_locus());
                   break;
                 }
               }
