@@ -57,6 +57,7 @@ namespace hole
       void
       Machine::_connect(elle::network::Locus const& locus)
       {
+        ELLE_TRACE_SCOPE("try connecting to %s", locus);
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
@@ -81,7 +82,7 @@ namespace hole
           }
         for (auto locus: loci)
           if (_hosts.find(locus) == _hosts.end())
-            _connect(locus);
+            _connect_try(locus);
         ELLE_LOG("%s: add host: %s", *this, *host);
         _hosts[locus] = host.release();
       }
@@ -91,8 +92,7 @@ namespace hole
       {
         try
           {
-            ELLE_TRACE("try connecting to %s", locus)
-              _connect(locus);
+            _connect(locus);
           }
         catch (reactor::network::Exception& err)
           {
