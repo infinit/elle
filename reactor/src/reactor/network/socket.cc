@@ -1,10 +1,10 @@
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/tcp-socket.hh>
-#include <reactor/network/udp-socket.hh>
 #include <reactor/network/udt-socket.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/scheduler.hh>
@@ -218,6 +218,30 @@ namespace reactor
     | Properties |
     `-----------*/
 
+
+    template <typename AsioSocket>
+    static elle::network::Locus
+    locus_from_endpoint(typename AsioSocket::endpoint_type const& endpoint)
+    {
+      auto host = boost::lexical_cast<std::string>(endpoint.address());
+      auto port = endpoint.port();
+      return elle::network::Locus(host, port);
+    }
+
+    template <typename AsioSocket>
+    elle::network::Locus
+    PlainSocket<AsioSocket>::local_locus() const
+    {
+      return locus_from_endpoint<AsioSocket>(local_endpoint());
+    }
+
+    template <typename AsioSocket>
+    elle::network::Locus
+    PlainSocket<AsioSocket>::remote_locus() const
+    {
+      return locus_from_endpoint<AsioSocket>(peer());
+    }
+
     template <typename AsioSocket>
     typename PlainSocket<AsioSocket>::EndPoint
     PlainSocket<AsioSocket>::peer() const
@@ -238,8 +262,8 @@ namespace reactor
 
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;
-    template
-    class PlainSocket<boost::asio::ip::udp::socket>;
+    // template
+    // class PlainSocket<boost::asio::ip::udp::socket>;
     template
     class PlainSocket<boost::asio::ip::udt::socket>;
   }

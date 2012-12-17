@@ -29,7 +29,9 @@ namespace reactor
       | Accepting |
       `----------*/
       public:
+        virtual void listen(int port) = 0;
         virtual Socket* accept() = 0;
+        virtual int port() const = 0;
 
       /*-----------.
       | Scheduling |

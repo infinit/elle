@@ -123,5 +123,11 @@ namespace reactor
       return EndPoint(boost::asio::ip::address_v4(), _acceptor->port());
     }
 
+    int
+    UDTServer::port() const
+    {
+      return local_endpoint().port();
+    }
+
   }
 }

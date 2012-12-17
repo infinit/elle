@@ -23,7 +23,9 @@ namespace reactor
         void listen(const EndPoint& end_point);
 
       public:
-        /// Retrieve the locally bound endpoint
+        /// The locally bound port.
+        virtual int port() const;
+        /// The locally bound endpoint.
         EndPoint local_endpoint() const;
 
       /*----------.
