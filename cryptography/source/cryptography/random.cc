@@ -3,6 +3,11 @@
 #include <cryptography/random.hh>
 
 #include <elle/log.hh>
+#include <elle/os/getenv.hh>
+
+#include <system_error>
+#include <iostream>
+#include <fstream>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
@@ -39,31 +44,26 @@ namespace infinit
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
         {
-          static const char* source;
-          int fd = -1;
-
           /// The path to read random data from.
           ///
           /// Enable for instance tests to override the random data source,
           /// so as to use /dev/urandom and avoid /dev/random enthropy
           /// starvation.
-          if ((source =
-               ::getenv("INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE")) == nullptr)
-            source = "/dev/random";
 
-          if ((fd = ::open(source, O_RDONLY)) == -1)
-            escape("%s", ::strerror(errno));
+          static std::string const source = elle::os::getenv(
+              "INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE",
+              "/dev/random"
+          );
+          std::ifstream random_source_file(source);
 
-          // Read random data.
-          if (::read(fd, temporary, sizeof (temporary)) == -1)
+          if (random_source_file.good() == false)
             {
-              ::close(fd);
-
-              escape("%s", ::strerror(errno));
+              escape("%s: %s", source,
+                     std::error_code(errno, std::system_category()).message());
             }
-
-          // Close the file descriptor.
-          ::close(fd);
+          // Read random data.
+          random_source_file.read(reinterpret_cast<char *>(temporary),
+                                  sizeof(temporary));
         }
 #elif defined(INFINIT_WINDOWS)
         {
