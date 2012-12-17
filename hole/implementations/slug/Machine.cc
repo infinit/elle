@@ -61,7 +61,8 @@ namespace hole
         std::string hostname;
         locus.host.Convert(hostname);
         std::unique_ptr<reactor::network::Socket> socket(
-          new reactor::network::UDTSocket(
+          reactor::network::Socket::create(
+            this->hole().protocol(),
             elle::concurrency::scheduler(),
             hostname, locus.port, _connection_timeout));
         _connect(std::move(socket), locus, true);
@@ -117,8 +118,8 @@ namespace hole
         , _connection_timeout(connection_timeout)
         , _state(State::detached)
         , _port(port)
-        , _server(new reactor::network::UDTServer
-                  (elle::concurrency::scheduler()))
+        , _server(reactor::network::Server::create
+                  (hole.protocol(), elle::concurrency::scheduler()))
         , _acceptor()
       {
         elle::network::Locus     locus;
