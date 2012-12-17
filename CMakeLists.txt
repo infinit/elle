@@ -107,9 +107,11 @@ add_library(elle ${LINK_METHOD}
   reactor/src/reactor/network/socket.cc
   reactor/src/reactor/network/tcp-server.cc
   reactor/src/reactor/network/tcp-socket.cc
-  reactor/src/reactor/network/udp-server-socket.cc
-  reactor/src/reactor/network/udp-server.cc
+  # reactor/src/reactor/network/udp-server-socket.cc
+  # reactor/src/reactor/network/udp-server.cc
   reactor/src/reactor/network/udp-socket.cc
+  reactor/src/reactor/network/udt-socket.cc
+  reactor/src/reactor/network/udt-server.cc
   reactor/src/reactor/operation.cc
   reactor/src/reactor/rw-mutex.cc
   reactor/src/reactor/scheduler.cc
