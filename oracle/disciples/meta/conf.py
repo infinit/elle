@@ -11,6 +11,9 @@ SESSION_COOKIE_NAME = 'SESSIONID'
 SESSION_TOKEN_NAME = 'token'
 SESSION_HEADER_NAME = 'Authorization'
 
+# Name of the mongo collection.
+COLLECTION_NAME = os.environ.get("META_COLLECTION_NAME", 'meta')
+
 INFINIT_AUTHORITY_PATH = os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
     "../../infinit.auth"

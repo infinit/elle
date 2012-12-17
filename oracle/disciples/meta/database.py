@@ -6,6 +6,8 @@ try:
 except ImportError:
     from bson.objectid import ObjectId
 
+from . import conf
+
 """
 Define database collections and their constraints
 """
@@ -23,7 +25,7 @@ def database(conn=None):
     if conn is not None:
         return conn.meta
     if _database is None:
-        _database = connection().meta
+        _database = getattr(connection(), conf.COLLECTION_NAME)
     return _database
 
 # collections
