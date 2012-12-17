@@ -1,8 +1,9 @@
 #include <elle/printf.hh>
 #include <elle/idiom/Close.hh>
 
+#include <asio-udt/acceptor.hh>
 #include <reactor/exception.hh>
-#include <reactor/network/tcp-server.hh>
+#include <reactor/network/udt-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 
@@ -15,12 +16,12 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    TCPServer::TCPServer(Scheduler& sched)
+    UDTServer::UDTServer(Scheduler& sched)
       : Super(sched)
       , _acceptor(0)
     {}
 
-    TCPServer::~TCPServer()
+    UDTServer::~UDTServer()
     {
       delete _acceptor;
     }
@@ -29,14 +30,13 @@ namespace reactor
     | Accepting |
     `----------*/
 
-    class TCPAccept: public Operation
+    class UDTAccept: public Operation
     {
       public:
-        TCPAccept(Scheduler& scheduler, boost::asio::ip::tcp::acceptor& acceptor)
+        UDTAccept(Scheduler& scheduler, boost::asio::ip::udt::acceptor& acceptor)
           : Operation(scheduler)
           , _acceptor(acceptor)
           , _socket(0)
-          , _peer()
         {}
 
         virtual const char* type_name() const
@@ -45,7 +45,7 @@ namespace reactor
           return name;
         }
 
-        TCPSocket::AsioSocket* socket()
+        UDTSocket::AsioSocket* socket()
         {
           return _socket;
         }
@@ -59,36 +59,37 @@ namespace reactor
 
         virtual void _start()
         {
-          _socket = new TCPSocket::AsioSocket(scheduler().io_service());
-          _acceptor.async_accept(*_socket, _peer,
-                                 boost::bind(&TCPAccept::_wakeup, this, _1));
+          _socket = new UDTSocket::AsioSocket(scheduler().io_service());
+          _acceptor.async_accept(boost::bind(&UDTAccept::_wakeup,
+                                             this, _1, _2));
         }
 
       private:
 
-        void _wakeup(const boost::system::error_code& error)
+      void _wakeup(boost::system::error_code const& error,
+                   boost::asio::ip::udt::socket* socket)
 
         {
           if (error == boost::system::errc::operation_canceled)
             return;
           if (error)
             _raise(new Exception(scheduler(), error.message()));
+          _socket = socket;
           _signal();
         }
 
-        boost::asio::ip::tcp::acceptor& _acceptor;
-        TCPSocket::AsioSocket* _socket;
-        TCPSocket::EndPoint _peer;
+        boost::asio::ip::udt::acceptor& _acceptor;
+        UDTSocket::AsioSocket* _socket;
     };
 
-    TCPSocket*
-    TCPServer::accept()
+    UDTSocket*
+    UDTServer::accept()
     {
       // FIXME: server should listen in ctor to avoid this crappy state ?
       assert(_acceptor);
-      TCPAccept accept(scheduler(), *_acceptor);
+      UDTAccept accept(scheduler(), *_acceptor);
       accept.run();
-      TCPSocket* socket = new TCPSocket(scheduler(), accept.socket());
+      UDTSocket* socket = new UDTSocket(scheduler(), accept.socket());
       return socket;
     }
 
@@ -97,41 +98,36 @@ namespace reactor
     `----------*/
 
     void
-    TCPServer::listen(const EndPoint& end_point)
+    UDTServer::listen(int port)
     {
       try
         {
-          _acceptor = new boost::asio::ip::tcp::acceptor(scheduler().io_service(),
-                                                         end_point);
+          _acceptor = new boost::asio::ip::udt::acceptor
+            (scheduler().io_service(), port);
         }
       catch (boost::system::system_error& e)
         {
           throw Exception(scheduler(),
                           elle::sprintf("unable to listen on %s: %s",
-                                        end_point, e.what()));
+                                        port, e.what()));
         }
     }
 
-    void
-    TCPServer::listen(int port)
-    {
-      return listen(EndPoint(boost::asio::ip::tcp::v4(), port));
-    }
-
-    TCPServer::EndPoint
-    TCPServer::local_endpoint() const
+    UDTServer::EndPoint
+    UDTServer::local_endpoint() const
     {
       if (_acceptor == nullptr)
         throw Exception(
-            const_cast<TCPServer*>(this)->scheduler(), //XXX
+            const_cast<UDTServer*>(this)->scheduler(), //XXX
             "The server is not listening.");
-      return _acceptor->local_endpoint();
+      return EndPoint(boost::asio::ip::address_v4(), _acceptor->port());
     }
 
     int
-    TCPServer::port() const
+    UDTServer::port() const
     {
       return local_endpoint().port();
     }
+
   }
 }
