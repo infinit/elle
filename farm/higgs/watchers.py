@@ -26,12 +26,11 @@ from collections import OrderedDict
 
 MAIL_TARGETS = (
     "developers@infinit.io",
-    "raphael.londeix@infinit.io",
-    "fabien.pichot@infinit.io",
-    "antony.mechin@infinit.io",
-    "quentin.hocquet@infinit.io",
-    "julien.quintard@infinit.io",
-    "charles.guillot@infinit.io",
+    #"raphael.londeix@infinit.io",
+    #"fabien.pichot@infinit.io",
+    #"antony.mechin@infinit.io",
+    #"quentin.hocquet@infinit.io",
+    #"julien.quintard@infinit.io",
 )
 
 if "_INFINIT_USE_MANDRILL" in os.environ:
