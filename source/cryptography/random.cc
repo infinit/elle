@@ -52,7 +52,7 @@ namespace infinit
 
           static std::string const source = elle::os::getenv(
               "INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE",
-              "/dev/random"
+              "/dev/urandom"
           );
           std::ifstream random_source_file(source);
 
