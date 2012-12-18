@@ -22,7 +22,10 @@ namespace etoile
       Object(NatureFile),
 
       porcupine(nullptr),
-      nest(nullptr)
+      nest(nullptr),
+      limits(nucleus::proton::limits::Porcupine{},
+             nucleus::proton::limits::Node{1024, 0.5, 0.2},
+             nucleus::proton::limits::Node{1024, 0.5, 0.2})
     {
     }
 

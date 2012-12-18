@@ -6,8 +6,9 @@
 # include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Handle.hh>
+# include <nucleus/proton/Capacity.hh>
 # include <nucleus/proton/Value.hh>
-# include <nucleus/proton/Contents.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Entry.hh>
 # include <nucleus/neutron/Size.hh>
@@ -109,6 +110,8 @@ namespace nucleus
       Entry&
       locate(elle::String const& name);
       /// Return a subset of the catalog i.e [index, index + size[.
+      ///
+      /// Note that the index is relative to the catalog.
       Range<Entry>
       consult(Index const& index,
               Size const& size) const;
@@ -151,23 +154,13 @@ namespace nucleus
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
-      // value
-      typedef elle::String K;
-      elle::Boolean
-      empty() const;
-      elle::String
-      mayor() const;
-      proton::Handle
-      split();
-      void
-      merge(proton::Handle& other);
-      // serialize
-      ELLE_SERIALIZE_FRIEND_FOR(Catalog);
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Catalog);
       // printable
       virtual
       void
       print(std::ostream& stream) const;
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Catalog);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Catalog);
       // iterable
       Scoutor
       begin() const;
@@ -177,6 +170,18 @@ namespace nucleus
       begin();
       Iterator
       end();
+      // value
+      typedef elle::String K;
+      elle::Boolean
+      empty() const;
+      elle::String
+      mayor() const;
+      proton::Capacity
+      capacity() const;
+      proton::Handle
+      split();
+      void
+      merge(proton::Handle& other);
 
       /*-----------.
       | Attributes |

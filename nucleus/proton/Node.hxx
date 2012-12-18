@@ -14,7 +14,9 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Node,
 {
   enforce(version == 0);
 
-  archive & value._capacity;
+  // XXX nothing to serialize but we have to declare this shit!
+  (void)archive;
+  (void)value;
 }
 
 #endif

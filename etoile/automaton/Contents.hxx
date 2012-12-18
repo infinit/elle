@@ -60,14 +60,8 @@ namespace etoile
                nucleus::neutron::permissions::read) ==
               nucleus::neutron::permissions::read)
             {
-              // XXX
-              nucleus::proton::Limits limits{
-                nucleus::proton::limits::Porcupine{},
-                nucleus::proton::limits::Node{1024, 0.5, 0.2},
-                nucleus::proton::limits::Node{1024, 0.5, 0.2}};
-
               // Instanciate a nest.
-              context.nest = new etoile::nest::Nest{limits};
+              context.nest = new etoile::nest::Nest{context.limits};
 
               // Instanciate a porcupine.
               context.porcupine =
@@ -85,14 +79,8 @@ namespace etoile
         }
       else
         {
-          // XXX
-          nucleus::proton::Limits limits{
-            nucleus::proton::limits::Porcupine{},
-            nucleus::proton::limits::Node{1024, 0.5, 0.2},
-            nucleus::proton::limits::Node{1024, 0.5, 0.2}};
-
           // Instanciate a nest.
-          context.nest = new etoile::nest::Nest{limits};
+          context.nest = new etoile::nest::Nest{context.limits};
 
           // otherwise create a new empty porcupine.
           context.porcupine =

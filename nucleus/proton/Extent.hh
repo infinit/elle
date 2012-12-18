@@ -9,7 +9,7 @@ namespace nucleus
   {
     /// Define the maximum size of the blocks when serialized i.e when
     /// transmitted over the network and stored.
-    typedef elle::Natural32 Extent;
+    typedef elle::Natural64 Extent;
   }
 }
 

@@ -86,8 +86,6 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, offset, region);
 
-      nucleus::neutron::Size size;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -102,34 +100,40 @@ namespace etoile
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
-      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
-      // write the file.
-      if (context.contents->content->Write(offset,
-                                           region) == elle::Status::Error)
-        escape("unable to write the file");
+      // Retrieve a door on the data.
+      nucleus::proton::Door<nucleus::neutron::Data> door{
+        context.porcupine->lookup(offset)};
 
-      // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the contents's size");
+      door.open();
+
+      // Write the content in the appropriate data node.
+      door().write(offset, elle::WeakBuffer{region.contents, region.size});
+
+      door.close();
+
+      // Update the porcupine.
+      context.porcupine->update(offset);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            size,
+            context.porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-      */
 
       // set the context's state.
       context.state = gear::Context::StateModified;
+
+      // XXX
+      context.porcupine->dump();
 
       return elle::Status::Ok;
     }
@@ -159,19 +163,31 @@ namespace etoile
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
-      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
-      // read the file.
-      if (context.contents->content->Read(offset,
-                                          size,
-                                          region) == elle::Status::Error)
-        escape("unable to read the file");
-      */
+      // Check that there is enough data to be read.
+      if (offset > context.porcupine->size())
+        return elle::Status::Ok;
+
+      // Retrieve a door on the data.
+      nucleus::proton::Door<nucleus::neutron::Data> door{
+        context.porcupine->lookup(offset)};
+
+      door.open();
+
+      // Read the content in the appropriate data node.
+      elle::Buffer buffer = door().read(offset, size);
+
+      door.close();
+
+      // XXX[not optimized: migrate to elle::Buffer so as to avoid
+      //     such stupid copies]
+      region.Prepare(buffer.size());
+      region.Write(0, buffer.contents(), buffer.size());
 
       return elle::Status::Ok;
     }
@@ -198,32 +214,116 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-      /* XXX[porcupine]
+
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == nullptr)
+      if (context.porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
-      // adjust the data size.
-      if (context.contents->content->Adjust(size) == elle::Status::Error)
-        escape("unable to adjust the file size");
+      // Ignore the call should the requested size be identical to the existing
+      // one.
+      if (size == context.porcupine->size())
+        return elle::Status::Ok;
 
-      nucleus::neutron::Size _size;
+      // Trim the porcupine manually depending on the content strategy. In other
+      // words, triming a tree is a bit specific as blocks must be removed
+      // manually.
+      switch (context.porcupine->strategy())
+        {
+        case nucleus::proton::Strategy::none:
+          throw elle::Exception("invalid 'none' strategy");
+        case nucleus::proton::Strategy::value:
+        case nucleus::proton::Strategy::block:
+          {
+            nucleus::proton::Door<nucleus::neutron::Data> door{
+              context.porcupine->lookup(size)};
 
-      // retrieve the new contents's size.
-      if (context.contents->content->Capacity(_size) == elle::Status::Error)
-        escape("unable to retrieve the contents's size");
+            door.open();
+
+            // Directly adjsut the data.
+            door().adjust(size - door().offset());
+
+            // Update the porcupine.
+            context.porcupine->update(size);
+
+            door.close();
+
+            break;
+          }
+        case nucleus::proton::Strategy::tree:
+          {
+            // Retrieve a door on the data responsible for the
+            // offset _size_.
+            nucleus::proton::Door<nucleus::neutron::Data> base{
+              context.porcupine->lookup(size)};
+
+            // Act depending on the fact that the file is shrunk or
+            // extended.
+            ELLE_ASSERT(size != context.porcupine->size());
+            /* XXX
+            if (size < context.porcupine->size())
+              {
+                // The file is shrunk.
+                //
+                // All the blocks following one responsible for _size_
+                // are removed.
+
+                base.open();
+
+                // Check whether there are additional blocks after the current
+                // one i.e the current block is not responsible for the end of
+                // the file.
+                if (context.porcupine->size() >
+                    (base().offset() + base().size()))
+                  {
+                    elle::Boolean
+                    while (true)
+                      {
+                        // Retrieve the door on the node following _base_.
+                        nucleus::proton::Door<nucleus::neutron::Data> door{
+                          context.porcupine->lookup(
+                            base().offset() + base().size())};
+
+                        door.open();
+
+                        door.close();
+                        };
+                        }
+
+// XXX no need to update because remove does it
+
+                base.close();
+              }
+            else
+              {
+                // The file is extended
+
+                XXX error si on ajoute trop d'un coup l'optim va chier non?
+              }
+            */
+
+            // Update the porcupine because the tree needs to be optimised
+            // following the adjustment of the data node.
+            context.porcupine->update(size);
+
+            break;
+          }
+        default:
+          throw elle::Exception("unknown strategy '%s'",
+                                context.porcupine->strategy());
+        }
+
+        // XXX les doors doivent etre ouvertes/fermees correctement.
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            _size,
+            context.porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-      */
 
       // set the context's state.
       context.state = gear::Context::StateModified;

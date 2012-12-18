@@ -94,28 +94,55 @@ namespace etoile
             {
             case nucleus::neutron::Genre::file:
               {
-                gear::File* context;
+                gear::File* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }
             case nucleus::neutron::Genre::directory:
               {
-                gear::Directory* context;
+                gear::Directory* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }
             case nucleus::neutron::Genre::link:
               {
-                gear::Link* context;
+                gear::Link* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }

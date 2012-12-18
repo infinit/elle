@@ -193,7 +193,7 @@ namespace nucleus
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((current().footprint()) > nodule.nest().limits().extent())
+      if (current().footprint() > nodule.nest().limits().extent())
         {
           //
           // in this case, the nodule needs to be split.
@@ -222,6 +222,7 @@ namespace nucleus
 
           // load the new right nodule.
           Ambit<typename X::V> newright(nodule.nest(), orphan);
+
           newright.load();
 
           //
@@ -260,16 +261,25 @@ namespace nucleus
           // create an inlet.
           auto il = new typename X::I(mayor.newright, orphan);
 
-          ELLE_FINALLY_ACTION_DELETE(il)
+          ELLE_FINALLY_ACTION_DELETE(il);
 
           // insert the inlet to the left nodule.
           nodule.insert(il);
+
+          ELLE_FINALLY_ABORT(il);
 
           // update the inlet with the proper capacity and state.
           il->capacity(capacity.newright);
           il->state(state.newright);
 
-          ELLE_FINALLY_ABORT(il);
+          // XXX
+          printf("--- NEW RIGHT\n");
+          nodule.dump(2);
+
+          // Should it be necessary, try to optimize further the
+          // freshly split _newright_ node.
+          ELLE_TRACE("try to optimize further the new right node");
+          Nodule::optimize(nodule, mayor.newright);
         }
       else if (current().footprint() <
                (nodule.nest().limits().extent() *
@@ -529,7 +539,8 @@ namespace nucleus
 
     template <typename T>
     Nodule<T>::Nodule(Type const type):
-      _type(type)
+      _type(type),
+      _capacity(0)
     {
     }
 
@@ -546,14 +557,27 @@ namespace nucleus
     {
       elle::String alignment(margin, ' ');
 
-      std::cout << alignment << "[Nodule]" << std::endl;
+      std::cout << alignment << "[Nodule] " << this->_type << std::endl;
 
       if (Node::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the node");
 
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Capacity] " << this->_capacity << std::endl;
+
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Nodule<T>::print(std::ostream& stream) const
+    {
+      stream << "nodule[" << this->_type << "](" << this->_capacity << ")";
+    }
   }
 }
 
@@ -571,6 +595,8 @@ ELLE_SERIALIZE_SIMPLE_T1(nucleus::proton::Nodule,
   enforce(version == 0);
 
   archive & base_class<nucleus::proton::Node>(value);
+
+  archive & value._capacity;
 }
 
 #endif

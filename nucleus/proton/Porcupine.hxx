@@ -251,7 +251,9 @@ namespace nucleus
             ELLE_ASSERT(this->_value != nullptr);
 
             // Verify the validity of the target index.
-            if (target > this->_value->capacity())
+            // XXX[si le test chier sur >= bien y reflechir car head()/tail()
+            //     utilise ca]
+            if (target >= this->_value->capacity())
               throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
                               target, this->_value->capacity());
@@ -271,7 +273,9 @@ namespace nucleus
             value.load();
 
             // Verify the validity of the target index.
-            if (target > value().capacity())
+            // XXX[si le test chier sur >= bien y reflechir car head()/tail()
+            //     utilise ca]
+            if (target >= value().capacity())
               throw Exception("the given target index '%s' exceeds the "
                               "capacity '%s' of the value",
                               target, value().capacity());
@@ -539,6 +543,90 @@ namespace nucleus
             this->_optimize();
 
             return;
+          }
+        default:
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    Door<T>
+    Porcupine<T>::head()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_TRACE("strategy: %s", this->_strategy);
+
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+          throw Exception("unable to trim an empty porcupine");
+        case Strategy::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            // Return a door to the value.
+            return (Door<T>{this->_value});
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(this->_handle != nullptr);
+
+            // Return a door to the value block.
+            return (Door<T>{*this->_handle, this->_nest});
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(this->_tree != nullptr);
+
+            // Return a door on the node responsible for the lowest keys.
+            return (Door<T>{this->_tree->head(), this->_nest});
+          }
+        default:
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    Door<T>
+    Porcupine<T>::tail()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_TRACE("strategy: %s", this->_strategy);
+
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+          throw Exception("unable to trim an empty porcupine");
+        case Strategy::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            // Return a door to the value.
+            return (Door<T>{this->_value});
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(this->_handle != nullptr);
+
+            // Return a door to the value block.
+            return (Door<T>{*this->_handle, this->_nest});
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(this->_tree != nullptr);
+
+            // Return a door on the node responsible for the highest keys.
+            return (Door<T>{this->_tree->tail(), this->_nest});
           }
         default:
           throw Exception("unknown strategy: '%s'",

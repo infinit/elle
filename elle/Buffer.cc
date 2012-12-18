@@ -255,7 +255,7 @@ namespace elle
   operator <<(std::ostream& stream,
               Buffer const& buffer)
   {
-    static Natural32 const length = 50;
+    static Natural32 const length = 40;
     String hexadecimal = format::hexadecimal::encode(buffer);
 
     // Display the string, depending on its length.
@@ -267,7 +267,8 @@ namespace elle
     else
       {
         // Otherwise chop it and display the begining and the end only.
-        stream << hexadecimal.substr(0, length / 2) << "..."
+        stream << hexadecimal.substr(0, length / 2)
+               << "..." << buffer.size() << " bytes" << "..."
                << hexadecimal.substr(hexadecimal.length() - (length / 2));
       }
 
@@ -388,7 +389,7 @@ namespace elle
   operator <<(std::ostream& stream,
               WeakBuffer const& buffer)
   {
-    static Natural32 const length = 50;
+    static Natural32 const length = 40;
     String hexadecimal = format::hexadecimal::encode(buffer);
 
     // Display the string, depending on its length.
@@ -400,7 +401,8 @@ namespace elle
     else
       {
         // Otherwise chop it and display the begining and the end only.
-        stream << hexadecimal.substr(0, length / 2) << "..."
+        stream << hexadecimal.substr(0, length / 2)
+               << "..." << buffer.size() << " bytes" << "..."
                << hexadecimal.substr(hexadecimal.length() - (length / 2));
       }
 

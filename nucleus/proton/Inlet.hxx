@@ -116,7 +116,7 @@ namespace nucleus
 
       // dump the key.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Key] " << this->_key << std::endl;
+                << "[Key] " << std::dec << this->_key << std::endl; // XXX[remove dec]
 
       // dump the value.
       if (this->_value.Dump(margin + 2) == elle::Status::Error)

@@ -16,7 +16,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
     /*----------.
     | Constants |
     `----------*/
@@ -87,20 +86,10 @@ namespace nucleus
 
           // Insert the entry into the right catalog.
           right.insert(entry);
-
-          // Needless to update the capacities: the right's is updated
-          // by calling insert() while the left's is updated at the
-          // end.
         }
 
       // Remove the moved entries from the the current catalog.
       left._container.erase(i, end);
-
-      // Update the left's capacity with the number of remaining entries.
-      left.capacity(left._container.size());
-
-      ELLE_ASSERT(left.capacity() == left._container.size());
-      ELLE_ASSERT(right.capacity() == right._container.size());
     }
 
     void
@@ -158,20 +147,10 @@ namespace nucleus
 
           // Insert the entry into the left catalog.
           left.insert(entry);
-
-          // Needless to update the capacities: the left's is updated
-          // by calling insert() while the right's is updated at the
-          // end.
         }
 
       // Remove the moved entries from the right catalog.
       right._container.erase(right._container.begin(), i.base());
-
-      // Update the right's capacity.
-      right.capacity(right._container.size());
-
-      ELLE_ASSERT(left.capacity() == left._container.size());
-      ELLE_ASSERT(right.capacity() == right._container.size());
     }
 
     /*-------------.
@@ -211,8 +190,7 @@ namespace nucleus
       // Inject the entry in the container.
       this->_inject(entry);
 
-      // Update the capacity and state.
-      this->capacity(this->capacity() + 1);
+      // Update the state.
       this->state(proton::State::dirty);
     }
 
@@ -341,8 +319,6 @@ namespace nucleus
       ELLE_ASSERT(entry->footprint() != 0);
       ELLE_ASSERT(this->footprint() >= entry->footprint());
       this->footprint(this->footprint() - entry->footprint());
-      ELLE_ASSERT(this->capacity() > 0);
-      this->capacity(this->capacity() - 1);
       this->state(proton::State::dirty);
 
       // Remove the entry from the container.
@@ -403,94 +379,6 @@ namespace nucleus
         throw Exception("unable to locate the given name: '%s'", name);
 
       return (iterator);
-    }
-
-    /*------.
-    | Value |
-    `------*/
-
-    elle::Boolean
-    Catalog::empty() const
-    {
-      return (this->_container.empty());
-    }
-
-    elle::String
-    Catalog::mayor() const
-    {
-      ELLE_ASSERT(this->_container.empty() == false);
-
-      return (this->_container.rbegin()->first);
-    }
-
-    proton::Handle
-    Catalog::split()
-    {
-      ELLE_TRACE_METHOD("");
-
-      // Allocate a new right catalog.
-      proton::Contents* contents{new proton::Contents{new Catalog}};
-      proton::Handle orphan{this->nest().attach(contents)};
-      proton::Ambit<Catalog> right{this->nest(), orphan};
-
-      // Load the new right catalog.
-      right.load();
-
-      // Export the entries from the current catalog into the new catalog.
-      Catalog::transfer_right(*this,
-                              right(),
-                              this->nest().limits().extent() *
-                              this->nest().limits().contention());
-
-      // Set both values' state as dirty.
-      this->state(proton::State::dirty);
-      right().state(proton::State::dirty);
-
-      // Unload the new right nodule.
-      right.unload();
-
-      return (orphan);
-    }
-
-    void
-    Catalog::merge(proton::Handle& other)
-    {
-      ELLE_TRACE_METHOD(other);
-
-      proton::Ambit<Catalog> catalog(this->nest(), other);
-
-      // Load the other catalog.
-      catalog.load();
-
-      // Check which value has the lowest keys.
-      if (catalog().mayor() < this->mayor())
-        {
-          // In this case, export the entries from the given catalog
-          // into the current's since these entries happen to have
-          // lower keys.
-          //
-          // Note that the footprint-based number of entries to keep in
-          // the left catalog is zero i.e transfer all entries.
-          Catalog::transfer_right(catalog(), *this, 0);
-        }
-      else
-        {
-          // Otherwise, import the higher entries from the given catalog
-          // into the current's.
-          //
-          // Note that the footprint-based number of entries to keep in
-          // the right catalog is zero i.e transfer all entries.
-          Catalog::transfer_left(*this, catalog(), 0);
-        }
-
-      // Set both values' state as dirty.
-      this->state(proton::State::dirty);
-      catalog().state(proton::State::dirty);
-
-      ELLE_ASSERT(catalog()._container.size() == 0);
-
-      // Unload the given catalog.
-      catalog.unload();
     }
 
     /*---------.
@@ -564,5 +452,98 @@ namespace nucleus
       return (this->_container.end());
     }
 
+    /*------.
+    | Value |
+    `------*/
+
+    elle::Boolean
+    Catalog::empty() const
+    {
+      return (this->_container.empty());
+    }
+
+    elle::String
+    Catalog::mayor() const
+    {
+      ELLE_ASSERT(this->_container.empty() == false);
+
+      return (this->_container.rbegin()->first);
+    }
+
+    proton::Capacity
+    Catalog::capacity() const
+    {
+      return (static_cast<proton::Capacity>(this->_container.size()));
+    }
+
+    proton::Handle
+    Catalog::split()
+    {
+      ELLE_TRACE_METHOD("");
+
+      // Allocate a new right catalog.
+      proton::Contents* contents{new proton::Contents{new Catalog}};
+      proton::Handle orphan{this->nest().attach(contents)};
+      proton::Ambit<Catalog> right{this->nest(), orphan};
+
+      // Load the new right catalog.
+      right.load();
+
+      // Export the entries from the current catalog into the new catalog.
+      Catalog::transfer_right(*this,
+                              right(),
+                              this->nest().limits().extent() *
+                              this->nest().limits().contention());
+
+      // Set both values' state as dirty.
+      this->state(proton::State::dirty);
+      right().state(proton::State::dirty);
+
+      // Unload the new right catalog.
+      right.unload();
+
+      return (orphan);
+    }
+
+    void
+    Catalog::merge(proton::Handle& other)
+    {
+      ELLE_TRACE_METHOD(other);
+
+      proton::Ambit<Catalog> catalog(this->nest(), other);
+
+      // Load the other catalog.
+      catalog.load();
+
+      // Check which value has the lowest keys.
+      if (catalog().mayor() < this->mayor())
+        {
+          // In this case, export the entries from the given catalog
+          // into the current's since these entries happen to have
+          // lower keys.
+          //
+          // Note that the footprint-based number of entries to keep in
+          // the left catalog is zero i.e transfer all entries.
+          Catalog::transfer_right(catalog(), *this, 0);
+        }
+      else
+        {
+          // Otherwise, import the higher entries from the given catalog
+          // into the current's.
+          //
+          // Note that the footprint-based number of entries to keep in
+          // the right catalog is zero i.e transfer all entries.
+          Catalog::transfer_left(*this, catalog(), 0);
+        }
+
+      // Set both values' state as dirty.
+      this->state(proton::State::dirty);
+      catalog().state(proton::State::dirty);
+
+      ELLE_ASSERT(catalog()._container.size() == 0);
+
+      // Unload the given catalog.
+      catalog.unload();
+    }
   }
 }

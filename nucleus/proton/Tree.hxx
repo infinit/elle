@@ -155,6 +155,8 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(target);
 
+      // XXX[check sur target >= capacity -> error]
+
       // Initialize the base.
       Capacity base(0);
 
@@ -197,6 +199,32 @@ namespace nucleus
 
       // Try to optimize the tree.
       this->_optimize();
+    }
+
+    template <typename T>
+    Handle
+    Tree<T>::head()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_root != nullptr);
+      ELLE_ASSERT(this->_capacity != 0);
+
+      return (this->seek(0).first);
+    }
+
+    template <typename T>
+    Handle
+    Tree<T>::tail()
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_root != nullptr);
+      ELLE_ASSERT(this->_capacity != 0);
+
+      return (this->seek(this->_capacity - 1).first);
     }
 
     template <typename T>
@@ -589,6 +617,22 @@ namespace nucleus
 
           // And increment the height.
           this->_height++;
+
+          // XXX
+          printf("--- NEW ROOT\n");
+          this->dump(2);
+
+          // At this point, the freshly split _newright_ nodule may need
+          // to be optimized further.
+          Ambit<Seam<T>> _newroot(this->_nest, handle_newroot);
+
+          _newroot.load();
+
+          Nodule<T>::optimize(_newroot(), mayor_newright);
+
+          _newroot.unload();
+
+          // XXX call this->_optimize() ?
         }
       else
         {

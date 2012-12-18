@@ -971,6 +971,16 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Quill<T>::print(std::ostream& stream) const
+    {
+      stream << "quill(#" << this->_container.size() << ")";
+    }
   }
 }
 

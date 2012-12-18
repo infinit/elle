@@ -32,7 +32,7 @@ namespace nucleus
             // XXX
             // ELLE_ASSERT(false && "should not be called: in an ideal world");
 
-            ELLE_TRACE("loading on construction");
+            ELLE_DEBUG("loading on construction");
 
             this->load();
 
@@ -60,7 +60,7 @@ namespace nucleus
                 // XXX
                 // ELLE_ASSERT(false && "should not be called: in an ideal world");
 
-                ELLE_TRACE("unloading on destruction");
+                ELLE_DEBUG("unloading on destruction");
 
                 this->unload();
               }
@@ -83,7 +83,7 @@ namespace nucleus
     Ambit<T>::load()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Ambit");
-      ELLE_TRACE_METHOD("");
+      ELLE_DEBUG_METHOD("");
 
       ELLE_ASSERT(this->_state == State::unloaded);
       ELLE_ASSERT(this->_block == nullptr);
@@ -105,7 +105,7 @@ namespace nucleus
     Ambit<T>::unload()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Ambit");
-      ELLE_TRACE_METHOD("");
+      ELLE_DEBUG_METHOD("");
 
       ELLE_ASSERT(this->_state == State::loaded);
       ELLE_ASSERT(this->_block != nullptr);

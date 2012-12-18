@@ -187,6 +187,12 @@ namespace nucleus
       /// the value block responsible for the given key _k_.
       void
       update(typename T::K const& k);
+      /// Return the handle of the very first node.
+      Handle
+      head();
+      /// Return the handle of the last node composing the tree.
+      Handle
+      tail();
       /// Check that the tree is valid according to some points given by
       /// _flags_ such that the internal capacity corresponds to the actual
       /// number of elements being stored, that the block addresses are correct,

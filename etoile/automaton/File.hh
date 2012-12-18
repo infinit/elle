@@ -2,7 +2,10 @@
 # define ETOILE_AUTOMATON_FILE_HH
 
 # include <elle/types.hh>
+# include <elle/standalone/Region.hh>
+
 # include <nucleus/neutron/fwd.hh>
+
 # include <etoile/gear/fwd.hh>
 
 namespace etoile

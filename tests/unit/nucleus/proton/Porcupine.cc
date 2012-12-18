@@ -16,6 +16,7 @@
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Data.hh>
 
 #include <etoile/Etoile.hh>
 #include <etoile/gear/Transcript.hh>
@@ -45,8 +46,12 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 // To define to dump the porcupine's statistcs.
 #undef PORCUPINE_STATISTICS
 
+//
+// ---------- Catalog ---------------------------------------------------------
+//
+
 std::vector<elle::String>
-test_porcupine_prepare(elle::Natural32 const n)
+test_porcupine_prepare_catalog(elle::Natural32 const n)
 {
   std::vector<elle::String> vector(n);
 
@@ -64,7 +69,7 @@ test_porcupine_prepare(elle::Natural32 const n)
 }
 
 void
-test_porcupine_add(
+test_porcupine_catalog_add(
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
   std::vector<elle::String>& vector)
 {
@@ -81,7 +86,11 @@ test_porcupine_add(
         new nucleus::neutron::Entry(vector[i],
                                     nucleus::proton::Address::null())};
 
+      catalog.open();
+
       catalog().insert(entry);
+
+      catalog.close();
 
       porcupine.update(vector[i]);
 
@@ -107,7 +116,7 @@ test_porcupine_add(
 }
 
 void
-test_porcupine_lookup(
+test_porcupine_catalog_lookup(
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
   std::vector<elle::String>& vector)
 {
@@ -120,10 +129,14 @@ test_porcupine_lookup(
       nucleus::proton::Door<nucleus::neutron::Catalog> catalog{
         porcupine.lookup(vector[i])};
 
+      catalog.open();
+
       ELLE_ASSERT(catalog().exist(vector[i]) == true);
 
       ELLE_ASSERT(
         porcupine.exist(vector[i]) == true);
+
+      catalog.close();
 
 #ifdef PORCUPINE_THOROUGH_CHECK
       porcupine.check(
@@ -144,7 +157,7 @@ test_porcupine_lookup(
 }
 
 nucleus::proton::Radix
-test_porcupine_seal(
+test_porcupine_catalog_seal(
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
   cryptography::SecretKey& secret)
 {
@@ -159,7 +172,7 @@ test_porcupine_seal(
 }
 
 void
-test_porcupine_seek(
+test_porcupine_catalog_seek(
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
   std::vector<elle::String>& vector)
 {
@@ -202,7 +215,7 @@ test_porcupine_seek(
 }
 
 nucleus::proton::Porcupine<nucleus::neutron::Catalog>*
-test_porcupine_serialize(
+test_porcupine_catalog_serialize(
   nucleus::proton::Radix radix1,
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine1,
   cryptography::SecretKey& secret,
@@ -235,9 +248,9 @@ test_porcupine_serialize(
   // This first lookup phase is going to be slower than when the
   // porcupine has been created because blocks needed to be fetched
   // from the storage layer.
-  test_porcupine_lookup(*porcupine2, vector);
+  test_porcupine_catalog_lookup(*porcupine2, vector);
 
-  test_porcupine_seek(*porcupine2, vector);
+  test_porcupine_catalog_seek(*porcupine2, vector);
 
   porcupine2->check(
     nucleus::proton::flags::all);
@@ -246,7 +259,7 @@ test_porcupine_serialize(
 }
 
 void
-test_porcupine_remove(
+test_porcupine_catalog_remove(
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>& porcupine,
   std::vector<elle::String>& vector,
   elle::Natural32 const index,
@@ -261,7 +274,11 @@ test_porcupine_remove(
       nucleus::proton::Door<nucleus::neutron::Catalog> catalog{
         porcupine.lookup(vector[i])};
 
+      catalog.open();
+
       catalog().erase(vector[i]);
+
+      catalog.close();
 
       porcupine.update(vector[i]);
 
@@ -294,9 +311,8 @@ test_porcupine_catalog()
   // with 6 levels which is enough to test all cases.
 
   elle::Natural32 const N = 200;
-  std::vector<elle::String> vector;
 
-  vector = test_porcupine_prepare(N);
+  std::vector<elle::String> vector = test_porcupine_prepare_catalog(N);
 
   // XXX[provide a path to where blocks should be stored i.e another
   //     hole storage]
@@ -307,13 +323,13 @@ test_porcupine_catalog()
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine1 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(nest1);
 
-  test_porcupine_add(*porcupine1, vector);
+  test_porcupine_catalog_add(*porcupine1, vector);
 
   ELLE_ASSERT(porcupine1->strategy() == nucleus::proton::Strategy::tree);
   ELLE_ASSERT(porcupine1->tree().height() >= 1);
   ELLE_ASSERT(porcupine1->tree().height() <= 10);
 
-  test_porcupine_lookup(*porcupine1, vector);
+  test_porcupine_catalog_lookup(*porcupine1, vector);
 
 #ifdef PORCUPINE_STATISTICS
   nucleus::proton::Statistics stats =
@@ -323,30 +339,75 @@ test_porcupine_catalog()
 
   cryptography::SecretKey secret1{cryptography::SecretKey::generate(256)};
 
-  nucleus::proton::Radix radix1{test_porcupine_seal(*porcupine1, secret1)};
+  nucleus::proton::Radix radix1{
+    test_porcupine_catalog_seal(*porcupine1, secret1)};
 
-  test_porcupine_seek(*porcupine1, vector);
+  test_porcupine_catalog_seek(*porcupine1, vector);
 
 #ifdef PORCUPINE_SERIALIZE_TEST
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
-    test_porcupine_serialize(radix1, *porcupine1, secret1, vector);
+    test_porcupine_catalog_serialize(radix1, *porcupine1, secret1, vector);
 
-  test_porcupine_remove(*porcupine2, vector, N / 3, N / 3);
+  test_porcupine_catalog_remove(*porcupine2, vector, N / 3, N / 3);
 
   cryptography::SecretKey secret2{cryptography::SecretKey::generate(256)};
 
-  nucleus::proton::Radix radix2{test_porcupine_seal(*porcupine2, secret2)};
+  nucleus::proton::Radix radix2{
+    test_porcupine_catalog_seal(*porcupine2, secret2)};
 
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine3 =
-    test_porcupine_serialize(radix2, *porcupine2, secret2, vector);
+    test_porcupine_catalog_serialize(radix2, *porcupine2, secret2, vector);
 
   delete porcupine3;
   delete porcupine2;
 #endif
 
-  test_porcupine_remove(*porcupine1, vector, 0, vector.size());
+  test_porcupine_catalog_remove(*porcupine1, vector, 0, vector.size());
 
   delete porcupine1;
+}
+
+//
+// ---------- Data ------------------------------------------------------------
+//
+void
+test_porcupine_data()
+{
+  // XXX[provide a path to where blocks should be stored i.e another
+  //     hole storage]
+  etoile::nest::Nest nest1{
+    nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0},
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0})};
+  nucleus::proton::Porcupine<nucleus::neutron::Data>* porcupine =
+    new nucleus::proton::Porcupine<nucleus::neutron::Data>(nest1);
+
+  // XXX elle::Buffer buffer{25360};
+  elle::Buffer buffer{5725};
+
+  elle::printf("XXX: %s\n", buffer);
+
+  nucleus::proton::Door<nucleus::neutron::Data> data{
+    porcupine->lookup(porcupine->size())};
+
+  data.open();
+
+  data().write(0, elle::WeakBuffer{buffer});
+
+  data.close();
+
+  porcupine->update(0);
+
+  porcupine->check(
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
+
+  porcupine->dump();
+
+  delete porcupine;
 }
 
 int
@@ -385,7 +446,8 @@ Main(elle::Natural32,
       hole->join();
 #endif
 
-      test_porcupine_catalog();
+      // XXXtest_porcupine_catalog();
+      test_porcupine_data();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
       etoile::Etoile::Clean();
@@ -430,9 +492,12 @@ int
 main(int argc,
      char* argv[])
 {
+  /* XXX
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&Main, argc, argv));
   sched.run();
   return main.result();
+  */
+  return Main(argc, argv);
 }

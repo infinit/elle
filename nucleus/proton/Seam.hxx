@@ -716,7 +716,6 @@ namespace nucleus
         {
           Seam<T>::I* inlet = scoutor->second;
           Ambit<Nodule<T>> current(this->nest(), inlet->value());
-          typename T::K mayor;
 
           ELLE_DEBUG_SCOPE("checking inlet %s", inlet);
 
@@ -1105,6 +1104,16 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    template <typename T>
+    void
+    Seam<T>::print(std::ostream& stream) const
+    {
+      stream << "seam(#" << this->_container.size() << ")";
+    }
   }
 }
 

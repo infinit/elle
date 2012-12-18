@@ -20,7 +20,6 @@ namespace nucleus
     Node::Node():
       _nest(nullptr),
       _footprint(0),
-      _capacity(0),
       _state(State::clean)
     {
     }
@@ -55,18 +54,6 @@ namespace nucleus
       this->_footprint = footprint;
     }
 
-    Capacity
-    Node::capacity() const
-    {
-      return (this->_capacity);
-    }
-
-    void
-    Node::capacity(elle::Natural64 const capacity)
-    {
-      this->_capacity = capacity;
-    }
-
     State
     Node::state() const
     {
@@ -92,10 +79,6 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Footprint] " << std::dec << this->_footprint
-                << std::endl;
-
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Capacity] " << std::dec << this->_capacity
                 << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift

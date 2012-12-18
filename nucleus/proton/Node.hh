@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
-# include <elle/serialize/Serializable.hh>
 # include <elle/io/Dumpable.hh>
 # include <elle/utility/Factory.hh>
 
@@ -27,6 +26,7 @@ namespace nucleus
       `-------------*/
     public:
       Node();
+      Node(Node const&) = default;
 
       //
       // methods
@@ -44,12 +44,6 @@ namespace nucleus
       /// XXX
       void
       footprint(Footprint const footprint);
-      /// XXX
-      Capacity
-      capacity() const;
-      /// XXX
-      void
-      capacity(Capacity const capacity);
       /// XXX
       State
       state() const;
@@ -69,20 +63,14 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-      // serialize
-      ELLE_SERIALIZE_FRIEND_FOR(Node);
-
       //
       // attributes
       //
     private:
       Nest* _nest;
       Footprint _footprint;
-      Capacity _capacity;
       State _state;
     };
-
-    // XXX operator << for Type
   }
 }
 

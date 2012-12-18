@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Limits.hh>
 
 # include <etoile/gear/Object.hh>
 # include <etoile/gear/Nature.hh>
@@ -60,6 +61,7 @@ namespace etoile
       //
       nucleus::proton::Porcupine<nucleus::neutron::Reference>* porcupine;
       etoile::nest::Nest* nest;
+      nucleus::proton::Limits limits;
     };
 
   }

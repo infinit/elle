@@ -38,9 +38,17 @@ namespace nucleus
     ///   merge(C& other);
     ///
     /// XXX les protos de split et merge ont changes!?!
+    /// XXX capacity() prototype
     class Value:
       public Node
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      Value();
+      Value(Value const&) = default;
+
       /*-----------.
       | Interfaces |
       `-----------*/

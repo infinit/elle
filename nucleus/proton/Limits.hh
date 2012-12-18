@@ -99,12 +99,12 @@ namespace nucleus
 
       // XXX
     public:
-      elle::Natural32
-      extent() const { return 1024; }
+      Extent
+      extent() const { return this->_nodule.extent(); };
       elle::Real
-      contention() const { return 0.5; }
+      contention() const { return this->_nodule.contention(); }
       elle::Real
-      balancing() const { return 0.2; }
+      balancing() const { return this->_nodule.balancing(); }
       // XXX
     };
   }

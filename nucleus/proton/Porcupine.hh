@@ -95,6 +95,12 @@ namespace nucleus
       /// the value responsible for the given key _k_.
       void
       update(typename T::K const& k);
+      /// Return a door on the very first node.
+      Door<T>
+      head();
+      /// Return a door on the last node composing the content.
+      Door<T>
+      tail();
       /// Return the number of elements being stored in the porcupine.
       elle::Size
       size() const;
