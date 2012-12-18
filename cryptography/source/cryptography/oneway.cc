@@ -1,8 +1,12 @@
 #include <cryptography/oneway.hh>
 #include <cryptography/cryptography.hh>
 
+#include <elle/log.hh>
+
 #include <openssl/evp.h>
 #include <openssl/err.h>
+
+ELLE_LOG_COMPONENT("infinit.cryptograhy.oneway");
 
 /*----------------.
 | Macro-functions |
@@ -65,6 +69,8 @@ namespace infinit
       hash(Plain const& plain,
            Algorithm algorithm)
       {
+        ELLE_TRACE_FUNCTION(plain, algorithm);
+
         ::EVP_MD const* function = resolve(algorithm);
 
         Digest digest(EVP_MD_size(function));
