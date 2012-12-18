@@ -82,17 +82,17 @@ namespace elle
                                 ##__VA_ARGS__),                         \
                    *this, this)
 # define ELLE_DEBUG_METHOD(...)                                         \
-  ELLE_TRACE_SCOPE("%s(%s) <%s at %s>",                                 \
+  ELLE_DEBUG_SCOPE("%s(%s) <%s at %s>",                                 \
                    __FUNCTION__,                                        \
                    elle::sprint(elle::iomanip::Separator(", "),         \
                                 ##__VA_ARGS__),                         \
                    *this, this)
 # define ELLE_DUMP_METHOD(...)                                          \
-  ELLE_TRACE_SCOPE("%s(%s) <%s at %s>",                                 \
-                   __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(", "),         \
-                                ##__VA_ARGS__),                         \
-                   *this, this)
+  ELLE_DUMP_SCOPE("%s(%s) <%s at %s>",                                  \
+                  __FUNCTION__,                                         \
+                  elle::sprint(elle::iomanip::Separator(", "),          \
+                               ##__VA_ARGS__),                          \
+                  *this, this)
 
     /// @brief Retreive a logger by its name.
     Logger&
