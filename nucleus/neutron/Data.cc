@@ -49,15 +49,18 @@ namespace nucleus
       Size size_left = size - footprint;
       Size size_right = left._buffer.size() - size_left;
 
+      // Keep the old size of the right data.
+      Size _size = right._buffer.size();
+
       // Extend the size of the right buffer.
       right._buffer.size(right._buffer.size() + size_right);
 
       // Move the existing data in the right value so as to welcome the
       // new content.
-      if (right._buffer.size() != 0)
+      if (_size != 0)
         ::memmove(right._buffer.mutable_contents() + size_right,
                   right._buffer.contents(),
-                  size_right);
+                  _size);
 
       ::memcpy(right._buffer.mutable_contents(),
                left._buffer.contents() + size_left,
@@ -309,10 +312,6 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD("");
 
-      // XXX
-      printf("BEFORE\n");
-      this->Dump(2);
-
       // Allocate a new right data.
       proton::Contents* contents{new proton::Contents{new Data{0}}};
       // XXX[change to extent * contention though contention = 100%]
@@ -334,11 +333,6 @@ namespace nucleus
       // Set both values' state as dirty.
       this->state(proton::State::dirty);
       right().state(proton::State::dirty);
-
-      // XXX
-      printf("AFTER\n");
-      this->Dump(2);
-      right().Dump(2);
 
       // Unload the new right data.
       right.unload();

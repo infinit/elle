@@ -283,9 +283,13 @@ namespace nucleus
                             elle::serialize::footprint(root()));
 
           if (root().footprint() > this->_nest.limits().extent())
+            {
+              // XXX
+              this->dump(0);
             throw Exception("the footprint '%s' exceeds the extent '%s'",
                             root().footprint(),
                             this->_nest.limits().extent());
+            }
         }
 
       // Check the state.
@@ -618,10 +622,6 @@ namespace nucleus
           // And increment the height.
           this->_height++;
 
-          // XXX
-          printf("--- NEW ROOT\n");
-          this->dump(2);
-
           // At this point, the freshly split _newright_ nodule may need
           // to be optimized further.
           Ambit<Seam<T>> _newroot(this->_nest, handle_newroot);
@@ -632,7 +632,10 @@ namespace nucleus
 
           _newroot.unload();
 
-          // XXX call this->_optimize() ?
+          // Finally, following the optimization of the _newright_ nodule
+          // which may have been split several times, the new root may
+          // now need to be optimized as well.
+          this->_optimize();
         }
       else
         {

@@ -382,10 +382,7 @@ test_porcupine_data()
   nucleus::proton::Porcupine<nucleus::neutron::Data>* porcupine =
     new nucleus::proton::Porcupine<nucleus::neutron::Data>(nest1);
 
-  // XXX elle::Buffer buffer{25360};
-  elle::Buffer buffer{5725};
-
-  elle::printf("XXX: %s\n", buffer);
+  elle::Buffer buffer{253601};
 
   nucleus::proton::Door<nucleus::neutron::Data> data{
     porcupine->lookup(porcupine->size())};
@@ -404,8 +401,6 @@ test_porcupine_data()
     nucleus::proton::flags::capacity |
     nucleus::proton::flags::footprint |
     nucleus::proton::flags::state);
-
-  porcupine->dump();
 
   delete porcupine;
 }
@@ -446,7 +441,7 @@ Main(elle::Natural32,
       hole->join();
 #endif
 
-      // XXXtest_porcupine_catalog();
+      test_porcupine_catalog();
       test_porcupine_data();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
@@ -492,12 +487,9 @@ int
 main(int argc,
      char* argv[])
 {
-  /* XXX
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&Main, argc, argv));
   sched.run();
   return main.result();
-  */
-  return Main(argc, argv);
 }

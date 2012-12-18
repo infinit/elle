@@ -272,10 +272,6 @@ namespace nucleus
           il->capacity(capacity.newright);
           il->state(state.newright);
 
-          // XXX
-          printf("--- NEW RIGHT\n");
-          nodule.dump(2);
-
           // Should it be necessary, try to optimize further the
           // freshly split _newright_ node.
           ELLE_TRACE("try to optimize further the new right node");
