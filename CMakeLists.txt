@@ -221,12 +221,11 @@ find_library(INFINIT_Z_LIBRARY z PATHS /opt/local/lib NO_DEFAULT_PATH)
 message(STATUS "Zip library: ${INFINIT_Z_LIBRARY}")
 
 ## Loading Qt
-find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
+find_package(Qt4 4.6.0 REQUIRED QtCore)
 
-set(QT_USE_QTNETWORK true)
-set(QT_DONT_USE_QTGUI true)
-set(QT_USE_QTXML true)
-set(QT_DONT_USE_QTGUI TRUE)
+#set(QT_DONT_USE_QTNETWORK true)
+#set(QT_DONT_USE_QTGUI true)
+#set(QT_DONT_USE_QTXML true)
 include(${QT_USE_FILE})
 
 include_directories(${QT_INCLUDES})
