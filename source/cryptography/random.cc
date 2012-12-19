@@ -23,7 +23,7 @@
 # endif
 #include <elle/idiom/Open.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.random");
+ELLE_LOG_COMPONENT("cryptography.random");
 
 namespace infinit
 {
