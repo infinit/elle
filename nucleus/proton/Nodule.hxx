@@ -277,9 +277,10 @@ namespace nucleus
           ELLE_TRACE("try to optimize further the new right node");
           Nodule::optimize(nodule, mayor.newright);
         }
-      else if (current().footprint() <
-               (nodule.nest().limits().extent() *
-                nodule.nest().limits().balancing()))
+      else if ((current().empty() == true) ||
+               (current().footprint() <=
+                (nodule.nest().limits().extent() *
+                 nodule.nest().limits().balancing())))
         {
           ELLE_TRACE("nodule's extent low limit reached: "
                      "%s < %s",

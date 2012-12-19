@@ -283,13 +283,9 @@ namespace nucleus
                             elle::serialize::footprint(root()));
 
           if (root().footprint() > this->_nest.limits().extent())
-            {
-              // XXX
-              this->dump(0);
             throw Exception("the footprint '%s' exceeds the extent '%s'",
                             root().footprint(),
                             this->_nest.limits().extent());
-            }
         }
 
       // Check the state.

@@ -331,7 +331,6 @@ namespace nucleus
       inlet = iterator->second;
 
       Ambit<Nodule<T>> current(this->nest(), inlet->value());
-      Capacity variation;
 
       // load the current child nodule.
       current.load();
@@ -364,7 +363,7 @@ namespace nucleus
         ELLE_ASSERT(inlet->capacity() <= current().capacity());
 
         // compute the capacity variation.
-        variation = current().capacity() - inlet->capacity();
+        Capacity variation = current().capacity() - inlet->capacity();
 
         // update the inlet's and seam's capacity by adding the difference.
         inlet->capacity(inlet->capacity() + variation);
@@ -396,7 +395,6 @@ namespace nucleus
       inlet = iterator->second;
 
       Ambit<Nodule<T>> current(this->nest(), inlet->value());
-      Capacity variation;
 
       // load the current child nodule.
       current.load();
@@ -428,14 +426,15 @@ namespace nucleus
       //
       {
         // make sure the operation is valid.
-        ELLE_ASSERT(inlet->capacity() <= current().capacity());
+        ELLE_ASSERT(inlet->capacity() >= current().capacity());
 
         // compute the capacity variation.
-        variation = current().capacity() - inlet->capacity();
+        Capacity variation = inlet->capacity() - current().capacity();
 
-        // update the inlet's and seam's capacity by substracting the difference.
-        inlet->capacity(inlet->capacity() + variation);
-        this->capacity(this->capacity() + variation);
+        // update the inlet's and seam's capacity by substracting
+        // the difference.
+        inlet->capacity(inlet->capacity() - variation);
+        this->capacity(this->capacity() - variation);
       }
 
       // unload the current nodule.

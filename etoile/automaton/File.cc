@@ -132,9 +132,6 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      // XXX
-      context.porcupine->dump();
-
       return elle::Status::Ok;
     }
 
@@ -236,18 +233,19 @@ namespace etoile
         case nucleus::proton::Strategy::value:
         case nucleus::proton::Strategy::block:
           {
+            // Retrieve a door on the only block.
             nucleus::proton::Door<nucleus::neutron::Data> door{
               context.porcupine->lookup(size)};
 
+            // Directly adjust the size, relatively i.e size - door.offset.
             door.open();
 
-            // Directly adjsut the data.
             door().adjust(size - door().offset());
+
+            door.close();
 
             // Update the porcupine.
             context.porcupine->update(size);
-
-            door.close();
 
             break;
           }
@@ -261,7 +259,7 @@ namespace etoile
             // Act depending on the fact that the file is shrunk or
             // extended.
             ELLE_ASSERT(size != context.porcupine->size());
-            /* XXX
+
             if (size < context.porcupine->size())
               {
                 // The file is shrunk.
@@ -269,39 +267,65 @@ namespace etoile
                 // All the blocks following one responsible for _size_
                 // are removed.
 
+                while (true)
+                  {
+                    // Retrieve the door on the last data node.
+                    nucleus::proton::Door<nucleus::neutron::Data> end{
+                      context.porcupine->tail()};
+
+                    // If this node is the same as _base_, this means
+                    // _base_ is the last node; hence stop.
+                    //
+                    // Otherwise remove the node from the tree.
+                    if (end == base)
+                      break;
+                    else
+                      {
+                        // Retrieve the key for which the last node is
+                        // responsible.
+                        end.open();
+
+                        nucleus::neutron::Offset _key = end().offset();
+
+                        end.close();
+
+                        // Remove the data block.
+                        context.porcupine->tree().remove(_key);
+
+                        // Although the remove() operation updates the
+                        // tree, the porcupine needs updating as well so
+                        // as to maintain consistency regarding the state.
+                        //
+                        // However, since the _base_ node will be adjusted,
+                        // the porcupine will be updated. Therefore, delay
+                        // the update for optimization purposes.
+                      }
+                  }
+
+                // Finally, the _base_ node needs to be adjusted to the final
+                // size, which is relative to the _base_: size - base.offset
                 base.open();
 
-                // Check whether there are additional blocks after the current
-                // one i.e the current block is not responsible for the end of
-                // the file.
-                if (context.porcupine->size() >
-                    (base().offset() + base().size()))
-                  {
-                    elle::Boolean
-                    while (true)
-                      {
-                        // Retrieve the door on the node following _base_.
-                        nucleus::proton::Door<nucleus::neutron::Data> door{
-                          context.porcupine->lookup(
-                            base().offset() + base().size())};
-
-                        door.open();
-
-                        door.close();
-                        };
-                        }
-
-// XXX no need to update because remove does it
+                base().adjust(size - base().offset());
 
                 base.close();
               }
             else
               {
-                // The file is extended
+                // The file is extended.
 
-                XXX error si on ajoute trop d'un coup l'optim va chier non?
+                // Retrieve the door on the last data node.
+                nucleus::proton::Door<nucleus::neutron::Data> end{
+                  context.porcupine->tail()};
+
+                // Adjust the size of the last node, relatively i.e
+                // size - end.offset.
+                end.open();
+
+                end().adjust(size - end().offset());
+
+                end.close();
               }
-            */
 
             // Update the porcupine because the tree needs to be optimised
             // following the adjustment of the data node.
@@ -313,8 +337,6 @@ namespace etoile
           throw elle::Exception("unknown strategy '%s'",
                                 context.porcupine->strategy());
         }
-
-        // XXX les doors doivent etre ouvertes/fermees correctement.
 
       // update the object.
       if (context.object->Update(

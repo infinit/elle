@@ -38,7 +38,7 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
 // To define in order to make the checks stronger and so as to
 // detect inconsistencies early on.
-#undef PORCUPINE_THOROUGH_CHECK
+#define PORCUPINE_THOROUGH_CHECK
 
 // To define to test the serialization mechanism with porcupines.
 #undef PORCUPINE_SERIALIZE_TEST
@@ -307,6 +307,8 @@ test_porcupine_catalog_remove(
 void
 test_porcupine_catalog()
 {
+  ELLE_TRACE_FUNCTION("");
+
   // A test with N = 1000 and an extent of 1024 leads to a porcupine
   // with 6 levels which is enough to test all cases.
 
@@ -370,9 +372,96 @@ test_porcupine_catalog()
 //
 // ---------- Data ------------------------------------------------------------
 //
+
+void
+test_porcupine_data_write(
+  nucleus::proton::Porcupine<nucleus::neutron::Data>& porcupine)
+{
+  ELLE_TRACE_FUNCTION(porcupine);
+
+  elle::Natural32 const N = 253601;
+
+  elle::Buffer buffer{N};
+
+  nucleus::proton::Door<nucleus::neutron::Data> data{
+    porcupine.lookup(porcupine.size())};
+
+  data.open();
+
+  data().write(0, elle::WeakBuffer{buffer});
+
+  data.close();
+
+  porcupine.update(0);
+
+  porcupine.check(
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
+}
+
+void
+test_porcupine_data_resize(
+  nucleus::proton::Porcupine<nucleus::neutron::Data>& porcupine)
+{
+  ELLE_TRACE_FUNCTION(porcupine);
+
+  nucleus::neutron::Size size = 1234;
+
+  nucleus::proton::Door<nucleus::neutron::Data> base{
+    porcupine.lookup(size)};
+
+  while (true)
+    {
+#ifdef PORCUPINE_THOROUGH_CHECK
+      porcupine.check(
+        nucleus::proton::flags::recursive |
+        nucleus::proton::flags::key |
+        nucleus::proton::flags::capacity |
+        nucleus::proton::flags::footprint |
+        nucleus::proton::flags::state);
+#endif
+
+      nucleus::proton::Door<nucleus::neutron::Data> end{
+        porcupine.tail()};
+
+      if (end == base)
+        break;
+      else
+        {
+          end.open();
+
+          nucleus::neutron::Offset _key = end().mayor();
+
+          end.close();
+
+          porcupine.tree().remove(_key);
+        }
+    }
+
+  base.open();
+
+  base().adjust(size - base().offset());
+
+  base.close();
+
+  porcupine.update(size);
+
+  porcupine.check(
+    nucleus::proton::flags::recursive |
+    nucleus::proton::flags::key |
+    nucleus::proton::flags::capacity |
+    nucleus::proton::flags::footprint |
+    nucleus::proton::flags::state);
+}
+
 void
 test_porcupine_data()
 {
+  ELLE_TRACE_FUNCTION("");
+
   // XXX[provide a path to where blocks should be stored i.e another
   //     hole storage]
   etoile::nest::Nest nest1{
@@ -382,25 +471,8 @@ test_porcupine_data()
   nucleus::proton::Porcupine<nucleus::neutron::Data>* porcupine =
     new nucleus::proton::Porcupine<nucleus::neutron::Data>(nest1);
 
-  elle::Buffer buffer{253601};
-
-  nucleus::proton::Door<nucleus::neutron::Data> data{
-    porcupine->lookup(porcupine->size())};
-
-  data.open();
-
-  data().write(0, elle::WeakBuffer{buffer});
-
-  data.close();
-
-  porcupine->update(0);
-
-  porcupine->check(
-    nucleus::proton::flags::recursive |
-    nucleus::proton::flags::key |
-    nucleus::proton::flags::capacity |
-    nucleus::proton::flags::footprint |
-    nucleus::proton::flags::state);
+  test_porcupine_data_write(*porcupine);
+  test_porcupine_data_resize(*porcupine);
 
   delete porcupine;
 }
@@ -441,7 +513,7 @@ Main(elle::Natural32,
       hole->join();
 #endif
 
-      test_porcupine_catalog();
+      // XXX test_porcupine_catalog();
       test_porcupine_data();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
@@ -487,9 +559,12 @@ int
 main(int argc,
      char* argv[])
 {
+  /* XXX
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&Main, argc, argv));
   sched.run();
   return main.result();
+  */
+  return Main(argc, argv);
 }

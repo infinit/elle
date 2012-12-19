@@ -1143,6 +1143,16 @@ namespace nucleus
     }
 
     template <typename T>
+    T&
+    Porcupine<T>::value()
+    {
+      ELLE_ASSERT(this->_strategy == Strategy::value);
+      ELLE_ASSERT(this->_value != nullptr);
+
+      return (*this->_value);
+    }
+
+    template <typename T>
     Handle const&
     Porcupine<T>::block() const
     {
@@ -1155,6 +1165,16 @@ namespace nucleus
     template <typename T>
     Tree<T> const&
     Porcupine<T>::tree() const
+    {
+      ELLE_ASSERT(this->_strategy == Strategy::tree);
+      ELLE_ASSERT(this->_tree != nullptr);
+
+      return (*this->_tree);
+    }
+
+    template <typename T>
+    Tree<T>&
+    Porcupine<T>::tree()
     {
       ELLE_ASSERT(this->_strategy == Strategy::tree);
       ELLE_ASSERT(this->_tree != nullptr);
@@ -1226,9 +1246,10 @@ namespace nucleus
                 // the block limits.
                 this->_optimize();
               }
-            else if (this->_value->footprint() <
-                     (this->_nest.limits().extent() *
-                      this->_nest.limits().balancing()))
+            else if ((this->_value->empty() == true) ||
+                     (this->_value->footprint() <=
+                      (this->_nest.limits().extent() *
+                       this->_nest.limits().balancing())))
               {
                 ELLE_TRACE("value's low limit reached: %s < %s",
                            this->_value->footprint(),
@@ -1313,9 +1334,10 @@ namespace nucleus
                 // Update the porcupine state.
                 this->_state = this->_tree->state();
               }
-            else if (value().footprint() <
-                     (this->_nest.limits().extent() *
-                      this->_nest.limits().balancing()))
+            else if ((value().empty() == true) ||
+                     (value().footprint() <=
+                      (this->_nest.limits().extent() *
+                       this->_nest.limits().balancing())))
               {
                 ELLE_TRACE("value block extent low limit reached: %s < %s",
                            value().footprint(),
@@ -1324,7 +1346,7 @@ namespace nucleus
 
                 // Check if the block has become small enough for its value
                 // to be embedded directly in its parent block.
-                if (value().footprint() < 1024) // XXX need limits: low/high
+                if (value().footprint() < 1024) // XXX need limits: low/high - same as above
                   {
                     ELLE_TRACE("the block's value could be embedded");
 

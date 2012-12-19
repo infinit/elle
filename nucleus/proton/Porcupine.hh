@@ -151,19 +151,29 @@ namespace nucleus
       destroy();
       /// Return the embedded value, should the strategy comply.
       ///
-      /// !WARNING! For debugging purposes only.
+      /// !WARNING! Do not use unless one knows exactly what he/she is doing.
       T const&
       value() const;
+      /// Return the embedded value, should the strategy comply.
+      ///
+      /// !WARNING! Do not use unless one knows exactly what he/she is doing.
+      T&
+      value();
       /// Return the value block's handle, should the strategy comply.
       ///
-      /// !WARNING! For debugging purposes only.
+      /// !WARNING! Do not use unless one knows exactly what he/she is doing.
       Handle const&
       block() const;
       /// Return the tree, should the strategy comply.
       ///
-      /// !WARNING! For debugging purposes only.
+      /// !WARNING! Do not use unless one knows exactly what he/she is doing.
       Tree<T> const&
       tree() const;
+      /// Return the tree, should the strategy comply.
+      ///
+      /// !WARNING! Do not use unless one knows exactly what he/she is doing.
+      Tree<T>&
+      tree();
     private:
       /// Transform an empty porcupine into a value-based porcupine so
       /// as to be able to return the caller a value on which to operate,
