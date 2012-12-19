@@ -2,7 +2,9 @@ import drake.cxx
 import drake.cxx.boost
 
 def configure(cxx_toolkit, cxx_config, enable_horizon = True,
-              optimization = True):
+              optimization = True, prefix = '/usr'):
+
+  prefix = drake.Path(prefix)
 
   asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config)
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
@@ -633,6 +635,11 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                      network_sources + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
 
+
+  # Install
+  install = drake.Rule('install')
+  install << drake.copy(infinit_bin, prefix)
+  install << drake.copy(infinit_libs + [udt_lib, asio_udt_lib], prefix)
 
   # # Tests
   # tests_cxx_config = drake.cxx.Config(cxx_config)
