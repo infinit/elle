@@ -187,20 +187,36 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(offset, size);
 
+      elle::Buffer buffer{size};
+
+      this->read(offset, size, buffer);
+
+      return (buffer);
+    }
+
+    void
+    Data::read(Offset const& offset,
+               Size const& size,
+               elle::Buffer& buffer) const
+    {
+      ELLE_TRACE_METHOD(offset, size, buffer);
+
       // Compute the size of the data read between what is available
       // and what is requested.
       Size _size = (this->_buffer.size() - offset) < size ?
         (this->_buffer.size() - offset) : size;
 
-      // Create a buffer.
-      elle::Buffer buffer(_size);
+      // Keep the current size of the buffer at which the data will
+      // be copied.
+      Offset _offset = static_cast<Offset>(buffer.size());
+
+      // Extend the buffer so as to hold the additional content.
+      buffer.size(buffer.size() + _size);
 
       // Copy the data to the output buffer.
-      ::memcpy(buffer.mutable_contents(),
+      ::memcpy(buffer.mutable_contents() + _offset,
                this->_buffer.contents() + offset,
-               buffer.size());
-
-      return (buffer);
+               _size);
     }
 
     void
@@ -318,8 +334,19 @@ namespace nucleus
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Data> right{this->nest(), orphan};
 
+      // XXX
+      printf("BEFORE\n");
+      this->Dump();
+      elle::String s1{(const char*)this->_buffer.contents(), this->_buffer.size()};
+      std::cout << s1 << std::endl;
+
       // Load the new right data.
       right.load();
+
+      // XXX
+      elle::printf("CONTENTION: %s\n",
+                   this->nest().limits().extent() *
+                   this->nest().limits().contention());
 
       // Export part of the buffer from the current data into the new data.
       Data::transfer_right(*this,
@@ -333,6 +360,13 @@ namespace nucleus
       // Set both values' state as dirty.
       this->state(proton::State::dirty);
       right().state(proton::State::dirty);
+
+      // XXX
+      printf("AFTER\n");
+      this->Dump();
+      std::cout << elle::String{(const char*)this->_buffer.contents(), this->_buffer.size()} << std::endl;
+      right().Dump();
+      std::cout << elle::String{(const char*)right()._buffer.contents(), right()._buffer.size()} << std::endl;
 
       // Unload the new right data.
       right.unload();

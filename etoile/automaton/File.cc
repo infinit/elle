@@ -106,19 +106,94 @@ namespace etoile
         escape("the user does not seem to be able to operate on this "
                "file");
 
-      // Retrieve a door on the data.
-      nucleus::proton::Door<nucleus::neutron::Data> door{
-        context.porcupine->lookup(offset)};
+      // Initialize the _offset which will move forward until it reaches
+      // _size.
+      nucleus::neutron::Offset _offset = offset;
+      nucleus::neutron::Size _size = offset + region.size;
 
-      door.open();
+      // Write the content [offset, offset + size[ which may span over
+      // several data blocks.
 
-      // Write the content in the appropriate data node.
-      door().write(offset, elle::WeakBuffer{region.contents, region.size});
+      while (_offset < _size)
+        {
+          // Retrieve a door on the data.
+          nucleus::proton::Door<nucleus::neutron::Data> data{
+            context.porcupine->lookup(_offset)};
 
-      door.close();
+          data.open();
 
-      // Update the porcupine.
-      context.porcupine->update(offset);
+          // Compute the offset relative to the door.
+          nucleus::neutron::Offset data_offset = _offset - data().offset();
+
+          // Compute the size of the content to write depending
+          // on the size of the current data block.
+          nucleus::neutron::Size data_size =
+            (data().size() - data_offset) < _size ?
+            (data().size() - data_offset) : _size;
+
+          ELLE_TRACE("write %s bytes of content at the absolute offset %s",
+                     data_size, _offset);
+
+          // Write the content in the appropriate data node.
+          //
+          // Note that since the size may be zero, unecessary work is prevented
+          // in such cases.
+          if (data_size != 0)
+            {
+              data().write(data_offset,
+                           elle::WeakBuffer{
+                             region.contents + (_offset - offset),
+                             data_size});
+
+              context.porcupine->update(_offset);
+            }
+
+          // Update the current offset so as to move on to the
+          // next block until the requested content has been written.
+          _offset = _offset + data_size;
+
+          ELLE_ASSERT(_offset <= _size);
+
+          // If the end of the current content has been reached (i.e the
+          // last block) and data remains to be written, extend the last
+          // block with the remaining content and finally stop.
+          ELLE_ASSERT(_offset <= context.porcupine->size());
+
+          if (_offset == context.porcupine->size())
+            {
+              ELLE_TRACE("the end offset '%s' of the current content has been "
+                         "reached", _offset);
+
+              // Check if content remains to be written.
+              if (_offset < _size)
+                {
+                  ELLE_TRACE("%s bytes of content remains to be written, hence "
+                             "expand the last data block",
+                             _size - _offset);
+
+                  // Write the remaining content at the end of the last
+                  // data block.
+                  ELLE_ASSERT((data_offset + data_size) == data().size());
+
+                  data().write(data_offset + data_size,
+                               elle::WeakBuffer{
+                                 region.contents + (_offset - offset),
+                                 _size - _offset});
+
+                  context.porcupine->update(_offset);
+                }
+
+              data.close();
+
+              break;
+            }
+
+          data.close();
+
+          ELLE_TRACE("proceed to the next data block");
+        }
+
+      ELLE_ASSERT(context.porcupine->size() >= region.size);
 
       // update the object.
       if (context.object->Update(
@@ -170,16 +245,64 @@ namespace etoile
       if (offset > context.porcupine->size())
         return elle::Status::Ok;
 
-      // Retrieve a door on the data.
-      nucleus::proton::Door<nucleus::neutron::Data> door{
-        context.porcupine->lookup(offset)};
+      // Initialize the _offset which will move forward until it reaches
+      // _size.
+      nucleus::neutron::Offset _offset = offset;
+      nucleus::neutron::Size _size = offset + size;
 
-      door.open();
+      // Read the content [offset, offset + size[ which may span over
+      // several data blocks.
+      elle::Buffer buffer;
 
-      // Read the content in the appropriate data node.
-      elle::Buffer buffer = door().read(offset, size);
+      // XXX
+      context.porcupine->dump();
 
-      door.close();
+      while (_offset < _size)
+        {
+          // Retrieve a door on the data.
+          nucleus::proton::Door<nucleus::neutron::Data> data{
+            context.porcupine->lookup(_offset)};
+
+          data.open();
+
+          // Compute the offset relative to the door.
+          nucleus::neutron::Offset data_offset = _offset - data().offset();
+
+          // Compute the size of the content to read depending
+          // on what is requested and what is available.
+          nucleus::neutron::Size data_size =
+            (data().size() - data_offset) < _size ?
+            (data().size() - data_offset) : _size;
+
+          ELLE_TRACE("read %s bytes of content at the absolute offset %s",
+                     data_size, _offset);
+
+          ELLE_ASSERT(data_size != 0);
+
+          // Read the content in the appropriate data node.
+          data().read(data_offset, data_size, buffer);
+
+          data.close();
+
+          // Update the current offset so as to move on to the
+          // next block until the requested content has been read.
+          _offset = _offset + data_size;
+          ELLE_ASSERT(_offset <= _size);
+
+          // If the end of the content has been reached, stop.
+          ELLE_ASSERT(_offset <= context.porcupine->size());
+          if (_offset == context.porcupine->size())
+            {
+              ELLE_TRACE("the end offset '%s' of the content has been "
+                         "reached", _offset);
+
+              break;
+            }
+
+          ELLE_TRACE("proceeed to the next data block");
+        }
+
+      ELLE_ASSERT(buffer.size() <= size);
 
       // XXX[not optimized: migrate to elle::Buffer so as to avoid
       //     such stupid copies]
@@ -240,6 +363,7 @@ namespace etoile
             // Directly adjust the size, relatively i.e size - door.offset.
             door.open();
 
+            ELLE_ASSERT(door().offset() == 0);
             door().adjust(size - door().offset());
 
             door.close();
@@ -264,8 +388,8 @@ namespace etoile
               {
                 // The file is shrunk.
                 //
-                // All the blocks following one responsible for _size_
-                // are removed.
+                // All the blocks following the one (i.e _base_) responsible
+                // for _size_ are removed.
 
                 while (true)
                   {

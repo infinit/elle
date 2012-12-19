@@ -52,7 +52,12 @@ namespace nucleus
 
       ELLE_TRACE("setting up the nucleus node factory");
 
-      // XXX[data]
+      factory->record<proton::Seam<neutron::Data>>(
+        proton::Nature::data_seam);
+      factory->record<proton::Quill<neutron::Data>>(
+        proton::Nature::data_quill);
+      factory->record<neutron::Data>(
+        proton::Nature::data_value);
       factory->record<proton::Seam<neutron::Catalog>>(
         proton::Nature::catalog_seam);
       factory->record<proton::Quill<neutron::Catalog>>(

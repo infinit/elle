@@ -10,7 +10,6 @@ using namespace infinit;
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/State.hh>
 # include <nucleus/proton/Porcupine.hh>
-# include <nucleus/proton/Limits.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Data.hh>
@@ -271,6 +270,9 @@ namespace etoile
 
           // XXX[should provide a len but with a static const value]
           cryptography::SecretKey key{cryptography::SecretKey::generate(256)};
+
+          // XXX
+          elle::printf("CLOSING CONTENTS WITH SIZE %s\n", context.porcupine->size());
 
           // update the object.
           if (context.object->Update(

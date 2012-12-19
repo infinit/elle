@@ -429,6 +429,10 @@ namespace nucleus
       {
         Capacity variation;
 
+        // XXX
+        elle::printf("QUILL: old-capacity %s %s %s\n",
+                     inlet->capacity(), value().capacity(), this->capacity());
+
         // depending on the variation.
         if (value().capacity() > inlet->capacity())
           {
@@ -455,12 +459,20 @@ namespace nucleus
           }
       }
 
+      // XXX
+      elle::printf("QUILL: new-capacity %s %s %s\n",
+                   inlet->capacity(), value().capacity(), this->capacity());
+
       // unload the value block.
       value.unload();
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
       Nodule<T>::optimize(*this, inlet->key());
+
+      // XXX
+      elle::printf("QUILL: optimized-capacity %s\n",
+                   this->capacity());
     }
 
     template <typename T>

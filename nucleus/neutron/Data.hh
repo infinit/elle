@@ -94,6 +94,15 @@ namespace nucleus
       elle::Buffer
       read(Offset const& offset,
            Size const& size) const;
+      /// Read _size_ bytes of data at _offset_ and copy them in the given
+      /// buffer.
+      ///
+      /// This method is useful to append content from multiple data blocks
+      /// without incurring expensive copies.
+      void
+      read(Offset const& offset,
+           Size const& size,
+           elle::Buffer& buffer) const;
       /// Set the new relative size of the data to _size_.
       void
       adjust(Size const& size);
