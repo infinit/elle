@@ -26,10 +26,12 @@ using u_ptr = std::unique_ptr<C>;
 template <class C>
 using s_ptr = std::shared_ptr<C>;
 
+// Class Hole {{{
+
 class Hole
 {
 private:
-    u_ptr<rnet::UDPSocket> _handle;
+    s_ptr<rnet::UDPSocket> _handle;
 
     std::pair<std::string, uint16_t> _public_endpoint;
 public:
@@ -65,10 +67,10 @@ public:
     drill(void);
 
 public:
-    u_ptr<rnet::UDPSocket> &&
+    s_ptr<rnet::UDPSocket>
     punched_handle()
     {
-        return std::move(this->_handle);
+        return this->_handle;
     }
 
     std::pair<std::string, uint16_t>
@@ -78,16 +80,20 @@ public:
     }
 };
 
+// class Hole }}}
+
+// Class KeepAlive {{{
+
 class KeepAlive
 {
 private:
     reactor::Scheduler    &sched;
-    u_ptr<rnet::UDPSocket> handle;
+    s_ptr<rnet::UDPSocket> handle;
     bool                  running = true;
 
 public:
     KeepAlive(reactor::Scheduler &sched,
-              u_ptr<rnet::UDPSocket> &&s);
+              s_ptr<rnet::UDPSocket> &&s);
     ~KeepAlive();
 
 public:
@@ -98,6 +104,10 @@ public:
     stop(void);
 
 };
+
+// Class KeepAlive }}}
+
+// class NAT {{{
 
 class NAT
 {
@@ -116,6 +126,8 @@ private:
     reactor::Scheduler &sched;
     u_ptr<reactor::Thread> alive;
 };
+
+// class NAT }}}
 
 } /* nat */
 } /* elle */
