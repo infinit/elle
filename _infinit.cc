@@ -162,8 +162,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
                        common::longinus::host(),
                        common::longinus::port());
-      public_addresses.push_back(NAT.punch(common::longinus::host(),
-                                           common::longinus::port()));
+      elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
+                                         common::longinus::port());
+
+      public_addresses.push_back(pokey.public_endpoint());
     }
   catch (elle::Exception &e)
     {

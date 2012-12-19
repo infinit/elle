@@ -33,6 +33,13 @@ private:
 
     std::pair<std::string, uint16_t> _public_endpoint;
 public:
+    Hole() = delete;
+    Hole(Hole const& hole) = delete;
+    Hole& operator =(Hole const& other) = delete;
+    Hole& operator =(Hole&& other) = delete;
+    Hole(Hole&& hole);
+    ~Hole();
+
     Hole(reactor::Scheduler &sched,
          std::string const &hostname,
          std::string const &port);
@@ -41,8 +48,12 @@ public:
          std::string const &hostname,
          int port);
 
-    ~Hole();
+private:
+    void
+    say(std::string const);
 
+    std::string const
+    get();
 public:
     void
     sayHello(void);
@@ -97,7 +108,7 @@ public:
     ~NAT();
 
 public:
-    std::pair<std::string, uint16_t>
+    Hole
     punch(std::string const &hostname,
           int port);
 
