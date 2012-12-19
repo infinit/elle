@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
+# include <elle/attribute.hh>
 # include <elle/IOStream.hh>
 # include <elle/network/Locus.hh>
 # include <elle/idiom/Close.hh>
@@ -143,7 +144,7 @@ namespace reactor
       friend class UDPSocket;
       template <typename AsioSocket>
       friend class SocketOperation;
-      AsioSocket* _socket;
+      ELLE_ATTRIBUTE_R(AsioSocket*, socket);
       EndPoint _peer;
     };
   }

@@ -164,8 +164,8 @@ namespace hole
           try
             {
               _server->listen(this->_port);
-              // In case we asked for a random port to be picked up
-              // (by using 0), retrieve the actual listening port.
+              // In case we asked for a random port to be picked up (by using 0)
+              // or hole punching happened, retrieve the actual listening port.
               this->_port = _server->port();
               ELLE_ASSERT(this->_port != 0);
               ELLE_TRACE("listening on port %s", this->_port);

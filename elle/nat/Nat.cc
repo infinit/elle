@@ -99,7 +99,7 @@ namespace elle
   // class KeepAlive {{{
 
   KeepAlive::KeepAlive(reactor::Scheduler& sched,
-                       u_ptr<rnet::UDPSocket>&& s):
+                       s_ptr<rnet::UDPSocket>&& s):
       sched(sched) , handle(std::move(s))
   {}
 

@@ -1,11 +1,18 @@
+#include <common/common.hh>
+
 #include <elle/printf.hh>
 #include <elle/idiom/Close.hh>
+#include <elle/log.hh>
+#include <elle/nat/Nat.hh>
 
 #include <asio-udt/acceptor.hh>
 #include <reactor/exception.hh>
 #include <reactor/network/udt-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
+
+
+ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
 namespace reactor
 {
@@ -19,6 +26,7 @@ namespace reactor
     UDTServer::UDTServer(Scheduler& sched)
       : Super(sched)
       , _acceptor(0)
+      , _nat(sched)
     {}
 
     UDTServer::~UDTServer()
@@ -100,10 +108,55 @@ namespace reactor
     void
     UDTServer::listen(int port)
     {
+      // Punch the potential firewall
+      {
+        try
+          {
+            auto shost = common::longinus::host();
+            auto sport = common::longinus::port();
+            ELLE_TRACE_SCOPE("punch hole through %s:%d", shost, sport);
+            elle::nat::Hole pokey = _nat.punch(shost, sport, port);
+            _udp_socket = pokey.punched_handle();
+            auto local_endpoint = _udp_socket->socket()->local_endpoint();
+            auto remote_endpoint_host = pokey.public_endpoint().first;
+            auto remote_endpoint_port = pokey.public_endpoint().second;
+            ELLE_DEBUG_SCOPE("punched hole on %s:%s -> %s",
+                             remote_endpoint_host, remote_endpoint_port,
+                             local_endpoint);
+          }
+        catch (std::runtime_error const& e)
+          {
+            ELLE_WARN("NAT punching error: %s", e.what());
+          }
+      }
+
+      try
+        {
+          if (_udp_socket)
+            {
+              auto fd = _udp_socket->socket()->native_handle();
+              _acceptor = new boost::asio::ip::udt::acceptor
+                (scheduler().io_service(), port, fd);
+            }
+          else
+            _acceptor = new boost::asio::ip::udt::acceptor
+              (scheduler().io_service(), port);
+        }
+      catch (boost::system::system_error& e)
+        {
+          throw Exception(scheduler(),
+                          elle::sprintf("unable to listen on %s: %s",
+                                        port, e.what()));
+        }
+    }
+
+    void
+    UDTServer::listen_fd(int port, int fd)
+    {
       try
         {
           _acceptor = new boost::asio::ip::udt::acceptor
-            (scheduler().io_service(), port);
+            (scheduler().io_service(), port, fd);
         }
       catch (boost::system::system_error& e)
         {

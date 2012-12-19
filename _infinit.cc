@@ -156,21 +156,21 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   std::vector<std::pair<std::string, uint16_t>> public_addresses;
 
 
-  // By default, try to open a hole in the nat.
-  try
-    {
-      ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
-                       common::longinus::host(),
-                       common::longinus::port());
-      elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
-                                         common::longinus::port());
+  // // By default, try to open a hole in the nat.
+  // try
+  //   {
+  //     ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
+  //                      common::longinus::host(),
+  //                      common::longinus::port());
+  //     elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
+  //                                        common::longinus::port());
 
-      public_addresses.push_back(pokey.public_endpoint());
-    }
-  catch (elle::Exception &e)
-    {
-      ELLE_WARN("NAT punching error: %s", e.what());
-    }
+  //     public_addresses.push_back(pokey.public_endpoint());
+  //   }
+  // catch (elle::Exception &e)
+  //   {
+  //     ELLE_WARN("NAT punching error: %s", e.what());
+  //   }
 
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
@@ -224,10 +224,10 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
               }
 
               client.token(agent::Agent::meta_token);
-              client.network_connect_device(descriptor.meta().id(),
-                                            passport.id(),
-                                            addresses,
-                                            public_addresses);
+              // client.network_connect_device(descriptor.meta().id(),
+              //                               passport.id(),
+              //                               addresses,
+              //                               public_addresses);
             }
         }
       catch (std::exception const& err)
