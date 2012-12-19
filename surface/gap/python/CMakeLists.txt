@@ -15,6 +15,8 @@ endif()
 
 include_directories("${PYTHON3_INCLUDE_DIR}")
 
+set(LIBRARY_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH}/python")
+
 add_definitions(-fPIC -fno-strict-aliasing)
 file(GLOB gap_srcs ../*.cc)
 list(APPEND gap_srcs pygap.cc)
@@ -39,4 +41,5 @@ if(UNIX)
 	)
 endif()
 
-file(COPY gap.py DESTINATION .)
+message(STATUS "copying gap.py to ${LIBRARY_OUTPUT_PATH}")
+file(COPY gap.py DESTINATION ${LIBRARY_OUTPUT_PATH})
