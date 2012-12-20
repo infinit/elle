@@ -67,7 +67,7 @@ TEST(uri_test, make_uri_from_wstring) {
 TEST(uri_test, basic_uri_scheme_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.scheme());
-  ASSERT_EQ(*instance.scheme(), "http");
+  ASSERT_EQ("http", *instance.scheme());
 }
 
 TEST(uri_test, basic_uri_user_info_test) {
@@ -78,7 +78,7 @@ TEST(uri_test, basic_uri_user_info_test) {
 TEST(uri_test, basic_uri_host_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.host());
-  ASSERT_EQ(*instance.host(), "www.example.com");
+  ASSERT_EQ("www.example.com", *instance.host());
 }
 
 TEST(uri_test, basic_uri_port_test) {
@@ -89,7 +89,7 @@ TEST(uri_test, basic_uri_port_test) {
 TEST(uri_test, basic_uri_path_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.path());
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, basic_uri_query_test) {
@@ -117,7 +117,7 @@ TEST(uri_test, basic_uri_range_scheme_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.scheme());
   ASSERT_TRUE(std::begin(instance) == std::begin(*instance.scheme()));
-  ASSERT_EQ(*instance.scheme(), "http");
+  ASSERT_EQ("http", *instance.scheme());
 }
 
 TEST(uri_test, basic_uri_range_user_info_test) {
@@ -128,7 +128,7 @@ TEST(uri_test, basic_uri_range_user_info_test) {
 TEST(uri_test, basic_uri_range_host_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.host());
-  ASSERT_EQ(*instance.host(), "www.example.com");
+  ASSERT_EQ("www.example.com", *instance.host());
 }
 
 TEST(uri_test, basic_uri_range_port_test) {
@@ -141,7 +141,7 @@ TEST(uri_test, basic_uri_range_port_test) {
 TEST(uri_test, basic_uri_range_path_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.path());
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("/", *instance.path());
   ASSERT_TRUE(std::end(instance) == std::end(*instance.path()));
 }
 
@@ -161,87 +161,87 @@ TEST(uri_test, basic_uri_range_fragment_test) {
 
 TEST(uri_test, full_uri_scheme_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.scheme(), "http");
+  ASSERT_EQ("http", *instance.scheme());
 }
 
 TEST(uri_test, full_uri_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.user_info(), "user:password");
+  ASSERT_EQ("user:password", *instance.user_info());
 }
 
 TEST(uri_test, full_uri_host_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.host(), "www.example.com");
+  ASSERT_EQ("www.example.com", *instance.host());
 }
 
 TEST(uri_test, full_uri_port_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.port(), "80");
+  ASSERT_EQ("80", *instance.port());
 }
 
 TEST(uri_test, full_uri_path_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.path(), "/path");
+  ASSERT_EQ("/path", *instance.path());
 }
 
 TEST(uri_test, full_uri_query_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.query(), "query");
+  ASSERT_EQ("query", *instance.query());
 }
 
 TEST(uri_test, full_uri_fragment_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_EQ(*instance.fragment(), "fragment");
+  ASSERT_EQ("fragment", *instance.fragment());
 }
 
 TEST(uri_test, full_uri_range_scheme_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.scheme());
   ASSERT_TRUE(std::begin(instance) == std::begin(*instance.scheme()));
-  ASSERT_EQ(*instance.scheme(), "http");
+  ASSERT_EQ("http", *instance.scheme());
 }
 
 TEST(uri_test, full_uri_range_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.user_info());
-  ASSERT_EQ(*instance.user_info(), "user:password");
+  ASSERT_EQ("user:password", *instance.user_info());
 }
 
 TEST(uri_test, full_uri_range_host_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.host());
-  ASSERT_EQ(*instance.host(), "www.example.com");
+  ASSERT_EQ("www.example.com", *instance.host());
 }
 
 TEST(uri_test, full_uri_range_port_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.port());
-  ASSERT_EQ(*instance.port(), "80");
+  ASSERT_EQ("80", *instance.port());
 }
 
 TEST(uri_test, full_uri_range_path_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.path());
-  ASSERT_EQ(*instance.path(), "/path");
+  ASSERT_EQ("/path", *instance.path());
 }
 
 TEST(uri_test, full_uri_range_query_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.query());
-  ASSERT_EQ(*instance.query(), "query");
+  ASSERT_EQ("query", *instance.query());
 }
 
 TEST(uri_test, full_uri_range_fragment_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.fragment());
-  ASSERT_EQ(*instance.fragment(), "fragment");
+  ASSERT_EQ("fragment", *instance.fragment());
   ASSERT_TRUE(std::end(instance) == std::end(*instance.fragment()));
 }
 
 TEST(uri_test, mailto_test) {
   network::uri instance("mailto:john.doe@example.com");
-  ASSERT_EQ(*instance.scheme(), "mailto");
-  ASSERT_EQ(*instance.path(), "john.doe@example.com");
+  ASSERT_EQ("mailto", *instance.scheme());
+  ASSERT_EQ("john.doe@example.com", *instance.path());
 }
 
 TEST(uri_test, file_test) {
@@ -252,162 +252,162 @@ TEST(uri_test, file_test) {
 
 TEST(uri_test, xmpp_test) {
   network::uri instance("xmpp:example-node@example.com?message;subject=Hello%20World");
-  ASSERT_EQ(*instance.scheme(), "xmpp");
-  ASSERT_EQ(*instance.path(), "example-node@example.com");
-  ASSERT_EQ(*instance.query(), "message;subject=Hello%20World");
+  ASSERT_EQ("xmpp", *instance.scheme());
+  ASSERT_EQ("example-node@example.com", *instance.path());
+  ASSERT_EQ("message;subject=Hello%20World", *instance.query());
 }
 
 TEST(uri_test, ipv4_address_test) {
   network::uri instance("http://129.79.245.252/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "129.79.245.252");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("129.79.245.252", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv4_loopback_test) {
   network::uri instance("http://127.0.0.1/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "127.0.0.1");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("127.0.0.1", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_1) {
   network::uri instance("http://[1080:0:0:0:8:800:200C:417A]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[1080:0:0:0:8:800:200C:417A]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[1080:0:0:0:8:800:200C:417A]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_2) {
   network::uri instance("http://[2001:db8:85a3:8d3:1319:8a2e:370:7348]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:db8:85a3:8d3:1319:8a2e:370:7348]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:db8:85a3:8d3:1319:8a2e:370:7348]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_3) {
   network::uri instance("http://[2001:db8:85a3:0:0:8a2e:370:7334]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:db8:85a3:0:0:8a2e:370:7334]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:db8:85a3:0:0:8a2e:370:7334]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_4) {
   network::uri instance("http://[2001:db8:85a3::8a2e:370:7334]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:db8:85a3::8a2e:370:7334]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:db8:85a3::8a2e:370:7334]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_5) {
   network::uri instance("http://[2001:0db8:0000:0000:0000:0000:1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:0db8:0000:0000:0000:0000:1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:0db8:0000:0000:0000:0000:1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_6) {
   network::uri instance("http://[2001:0db8:0000:0000:0000::1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:0db8:0000:0000:0000::1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:0db8:0000:0000:0000::1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_7) {
   network::uri instance("http://[2001:0db8:0:0:0:0:1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:0db8:0:0:0:0:1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:0db8:0:0:0:0:1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_8) {
   network::uri instance("http://[2001:0db8:0:0::1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:0db8:0:0::1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:0db8:0:0::1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_9) {
   network::uri instance("http://[2001:0db8::1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:0db8::1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:0db8::1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_10) {
   network::uri instance("http://[2001:db8::1428:57ab]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[2001:db8::1428:57ab]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[2001:db8::1428:57ab]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_11) {
   network::uri instance("http://[::ffff:0c22:384e]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[::ffff:0c22:384e]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[::ffff:0c22:384e]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_12) {
   network::uri instance("http://[fe80::]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[fe80::]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[fe80::]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_address_test_13) {
   network::uri instance("http://[::ffff:c000:280]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[::ffff:c000:280]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[::ffff:c000:280]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_loopback_test) {
   network::uri instance("http://[::1]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[::1]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[::1]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_loopback_test_1) {
   network::uri instance("http://[0000:0000:0000:0000:0000:0000:0000:0001]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[0000:0000:0000:0000:0000:0000:0000:0001]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[0000:0000:0000:0000:0000:0000:0000:0001]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_v4inv6_test_1) {
   network::uri instance("http://[::ffff:12.34.56.78]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[::ffff:12.34.56.78]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[::ffff:12.34.56.78]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ipv6_v4inv6_test_2) {
   network::uri instance("http://[::ffff:192.0.2.128]/");
-  ASSERT_EQ(*instance.scheme(), "http");
-  ASSERT_EQ(*instance.host(), "[::ffff:192.0.2.128]");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("http", *instance.scheme());
+  ASSERT_EQ("[::ffff:192.0.2.128]", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, ftp_test) {
   network::uri instance("ftp://john.doe@ftp.example.com/");
-  ASSERT_EQ(*instance.scheme(), "ftp");
-  ASSERT_EQ(*instance.user_info(), "john.doe");
-  ASSERT_EQ(*instance.host(), "ftp.example.com");
-  ASSERT_EQ(*instance.path(), "/");
+  ASSERT_EQ("ftp", *instance.scheme());
+  ASSERT_EQ("john.doe", *instance.user_info());
+  ASSERT_EQ("ftp.example.com", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, news_test) {
   network::uri instance("news:comp.infosystems.www.servers.unix");
-  ASSERT_EQ(*instance.scheme(), "news");
-  ASSERT_EQ(*instance.path(), "comp.infosystems.www.servers.unix");
+  ASSERT_EQ("news", *instance.scheme());
+  ASSERT_EQ("comp.infosystems.www.servers.unix", *instance.path());
 }
 
 TEST(uri_test, tel_test) {
   network::uri instance("tel:+1-816-555-1212");
-  ASSERT_EQ(*instance.scheme(), "tel");
-  ASSERT_EQ(*instance.path(), "+1-816-555-1212");
+  ASSERT_EQ("tel", *instance.scheme());
+  ASSERT_EQ("+1-816-555-1212", *instance.path());
 }
 
 TEST(uri_test, copy_constructor_test) {
@@ -427,20 +427,20 @@ TEST(uri_test, swap_test) {
   network::uri instance("http://www.example.com/");
   network::uri copy("http://www.example.org/");
   network::swap(instance, copy);
-  ASSERT_EQ(instance.string(), "http://www.example.org/");
-  ASSERT_EQ(copy.string(), "http://www.example.com/");
+  ASSERT_EQ("http://www.example.org/", instance.string());
+  ASSERT_EQ("http://www.example.com/", copy.string());
 }
 
 TEST(uri_test, authority_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.authority());
-  ASSERT_EQ(*instance.authority(), "user:password@www.example.com:80");
+  ASSERT_EQ("user:password@www.example.com:80", *instance.authority());
 }
 
 TEST(uri_test, partial_authority_test) {
   network::uri instance("http://www.example.com/path?query#fragment");
   ASSERT_TRUE(instance.authority());
-  ASSERT_EQ(*instance.authority(), "www.example.com");
+  ASSERT_EQ("www.example.com", *instance.authority());
 }
 
 TEST(uri_test, DISABLED_mailto_has_no_authority) {
@@ -460,21 +460,21 @@ TEST(uri_test, issue_104_test) {
   std::unique_ptr<network::uri> instance(new network::uri("http://www.example.com/"));
   network::uri copy = *instance;
   instance.reset();
-  ASSERT_EQ(*copy.scheme(), "http");
+  ASSERT_EQ("http", *copy.scheme());
 }
 
 TEST(uri_test, uri_set_test) {
   std::set<network::uri> uri_set;
   uri_set.insert(network::uri("http://www.example.com/"));
   ASSERT_FALSE(uri_set.empty());
-  ASSERT_EQ((*std::begin(uri_set)), network::uri("http://www.example.com/"));
+  ASSERT_EQ(network::uri("http://www.example.com/"), (*std::begin(uri_set)));
 }
 
 TEST(uri_test, uri_unordered_set_test) {
   std::unordered_set<network::uri> uri_set;
   uri_set.insert(network::uri("http://www.example.com/"));
   ASSERT_FALSE(uri_set.empty());
-  ASSERT_EQ((*std::begin(uri_set)), network::uri("http://www.example.com/"));
+  ASSERT_EQ(network::uri("http://www.example.com/"), (*std::begin(uri_set)));
 }
 
 TEST(uri_test, http_is_absolute) {
