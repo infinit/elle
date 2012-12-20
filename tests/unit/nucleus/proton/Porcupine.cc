@@ -379,7 +379,7 @@ test_porcupine_data_write(
 {
   ELLE_TRACE_FUNCTION(porcupine);
 
-  elle::Natural32 const N = 253601;
+  elle::Natural32 const N = 25360;
 
   elle::Buffer buffer{N};
 
