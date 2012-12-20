@@ -87,8 +87,6 @@ namespace satellite
     // Load the authority.
     elle::Authority authority{elle::io::Path(lune::Lune::Authority)};
 
-    authority.Dump();
-
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the authority");
