@@ -21,6 +21,7 @@ import subprocess as sp
 
 from higgs import pool
 from higgs import infinitools
+
 from higgs import watchers
 from higgs.constants import BUILD, SOURCE
 from higgs.watchers import StatusCode

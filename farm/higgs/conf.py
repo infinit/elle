@@ -15,6 +15,9 @@ class Conf:
     def set_listen_port(self, port, mode="slug"):
         self._conf["hole"]["{0}.port".format(mode)] = str(port)
 
+    def get_listen_port(self, mode="slug"):
+        return int(self.conf["hole"]["{mode}.port".format(mode=mode)])
+
     def set_timeout(self, timeout, mode="slug"):
         self._conf["hole"]["{0}.timeout".format(mode)] = str(timeout)
 

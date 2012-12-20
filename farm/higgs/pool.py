@@ -44,9 +44,6 @@ class PoolEngine:
         c = conf.Conf()
         c.set_listen_port(self.low_port)
         c.set_timeout(1000)
-        conf_file_path = os.path.join(new_home, "infinit.conf")
-        with open(conf_file_path, "w") as conf_file:
-            c.commit(file=conf_file)
 
         # Copy the generated auth into the new home
         auth_file_path = os.path.join(homedir, "infinit.auth")
@@ -139,10 +136,12 @@ class Pool:
             new_homedir = tempfile.mkdtemp(dir=homedir)
             os.rmdir(new_homedir)
             new_H = H.duplicate(new_homedir)
-            new_H.conf.set_listen_port(last_assigned_port + 1);
-            new_conf_file_path = os.path.join(new_H.home, "infinit.conf")
-            with open(new_conf_file_path, "w") as conffile:
-                new_H.conf.commit(conffile)
+
+            new_conf = conf.Conf()
+            new_conf.set_listen_port(last_assigned_port + 1)
+            new_conf.set_timeout(1000)
+            new_H.overwrite_conf(new_conf)
+
             self.l_home.append(new_H)
             last_assigned_port = new_H.port
 
