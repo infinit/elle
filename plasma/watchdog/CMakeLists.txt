@@ -1,4 +1,5 @@
 
+find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDES})
 add_definitions(${QT_DEFINITIONS})

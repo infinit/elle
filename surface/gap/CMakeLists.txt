@@ -1,4 +1,6 @@
+find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
 include_directories(${QT_INCLUDES})
 
 file(GLOB gap_srcs
