@@ -289,45 +289,6 @@ namespace network {
     }
   } // namespace detail
 
-  uri::part_range::part_range() {
-
-  }
-
-  uri::part_range::part_range(const_iterator first, const_iterator last)
-    : first_(first), last_(last) {
-
-  }
-
-  uri::part_range::const_iterator uri::part_range::begin() const {
-    return first_;
-  }
-
-  uri::part_range::const_iterator uri::part_range::end() const {
-    return last_;
-  }
-
-  bool uri::part_range::empty() const {
-    return (first_ == last_);
-  }
-
-#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-  uri::part_range::operator unspecified_bool_type () const {
-    return !empty()? &part_range::empty : nullptr;
-  }
-#else
-  uri::part_range::operator bool () const {
-    return !empty();
-  }
-#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-
-  uri::part_range::string_type uri::part_range::native() const {
-    return string_type(first_, last_);
-  }
-
-  std::string uri::part_range::string() const {
-    return std::string(first_, last_);
-  }
-
   uri::uri(const boost::optional<string_type> &scheme,
 	   const boost::optional<string_type> &user_info,
 	   const boost::optional<string_type> &host,
@@ -419,56 +380,56 @@ namespace network {
     return uri_.end();
   }
 
-  boost::optional<uri::part_range> uri::scheme() const {
-    return part_range(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
+  boost::optional<string_ref> uri::scheme() const {
+    return string_ref(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
   }
 
-  boost::optional<uri::part_range> uri::user_info() const {
+  boost::optional<string_ref> uri::user_info() const {
     return uri_parts_.hier_part.user_info?
-      part_range(std::begin(uri_parts_.hier_part.user_info.get()),
+      string_ref(std::begin(uri_parts_.hier_part.user_info.get()),
 		 std::end(uri_parts_.hier_part.user_info.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::host() const {
+  boost::optional<string_ref> uri::host() const {
     return uri_parts_.hier_part.host?
-      part_range(std::begin(uri_parts_.hier_part.host.get()),
+      string_ref(std::begin(uri_parts_.hier_part.host.get()),
 		 std::end(uri_parts_.hier_part.host.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::port() const {
+  boost::optional<string_ref> uri::port() const {
     return uri_parts_.hier_part.port?
-      part_range(std::begin(uri_parts_.hier_part.port.get()),
+      string_ref(std::begin(uri_parts_.hier_part.port.get()),
 		 std::end(uri_parts_.hier_part.port.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::path() const {
+  boost::optional<string_ref> uri::path() const {
     return uri_parts_.hier_part.path?
-      part_range(std::begin(uri_parts_.hier_part.path.get()),
+      string_ref(std::begin(uri_parts_.hier_part.path.get()),
 		 std::end(uri_parts_.hier_part.path.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::query() const {
+  boost::optional<string_ref> uri::query() const {
     return uri_parts_.query ?
-      part_range(std::begin(uri_parts_.query.get()),
+      string_ref(std::begin(uri_parts_.query.get()),
 		 std::end(uri_parts_.query.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::fragment() const {
+  boost::optional<string_ref> uri::fragment() const {
     return uri_parts_.fragment?
-      part_range(std::begin(uri_parts_.fragment.get()),
+      string_ref(std::begin(uri_parts_.fragment.get()),
 		 std::end(uri_parts_.fragment.get()))
-      : boost::optional<part_range>();
+      : boost::optional<string_ref>();
   }
 
-  boost::optional<uri::part_range> uri::authority() const {
+  boost::optional<string_ref> uri::authority() const {
     auto host = this->host();
     if (!host) {
-      return boost::optional<part_range>();
+      return boost::optional<string_ref>();
     }
 
     auto first = std::begin(*host), last = std::end(*host);
@@ -480,7 +441,7 @@ namespace network {
       last = std::end(*port());
     }
 
-    return part_range(first, last);
+    return string_ref(first, last);
   }
 
 
@@ -551,7 +512,7 @@ namespace network {
     }
 
     if (!uri_parts_.scheme) {
-      uri_parts_.scheme = part_range(std::begin(uri_),
+      uri_parts_.scheme = string_ref(std::begin(uri_),
 				     std::begin(uri_));
     }
   }

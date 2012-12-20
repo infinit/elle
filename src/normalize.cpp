@@ -15,7 +15,7 @@
 #include <boost/range/algorithm/for_each.hpp>
 
 namespace network {
-  uri::string_type normalize_path(const uri::part_range &path) {
+  uri::string_type normalize_path(const ::network::string_ref &path) {
     using namespace boost;
     using namespace boost::algorithm;
 

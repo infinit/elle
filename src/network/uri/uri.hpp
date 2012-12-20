@@ -12,7 +12,8 @@
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/translate.hpp>
-#include <boost/algorithm/string_ref.hpp>
+#include <network/utils/string_ref.hpp>
+#include <boost/range/algorithm/equal.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
@@ -70,49 +71,6 @@ namespace network {
     typedef string_type::const_iterator const_iterator;
     typedef const_iterator iterator;
     typedef std::iterator_traits<iterator>::value_type value_type;
-
-    class part_range {
-
-    public:
-
-      typedef uri::string_type string_type;
-      typedef uri::const_iterator const_iterator;
-      typedef uri::iterator iterator;
-      typedef uri::value_type value_type;
-
-#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-      typedef bool (part_range::*unspecified_bool_type)() const;
-#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-
-      part_range();
-
-      part_range(const_iterator first, const_iterator last);
-
-      const_iterator begin() const;
-
-      const_iterator end() const;
-
-      bool empty() const;
-
-#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-      operator unspecified_bool_type () const;
-#else
-      explicit operator bool () const;
-#endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-
-#if !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-      explicit operator string_type () const;
-#endif // !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
-
-      string_type native() const;
-
-      std::string string() const;
-
-    private:
-
-      const_iterator first_, last_;
-
-    };
 
   private:
 
@@ -172,21 +130,21 @@ namespace network {
 
     const_iterator end() const;
 
-    boost::optional<part_range> scheme() const;
+    boost::optional<string_ref> scheme() const;
 
-    boost::optional<part_range> user_info() const;
+    boost::optional<string_ref> user_info() const;
 
-    boost::optional<part_range> host() const;
+    boost::optional<string_ref> host() const;
 
-    boost::optional<part_range> port() const;
+    boost::optional<string_ref> port() const;
 
-    boost::optional<part_range> path() const;
+    boost::optional<string_ref> path() const;
 
-    boost::optional<part_range> query() const;
+    boost::optional<string_ref> query() const;
 
-    boost::optional<part_range> fragment() const;
+    boost::optional<string_ref> fragment() const;
 
-    boost::optional<part_range> authority() const;
+    boost::optional<string_ref> authority() const;
 
     string_type native() const;
 
