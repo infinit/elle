@@ -271,9 +271,6 @@ namespace etoile
           // XXX[should provide a len but with a static const value]
           cryptography::SecretKey key{cryptography::SecretKey::generate(256)};
 
-          // XXX
-          elle::printf("CLOSING CONTENTS WITH SIZE %s\n", context.porcupine->size());
-
           // update the object.
           if (context.object->Update(
                 *context.author,

@@ -254,9 +254,6 @@ namespace etoile
       // several data blocks.
       elle::Buffer buffer;
 
-      // XXX
-      context.porcupine->dump();
-
       while (_offset < _size)
         {
           // Retrieve a door on the data.
