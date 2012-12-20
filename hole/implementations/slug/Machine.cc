@@ -163,11 +163,12 @@ namespace hole
           elle::network::Host host(elle::network::Host::TypeAny);
           try
             {
-              ELLE_TRACE("listen on port %s", this->_port)
               _server->listen(this->_port);
               // In case we asked for a random port to be picked up
               // (by using 0), retrieve the actual listening port.
               this->_port = _server->port();
+              ELLE_ASSERT(this->_port != 0);
+              ELLE_TRACE("listening on port %s", this->_port);
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
                                                   boost::bind(&Machine::_accept, this)));
