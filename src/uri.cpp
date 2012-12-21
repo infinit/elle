@@ -477,8 +477,37 @@ namespace network {
     return (absolute() && !authority());
   }
 
-  uri uri::normalize(uri_comparison_level comparison_level) const {
-    return *this;
+  uri uri::normalize(uri_comparison_level level) const {
+
+    string_type normalized(uri_);
+
+    if (uri_comparison_level::case_normalization == level) {
+      // All alphabetic characters are lower-case...
+      std::transform(std::begin(normalized),
+		     std::end(normalized),
+		     std::begin(normalized),
+		     std::tolower);
+
+      // ...except when used in percent encoding!
+      auto it = std::begin(normalized);
+      while (it != std::end(normalized)) {
+	if (*it == '%') {
+	  ++it; *it = std::toupper(*it);
+	  ++it; *it = std::toupper(*it);
+	}
+	++it;
+      }
+    }
+
+    if (uri_comparison_level::percent_encoding_normalization == level) {
+
+    }
+
+    if (uri_comparison_level::path_segment_normalization == level) {
+
+    }
+
+    return uri(normalized);
   }
 
   uri uri::relativize(const uri &other) const {

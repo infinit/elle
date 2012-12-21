@@ -9,7 +9,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 set(
   TESTS
   uri_test
-  uri_resolve_test
+  #uri_resolve_test
   uri_comparison_test
   uri_normalization_test
   uri_encoding_test

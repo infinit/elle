@@ -9,15 +9,16 @@
 
 const network::uri base_uri("http://a/b/c/d;p?q");
 
-TEST(uri_resolve_test, default_) {
-  FAIL();
-}
-
-
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1
 
+TEST(uri_resolve_test, normal_example_1) {
 //     "g"             =  "http://a/b/c/g"
+  network::uri_builder builder;
+  builder.path("g");
+  ASSERT_EQ(network::uri("http://a/b/c/g"), base_uri.resolve(builder.uri()));
+}
+
 //      "./g"           =  "http://a/b/c/g"
 //      "g/"            =  "http://a/b/c/g/"
 //      "/g"            =  "http://a/g"

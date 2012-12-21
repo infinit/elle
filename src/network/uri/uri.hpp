@@ -162,7 +162,7 @@ namespace network {
 
     bool opaque() const;
 
-    uri normalize(uri_comparison_level comparison_level) const;
+    uri normalize(uri_comparison_level level) const;
 
     uri relativize(const uri &other) const;
 
