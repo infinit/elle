@@ -33,3 +33,6 @@ TEST(uri_normalization_test, normalize_case_percent_encode_is_upper_case) {
   ASSERT_EQ("http://www.example.com/%AA",
 	    instance.normalize(network::uri_comparison_level::case_normalization).string());
 }
+
+//example://a/b/c/%7Bfoo%7D
+//eXAMPLE://a/./b/../b/%63/%7bfoo%7d

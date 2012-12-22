@@ -14,12 +14,6 @@ TEST(uri_test, equality_test) {
   ASSERT_EQ(uri_1, uri_2);
 }
 
-TEST(uri_test, equality_test_reordered_query) {
-  network::uri uri_1("http://www.example.com/?a=1&b=2");
-  network::uri uri_2("http://www.example.com/?b=2&a=1");
-  ASSERT_EQ(uri_1, uri_2);
-}
-
 TEST(uri_test, equality_test_capitalized_scheme) {
   network::uri uri_1("http://www.example.com/");
   network::uri uri_2("HTTP://www.example.com/");

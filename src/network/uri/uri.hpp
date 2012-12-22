@@ -164,9 +164,9 @@ namespace network {
 
     uri normalize(uri_comparison_level level) const;
 
-    uri relativize(const uri &other) const;
-
-    uri resolve(const uri &other) const;
+    //uri relativize(const uri &other) const;
+    //
+    //uri resolve(const uri &other) const;
 
   private:
 

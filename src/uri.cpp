@@ -296,6 +296,7 @@ namespace network {
 	   const boost::optional<string_type> &path,
 	   const boost::optional<string_type> &query,
 	   const boost::optional<string_type> &fragment) {
+
     if (scheme) {
       uri_.append(*scheme);
     }
@@ -314,7 +315,7 @@ namespace network {
 	uri_.append(*host);
       }
       else {
-	std::error_code ec = make_error_code(uri_error::invalid_host);
+	auto ec = make_error_code(uri_error::invalid_host);
 	throw std::system_error(ec);
       }
 
@@ -324,8 +325,14 @@ namespace network {
       }
     }
     else {
-      if (scheme && (path || query || fragment)) {
-	uri_.append(":");
+      if (scheme) {
+	if (path || query || fragment) {
+	  uri_.append(":");
+	}
+	else {
+	  auto ec = make_error_code(uri_error::invalid_scheme);
+	  throw std::system_error(ec);
+	}
       }
     }
 
@@ -342,6 +349,38 @@ namespace network {
       uri_.append("#");
       uri_.append(*fragment);
     }
+
+    auto it = std::begin(uri_);
+    if (scheme) {
+      //uri_parts_.scheme = boost::iterator_range<const_iterator>(std::begin(uri_), std::end(uri_));
+    }
+
+    if (user_info) {
+
+    }
+
+    if (host) {
+
+    }
+
+    if (port) {
+
+    }
+
+    if (path) {
+
+    }
+
+    if (query) {
+
+    }
+
+    if (fragment) {
+
+    }
+
+    std::error_code ec;
+    parse(ec);
   }
 
   uri::uri() {
@@ -500,6 +539,17 @@ namespace network {
     }
 
     if (uri_comparison_level::percent_encoding_normalization == level) {
+      // alpha range %41-%5A, %61-%7A
+
+      // digit %30-%39
+
+      // hyphen %2D
+
+      // period %2E
+
+      // underscore %5F
+
+      // tilde %7E
 
     }
 
@@ -510,23 +560,23 @@ namespace network {
     return uri(normalized);
   }
 
-  uri uri::relativize(const uri &other) const {
-    if (opaque() || other.opaque()) {
-      return other;
-    }
-
-    return other;
-  }
-
-  uri uri::resolve(const uri &other) const {
-    // http://tools.ietf.org/html/rfc3986#section-5.2
-
-
-    //if (!other.absolute() && !other.opaque()) {
-    //
-    //}
-    return other;
-  }
+  //uri uri::relativize(const uri &other) const {
+  //  if (opaque() || other.opaque()) {
+  //    return other;
+  //  }
+  //
+  //  return other;
+  //}
+  //
+  //uri uri::resolve(const uri &other) const {
+  //  // http://tools.ietf.org/html/rfc3986#section-5.2
+  //
+  //
+  //  //if (!other.absolute() && !other.opaque()) {
+  //  //
+  //  //}
+  //  return other;
+  //}
 
   void uri::parse(std::error_code &ec) {
     if (uri_.empty()) {
