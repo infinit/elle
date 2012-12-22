@@ -521,18 +521,16 @@ namespace network {
     string_type normalized(uri_);
 
     if (uri_comparison_level::case_normalization == level) {
-      // All alphabetic characters are lower-case...
-      std::transform(std::begin(normalized),
-		     std::end(normalized),
-		     std::begin(normalized),
-		     std::tolower);
-
-      // ...except when used in percent encoding!
+      // All alphabetic characters are lower-case except when used in
+      // percent encoding
       auto it = std::begin(normalized);
       while (it != std::end(normalized)) {
 	if (*it == '%') {
 	  ++it; *it = std::toupper(*it);
 	  ++it; *it = std::toupper(*it);
+	}
+	else {
+	  *it = std::tolower(*it);
 	}
 	++it;
       }
@@ -550,7 +548,6 @@ namespace network {
       // underscore %5F
 
       // tilde %7E
-
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {
