@@ -487,10 +487,6 @@ namespace nucleus
             this->refresh(iterator, current().mayor());
         }
 
-      // XXX
-      elle::printf("SEAM: old-capacity %s %s %s\n",
-                   inlet->capacity(), current().capacity(), this->capacity());
-
       //
       // update the capacity.
       //
@@ -521,20 +517,12 @@ namespace nucleus
           }
       }
 
-      // XXX
-      elle::printf("SEAM: new-capacity %s %s %s\n",
-                   inlet->capacity(), current().capacity(), this->capacity());
-
       // unload the current nodule.
       current.unload();
 
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
       Nodule<T>::optimize(*this, inlet->key());
-
-      // XXX
-      elle::printf("SEAM: optimized-capacity %s\n",
-                   this->capacity());
     }
 
     template <typename T>

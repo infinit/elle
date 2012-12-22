@@ -188,20 +188,12 @@ namespace nucleus
 
       root.load();
 
-      // XXX
-      elle::printf("TREE: old-capacity %s\n",
-                   this->_capacity);
-
       // Recursively update the tree from the given key.
       root().update(k);
 
       // Update the capacity and state.
       this->_capacity = root().capacity();
       this->_state = root().state();
-
-      // XXX
-      elle::printf("TREE: new-capacity %s\n",
-                   this->_capacity);
 
       root.unload();
 
