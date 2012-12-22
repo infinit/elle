@@ -8,7 +8,6 @@ namespace elle
   template <typename T>
   struct cast
   {
-
     // XXX move should be explicit, this specialization should not be used.
     template <typename U>
     static std::unique_ptr<T>
@@ -32,6 +31,7 @@ namespace elle
       return std::unique_ptr<T>(static_cast<T*>(res));
     }
 
+    // XXX[???]
     // template <typename U>
     // static T*
     // static_(U* p)
@@ -40,6 +40,7 @@ namespace elle
     //   return static_cast<T*>(p);
     // }
 
+    // XXX[???]
     // template <typename U>
     // static std::unique_ptr<T>
     // static_(std::unique_ptr<U>&& p)
@@ -48,6 +49,7 @@ namespace elle
     //   return std::unique_ptr<T>(static_cast<T*>(p.release()));
     // }
 
+    // XXX[???]
     // template <typename U>
     // static T*
     // static_(const std::unique_ptr<U>& p)

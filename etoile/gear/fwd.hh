@@ -8,8 +8,12 @@ namespace etoile
 {
   namespace gear
   {
-
     class Action;
+    namespace action
+    {
+      class Push;
+      class Wipe;
+    }
     class Actor;
     class Chronicle;
     class Context;
@@ -22,7 +26,6 @@ namespace etoile
     class Object;
     class Scope;
     class Transcript;
-
   }
 }
 

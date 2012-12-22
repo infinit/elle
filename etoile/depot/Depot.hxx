@@ -1,9 +1,12 @@
 #ifndef ETOILE_DEPOT_DEPOT_HXX
 # define ETOILE_DEPOT_DEPOT_HXX
 
+# include <etoile/journal/Journal.hh>
+
 # include <hole/Hole.hh>
 
 # include <reactor/exception.hh>
+
 # include <elle/concurrency/Scheduler.hh>
 
 namespace etoile
@@ -15,8 +18,6 @@ namespace etoile
     Depot::pull(nucleus::proton::Address const& address,
                 nucleus::proton::Revision const& revision)
     {
-      std::unique_ptr<nucleus::proton::Block> block;
-
       // Check that the address' component corresponds to the
       // type of block requested. For instance, if one requests
       // a block of type Group, the block's address must embed
@@ -28,20 +29,26 @@ namespace etoile
                           "match the type's '%s'",
                           address.component(), T::Constants::component)};
 
-      // Retrieve the block from the storage layer.
-      block = hole().pull(address, revision);
+      std::unique_ptr<nucleus::proton::Block> block;
+
+      // Try to retrieve the block from the journal, should the block
+      // be still in the pipe for being published onto the storage layer.
+      block = journal::Journal::retrieve(address);
+
+      // Otherwise, retrieve the block from the storage layer.
+      if (block == nullptr)
+        block = hole().pull(address, revision);
 
       // Cast it to make sure a node did not return a block of another
       // type.
-      std::unique_ptr<T> type(dynamic_cast<T*>(block.release()));
+      std::unique_ptr<T> _block(dynamic_cast<T*>(block.release()));
 
-      if (type.get() == nullptr)
+      if (_block.get() == nullptr)
         throw reactor::Exception{
-            elle::concurrency::scheduler(),
-            "the retrieved block type does not match the requested one"
-        };
+          elle::concurrency::scheduler(),
+          "the retrieved block type does not match the requested one"};
 
-      return type;
+      return (_block);
     }
   }
 }

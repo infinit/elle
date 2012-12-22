@@ -219,9 +219,11 @@ namespace etoile
 
       Nest::P::Scoutor scoutor;
 
-      if ((scoutor = this->_placements.find(placement)) == this->_placements.end())
+      if ((scoutor = this->_placements.find(placement)) ==
+          this->_placements.end())
         throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Unable to locate a pod for the given placement");
+                                 "unable to locate a pod for the given "
+                                 "placement");
       assert(scoutor->second != nullptr);
 
       return (scoutor->second);

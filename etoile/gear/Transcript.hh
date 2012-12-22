@@ -50,6 +50,9 @@ namespace etoile
       /// Return the number of actions recorded in the transcript.
       elle::Size
       size() const;
+      /// Return true if the transcript is empty.
+      elle::Boolean
+      empty() const;
 
       /*-----------.
       | Interfaces |

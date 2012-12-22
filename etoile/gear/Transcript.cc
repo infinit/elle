@@ -40,6 +40,12 @@ namespace etoile
       return (static_cast<elle::Size>(this->_container.size()));
     }
 
+    elle::Boolean
+    Transcript::empty() const
+    {
+      return (this->_container.empty());
+    }
+
     /*---------.
     | Dumpable |
     `---------*/

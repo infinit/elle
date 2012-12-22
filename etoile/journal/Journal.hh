@@ -17,7 +17,6 @@ namespace etoile
   ///
   namespace journal
   {
-
     ///
     /// this class represents the journal manager.
     ///
@@ -28,16 +27,30 @@ namespace etoile
     public:
       static elle::Status Record(gear::Scope* scope);
 
-      /// Retreive a block from the Journal. returns true if the block is found,
-      /// or throws an exception.
-      elle::Boolean get_block(nucleus::proton::Address const& address,
-                              nucleus::proton::Revision const& revision,
-                              nucleus::proton::Block& out_block);
+      // XXX[temporay: clones the block through serialization]
+      static
+      std::unique_ptr<nucleus::proton::Block>
+      clone(nucleus::neutron::Component const component,
+            nucleus::proton::Block const&);
+      /// Retrieve a block from the journal.
+      ///
+      /// This method returns true if the block is found, false otherwise.
+      /// Note that this method may throw an exception should an error occur.
+      static
+      std::unique_ptr<nucleus::proton::Block>
+      retrieve(nucleus::proton::Address const& address,
+               nucleus::proton::Revision const& revision =
+                 nucleus::proton::Revision::Last);
 
     private:
-      static elle::Status _Record(gear::Scope* scope);
+      /// Process the given scope's transcript so as to push and/or wipe some
+      /// blocks.
+      ///
+      /// Note that this process is run it a specific background thread.
+      static
+      void
+      _process(gear::Scope* scope);
     };
-
   }
 }
 
