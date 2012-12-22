@@ -72,7 +72,7 @@ namespace etoile
         {
           ELLE_TRACE("record the ensemble block in the transcript");
 
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Wipe(context.group->ensemble()));
         }
 
@@ -202,7 +202,7 @@ namespace etoile
           context.ensemble->state(nucleus::proton::State::consistent);
 
           // mark the block as needing to be stored.
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Push(address, context.ensemble));
 
           // ugrade the group.

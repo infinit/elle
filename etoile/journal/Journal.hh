@@ -22,16 +22,14 @@ namespace etoile
     ///
     class Journal
     {
-    private:
-      static std::set<gear::Scope*>  _scopes;
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      static elle::Status Record(gear::Scope* scope);
-
-      // XXX[temporay: clones the block through serialization]
+      /// XXX
       static
-      std::unique_ptr<nucleus::proton::Block>
-      clone(nucleus::neutron::Component const component,
-            nucleus::proton::Block const&);
+      elle::Status
+      Record(gear::Scope* scope);
       /// Retrieve a block from the journal.
       ///
       /// This method returns true if the block is found, false otherwise.
@@ -43,13 +41,24 @@ namespace etoile
                  nucleus::proton::Revision::Last);
 
     private:
-      /// Process the given scope's transcript so as to push and/or wipe some
-      /// blocks.
+      /// Process a given transcript so as to push and/or wipe some blocks.
       ///
       /// Note that this process is run it a specific background thread.
       static
       void
-      _process(gear::Scope* scope);
+      _process(gear::Transcript* transcript);
+      // XXX[temporay: clones the block through serialization]
+      static
+      std::unique_ptr<nucleus::proton::Block>
+      _clone(nucleus::neutron::Component const component,
+             nucleus::proton::Block const&);
+
+      /*------------------.
+      | Static Attributes |
+      `------------------*/
+    private:
+      /// Represent the transcript which need to be processed.
+      static std::set<gear::Transcript*>  _queue;
     };
   }
 }

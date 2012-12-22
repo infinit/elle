@@ -23,67 +23,159 @@ namespace etoile
 {
   namespace journal
   {
-    std::set<gear::Scope*> Journal::_scopes;
+    /*------------------.
+    | Static Attributes |
+    `------------------*/
 
-    ///
-    /// this method records a given scope so as to trigger the action
-    /// later on.
-    ///
-    /// XXX the scope is orphan at this point!
-    ///
-    elle::Status        Journal::Record(gear::Scope*            scope)
+    std::set<gear::Transcript*> Journal::_queue;
+
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    elle::Status
+    Journal::Record(gear::Scope*            scope)
     {
       ELLE_TRACE_SCOPE("Journal::Record(%s)", *scope);
 
       ELLE_FINALLY_ACTION_DELETE(scope);
 
       // Ignore empty scope' transcripts.
-      if (scope->context->transcript.empty() == true)
+      if (scope->context->transcript().empty() == true)
         {
           ELLE_TRACE("ignore this scope because it has an empty transcript");
 
           return elle::Status::Ok;
         }
 
+      // Retrieve the transcript from the context.
+      gear::Transcript* transcript = scope->context->cede();
+
       try
        {
-         Journal::_scopes.insert(scope);
-
-         ELLE_FINALLY_ABORT(scope);
+         // Insert the transcript in the journal's queue.
+         Journal::_queue.insert(transcript);
 
          // Spawn a thread and do not wait for it to complete since
          // we want the processing to occur in the background as it
          // may take some time.
          new reactor::Thread(elle::concurrency::scheduler(),
                              "journal process",
-                             boost::bind(&Journal::_process, scope),
+                             boost::bind(&Journal::_process, transcript),
                              true);
+
        }
       catch (std::exception const& err)
         {
-          Journal::_scopes.erase(scope);
+          // Remove the transcript since something went wrong.
+          Journal::_queue.erase(transcript);
 
-          ELLE_FINALLY_ABORT(scope);
+          delete transcript;
 
           escape("unable to spawn a new thread; reason: '%s'", err.what());
         }
 
+      // Update the context's state.
+      scope->context->state = gear::Context::StateJournaled;
+
+      ELLE_FINALLY_ABORT(scope);
+
+      // Finally, delete the scope.
+      delete scope;
+
       return elle::Status::Ok;
     }
 
-    void
-    Journal::_process(gear::Scope*            scope)
+    std::unique_ptr<nucleus::proton::Block>
+    Journal::retrieve(nucleus::proton::Address const& address,
+                      nucleus::proton::Revision const& revision)
     {
-      ELLE_TRACE_FUNCTION(scope);
+      ELLE_TRACE_FUNCTION(address, revision);
 
-      // set the context's state.
-      scope->context->state = gear::Context::StateJournaled;
+      for (auto transcript: Journal::_queue)
+        {
+          ELLE_TRACE_SCOPE("exploring transcript %s", *transcript);
+
+          for (auto action: *transcript)
+            {
+              switch (action->type())
+                {
+                case gear::Action::Type::push:
+                  {
+                    ELLE_ASSERT(
+                      dynamic_cast<gear::action::Push const*>(action) !=
+                      nullptr);
+                    auto _action =
+                      static_cast<gear::action::Push const*>(action);
+
+                    // Ignore non-matching addresses.
+                    if (_action->address() != address)
+                      continue;
+
+                    if (revision == nucleus::proton::Revision::Any)
+                      {
+                        ELLE_TRACE("cloning the block associated with the "
+                                   "action %s", *_action);
+
+                        return (Journal::_clone(address.component(),
+                                                _action->block()));
+                      }
+                    else
+                      {
+                        auto _block =
+                          dynamic_cast<nucleus::proton::MutableBlock const*>(
+                            &_action->block());
+
+                        // Ignore non-mutable-blocks and non-matching revisions.
+                        if ((_block == nullptr) ||
+                            (_block->revision() != revision))
+                          continue;
+
+                        ELLE_TRACE("cloning the mutable block associated "
+                                   "with the action %s", *_action);
+
+                        return (Journal::_clone(address.component(),
+                                                _action->block()));
+                      }
+
+                    break;
+                  }
+                case gear::Action::Type::wipe:
+                  {
+                    ELLE_ASSERT(
+                      dynamic_cast<gear::action::Wipe const*>(action) !=
+                      nullptr);
+                    auto _action =
+                      static_cast<gear::action::Wipe const*>(action);
+
+                    // Ignore non-matching addresses.
+                    if (_action->address() != address)
+                      continue;
+
+                    // If the requested block is about to be wiped,
+                    // throw an error.
+                    throw elle::Exception("this block has been scheduled "
+                                          "for deletion");
+                  }
+                }
+            }
+        }
+
+      ELLE_TRACE("the requested block is not present in the journal");
+
+      return (std::unique_ptr<nucleus::proton::Block>(nullptr));
+    }
+
+    void
+    Journal::_process(gear::Transcript* transcript)
+    {
+      ELLE_TRACE_FUNCTION(transcript);
 
       ELLE_TRACE("pushing the blocks")
         {
           // XXX[to improve in the future]
           // Go through the blocks which needs to be pushed.
-          for (auto action: scope->context->transcript)
+          for (auto action: *transcript)
             {
               switch (action->type())
                 {
@@ -101,7 +193,7 @@ namespace etoile
       ELLE_TRACE("wiping the blocks")
         {
           // Then, process the blocks to wipe.
-          for (auto action: scope->context->transcript)
+          for (auto action: *transcript)
             {
               switch (action->type())
                 {
@@ -116,16 +208,15 @@ namespace etoile
             }
         }
 
-      // set the context's state.
-      scope->context->state = gear::Context::StateCleaned;
+      // Remove the transcript from the queue.
+      Journal::_queue.erase(transcript);
 
-      Journal::_scopes.erase(scope);
-      delete scope;
+      delete transcript;
     }
 
     std::unique_ptr<nucleus::proton::Block>
-    Journal::clone(nucleus::neutron::Component const component,
-                   nucleus::proton::Block const& block)
+    Journal::_clone(nucleus::neutron::Component const component,
+                    nucleus::proton::Block const& block)
     {
       ELLE_TRACE_FUNCTION(component, block);
 
@@ -161,84 +252,6 @@ namespace etoile
       ELLE_FINALLY_ABORT(_block);
 
       return (std::unique_ptr<nucleus::proton::Block>(_block));
-    }
-
-    std::unique_ptr<nucleus::proton::Block>
-    Journal::retrieve(nucleus::proton::Address const& address,
-                      nucleus::proton::Revision const& revision)
-    {
-      ELLE_TRACE_FUNCTION(address, revision);
-
-      for (auto scope: Journal::_scopes)
-        {
-          for (auto action: scope->context->transcript)
-            {
-              switch (action->type())
-                {
-                case gear::Action::Type::push:
-                  {
-                    ELLE_ASSERT(
-                      dynamic_cast<gear::action::Push const*>(action) !=
-                      nullptr);
-                    auto _action =
-                      static_cast<gear::action::Push const*>(action);
-
-                    // Ignore non-matching addresses.
-                    if (_action->address() != address)
-                      continue;
-
-                    if (revision == nucleus::proton::Revision::Any)
-                      {
-                        ELLE_TRACE("cloning the block associated with the "
-                                   "action %s", *_action);
-
-                        return (Journal::clone(address.component(),
-                                               _action->block()));
-                      }
-                    else
-                      {
-                        auto _block =
-                          dynamic_cast<nucleus::proton::MutableBlock const*>(
-                            &_action->block());
-
-                        // Ignore non-mutable-blocks and non-matching revisions.
-                        if ((_block == nullptr) ||
-                            (_block->revision() != revision))
-                          continue;
-
-                        ELLE_TRACE("cloning the mutable block associated "
-                                   "with the action %s", *_action);
-
-                        return (Journal::clone(address.component(),
-                                               _action->block()));
-                      }
-
-                    break;
-                  }
-                case gear::Action::Type::wipe:
-                  {
-                    ELLE_ASSERT(
-                      dynamic_cast<gear::action::Wipe const*>(action) !=
-                      nullptr);
-                    auto _action =
-                      static_cast<gear::action::Wipe const*>(action);
-
-                    // Ignore non-matching addresses.
-                    if (_action->address() != address)
-                      continue;
-
-                    // If the requested block is about to be wiped,
-                    // throw an error.
-                    throw elle::Exception("this block has been scheduled "
-                                          "for deletion");
-                  }
-                }
-            }
-        }
-
-      ELLE_TRACE("the requested block is not present in the journal");
-
-      return (std::unique_ptr<nucleus::proton::Block>(nullptr));
     }
   }
 }

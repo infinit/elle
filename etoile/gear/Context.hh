@@ -47,14 +47,27 @@ namespace etoile
           StateDestroyed,
 
           StateJournaled,
-
-          StateCleaned
         };
 
       //
       // constructors & destructors
       //
       Context(const Nature);
+      ~Context();
+
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      // XXX
+      Transcript const&
+      transcript() const;
+      // XXX
+      Transcript&
+      transcript();
+      // XXX
+      Transcript*
+      cede();
 
       //
       // interfaces
@@ -71,7 +84,8 @@ namespace etoile
       State                     state;
       Operation                 operation;
 
-      Transcript transcript;
+    private: // XXX
+      Transcript* _transcript;
     };
 
   }

@@ -121,7 +121,7 @@ namespace etoile
         escape("unable to destroy the access");
 
       // mark the object as needing to be removed.
-      context.transcript.record(
+      context.transcript().record(
         new gear::action::Wipe(context.location.address()));
 
       // set the context's state.
@@ -157,7 +157,7 @@ namespace etoile
             escape("unable to seal the object");
 
           // mark the block as needing to be stored.
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Push(context.location.address(),
                                    context.object));
         }

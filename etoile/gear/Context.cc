@@ -17,8 +17,46 @@ namespace etoile
     Context::Context(const Nature                               nature):
       nature(nature),
       state(Context::StateUnknown),
-      operation(OperationUnknown)
+      operation(OperationUnknown),
+      _transcript(new Transcript)
     {
+    }
+
+    Context::~Context()
+    {
+      delete this->_transcript;
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    Transcript const&
+    Context::transcript() const
+    {
+      ELLE_ASSERT(this->_transcript != nullptr);
+
+      return (*this->_transcript);
+    }
+
+    Transcript&
+    Context::transcript()
+    {
+      ELLE_ASSERT(this->_transcript != nullptr);
+
+      return (*this->_transcript);
+    }
+
+    Transcript*
+    Context::cede()
+    {
+      ELLE_ASSERT(this->_transcript != nullptr);
+
+      Transcript* transcript = this->_transcript;
+
+      this->_transcript = nullptr;
+
+      return (transcript);
     }
 
 //
@@ -48,8 +86,9 @@ namespace etoile
                 << this->operation << std::endl;
 
       // dump the transcript.
-      if (this->transcript.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the transcript");
+      if (this->_transcript != nullptr)
+        if (this->_transcript->Dump(margin + 2) == elle::Status::Error)
+          escape("unable to dump the transcript");
 
       return elle::Status::Ok;
     }

@@ -743,7 +743,7 @@ namespace etoile
           ELLE_TRACE("record the Access block '%s' for removal",
                      context.object->access());
 
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Wipe(context.object->access()));
         }
 
@@ -864,7 +864,7 @@ namespace etoile
 
           ELLE_TRACE("record the Access block '%s' for storing", address);
 
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Push(address, context.access));
         }
 

@@ -335,7 +335,7 @@ namespace etoile
         escape("unable to destroy the ensemble");
 
       // mark the group as needing to be removed.
-      context.transcript.record(
+      context.transcript().record(
         new gear::action::Wipe(context.location.address()));
 
       // set the context's state.
@@ -372,7 +372,7 @@ namespace etoile
           context.group->seal(agent::Agent::Identity.pair().k());
 
           // mark the block as needing to be stored.
-          context.transcript.record(
+          context.transcript().record(
             new gear::action::Push(context.location.address(), context.group));
         }
 
