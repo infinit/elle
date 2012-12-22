@@ -35,6 +35,7 @@ namespace etoile
     Pod::Pod(const nucleus::proton::Placement& placement,
              nucleus::proton::Contents* block):
       nature(NatureVolatile),
+      link(LinkAttached),
       state(StateUnloaded),
       placement(placement),
       address(nucleus::proton::Address::null()),
@@ -50,6 +51,7 @@ namespace etoile
              const nucleus::proton::Address& address,
              nucleus::proton::Contents* block):
       nature(NaturePersistent),
+      link(LinkAttached),
       state(StateUnloaded),
       placement(placement),
       address(address),
@@ -65,6 +67,7 @@ namespace etoile
       elle::radix::Object(element),
 
       nature(element.nature),
+      link(element.link),
       state(element.state),
       placement(element.placement),
       address(element.address),
@@ -90,13 +93,12 @@ namespace etoile
                  this->counter, this->counter + 1);
 
       ELLE_ASSERT(this->placement == handle.placement());
-      ELLE_ASSERT(this->nature != Pod::NatureOrphan);
+      ELLE_ASSERT(this->link != Pod::LinkDetached);
 
       if (this->block == nullptr)
         {
-          /* XXX
           ELLE_ASSERT(false);
-
+          /* XXX
           // XXX depend on the nature: local or network => probablement en local via placement
 
           ELLE_ASSERT(this->address != nucleus::proton::Address::Null);

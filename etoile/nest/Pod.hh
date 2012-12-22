@@ -29,8 +29,13 @@ namespace etoile
       enum Nature
         {
           NatureVolatile,
-          NaturePersistent,
-          NatureOrphan
+          NaturePersistent
+        };
+
+      enum Link
+        {
+          LinkAttached,
+          LinkDetached
         };
 
       enum State
@@ -78,6 +83,7 @@ namespace etoile
       // attributes
       //
       Nature nature;
+      Link link;
       State state;
 
       nucleus::proton::Placement placement;

@@ -85,6 +85,10 @@ namespace etoile
             {
             case Pod::NatureVolatile:
               {
+                // Ignore volatile detached blocks.
+                if (pod->link == Pod::LinkDetached)
+                  continue;
+
                 switch (pod->block->state())
                   {
                   case nucleus::proton::State::clean:
@@ -116,41 +120,51 @@ namespace etoile
               }
             case Pod::NaturePersistent:
               {
-                switch (pod->block->state())
+                switch (pod->link)
                   {
-                  case nucleus::proton::State::clean:
+                  case Pod::LinkAttached:
                     {
-                      // nothing to do: the block has not been modified.
+                      switch (pod->block->state())
+                        {
+                        case nucleus::proton::State::clean:
+                          {
+                            // nothing to do: the block has not been modified.
+                            break;
+                          }
+                        case nucleus::proton::State::dirty:
+                          {
+                            throw elle::Exception("the block is dirty but has "
+                                                  "not been sealed.");
+                          }
+                        case nucleus::proton::State::consistent:
+                          {
+                            ELLE_ASSERT(pod->address !=
+                                        nucleus::proton::Address::null());
+
+                            transcript.record(
+                              new gear::action::Wipe(pod->address));
+
+                            nucleus::proton::Address address =
+                              pod->block->bind();
+
+                            transcript.record(
+                              new gear::action::Push(address,
+                                                     pod->block));
+
+                            break;
+                          }
+                        }
+
                       break;
                     }
-                  case nucleus::proton::State::dirty:
+                  case Pod::LinkDetached:
                     {
-                      throw reactor::Exception(elle::concurrency::scheduler(),
-                                               "The block is dirty but has not"
-                                               "been sealed.");
-                    }
-                  case nucleus::proton::State::consistent:
-                    {
-                      ELLE_ASSERT(pod->address !=
-                                  nucleus::proton::Address::null());
-
-                      transcript.record(new gear::action::Wipe(pod->address));
-
-                      nucleus::proton::Address address = pod->block->bind();
-
-                      transcript.record(new gear::action::Push(address,
-                                                               pod->block));
+                      if (pod->address != nucleus::proton::Address::null())
+                        transcript.record(new gear::action::Wipe(pod->address));
 
                       break;
                     }
                   }
-
-                break;
-              }
-            case Pod::NatureOrphan:
-              {
-                if (pod->address != nucleus::proton::Address::null())
-                  transcript.record(new gear::action::Wipe(pod->address));
 
                 break;
               }
@@ -353,14 +367,11 @@ namespace etoile
       // retrieve the pod.
       Pod* pod = this->_retrieve(handle.placement());
 
-      // update the pod's nature.
-      pod->nature = Pod::NatureOrphan;
+      // update the pod's link.
+      pod->link = Pod::LinkDetached;
 
-      /* XXX[???]
-      if ((pod->nature == Pod::NatureOrphan) &&
-          (pod->counter == 0))
-        pod->release();
-      */
+      // Try to optimize the nest.
+      this->_optimize();
     }
 
     std::shared_ptr<nucleus::proton::Contents>
@@ -458,11 +469,68 @@ namespace etoile
 
       pod->unload(handle);
 
-      /* XXX[to do only with blocks which have not been modified]
-      if ((pod->nature == Pod::NatureOrphan) &&
-          (pod->counter == 0))
-        pod->release();
-      */
+      // If the block has been detached and is no longer used,
+      // Try to optimize the nest.
+      this->_optimize();
+    }
+
+    void
+    Nest::_optimize()
+    {
+//       // XXX[100 / 20]
+//       elle::Natural32 const limit_high = 0;
+//       elle::Natural32 const limit_low = 0;
+
+//       ELLE_TRACE_FUNCTION("");
+
+//       if (this->_placements.size() <= high_limit) // XXX
+//         {
+//           ELLE_TRACE("the nest does not need to be optimized");
+//           return;
+//         }
+
+//       ELLE_TRACE("look for unused pod so as to lighten the nest");
+
+//       elle::Boolean traversed = false;
+
+//       while (traversed == false)
+//         {
+//           traversed = true;
+
+//           for (auto& pair: this->_placements)
+//             {
+//               auto& placement = pair.first;
+//               auto& pod = pair.second;
+
+//               // Handle volatile blocks (i.e just created) which have
+//               // been detached.
+//               if ((pod->nature == Pod::NatureVolatile) &&
+//                   (pod->link == Pod::LinkDetached) &&
+//                   (pod->counter == 0))
+//                 {
+//                   this->_delete(placement);
+
+//                   traversed = false;
+
+//                   break;
+//                 }
+
+//               // Ignore pod which are still in use.
+//               if (pod->state != Pod::StateUnloaded)
+//                 continue;
+
+//               ELLE_ASSERT(pod->counter == 0);
+
+//               // Ignore pod whose block has been unloaded on the storage layer.
+//               if (pod->block == nullptr)
+//                 continue;
+
+//               // Bind the block.
+//               // XXX pod->address = pod->block->bind();
+
+//               // XXX
+//             }
+//         }
     }
 
 //

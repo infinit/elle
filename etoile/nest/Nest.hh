@@ -90,6 +90,11 @@ namespace etoile
       /// XXX
       void
       _delete(nucleus::proton::Address const& address);
+      /// XXX
+      void
+      _optimize();
+
+      // XXX mettre les methodes privees ensembles
 
       //
       // interfaces
