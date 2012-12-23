@@ -58,7 +58,7 @@ while tries < MAX_TRIES:
 if tries == MAX_TRIES:
     raise("Maximum number of tries exceeded")
 
-with open(p2, 'r') as f:
-    assert f.read() == DATA
+with open(p2, 'rb') as f:
+    assert f.read().decode('utf-8') == DATA
 
 
