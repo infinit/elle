@@ -38,7 +38,6 @@ import sysconfig
 print(sysconfig.get_config_var('VERSION'))
 
 with open(p1, 'wb') as f:
-    print("File encoding:", f.encoding)
     f.write(DATA.encode('utf8'))
 
 with open(p1, 'rb') as f:
