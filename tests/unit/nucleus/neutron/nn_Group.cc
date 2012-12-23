@@ -16,7 +16,7 @@ using namespace infinit;
 
 ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
-void test()
+void test1()
 {
   cryptography::KeyPair owner(cryptography::KeyPair::generate(1024));
 
@@ -93,11 +93,26 @@ void test()
   }
 }
 
+void test2()
+{
+  cryptography::KeyPair owner(cryptography::KeyPair::generate(1024));
+
+  nucleus::proton::Network network("test");
+
+  nucleus::neutron::Group group(network, owner.K(), "suce mon cul");
+
+  nucleus::neutron::Token token(group.manager_token());
+
+  cryptography::PrivateKey k{
+    token.extract<cryptography::PrivateKey>(owner.k())};
+}
+
 int main(int, char** argv)
 {
   try
     {
-      test();
+      test1();
+      test2();
 
       std::cout << "tests done.\n";
       return 0;

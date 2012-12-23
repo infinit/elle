@@ -1,12 +1,14 @@
 #ifndef  PLASMA_WATCHDOG_CLIENTACTIONS_HH
 # define PLASMA_WATCHDOG_CLIENTACTIONS_HH
 
-# include <QVariantList>
+# include <elle/format/json.hh>
 
 namespace plasma
 {
   namespace watchdog
   {
+    namespace json = elle::format::json;
+
     class Manager;
     class Client;
     class Connection;
@@ -30,8 +32,7 @@ namespace plasma
     {
     private:
       Manager&          _manager;
-      QString           _token;
-      QString           _watchdogId;
+      std::string       _watchdog_id;
       std::string const _user_id;
 
     public:
@@ -41,8 +42,8 @@ namespace plasma
 
     // properties
     public:
-      QString const& watchdogId() const { return this->_watchdogId; }
-      void watchdogId(QString const& id) { this->_watchdogId = id; }
+      std::string const& watchdog_id() const { return this->_watchdog_id; }
+      void watchdog_id(std::string const& id) { this->_watchdog_id = id; }
 
     private:
       ///
@@ -55,7 +56,7 @@ namespace plasma
       ///
       ///   R: no response
       ///
-      void _on_run(Connection& conn, Client& client, QVariantMap const& args);
+      void _on_run(Connection& conn, Client& client, json::Dictionary const& args);
 
 
       ///
@@ -67,7 +68,7 @@ namespace plasma
       ///
       ///   R: no response
       ///
-      void _on_stop(Connection& conn, Client& client, QVariantMap const& args);
+      void _on_stop(Connection& conn, Client& client, json::Dictionary const& args);
 
       ///
       /// Refresh all networks (calls meta).
@@ -80,7 +81,7 @@ namespace plasma
       ///
       void _on_refresh_networks(Connection& conn,
                                 Client& client,
-                                QVariantMap const& args);
+                                json::Dictionary const& args);
 
       ///
       /// Retreive file infos
@@ -99,7 +100,7 @@ namespace plasma
       ///  }
       void _on_status(Connection& conn,
                       Client& client,
-                      QVariantMap const& args);
+                      json::Dictionary const& args);
 
     };
 

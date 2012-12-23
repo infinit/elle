@@ -22,7 +22,8 @@ namespace plasma
       Q_OBJECT
 
     private:
-        std::unique_ptr<LocalServer> _server;
+      std::unique_ptr<LocalServer> _server;
+      std::string const _user_id;
 
     public:
       Application(std::string const& user_id);

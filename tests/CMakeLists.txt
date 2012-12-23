@@ -18,11 +18,10 @@ function(simple_test)
         list(APPEND ${S_TEST_NAME}_srcs
                 "${S_TEST_SOURCE};${S_TEST_NAME}.cc")
         add_executable(${_TARGET} ${${S_TEST_NAME}_srcs})
-        add_test(${S_TEST_NAME}
-                ${_TARGET}
-                ${S_TEST_ARGS})
+        add_test(NAME ${S_TEST_NAME}
+                 COMMAND ${_TARGET}
+                 ${S_TEST_ARGS})
         if (S_TEST_LIB)
-                message(STATUS "${_TARGET}: linking with ${S_TEST_LIB}")
                 target_link_libraries(${_TARGET} ${S_TEST_LIB})
         endif()
         if (S_TEST_PASS_REGEX)

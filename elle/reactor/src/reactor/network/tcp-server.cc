@@ -128,5 +128,10 @@ namespace reactor
       return _acceptor->local_endpoint();
     }
 
+    int
+    TCPServer::port() const
+    {
+      return local_endpoint().port();
+    }
   }
 }

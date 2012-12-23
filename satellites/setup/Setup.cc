@@ -32,7 +32,6 @@ namespace satellite
       if (elle::io::Directory::Exist(path) == elle::Status::False)
         {
           // create the directory.
-          printf("\n\nGROOSPOIJAZERNAOZFZNAFOINAZOINFOIZANONFOIA\n");
           if (elle::io::Directory::Create(path) == elle::Status::Error)
             escape("unable to create the directory");
         }

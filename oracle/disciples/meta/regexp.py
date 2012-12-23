@@ -1,7 +1,7 @@
 import re
 import meta.error as error
 
-Email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$'
+Email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]{2,20}\.[a-zA-Z]{2,5}$'
 Handle = r'^.{3,50}$'
 Password = r'^.{64}$'
 Device = r'^.{3,50}$'
@@ -22,7 +22,7 @@ class Validator:
             if result:
               result = 0
             else:
-              result = error_code
+              result = self.error_code
         except:
             result = self.error_code
         return result

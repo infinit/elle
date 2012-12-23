@@ -8,10 +8,15 @@ CMakeLists.txt.shared
 CMakeLists.txt.user
 DerivedData/
 __pycache__
-build
+*build
 config.hh
 config.mk
 dependencies/environment.sh
 releases/
 work/
 .drake
+xcuserdata
+xcdebugger
+*.xcuserdatad
+*.xcuserstate
+surface/macosx-old/medecine/Debug

@@ -35,6 +35,22 @@ namespace
   }
 
   std::string
+  _download_directory()
+  {
+    std::string download_dir = elle::os::getenv("INFINIT_DOWNLOAD_DIR", "");
+    if (download_dir.length() > 0 && path::exists(download_dir) && path::is_directory(download_dir))
+      return download_dir;
+
+    std::string home_dir = _home_directory();
+    std::string probable_download_dir = path::join(home_dir, "/Downloads");
+
+    if (path::exists(probable_download_dir) && path::is_directory(probable_download_dir))
+      return probable_download_dir;
+
+    return home_dir;
+  }
+
+  std::string
   _infinit_home()
   {
     return elle::os::getenv(
@@ -195,6 +211,13 @@ namespace common
       return sizeof(void*) * 8;
     }
 
+    std::string const&
+    download_directory()
+    {
+      static std::string download_dir = _download_directory();
+      return download_dir;
+    }
+
   } //!system
 
   namespace meta
@@ -344,7 +367,7 @@ namespace common
     std::string
     server_name(std::string const& user_id)
     {
-      return ".infinit-watchdog-server-name-for-" + user_id;
+      return path::join(infinit::user_directory(user_id), "server.wtg");
     }
 
     std::string
@@ -374,6 +397,37 @@ namespace common
         );
     }
 
+    std::string
+    id_path(std::string const& user_id)
+    {
+        return path::join(
+          infinit::user_directory(user_id),
+          "id.wtg"
+        );
+    }
   }
 
+  namespace longinus
+  {
+    std::string const&
+    host()
+    {
+      static std::string const host_string = elle::os::getenv(
+          "INFINIT_LONGINUS_HOST",
+          elle::sprint(COMMON_DEFAULT_LONGINUS_HOST)
+      );
+
+      return host_string;
+    }
+
+    int
+    port()
+    {
+      static std::string const port_string = elle::os::getenv(
+          "INFINIT_LONGINUS_PORT",
+          elle::sprint(COMMON_DEFAULT_LONGINUS_PORT)
+      );
+      return std::stoi(port_string);
+    }
+  }
 }

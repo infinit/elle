@@ -2,6 +2,7 @@
 #include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
 #include <reactor/backend/coro_io/thread.hh>
 #include <reactor/backtrace.hh>
+#include <reactor/exception.hh>
 
 #include <elle/log.hh>
 #include <elle/idiom/Close.hh>
@@ -155,10 +156,18 @@ namespace reactor
           assert(_action);
           _action();
         }
+        catch (reactor::Exception const& e)
+        {
+          std::cerr << "Thread " << name()
+                    << " killed by exception " << demangle(typeid(e).name()) << ": "
+                    << e.what() << "." << std::endl;
+          std::cerr << e.backtrace() << std::endl;
+          std::abort();
+        }
         catch (const std::exception& e)
         {
           std::cerr << "Thread " << name()
-                    << " killed by exception" << demangle(typeid(e).name()) << ": "
+                    << " killed by exception " << demangle(typeid(e).name()) << ": "
                     << e.what() << "." << std::endl;
           std::abort();
         }

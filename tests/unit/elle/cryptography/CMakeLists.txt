@@ -21,3 +21,6 @@ simple_test(NAME ec_oneway
 simple_test(NAME ec_all
             PASS_REGEX "tests done."
             LIB ${EC_DEPENDENCIES})
+simple_test(NAME ec_random
+            PASS_REGEX "tests done."
+            LIB ${EC_DEPENDENCIES})

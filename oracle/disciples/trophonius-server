@@ -10,5 +10,5 @@ import sys
 from trophonius.application import Application
 
 if __name__ == '__main__':
-	application = Application("0.0.0.0", 23456)
-	application.run()
+   application = Application("0.0.0.0")
+   application.run()

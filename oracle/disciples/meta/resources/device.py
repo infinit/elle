@@ -65,9 +65,9 @@ class Create(Page):
     """
     __pattern__ = "/device/create"
 
-    _validators = {
-        'name': regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)
-    }
+    _validators = [
+        ('name', regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)),
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -86,11 +86,11 @@ class Create(Page):
         id_ = database.devices().insert(to_save)
         assert id_ is not None
 
-        print(str(id_),
-              str(to_save['name']),
-              self.user['public_key'],
-              conf.INFINIT_AUTHORITY_PATH,
-              conf.INFINIT_AUTHORITY_PASSWORD);
+        # print(str(id_),
+        #       str(to_save['name']),
+        #       self.user['public_key'],
+        #       conf.INFINIT_AUTHORITY_PATH,
+        #       conf.INFINIT_AUTHORITY_PASSWORD);
 
         to_save['passport'] = metalib.generate_passport(
             str(id_),
@@ -124,10 +124,10 @@ class Update(Page):
 
     __pattern__ = "/device/update"
 
-    _validators = {
-        'name': regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID),
-        '_id': regexp.Validator(regexp.NetworkID, error.DEVICE_ID_NOT_VALID),
-    }
+    _validators = [
+        ('name', regexp.Validator(regexp.Device, error.DEVICE_NOT_VALID)),
+        ('_id', regexp.Validator(regexp.NetworkID, error.DEVICE_ID_NOT_VALID)),
+    ]
 
     def POST(self):
         self.requireLoggedIn()
@@ -166,11 +166,11 @@ class Delete(Page):
 
     __pattern__ = "/device/delete"
 
-    _validators = {
-        '_id': regexp.Validator(regexp.NotNull, error.DEVICE_ID_NOT_VALID),
-    }
+    _validators = [
+        ('_id', regexp.Validator(regexp.NotNull, error.DEVICE_ID_NOT_VALID)),
+    ]
 
-    def DELETE(self):
+    def POST(self):
         self.requireLoggedIn()
 
         status = self.validate()

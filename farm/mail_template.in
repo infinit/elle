@@ -2,225 +2,231 @@
 <head>
 </head>
 <body>
-	%% py table_style = 'font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; border-collapse:collapse;'
-	%% py th_style = "font-size:1.1em; color: #ffffff; text-align:left; background-color:#A7C942;border:1px solid #98bf21; padding: 3px 7px 2px 7px; padding-top: 5px; padding-bottom: 4px;"
-	%% py td_style = "font-size:1em; border:1px solid #98bf21; padding: 3px 7px 2px 7px;"
-	%% py td_alt_style = "color:#000000; background-color:#eaf2d3; font-size:1em; border:1px solid #98bf21; padding: 3px 7px 2px 7px;"
-	%% py td_style = td_alt_style
-	<h1>Summary</h1>
-	<table border-collapse="collapse" width="100%" style="{{table_style}}">
-	<tr>
-		<th style="{{th_style}}"> Script name </th>
-		<th style="{{th_style}}"> Status </th>
-		<th style="{{th_style}}"> Time </th>
-		<th style="{{th_style}}"> RAM </th>
-		<th style="{{th_style}}"> Virtual Size </th>
-		<th style="{{th_style}}"> CPU </th>
-	</tr>
-	%% py bool = 1
-	%% for name, stats in scripts.items()
-	%% if bool == 0
-	%% py _curr_style = td_style
-	%% py bool = 1
-	%% else
-	%% py _curr_style = td_alt_style
-	%% py bool = 0
-	%% endif
-	<tr>
-		<td style="{{_curr_style}}"> {{name}}  </td>
-		<td style="{{_curr_style}}">
-		%% if stats["result"] == "SUCCESS"
-			<font color="#00ff00"> {{stats["result"]}} </font>
-		%% elif stats["result"] == "FAILURE" and "Reason" in stats.keys()
-			<font color="#ff0000"> {{stats["Reason"]}} </font>
-		%% elif stats["result"] == "FAILURE"
-			<font color="#ff0000"> {{stats["result"]}} </font>
-		%% endif
-		</td>
-		<td style="{{_curr_style}}">
-		%% if "Error" not in stats.keys()
-			{{stats["timing"]["elapsed time"]}}
-		%% elif 1
-			No timing info
-		%% endif
-		</td>
+    %% py table_style = 'font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; border-collapse:collapse;'
+    %% py th_style = "font-size:1.1em; color: #ffffff; text-align:left; background-color:#A7C942;border:1px solid #98bf21; padding: 3px 7px 2px 7px; padding-top: 5px; padding-bottom: 4px;"
+    %% py td_style = "font-size:1em; border:1px solid #98bf21; padding: 3px 7px 2px 7px;"
+    %% py td_alt_style = "color:#000000; background-color:#eaf2d3; font-size:1em; border:1px solid #98bf21; padding: 3px 7px 2px 7px;"
+    %% py td_style = td_alt_style
+    <h1>Summary</h1>
+    <table border-collapse="collapse" width="100%" style="{{table_style}}">
+    <tr>
+        <th style="{{th_style}}"> Script name </th>
+        <th style="{{th_style}}"> Status </th>
+        <th style="{{th_style}}"> Time </th>
+        <th style="{{th_style}}"> RAM </th>
+        <th style="{{th_style}}"> Virtual Size </th>
+        <th style="{{th_style}}"> CPU </th>
+    </tr>
+    %% py bool = 1
+    %% for name, stats in scripts.items()
+    %% if bool == 0
+    %% py _curr_style = td_style
+    %% py bool = 1
+    %% else
+    %% py _curr_style = td_alt_style
+    %% py bool = 0
+    %% endif
+    <tr>
+        <td style="{{_curr_style}}"> {{name}}  </td>
+        <td style="{{_curr_style}}">
+        %% if stats["result"] == "SUCCESS"
+            <font color="#00ff00"> {{stats["result"]}} </font>
+        %% elif stats["result"] == "FAILURE" and "Reason" in stats.keys()
+            <font color="#ff0000"> {{stats["Reason"]}} </font>
+        %% elif stats["result"] == "FAILURE"
+            <font color="#ff0000"> {{stats["result"]}} </font>
+        %% endif
+        </td>
+        <td style="{{_curr_style}}">
+        %% if "Error" not in stats.keys()
+            {{stats["timing"]["elapsed time"]}}
+        %% elif 1
+            No timing info
+        %% endif
+        </td>
                 %% if "os stats" in stats
                 <td style="{{_curr_style}}">
-                    {{"<br>".join(k["%MEM"] for k in stats["os stats"].values())}}
+		%% for inst in stats["os stats"].values()
+		<span>{{int(inst["avg"]["rss"] / 1024)}}Kb</span> <br />
+		%% endfor
                 </td>
                 <td style="{{_curr_style}}">
-                    {{"<br>".join(k["VSZ"] for k in stats["os stats"].values())}}
+		%% for inst in stats["os stats"].values()
+		<span>{{int(inst["avg"]["vms"] / 1024)}}Kb</span> <br />
+		%% endfor
                 </td>
                 <td style="{{_curr_style}}">
-                    {{"<br>".join(k["%CPU"] for k in stats["os stats"].values())}}
+		%% for inst in stats["os stats"].values()
+		<span>{{int(inst["avg"]["cpu"])}}%</span> <br />
+		%% endfor
                 </td>
                 %%else
                 <td colspan=3> </td>
                 %%endif
         </tr>
-	%% endfor
+    %% endfor
         %% if "unit_tests" in dict
-	</tr>
+    </tr>
             <td style="{{_curr_style}}">
             Unit test
             </td>
             <td style="{{_curr_style}}">
-		<font color="#00ff00"> {{unit_tests["result"]}} </font>
+        <font color="#00ff00"> {{unit_tests["result"]}} </font>
             </td>
             <td colspan=4> </td>
         </tr>
         %%endif
-	</table>
-	<h1> Details </h1>
-	%% py bool = 1
+    </table>
+    <h1> Details </h1>
+    %% py bool = 1
 
-	%% for name, stats in scripts.items()
+    %% for name, stats in scripts.items()
 
-	%% if "Error" not in stats.keys()
+    %% if "Error" not in stats.keys()
 
-		 <h2> {{name}} ({{stats["result"]}}) ({{stats["Script path"]}} with
+         <h2> {{name}} ({{stats["result"]}}) ({{stats["Script path"]}} with
                  {{stats["Number of peers"]}} peer{% if stats["Number of peers"] > 1 %}s{%endif%}) </h2>
 
              <table border-collapse="collapse" width="100%" style="{{table_style}}">
                  <tr> <td style={{th_style}}> Timing info </td> </tr>
-		 %% for Tn, Tv in stats["timing"].items()
-		 <tr>
-			<td style="{{th_style}}">
-			{{Tn}}
-			</td>
-			<td style="{{td_alt_style}}">
-			{{Tv}}
-			</td>
-		 </tr>
-		 %% endfor
-		 %% for pid, pid_stat in stats["os stats"].items()
-		 <tr> <td> {{pid}} </td> </tr>
-		 %% for type, type_stat in pid_stat.items()
-		 <tr>
-			<td style="{{th_style}}">
-			{{type}}
-			</td>
-			<td style="{{td_alt_style}}">
-			{{type_stat}}
-			</td>
-		 </tr>
-		 %%endfor
-                 %%endfor
-		 <tr> <td> Outputs </td> </tr>
-		 <tr>
-			<td style="{{th_style}}">
-			stdout
-			</td>
-			<td style="{{td_alt_style}}">
+         %% for Tn, Tv in stats["timing"].items()
+         <tr>
+            <td style="{{th_style}}">
+            {{Tn}}
+            </td>
+            <td style="{{td_alt_style}}">
+            {{Tv}}
+            </td>
+         </tr>
+         %% endfor
+         %% for pid, pid_stat in stats["os stats"].items()
+         <tr> <td> {{pid}} </td> </tr>
+         %% for type, type_stat in pid_stat.items()
+         <tr>
+            <td style="{{th_style}}">
+            {{type}}
+            </td>
+            <td style="{{td_alt_style}}">
+            {{type_stat}}
+            </td>
+         </tr>
+         %%endfor
+         %%endfor
+         <tr> <td> Outputs </td> </tr>
+         <tr>
+            <td style="{{th_style}}">
+            stdout
+            </td>
+            <td style="{{td_alt_style}}">
                         <pre>{{stats["std"]["out"]}}</pre>
-			</td>
-		 </tr>
+            </td>
+         </tr>
                  %% if "err" in stats["std"]
-		 <tr>
-			<td style="{{th_style}}">
-			stderr
-			</td>
-			<td style="{{td_alt_style}}">
+         <tr>
+            <td style="{{th_style}}">
+            stderr
+            </td>
+            <td style="{{td_alt_style}}">
                         <pre>{{stats["std"]["err"]}}</pre>
-			</td>
-		</tr>
+            </td>
+        </tr>
                 %% endif
                  %% py _bite_i =0
-		 %% for HName, HData in stats["home"].items()
+         %% for HName, HData in stats["home"].items()
                  %% py _bite_i += 1
                  <tr> <td> Instance No{{_bite_i}} </td> </tr>
-		 	<tr>
-		 	   <td style="{{th_style}}">
-		 	   home directory
-		 	   </td>
-		 	   <td style="{{td_style}}">
-		 	   {{HData["home"]}}
-		 	   </td>
-			</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   User name
-		 	   </td>
-		 	   <td style="{{td_alt_style}}">
-		 	   {{HData["user"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   Network name
-		 	   </td>
-		 	   <td style="{{td_style}}">
-		 	   {{HData["network"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   Network mode
-		 	   </td>
-		 	   <td style="{{td_alt_style}}">
-		 	   {{HData["mode"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   .set file
-		 	   </td>
-		 	   <td style="{{td_style}}">
-		 	   {{HData["set"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   slug.port
-		 	   </td>
-		 	   <td style="{{td_alt_style}}">
-		 	   {{HData["conf"]["hole"]["slug.port"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   slug.timeout
-		 	   </td>
-		 	   <td style="{{td_style}}">
-		 	   {{HData["conf"]["hole"]["slug.timeout"]}}
-		 	   </td>
-		 	</tr>
-			<tr>
-		 	   <td style="{{th_style}}">
-			   8Infinit output (can be massive)
-		 	   </td>
-		 	   <td style="{{td_style}}">
+            <tr>
+               <td style="{{th_style}}">
+               home directory
+               </td>
+               <td style="{{td_style}}">
+               {{HData["home"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               User name
+               </td>
+               <td style="{{td_alt_style}}">
+               {{HData["user"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               Network name
+               </td>
+               <td style="{{td_style}}">
+               {{HData["network"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               Network mode
+               </td>
+               <td style="{{td_alt_style}}">
+               {{HData["mode"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               .set file
+               </td>
+               <td style="{{td_style}}">
+               {{HData["set"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               slug.port
+               </td>
+               <td style="{{td_alt_style}}">
+               {{HData["conf"]["hole"]["slug.port"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               slug.timeout
+               </td>
+               <td style="{{td_style}}">
+               {{HData["conf"]["hole"]["slug.timeout"]}}
+               </td>
+            </tr>
+            <tr>
+               <td style="{{th_style}}">
+               8Infinit output (can be massive)
+               </td>
+               <td style="{{td_style}}">
                            <pre>{{HData["output"]}}</pre>
                            </td>
-		 	</tr>
+            </tr>
                  %%endfor
-		 <tr> <td> Environment </td> </tr>
-		 %% for Tn, Tv in stats["environ"].items()
-		 <tr>
-			<td style="{{th_style}}">
-			{{Tn}}
-			</td>
-			<td style="{{td_alt_style}}">
-			{{Tv}}
-			</td>
-		 </tr>
-		 %% endfor
-		 </table>
+         <tr> <td> Environment </td> </tr>
+         %% for Tn, Tv in stats["environ"].items()
+         <tr>
+            <td style="{{th_style}}">
+            {{Tn}}
+            </td>
+            <td style="{{td_alt_style}}">
+            {{Tv}}
+            </td>
+         </tr>
+         %% endfor
+         </table>
 
-	%% endif
-	%% endfor
-	%% if "unit_tests" in dict
-	<h1> Unit Tests </h1>
-	<table border-collapse="collapse" width="100%" style="{{table_style}}">
-	<tr>
-		<td style="{{th_style}}">
-		stdout
-		</td>
-		<td style="{{td_style}}">
+    %% endif
+    %% endfor
+    %% if "unit_tests" in dict
+    <h1> Unit Tests </h1>
+    <table border-collapse="collapse" width="100%" style="{{table_style}}">
+    <tr>
+        <td style="{{th_style}}">
+        stdout
+        </td>
+        <td style="{{td_style}}">
                 <pre>{{unit_tests["stdout"]}}</pre>
-		</td>
-	</tr>
-	</table>
-	%% endif
+        </td>
+    </tr>
+    </table>
+    %% endif
 </body>
 </hmtl>

@@ -6,4 +6,5 @@ add_executable(8authority
 target_link_libraries(
 	8authority
 	${INFINIT_LIBRARIES}
+	readline
 )

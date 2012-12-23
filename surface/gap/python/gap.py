@@ -4,7 +4,8 @@ import _gap
 from collections import namedtuple
 import sys
 
-"""gap library binding module
+"""
+gap library binding module
 
 >>> state = State
 >>> state.meta_status
@@ -28,36 +29,58 @@ class State:
         self.email = ''
 
         directly_exported_methods = [
-            'create_network',
             'enable_debug',
-            'refresh_networks',
-            'networks',
-            'launch_watchdog',
-            'stop_watchdog',
             'set_permissions',
             'set_device_name',
+
+            'logout',
+            'connect',
+            'invite_user',
+            'send_message',
+            # Users.
+            'search_users',
+            'get_swaggers',
+            'user_fullname',
+            'user_email',
+
+            # Networks.
+            'launch_watchdog',
+            'stop_watchdog',
+            'create_network',
+            'refresh_networks',
+            'networks',
             'network_add_user',
             'network_name',
             'network_mount_point',
-            'logout',
-            'connect',
-            'poll',
-            'OnBite',
-            'OnTransaction',
-            'OnTransactionStatus',
-            'OnMessage',
-            'send_files',
-            'update_transaction',
-            'invite_user',
-            'scratch_db',
-            'send_message',
-            'get_notifications',
-            'notifications_red',
-        ]
 
-        directly_exported_enums = [
-            'Status',
-            'TransactionStatus',
+            # Transaction
+            'send_files',
+            'set_output_dir',
+            'get_output_dir',
+            'update_transaction',
+            'transactions',
+            'transaction_sender_id',
+            'transaction_sender_fullname',
+            'transaction_sender_device_id',
+            'transaction_recipient_id',
+            'transaction_recipient_fullname',
+            'transaction_recipient_device_id',
+            'transaction_network_id',
+            'transaction_first_filename',
+            'transaction_files_count',
+            'transaction_total_size',
+            'transaction_is_directory',
+            'transaction_status',
+
+            # Notifications
+            'poll',
+            'pull_notifications',
+            'notifications_read',
+
+            # Callback.
+            'transaction_callback',
+            'transaction_status_callback',
+            'message_callback',
         ]
 
         def make_method(m):
@@ -70,14 +93,8 @@ class State:
         for method in directly_exported_methods:
             setattr(self, method, make_method(method))
 
-        # transforms gap_EnumName_value to EnumName.value
-        for enum in directly_exported_enums:
-            to_remove = len('gap_') + len(enum) + 1
-            l_mbrs = [i[to_remove:] for i in dir(getattr(_gap, enum)) if i.startswith('gap_')]
-            l_vals = [getattr(_gap, "gap_"+enum+"_"+m) for m in l_mbrs]
-            T = namedtuple(enum, " ".join(l_mbrs))
-            t = T(*l_vals)
-            setattr(self, enum, t)
+        self.Status = getattr(_gap, "Status")
+        self.TransactionStatus = getattr(_gap, "TransactionStatus")
 
     def __del__(self):
         _gap.free(self._state)
@@ -108,6 +125,10 @@ class State:
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         self._call('login', email, pw_hash)
+
+    @property
+    def logged(self):
+        return self._call('is_logged')
 
     def register(self, fullname, email, password, dev_name, activation_code):
         self.email = email

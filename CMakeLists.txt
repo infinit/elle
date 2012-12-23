@@ -4,6 +4,11 @@ cmake_minimum_required(VERSION 2.8)
 set(HAS_XCODE TRUE CACHE BOOL
     "Disable HAS_XCODE if your machine does not have it")
 
+option(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)
+option(DISABLE_HORIZON "Enable fuse system mount points" OFF)
+option(USE_STATIC_LIBS "Use static version of libraries" OFF)
+option(USE_STATIC_RUNTIME "Link statically with libgcc and libg++" OFF)
+
 # follow symlink when copying
 cmake_policy(SET CMP0009 NEW)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -112,7 +117,7 @@ if (UNIX)
         -D_LARGE_FILE
         -D_FILE_OFFSET_BITS=64
         -m${INFINIT_ARCHITECTURE}
-        -std=c++0x
+        -std=c++11
         -Wall
         -Wextra
         -Wpointer-arith
@@ -135,6 +140,14 @@ if(INFINIT_MACOSX)
   list(APPEND CUSTOM_CXX_FLAGS "-Wno-deprecated-declarations")
 endif(INFINIT_MACOSX)
 
+if (USE_STATIC_RUNTIME)
+	message(STATUS "Using static runtime linking")
+	list(APPEND CUSTOM_CXX_FLAGS
+		"-static-libgcc"
+		#"-static-libstdc++"
+	)
+endif()
+
 foreach(flag ${CUSTOM_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 endforeach()
@@ -147,13 +160,19 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 # Defines LINK_METHOD to STATIC if build type is release, SHARED otherwise.
 #
 
-if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
-	set(USE_STATIC_LIBS ON)
-	set(LINK_METHOD STATIC)
-else()
-	set(USE_STATIC_LIBS OFF)# CACHE BOOL "use static libraries for linking")
-	set(LINK_METHOD STATIC)
+if (USE_STATIC_LIBS)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES
+		"${CMAKE_STATIC_LIBRARY_SUFFIX};${CMAKE_SHARED_LIBRARY_SUFFIX}"
+	)
 endif()
+
+#if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
+#	set(USE_STATIC_LIBS ON)
+	set(LINK_METHOD STATIC)
+#else()
+#	set(USE_STATIC_LIBS OFF)# CACHE BOOL "use static libraries for linking")
+	set(LINK_METHOD STATIC)
+#endif()
 
 # tell cmake to not build shared libraries by default
 set(BUILD_SHARED_LIBS OFF)
@@ -165,34 +184,6 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
-# - Infinit internal dependencies ---------------------------------------------
-
-set(INFINIT_LIBRARIES_PREFIX
-	"${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
-
-set(INFINIT_OPENSSL_STATIC_LIBRARIES
-  ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_STATIC_LIBRARY_SUFFIX}
-  ${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-set(INFINIT_OPENSSL_SHARED_LIBRARIES
-  ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_SHARED_LIBRARY_SUFFIX}
-  ${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto${CMAKE_SHARED_LIBRARY_SUFFIX}
-)
-
-set(INFINIT_QJSON_SHARED_LIBRARIES
-  libqjson${CMAKE_SHARED_LIBRARY_SUFFIX}
-)
-
-
-set(INFINIT_EXTERNAL_LIBRARIES
-  ${INFINIT_OPENSSL_STATIC_LIBRARIES}
-  ${INFINIT_OPENSSL_SHARED_LIBRARIES}
-  ${INFINIT_QJSON_SHARED_LIBRARIES}
-)
-
-message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
-message("-- External libraries: ${INFINIT_EXTERNAL_LIBRARIES}")
 
 ##
 ## Dependencies target.
@@ -213,25 +204,81 @@ add_custom_command(
 ## Loading boost
 set(Boost_USE_STATIC_LIBS ${USE_STATIC_LIBS})
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_USE_STATIC_RUNTIME ${USE_STATIC_RUNTIME})
 find_package(Boost
 	COMPONENTS system thread signals filesystem unit_test_framework
 	REQUIRED
 )
 
 include_directories(${Boost_INCLUDE_DIRS})
-
-message("-- Boost libraries: ${Boost_LIBRARIES}")
+message(STATUS "Boost libraries:")
+foreach(lib ${Boost_LIBRARIES})
+	message("\t - ${lib}")
+endforeach()
+## Loading libz
+unset(INFINIT_Z_LIBRARY)
+find_library(INFINIT_Z_LIBRARY z PATHS /opt/local/lib NO_DEFAULT_PATH)
+message(STATUS "Zip library: ${INFINIT_Z_LIBRARY}")
 
 ## Loading Qt
-find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
-set(QT_DONT_USE_QTGUI true)
+find_package(Qt4 4.6.0 REQUIRED QtCore)
+
+#set(QT_DONT_USE_QTNETWORK true)
+#set(QT_DONT_USE_QTGUI true)
+#set(QT_DONT_USE_QTXML true)
+include(${QT_USE_FILE})
+
+include_directories(${QT_INCLUDES})
+add_definitions(${QT_DEFINITIONS})
+
+message(STATUS "Qt Libraries:")
+foreach(lib ${QT_LIBRARIES})
+	message("\t - ${lib}")
+endforeach()
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
+
+# - Infinit internal dependencies ---------------------------------------------
+
+set(INFINIT_LIBRARIES_PREFIX
+	"${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
+
+message("-- External librairies directory prefix: ${INFINIT_LIBRARIES_PREFIX}")
+
+set(INFINIT_OPENSSL_STATIC_LIBRARIES
+  ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+
+set(INFINIT_OPENSSL_SHARED_LIBRARIES
+  ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_SHARED_LIBRARY_SUFFIX}
+  ${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto${CMAKE_SHARED_LIBRARY_SUFFIX}
+)
+
+set(INFINIT_EXTERNAL_LIBRARIES
+  ${INFINIT_OPENSSL_STATIC_LIBRARIES}
+  ${INFINIT_OPENSSL_SHARED_LIBRARIES}
+)
+
+if(USE_STATIC_LIBS)
+	set(INFINIT_OPENSSL_LIBRARIES
+		${INFINIT_OPENSSL_STATIC_LIBRARIES}
+		${INFINIT_Z_LIBRARY}
+	)
+else()
+	set(INFINIT_OPENSSL_LIBRARIES ${INFINIT_OPENSSL_SHARED_LIBRARIES})
+endif()
+
+message("-- OpenSSL libraries:")
+foreach(lib  ${INFINIT_OPENSSL_LIBRARIES})
+	message("\t - ${lib}")
+endforeach()
 
 # XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/udt/include)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
@@ -242,10 +289,12 @@ add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
+add_subdirectory(asio-udt)
+
 if(NOT DISABLE_HORIZON)
   add_subdirectory(horizon)
   # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
-  set(HORIZON_LIB horizon ${INFINIT_PLATFORM_NO_ARCH} horizon)
+  set(HORIZON_LIB horizon ${INFINIT_PLATFORM_NO_ARCH} horizon fuse)
 endif()
 add_subdirectory(hole)
 
@@ -257,6 +306,7 @@ add_library(infinit ${LINK_METHOD}
 add_dependencies(infinit hole dependencies)
 
 
+## ----------------------------------------------------------------------------
 # The whole project is linked against these libraries
 
 set(INFINIT_LIBRARIES
@@ -282,21 +332,25 @@ set(INFINIT_LIBRARIES
   lune
   elle
   comet
+  asio-udt
 
-  fuse
   cryptography
-  ${INFINIT_OPENSSL_SHARED_LIBRARIES}
+  ${INFINIT_OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT} # XXX[is it necessary with pthread below?]
-  readline
-  pthread
+  ${CMAKE_THREAD_LIBS_INIT}
+  #  readline
 
   nucleus
   elle
   comet
 )
 
-OPTION(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)
+message(STATUS "Infinit libraries:")
+foreach(lib ${INFINIT_LIBRARIES})
+	message("\t - ${lib}")
+endforeach()
+
+## Executables ----------------------------------------------------------------
 
 add_subdirectory(satellites)
 add_subdirectory(plasma)
@@ -309,10 +363,13 @@ add_subdirectory(oracle)
 add_executable(8infinit
   _infinit.cc
 )
-target_link_libraries(8infinit LINK_PRIVATE ${INFINIT_LIBRARIES})
+target_link_libraries(8infinit LINK_PRIVATE
+	${INFINIT_LIBRARIES}
+	readline
+)
 add_dependencies(8infinit dependencies)
 
-# configuration
+## configuration --------------------------------------------------------------
 configure_file(
 	"${CMAKE_SOURCE_DIR}/config.hh.cmake"
 	"${CMAKE_SOURCE_DIR}/config.hh"

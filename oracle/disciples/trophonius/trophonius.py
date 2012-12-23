@@ -85,7 +85,7 @@ class Trophonius(basic.LineReceiver):
 			self.sendLine(json.dumps(res))
 		elif isinstance(res, int):
 			s = {}
-                        s["notification_id"] = -666
+                        s["notification_type"] = -666
 			s["response_code"] = res
 			if msg:
 				s["response_details"] = "{}: {}".format(response_matrix[res], msg)

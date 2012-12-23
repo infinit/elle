@@ -9,9 +9,10 @@
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
 
+# include <nucleus/neutron/Permissions.hh>
+
 # include <plasma/meta/Client.hh>
 # include <plasma/trophonius/Client.hh>
-
 
 # include "gap.h"
 
@@ -48,7 +49,15 @@ namespace surface
       Exception(gap_Status code, std::string const& msg);
     };
 
-   class State
+    using ::plasma::Transaction;
+    using ::plasma::trophonius::Notification;
+    using ::plasma::trophonius::TransactionNotification;
+    using ::plasma::trophonius::TransactionStatusNotification;
+    using ::plasma::trophonius::UserStatusNotification;
+    using ::plasma::trophonius::MessageNotification;
+    using ::plasma::trophonius::NotificationType;
+
+    class State
     {
     private:
       std::unique_ptr<plasma::meta::Client>       _meta;
@@ -61,7 +70,7 @@ namespace surface
 
     public:
       void
-      scratch_db();
+      debug();
 
     ///
     /// Login & register
@@ -74,6 +83,14 @@ namespace surface
       void
       login(std::string const& email,
             std::string const& password);
+
+
+    private:
+      bool
+      _logged;
+    public:
+      bool
+      is_logged() { return this->_logged; }
 
       /// Logout from meta.
       void
@@ -110,6 +127,20 @@ namespace surface
       std::map<std::string, User const*>
       search_users(std::string const& text);
 
+      /// Swaggers.
+
+    private:
+      typedef std::map<std::string, User const*> SwaggersMap;
+      SwaggersMap _swaggers;
+      bool _swaggers_dirty;
+
+    public:
+      SwaggersMap const&
+      swaggers();
+
+      User const&
+      swagger(std::string const& id);
+
       /// Connect to trophonius
       void
       connect();
@@ -130,7 +161,7 @@ namespace surface
 
 
     private:
-      typedef std::map<std::string, plasma::meta::TransactionResponse*> TransactionsMap;
+      typedef std::map<std::string, plasma::Transaction> TransactionsMap;
       std::unique_ptr<TransactionsMap> _transactions;
 
     public:
@@ -139,7 +170,7 @@ namespace surface
       transactions();
 
       /// @brief Get data from a specific transaction.
-      plasma::meta::TransactionResponse const&
+      Transaction const&
       transaction(std::string const& transaction_id);
 
     public:
@@ -160,26 +191,61 @@ namespace surface
       /// @brief Start the transfer process on recipient.
       ///
       void
-      download_files(std::string const& transaction_id,
-                     std::string const& path);
+      _download_files(std::string const& transaction_id);
 
     private:
+      std::string _output_dir;
 
+    public:
       void
-      _accept_transaction(std::string const& transaction_id);
+      output_dir(std::string const& dir);
 
+      std::string
+      output_dir();
+
+    private:
+      // Functions callback on each status (set and get).
+
+      /// @brief Use to accept the transaction for the recipient.
       void
-      _deny_transaction(std::string const& transaction_id);
+      _accept_transaction(Transaction const& transaction);
 
+      /// @brief Use to add rights on network when the recipient accepts.
       void
-      _cancel_transaction(std::string const& transaction_id);
+      _on_transaction_accepted(Transaction const& transaction);
 
+      /// @brief Use to deny the transaction for the recipient.
       void
-      _start_transaction(std::string const& transaction_id);
+      _deny_transaction(Transaction const& transaction);
 
+      /// @brief Use to "delete" the transaction if the recipient denied it.
       void
-      _close_transaction(std::string const& transaction_id);
+      _on_transaction_denied(Transaction const& transaction);
 
+      /// @brief Use to cancel a pending transaction or an unfinished one.
+      void
+      _cancel_transaction(Transaction const& transaction);
+
+      /// @brief Use to destroy network if transaction has been canceled.
+      void
+      _on_transaction_canceled(Transaction const& transaction);
+
+      /// @brief Use to inform recipient that everything is ok and he can start
+      /// downloading.
+      void
+      _start_transaction(Transaction const& transaction);
+
+      /// @brief Use to .
+      void
+      _on_transaction_started(Transaction const& transaction);
+
+      /// @brief Use to inform the sender that download is complete.
+      void
+      _close_transaction(Transaction const& transaction);
+
+      /// @brief Use to close network.
+      void
+      _on_transaction_closed(Transaction const& transaction);
 
 
     private:
@@ -234,12 +300,18 @@ namespace surface
       get_name(boost::filesystem::path const& path);
 
       /// Set the permissions for a file.
+      /// XXX: old
+      void
+      deprecated_set_permissions(std::string const& user_id,
+                                 std::string const& abspath,
+                                 nucleus::neutron::Permissions permissions,
+                                 bool recursive = false);
+
+      /// Give the recipient the write on the root of the network.
       void
       set_permissions(std::string const& user_id,
-                      std::string const& abspath,
-                      int permissions,
-                      bool recursive = false);
-
+                      std::string const& network_id,
+                      nucleus::neutron::Permissions permissions);
     ///
     /// Manipulate networks
     ///
@@ -256,6 +328,11 @@ namespace surface
       /// Create a new network.
       std::string
       create_network(std::string const& name);
+
+      /// Delete a new network.
+      std::string
+      delete_network(std::string const& name,
+                     bool force = false);
 
       /// Force the watchdog to check for new networks.
       void
@@ -278,51 +355,59 @@ namespace surface
       network_add_user(std::string const& network_id,
                        std::string const& user);
 
-      // /// Accept file transfer.
-      // void
-      // accept_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
-
-      // /// Deny file transfer.
-      // void
-      // deny_file_transfer(std::string const& transaction_id) {(void) transaction_id; }
-
-      /// Trophonius binding.
     private:
-      typedef std::map<int, std::list<plasma::trophonius::BasicHandler*>> HandlerMap;
-      HandlerMap _notification_handlers;
+      typedef
+        std::function<void(Notification const&, bool)>
+        NotificationHandler;
+      std::map<NotificationType, std::list<NotificationHandler>> _notification_handlers;
 
     public:
+      typedef
+        std::function<void(UserStatusNotification const&)>
+        UserStatusNotificationCallback;
 
-      void
-      attach_callback(std::function<void(gap_UserStatusNotification const*)> callback);
+      typedef
+        std::function<void(TransactionNotification const&, bool)>
+        TransactionNotificationCallback;
 
-      void
-      attach_callback(std::function<void(gap_TransactionNotification const*)> callback);
 
-      void
-      attach_callback(std::function<void(gap_TransactionStatusNotification const*)> callback);
+      typedef
+        std::function<void(TransactionStatusNotification const&, bool)>
+        TransactionStatusNotificationCallback;
 
-      void
-      attach_callback(std::function<void(gap_MessageNotification const*)> callback);
-
-      void
-      attach_callback(std::function<void(gap_BiteNotification const*)> callback);
-
-    private:
-      void
-      _on_notification(gap_TransactionNotification const* n);
-
-      void
-      _on_notification(gap_TransactionStatusNotification const* n);
+      typedef
+        std::function<void(MessageNotification const&)>
+        MessageNotificationCallback;
 
     public:
-      bool
-      poll();
+      void
+      user_status_callback(UserStatusNotificationCallback const& cb);
+
+      void
+      transaction_callback(TransactionNotificationCallback const& cb);
+
+      void
+      transaction_status_callback(TransactionStatusNotificationCallback const& cb);
+
+      void
+      message_callback(MessageNotificationCallback const& cb);
 
     private:
-      bool
-      _handle_dictionnary(elle::format::json::Dictionary const& dict,
-                          bool _new = true);
+      void
+      _on_transaction(TransactionNotification const& notif,
+                      bool is_new);
+
+      void
+      _on_transaction_status(TransactionStatusNotification const& notif);
+
+    public:
+      size_t
+      poll(size_t max = 10);
+
+    private:
+      void
+      _handle_notification(Notification const& notif,
+                           bool _new = true);
 
     private:
       // Retrieve the current watchdog id.
@@ -339,6 +424,7 @@ namespace surface
 
       void
       _reload_networks();
+
     };
 
   }

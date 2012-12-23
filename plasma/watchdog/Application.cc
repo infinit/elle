@@ -21,8 +21,11 @@ static int dummy = 0;
 
 Application::Application(std::string const& user_id) :
   QCoreApplication(dummy, (char**)nullptr),
-  _server{new LocalServer(*this, user_id)}
-{}
+  _server{new LocalServer(*this, user_id)},
+  _user_id{user_id}
+{
+  ELLE_TRACE("Creating new application for user %s", _user_id);
+}
 
 namespace
 {
@@ -54,15 +57,13 @@ namespace
 
 int Application::exec()
 {
-  QDir homeDirectory(common::infinit::home().c_str());
-
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);
   ELLE_DEBUG("New watchdog id: %s", watchdogId);
 
   // Saving watchdog id
   {
-    QFile f(homeDirectory.filePath("infinit.wtg"));
+    QFile f(common::watchdog::id_path(this->_user_id).c_str());
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate))
       {
         ELLE_ERR("Cannot open file: %s", f.fileName().toStdString());
@@ -77,6 +78,7 @@ int Application::exec()
   }
 
 
+  ELLE_DEBUG("Starting the local server");
   this->_server->start(watchdogId);
   return this->QCoreApplication::exec();
 }

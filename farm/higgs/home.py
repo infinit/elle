@@ -32,9 +32,7 @@ class Home:
 
     @property
     def port(self):
-        return int(self.conf.conf["hole"]["{mode}.port".format(
-            mode=self.mode
-            )])
+        return self.conf.get_listen_port(self.mode)
 
     def create(self):
         auth = self.auth
@@ -43,16 +41,22 @@ class Home:
         network = self.network
         conf = self.conf
 
-        # Nota bene: This is not a powerpoint !
-        if not os.path.exists("{home}/infinit.ppt".format(**self.__dict__)):
-            print("creating a new passport file")
-            cli.Passport.create(auth)
-
         if not os.path.exists("{home}/users/{user}".format(**self.__dict__)):
             print("creating user {0}".format(user))
             self.user_auth = cli.User.create(auth, user)
         else:
             self.user_auth = cli.User.fetch(auth, user)
+
+        conf_file_path = "{home}/users/{user}/{user}.conf".format(**self.__dict__)
+        if not os.path.exists(conf_file_path):
+            print("storing the configuration file")
+            with open(conf_file_path, "w") as conf_file:
+                self.conf.commit(file=conf_file)
+
+        # Nota bene: This is not a powerpoint !
+        if not os.path.exists("{home}/users/{user}/{user}.ppt".format(**self.__dict__)):
+            print("creating a new passport file")
+            cli.Passport.create(auth, self.user_auth)
 
         if not os.path.exists("{home}/networks/{network}".format(**self.__dict__)):
             print("creating network {0}".format(network))
@@ -61,7 +65,10 @@ class Home:
 
     def add_peer(self, addr):
         if "dotset" not in self.__dict__:
-            self.dotset = open(os.path.join(self.home,
+            self.dotset = open(os.path.join(
+                self.home,
+                "users",
+                self.user,
                 "networks",
                 self.network,
                 "{0}.set".format(self.network)), "a")
@@ -83,6 +90,15 @@ class Home:
                      self.conf.clone())
         new_H.user_auth = self.user_auth;
         return new_H
+
+    def overwrite_conf(self, new_conf):
+        conf_file_path = "{home}/users/{user}/{user}.conf".format(**self.__dict__)
+        print("overwritting configuration port", self.port, "with", new_conf.get_listen_port(),
+              "at", conf_file_path)
+        self.conf = new_conf
+        print("storing the configuration file")
+        with open(conf_file_path, "w") as conf_file:
+            self.conf.commit(file=conf_file)
 
     def destroy(self):
         #print("removing home at ", self)

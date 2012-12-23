@@ -6,4 +6,5 @@ add_executable(8user
 target_link_libraries(
 	8user
 	${INFINIT_LIBRARIES}
+	readline
 )

@@ -98,16 +98,20 @@ namespace elle
       friend class BaseClass::Access;
 
     public:
-      template<typename T>
+      JSONArchive(StreamType& stream):
+        BaseClass(stream)
+      {}
+
+      template <typename T>
       JSONArchive(StreamType& stream, T& out):
         BaseClass(stream)
       {
         *this >> out;
       }
 
+      using BaseClass::operator >>;
     protected:
       template<typename T> void Load(T& val);
-      using BaseClass::operator >>;
     };
 
   }

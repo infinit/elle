@@ -21,29 +21,63 @@ class Search(Page):
 
     def POST(self):
         text = self.data["text"]
-        if len(text):
-            return self.error(error.UNKNOWN, "Search is not implemented yet.")
+        count = 'count' in self.data and self.data['count'] or 5
+        offset = 'offset' in self.data and self.data['offset'] or 0
 
-        users = database.users().find(fields=["_id"], limit=100)
-        result = list(user['_id'] for user in users)
+        # While not sure it's an email or a fullname, search in both.
+        if not '@' in text:
+            users = database.users().find(
+                {
+                    '$or' : [
+                        {'fullname' : {'$regex' : '^%s' % text,  '$options': 'i'}},
+                        {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
+                    ]
+                },
+                fields=["_id"],
+                limit=count + offset
+            )
+        else:
+            users = database.users().find(
+                {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
+                fields=["_id"],
+                limit=count + offset
+        )
+
+        result = list(user['_id'] for user in users[offset:])
 
         return self.success({
             'users': result,
         })
 
+class Message(Page):
+    __pattern__ = "/debug"
+
+    def POST(self):
+        self.notifier.notify_one(
+            notifier.MESSAGE,
+            self.data["recipient_id"],
+            {
+                'sender_id' : self.data['sender_id'],
+                'message': self.data['message'],
+            }
+        )
+
+        return self.success({})
+
 class GetSwaggers(Page):
-    __pattern__ =  "/user/get_swaggers"
+    __pattern__ =  "/user/swaggers"
 
     def GET(self):
-            return self.success({"swaggers" : self.user["swaggers"]})
+        self.requireLoggedIn()
+        return self.success({"swaggers" : self.user["swaggers"].keys()})
 
 class AddSwagger(Page):
     __pattern__ = "/user/add_swagger"
 
-    _validators = {
-        'email' : regexp.EmailValidator,
-        'fullname': regexp.HandleValidator,
-    }
+    _validators = [
+        ('email', regexp.EmailValidator),
+        ('fullname', regexp.HandleValidator),
+    ]
 
     def POST(self):
         import pymongo
@@ -179,15 +213,8 @@ class MinimumSelf(Page):
     Get self infos
         GET
             -> {
-                'fullname': "My Name",
                 'email': "My email",
-                'devices': [device_id1, ...],
-                'networks': [network_id1, ...]
-                'identity': 'identity string',
                 'public_key': 'public_key string',
-                'accounts': [
-                    {'type':'account type', 'id':'unique account identifier'}
-                ]
             }
     """
 
@@ -225,6 +252,8 @@ class One(Page):
             'email': user['email'],
             'public_key': user['public_key'],
             'fullname': user['fullname'],
+            # XXX: user['connected']
+            'status': 1, #user['status']
         })
 
 class Register(Page):
@@ -240,11 +269,11 @@ class Register(Page):
 
     __pattern__ = "/user/register"
 
-    _validators = {
-        'email': regexp.EmailValidator,
-        'fullname': regexp.HandleValidator,
-        'password': regexp.PasswordValidator,
-    }
+    _validators = [
+        ('email', regexp.EmailValidator),
+        ('fullname', regexp.HandleValidator),
+        ('password', regexp.PasswordValidator),
+    ]
 
     def POST(self):
         if self.user is not None:
@@ -325,10 +354,10 @@ class Login(Page):
     """
     __pattern__ = "/user/login"
 
-    _validators = {
-        'email': regexp.EmailValidator,
-        'password': regexp.PasswordValidator,
-    }
+    _validators = [
+        ('email', regexp.EmailValidator),
+        ('password', regexp.PasswordValidator),
+    ]
 
     def POST(self):
         if self.user is not None:
@@ -364,9 +393,9 @@ class Disconnection(Page):
 
     __pattern__ = "/user/disconnected"
 
-    _validators = {
-        'user_id': regexp.UserIDValidator,
-    }
+    _validators = [
+        ('user_id', regexp.UserIDValidator),
+    ]
 
     def POST(self):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:

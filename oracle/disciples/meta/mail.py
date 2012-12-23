@@ -9,18 +9,21 @@ import smtplib
 
 def send(mail, subject, content,
          from_="Infinit <no-reply@infinit.io>",
+         reply_to=None,
          encoding='utf8'):
-        msg = MIMEText(content, _charset=encoding)
-        msg['Subject'] = Header(subject, encoding)
-        msg['From'] = Header(from_, encoding)
-        msg['To'] = Header(mail, encoding)
+    msg = MIMEText(content, _charset=encoding)
+    msg['Subject'] = Header(subject, encoding)
+    msg['From'] = Header(from_, encoding)
+    msg['To'] = Header(mail, encoding)
+    if reply_to is not None:
+        msg['Reply-To'] = reply_to
 
-        smtp_server = smtplib.SMTP(conf.MANDRILL_SMTP_HOST, conf.MANDRILL_SMTP_PORT)
-        try:
-            smtp_server.login(conf.MANDRILL_USERNAME, conf.MANDRILL_PASSWORD)
-            smtp_server.sendmail(msg['From'], [msg['To']], msg.as_string())
-        finally:
-            smtp_server.quit()
+    smtp_server = smtplib.SMTP(conf.MANDRILL_SMTP_HOST, conf.MANDRILL_SMTP_PORT)
+    try:
+        smtp_server.login(conf.MANDRILL_USERNAME, conf.MANDRILL_PASSWORD)
+        smtp_server.sendmail(msg['From'], [msg['To']], msg.as_string())
+    finally:
+        smtp_server.quit()
 
 
 #################################################################################
@@ -96,11 +99,11 @@ http://infinit.io
 USER_INVITATION_CONTENT = """
 Dear user,
 
-%(inviter_mail)s wants to share %(file_name)s and make you discover Infinit.
+%(invited_fullname) (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
 
-XXX
-blabla, not stable, blabla, alpha, blabla, danger, blabla, destroy all your data, blabla.
+%(message)s
 
+XXXX
 To get started, download Infinit here: http://infinit.io/download.
 
 IMPORTANT:
@@ -114,27 +117,6 @@ Instructions:
 
  * MacOSX (only Mountain Lion):
     1) Install Infinit and create an account with your access code.
-    2) Roll a d100
-    3) Add 50 cause you are a mac user
-    4) Refer to table below to discover your anus breaking point.
-
-| Result* >>>> Size
------------------------------------------
-| 51 - 55 >>>> IPod shuffle
-| 56 - 60 >>>> IPod nano
-| 61 - 65 >>>> IPod Classic
-| 66 - 75 >>>> IPod Touch | IPhone 1,2,3
-| 76 - 80 >>>> IPhone 4-5
-| 81 - 85 >>>> IPad Mini
-| 86 - 95 >>>> IPad
-| 96 - 105 >>> Mac book mini
-| 106 - 115 >> Mac book 13
-| 116 - 125 >> Mac book 15
-| 126 - 135 >> iMac 21
-| 136 - 145 >> iMac 27
-| 145 - 150 >> eMac
-
-(*) Add 5 for each apple product you already purchased !
 
  * Linux:
     1) Wait for infinit to be integrated.

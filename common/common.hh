@@ -5,12 +5,14 @@
 
 # define COMMON_DEFAULT_INFINIT_HOME ".infinit"
 # define COMMON_DEFAULT_META_PROTOCOL "http"
-# define COMMON_DEFAULT_META_HOST "meta.api.infinit.io"
+# define COMMON_DEFAULT_META_HOST "development.infinit.io"
 # define COMMON_DEFAULT_META_PORT 12345
 # define COMMON_DEFAULT_TROPHONIUS_PROTOCOL "http"
-# define COMMON_DEFAULT_TROPHONIUS_HOST "infinit.im"
+# define COMMON_DEFAULT_TROPHONIUS_HOST "development.infinit.io"
 # define COMMON_DEFAULT_TROPHONIUS_PORT 23456
 # define COMMON_DEFAULT_RESOURCES_ROOT_URL "http://download.infinit.io"
+# define COMMON_DEFAULT_LONGINUS_HOST "development.infinit.io"
+# define COMMON_DEFAULT_LONGINUS_PORT 9999
 
 namespace common
 {
@@ -59,6 +61,10 @@ namespace common
     /// Returns the user home directory.
     std::string const&
     home_directory();
+
+    /// Returns download directory at {HOME}/Downloads if exists else home directory.
+    std::string const&
+    download_directory();
 
     /// Returns the platform name (linux, macosx or windows)
     std::string const&
@@ -153,11 +159,24 @@ namespace common
     std::string
     lock_path(std::string const& user_id);
 
+    /// The path to the id file.
+    std::string
+    id_path(std::string const& user_id);
+
     /// The path to the log file.
     std::string
     log_path(std::string const& user_id);
   }
 
+  namespace longinus
+  {
+
+    std::string const&
+    host();
+
+    int
+    port();
+  }
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
   std::string const&

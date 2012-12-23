@@ -1,7 +1,5 @@
-set(QT_USE_QTNETWORK true)
-set(QT_DONT_USE_QTGUI true)
-set(QT_USE_QTXML true)
 
+find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDES})
 add_definitions(${QT_DEFINITIONS})
@@ -15,6 +13,5 @@ add_executable(8watchdog ${watchdog_moc_srcs} ${watchdog_srcs})
 
 target_link_libraries(8watchdog
   ${INFINIT_LIBRARIES}
-  ${INFINIT_QJSON_SHARED_LIBRARIES}
   ${QT_LIBRARIES}
 )

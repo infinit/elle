@@ -23,7 +23,9 @@ class Page(object):
 
     __notifier = None
 
-    _validators = {}
+    _validators = []
+
+    _mendatory_fields = []
 
     def __init__(self):
         self._input = None
@@ -63,14 +65,17 @@ class Page(object):
         return self._input
 
     def validate(self):
-        for k, v in self._validators.items():
-            if not k in self.data:
-                return {error.BAD_REQUEST, "Field '%s' is mandatory" % k}
+        for (field, validator) in self._validators:
+            if not field in self.data.keys():
+                return (error.BAD_REQUEST, "Field %s is mandatory" % field)
             else:
-                error_code = v(self.data[k])
+                error_code = validator(self.data[field])
                 if error_code:
-                    return {error_code}
-        return {}
+                    return (error_code, str())
+        for (field, type_) in self._mendatory_fields:
+            if not field in self.data.keys() or not isinstance(self.data[field], type_):
+                return (error.BAD_REQUEST, "Field %s is mandatory and must be an %s" % (field, type_))
+        return ()
 
     def logout(self):
         self.session.kill()
@@ -110,7 +115,6 @@ class Page(object):
 
     def forbidden(self, msg):
         raise web.HTTPError("403 {}".format(msg))
-
     def requireLoggedIn(self):
         if not self.user:
             self.forbidden("Authentication required.")
@@ -121,14 +125,14 @@ class Page(object):
         return hashlib.md5(seasoned).hexdigest()
 
     def notifySwaggers(self, notification_id, data, bAll = False):
-        swgs = list(self.user["swaggers"])
+        swgs = list(self.user["swaggers"].keys())
         # if not bAll, notify only the connected ones.
         if not bAll:
             for s in swgs:
-                if not connected(s):
+                if not self.connected(database.ObjectId(s)):
                     swgs.remove(s)
         d = {
-                "sender_id" : self.user["_id"],
+                "user_id" : self.user["_id"],
             }
         d.update(data)
         self.notifier.notify_some(notification_id,
@@ -136,8 +140,11 @@ class Page(object):
                                   d)
 
     def error(self, err=error.UNKNOWN, msg=""):
+        assert isinstance(err, int)
+        assert isinstance(msg, str)
         if not msg and err in error.error_details:
             msg = error.error_details[err]
+
         return json.dumps({
             'success': False,
             'error_code': err,

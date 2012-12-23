@@ -8,14 +8,8 @@ Main(void)
 {
     elle::nat::NAT a(elle::concurrency::scheduler());
 
-    a.punch("localhost", 9999);
-    while (1)
-    {
-        reactor::Sleep s(elle::concurrency::scheduler(),
-                         boost::posix_time::seconds(5));
-        s.run();
-        std::printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
-    }
+    elle::nat::Hole h = a.punch("infinit.im", 9999);
+    std::cout << h.public_endpoint().first << ":" << h.public_endpoint().second << std::endl;
     return 0;
 }
 
@@ -28,7 +22,7 @@ main(int , const char *[])
                          []
                          {
                             Main();
-                            std::cout << "Finished test" << std::endl;
+                            std::cout << "tests done." << std::endl;
                          });
     sched.run();
     return 0;

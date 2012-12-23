@@ -15,12 +15,12 @@ ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \
   ELLE_SERIALIZE_SIMPLE(type, archive, value, version)                        \
   {                                                                           \
-    assert(version == 0);                                                     \
-    archive & named("success", value._success);                              \
+    enforce(version == 0);                                                    \
+    archive & named("success", value._success);                               \
    if (!value.success())                                                      \
       {                                                                       \
-        archive & named("error_code", value.response_code);                      \
-        archive & named("error_details", value.response_details);                \
+        archive & named("error_code", value.response_code);                   \
+        archive & named("error_details", value.response_details);             \
         return;                                                               \
       }                                                                       \
     ResponseSerializer<type>::serialize(archive, value);                      \
@@ -28,7 +28,22 @@ ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
   template<> template<typename Archive, typename Value>                       \
   void elle::serialize::ResponseSerializer<type>::serialize(Archive& archive, \
                                                             Value& value)     \
+/**/
 
+namespace elle
+{
+  namespace serialize
+  {
+    template<typename T>
+    struct ResponseSerializer
+    {
+      ELLE_SERIALIZE_BASE_CLASS_MIXIN_TN(T, 0)
+
+      template<typename Archive, typename Value>
+      static void serialize(Archive&, Value&);
+    };
+  }
+}
 
 SERIALIZE_RESPONSE(plasma::meta::DebugResponse, ar, res)
 {
@@ -64,7 +79,16 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
   ar & named("fullname", res.fullname);
   ar & named("email", res.email);
   ar & named("public_key", res.public_key);
+  ar & named("status", res.status);
 }
+
+// SERIALIZE_RESPONSE(plasma::meta::SwaggerResponse, ar, res)
+// {
+//   ar & named("_id", res._id);
+//   ar & named("fullname", res.fullname);
+//   ar & named("email", res.email);
+//   ar & named("public_key", res.public_key);
+// }
 
 SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
 {
@@ -78,6 +102,11 @@ SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::UsersResponse, ar, res)
 {
   ar & named("users", res.users);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::SwaggersResponse, ar, res)
+{
+  ar & named("swaggers", res.swaggers);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::CreateDeviceResponse, ar, res)
@@ -99,19 +128,22 @@ SERIALIZE_RESPONSE(plasma::meta::InviteUserResponse, ar, res)
 
 SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
 {
+  // XXX see plasma/plasma.hxx
   ar & named("transaction_id", res.transaction_id);
-  ar & named("first_filename", res.first_filename);
-  ar & named("files_count", res.files_count);
-  ar & named("total_size", res.total_size);
-  ar & named("is_directory", res.is_directory);
-  ar & named("network_id", res.network_id);
   ar & named("sender_id", res.sender_id);
   ar & named("sender_fullname", res.sender_fullname);
   ar & named("sender_device_id", res.sender_device_id);
   ar & named("recipient_id", res.recipient_id);
   ar & named("recipient_fullname", res.recipient_fullname);
   ar & named("recipient_device_id", res.recipient_device_id);
+  ar & named("recipient_device_name", res.recipient_device_id);
+  ar & named("network_id", res.network_id);
+  ar & named("first_filename", res.first_filename);
+  ar & named("files_count", res.files_count);
+  ar & named("total_size", res.total_size);
+  ar & named("is_directory", res.is_directory);
   ar & named("status", res.status);
+  ar & named("message", res.message);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::TransactionsResponse, ar, res)
@@ -127,21 +159,6 @@ SERIALIZE_RESPONSE(plasma::meta::CreateTransactionResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::UpdateTransactionResponse, ar, res)
 {
   ar & named("updated_transaction_id", res.updated_transaction_id);
-}
-
-SERIALIZE_RESPONSE(plasma::meta::StartTransactionResponse, ar, res)
-{
-  ar & named("updated_transaction_id", res.updated_transaction_id);
-}
-
-SERIALIZE_RESPONSE(plasma::meta::FinishTransactionResponse, ar, res)
-{
-  ar & named("finished_transaction_id", res.finished_transaction_id);
-}
-
-SERIALIZE_RESPONSE(plasma::meta::CancelTransactionResponse, ar, res)
-{
-  ar & named("canceled_transaction_id", res.canceled_transaction_id);
 }
 
 SERIALIZE_RESPONSE(plasma::meta::MessageResponse, ar, res)
@@ -177,6 +194,12 @@ SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
 {
   ar & named("created_network_id", res.created_network_id);
 }
+
+SERIALIZE_RESPONSE(plasma::meta::DeleteNetworkResponse, ar, res)
+{
+  ar & named("deleted_network_id", res.deleted_network_id);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::UpdateNetworkResponse, ar, res)
 {
   ar & named("updated_network_id", res.updated_network_id);
@@ -318,6 +341,19 @@ namespace plasma
       return this->_client.post<UsersResponse>("/user/search", request);
     }
 
+    SwaggersResponse
+    Client::get_swaggers()
+    {
+      return this->_client.get<SwaggersResponse>("/user/swaggers");
+    }
+
+    // SwaggerResponse
+    // Client::get_swagger(std::string const& id)
+    // {
+    //   return this->_client.get<SwaggerResponse>("/user/" + id + "/view");
+    // }
+
+
     //- Devices ---------------------------------------------------------------
 
     CreateDeviceResponse
@@ -364,13 +400,12 @@ namespace plasma
                                std::string const& network_id,
                                std::string const& device_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
+      json::Dictionary request{std::map<std::string, std::string>{
           {"recipient_id_or_email", recipient_id_or_email},
           {"first_filename", first_filename},
           {"device_id", device_id},
           {"network_id", network_id},
-        }};
+      }};
       request["total_size"] = size;
       request["is_directory"] = is_dir;
       request["files_count"] = count;
@@ -389,57 +424,40 @@ namespace plasma
       json::Dictionary request{std::map<std::string, std::string>
         {
           {"transaction_id", transaction_id},
-          {"device_id", device_id},
-          {"device_name", device_name},
         }};
+
       request["status"] = status;
+      if (device_id.length() > 0)
+        request["device_id"] = device_id;
+      if (device_name.length() > 0)
+        request["device_name"] = device_name;
 
       ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%ui'",
                  transaction_id,
                  device_name,
                  status);
 
-      auto res = this->_client.post<UpdateTransactionResponse>("/transaction/update", request);
+      UpdateTransactionResponse res;
 
-      return res;
-    }
+      switch(status)
+      {
+        case gap_TransactionStatus::gap_transaction_status_accepted:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/accept", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_started:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_canceled:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/cancel", request);
+          break;
+        case gap_TransactionStatus::gap_transaction_status_finished:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/finish", request);
+          break;
+        default:
+          ELLE_WARN("You are not able to change transaction status to '%i'.",
+            status);
 
-    StartTransactionResponse
-    Client::start_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<StartTransactionResponse>("/transaction/start", request);
-
-      return res;
-    }
-
-    FinishTransactionResponse
-    Client::finish_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<FinishTransactionResponse>("/transaction/finish", request);
-
-      return res;
-    }
-
-
-    CancelTransactionResponse
-    Client::cancel_transaction(std::string const& transaction_id)
-    {
-      json::Dictionary request{std::map<std::string, std::string>
-        {
-          {"transaction_id", transaction_id},
-        }};
-
-      auto res = this->_client.post<CancelTransactionResponse>("/transaction/cancel", request);
+      }
 
       return res;
     }
@@ -527,12 +545,23 @@ namespace plasma
     }
 
     CreateNetworkResponse
-    Client::create_network(std::string const& name)
+    Client::create_network(std::string const& network_id)
     {
       json::Dictionary request{std::map<std::string, std::string>{
-          {"name", name},
+          {"name", network_id},
       }};
       return this->_client.post<CreateNetworkResponse>("/network/create", request);
+    }
+
+    DeleteNetworkResponse
+    Client::delete_network(std::string const& network_id,
+                           bool force)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"network_id", network_id},
+      }};
+      request["force"] = force;
+      return this->_client.post<DeleteNetworkResponse>("/network/delete", request);
     }
 
     UpdateNetworkResponse
@@ -616,66 +645,54 @@ namespace plasma
                                    std::string const* external_ip,
                                    uint16_t external_port)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
-          {"_id", network_id},
-          {"device_id", device_id},
-      }};
+        adapter_type local_adapter;
+        adapter_type public_adapter;
 
-      if (local_ip != nullptr)
-      {
-        json::Array local_addr;
-        local_addr.push_back(*local_ip);
-        local_addr.push_back(local_port);
-        request["local"] = local_addr;
-      }
+        local_adapter.emplace_back(*local_ip, local_port);
+        public_adapter.emplace_back(*external_ip, external_port);
 
-      if (external_ip != nullptr)
-      {
-        json::Array external_addr;
-        external_addr.push_back(*external_ip);
-        external_addr.push_back(external_port);
-        request["external"] = external_addr;
-      }
-      return this->_client.post<NetworkConnectDeviceResponse>(
-          "/network/connect_device",
-          request
-      );
+        return this->_network_connect_device(network_id,
+                                             device_id,
+                                             local_adapter,
+                                             public_adapter);
     }
 
     NetworkConnectDeviceResponse
-      Client::_network_connect_device(std::string const& network_id,
-                                      std::string const& device_id,
-                                      std::vector<std::pair<std::string, uint16_t>> const &c,
-                                      std::string const* external_ip,
-                                      uint16_t external_port)
+    Client::_network_connect_device(std::string const& network_id,
+                                    std::string const& device_id,
+                                    adapter_type const& local_endpoints,
+                                    adapter_type const& public_endpoints)
       {
-        json::Dictionary request {
-            std::map<std::string, std::string> {
-                  {"_id", network_id},
-                  {"device_id", device_id},
-            }
+        json::Dictionary request{
+          std::map<std::string, std::string>{
+                {"_id", network_id},
+                {"device_id", device_id},
+          }
         };
 
         json::Array local_addrs;
+        for (auto& a: local_endpoints)
+          {
+            json::Dictionary endpoint;
 
-        for (auto &a: c)
-        {
-          json::Dictionary endpoint;
-
-          endpoint["ip"] = a.first;
-          endpoint["port"] = a.second;
-          local_addrs.push_back(endpoint);
-        }
+            endpoint["ip"] = a.first;
+            endpoint["port"] = a.second;
+            local_addrs.push_back(endpoint);
+          }
 
         request["locals"] = local_addrs;
 
-        if (external_ip != nullptr)
-        {
-            json::Array external_addr;
-            external_addr.push_back(*external_ip);
-            external_addr.push_back(external_port);
-            request["external"] = external_addr;
-        }
+        json::Array public_addrs;
+        for (auto& a : public_endpoints)
+         {
+           json::Dictionary pub_addr;
+
+           pub_addr["ip"] = a.first;
+           pub_addr["port"] = a.second;
+           public_addrs.push_back(pub_addr);
+         }
+
+        request["externals"] = public_addrs;
 
         return this->_client.post<NetworkConnectDeviceResponse>(
             "/network/connect_device",

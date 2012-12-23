@@ -13,6 +13,8 @@ import os
 import re
 import stat
 import sys
+import glob
+import shlex
 
 # Poll thread
 import time
@@ -40,6 +42,7 @@ INFINIT_DEFAULT_HOME = os.path.join(
 )
 
 INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
+INFINIT_KEY_PATH = os.environ.get('INFINIT_KEY_PATH')
 
 if 'darwin' in sys.platform.lower():
     INFINIT_PLATFORM = 'macosx'
@@ -76,13 +79,19 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--no-update', '-n',
+    '--update', '-n',
     help="Skip the update process",
     action="store_true",
 )
 
 parser.add_argument(
     '--debug', '-d',
+    help="Enable debug mode",
+    action="store_true",
+)
+
+parser.add_argument(
+    '--auto-start',
     help="Enable debug mode",
     action="store_true",
 )
@@ -104,12 +113,39 @@ def make_simple_argument_parser(prog=None,
         parser.add_argument(*flags, **arg)
     return parser
 
+def get_candidates_for_path(path, magic):
+    path = os.path.expanduser(path)
+    path = os.path.expandvars(path)
+    save = path
+    candidates = []
+    if os.path.isdir(path):
+        path = path + "*"
+        candidates = [p[len(save):] for p in glob.glob(path)]
+    # else:
+    #     path = path + "*"
+    #     _candidates = [p for p in glob.glob(path)]
+    #     if len(_candidates) > 0:
+    #        candidates = [p[len(os.path.dirname(p)  + magic + os.path.basename(save)):] for p in _candidates]
+    #        candidates = [magic + p for p in candidates]
+    return candidates
+
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
         self._state = state
         self._args = args
-        self.prompt = state.email + '$ '
+        self._notifs = []
+        self._notifs_old = []
+        self._attach_callbacks()
         super(InfinitShell, self).__init__()
+
+    def _attach_callbacks(self):
+        self._state.transaction_callback(self._incomming_transfer_handler)
+        self._state.transaction_status_callback(self._file_transfer_status_handler)
+        self._state.message_callback(self._message_handler)
+
+    @property
+    def prompt(self):
+      return self._state.email + '(' + str(len(self._notifs)) + ') $ '
 
     def default(self, line):
         if line == 'EOF':
@@ -138,6 +174,10 @@ class InfinitShell(cmd.Cmd):
     def do_networks(self, line):
         """Print networks."""
         args = self._get_args(self._networks_argument_parser, line)
+
+        if not args:
+            return
+
         try:
             networks = self._state.networks()
             for network_id in networks:
@@ -154,7 +194,7 @@ class InfinitShell(cmd.Cmd):
         self._networks_argument_parser.print_help()
 
     ###########################################################################
-    # Retreive networks.
+    # Create network.
 
     _create_network_argument_parser = make_simple_argument_parser(
         prog = "create_network",
@@ -172,8 +212,10 @@ class InfinitShell(cmd.Cmd):
 
     def do_create_network(self, line):
         args = self._get_args(self._create_network_argument_parser, line)
+
         if not args:
             return
+
         try:
             self._state.create_network(args.name)
         except Exception as e:
@@ -195,6 +237,12 @@ class InfinitShell(cmd.Cmd):
     def do_start(self, args):
         """Mount all infinit networks."""
         try:
+            self._state.launch_watchdog()
+            self._state.connect()
+
+            self._thread = PollThread(self._state)
+            self._thread.start()
+
             self._state.launch_watchdog()
         except Exception as e:
             print(e)
@@ -219,6 +267,65 @@ class InfinitShell(cmd.Cmd):
             print(e)
 
     ###########################################################################
+    # Search user.
+
+    _search_users_argument_parser = make_simple_argument_parser(
+        prog = "search_users",
+        description = "Print all users",
+        args = [
+            {
+                'flags':'search',
+                'help':'The user email or fullname.'
+            }
+        ],
+    )
+
+    def do_search_users(self, line):
+        """Print search_users."""
+        args = self._get_args(self._search_users_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            search_ = args.search
+
+            users = self._state.search_users(search_)
+            for user_id in users:
+                print(user_id, ":", self._state.user_fullname(user_id), "-", self._state.user_email(user_id))
+        except Exception as e:
+            print(e)
+
+    def help_search_users(self):
+        self._search_users_argument_parser.print_help()
+
+    ###########################################################################
+    # Get swaggers.
+
+    _swaggers_argument_parser = make_simple_argument_parser(
+        prog = "swaggers",
+        description = "Print all users",
+        args = [],
+    )
+
+    def do_swaggers(self, line):
+        """Print swaggers."""
+        args = self._get_args(self._swaggers_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            users = self._state.get_swaggers()
+            for user_id in users:
+                print(user_id, ":", self._state.user_fullname(user_id), "-", self._state.user_email(user_id))
+        except Exception as e:
+            print(e)
+
+    def help_swaggers(self):
+        self._swaggers_argument_parser.print_help()
+
+    ###########################################################################
     # Invite a user to a network.
 
     _invite_argument_parser = make_simple_argument_parser(
@@ -241,6 +348,7 @@ class InfinitShell(cmd.Cmd):
 
     def do_invite(self, line):
         args = self._get_args(self._invite_argument_parser, line)
+
         if not args:
             return
 
@@ -294,20 +402,219 @@ class InfinitShell(cmd.Cmd):
 
     def do_sendfiles(self, line):
         args = self._get_args(self._sendfiles_argument_parser, line)
+
         if not args:
             return
 
-        recipient = args.user
-
         try:
+            recipient = args.user
+            files = args.files
+
             self._state.send_files(recipient, files)
         except Exception as e:
             print(e)
 
-    # def complete_sendfiles(self, text, line, begidx, endidx):
-    #     # XXX: Finish completion.
-    #     print(text, line, begidx, endidx, sep="|")
-    #     return []
+    def complete_sendfiles(self, text, line, begidx, endidx):
+        tok = shlex.split(line)
+        if len(tok) > 2:
+            return get_candidates_for_path(tok[len(tok) - 1], line[begidx:endidx])
+
+    ###########################################################################
+    # Set output dir.
+
+    _set_output_dir_argument_parser = make_simple_argument_parser(
+        prog = "set_output_dir",
+        description = "Set the output directory where the files are going to be downloaded.",
+        args = [
+            {
+                'flags': 'output_dir',
+                'help': 'the directory to put file on.',
+            }
+        ],
+    )
+
+    def help_set_output_dir(self):
+        self._set_output_dir_argument_parser.print_help()
+
+    def do_set_output_dir(self, line):
+        args = self._get_args(self._set_output_dir_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            output_dir = args.output_dir
+
+            self._state.set_output_dir(output_dir)
+        except Exception as e:
+            print(e)
+
+    def complete_set_output_dir(self, text, line, begidx, endidx):
+        sp = line.split(" ")
+        if len(sp) == 2:
+            return get_candidates_for_path(line, line[begidx:endidx])
+
+
+    ###########################################################################
+    # Retreive transactions.
+
+    _transactions_argument_parser = make_simple_argument_parser(
+        prog = "transactions",
+        description = "Print all transactions",
+        args = [],
+    )
+
+    def do_transactions(self, line):
+        """Print transactions."""
+        args = self._get_args(self._transactions_argument_parser, line)
+        try:
+            transactions = self._state.transactions()
+            transactions = [(t, self._state.transaction_status(t)) for t in transactions]
+            print(", ".join('%s(%s)' % trans for trans in transactions))
+        except Exception as e:
+            print(e)
+
+    def help_transactions(self):
+        self._transactions_argument_parser.print_help()
+
+    ###########################################################################
+    # Transaction.
+
+    _transaction_argument_parser = make_simple_argument_parser(
+        prog = "transaction",
+        description = "Print all human readeable informations relative to a transaction.",
+        args = [
+            {
+                'flags': 'id',
+                'help': 'The id of the transaction.',
+            }
+        ],
+    )
+
+    def do_transaction(self, line):
+        """Print transaction."""
+        args = self._get_args(self._transaction_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            id_ = args.id
+
+            if not self._state.transaction_sender_fullname(id_):
+                return
+
+            print("Sender:        ", self._state.transaction_sender_fullname(id_))
+            print("First filename:", self._state.transaction_first_filename(id_))
+            print("Files count:   ", self._state.transaction_files_count(id_))
+            print("Total size:    ", self._state.transaction_total_size(id_))
+            print("Network:       ", self._state.transaction_network_id(id_))
+            print("Status:        ", self._state.transaction_status(id_))
+
+        except Exception as e:
+            print(e)
+
+    def help_transaction(self):
+        self._transaction_argument_parser.print_help()
+
+    def complete_transaction(self, text, line, begidx, endidx):
+        return [t for t in self._state.transactions() if t.startswith(text)]
+
+    ###########################################################################
+    # Update transactions
+    _update_transaction_argument_parser = make_simple_argument_parser(
+        prog = "update_transaction",
+        description = "update a specific transaction.",
+        args = [
+            {
+                'flags': 'transaction_id',
+                'help': 'The transaction id to update.',
+            },
+            {
+                'flags': 'status',
+                'help': 'The new status',
+            }
+        ]
+    )
+
+    def do_update_transaction(self, line):
+        args = self._get_args(self._update_transaction_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            transaction = args.transaction_id;
+            status = args.status;
+
+            if status == 'accept':
+                status = self._state.TransactionStatus.accepted
+            elif status == 'cancel':
+                status = self._state.TransactionStatus.canceled
+            else:
+                print('unknown status')
+                return
+
+            self._state.update_transaction(transaction, self._state.TransactionStatus(status))
+        except Exception as e:
+            print(e)
+
+    def help_update_transaction(self):
+        self._update_transaction_argument_parser.print_help()
+
+    def complete_update_transaction(self, text, line, begidx, endidx):
+        sp = line.split(" ")
+        if len(sp) == 2:
+            return [t for t in self._state.transactions() if t.startswith(text)]
+        else:
+            return [s for s in ['accept', 'cancel'] if s.startswith(text)]
+
+    ###########################################################################
+    # Notifications.
+    _notifications_argument_parser = make_simple_argument_parser(
+        prog = "notifications",
+        description = "Display current notifications.",
+        args = [
+            {
+                'flags': 'count',
+                'help': 'number of notifications you want to display. Default: 10.',
+                'nargs': '?',
+                'default': 10,
+                'type': int,
+            },
+            {
+               'flags': 'offset',
+               'help': 'offset of notifications to display. Default: 0.',
+               'nargs': '?',
+               'default': 0,
+               'type': int,
+            }
+        ],
+    )
+
+    def help_notifications(self):
+        self._notifications_argument_parser.print_help()
+
+    def do_notifications(self, line):
+        args = self._get_args(self._notifications_argument_parser, line)
+
+        if not args:
+            return
+
+        try:
+            count = args.count
+            offset = args.offset
+
+            for notif in self._notifs:
+                print(notif)
+            for notif in self._notifs_old:
+                print(notif)
+
+            self._notifs_old += self._notifs
+            self._notifs = []
+            self._state.notifications_read()
+        except Exception as e:
+            print(e)
 
     ###########################################################################
     # Default.
@@ -316,6 +623,36 @@ class InfinitShell(cmd.Cmd):
             print()
             raise KeyboardInterrupt()
         print("Command not found:", line)
+
+    ###########################################################################
+    # Callbacks.
+    def _incomming_transfer_handler(self, transaction_id, new):
+        if new:
+            recipient = self._notifs
+        else:
+            recipient = self._notifs_old
+
+        recipient.append("New transaction %s from %s [(%s file(s)) %s %sB]" % (
+                         transaction_id,
+                         self._state.transaction_sender_fullname(transaction_id),
+                         self._state.transaction_files_count(transaction_id),
+                         self._state.transaction_first_filename(transaction_id),
+                         self._state.transaction_total_size(transaction_id))
+        )
+
+    def _file_transfer_status_handler(self, transaction_id, new):
+        if new:
+            recipient = self._notifs
+        else:
+            recipient = self._notifs_old
+
+        recipient.append("Notification %s status changed to %s" % (
+                         transaction_id,
+                         self._state.TransactionStatus(self._state.transaction_status(transaction_id)))
+        )
+
+    def _message_handler(self, message):
+        print("Message")
 
 def start_shell(state, args):
     shell = InfinitShell(state, args)
@@ -330,6 +667,16 @@ def start_shell(state, args):
             if not dev_name:
                 dev_name = default_dev_name
             shell.do_create_device(dev_name)
+
+    if not hasattr(state, 'output_dir') or len(state.output_dir) == 0:
+        if args.action == 'shell':
+            print("No output dir found, try 'set_output_dir' command")
+        else:
+            default_output_dir = state.get_output_dir()
+            state.output_dir = input("Output dir (defaults to '%s'): " % default_output_dir).strip()
+            if not state.output_dir:
+                state.output_dir = default_output_dir
+            state.set_output_dir(state.output_dir)
 
     if 'shell' in args.action:
         do_shell = True
@@ -386,8 +733,7 @@ def register(state):
         else:
           break
 
-def login(state):
-    email=None
+def login(state, email = None):
     while True:
         email = re_input("email", regexp=EMAIL_REGEXP, default=email)
         password = getpass.getpass("password: ").strip()
@@ -464,14 +810,14 @@ def update_binaries():
 def main():
     args = parser.parse_args()
 
-    if not args.no_update:
+    if args.update:
         update_binaries()
 
     file_dir = os.path.abspath(os.path.dirname(__file__))
     sys.path = [
-        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '../lib'),
+        os.path.join(file_dir, '../surface/gap/python'),
         os.path.join(INFINIT_HOME, 'python'),
-        os.path.join(file_dir, '..', 'python'),
     ] + sys.path
 
     import gap
@@ -484,27 +830,11 @@ def main():
         args.action.remove('register')
         register(state)
     else:
-        print("Authentication required (if you don't have an account, try -r)")
-        login(state)
+        if state.logged != True:
+            print("Authentication required (if you don't have an account, try -r)")
+            login(state)
 
-    state.OnTransaction(_IncommingFileTransferHandler)
-    state.OnTransactionStatus(_FileTransferStatusHandler)
-    state.OnMessage(_MessageHandler)
-    thread = PollThread(state)
-    thread.start()
-    state.connect()
     start_shell(state, args)
-
-def _IncommingFileTransferHandler(transfer):
-    username = state.user_fullname(transfer.sender_id)
-    print("_IncommingFileTransferHandler:", username)
-    #state.answer_transaction(transfer.transaction_id, answer)
-
-def _FileTransferStatusHandler(status):
-    print("_FileTransferStatusHandler")
-
-def _MessageHandler(message):
-    print("_MessageHandler")
 
 class PollThread (threading.Thread):
     close = False
@@ -512,17 +842,15 @@ class PollThread (threading.Thread):
     def __init__(self, state):
         super(PollThread, self).__init__()
         self.state = state
+        self.running = True
 
     def run (self):
-        self.bite = False
-        while True:
+        while self.running:
             time.sleep(0.5)
             self.state.poll()
-            if self.close == True:
-                return
 
     def stop(self):
-        self.close = True
+        self.running = False
 
 if __name__ == '__main__':
     thread = 0
@@ -531,5 +859,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         if thread:
             thread.close()
-            time.sleep(0.05)
+            time.sleep(0.1)
         pass

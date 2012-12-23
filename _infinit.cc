@@ -8,6 +8,7 @@
 #include <elle/network/Interface.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/cast.hh>
+#include <elle/nat/Nat.hh>
 
 #include <agent/Agent.hh>
 
@@ -150,6 +151,27 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
+  // Create the NAT Manipulation class
+  elle::nat::NAT NAT(elle::concurrency::scheduler());
+  std::vector<std::pair<std::string, uint16_t>> public_addresses;
+
+
+  // By default, try to open a hole in the nat.
+  try
+    {
+      ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
+                       common::longinus::host(),
+                       common::longinus::port());
+      elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
+                                         common::longinus::port());
+
+      public_addresses.push_back(pokey.public_endpoint());
+    }
+  catch (elle::Exception &e)
+    {
+      ELLE_WARN("NAT punching error: %s", e.what());
+    }
+
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
                         elle::io::Piece{"%NETWORK%", Infinit::Network});
@@ -176,7 +198,8 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       plasma::meta::Client client(common::meta::host(), common::meta::port());
       try
         {
-          std::string address;
+          std::vector<std::pair<std::string, uint16_t>> addresses;
+
           auto interfaces = elle::network::Interface::get_map(
             elle::network::Interface::Filter::only_up
             | elle::network::Interface::Filter::no_loopback
@@ -185,22 +208,26 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
             if (pair.second.ipv4_address.size() > 0 &&
                 pair.second.mac_address.size() > 0)
               {
-                address = pair.second.ipv4_address;
+                addresses.emplace_back(pair.second.ipv4_address, slug->port());
                 break;
               }
-          if (address.size() == 0)
+          if (addresses.size() == 0)
             {
               ELLE_ERR("Cannot find any valid ip address");
             }
           else
             {
-              ELLE_LOG("Register instance address: %s:%d", address,
-                       slug->port());
+              for (auto const &pair: addresses)
+              {
+                ELLE_LOG("Register instance address: %s:%d", pair.first,
+                         pair.second);
+              }
+
               client.token(agent::Agent::meta_token);
               client.network_connect_device(descriptor.meta().id(),
                                             passport.id(),
-                                            &address,
-                                            slug->port());
+                                            addresses,
+                                            public_addresses);
             }
         }
       catch (std::exception const& err)

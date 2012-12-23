@@ -251,15 +251,15 @@ def fill_dependencies(dependencies, binary_path, kind, indent=1):
 LIBRARY_EXT = "darwin" in sys.platform and "dylib" or "so"
 
 infinit_files = [
-    ("8infinit", "bin"),
-    ("satellites/access/8access", "bin"),
-    ("satellites/group/8group", "bin"),
-    ("plasma/watchdog/8watchdog", "bin"),
-    ("surface/cli/infinit-cli", "bin"),
-    ("surface/cli/8chmod", "bin"),
-    ("surface/gap/libgap." + LIBRARY_EXT, "lib"),
-    ("surface/gap/python/_gap.so", "python"),
-    ("surface/gap/python/gap.py", "python"),
+    ("bin/8infinit", "bin"),
+    ("bin/8access", "bin"),
+    ("bin/8group", "bin"),
+    ("bin/8watchdog", "bin"),
+    ("bin/8chmod", "bin"),
+    ("bin/infinit-cli", "bin"),
+    ("lib/libgap." + LIBRARY_EXT, "lib"),
+    ("lib/python/_gap.so", "python"),
+    ("lib/python/gap.py", "python"),
 ]
 
 dependencies = {}
@@ -330,11 +330,15 @@ server_scripts = [
     "meta-server",
     "meta-tests",
     "creosus-server",
+    "trophonius-server",
+    "trophonius",
+    "longinus-server.py",
+    "longinus",
 ]
 
 if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
     for f in server_scripts:
-        src = os.path.join(DIR_BUILD, "oracle/disciples", f)
+        src = os.path.join(DIR_BUILD, "lib/python", f)
         dst = os.path.join(DIR_INSTALL_SERVER, f)
         if os.path.isdir(src):
             shutil.copytree(src, dst)

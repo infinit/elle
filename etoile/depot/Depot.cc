@@ -43,6 +43,12 @@ namespace etoile
       _hole() = hole;
     }
 
+    elle::Boolean
+    have_hole()
+    {
+      return (_hole() != nullptr);
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //

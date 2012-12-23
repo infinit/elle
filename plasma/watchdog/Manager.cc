@@ -102,21 +102,21 @@ void Manager::unregister_all_commands()
   this->_commands->clear();
 }
 
-
-void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
+void
+Manager::execute_command(ConnectionPtr& conn,
+                         json::Dictionary const& cmd)
 {
-  if (cmd["_id"].toString() != this->_actions->watchdogId())
+  if (cmd["_id"] != this->_actions->watchdog_id())
     {
       ELLE_WARN("Invalid given watchdog id: %s",
-                      cmd["_id"].toString().toStdString());
+                      cmd["_id"]);
       return;
     }
 
-  auto it = this->_commands->find(cmd["command"].toString().toStdString());
+  auto it = this->_commands->find(cmd["command"].as<std::string>());
   if (it == this->_commands->end())
     {
-      ELLE_WARN("command not found: %s",
-                      cmd["command"].toString().toStdString());
+      ELLE_WARN("command not found: %s", cmd["command"]);
       return;
     }
 
@@ -133,9 +133,9 @@ void Manager::stop()
   exit(0);
 }
 
-void Manager::start(std::string const& watchdogId)
+void Manager::start(std::string const& watchdog_id)
 {
-  this->_actions->watchdogId(watchdogId.c_str());
+  this->_actions->watchdog_id(watchdog_id);
 }
 
 void Manager::refresh_networks()

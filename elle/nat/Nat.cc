@@ -1,134 +1,160 @@
+#include <sstream>
 #include <elle/nat/Nat.hh>
 #include <elle/concurrency/Scheduler.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/sleep.hh>
 
-namespace elle {
-namespace nat {
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
-namespace {
-
-namespace ec = elle::concurrency;
-namespace rnet = reactor::network;
-
-}
-
-// Class Hole {{{
-
-Hole::Hole(reactor::Scheduler &sched,
-           std::string const &hostname,
-           std::string const &port)
-    : _handle(new rnet::UDPSocket(sched, hostname, port))
+namespace elle
 {
-}
+  namespace nat
+  {
 
-Hole::Hole(reactor::Scheduler &sched,
-           std::string const &hostname,
-           int port)
-    : _handle(new rnet::UDPSocket(sched, hostname, port))
-{
-}
+  namespace {
 
-Hole::~Hole()
-{
-}
+    namespace ec = elle::concurrency;
+    namespace rnet = reactor::network;
 
-void
-Hole::requestPublicIP(void)
-{
-    int n;
-    char msg[] = "echo sasp\n";
+  }
+
+  // Class Hole {{{
+
+  Hole::Hole(reactor::Scheduler &sched,
+             std::string const &hostname,
+             std::string const &port)
+      : _handle{new rnet::UDPSocket{sched, hostname, port}}
+      , _public_endpoint{"", 0}
+  {
+  }
+
+  Hole::Hole(reactor::Scheduler &sched,
+             std::string const &hostname,
+             int port)
+      : _handle{new rnet::UDPSocket{sched, hostname, port}}
+      , _public_endpoint{"", 0}
+  {
+  }
+
+  Hole::Hole(Hole&& other):
+    _handle{std::move(other._handle)}
+  {}
+
+  Hole::~Hole()
+  {
+    this->say("quit");
+  }
+
+  void
+  Hole::sayHello(void)
+  {
+    this->say("hello");
+  }
+
+  void
+  Hole::say(std::string const msg)
+  {
+    if (this->_handle)
+      {
+        this->_handle->write(rnet::Buffer(msg + "\n"));
+      }
+  }
+
+  std::string const
+  Hole::get()
+  {
     std::string resp;
 
     resp.resize(512);
-    this->_handle->write(rnet::Buffer(msg, sizeof(msg)));
-    n = this->_handle->read_some(rnet::Buffer(resp));
-}
+    this->_handle->read_some(rnet::Buffer(resp));
+    return resp;
+  }
 
-void
-Hole::drill(void)
-{
-    this->requestPublicIP();
-}
+  void
+  Hole::exchangeIP(void)
+  {
+    std::string resp;
+    std::stringstream ss;
+    std::vector<std::string> splited;
 
-// class Hole }}}
+    ss << "local " << this->_handle->local_endpoint();
+    this->say(ss.str());
+    resp = this->get();
 
-// class KeepAlive {{{
+    boost::split(splited, resp, boost::is_any_of(" :"));
+    this->_public_endpoint = std::make_pair(splited[1], std::stoi(splited[2]));
+  }
 
-KeepAlive::KeepAlive(reactor::Scheduler& sched,
-                     u_ptr<rnet::UDPSocket>&& s)
-    : sched(sched)
-    , handle(std::move(s))
-{
-}
+  void
+  Hole::drill(void)
+  {
+    this->sayHello();
+    this->exchangeIP();
+  }
 
-KeepAlive::~KeepAlive()
-{
-}
+  // class Hole }}}
 
-void
-KeepAlive::run(void)
-{
+  // class KeepAlive {{{
+
+  KeepAlive::KeepAlive(reactor::Scheduler& sched,
+                       u_ptr<rnet::UDPSocket>&& s):
+      sched(sched) , handle(std::move(s))
+  {}
+
+  KeepAlive::~KeepAlive()
+  {}
+
+  void
+  KeepAlive::run(void)
+  {
     std::string  buf;
-    int n;
 
     buf.resize(128);
     while (this->running == true)
     {
-        reactor::Sleep s(this->sched, boost::posix_time::seconds(2));
+        reactor::Sleep s(this->sched, boost::posix_time::seconds(60));
 
         handle->write(rnet::Buffer(std::string("ping\n")));
-        n = handle->read_some(rnet::Buffer(buf));
+        handle->read_some(rnet::Buffer(buf));
         s.run();
     }
-}
+  }
 
-void
-KeepAlive::stop(void)
-{
+  void
+  KeepAlive::stop(void)
+  {
     this->running = false;
-}
+  }
 
-// class KeepAlive }}}
+  // class KeepAlive }}}
 
-// class NAT {{{
+  // class NAT {{{
 
-NAT::NAT(reactor::Scheduler &s)
-    : sched(s)
-    , alive()
-{
-}
+  NAT::NAT(reactor::Scheduler &s):
+      sched(s),
+      alive()
+  {}
 
-NAT::~NAT()
-{
+  NAT::~NAT()
+  {
     if (this->alive)
-        this->alive->terminate();
-}
+      this->alive->terminate();
+  }
 
-void
-NAT::punch(std::string const &hostname,
-      int port)
-{
+  Hole
+  NAT::punch(std::string const &hostname,
+             int port)
+  {
     Hole h(sched, hostname, port);
 
     h.drill();
-    rnet::UDPSocket *ptr = h.getPunchedHandle().release(); /*Hack*/
-    this->alive = u_ptr<reactor::Thread>(new reactor::Thread(
-        this->sched,
-        "Keep Alive UDP Hole Punching",
-        [this, ptr]
-        {
-           u_ptr<KeepAlive> ka(
-               new KeepAlive(this->sched, u_ptr<rnet::UDPSocket>(ptr))
-           );
-           ka->run();
-        }
-    ));
-}
+    return h;
+  }
 
 
-// class NAT }}}
+  // class NAT }}}
 
-} /* nat */
+  } /* nat */
 } /* elle */

@@ -6,4 +6,5 @@ add_executable(8transfer
 target_link_libraries(
 	8transfer
 	${INFINIT_LIBRARIES}
+	readline
 )
