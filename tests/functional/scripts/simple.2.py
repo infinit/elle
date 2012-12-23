@@ -37,12 +37,12 @@ DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
 import sysconfig
 print(sysconfig.get_config_var('VERSION'))
 
-with open(p1, 'w') as f:
+with open(p1, 'wb') as f:
     print("File encoding:", f.encoding)
-    f.write(DATA)
+    f.write(DATA.encode('utf8'))
 
-with open(p1, 'r') as f:
-    s = f.read()
+with open(p1, 'rb') as f:
+    s = f.read().decode('utf8')
     print(s, file=sys.stderr)
     assert s == DATA
 
