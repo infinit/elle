@@ -17,25 +17,23 @@ namespace nucleus
 {
   namespace proton
   {
-    /// Repreent the location of a block being either in main memory, in
-    /// the nest or on the storage layer.
+    /// Represent the location of a block in the nest.
     ///
-    /// In term of implementation, the _placement_ is used to reference the
-    /// block in the nest, in which case the block could very well be in
-    /// main memory or on a disk-based cache. Should the block not be loaded
-    /// in the nest, the _address_ indicates the block's address in the storage
-    /// layer. Finally, if the block is actually currently loaded in main
-    /// memory, the _block_ attribute holds its address.
+    /// In term of implementation, whenever the nest is requested for
+    /// loading the given handle, an _egg_ is set in the handle so as to
+    /// reference the block in its nest.
     ///
-    /// Note that a _secret_ is also kept which enable one to decrypt the
-    /// referenced block.
+    /// A handle can be created two ways, either by providing the address
+    /// of the block along with the secret key for decrypting it or by
+    /// providing the egg to reference for accessing the block along with
+    /// a temporary address (required for computing the handle's footprint).
     class Handle:
       public elle::Printable
     {
-      // XXX
-    public:
-      /// XXX
-      static Handle Null;
+      /* XXX
+         permanent: address/secret
+         volatile: egg/footprint
+       */
 
       //
       // constructors & destructors
@@ -51,10 +49,9 @@ namespace nucleus
              Address const& address,
              cryptography::SecretKey const& secret);
       /// XXX
-      Handle(Placement const& placement,
-             Address const& address);
-      /// XXX
       Handle(Handle const& other);
+      /// XXX
+      ~Handle();
 
       //
       // methods
@@ -111,6 +108,7 @@ namespace nucleus
       // attributes
       //
     private:
+      // XXX Egg* egg;
       // XXX[il devrait y avoir un type: memory, nest, storage layer]
       // XXX[et une union? en fait non probablement pas car c'est bien de garder l'addresse]
       Placement _placement;

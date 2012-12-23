@@ -346,11 +346,25 @@ namespace etoile
       ELLE_FINALLY_ABORT(pod);
 
       // XXX[a temporary address for the footprint() to be valid]
+      // XXX[use a network argument passed when Nest is instanciated +
+      //     family.. et component contents]
       static nucleus::proton::Address some(pod->block->network(),
                                            pod->block->family(),
                                            pod->block->component());
+      /// This constant represents the hard-coded length of the secrets
+      /// used to encrypt the blocks composing porcupines.
+      /// XXX in bytes & to move in Contents where the encryption actually
+      ///     takes place?
+      /// XXX the length should be parameterable
+      static const elle::Natural32 secret_length = 256;
+      // XXX[pass info so as to parameter the future size of the key]
+      static cryptography::SecretKey secret{
+        cryptography::SecretKey::generate(secret_length)};
+      static nucleus::proton::Footprint footprint{
+        elle::serialize::footprint(some) + elle::serialize::footprint(secret)};
 
-      nucleus::proton::Handle handle(pod->placement, some);
+      // XXX[future] nucleus::proton::Handle handle(pod->placement, footprint);
+      nucleus::proton::Handle handle(pod->placement, some, secret);
 
       return (handle);
     }
@@ -380,9 +394,6 @@ namespace etoile
       ELLE_TRACE_METHOD(handle);
 
       std::shared_ptr<nucleus::proton::Contents> block;
-
-      // make sure the given handle is valid.
-      assert(handle != nucleus::proton::Handle::Null);
 
       if (handle.placement() != nucleus::proton::Placement::Null)
         {

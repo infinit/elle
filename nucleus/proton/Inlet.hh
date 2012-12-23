@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Handle.hh>
@@ -14,98 +15,55 @@ namespace nucleus
 {
   namespace proton
   {
-
+    /// Represent a nodule item i.e a descriptor of the child element
+    /// being referenced be it either a sub-nodule block or a value block.
     ///
-    /// this class represents a nodule item being for seams or quills.
-    ///
-    /// an inlet therefore embeds the item's key along with the address
-    /// of the value whose type depends upon the nodule's nature. indeed,
-    /// while seams' entries reference other nodules, i.e sub-seams or quills,
-    /// quills' entries reference the final value.
-    ///
-    /// as said above, every inlet embeds the address of the value object.
-    /// note however that should the inlet just be created (common case),
-    /// the address would be null, hence empty. unfortunately, the address
-    /// will eventually be computed. since the size of the address differs
-    /// between its creation and its sealing, the footprint calculation is
-    /// biaised and thus incorrect.
-    ///
-    /// in order to circumvent this issue, the initial empty address is set
-    /// to Address::Some, whose role is to provide an address with a valid
-    /// size.
-    ///
+    /// An inlet embeds the item's key along with the address of the child
+    /// block i.e through a handle.
     template <typename K>
     class Inlet:
-      public elle::io::Dumpable
+      public elle::Printable,
+      public elle::io::Dumpable,
+      private boost::noncopyable
     {
-    public:
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       Inlet();
-      Inlet(K const&,
-            Handle const&);
-
-      //
-      // methods
-      //
-    public:
-      /// XXX
-      K const&
-      key() const;
-      /// XXX
-      void
-      key(K const&);
-      /// XXX
-      Handle&
-      value();
-      /// XXX
-      Capacity const&
-      capacity() const;
-      /// XXX
-      void
-      capacity(Capacity const);
-      /// XXX
-      State const&
-      state() const;
-      /// XXX
-      void
-      state(State const);
-      /// XXX
-      Footprint const&
-      footprint() const;
-      /// XXX
-      void
-      footprint(Footprint const);
+      Inlet(K const& k,
+            Handle const& v);
 
       /*----------.
       | Operators |
       `----------*/
     public:
-      ELLE_OPERATOR_ASSIGNMENT(Inlet);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Inlet);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Inlet);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      K _key;
-      Handle _value;
-      Capacity _capacity;
-      State _state;
-      Footprint _footprint;
+      ELLE_ATTRIBUTE_RW(K, key);
+      ELLE_ATTRIBUTE_RX(Handle, value);
+      ELLE_ATTRIBUTE_RW(Capacity, capacity);
+      ELLE_ATTRIBUTE_RW(State, state);
+      ELLE_ATTRIBUTE_RW(Footprint, footprint);
     };
-
   }
 }
 

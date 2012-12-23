@@ -340,37 +340,37 @@ namespace nucleus
               next++;
 
               //
-              // if the iterators are valid, consider it.
+              // load the left/right nodules, if the iterators
+              // are valid.
               //
-              Handle l;
-              Handle r;
+              Ambit<typename X::V>* left = nullptr;
+              Ambit<typename X::V>* right = nullptr;
+
+              ELLE_FINALLY_ACTION_DELETE(left);
+              ELLE_FINALLY_ACTION_DELETE(right);
 
               if ((iterator != nodule._container.begin()) &&
                   (previous != nodule._container.end()))
-                l = previous->second->value();
+                left = new Ambit<typename X::V>(nodule.nest(),
+                                                previous->second->value());
 
               if (next != nodule._container.end())
-                r = next->second->value();
-
-              //
-              // load the left/right nodules.
-              //
-              Ambit<typename X::V> left(nodule.nest(), l);
-              Ambit<typename X::V> right(nodule.nest(), r);
+                right = new Ambit<typename X::V>(nodule.nest(),
+                                                 next->second->value());
 
               // XXX expliquer que la on se base sur le pointeur
               // plutot que le handle.
 
-              if (left.handle() != Handle::Null)
+              if (left != nullptr)
                 {
                   ELLE_TRACE("left neighbour present");
-                  left.load();
+                  (*left).load();
                 }
 
-              if (right.handle() != Handle::Null)
+              if (right != nullptr)
                 {
                   ELLE_TRACE("right neighbour present");
-                  right.load();
+                  (*right).load();
                 }
 
               // XXX expliquer que plus bas on reteste le left/right.handle pour
@@ -386,9 +386,9 @@ namespace nucleus
               // and right nodules have been loaded anyway so that the pointers
               // can be compared more efficiently.
               //
-              if ((left.handle() != Handle::Null) &&
-                  (left().state() == State::dirty) &&
-                  ((left().footprint() + current().footprint() - initial) <
+              if ((left != nullptr) &&
+                  ((*left)().state() == State::dirty) &&
+                  (((*left)().footprint() + current().footprint() - initial) <
                    nodule.nest().limits().extent()))
                 {
                   //
@@ -402,9 +402,10 @@ namespace nucleus
                   //
                   goto _merge_left;
                 }
-              else if ((right.handle() != Handle::Null) &&
-                       (right().state() == State::dirty) &&
-                       ((current().footprint() - initial + right().footprint()) <
+              else if ((right != nullptr) &&
+                       ((*right)().state() == State::dirty) &&
+                       ((current().footprint() - initial +
+                         (*right)().footprint()) <
                         nodule.nest().limits().extent()))
                 {
                   //
@@ -413,8 +414,9 @@ namespace nucleus
                   //
                   goto _merge_right;
                 }
-              else if ((left.handle() != Handle::Null) &&
-                       ((left().footprint() + current().footprint() - initial) <
+              else if ((left != nullptr) &&
+                       (((*left)().footprint() + current().footprint() -
+                         initial) <
                         nodule.nest().limits().extent()))
                 {
                   //
@@ -425,12 +427,12 @@ namespace nucleus
                   ELLE_TRACE("merging with the left neighbour");
 
                   // merge the nodule.
-                  left().merge(current.handle());
+                  (*left)().merge(current.handle());
 
                   // update the inlet referencing left.
                   typename X::I* il = previous->second;
-                  il->capacity(left().capacity());
-                  il->state(left().state());
+                  il->capacity((*left)().capacity());
+                  il->state((*left)().state());
 
                   // at this point, current is empty and unreferenced.
                   // therefore, detach the block from the porcupine.
@@ -451,11 +453,11 @@ namespace nucleus
                   // finally, update the current seam so as to reference the new
                   // mayor key for the left nodule since it has received
                   // all the entries of the current child.
-                  nodule.refresh(previous, left().mayor());
+                  nodule.refresh(previous, (*left)().mayor());
                 }
-              else if ((right.handle() != Handle::Null) &&
+              else if ((right != nullptr) &&
                        ((current().footprint() - initial +
-                         right().footprint()) <
+                         (*right)().footprint()) <
                         nodule.nest().limits().extent()))
                 {
                   //
@@ -467,12 +469,12 @@ namespace nucleus
                   ELLE_TRACE("merging with the right neighbour");
 
                   // merge the nodule.
-                  right().merge(current.handle());
+                  (*right)().merge(current.handle());
 
                   // update the inlet referencing right.
                   typename X::I* il = next->second;
-                  il->capacity(right().capacity());
-                  il->state(right().state());
+                  il->capacity((*right)().capacity());
+                  il->state((*right)().state());
 
                   // at this point, current is empty and unreferenced.
                   // therefore, detach the block from the porcupine.
@@ -519,11 +521,16 @@ namespace nucleus
               // unload the left/right nodules, if necessary.
               //
 
-              if (left.handle() != Handle::Null)
-                left.unload();
+              if (left != nullptr)
+                (*left).unload();
 
-              if (right.handle() != Handle::Null)
-                right.unload();
+              if (right != nullptr)
+                (*right).unload();
+
+              delete left;
+              delete right;
+              ELLE_FINALLY_ABORT(left);
+              ELLE_FINALLY_ABORT(right);
             }
         }
       else

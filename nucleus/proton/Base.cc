@@ -61,9 +61,9 @@ namespace nucleus
       return true;
     }
 
-    /*-----------.
-    | Interfaces |
-    `-----------*/
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Base::Dump(elle::Natural32              margin) const
@@ -83,6 +83,10 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
     void
     Base::print(std::ostream& stream) const
     {
@@ -90,6 +94,5 @@ namespace nucleus
              << this->_revision
              << "}";
     }
-
   }
 }

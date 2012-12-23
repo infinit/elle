@@ -387,11 +387,12 @@ namespace nucleus
             root.unload();
 
             // Regenerate the handle based on the new address and the secret.
-            Handle* handle = new Handle{this->_root->placement(),
-                                        address,
-                                        secret};
+            Placement _placement = this->_root->placement();
+
             delete this->_root;
-            this->_root = handle;
+
+            this->_root = new Handle{address, secret};
+            this->_root->placement(_placement);
 
             // Return the type-independent tree's root.
             return (Root(this->_root->address(),
