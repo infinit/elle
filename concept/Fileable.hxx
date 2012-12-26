@@ -109,10 +109,7 @@ namespace elle
 
       ELLE_TRACE_SCOPE("exists(%s)", path);
 
-      if (elle::io::File::Exist(path) == elle::Status::False)
-        return (false);
-
-      return (true);
+      return (elle::io::File::Exist(path));
     }
 
   }

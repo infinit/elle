@@ -49,10 +49,8 @@ namespace elle
     switch (res)
       {
       case Status::Ok:
-      case Status::True:
         return true;
       case Status::Error:
-      case Status::False:
         return false;
       default:
         ELLE_ASSERT(false && "Invalid return code");

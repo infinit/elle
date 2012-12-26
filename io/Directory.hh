@@ -32,7 +32,7 @@ namespace elle
       //
       static Status     Create(const Path&);
       static Status     Remove(const Path&);
-      static Status     Exist(const Path&);
+      static Boolean    Exist(const Path&);
       static Status     Dig(const Path&);
       static Status     Clear(const Path&);
       static Status     List(const Path&,
