@@ -165,9 +165,17 @@ namespace etoile
                "directory");
 
       // look up the entry.
-      if (context.contents->content->Lookup(name,
-                                            entry) == elle::Status::Error)
-        escape("unable to find the entry in the directory");
+      try
+        {
+          if (context.contents->content->Lookup(name,
+                                                entry) == elle::Status::Error)
+            escape("unable to find the entry in the directory");
+        }
+      catch (elle::Exception const& e)
+        {
+          // XXX[return normally with a null-pointer trait]
+          entry = nullptr;
+        }
 
       return elle::Status::Ok;
     }

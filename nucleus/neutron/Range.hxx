@@ -141,15 +141,15 @@ namespace nucleus
     /// this method returns true if an item for the given symbol exists.
     ///
     template <typename T>
-    elle::Status        Range<T>::Exist(const Range<T>::Symbol& symbol) const
+    elle::Boolean       Range<T>::Exist(const Range<T>::Symbol& symbol) const
     {
       Range<T>::Scoutor scoutor;
 
       // try to locate the entry.
-      if (this->Locate(symbol, scoutor) != elle::Status::True)
-        return elle::Status::False;
+      if (this->Locate(symbol, scoutor) != true)
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -158,7 +158,7 @@ namespace nucleus
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    elle::Status        Range<T>::Lookup(const Range<T>::Symbol& symbol,
+    elle::Boolean       Range<T>::Lookup(const Range<T>::Symbol& symbol,
                                          T const*& item) const
     {
       Range<T>::Scoutor scoutor;
@@ -168,16 +168,16 @@ namespace nucleus
 
       // try to locate the item.
       if (this->Locate(symbol, scoutor) == false)
-        return elle::Status::False;
+        return false;
 
       // return the item.
       item = *scoutor;
 
-      return elle::Status::True;
+      return true;
     }
 
     template <typename T>
-    elle::Status        Range<T>::Lookup(const Range<T>::Symbol& symbol,
+    elle::Boolean       Range<T>::Lookup(const Range<T>::Symbol& symbol,
                                          T*& item) const
     {
       Range<T>::Scoutor scoutor;
@@ -187,12 +187,12 @@ namespace nucleus
 
       // try to locate the item.
       if (this->Locate(symbol, scoutor) == false)
-        return elle::Status::False;
+        return false;
 
       // return the item.
       item = *scoutor;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -232,7 +232,7 @@ namespace nucleus
     /// this method returns a scoutor on the identified item.
     ///
     template <typename T>
-    elle::Status        Range<T>::Locate(const Range<T>::Symbol& symbol,
+    elle::Boolean       Range<T>::Locate(const Range<T>::Symbol& symbol,
                                          Range<T>::Scoutor&     scoutor) const
     {
       Range<T>::Scoutor s;
@@ -250,11 +250,11 @@ namespace nucleus
               // return the scoutor.
               scoutor = s;
 
-              return elle::Status::True;
+              return true;
             }
         }
 
-      return elle::Status::False;
+      return false;
     }
 
     ///
@@ -263,7 +263,7 @@ namespace nucleus
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    elle::Status        Range<T>::Locate(const Range<T>::Symbol& symbol,
+    elle::Boolean       Range<T>::Locate(const Range<T>::Symbol& symbol,
                                          Range<T>::Iterator&    iterator)
     {
       Range<T>::Iterator        i;
@@ -281,11 +281,11 @@ namespace nucleus
               // return the iterator.
               iterator = i;
 
-              return elle::Status::True;
+              return true;
             }
         }
 
-      return elle::Status::False;
+      return false;
     }
 
     ///

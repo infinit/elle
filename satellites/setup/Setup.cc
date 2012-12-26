@@ -29,7 +29,7 @@ namespace satellite
         escape("unable to create the path");
 
       // if the user directory does not exist, create it.
-      if (elle::io::Directory::Exist(path) == elle::Status::False)
+      if (elle::io::Directory::Exist(path) == false)
         {
           // create the directory.
           if (elle::io::Directory::Create(path) == elle::Status::Error)
@@ -62,7 +62,7 @@ namespace satellite
         escape("unable to create the path");
 
       // if the user directory exists, clear it and remove it.
-      if (elle::io::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == true)
         {
           // clear the content.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)
@@ -149,7 +149,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -159,8 +159,8 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Initialize") == elle::Status::True) &&
-        (Infinit::Parser->Test("Clean") == elle::Status::True))
+    if ((Infinit::Parser->Test("Initialize") == true) &&
+        (Infinit::Parser->Test("Clean") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -169,11 +169,11 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Initialize") == elle::Status::True)
+    if (Infinit::Parser->Test("Initialize") == true)
       operation = Setup::OperationInitialize;
 
     // test the option.
-    if (Infinit::Parser->Test("Clean") == elle::Status::True)
+    if (Infinit::Parser->Test("Clean") == true)
       operation = Setup::OperationClean;
 
     // trigger the operation.

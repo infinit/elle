@@ -790,7 +790,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -824,8 +824,8 @@ namespace satellite
       escape("unable to initialize Agent");
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("From") == elle::Status::True) &&
-        (Infinit::Parser->Test("To") == elle::Status::True))
+    if ((Infinit::Parser->Test("From") == true) &&
+        (Infinit::Parser->Test("To") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -834,11 +834,11 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("From") == elle::Status::True)
+    if (Infinit::Parser->Test("From") == true)
       operation = Transfer::OperationFrom;
 
     // test the option.
-    if (Infinit::Parser->Test("To") == elle::Status::True)
+    if (Infinit::Parser->Test("To") == true)
       operation = Transfer::OperationTo;
 
     // FIXME: do not re-parse the descriptor every time.

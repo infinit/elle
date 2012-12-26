@@ -156,7 +156,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -170,21 +170,21 @@ namespace satellite
       escape("unable to initialize Etoile");
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Record") == elle::Status::True) &&
-        (Infinit::Parser->Test("Replay") == elle::Status::True) &&
-        (Infinit::Parser->Test("Dump") == elle::Status::True))
+    if ((Infinit::Parser->Test("Record") == true) &&
+        (Infinit::Parser->Test("Replay") == true) &&
+        (Infinit::Parser->Test("Dump") == true))
       escape("the record and replay options are mutually exclusive");
 
     // test the option.
-    if (Infinit::Parser->Test("Record") == elle::Status::True)
+    if (Infinit::Parser->Test("Record") == true)
       operation = Diary::OperationRecord;
 
     // test the option.
-    if (Infinit::Parser->Test("Replay") == elle::Status::True)
+    if (Infinit::Parser->Test("Replay") == true)
       operation = Diary::OperationReplay;
 
     // test the option.
-    if (Infinit::Parser->Test("Dump") == elle::Status::True)
+    if (Infinit::Parser->Test("Dump") == true)
       operation = Diary::OperationDump;
 
     // trigger a command.
@@ -271,14 +271,14 @@ namespace satellite
           to = std::numeric_limits<decltype(to)>::max();
 
           // retrieve the from.
-          if ((Infinit::Parser->Test("From") == elle::Status::True) &&
+          if ((Infinit::Parser->Test("From") == true) &&
               (Infinit::Parser->Value(
                  "From",
                  from) == elle::Status::Error))
               escape("unable to retrieve the from value");
 
           // retrieve the to.
-          if ((Infinit::Parser->Test("To") == elle::Status::True) &&
+          if ((Infinit::Parser->Test("To") == true) &&
               (Infinit::Parser->Value(
                  "To",
                  to) == elle::Status::Error))

@@ -290,7 +290,7 @@ namespace satellite
       throw std::runtime_error("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -298,9 +298,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
-        (Infinit::Parser->Test("Information") == elle::Status::True))
+    if ((Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Destroy") == true) &&
+        (Infinit::Parser->Test("Information") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -310,15 +310,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = User::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = User::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = User::OperationInformation;
 
     // trigger the operation.

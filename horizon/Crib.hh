@@ -26,7 +26,7 @@ namespace horizon
     //
     static elle::Status       Add(const elle::String&,
                                   Handle*);
-    static elle::Status       Exist(const elle::String&);
+    static elle::Boolean      Exist(const elle::String&);
     static elle::Status       Retrieve(const elle::String&,
                                        Handle*&);
     static elle::Status       Remove(const elle::String&);

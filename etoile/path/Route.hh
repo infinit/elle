@@ -60,7 +60,7 @@ namespace etoile
       elle::Status              Create(const Route&,
                                        const Slab&);
 
-      elle::Status              Derives(const Route&) const;
+      elle::Boolean             Derives(const Route&) const;
 
       elle::Status              Clear();
 

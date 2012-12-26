@@ -158,7 +158,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();

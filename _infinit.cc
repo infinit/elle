@@ -91,7 +91,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to parse the command line");
 
   // test the option.
-  if (Infinit::Parser->Test("Help") == elle::Status::True)
+  if (Infinit::Parser->Test("Help") == true)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -123,7 +123,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     }
 
   // Retrieve the mount point.
-  if (Infinit::Parser->Test("Mountpoint") == elle::Status::True)
+  if (Infinit::Parser->Test("Mountpoint") == true)
     {
       if (Infinit::Parser->Value("Mountpoint",
                                  Infinit::Mountpoint) == elle::Status::Error)

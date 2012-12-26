@@ -30,13 +30,13 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status        Attributes::Exist(const elle::String&   name) const
+    elle::Boolean       Attributes::Exist(const elle::String&   name) const
     {
       // test.
       if (this->range.Exist(name) == false)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -46,7 +46,7 @@ namespace nucleus
                                            Trait const*& trait) const
     {
       // look in the range.
-      if (this->range.Lookup(name, trait) == elle::Status::Error)
+      if (this->range.Lookup(name, trait) == false)
         escape("unable to retrieve the trait");
 
       return elle::Status::Ok;

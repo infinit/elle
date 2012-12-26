@@ -55,9 +55,9 @@ namespace lune
     //
     elle::Status        Add(const elle::String&,
                             const T&);
-    elle::Status        Lookup(const elle::String&,
+    elle::Boolean       Lookup(const elle::String&,
                                T*& = Trash::Value);
-    elle::Status        Lookup(const T&,
+    elle::Boolean       Lookup(const T&,
                                elle::String*& = Trash::Name);
     elle::Status        Remove(const elle::String&);
 

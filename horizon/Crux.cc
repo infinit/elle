@@ -120,7 +120,7 @@ namespace horizon
     // indicating that the file belongs to someone, with the given
     // permissions, but cannot be mapped to a local user name.
     if (Horizon::Dictionary.users.Lookup(abstract.keys.owner,
-                                         name) == elle::Status::True)
+                                         name) == true)
       {
         // In this case, the object's owner is known locally.
         struct ::passwd*      passwd;
@@ -744,7 +744,7 @@ namespace horizon
     // The following therefore checks if the path corresponds to a
     // file in creation. if so, the permissions are recorded for
     // future application.
-    if (Crib::Exist(elle::String(path)) == elle::Status::True)
+    if (Crib::Exist(elle::String(path)) == true)
       {
         Handle*       handle;
 
@@ -872,7 +872,7 @@ namespace horizon
                  char* value,
                  size_t size)
   {
-    ELLE_TRACE_FUNCTION(path, name, value, size);
+    ELLE_TRACE_FUNCTION(path, name, size);
 
     etoile::path::Way way(path);
 
@@ -1740,7 +1740,7 @@ namespace horizon
     // Rename the path associated with the handle in the
     // Crib should the handle reference a freshly created
     // object, hence lying in the Crib.
-    if (Crib::Exist(source) == elle::Status::True)
+    if (Crib::Exist(source) == true)
       Crib::rename(source, target);
 
     return (0);

@@ -155,15 +155,15 @@ namespace elle
 
       Status            Example(const String&);
 
-      Status            Locate(const String&,
+      Boolean           Locate(const String&,
                                Option*&);
-      Status            Locate(const Character&,
+      Boolean           Locate(const Character&,
                                Option*&);
 
       Status            Parse();
 
-      Status            Test(const String&);
-      Status            Argument(const String&);
+      Boolean           Test(const String&);
+      Boolean           Argument(const String&);
 
       template <typename T>
       Status            Value(const String&,

@@ -68,13 +68,13 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status        Catalog::Exist(const elle::String&      name) const
+    elle::Boolean       Catalog::Exist(const elle::String&      name) const
     {
       // test.
       if (this->range.Exist(name) == false)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace nucleus
                                         Entry const*& entry) const
     {
       // look in the range.
-      if (this->range.Lookup(name, entry) == elle::Status::Error)
+      if (this->range.Lookup(name, entry) == false)
         escape("unable to retrieve the entry");
 
       return elle::Status::Ok;
@@ -167,11 +167,11 @@ namespace nucleus
         escape("unable to rename to a non empty-named entry in the catalog");
 
       // check that an entry _to_ does not already exist.
-      if (this->range.Exist(to) == elle::Status::True)
+      if (this->range.Exist(to) == true)
         escape("an entry already exists with the to-be-renamed name");
 
       // look in the range.
-      if (this->range.Lookup(from, entry) == elle::Status::Error)
+      if (this->range.Lookup(from, entry) == false)
         escape("unable to retrieve the entry");
 
       // modify the name.

@@ -377,7 +377,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -423,13 +423,13 @@ namespace satellite
       infinit::hole_factory(storage, passport, Infinit::authority()));
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Information") == elle::Status::True) &&
-        (Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Add") == elle::Status::True) &&
-        (Infinit::Parser->Test("Lookup") == elle::Status::True) &&
-        (Infinit::Parser->Test("Consult") == elle::Status::True) &&
-        (Infinit::Parser->Test("Remove") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True))
+    if ((Infinit::Parser->Test("Information") == true) &&
+        (Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Add") == true) &&
+        (Infinit::Parser->Test("Lookup") == true) &&
+        (Infinit::Parser->Test("Consult") == true) &&
+        (Infinit::Parser->Test("Remove") == true) &&
+        (Infinit::Parser->Test("Destroy") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -439,25 +439,25 @@ namespace satellite
       }
 
     // test the options.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = Group::OperationInformation;
 
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = Group::OperationCreate;
 
-    if (Infinit::Parser->Test("Add") == elle::Status::True)
+    if (Infinit::Parser->Test("Add") == true)
       operation = Group::OperationAdd;
 
-    if (Infinit::Parser->Test("Lookup") == elle::Status::True)
+    if (Infinit::Parser->Test("Lookup") == true)
       operation = Group::OperationLookup;
 
-    if (Infinit::Parser->Test("Consult") == elle::Status::True)
+    if (Infinit::Parser->Test("Consult") == true)
       operation = Group::OperationConsult;
 
-    if (Infinit::Parser->Test("Remove") == elle::Status::True)
+    if (Infinit::Parser->Test("Remove") == true)
       operation = Group::OperationRemove;
 
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = Group::OperationDestroy;
 
     // trigger the operation.

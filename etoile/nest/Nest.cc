@@ -31,9 +31,9 @@ namespace etoile
     elle::Status            Nest::Exist(const nucleus::Placement&   placement)
     {
       if (Nest::Placements.find(placement) == Nest::Placements.end())
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -42,9 +42,9 @@ namespace etoile
     elle::Status            Nest::Exist(const nucleus::Address&     address)
     {
       if (Nest::Addresses.find(address) == Nest::Addresses.end())
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

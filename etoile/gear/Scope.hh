@@ -81,7 +81,7 @@ namespace etoile
       static elle::Status       Initialize();
       static elle::Status       Clean();
 
-      static elle::Status       Exist(const path::Chemin&);
+      static elle::Boolean      Exist(const path::Chemin&);
       static elle::Status       Add(const path::Chemin&,
                                     Scope*);
       static elle::Status       Retrieve(const path::Chemin&,
@@ -123,7 +123,7 @@ namespace etoile
       //
       elle::Status      Create();
 
-      elle::Status      Locate(Actor*,
+      elle::Boolean     Locate(Actor*,
                                A::Iterator* = nullptr);
 
       elle::Status      Attach(Actor*);

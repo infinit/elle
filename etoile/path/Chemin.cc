@@ -101,13 +101,13 @@ namespace etoile
     /// other entries. in other words A's route and venue can be equal
     /// or longer.
     ///
-    elle::Status        Chemin::Derives(const Chemin&            base) const
+    elle::Boolean       Chemin::Derives(const Chemin&            base) const
     {
-      if ((this->route.Derives(base.route) == elle::Status::True) &&
-          (this->venue.Derives(base.venue) == elle::Status::True))
-        return (elle::Status::True);
+      if ((this->route.Derives(base.route) == true) &&
+          (this->venue.Derives(base.venue) == true))
+        return (true);
 
-      return (elle::Status::False);
+      return (false);
     }
 
     ///

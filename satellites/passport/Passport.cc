@@ -135,7 +135,7 @@ namespace satellite
       passport.load(passport_path);
 
       // validate the passport.
-      if (passport.validate(Infinit::authority()) == elle::Status::Error)
+      if (passport.validate(Infinit::authority()) == false)
         escape("unable to validate the passport");
     }
 
@@ -242,7 +242,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -260,9 +260,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
-        (Infinit::Parser->Test("Information") == elle::Status::True))
+    if ((Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Destroy") == true) &&
+        (Infinit::Parser->Test("Information") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -272,15 +272,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = Passport::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = Passport::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = Passport::OperationInformation;
 
     // trigger the operation.
