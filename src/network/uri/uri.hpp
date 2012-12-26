@@ -12,7 +12,7 @@
 #include <network/uri/config.hpp>
 #include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/translate.hpp>
-#include <network/utils/string_ref.hpp>
+#include <network/utility/string_ref.hpp>
 #include <boost/range/algorithm/equal.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
