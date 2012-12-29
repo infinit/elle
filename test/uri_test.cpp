@@ -492,7 +492,7 @@ TEST(uri_test, http_is_hierarchical) {
   ASSERT_TRUE(!instance.opaque());
 }
 
-TEST(uri_test, DISABLED_mailto_is_opaque) {
+TEST(uri_test, mailto_is_opaque) {
   network::uri instance("mailto:john.doe@example.com");
   ASSERT_TRUE(instance.opaque());
 }

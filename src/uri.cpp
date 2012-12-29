@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <algorithm>
 #include <functional>
-#include <map>
+#include <unordered_map>
 
 namespace network {
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
@@ -467,17 +467,19 @@ namespace network {
 
   boost::optional<string_ref> uri::authority() const {
     auto host = this->host();
-    if (!host) {
+    if (!host || !*host) {
       return boost::optional<string_ref>();
     }
 
     auto first = std::begin(*host), last = std::end(*host);
-    if (user_info()) {
-      first = std::begin(*user_info());
+    auto user_info = this->user_info();
+    if (user_info) {
+      first = std::begin(*user_info);
     }
 
-    if (port()) {
-      last = std::end(*port());
+    auto port = this->port();
+    if (port) {
+      last = std::end(*port);
     }
 
     return string_ref(first, last);
@@ -516,15 +518,67 @@ namespace network {
     return (absolute() && !authority());
   }
 
+  namespace {
+    std::unordered_map<std::string, char> make_percent_decoded_chars() {
+      std::unordered_map<std::string, char> map;
+      map["%41"] = 'a'; map["%61"] = 'a';
+      map["%42"] = 'b'; map["%62"] = 'b';
+      map["%43"] = 'c'; map["%63"] = 'c';
+      map["%44"] = 'd'; map["%64"] = 'd';
+      map["%45"] = 'e'; map["%65"] = 'e';
+      map["%46"] = 'f'; map["%66"] = 'f';
+      map["%47"] = 'g'; map["%67"] = 'g';
+      map["%48"] = 'h'; map["%68"] = 'h';
+      map["%49"] = 'i'; map["%69"] = 'i';
+      map["%4A"] = 'j'; map["%6A"] = 'j';
+      map["%4B"] = 'k'; map["%6B"] = 'k';
+      map["%4C"] = 'l'; map["%6C"] = 'l';
+      map["%4D"] = 'm'; map["%6D"] = 'm';
+      map["%4E"] = 'n'; map["%6E"] = 'n';
+      map["%4F"] = 'o'; map["%6F"] = 'o';
+      map["%50"] = 'p'; map["%70"] = 'p';
+      map["%51"] = 'q'; map["%71"] = 'q';
+      map["%52"] = 'r'; map["%72"] = 'r';
+      map["%53"] = 's'; map["%73"] = 's';
+      map["%54"] = 't'; map["%74"] = 't';
+      map["%55"] = 'u'; map["%75"] = 'u';
+      map["%56"] = 'v'; map["%76"] = 'v';
+      map["%57"] = 'w'; map["%77"] = 'w';
+      map["%58"] = 'x'; map["%78"] = 'x';
+      map["%59"] = 'y'; map["%79"] = 'y';
+      map["%5A"] = 'z'; map["%7A"] = 'z';
+      map["%30"] = '0';
+      map["%31"] = '1';
+      map["%32"] = '2';
+      map["%33"] = '3';
+      map["%34"] = '4';
+      map["%35"] = '5';
+      map["%36"] = '6';
+      map["%37"] = '7';
+      map["%38"] = '8';
+      map["%39"] = '9';
+      map["%2D"] = '-';
+      map["%2E"] = '.';
+      map["%5F"] = '_';
+      map["%7E"] = '~';
+      return map;
+    }
+
+    static const std::unordered_map<std::string, char> percent_decoded_chars =
+      make_percent_decoded_chars();
+  } // namespace
+
   uri uri::normalize(uri_comparison_level level) const {
 
     string_type normalized(uri_);
 
-    if (uri_comparison_level::case_normalization == level) {
+    if ((uri_comparison_level::case_normalization == level) ||
+	(uri_comparison_level::percent_encoding_normalization == level) ||
+	(uri_comparison_level::path_segment_normalization == level)) {
       // All alphabetic characters are lower-case except when used in
       // percent encoding
-      auto it = std::begin(normalized);
-      while (it != std::end(normalized)) {
+      auto it = std::begin(normalized), end = std::end(normalized);
+      while (it != end) {
 	if (*it == '%') {
 	  ++it; *it = std::toupper(*it);
 	  ++it; *it = std::toupper(*it);
@@ -536,18 +590,25 @@ namespace network {
       }
     }
 
-    if (uri_comparison_level::percent_encoding_normalization == level) {
-      // alpha range %41-%5A, %61-%7A
-
-      // digit %30-%39
-
-      // hyphen %2D
-
-      // period %2E
-
-      // underscore %5F
-
-      // tilde %7E
+    if ((uri_comparison_level::percent_encoding_normalization == level) ||
+	(uri_comparison_level::path_segment_normalization == level)) {
+      auto it = std::begin(normalized), it2 = std::begin(normalized), end = std::end(normalized);
+      while (it != end) {
+	if (*it == '%') {
+	  auto sfirst = it, slast = it;
+	  std::advance(slast, 3);
+	  auto char_it = percent_decoded_chars.find(std::string(string_ref(sfirst, slast)));
+	  if (char_it != std::end(percent_decoded_chars)) {
+	    *it2 = char_it->second;
+	  }
+	  ++it; ++it;
+	}
+	else {
+	  *it2 = *it;
+	}
+	++it; ++it2;
+      }
+      normalized.erase(it2, end);
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {

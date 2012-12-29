@@ -45,7 +45,9 @@ namespace network {
       return last_;
     }
 
-    bool empty() const;
+    bool empty() const {
+      return first_ == last_;
+    }
 
 #if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
     operator unspecified_bool_type () const {

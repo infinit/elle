@@ -34,6 +34,21 @@ namespace network {
 
   template <
     class InputIterator,
+    typename CharT
+    >
+  InputIterator decode_char(InputIterator it, CharT &v) {
+    assert(*it == '%');
+    ++it;
+    auto v0 = detail::letter_to_hex(*it);
+    ++it;
+    auto v1 = detail::letter_to_hex(*it);
+    ++it;
+    v = (0x10 * v0) + v1;
+    return it;
+  }
+
+  template <
+    class InputIterator,
     class OutputIterator
     >
   OutputIterator decode(InputIterator in_begin,
@@ -43,12 +58,8 @@ namespace network {
     auto out = out_begin;
     while (it != in_end) {
       if (*it == '%') {
-	++it;
-	auto v0 = detail::letter_to_hex(*it);
-	++it;
-	auto v1 = detail::letter_to_hex(*it);
-	++it;
-	*out++ = 0x10 * v0 + v1;
+	it = decode_char(it, *out);
+	++out;
       }
       else {
 	*out++ = *it++;

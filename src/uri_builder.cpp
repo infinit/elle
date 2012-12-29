@@ -8,6 +8,32 @@
 
 
 namespace network {
+  // alpha range %41-%5A, %61-%7A
+
+  // digit %30-%39
+
+  // hyphen %2D
+
+  // period %2E
+
+  // underscore %5F
+
+  // tilde %7E
+
+  template <typename Iter>
+  Iter replace_encoded_chars(Iter first, Iter last, Iter out) {
+    auto it = first;
+    while (it != last) {
+      if (*it == '%') {
+
+      }
+      else {
+	++it;
+      }
+    }
+    return out;
+  }
+
   struct uri_builder::impl {
 
     boost::optional<network::uri> base_uri_;
