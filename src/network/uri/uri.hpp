@@ -164,6 +164,8 @@ namespace network {
 
     uri normalize(uri_comparison_level level) const;
 
+    int compare(const uri &other, uri_comparison_level level) const;
+
     //uri relativize(const uri &other) const;
     //
     //uri resolve(const uri &other) const;
@@ -200,11 +202,9 @@ namespace network {
     lhs.swap(rhs);
   }
 
-  NETWORK_URI_DECL bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level);
-
   inline
   bool operator == (const uri &lhs, const uri &rhs) {
-    return equals(lhs, rhs, uri_comparison_level::path_segment_normalization);
+    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) == 0;
   }
 
   inline
@@ -214,9 +214,7 @@ namespace network {
 
   inline
   bool operator < (const uri &lhs, const uri &rhs) {
-    return
-      lhs.normalize(uri_comparison_level::path_segment_normalization).native() <
-      rhs.normalize(uri_comparison_level::path_segment_normalization).native();
+    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) < 0;
   }
 
   inline

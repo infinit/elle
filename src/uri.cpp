@@ -644,11 +644,11 @@ namespace network {
 	}
 	else {
 	  std::vector<string_type> path_segments;
-	  split(path_segments, path, is_any_of("/"));
+	  boost::split(path_segments, path, is_any_of("/"));
 
 	  // remove single dot segments
-	  remove_erase_if(path_segments, [] (const uri::string_type &s) {
-	      return equal(s, as_literal("."));
+	  boost::remove_erase_if(path_segments, [] (const uri::string_type &s) {
+	      return boost::equal(s, as_literal("."));
 	    });
 
 	  // remove double dot segments
@@ -656,7 +656,7 @@ namespace network {
 	  auto depth = 0;
 	  boost::for_each(path_segments, [&normalized_segments, &depth] (const string_type &s) {
 	      assert(depth >= 0);
-	      if (equal(s, as_literal(".."))) {
+	      if (boost::equal(s, as_literal(".."))) {
 		normalized_segments.pop_back();
 	      }
 	      else {
@@ -725,17 +725,21 @@ namespace network {
     }
   }
 
-  bool equals(const uri &lhs, const uri &rhs, uri_comparison_level level) {
+  int uri::compare(const uri &other, uri_comparison_level level) const {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
-    if (lhs.empty() && rhs.empty()) {
-      return true;
+    if (empty() && other.empty()) {
+      return 0;
     }
 
-    if (lhs.empty() || rhs.empty()) {
-      return false;
+    if (empty()) {
+      return -1;
     }
 
-    return lhs.normalize(level).native() == rhs.normalize(level).native();
+    if (other.empty()) {
+      return 1;
+    }
+
+    return normalize(level).native().compare(other.normalize(level).native());
   }
 } // namespace network
