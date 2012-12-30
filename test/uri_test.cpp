@@ -113,52 +113,6 @@ TEST(uri_test, basic_uri_value_semantics_test) {
   ASSERT_EQ(copy, assigned);
 }
 
-TEST(uri_test, basic_uri_range_scheme_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.scheme());
-  ASSERT_TRUE(std::begin(instance) == std::begin(*instance.scheme()));
-  ASSERT_EQ("http", *instance.scheme());
-}
-
-TEST(uri_test, basic_uri_range_user_info_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_FALSE(instance.user_info());
-}
-
-TEST(uri_test, basic_uri_range_host_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.host());
-  ASSERT_EQ("www.example.com", *instance.host());
-}
-
-TEST(uri_test, basic_uri_range_port_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_FALSE(instance.port());
-  //ASSERT_TRUE(std::end(*instance.host()) == std::begin(*instance.port()));
-  //ASSERT_TRUE(std::end(*instance.host()) == std::end(*instance.port()));
-}
-
-TEST(uri_test, basic_uri_range_path_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.path());
-  ASSERT_EQ("/", *instance.path());
-  ASSERT_TRUE(std::end(instance) == std::end(*instance.path()));
-}
-
-TEST(uri_test, basic_uri_range_query_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_FALSE(instance.query());
-  //ASSERT_TRUE(std::end(instance) == std::begin(*instance.query()));
-  //ASSERT_TRUE(std::end(instance) == std::end(*instance.query()));
-}
-
-TEST(uri_test, basic_uri_range_fragment_test) {
-  network::uri instance("http://www.example.com/");
-  ASSERT_FALSE(instance.fragment());
-  //ASSERT_TRUE(std::end(instance) == std::begin(instance.fragment()));
-  //ASSERT_TRUE(std::end(instance) == std::end(instance.fragment()));
-}
-
 TEST(uri_test, full_uri_scheme_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_EQ("http", *instance.scheme());

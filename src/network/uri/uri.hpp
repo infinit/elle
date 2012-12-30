@@ -185,7 +185,7 @@ namespace network {
 #pragma warning(push)
 #endif // defined(_MSC_VER)
 
-    detail::uri_parts<const_iterator> uri_parts_;
+    detail::uri_parts<string_type::iterator> uri_parts_;
 
   };
 

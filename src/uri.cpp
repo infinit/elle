@@ -79,11 +79,11 @@ namespace network {
     class String
     >
   struct uri_grammar : qi::grammar<
-    typename String::const_iterator
-    , detail::uri_parts<typename String::const_iterator>()> {
+    typename String::iterator
+    , detail::uri_parts<typename String::iterator>()> {
 
     typedef String string_type;
-    typedef typename String::const_iterator const_iterator;
+    typedef typename String::iterator iterator;
 
     uri_grammar() : uri_grammar::base_type(start, "uri") {
       // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
@@ -237,9 +237,9 @@ namespace network {
 	 )
 	|
 	(
-	 qi::attr(boost::iterator_range<const_iterator>())
-	 >>  qi::attr(boost::iterator_range<const_iterator>())
-	 >>  qi::attr(boost::iterator_range<const_iterator>())
+	 qi::attr(boost::iterator_range<iterator>())
+	 >>  qi::attr(boost::iterator_range<iterator>())
+	 >>  qi::attr(boost::iterator_range<iterator>())
 	 >>  (
 	      path_absolute
 	      |   path_rootless
@@ -256,40 +256,40 @@ namespace network {
 	;
     }
 
-    qi::rule<const_iterator, typename boost::iterator_range<const_iterator>::value_type()>
+    qi::rule<iterator, typename boost::iterator_range<iterator>::value_type()>
     gen_delims, sub_delims, reserved, unreserved;
-    qi::rule<const_iterator, string_type()>
+    qi::rule<iterator, string_type()>
     pct_encoded, pchar;
 
-    qi::rule<const_iterator, string_type()>
+    qi::rule<iterator, string_type()>
     segment, segment_nz, segment_nz_nc;
-    qi::rule<const_iterator, boost::iterator_range<const_iterator>()>
+    qi::rule<iterator, boost::iterator_range<iterator>()>
     path_abempty, path_absolute, path_rootless, path_empty;
 
-    qi::rule<const_iterator, string_type()>
+    qi::rule<iterator, string_type()>
     dec_octet, ipv4address, reg_name, ipv6address, ipvfuture, ip_literal;
 
-    qi::rule<const_iterator, string_type()>
+    qi::rule<iterator, string_type()>
     h16, ls32;
 
-    qi::rule<const_iterator, boost::iterator_range<const_iterator>()>
+    qi::rule<iterator, boost::iterator_range<iterator>()>
     host, port;
 
-    qi::rule<const_iterator, boost::iterator_range<const_iterator>()>
+    qi::rule<iterator, boost::iterator_range<iterator>()>
     scheme, user_info, query, fragment;
 
-    qi::rule<const_iterator, detail::hierarchical_part<const_iterator>()>
+    qi::rule<iterator, detail::hierarchical_part<iterator>()>
     hier_part;
 
     // actual uri parser
-    qi::rule<const_iterator, detail::uri_parts<const_iterator>()> start;
+    qi::rule<iterator, detail::uri_parts<iterator>()> start;
 
   };
 
   namespace detail {
-    bool parse(uri::const_iterator first,
-	       uri::const_iterator last,
-	       uri_parts<uri::const_iterator> &parts) {
+    bool parse(uri::string_type::iterator first,
+	       uri::string_type::iterator last,
+	       uri_parts<uri::string_type::iterator> &parts) {
       namespace qi = boost::spirit::qi;
       static uri_grammar<uri::string_type> grammar;
       bool is_valid = qi::parse(first, last, grammar, parts);
@@ -360,7 +360,7 @@ namespace network {
 
     auto it = std::begin(uri_);
     if (scheme) {
-      //uri_parts_.scheme = boost::iterator_range<const_iterator>(std::begin(uri_), std::end(uri_));
+      //uri_parts_.scheme = boost::iterator_range<iterator>(std::begin(uri_), std::end(uri_));
     }
 
     if (user_info) {
@@ -531,32 +531,32 @@ namespace network {
   namespace {
     std::unordered_map<std::string, char> make_percent_decoded_chars() {
       std::unordered_map<std::string, char> map;
-      map["%41"] = 'a'; map["%61"] = 'a';
-      map["%42"] = 'b'; map["%62"] = 'b';
-      map["%43"] = 'c'; map["%63"] = 'c';
-      map["%44"] = 'd'; map["%64"] = 'd';
-      map["%45"] = 'e'; map["%65"] = 'e';
-      map["%46"] = 'f'; map["%66"] = 'f';
-      map["%47"] = 'g'; map["%67"] = 'g';
-      map["%48"] = 'h'; map["%68"] = 'h';
-      map["%49"] = 'i'; map["%69"] = 'i';
-      map["%4A"] = 'j'; map["%6A"] = 'j';
-      map["%4B"] = 'k'; map["%6B"] = 'k';
-      map["%4C"] = 'l'; map["%6C"] = 'l';
-      map["%4D"] = 'm'; map["%6D"] = 'm';
-      map["%4E"] = 'n'; map["%6E"] = 'n';
-      map["%4F"] = 'o'; map["%6F"] = 'o';
-      map["%50"] = 'p'; map["%70"] = 'p';
-      map["%51"] = 'q'; map["%71"] = 'q';
-      map["%52"] = 'r'; map["%72"] = 'r';
-      map["%53"] = 's'; map["%73"] = 's';
-      map["%54"] = 't'; map["%74"] = 't';
-      map["%55"] = 'u'; map["%75"] = 'u';
-      map["%56"] = 'v'; map["%76"] = 'v';
-      map["%57"] = 'w'; map["%77"] = 'w';
-      map["%58"] = 'x'; map["%78"] = 'x';
-      map["%59"] = 'y'; map["%79"] = 'y';
-      map["%5A"] = 'z'; map["%7A"] = 'z';
+      map["%41"] = 'a'; map["%61"] = 'A';
+      map["%42"] = 'b'; map["%62"] = 'B';
+      map["%43"] = 'c'; map["%63"] = 'C';
+      map["%44"] = 'd'; map["%64"] = 'D';
+      map["%45"] = 'e'; map["%65"] = 'E';
+      map["%46"] = 'f'; map["%66"] = 'F';
+      map["%47"] = 'g'; map["%67"] = 'G';
+      map["%48"] = 'h'; map["%68"] = 'H';
+      map["%49"] = 'i'; map["%69"] = 'I';
+      map["%4A"] = 'j'; map["%6A"] = 'J';
+      map["%4B"] = 'k'; map["%6B"] = 'K';
+      map["%4C"] = 'l'; map["%6C"] = 'L';
+      map["%4D"] = 'm'; map["%6D"] = 'M';
+      map["%4E"] = 'n'; map["%6E"] = 'N';
+      map["%4F"] = 'o'; map["%6F"] = 'O';
+      map["%50"] = 'p'; map["%70"] = 'P';
+      map["%51"] = 'q'; map["%71"] = 'Q';
+      map["%52"] = 'r'; map["%72"] = 'R';
+      map["%53"] = 's'; map["%73"] = 'S';
+      map["%54"] = 't'; map["%74"] = 'T';
+      map["%55"] = 'u'; map["%75"] = 'U';
+      map["%56"] = 'v'; map["%76"] = 'V';
+      map["%57"] = 'w'; map["%77"] = 'W';
+      map["%58"] = 'x'; map["%78"] = 'X';
+      map["%59"] = 'y'; map["%79"] = 'Y';
+      map["%5A"] = 'z'; map["%7A"] = 'Z';
       map["%30"] = '0';
       map["%31"] = '1';
       map["%32"] = '2';
@@ -584,18 +584,25 @@ namespace network {
     if ((uri_comparison_level::case_normalization == level) ||
 	(uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
-      // All alphabetic characters are lower-case except when used in
-      // percent encoding
-      auto it = std::begin(normalized), end = std::end(normalized);
-      while (it != end) {
-	if (*it == '%') {
-	  ++it; *it = std::toupper(*it);
-	  ++it; *it = std::toupper(*it);
+      // All alphabetic characters in the scheme and host are
+      // lower-case except when used in percent encoding
+      if (auto scheme = uri_parts_.scheme) {
+	std::transform(std::begin(*scheme), std::end(*scheme), std::begin(*scheme),
+		       [] (string_type::value_type v) { return std::tolower(v); });
+      }
+
+      if (auto host = uri_parts_.hier_part.host) {
+	auto it = std::begin(*host), end = std::end(*host);
+	while (it != end) {
+	  if (*it == '%') {
+	    ++it; *it = std::toupper(*it);
+	    ++it; *it = std::toupper(*it);
+	  }
+	  else {
+	    *it = std::tolower(*it);
+	  }
+	  ++it;
 	}
-	else {
-	  *it = std::tolower(*it);
-	}
-	++it;
       }
     }
 
@@ -621,8 +628,8 @@ namespace network {
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {
-      const_iterator first = std::begin(normalized), last = std::end(normalized);
-      detail::uri_parts<const_iterator> parts;
+      auto first = std::begin(normalized), last = std::end(normalized);
+      detail::uri_parts<string_type::iterator> parts;
       bool is_valid = detail::parse(first, last, parts);
       assert(is_valid);
 
@@ -670,8 +677,8 @@ namespace network {
 
 	string_type::iterator path_begin = std::begin(normalized);
 	std::advance(path_begin,
-		     std::distance<string_type::const_iterator>(path_begin,
-								std::begin(*parts.hier_part.path)));
+		     std::distance<string_type::iterator>(path_begin,
+							  std::begin(*parts.hier_part.path)));
 	normalized.erase(path_begin, std::end(normalized));
 	normalized.append(path);
 
@@ -731,11 +738,10 @@ namespace network {
       return;
     }
 
-    const_iterator first(std::begin(uri_)), last(std::end(uri_));
+    auto first = std::begin(uri_), last = std::end(uri_);
     bool is_valid = detail::parse(first, last, uri_parts_);
     if (!is_valid) {
       ec = make_error_code(uri_error::invalid_syntax);
-      return;
     }
   }
 } // namespace network
