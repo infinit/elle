@@ -10,10 +10,18 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/range/as_literal.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 #include <algorithm>
 #include <functional>
 #include <unordered_map>
+#include <vector>
+#include <stack>
 
 namespace network {
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
@@ -279,11 +287,11 @@ namespace network {
   };
 
   namespace detail {
-    bool parse(std::string::const_iterator first,
-	       std::string::const_iterator last,
-	       uri_parts<std::string::const_iterator> &parts) {
+    bool parse(uri::const_iterator first,
+	       uri::const_iterator last,
+	       uri_parts<uri::const_iterator> &parts) {
       namespace qi = boost::spirit::qi;
-      static uri_grammar<std::string> grammar;
+      static uri_grammar<uri::string_type> grammar;
       bool is_valid = qi::parse(first, last, grammar, parts);
       return is_valid && (first == last);
     }
@@ -597,7 +605,7 @@ namespace network {
 	if (*it == '%') {
 	  auto sfirst = it, slast = it;
 	  std::advance(slast, 3);
-	  auto char_it = percent_decoded_chars.find(std::string(string_ref(sfirst, slast)));
+	  auto char_it = percent_decoded_chars.find(string_type(string_ref(sfirst, slast)));
 	  if (char_it != std::end(percent_decoded_chars)) {
 	    *it2 = char_it->second;
 	  }
@@ -612,7 +620,70 @@ namespace network {
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {
+      const_iterator first = std::begin(normalized), last = std::end(normalized);
+      detail::uri_parts<const_iterator> parts;
+      bool is_valid = detail::parse(first, last, parts);
+      assert(is_valid);
 
+      if (parts.hier_part.path) {
+	using namespace boost;
+	using namespace boost::algorithm;
+
+	string_type path(std::begin(*parts.hier_part.path), std::end(*parts.hier_part.path));
+	boost::optional<string_type> query, fragment;
+	if (parts.query) {
+	  query = string_type(std::begin(*parts.query), std::end(*parts.query));
+	}
+
+	if (parts.fragment) {
+	  fragment = string_type(std::begin(*parts.fragment), std::end(*parts.fragment));
+	}
+
+	if (path.empty()) {
+	  path = "/";
+	}
+	else {
+	  std::vector<string_type> path_segments;
+	  split(path_segments, path, is_any_of("/"));
+
+	  // remove single dot segments
+	  remove_erase_if(path_segments, [] (const uri::string_type &s) {
+	      return equal(s, as_literal("."));
+	    });
+
+	  // remove double dot segments
+	  std::vector<string_type> normalized_segments;
+	  auto depth = 0;
+	  boost::for_each(path_segments, [&normalized_segments, &depth] (const string_type &s) {
+	      assert(depth >= 0);
+	      if (equal(s, as_literal(".."))) {
+		normalized_segments.pop_back();
+	      }
+	      else {
+		normalized_segments.push_back(s);
+	      }
+	    });
+
+	  path = boost::join(normalized_segments, "/");
+	}
+
+	string_type::iterator path_begin = std::begin(normalized);
+	std::advance(path_begin,
+		     std::distance<string_type::const_iterator>(path_begin,
+								std::begin(*parts.hier_part.path)));
+	normalized.erase(path_begin, std::end(normalized));
+	normalized.append(path);
+
+	if (query) {
+	  normalized.append("?");
+	  normalized.append(*query);
+	}
+
+	if (fragment) {
+	  normalized.append("#");
+	  normalized.append(*fragment);
+	}
+      }
     }
 
     return uri(normalized);
