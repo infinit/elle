@@ -1,8 +1,8 @@
 // Copyright 2012 Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 
 #include <network/uri/uri.hpp>
@@ -66,7 +66,7 @@ BOOST_FUSION_ADAPT_TPL_STRUCT
 (
  (FwdIter),
  (network::detail::uri_parts)(FwdIter),
- (boost::iterator_range<FwdIter>, scheme)
+ (boost::optional<boost::iterator_range<FwdIter> >, scheme)
  (network::detail::hierarchical_part<FwdIter>, hier_part)
  (boost::optional<boost::iterator_range<FwdIter> >, query)
  (boost::optional<boost::iterator_range<FwdIter> >, fragment)
@@ -428,7 +428,9 @@ namespace network {
   }
 
   boost::optional<string_ref> uri::scheme() const {
-    return string_ref(std::begin(uri_parts_.scheme), std::end(uri_parts_.scheme));
+    return uri_parts_.scheme?
+      string_ref(std::begin(uri_parts_.scheme.get()), std::end(uri_parts_.scheme.get()))
+      : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::user_info() const {
@@ -475,7 +477,7 @@ namespace network {
 
   boost::optional<string_ref> uri::authority() const {
     auto host = this->host();
-    if (!host || !*host) {
+    if (!host) {
       return boost::optional<string_ref>();
     }
 
@@ -577,7 +579,6 @@ namespace network {
   } // namespace
 
   uri uri::normalize(uri_comparison_level level) const {
-
     string_type normalized(uri_);
 
     if ((uri_comparison_level::case_normalization == level) ||
@@ -605,7 +606,7 @@ namespace network {
 	if (*it == '%') {
 	  auto sfirst = it, slast = it;
 	  std::advance(slast, 3);
-	  auto char_it = percent_decoded_chars.find(string_type(string_ref(sfirst, slast)));
+	  auto char_it = percent_decoded_chars.find(string_type(sfirst, slast));
 	  if (char_it != std::end(percent_decoded_chars)) {
 	    *it2 = char_it->second;
 	  }
@@ -707,24 +708,6 @@ namespace network {
   //  return other;
   //}
 
-  void uri::parse(std::error_code &ec) {
-    if (uri_.empty()) {
-      return;
-    }
-
-    const_iterator first(std::begin(uri_)), last(std::end(uri_));
-    bool is_valid = detail::parse(first, last, uri_parts_);
-    if (!is_valid) {
-      ec = make_error_code(uri_error::invalid_syntax);
-      return;
-    }
-
-    if (!uri_parts_.scheme) {
-      uri_parts_.scheme = string_ref(std::begin(uri_),
-				     std::begin(uri_));
-    }
-  }
-
   int uri::compare(const uri &other, uri_comparison_level level) const {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
@@ -741,5 +724,18 @@ namespace network {
     }
 
     return normalize(level).native().compare(other.normalize(level).native());
+  }
+
+  void uri::parse(std::error_code &ec) {
+    if (uri_.empty()) {
+      return;
+    }
+
+    const_iterator first(std::begin(uri_)), last(std::end(uri_));
+    bool is_valid = detail::parse(first, last, uri_parts_);
+    if (!is_valid) {
+      ec = make_error_code(uri_error::invalid_syntax);
+      return;
+    }
   }
 } // namespace network

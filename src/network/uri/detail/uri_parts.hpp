@@ -23,34 +23,16 @@ namespace network {
       boost::optional<boost::iterator_range<FwdIter> > host;
       boost::optional<boost::iterator_range<FwdIter> > port;
       boost::optional<boost::iterator_range<FwdIter> > path;
-
-      FwdIter begin() const {
-        return std::begin(user_info);
-      }
-
-      FwdIter end() const {
-        return std::end(path);
-      }
-
     };
 
     template <
       class FwdIter
       >
     struct uri_parts {
-      boost::iterator_range<FwdIter> scheme;
+      boost::optional<boost::iterator_range<FwdIter> > scheme;
       hierarchical_part<FwdIter> hier_part;
       boost::optional<boost::iterator_range<FwdIter> > query;
       boost::optional<boost::iterator_range<FwdIter> > fragment;
-
-      FwdIter begin() const {
-        return std::begin(scheme);
-      }
-
-      FwdIter end() const {
-        return std::end(fragment);
-      }
-
     };
   } // namespace detail
 } // namespace network

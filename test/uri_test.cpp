@@ -443,11 +443,6 @@ TEST(uri_test, partial_authority_test) {
   ASSERT_EQ("www.example.com", *instance.authority());
 }
 
-TEST(uri_test, DISABLED_mailto_has_no_authority) {
-  network::uri instance("mailto:john.doe@example.com");
-  ASSERT_FALSE(instance.authority());
-}
-
 TEST(uri_test, range_test) {
   const std::string url("http://www.example.com/");
   network::uri instance(url);
@@ -477,19 +472,79 @@ TEST(uri_test, uri_unordered_set_test) {
   ASSERT_EQ(network::uri("http://www.example.com/"), (*std::begin(uri_set)));
 }
 
+TEST(uri_test, empty_uri) {
+  network::uri instance;
+  ASSERT_TRUE(instance.empty());
+}
+
+TEST(uri_test, empty_uri_has_no_scheme) {
+  network::uri instance;
+  ASSERT_FALSE(instance.scheme());
+}
+
+TEST(uri_test, empty_uri_has_no_user_info) {
+  network::uri instance;
+  ASSERT_FALSE(instance.user_info());
+}
+
+TEST(uri_test, empty_uri_has_no_host) {
+  network::uri instance;
+  ASSERT_FALSE(instance.host());
+}
+
+TEST(uri_test, empty_uri_has_no_port) {
+  network::uri instance;
+  ASSERT_FALSE(instance.port());
+}
+
+TEST(uri_test, empty_uri_has_no_path) {
+  network::uri instance;
+  ASSERT_FALSE(instance.path());
+}
+
+TEST(uri_test, empty_uri_has_no_query) {
+  network::uri instance;
+  ASSERT_FALSE(instance.query());
+}
+
+TEST(uri_test, empty_uri_has_no_fragment) {
+  network::uri instance;
+  ASSERT_FALSE(instance.fragment());
+}
+
 TEST(uri_test, http_is_absolute) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.absolute());
 }
 
-TEST(uri_test, mailto_is_absolute) {
+TEST(uri_test, mailto_has_no_user_info) {
   network::uri instance("mailto:john.doe@example.com");
-  ASSERT_TRUE(instance.absolute());
+  ASSERT_FALSE(instance.user_info());
+}
+
+TEST(uri_test, mailto_has_no_host) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_FALSE(instance.host());
+}
+
+TEST(uri_test, mailto_has_no_port) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_FALSE(instance.port());
+}
+
+TEST(uri_test, mailto_has_no_authority) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_FALSE(instance.authority());
 }
 
 TEST(uri_test, http_is_hierarchical) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(!instance.opaque());
+}
+
+TEST(uri_test, mailto_is_absolute) {
+  network::uri instance("mailto:john.doe@example.com");
+  ASSERT_TRUE(instance.absolute());
 }
 
 TEST(uri_test, mailto_is_opaque) {
