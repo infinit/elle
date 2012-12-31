@@ -297,6 +297,36 @@ namespace network {
     }
   } // namespace detail
 
+  struct uri::impl {
+
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif // defined(_MSC_VER)
+
+    string_type uri_;
+
+#if defined(_MSC_VER)
+#pragma warning(push)
+#endif // defined(_MSC_VER)
+
+    detail::uri_parts<string_type::iterator> uri_parts_;
+
+    impl *clone();
+
+  };
+
+  uri::impl *uri::impl::clone() {
+    impl *other = new impl;
+    other->uri_ = uri_;
+    if (!other->uri_.empty()) {
+      auto first = std::begin(other->uri_), last = std::end(other->uri_);
+      bool is_valid = detail::parse(first, last, other->uri_parts_);
+      assert(is_valid);
+    }
+    return other;
+  }
+
   uri::uri(const boost::optional<string_type> &scheme,
 	   const boost::optional<string_type> &user_info,
 	   const boost::optional<string_type> &host,
@@ -304,23 +334,24 @@ namespace network {
 	   const boost::optional<string_type> &path,
 	   const boost::optional<string_type> &query,
 	   const boost::optional<string_type> &fragment) {
+    string_type uri;
 
     if (scheme) {
-      uri_.append(*scheme);
+      uri.append(*scheme);
     }
 
     if (user_info || host || port) {
       if (scheme) {
-	uri_.append("://");
+	uri.append("://");
       }
 
       if (user_info) {
-	uri_.append(*user_info);
-	uri_.append("@");
+	uri.append(*user_info);
+	uri.append("@");
       }
 
       if (host) {
-	uri_.append(*host);
+	uri.append(*host);
       }
       else {
 	auto ec = make_error_code(uri_error::invalid_host);
@@ -328,14 +359,14 @@ namespace network {
       }
 
       if (port) {
-	uri_.append(":");
-	uri_.append(*port);
+	uri.append(":");
+	uri.append(*port);
       }
     }
     else {
       if (scheme) {
 	if (path || query || fragment) {
-	  uri_.append(":");
+	  uri.append(":");
 	}
 	else {
 	  auto ec = make_error_code(uri_error::invalid_scheme);
@@ -345,20 +376,20 @@ namespace network {
     }
 
     if (path) {
-      uri_.append(*path);
+      uri.append(*path);
     }
 
     if (query) {
-      uri_.append("?");
-      uri_.append(*query);
+      uri.append("?");
+      uri.append(*query);
     }
 
     if (fragment) {
-      uri_.append("#");
-      uri_.append(*fragment);
+      uri.append("#");
+      uri.append(*fragment);
     }
 
-    auto it = std::begin(uri_);
+    auto it = std::begin(uri);
     if (scheme) {
       //uri_parts_.scheme = boost::iterator_range<iterator>(std::begin(uri_), std::end(uri_));
     }
@@ -388,90 +419,98 @@ namespace network {
     }
 
     std::error_code ec;
-    parse(ec);
+    init(uri, ec);
+    if (ec) {
+      throw std::system_error(ec);
+    }
   }
 
-  uri::uri() {
+  uri::uri()
+    : pimpl_(new impl) {
 
   }
 
   uri::uri(const uri &other)
-    : uri_(other.uri_) {
-    std::error_code ec;
-    parse(ec);
-    // don't throw
+    : pimpl_(other.pimpl_->clone()) {
+
+  }
+
+  uri::uri(uri &&other)
+    : pimpl_(other.pimpl_) {
+    other.pimpl_ = new impl;
   }
 
   uri::~uri() {
-
+    delete pimpl_;
   }
 
   uri &uri::operator = (const uri &other) {
-    uri_ = other.uri_;
-    std::error_code ec;
-    parse(ec);
-    // don't throw
+    uri(other).swap(*this);
+    return *this;
+  }
+
+  uri &uri::operator = (uri &&other) {
+    uri(other).swap(*this);
     return *this;
   }
 
   void uri::swap(uri &other) {
-    std::swap(uri_, other.uri_);
-    std::swap(uri_parts_, other.uri_parts_);
+    std::swap(pimpl_, other.pimpl_);
   }
 
   uri::const_iterator uri::begin() const {
-    return uri_.begin();
+    return pimpl_->uri_.begin();
   }
 
   uri::const_iterator uri::end() const {
-    return uri_.end();
+    return pimpl_->uri_.end();
   }
 
   boost::optional<string_ref> uri::scheme() const {
-    return uri_parts_.scheme?
-      string_ref(std::begin(uri_parts_.scheme.get()), std::end(uri_parts_.scheme.get()))
+    return pimpl_->uri_parts_.scheme?
+      string_ref(std::begin(pimpl_->uri_parts_.scheme.get()), std::end(pimpl_->uri_parts_.scheme.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::user_info() const {
-    return uri_parts_.hier_part.user_info?
-      string_ref(std::begin(uri_parts_.hier_part.user_info.get()),
-		 std::end(uri_parts_.hier_part.user_info.get()))
+    return pimpl_->uri_parts_.hier_part.user_info?
+      string_ref(std::begin(pimpl_->uri_parts_.hier_part.user_info.get()),
+		 std::end(pimpl_->uri_parts_.hier_part.user_info.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::host() const {
-    return uri_parts_.hier_part.host?
-      string_ref(std::begin(uri_parts_.hier_part.host.get()),
-		 std::end(uri_parts_.hier_part.host.get()))
+    return pimpl_->uri_parts_.hier_part.host?
+      string_ref(std::begin(pimpl_->uri_parts_.hier_part.host.get()),
+		 std::end(pimpl_->uri_parts_.hier_part.host.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::port() const {
-    return uri_parts_.hier_part.port?
-      string_ref(std::begin(uri_parts_.hier_part.port.get()),
-		 std::end(uri_parts_.hier_part.port.get()))
+    return pimpl_->uri_parts_.hier_part.port?
+      string_ref(std::begin(pimpl_->uri_parts_.hier_part.port.get()),
+		 std::end(pimpl_->uri_parts_.hier_part.port.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::path() const {
-    return uri_parts_.hier_part.path?
-      string_ref(std::begin(uri_parts_.hier_part.path.get()),
-		 std::end(uri_parts_.hier_part.path.get()))
+    return pimpl_->uri_parts_.hier_part.path?
+      string_ref(std::begin(pimpl_->uri_parts_.hier_part.path.get()),
+		 std::end(pimpl_->uri_parts_.hier_part.path.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::query() const {
-    return uri_parts_.query ?
-      string_ref(std::begin(uri_parts_.query.get()),
-		 std::end(uri_parts_.query.get()))
+    return pimpl_->uri_parts_.query ?
+      string_ref(std::begin(pimpl_->uri_parts_.query.get()),
+		 std::end(pimpl_->uri_parts_.query.get()))
       : boost::optional<string_ref>();
   }
 
   boost::optional<string_ref> uri::fragment() const {
-    return uri_parts_.fragment?
-      string_ref(std::begin(uri_parts_.fragment.get()),
-		 std::end(uri_parts_.fragment.get()))
+    return pimpl_->uri_parts_.fragment?
+      string_ref(std::begin(pimpl_->uri_parts_.fragment.get()),
+		 std::end(pimpl_->uri_parts_.fragment.get()))
       : boost::optional<string_ref>();
   }
 
@@ -497,27 +536,27 @@ namespace network {
 
 
   uri::string_type uri::native() const {
-    return uri_;
+    return pimpl_->uri_;
   }
 
   std::string uri::string() const {
-    return std::string(std::begin(uri_), std::end(uri_));
+    return std::string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
   std::wstring uri::wstring() const {
-    return std::wstring(std::begin(uri_), std::end(uri_));
+    return std::wstring(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
   std::u16string uri::u16string() const {
-    return std::u16string(std::begin(uri_), std::end(uri_));
+    return std::u16string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
   std::u32string uri::u32string() const {
-    return std::u32string(std::begin(uri_), std::end(uri_));
+    return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
   bool uri::empty() const {
-    return uri_.empty();
+    return pimpl_->uri_.empty();
   }
 
   bool uri::absolute() const {
@@ -579,32 +618,33 @@ namespace network {
   } // namespace
 
   uri uri::normalize(uri_comparison_level level) const {
-    string_type normalized(uri_);
-
     if ((uri_comparison_level::case_normalization == level) ||
 	(uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // All alphabetic characters in the scheme and host are
-      // lower-case except when used in percent encoding
-      if (auto scheme = uri_parts_.scheme) {
+      // lower-case...
+      if (auto scheme = pimpl_->uri_parts_.scheme) {
 	std::transform(std::begin(*scheme), std::end(*scheme), std::begin(*scheme),
 		       [] (string_type::value_type v) { return std::tolower(v); });
       }
 
-      if (auto host = uri_parts_.hier_part.host) {
-	auto it = std::begin(*host), end = std::end(*host);
-	while (it != end) {
-	  if (*it == '%') {
-	    ++it; *it = std::toupper(*it);
-	    ++it; *it = std::toupper(*it);
-	  }
-	  else {
-	    *it = std::tolower(*it);
-	  }
-	  ++it;
+      if (auto host = pimpl_->uri_parts_.hier_part.host) {
+	std::transform(std::begin(*host), std::end(*host), std::begin(*host),
+		       [] (string_type::value_type v) { return std::tolower(v); });
+      }
+
+      // ...except when used in percent encoding
+      auto it = std::begin(pimpl_->uri_), end = std::end(pimpl_->uri_);
+      while (it != end) {
+	if (*it == '%') {
+	  ++it; *it = std::toupper(*it);
+	  ++it; *it = std::toupper(*it);
 	}
+	++it;
       }
     }
+
+    string_type normalized(pimpl_->uri_);
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
@@ -733,15 +773,16 @@ namespace network {
     return normalize(level).native().compare(other.normalize(level).native());
   }
 
-  void uri::parse(std::error_code &ec) {
-    if (uri_.empty()) {
-      return;
-    }
+  void uri::init(const string_type &uri, std::error_code &ec) {
+    pimpl_ = new impl;
 
-    auto first = std::begin(uri_), last = std::end(uri_);
-    bool is_valid = detail::parse(first, last, uri_parts_);
-    if (!is_valid) {
-      ec = make_error_code(uri_error::invalid_syntax);
+    pimpl_->uri_ = uri;
+    if (!pimpl_->uri_.empty()) {
+      auto first = std::begin(pimpl_->uri_), last = std::end(pimpl_->uri_);
+      bool is_valid = detail::parse(first, last, pimpl_->uri_parts_);
+      if (!is_valid) {
+	ec = make_error_code(uri_error::invalid_syntax);
+      }
     }
   }
 } // namespace network

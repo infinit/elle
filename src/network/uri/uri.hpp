@@ -10,10 +10,8 @@
 #define NETWORK_URI_INC
 
 #include <network/uri/config.hpp>
-#include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/translate.hpp>
 #include <network/utility/string_ref.hpp>
-#include <boost/range/algorithm/equal.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <exception>
@@ -89,10 +87,9 @@ namespace network {
     template <
       class InputIter
       >
-    uri(const InputIter &first, const InputIter &last)
-      : uri_(first, last) {
+    uri(const InputIter &first, const InputIter &last) {
       std::error_code ec;
-      parse(ec);
+      init(string_type(first, last), ec);
       if (ec) {
 	throw std::system_error(ec);
       }
@@ -101,10 +98,9 @@ namespace network {
     template <
       class Source
       >
-    explicit uri(const Source &uri)
-      : uri_(detail::translate(uri)) {
+    explicit uri(const Source &uri) {
       std::error_code ec;
-      parse(ec);
+      init(detail::translate(uri), ec);
       if (ec) {
 	throw std::system_error(ec);
       }
@@ -113,16 +109,19 @@ namespace network {
     template <
       class Source
       >
-    explicit uri(const Source &uri, std::error_code &ec)
-      : uri_(detail::translate(uri)) {
-      parse(ec);
+    explicit uri(const Source &uri, std::error_code &ec) {
+      init(detail::translate(uri), ec);
     }
 
     uri(const uri &other);
 
+    uri(uri &&other);
+
     ~uri();
 
     uri &operator = (const uri &other);
+
+    uri &operator = (uri &&other);
 
     void swap(uri &other);
 
@@ -172,20 +171,10 @@ namespace network {
 
   private:
 
-    void parse(std::error_code &ec);
+    void init(const string_type &uri, std::error_code &ec);
 
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif // defined(_MSC_VER)
-
-    string_type uri_;
-
-#if defined(_MSC_VER)
-#pragma warning(push)
-#endif // defined(_MSC_VER)
-
-    detail::uri_parts<string_type::iterator> uri_parts_;
+    struct impl;
+    impl *pimpl_;
 
   };
 

@@ -35,19 +35,19 @@ TEST(uri_normalization_test, normalize_case_percent_encode_is_upper_case) {
 }
 
 TEST(uri_normalization_test, normalize_percent_encoding) {
-  network::uri instance("http://www%2Eexample%2Ecom/%7E%66%6F%6F%62%61%72%5F%36%39/");
+  network::uri instance("http://www%2Eexample%2Ecom/%7E%46%4F%4F%42%41%52%5F%36%39/");
   ASSERT_EQ("http://www.example.com/~foobar_69/",
 	    instance.normalize(network::uri_comparison_level::percent_encoding_normalization).string());
 }
 
 TEST(uri_normalization_test, normalize_percent_encoding_with_lower_case_elements) {
-  network::uri instance("http://www%2eexample%2ecom/%7e%66%6f%6f%62%61%72%5f%36%39/");
+  network::uri instance("http://www%2eexample%2ecom/%7e%46%4f%4f%42%41%52%5f%36%39/");
   ASSERT_EQ("http://www.example.com/~foobar_69/",
 	    instance.normalize(network::uri_comparison_level::percent_encoding_normalization).string());
 }
 
 TEST(uri_normalization_test, normalize_percent_encoding_is_upper_case) {
-  network::uri instance("HTTP://www%2Eexample%2Ecom/%7E%66%6F%6F%62%61%72%5F%36%39/");
+  network::uri instance("HTTP://www%2Eexample%2Ecom/%7E%46%4F%4F%42%41%52%5F%36%39/");
   ASSERT_EQ("http://www.example.com/~foobar_69/",
 	    instance.normalize(network::uri_comparison_level::percent_encoding_normalization).string());
 }
