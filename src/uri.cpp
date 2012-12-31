@@ -351,6 +351,16 @@ namespace network {
     return other;
   }
 
+  namespace {
+    inline
+    boost::iterator_range<uri::string_type::iterator> copy_range(const uri::string_type &part,
+								 uri::string_type::iterator &it) {
+      auto first = it;
+      std::advance(it, std::distance(std::begin(part), std::end(part)));
+      return boost::iterator_range<uri::string_type::iterator>(first, it);
+    }
+  } // namespace
+
   uri::uri(const boost::optional<string_type> &scheme,
 	   const boost::optional<string_type> &user_info,
 	   const boost::optional<string_type> &host,
@@ -377,7 +387,7 @@ namespace network {
 	pimpl_->uri_.append(*host);
       }
       else {
-	auto ec = make_error_code(uri_error::invalid_host);
+	auto ec = make_error_code(uri_error::invalid_uri);
 	throw std::system_error(ec);
       }
 
@@ -392,7 +402,7 @@ namespace network {
 	  pimpl_->uri_.append(":");
 	}
 	else {
-	  auto ec = make_error_code(uri_error::invalid_scheme);
+	  auto ec = make_error_code(uri_error::invalid_uri);
 	  throw std::system_error(ec);
 	}
       }
@@ -414,72 +424,39 @@ namespace network {
 
     auto it = std::begin(pimpl_->uri_);
     if (scheme) {
-      auto scheme_first = it;
-      std::advance(it, std::distance(std::begin(*scheme), std::end(*scheme)));
-      pimpl_->uri_parts_.scheme =
-	boost::iterator_range<string_type::iterator>(scheme_first, it);
-
+      pimpl_->uri_parts_.scheme = copy_range(*scheme, it);
+      // ignore ://
       while ((':' == *it) || ('/' == *it)) {
 	++it;
       }
     }
 
     if (user_info) {
-      auto user_info_first = it;
-      std::advance(it, std::distance(std::begin(*user_info), std::end(*user_info)));
-      pimpl_->uri_parts_.hier_part.user_info =
-	boost::iterator_range<string_type::iterator>(user_info_first, it);
-
-      while ('@' == *it) {
-    	++it;
-      }
+      pimpl_->uri_parts_.hier_part.user_info = copy_range(*user_info, it);
+      ++it; // ignore @
     }
 
     if (host) {
-      auto host_first = it;
-      std::advance(it, std::distance(std::begin(*host), std::end(*host)));
-      pimpl_->uri_parts_.hier_part.host =
-	boost::iterator_range<string_type::iterator>(host_first, it);
+      pimpl_->uri_parts_.hier_part.host = copy_range(*host, it);
     }
 
     if (port) {
-      while (':' == *it) {
-    	++it;
-      }
-
-      auto port_first = it;
-      std::advance(it, std::distance(std::begin(*port), std::end(*port)));
-      pimpl_->uri_parts_.hier_part.port =
-	boost::iterator_range<string_type::iterator>(port_first, it);
+      ++it; // ignore :
+      pimpl_->uri_parts_.hier_part.port = copy_range(*port, it);
     }
 
     if (path) {
-      auto path_first = it;
-      std::advance(it, std::distance(std::begin(*path), std::end(*path)));
-      pimpl_->uri_parts_.hier_part.path =
-	boost::iterator_range<string_type::iterator>(path_first, it);
+      pimpl_->uri_parts_.hier_part.path = copy_range(*path, it);
     }
 
     if (query) {
-      while ('?' == *it) {
-    	++it;
-      }
-
-      auto query_first = it;
-      std::advance(it, std::distance(std::begin(*query), std::end(*query)));
-      pimpl_->uri_parts_.query =
-	boost::iterator_range<string_type::iterator>(query_first, it);
+      ++it; // ignore ?
+      pimpl_->uri_parts_.query = copy_range(*query, it);
     }
 
     if (fragment) {
-      while ('#' == *it) {
-    	++it;
-      }
-
-      auto fragment_first = it;
-      std::advance(it, std::distance(std::begin(*fragment), std::end(*fragment)));
-      pimpl_->uri_parts_.fragment =
-	boost::iterator_range<string_type::iterator>(fragment_first, it);
+      ++it; // ignore #
+      pimpl_->uri_parts_.fragment = copy_range(*fragment, it);
     }
   }
 
@@ -670,8 +647,7 @@ namespace network {
       return map;
     }
 
-    static const std::unordered_map<std::string, char> percent_decoded_chars =
-      make_percent_decoded_chars();
+    static const auto percent_decoded_chars =  make_percent_decoded_chars();
   } // namespace
 
   uri uri::normalize(uri_comparison_level level) const {

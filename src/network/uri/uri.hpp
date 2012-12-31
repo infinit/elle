@@ -26,6 +26,7 @@ namespace network {
     invalid_syntax = 1,
 
     // builder errors
+    invalid_uri,
     invalid_scheme,
     invalid_user_info,
     invalid_host,

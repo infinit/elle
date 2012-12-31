@@ -5,7 +5,12 @@
 
 
 #include <network/uri.hpp>
-
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 namespace network {
   // alpha range %41-%5A, %61-%7A
@@ -57,7 +62,7 @@ namespace network {
 
   void uri_builder::set_scheme(const string_type &scheme) {
     // validate scheme is valid and normalize
-    pimpl_->scheme_ = scheme;
+    pimpl_->scheme_ = boost::to_lower_copy(scheme);
   }
 
   void uri_builder::set_user_info(const string_type &user_info) {
