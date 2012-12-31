@@ -165,9 +165,9 @@ namespace network {
 
     int compare(const uri &other, uri_comparison_level level) const;
 
-    //uri relativize(const uri &other) const;
-    //
-    //uri resolve(const uri &other) const;
+    //uri relativize(const uri &other, uri_comparison_level level) const;
+
+    //uri resolve(const uri &other, uri_comparison_level level) const;
 
   private:
 

@@ -11,6 +11,7 @@
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -23,7 +24,6 @@
 #include <functional>
 #include <unordered_map>
 #include <vector>
-#include <stack>
 
 namespace network {
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
@@ -558,7 +558,6 @@ namespace network {
     return string_ref(first, last);
   }
 
-
   uri::string_type uri::native() const {
     return pimpl_->uri_;
   }
@@ -647,14 +646,12 @@ namespace network {
 	(uri_comparison_level::path_segment_normalization == level)) {
       // All alphabetic characters in the scheme and host are
       // lower-case...
-      if (auto scheme = pimpl_->uri_parts_.scheme) {
-	std::transform(std::begin(*scheme), std::end(*scheme), std::begin(*scheme),
-		       [] (string_type::value_type v) { return std::tolower(v); });
+      if (pimpl_->uri_parts_.scheme) {
+	boost::to_lower(*pimpl_->uri_parts_.scheme);
       }
 
-      if (auto host = pimpl_->uri_parts_.hier_part.host) {
-	std::transform(std::begin(*host), std::end(*host), std::begin(*host),
-		       [] (string_type::value_type v) { return std::tolower(v); });
+      if (pimpl_->uri_parts_.hier_part.host) {
+	boost::to_lower(*pimpl_->uri_parts_.hier_part.host);
       }
 
       // ...except when used in percent encoding
@@ -669,7 +666,6 @@ namespace network {
     }
 
     string_type normalized(pimpl_->uri_);
-
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       auto it = std::begin(normalized), it2 = std::begin(normalized), end = std::end(normalized);
@@ -719,22 +715,24 @@ namespace network {
 	  boost::split(path_segments, path, is_any_of("/"));
 
 	  // remove single dot segments
-	  boost::remove_erase_if(path_segments, [] (const uri::string_type &s) {
-	      return boost::equal(s, as_literal("."));
-	    });
+	  boost::remove_erase_if(path_segments,
+				 [] (const uri::string_type &s) {
+				   return boost::equal(s, as_literal("."));
+				 });
 
 	  // remove double dot segments
 	  std::vector<string_type> normalized_segments;
 	  auto depth = 0;
-	  boost::for_each(path_segments, [&normalized_segments, &depth] (const string_type &s) {
-	      assert(depth >= 0);
-	      if (boost::equal(s, as_literal(".."))) {
-		normalized_segments.pop_back();
-	      }
-	      else {
-		normalized_segments.push_back(s);
-	      }
-	    });
+	  boost::for_each(path_segments,
+			  [&normalized_segments, &depth] (const string_type &s) {
+			    assert(depth >= 0);
+			    if (boost::equal(s, as_literal(".."))) {
+			      normalized_segments.pop_back();
+			    }
+			    else {
+			      normalized_segments.push_back(s);
+			    }
+			  });
 
 	  path = boost::join(normalized_segments, "/");
 	}
@@ -761,15 +759,20 @@ namespace network {
     return uri(normalized);
   }
 
-  //uri uri::relativize(const uri &other) const {
+  //uri uri::relativize(const uri &other, uri_comparison_level level) const {
   //  if (opaque() || other.opaque()) {
+  //    return other;
+  //  }
+  //
+  //  if ((scheme() && other.scheme()) &&
+  //	(scheme().get() == other.scheme().get())) {
   //    return other;
   //  }
   //
   //  return other;
   //}
-  //
-  //uri uri::resolve(const uri &other) const {
+
+  //uri uri::resolve(const uri &other, uri_comparison_level level) const {
   //  // http://tools.ietf.org/html/rfc3986#section-5.2
   //
   //
