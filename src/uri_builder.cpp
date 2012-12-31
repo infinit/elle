@@ -56,7 +56,7 @@ namespace network {
   }
 
   void uri_builder::set_scheme(const string_type &scheme) {
-    // validate scheme is valid
+    // validate scheme is valid and normalize
     pimpl_->scheme_ = scheme;
   }
 

@@ -357,25 +357,24 @@ namespace network {
 	   const boost::optional<string_type> &port,
 	   const boost::optional<string_type> &path,
 	   const boost::optional<string_type> &query,
-	   const boost::optional<string_type> &fragment) {
-    string_type uri;
-
+	   const boost::optional<string_type> &fragment)
+    : pimpl_(new impl) {
     if (scheme) {
-      uri.append(*scheme);
+      pimpl_->uri_.append(*scheme);
     }
 
     if (user_info || host || port) {
       if (scheme) {
-	uri.append("://");
+	pimpl_->uri_.append("://");
       }
 
       if (user_info) {
-	uri.append(*user_info);
-	uri.append("@");
+	pimpl_->uri_.append(*user_info);
+	pimpl_->uri_.append("@");
       }
 
       if (host) {
-	uri.append(*host);
+	pimpl_->uri_.append(*host);
       }
       else {
 	auto ec = make_error_code(uri_error::invalid_host);
@@ -383,14 +382,14 @@ namespace network {
       }
 
       if (port) {
-	uri.append(":");
-	uri.append(*port);
+	pimpl_->uri_.append(":");
+	pimpl_->uri_.append(*port);
       }
     }
     else {
       if (scheme) {
 	if (path || query || fragment) {
-	  uri.append(":");
+	  pimpl_->uri_.append(":");
 	}
 	else {
 	  auto ec = make_error_code(uri_error::invalid_scheme);
@@ -400,52 +399,87 @@ namespace network {
     }
 
     if (path) {
-      uri.append(*path);
+      pimpl_->uri_.append(*path);
     }
 
     if (query) {
-      uri.append("?");
-      uri.append(*query);
+      pimpl_->uri_.append("?");
+      pimpl_->uri_.append(*query);
     }
 
     if (fragment) {
-      uri.append("#");
-      uri.append(*fragment);
+      pimpl_->uri_.append("#");
+      pimpl_->uri_.append(*fragment);
     }
 
-    auto it = std::begin(uri);
+    auto it = std::begin(pimpl_->uri_);
     if (scheme) {
-      //uri_parts_.scheme = boost::iterator_range<iterator>(std::begin(uri_), std::end(uri_));
+      auto scheme_first = it;
+      std::advance(it, std::distance(std::begin(*scheme), std::end(*scheme)));
+      pimpl_->uri_parts_.scheme =
+	boost::iterator_range<string_type::iterator>(scheme_first, it);
+
+      while ((':' == *it) || ('/' == *it)) {
+	++it;
+      }
     }
 
     if (user_info) {
+      auto user_info_first = it;
+      std::advance(it, std::distance(std::begin(*user_info), std::end(*user_info)));
+      pimpl_->uri_parts_.hier_part.user_info =
+	boost::iterator_range<string_type::iterator>(user_info_first, it);
 
+      while ('@' == *it) {
+    	++it;
+      }
     }
 
     if (host) {
-
+      auto host_first = it;
+      std::advance(it, std::distance(std::begin(*host), std::end(*host)));
+      pimpl_->uri_parts_.hier_part.host =
+	boost::iterator_range<string_type::iterator>(host_first, it);
     }
 
     if (port) {
+      while (':' == *it) {
+    	++it;
+      }
 
+      auto port_first = it;
+      std::advance(it, std::distance(std::begin(*port), std::end(*port)));
+      pimpl_->uri_parts_.hier_part.port =
+	boost::iterator_range<string_type::iterator>(port_first, it);
     }
 
     if (path) {
-
+      auto path_first = it;
+      std::advance(it, std::distance(std::begin(*path), std::end(*path)));
+      pimpl_->uri_parts_.hier_part.path =
+	boost::iterator_range<string_type::iterator>(path_first, it);
     }
 
     if (query) {
+      while ('?' == *it) {
+    	++it;
+      }
 
+      auto query_first = it;
+      std::advance(it, std::distance(std::begin(*query), std::end(*query)));
+      pimpl_->uri_parts_.query =
+	boost::iterator_range<string_type::iterator>(query_first, it);
     }
 
     if (fragment) {
+      while ('#' == *it) {
+    	++it;
+      }
 
-    }
-
-    std::error_code ec;
-    init(uri, ec);
-    if (ec) {
-      throw std::system_error(ec);
+      auto fragment_first = it;
+      std::advance(it, std::distance(std::begin(*fragment), std::end(*fragment)));
+      pimpl_->uri_parts_.fragment =
+	boost::iterator_range<string_type::iterator>(fragment_first, it);
     }
   }
 
