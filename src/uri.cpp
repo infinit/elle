@@ -261,9 +261,9 @@ namespace network {
 	 )
 	|
 	(
-	 qi::attr(boost::iterator_range<iterator>())
-	 >>  qi::attr(boost::iterator_range<iterator>())
-	 >>  qi::attr(boost::iterator_range<iterator>())
+	 qi::attr(boost::optional<boost::iterator_range<iterator> >())
+	 >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
+	 >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
 	 >>  (
 	      path_absolute
 	      |   path_rootless
