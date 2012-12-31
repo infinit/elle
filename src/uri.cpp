@@ -11,6 +11,7 @@
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -799,7 +800,7 @@ namespace network {
   void uri::init(const string_type &uri, std::error_code &ec) {
     pimpl_ = new impl;
 
-    pimpl_->uri_ = uri;
+    pimpl_->uri_ = boost::trim_copy(uri);
     if (!pimpl_->uri_.empty()) {
       auto first = std::begin(pimpl_->uri_), last = std::end(pimpl_->uri_);
       bool is_valid = detail::parse(first, last, pimpl_->uri_parts_);

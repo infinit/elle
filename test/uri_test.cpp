@@ -506,7 +506,11 @@ TEST(uri_test, mailto_is_opaque) {
   ASSERT_TRUE(instance.opaque());
 }
 
-TEST(uri_test, DISABLED_whitespace_test) {
-  // todo trim whitespace in parser.
-  network::uri instance(" http://www.example.com/");
+TEST(uri_test, whitespace_no_throw) {
+  ASSERT_NO_THROW(network::uri(" http://www.example.com/ "));
+}
+
+TEST(uri_test, whitespace_is_trimmed) {
+  network::uri instance(" http://www.example.com/ ");
+  ASSERT_EQ("http://www.example.com/", instance.string());
 }
