@@ -47,7 +47,7 @@ namespace network {
   }
 
   uri_builder::~uri_builder() {
-
+    delete pimpl_;
   }
 
   uri_builder &uri_builder::base_uri(const network::uri &base_uri) {

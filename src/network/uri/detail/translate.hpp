@@ -5,11 +5,9 @@
 
 
 #ifndef NETWORK_URI_DETAIL_TRANSLATE_INC
-# define NETWORK_URI_DETAIL_TRANSLATE_INC
-
+#define NETWORK_URI_DETAIL_TRANSLATE_INC
 
 #include <string>
-
 
 namespace network {
   namespace detail {

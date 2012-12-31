@@ -9,8 +9,6 @@
 #ifndef NETWORK_URI_BUILDER_INC
 #define NETWORK_URI_BUILDER_INC
 
-#include <memory>
-
 namespace network {
   class NETWORK_URI_DECL uri_builder {
 
@@ -87,7 +85,7 @@ namespace network {
     void set_fragment(const string_type &fragment);
 
     struct impl;
-    std::unique_ptr<impl> pimpl_;
+    impl *pimpl_;
 
   };
 } // namespace network

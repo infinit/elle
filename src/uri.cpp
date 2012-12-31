@@ -6,7 +6,6 @@
 
 
 #include <network/uri/uri.hpp>
-#include <network/uri/detail/uri_parts.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
@@ -14,9 +13,11 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <boost/range/as_literal.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/optional.hpp>
 #include <algorithm>
 #include <functional>
 #include <unordered_map>
@@ -50,6 +51,28 @@ namespace network {
   std::error_code make_error_code(uri_error e) {
     return std::error_code(static_cast<int>(e), uri_category());
   }
+
+  namespace detail {
+    template <
+      class FwdIter
+      >
+    struct hierarchical_part {
+      boost::optional<boost::iterator_range<FwdIter> > user_info;
+      boost::optional<boost::iterator_range<FwdIter> > host;
+      boost::optional<boost::iterator_range<FwdIter> > port;
+      boost::optional<boost::iterator_range<FwdIter> > path;
+    };
+
+    template <
+      class FwdIter
+      >
+    struct uri_parts {
+      boost::optional<boost::iterator_range<FwdIter> > scheme;
+      hierarchical_part<FwdIter> hier_part;
+      boost::optional<boost::iterator_range<FwdIter> > query;
+      boost::optional<boost::iterator_range<FwdIter> > fragment;
+    };
+  } // namespace detail
 } // namespace network
 
 BOOST_FUSION_ADAPT_TPL_STRUCT
