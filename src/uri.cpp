@@ -1,4 +1,4 @@
-// Copyright 2012 Glyn Matthews.
+// Copyright 2012, 2013 Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -717,26 +717,26 @@ namespace network {
 	  fragment = string_type(std::begin(*parts.fragment), std::end(*parts.fragment));
 	}
 
-	if (path.empty()) {
-	  path = "/";
-	}
-	else {
+	if (!path.empty()) {
 	  std::vector<string_type> path_segments;
 	  boost::split(path_segments, path, is_any_of("/"));
 
 	  // remove single dot segments
 	  boost::remove_erase_if(path_segments,
 				 [] (const uri::string_type &s) {
-				   return boost::equal(s, as_literal("."));
+				   return (s == ".");
 				 });
 
 	  // remove double dot segments
 	  std::vector<string_type> normalized_segments;
-	  auto depth = 0;
 	  boost::for_each(path_segments,
-			  [&normalized_segments, &depth] (const string_type &s) {
-			    assert(depth >= 0);
-			    if (boost::equal(s, as_literal(".."))) {
+			  [&normalized_segments] (const string_type &s) {
+			    if (".." == s) {
+			      // in a valid path, the minimum number of segments is 1
+			      if (normalized_segments.size() <= 1) {
+				throw std::system_error(uri_error::invalid_path);
+			      }
+
 			      normalized_segments.pop_back();
 			    }
 			    else {
@@ -745,6 +745,21 @@ namespace network {
 			  });
 
 	  path = boost::join(normalized_segments, "/");
+
+	  // remove adjacent slashes
+	  char p = '\0';
+	  boost::remove_erase_if(path,
+				 [&p] (const uri::value_type &c) {
+				   if ((p == '/') && (c == '/')) {
+				     return true;
+				   }
+				   p = c;
+				   return false;
+				 });
+	}
+
+	if (path.empty()) {
+	  path = "/";
 	}
 
 	string_type::iterator path_begin = std::begin(normalized);

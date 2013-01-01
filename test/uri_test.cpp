@@ -514,3 +514,17 @@ TEST(uri_test, whitespace_is_trimmed) {
   network::uri instance(" http://www.example.com/ ");
   ASSERT_EQ("http://www.example.com/", instance.string());
 }
+
+TEST(uri_test, unnormalized_invalid_path_doesnt_throw) {
+  ASSERT_NO_THROW(network::uri("http://www.example.com/.."));
+}
+
+TEST(uri_test, unnormalized_invalid_path_is_valid) {
+  network::uri instance("http://www.example.com/..");
+  ASSERT_TRUE(instance.path());
+}
+
+TEST(uri_test, unnormalized_invalid_path_value) {
+  network::uri instance("http://www.example.com/..");
+  ASSERT_EQ("/..", *instance.path());
+}

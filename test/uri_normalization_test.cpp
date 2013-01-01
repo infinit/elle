@@ -123,3 +123,37 @@ TEST(uri_normalization_test, path_segmented_remove_double_dot_segments_with_quer
   ASSERT_EQ("http://www.example.com/b/?key=value#fragment",
 	    instance.normalize(network::uri_comparison_level::path_segment_normalization).string());
 }
+
+TEST(uri_normalization_test, path_double_dash) {
+  network::uri instance("http://www.example.com//");
+  ASSERT_EQ("http://www.example.com/",
+	    instance.normalize(network::uri_comparison_level::path_segment_normalization).string());
+}
+
+TEST(uri_normalization_test, path_triple_dash) {
+  network::uri instance("http://www.example.com///");
+  ASSERT_EQ("http://www.example.com/",
+	    instance.normalize(network::uri_comparison_level::path_segment_normalization).string());
+}
+
+TEST(uri_normalization_test, path_depth_below_root) {
+  network::uri instance("http://www.example.com/..");
+  ASSERT_THROW(instance.normalize(network::uri_comparison_level::path_segment_normalization), std::system_error);
+}
+
+TEST(uri_normalization_test, path_depth_below_root_2) {
+  network::uri instance("http://www.example.com/a/../..");
+  ASSERT_THROW(instance.normalize(network::uri_comparison_level::path_segment_normalization), std::system_error);
+}
+
+TEST(uri_normalization_test, path_dash_dot_dash) {
+  network::uri instance("http://www.example.com/./");
+  ASSERT_EQ("http://www.example.com/",
+	    instance.normalize(network::uri_comparison_level::path_segment_normalization).string());
+}
+
+TEST(uri_normalization_test, path_dash_dot_dash_dot) {
+  network::uri instance("http://www.example.com/./.");
+  ASSERT_EQ("http://www.example.com/",
+	    instance.normalize(network::uri_comparison_level::path_segment_normalization).string());
+}
