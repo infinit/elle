@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -12,11 +12,12 @@ const network::uri base_uri("http://a/b/c/d;p?q");
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1
 
-TEST(uri_resolve_test, normal_example_1) {
+TEST(uri_resolve_test, DISABLED_normal_example_1) {
 //     "g"             =  "http://a/b/c/g"
   network::uri_builder builder;
   builder.path("g");
-  ASSERT_EQ(network::uri("http://a/b/c/g"), base_uri.resolve(builder.uri()));
+  ASSERT_EQ(network::uri("http://a/b/c/g"),
+	    base_uri.resolve(builder.uri(), network::uri_comparison_level::string_comparison));
 }
 
 //      "./g"           =  "http://a/b/c/g"

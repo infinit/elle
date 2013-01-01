@@ -7,9 +7,7 @@
 
 #include <network/uri/uri.hpp>
 #include <network/utility/string_ref_io.hpp>
-#include <boost/config/warning_disable.hpp>
-#include <boost/spirit/home/qi.hpp>
-#include <boost/fusion/adapted/struct/adapt_struct.hpp>
+#include "detail/uri_parse.hpp"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -21,6 +19,7 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/optional.hpp>
+#include <cctype>
 #include <algorithm>
 #include <functional>
 #include <unordered_map>
@@ -54,287 +53,64 @@ namespace network {
     return std::error_code(static_cast<int>(e), uri_category());
   }
 
-  namespace detail {
-    template <
-      class FwdIter
-      >
-    struct hierarchical_part {
-      boost::optional<boost::iterator_range<FwdIter> > user_info;
-      boost::optional<boost::iterator_range<FwdIter> > host;
-      boost::optional<boost::iterator_range<FwdIter> > port;
-      boost::optional<boost::iterator_range<FwdIter> > path;
-    };
-
-    template <
-      class FwdIter
-      >
-    struct uri_parts {
-      boost::optional<boost::iterator_range<FwdIter> > scheme;
-      hierarchical_part<FwdIter> hier_part;
-      boost::optional<boost::iterator_range<FwdIter> > query;
-      boost::optional<boost::iterator_range<FwdIter> > fragment;
-    };
-  } // namespace detail
-} // namespace network
-
-BOOST_FUSION_ADAPT_TPL_STRUCT
-(
- (FwdIter),
- (network::detail::hierarchical_part)(FwdIter),
- (boost::optional<boost::iterator_range<FwdIter> >, user_info)
- (boost::optional<boost::iterator_range<FwdIter> >, host)
- (boost::optional<boost::iterator_range<FwdIter> >, port)
- (boost::optional<boost::iterator_range<FwdIter> >, path)
- );
-
-BOOST_FUSION_ADAPT_TPL_STRUCT
-(
- (FwdIter),
- (network::detail::uri_parts)(FwdIter),
- (boost::optional<boost::iterator_range<FwdIter> >, scheme)
- (network::detail::hierarchical_part<FwdIter>, hier_part)
- (boost::optional<boost::iterator_range<FwdIter> >, query)
- (boost::optional<boost::iterator_range<FwdIter> >, fragment)
- );
-
-namespace network {
-  namespace qi = boost::spirit::qi;
-
-  template <
-    class String
-    >
-  struct uri_grammar : qi::grammar<
-    typename String::iterator
-    , detail::uri_parts<typename String::iterator>()> {
-
-    typedef String string_type;
-    typedef typename String::iterator iterator;
-
-    uri_grammar() : uri_grammar::base_type(start, "uri") {
-      // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-      gen_delims %= qi::char_(":/?#[]@");
-      // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-      sub_delims %= qi::char_("!$&'()*+,;=");
-      // reserved = gen-delims / sub-delims
-      reserved %= gen_delims | sub_delims;
-      // unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
-      unreserved %= qi::alnum | qi::char_("-._~");
-      // pct-encoded = "%" HEXDIG HEXDIG
-      pct_encoded %= qi::char_("%") >> qi::repeat(2)[qi::xdigit];
-
-      // pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-      pchar %= qi::raw[
-		       unreserved | pct_encoded | sub_delims | qi::char_(":@")
-		       ];
-
-      // segment = *pchar
-      segment %= qi::raw[*pchar];
-      // segment-nz = 1*pchar
-      segment_nz %= qi::raw[+pchar];
-      // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
-      segment_nz_nc %= qi::raw[
-			       +(unreserved | pct_encoded | sub_delims | qi::char_("@"))
-			       ];
-      // path-abempty  = *( "/" segment )
-      path_abempty %=
-	qi::raw[*(qi::char_("/") >> segment)]
-	;
-      // path-absolute = "/" [ segment-nz *( "/" segment ) ]
-      path_absolute %=
-	qi::raw[
-		qi::char_("/")
-		>>  -(segment_nz >> *(qi::char_("/") >> segment))
-		]
-	;
-      // path-rootless = segment-nz *( "/" segment )
-      path_rootless %=
-	qi::raw[segment_nz >> *(qi::char_("/") >> segment)]
-	;
-      // path-empty = 0<pchar>
-      path_empty %=
-	qi::raw[qi::eps]
-	;
-
-      // scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-      scheme %=
-	qi::raw[qi::alpha >> *(qi::alnum | qi::char_("+.-"))]
-	;
-
-      // user_info = *( unreserved / pct-encoded / sub-delims / ":" )
-      user_info %=
-	qi::raw[*(unreserved | pct_encoded | sub_delims | qi::char_(":"))]
-	;
-
-      ip_literal %=
-	qi::lit('[') >> (ipv6address | ipvfuture) >> ']'
-	;
-
-      ipvfuture %=
-	qi::lit('v') >> +qi::xdigit >> '.' >> +( unreserved | sub_delims | ':')
-	;
-
-      ipv6address %= qi::raw[
-			     qi::repeat(6)[h16 >> ':'] >> ls32
-			     |                                                  "::" >> qi::repeat(5)[h16 >> ':'] >> ls32
-			     | - qi::raw[                               h16] >> "::" >> qi::repeat(4)[h16 >> ':'] >> ls32
-			     | - qi::raw[                               h16] >> "::" >> qi::repeat(3)[h16 >> ':'] >> ls32
-			     | - qi::raw[                               h16] >> "::" >> qi::repeat(2)[h16 >> ':'] >> ls32
-			     | - qi::raw[                               h16] >> "::" >>               h16 >> ':'  >> ls32
-			     | - qi::raw[                               h16] >> "::"                              >> ls32
-			     | - qi::raw[                               h16] >> "::"                              >> h16
-			     | - qi::raw[                               h16] >> "::"
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >> qi::repeat(3)[h16 >> ':'] >> ls32
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >> qi::repeat(2)[h16 >> ':'] >> ls32
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >>               h16 >> ':'  >> ls32
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::"                              >> ls32
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::"                              >> h16
-			     | - qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::"
-			     | - qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >> qi::repeat(2)[h16 >> ':'] >> ls32
-			     | - qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >>               h16 >> ':'  >> ls32
-			     | - qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::"                              >> ls32
-			     | - qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::"                              >> h16
-			     | - qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::"
-			     | - qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::" >>               h16 >> ':'  >> ls32
-			     | - qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::"                              >> ls32
-			     | - qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::"                              >> h16
-			     | - qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::"
-			     | - qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::"                              >> ls32
-			     | - qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::"                              >> h16
-			     | - qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::"
-			     | - qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >> "::"                              >> h16
-			     | - qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >> "::"
-			     | - qi::raw[qi::repeat(6)[(h16 >> ':')] >> h16] >> "::"
-			     ];
-
-      // ls32 = ( h16 ":" h16 ) / IPv4address
-      ls32 %= (h16 >> ':' >> h16) | ipv4address
-	;
-
-      // h16 = 1*4HEXDIG
-      h16 %= qi::repeat(1, 4)[qi::xdigit]
-	;
-
-      // dec-octet = DIGIT / %x31-39 DIGIT / "1" 2DIGIT / "2" %x30-34 DIGIT / "25" %x30-35
-      dec_octet %=
-	!(qi::lit('0') >> qi::digit)
-	>>  qi::raw[
-		    qi::uint_parser<boost::uint8_t, 10, 1, 3>()
-		    ];
-
-      // IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
-      ipv4address %= qi::raw[
-			     dec_octet >> qi::repeat(3)[qi::lit('.') >> dec_octet]
-			     ];
-
-      // reg-name = *( unreserved / pct-encoded / sub-delims )
-      reg_name %= qi::raw[
-			  *(unreserved | pct_encoded | sub_delims)
-			  ];
-
-      // TODO, host = IP-literal / IPv4address / reg-name
-      host %=
-	qi::raw[ip_literal | ipv4address | reg_name]
-	;
-
-      // port %= qi::ushort_;
-      port %=
-	qi::raw[*qi::digit]
-	;
-
-      // query = *( pchar / "/" / "?" )
-      query %=
-	qi::raw[*(pchar | qi::char_("/?"))]
-	;
-
-      // fragment = *( pchar / "/" / "?" )
-      fragment %=
-	qi::raw[*(pchar | qi::char_("/?"))]
-	;
-
-      // hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty
-      // authority = [ userinfo "@" ] host [ ":" port ]
-      hier_part %=
-	(
-	 (("//" >> user_info >> '@') | "//")
-	 >>  host
-	 >> -(':' >> port)
-	 >>  path_abempty
-	 )
-	|
-	(
-	 qi::attr(boost::optional<boost::iterator_range<iterator> >())
-	 >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
-	 >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
-	 >>  (
-	      path_absolute
-	      |   path_rootless
-	      |   path_empty
-	      )
-	 )
-	;
-
-      start %=
-	(scheme >> ':')
-	>> hier_part
-	>>  -('?' >> query)
-	>>  -('#' >> fragment)
-	;
-    }
-
-    qi::rule<iterator, typename boost::iterator_range<iterator>::value_type()>
-    gen_delims, sub_delims, reserved, unreserved;
-    qi::rule<iterator, string_type()>
-    pct_encoded, pchar;
-
-    qi::rule<iterator, string_type()>
-    segment, segment_nz, segment_nz_nc;
-    qi::rule<iterator, boost::iterator_range<iterator>()>
-    path_abempty, path_absolute, path_rootless, path_empty;
-
-    qi::rule<iterator, string_type()>
-    dec_octet, ipv4address, reg_name, ipv6address, ipvfuture, ip_literal;
-
-    qi::rule<iterator, string_type()>
-    h16, ls32;
-
-    qi::rule<iterator, boost::iterator_range<iterator>()>
-    host, port;
-
-    qi::rule<iterator, boost::iterator_range<iterator>()>
-    scheme, user_info, query, fragment;
-
-    qi::rule<iterator, detail::hierarchical_part<iterator>()>
-    hier_part;
-
-    // actual uri parser
-    qi::rule<iterator, detail::uri_parts<iterator>()> start;
-
-  };
-
-  namespace detail {
-    bool parse(uri::string_type::iterator first,
+  namespace {
+    inline
+    boost::iterator_range<uri::string_type::iterator>
+    copy_range(uri::string_type::iterator first,
 	       uri::string_type::iterator last,
-	       uri_parts<uri::string_type::iterator> &parts) {
-      namespace qi = boost::spirit::qi;
-      static uri_grammar<uri::string_type> grammar;
-      bool is_valid = qi::parse(first, last, grammar, parts);
-      return is_valid && (first == last);
+	       uri::string_type::iterator &it) {
+      auto part_first = it;
+      std::advance(it, std::distance(first, last));
+      return boost::iterator_range<uri::string_type::iterator>(part_first, it);
     }
-  } // namespace detail
+
+    void advance(uri::string_type::iterator first,
+		 uri::string_type::iterator last,
+		 detail::uri_parts<uri::string_type::iterator> &parts,
+		 const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
+      auto it = first;
+      if (auto scheme = existing_parts.scheme) {
+	parts.scheme.reset(copy_range(std::begin(*scheme), std::end(*scheme), it));
+
+	// ignore ://
+	while ((':' == *it) || ('/' == *it)) {
+	  ++it;
+	}
+      }
+
+      if (auto user_info = existing_parts.hier_part.user_info) {
+	parts.hier_part.user_info.reset(copy_range(std::begin(*user_info), std::end(*user_info), it));
+	++it; // ignore @
+      }
+
+      if (auto host = existing_parts.hier_part.host) {
+	parts.hier_part.host.reset(copy_range(std::begin(*host), std::end(*host), it));
+      }
+
+      if (auto port = existing_parts.hier_part.port) {
+	++it; // ignore :
+	parts.hier_part.port.reset(copy_range(std::begin(*port), std::end(*port), it));
+      }
+
+      if (auto path = existing_parts.hier_part.path) {
+	parts.hier_part.path.reset(copy_range(std::begin(*path), std::end(*path), it));
+      }
+
+      if (auto query = existing_parts.query) {
+	++it; // ignore ?
+	parts.query.reset(copy_range(std::begin(*query), std::end(*query), it));
+      }
+
+      if (auto fragment = existing_parts.fragment) {
+	++it; // ignore #
+	parts.fragment.reset(copy_range(std::begin(*fragment), std::end(*fragment), it));
+      }
+    }
+  } // namespace
 
   struct uri::impl {
 
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif // defined(_MSC_VER)
-
     string_type uri_;
-
-#if defined(_MSC_VER)
-#pragma warning(push)
-#endif // defined(_MSC_VER)
-
     detail::uri_parts<string_type::iterator> uri_parts_;
 
     impl *clone();
@@ -342,33 +118,19 @@ namespace network {
   };
 
   uri::impl *uri::impl::clone() {
-    impl *other = new impl;
+    std::unique_ptr<impl> other(new impl);
     other->uri_ = uri_;
-    if (!other->uri_.empty()) {
-      auto first = std::begin(other->uri_), last = std::end(other->uri_);
-      bool is_valid = detail::parse(first, last, other->uri_parts_);
-      assert(is_valid);
-    }
-    return other;
+    advance(std::begin(other->uri_), std::end(other->uri_), other->uri_parts_, uri_parts_);
+    return other.release();
   }
 
-  namespace {
-    inline
-    boost::iterator_range<uri::string_type::iterator> copy_range(const uri::string_type &part,
-								 uri::string_type::iterator &it) {
-      auto first = it;
-      std::advance(it, std::distance(std::begin(part), std::end(part)));
-      return boost::iterator_range<uri::string_type::iterator>(first, it);
-    }
-  } // namespace
-
-  uri::uri(const boost::optional<string_type> &scheme,
-	   const boost::optional<string_type> &user_info,
-	   const boost::optional<string_type> &host,
-	   const boost::optional<string_type> &port,
-	   const boost::optional<string_type> &path,
-	   const boost::optional<string_type> &query,
-	   const boost::optional<string_type> &fragment)
+  uri::uri(boost::optional<string_type> scheme,
+	   boost::optional<string_type> user_info,
+	   boost::optional<string_type> host,
+	   boost::optional<string_type> port,
+	   boost::optional<string_type> path,
+	   boost::optional<string_type> query,
+	   boost::optional<string_type> fragment)
     : pimpl_(new impl) {
     if (scheme) {
       pimpl_->uri_.append(*scheme);
@@ -425,7 +187,7 @@ namespace network {
 
     auto it = std::begin(pimpl_->uri_);
     if (scheme) {
-      pimpl_->uri_parts_.scheme = copy_range(*scheme, it);
+      pimpl_->uri_parts_.scheme.reset(copy_range(std::begin(*scheme), std::end(*scheme), it));
       // ignore ://
       while ((':' == *it) || ('/' == *it)) {
 	++it;
@@ -433,31 +195,31 @@ namespace network {
     }
 
     if (user_info) {
-      pimpl_->uri_parts_.hier_part.user_info = copy_range(*user_info, it);
+      pimpl_->uri_parts_.hier_part.user_info.reset(copy_range(std::begin(*user_info), std::end(*user_info), it));
       ++it; // ignore @
     }
 
     if (host) {
-      pimpl_->uri_parts_.hier_part.host = copy_range(*host, it);
+      pimpl_->uri_parts_.hier_part.host.reset(copy_range(std::begin(*host), std::end(*host), it));
     }
 
     if (port) {
       ++it; // ignore :
-      pimpl_->uri_parts_.hier_part.port = copy_range(*port, it);
+      pimpl_->uri_parts_.hier_part.port.reset(copy_range(std::begin(*port), std::end(*port), it));
     }
 
     if (path) {
-      pimpl_->uri_parts_.hier_part.path = copy_range(*path, it);
+      pimpl_->uri_parts_.hier_part.path.reset(copy_range(std::begin(*path), std::end(*path), it));
     }
 
     if (query) {
       ++it; // ignore ?
-      pimpl_->uri_parts_.query = copy_range(*query, it);
+      pimpl_->uri_parts_.query.reset(copy_range(std::begin(*query), std::end(*query), it));
     }
 
     if (fragment) {
       ++it; // ignore #
-      pimpl_->uri_parts_.fragment = copy_range(*fragment, it);
+      pimpl_->uri_parts_.fragment.reset(copy_range(std::begin(*fragment), std::end(*fragment), it));
     }
   }
 
@@ -575,7 +337,7 @@ namespace network {
   }
 
   std::string uri::string() const {
-    return std::string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
+    return pimpl_->uri_;
   }
 
   std::wstring uri::wstring() const {
@@ -773,8 +535,7 @@ namespace network {
   uri uri::normalize(uri_comparison_level level) const {
     string_type normalized(pimpl_->uri_);
     detail::uri_parts<string_type::iterator> parts;
-    bool is_valid = detail::parse(std::begin(normalized), std::end(normalized), parts);
-    assert(is_valid);
+    advance(std::begin(normalized), std::end(normalized), parts, pimpl_->uri_parts_);
 
     if ((uri_comparison_level::case_normalization == level) ||
 	(uri_comparison_level::percent_encoding_normalization == level) ||
@@ -880,15 +641,13 @@ namespace network {
 			other_path, query, fragment);
   }
 
-  //uri uri::resolve(const uri &other, uri_comparison_level level) const {
-  //  // http://tools.ietf.org/html/rfc3986#section-5.2
-  //
-  //
-  //  //if (!other.absolute() && !other.opaque()) {
-  //  //
-  //  //}
-  //  return other;
-  //}
+  uri uri::resolve(const uri &other, uri_comparison_level level) const {
+    // http://tools.ietf.org/html/rfc3986#section-5.2
+    if (!other.absolute() && !other.opaque()) {
+      return other;
+    }
+    return other;
+  }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {
     // if both URIs are empty, then we should define them as equal
@@ -908,7 +667,7 @@ namespace network {
     return normalize(level).native().compare(other.normalize(level).native());
   }
 
-  void uri::init(const string_type &uri, std::error_code &ec) {
+  void uri::initialize(const string_type &uri, std::error_code &ec) {
     pimpl_ = new impl;
 
     pimpl_->uri_ = boost::trim_copy(uri);

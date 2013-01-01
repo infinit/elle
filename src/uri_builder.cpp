@@ -56,37 +56,37 @@ namespace network {
   }
 
   uri_builder &uri_builder::base_uri(const network::uri &base_uri) {
-    pimpl_->base_uri_ = base_uri;
+    pimpl_->base_uri_.reset(base_uri);
     return *this;
   }
 
   void uri_builder::set_scheme(const string_type &scheme) {
     // validate scheme is valid and normalize
-    pimpl_->scheme_ = boost::to_lower_copy(scheme);
+    pimpl_->scheme_.reset(boost::to_lower_copy(scheme));
   }
 
   void uri_builder::set_user_info(const string_type &user_info) {
-    pimpl_->user_info_ = user_info;
+    pimpl_->user_info_.reset(user_info);
   }
 
   void uri_builder::set_host(const string_type &host) {
-    pimpl_->host_ = host;
+    pimpl_->host_.reset(host);
   }
 
   void uri_builder::set_port(const string_type &port) {
-    pimpl_->port_ = port;
+    pimpl_->port_.reset(port);
   }
 
   void uri_builder::set_path(const string_type &path) {
-    pimpl_->path_ = path;
+    pimpl_->path_.reset(path);
   }
 
   void uri_builder::set_query(const string_type &query) {
-    pimpl_->query_ = query;
+    pimpl_->query_.reset(query);
   }
 
   void uri_builder::set_fragment(const string_type &fragment) {
-    pimpl_->fragment_ = fragment;
+    pimpl_->fragment_.reset(fragment);
   }
 
   network::uri uri_builder::uri() const {

@@ -72,13 +72,13 @@ namespace network {
 
   private:
 
-    uri(const boost::optional<string_type> &scheme,
-	const boost::optional<string_type> &user_info,
-	const boost::optional<string_type> &host,
-	const boost::optional<string_type> &port,
-	const boost::optional<string_type> &path,
-	const boost::optional<string_type> &query,
-	const boost::optional<string_type> &fragment);
+    uri(boost::optional<string_type> scheme,
+	boost::optional<string_type> user_info,
+	boost::optional<string_type> host,
+	boost::optional<string_type> port,
+	boost::optional<string_type> path,
+	boost::optional<string_type> query,
+	boost::optional<string_type> fragment);
 
   public:
 
@@ -89,7 +89,7 @@ namespace network {
       >
     uri(const InputIter &first, const InputIter &last) {
       std::error_code ec;
-      init(string_type(first, last), ec);
+      initialize(string_type(first, last), ec);
       if (ec) {
 	throw std::system_error(ec);
       }
@@ -100,7 +100,7 @@ namespace network {
       >
     explicit uri(const Source &uri) {
       std::error_code ec;
-      init(detail::translate(uri), ec);
+      initialize(detail::translate(uri), ec);
       if (ec) {
 	throw std::system_error(ec);
       }
@@ -110,7 +110,7 @@ namespace network {
       class Source
       >
     explicit uri(const Source &uri, std::error_code &ec) {
-      init(detail::translate(uri), ec);
+      initialize(detail::translate(uri), ec);
     }
 
     uri(const uri &other);
@@ -167,11 +167,11 @@ namespace network {
 
     uri relativize(const uri &other, uri_comparison_level level) const;
 
-    //uri resolve(const uri &other, uri_comparison_level level) const;
+    uri resolve(const uri &other, uri_comparison_level level) const;
 
   private:
 
-    void init(const string_type &uri, std::error_code &ec);
+    void initialize(const string_type &uri, std::error_code &ec);
 
     struct impl;
     impl *pimpl_;

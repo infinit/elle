@@ -13,14 +13,13 @@ set(
   uri_normalization_test
   uri_comparison_test
   uri_relativize_test
-  #uri_resolve_test
+  uri_resolve_test
   uri_builder_test
   )
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
-  add_dependencies(${test} uri)
-  target_link_libraries(${test}
-    ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} uri)
+  add_dependencies(${test} network_uri)
+  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} network_uri)
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()
