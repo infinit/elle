@@ -6,6 +6,7 @@
 
 
 #include <network/uri/uri.hpp>
+#include <network/utility/string_ref_io.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
@@ -732,7 +733,7 @@ namespace network {
 				 if ((prev_segment && prev_segment->empty()) && segment.empty()) {
 				   return true;
 				 }
-				 prev_segment = segment;
+				 prev_segment.reset(segment);
 				 return false;
 			       });
 
@@ -744,26 +745,28 @@ namespace network {
       }
     }
 
-    template <class Iter>
-    uri::string_type normalize_path(Iter first, Iter last, uri_comparison_level level) {
-      uri::string_type normalized(first, last);
-
+    uri::string_type normalize_path(uri::string_type path, uri_comparison_level level) {
       if ((uri_comparison_level::case_normalization == level) ||
 	  (uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	percent_encoding_to_upper(normalized);
+	percent_encoding_to_upper(path);
       }
 
       if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	decode_encoded_chars(normalized);
+	decode_encoded_chars(path);
       }
 
       if (uri_comparison_level::path_segment_normalization == level) {
-	normalize_path_segments(normalized);
+	normalize_path_segments(path);
       }
 
-      return normalized;
+      return std::move(path);
+    }
+
+    template <class Iter>
+    uri::string_type normalize_path(Iter first, Iter last, uri_comparison_level level) {
+      return normalize_path(uri::string_type(first, last), level);
     }
   } // namespace
 
@@ -808,11 +811,11 @@ namespace network {
 	// put the normalized path back into the uri
 	boost::optional<string_type> query, fragment;
 	if (parts.query) {
-	  query = string_type(std::begin(*parts.query), std::end(*parts.query));
+	  query.reset(string_type(std::begin(*parts.query), std::end(*parts.query)));
 	}
 
 	if (parts.fragment) {
-	  fragment = string_type(std::begin(*parts.fragment), std::end(*parts.fragment));
+	  fragment.reset(string_type(std::begin(*parts.fragment), std::end(*parts.fragment)));
 	}
 
 	string_type::iterator path_begin = std::begin(normalized);
@@ -837,18 +840,45 @@ namespace network {
     return uri(normalized);
   }
 
-  //uri uri::relativize(const uri &other, uri_comparison_level level) const {
-  //  if (opaque() || other.opaque()) {
-  //    return other;
-  //  }
-  //;
-  //  if ((scheme() && other.scheme()) &&
-  //	(scheme().get() == other.scheme().get())) {
-  //    return other;
-  //  }
-  //
-  //  return other;
-  //}
+  uri uri::relativize(const uri &other, uri_comparison_level level) const {
+    if (opaque() || other.opaque()) {
+      return other;
+    }
+
+    auto scheme = this->scheme(), other_scheme = other.scheme();
+    if ((!scheme || !other_scheme) ||
+	!boost::algorithm::equals(*scheme, *other_scheme)) {
+      return other;
+    }
+
+    auto authority = this->authority(), other_authority = other.authority();
+    if ((!authority || !other_authority) ||
+	!boost::algorithm::equals(*authority, *other_authority)) {
+      return other;
+    }
+
+    if (!this->path() || !other.path()) {
+      return other;
+    }
+
+    auto path = normalize_path(string_type(*this->path()), level),
+      other_path = normalize_path(string_type(*other.path()), level);
+
+    boost::optional<string_type> query, fragment;
+    if (other.query()) {
+      query.reset(string_type(*other.query()));
+    }
+
+    if (other.fragment()) {
+      fragment.reset(string_type(*other.fragment()));
+    }
+
+    return network::uri(boost::optional<string_type>(),
+			boost::optional<string_type>(),
+			boost::optional<string_type>(),
+			boost::optional<string_type>(),
+			other_path, query, fragment);
+  }
 
   //uri uri::resolve(const uri &other, uri_comparison_level level) const {
   //  // http://tools.ietf.org/html/rfc3986#section-5.2

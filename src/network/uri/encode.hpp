@@ -45,10 +45,8 @@ namespace network {
 	out++ = in;
       }
       else {
-	auto it = ignore, end = ignore + std::strlen(ignore);
-	for (; (it != end) && (*it != in); ++it) ;
-
-	if (it != end) {
+	auto first = ignore, last = ignore + std::strlen(ignore);
+	if (std::find(first, last, in) != last) {
 	  out++ = in;
 	}
 	else {

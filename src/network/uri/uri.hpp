@@ -1,5 +1,5 @@
 // Copyright 2009-2010 Jeroen Habraken.
-// Copyright 2009-2012 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2013 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -14,7 +14,6 @@
 #include <network/utility/string_ref.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
-#include <exception>
 #include <system_error>
 #include <algorithm>
 #include <functional>
@@ -124,7 +123,7 @@ namespace network {
 
     uri &operator = (uri &&other);
 
-    void swap(uri &other);
+    void swap(uri &other); // noexcept
 
     const_iterator begin() const;
 
@@ -156,17 +155,17 @@ namespace network {
 
     std::u32string u32string() const;
 
-    bool empty() const;
+    bool empty() const; // noexcept
 
-    bool absolute() const;
+    bool absolute() const; // noexcept
 
-    bool opaque() const;
+    bool opaque() const; // noexcept
 
     uri normalize(uri_comparison_level level) const;
 
     int compare(const uri &other, uri_comparison_level level) const;
 
-    //uri relativize(const uri &other, uri_comparison_level level) const;
+    uri relativize(const uri &other, uri_comparison_level level) const;
 
     //uri resolve(const uri &other, uri_comparison_level level) const;
 

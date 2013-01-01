@@ -1,4 +1,4 @@
-// Copyright 2012 Glyn Matthews.
+// Copyright 2012, 2013 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,7 @@
 #include <iterator>
 #include <boost/optional.hpp>
 #include <boost/range/as_literal.hpp>
+#include <iosfwd>
 
 namespace network {
   template <typename CharT, class CharTraits = std::char_traits<CharT> >
@@ -59,7 +60,11 @@ namespace network {
     }
 #endif // defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
 
-#if !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
+#if defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
+    operator string_type () const {
+      return string_type(first_, last_);
+    }
+#else
     explicit operator string_type () const {
       return string_type(first_, last_);
     }
