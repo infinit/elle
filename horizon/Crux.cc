@@ -274,7 +274,8 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path);
 
-    // XXX not supported: do something about it
+    // XXX[not supported: do something about it, especially for the modification
+    //     time as the creation time must not be changeable]
 
     return (-ENOSYS);
   }
@@ -829,7 +830,7 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path, uid, gid);
 
-    // XXX to implement.
+    // XXX[to implement!]
 
     return (-ENOSYS);
   }
