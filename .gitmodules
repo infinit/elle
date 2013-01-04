@@ -4,3 +4,6 @@
 [submodule "surface/macosx"]
 	path = surface/macosx
 	url = git@development.infinit.io:infinit-macosx
+[submodule "asio-udt"]
+	path = asio-udt
+	url = git@development.infinit.io:asio-udt

@@ -342,7 +342,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -372,10 +372,10 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Lookup") == elle::Status::True) &&
-        (Infinit::Parser->Test("Consult") == elle::Status::True) &&
-        (Infinit::Parser->Test("Grant") == elle::Status::True) &&
-        (Infinit::Parser->Test("Revoke") == elle::Status::True))
+    if ((Infinit::Parser->Test("Lookup") == true) &&
+        (Infinit::Parser->Test("Consult") == true) &&
+        (Infinit::Parser->Test("Grant") == true) &&
+        (Infinit::Parser->Test("Revoke") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -385,19 +385,19 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Lookup") == elle::Status::True)
+    if (Infinit::Parser->Test("Lookup") == true)
       operation = Access::OperationLookup;
 
     // test the option.
-    if (Infinit::Parser->Test("Consult") == elle::Status::True)
+    if (Infinit::Parser->Test("Consult") == true)
       operation = Access::OperationConsult;
 
     // test the option.
-    if (Infinit::Parser->Test("Grant") == elle::Status::True)
+    if (Infinit::Parser->Test("Grant") == true)
       operation = Access::OperationGrant;
 
     // test the option.
-    if (Infinit::Parser->Test("Revoke") == elle::Status::True)
+    if (Infinit::Parser->Test("Revoke") == true)
       operation = Access::OperationRevoke;
 
     // trigger the operation.
@@ -553,11 +553,11 @@ namespace satellite
           permissions = nucleus::neutron::permissions::none;
 
           // grant the read permission, if requested.
-          if (Infinit::Parser->Test("Read") == elle::Status::True)
+          if (Infinit::Parser->Test("Read") == true)
             permissions |= nucleus::neutron::permissions::read;
 
           // grant the write permission, if requested.
-          if (Infinit::Parser->Test("Write") == elle::Status::True)
+          if (Infinit::Parser->Test("Write") == true)
             permissions |= nucleus::neutron::permissions::write;
 
           // declare additional local variables.

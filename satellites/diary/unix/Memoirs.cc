@@ -202,9 +202,9 @@ namespace satellite
     elle::Status        Memoirs::End() const
     {
       if (this->archive.Size() <= this->offset)
-        return elle::Status::True;
+        return true;
 
-      return elle::Status::False;
+      return false;
     }
 
 //

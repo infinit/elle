@@ -221,12 +221,11 @@ find_library(INFINIT_Z_LIBRARY z PATHS /opt/local/lib NO_DEFAULT_PATH)
 message(STATUS "Zip library: ${INFINIT_Z_LIBRARY}")
 
 ## Loading Qt
-find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
+find_package(Qt4 4.6.0 REQUIRED QtCore)
 
-set(QT_USE_QTNETWORK true)
-set(QT_DONT_USE_QTGUI true)
-set(QT_USE_QTXML true)
-set(QT_DONT_USE_QTGUI TRUE)
+#set(QT_DONT_USE_QTNETWORK true)
+#set(QT_DONT_USE_QTGUI true)
+#set(QT_DONT_USE_QTXML true)
 include(${QT_USE_FILE})
 
 include_directories(${QT_INCLUDES})
@@ -278,6 +277,8 @@ endforeach()
 # XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/udt/include)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
@@ -288,6 +289,8 @@ add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
+add_subdirectory(asio-udt)
+
 if(NOT DISABLE_HORIZON)
   add_subdirectory(horizon)
   # circular dependency with ${INFINIT_PLATFORM_NO_ARCH} lib
@@ -329,6 +332,7 @@ set(INFINIT_LIBRARIES
   lune
   elle
   comet
+  asio-udt
 
   cryptography
   ${INFINIT_OPENSSL_LIBRARIES}

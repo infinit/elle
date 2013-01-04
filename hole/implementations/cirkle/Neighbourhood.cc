@@ -75,10 +75,10 @@ namespace hole
       elle::Status      Neighbourhood::Exist(const elle::network::Locus& locus)
       {
         // try to locate the locus.
-        if (this->Locate(locus) == elle::Status::True)
-          return elle::Status::True;
+        if (this->Locate(locus) == true)
+          return true;
 
-        return elle::Status::False;
+        return false;
       }
 
       ///
@@ -90,7 +90,7 @@ namespace hole
         Neighbourhood::Iterator iterator;
 
         // try to locate the locus.
-        if (this->Locate(locus, &iterator) == elle::Status::False)
+        if (this->Locate(locus, &iterator) == false)
           escape("unable to locate the given locus");
 
         // return the associated neighbour.
@@ -107,7 +107,7 @@ namespace hole
         Neighbourhood::Iterator iterator;
 
         // try to locate the locus.
-        if (this->Locate(locus, &iterator) == elle::Status::False)
+        if (this->Locate(locus, &iterator) == false)
           escape("unable to locate the given locus");
 
         // erase the iterator.
@@ -130,10 +130,10 @@ namespace hole
             if (iterator != nullptr)
               *iterator = i;
 
-            return elle::Status::True;
+            return true;
           }
 
-        return elle::Status::False;
+        return false;
       }
 
 //

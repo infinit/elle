@@ -1,7 +1,10 @@
 #ifndef INFINIT_REACTOR_NETWORK_SERVER_HH
 # define INFINIT_REACTOR_NETWORK_SERVER_HH
 
+# include <memory>
+
 # include <reactor/network/fwd.hh>
+# include <reactor/network/Protocol.hh>
 
 namespace reactor
 {
@@ -20,16 +23,25 @@ namespace reactor
       `-------------*/
       public:
         /** Create a server.
-         *  @param service The underlying boost io service.
+         *  @param sched The underlying scheduler.
          */
         Server(Scheduler& sched);
         ~Server();
+        /** Create a server for the given protocol.
+         *  @param protocol The transport protocl to use.
+         *  @param sched The underlying scheduler.
+         */
+        static
+        std::unique_ptr<Server>
+        create(Protocol protocol, Scheduler& sched);
 
       /*----------.
       | Accepting |
       `----------*/
       public:
+        virtual void listen(int port) = 0;
         virtual Socket* accept() = 0;
+        virtual int port() const = 0;
 
       /*-----------.
       | Scheduling |

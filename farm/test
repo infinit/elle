@@ -21,41 +21,24 @@ import subprocess as sp
 
 from higgs import pool
 from higgs import infinitools
+
 from higgs import watchers
+from higgs.constants import BUILD, SOURCE
 from higgs.watchers import StatusCode
 from collections import namedtuple
 from collections import OrderedDict
 
 pattern = re.compile(r"^(?P<name>.*)\.(?P<nb>\d+)\.(?P<ext>py|sh)$")
 
-import platform
-
-os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
-
-BUILD = os.environ.get(
-    'DIR_BUILD',
-    os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '../build/',
-        platform.system().lower() + platform.architecture()[0][:2]
-    )
-)
-
-SOURCE = os.environ.get(
-    'DIR_SOURCE',
-    os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '../source/'
-    )
-)
+os.environ['INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE'] = '/dev/urandom'
 
 WATCHERS = (
-        watchers.Timing,
-        watchers.Environ,
-        watchers.Result,
-        watchers.Memory,
-        watchers.Graph,
-    )
+    watchers.Timing,
+    watchers.Environ,
+    watchers.Result,
+    watchers.Memory,
+    watchers.Graph,
+)
 
 
 def launch_script(engine, script_report, script_path, script_name, nb_instance):

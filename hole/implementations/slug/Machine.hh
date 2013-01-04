@@ -11,6 +11,8 @@
 # include <elle/idiom/Close.hh>
 #  include <reactor/network/fwd.hh>
 #  include <reactor/duration.hh>
+#  include <reactor/network/udt-server.hh>
+#  include <reactor/network/udt-socket.hh>
 # include <elle/idiom/Open.hh>
 
 # include <hole/fwd.hh>
@@ -70,7 +72,8 @@ namespace hole
         std::vector<Host*> hosts();
       private:
         friend class Host;
-        std::unordered_map<elle::network::Locus, Host*> _hosts;
+        typedef std::unordered_map<elle::network::Locus, Host*> Hosts;
+        Hosts _hosts;
         void _connect(elle::network::Locus const& locus);
         void _connect(std::unique_ptr<reactor::network::Socket> socket,
                       elle::network::Locus const& locus, bool opener);
@@ -86,7 +89,7 @@ namespace hole
       private:
         elle::network::Port _port;
         void _accept();
-        std::unique_ptr<reactor::network::TCPServer> _server;
+        std::unique_ptr<reactor::network::Server> _server;
         std::unique_ptr<reactor::Thread> _acceptor;
 
       /*----.

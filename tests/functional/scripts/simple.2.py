@@ -37,12 +37,11 @@ DATA = """bolos /bɔ.los/ masculin, singulier et pluriel identiques
 import sysconfig
 print(sysconfig.get_config_var('VERSION'))
 
-with open(p1, 'w') as f:
-    print("File encoding:", f.encoding)
-    f.write(DATA)
+with open(p1, 'wb') as f:
+    f.write(DATA.encode('utf8'))
 
-with open(p1, 'r') as f:
-    s = f.read()
+with open(p1, 'rb') as f:
+    s = f.read().decode('utf8')
     print(s, file=sys.stderr)
     assert s == DATA
 
@@ -59,7 +58,7 @@ while tries < MAX_TRIES:
 if tries == MAX_TRIES:
     raise("Maximum number of tries exceeded")
 
-with open(p2, 'r') as f:
-    assert f.read() == DATA
+with open(p2, 'rb') as f:
+    assert f.read().decode('utf-8') == DATA
 
 

@@ -1,7 +1,7 @@
 #ifndef INFINIT_PROTOCOL_RPC_HH
 # define INFINIT_PROTOCOL_RPC_HH
 
-# include <iostream>
+# include <ostream>
 # include <memory>
 # include <unordered_map>
 

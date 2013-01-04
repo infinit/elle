@@ -56,7 +56,10 @@ namespace hole
       }
 
       Host::~Host()
-      {}
+      {
+        // Stop operations on the socket before it is deleted.
+        _rpcs_handler->terminate_now();
+      }
 
       /*-----------.
       | Attributes |
@@ -83,7 +86,10 @@ namespace hole
           {
             ELLE_WARN("%s: discarded: %s", *this, e.what());
             this->_machine._remove(this);
+            return;
           }
+        ELLE_LOG("%s: left", *this);
+        this->_machine._remove(this);
       }
 
       /*----.

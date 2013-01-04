@@ -59,7 +59,7 @@ namespace lune
     Map<T>::Entry*      entry;
 
     // check if the entry exists.
-    if (this->Lookup(name) == elle::Status::True)
+    if (this->Lookup(name) == true)
       escape("this name is already registered");
 
     // allocate a new entry.
@@ -79,7 +79,7 @@ namespace lune
   /// this method returns the maped value.
   ///
   template <typename T>
-  elle::Status          Map<T>::Lookup(const elle::String&      name,
+  elle::Boolean         Map<T>::Lookup(const elle::String&      name,
                                        T*&                      value)
   {
     Map<T>::Scoutor     scoutor;
@@ -97,18 +97,18 @@ namespace lune
             // return the value.
             value = &entry->value;
 
-            return elle::Status::True;
+            return true;
           }
       }
 
-    return elle::Status::False;
+    return false;
   }
 
   ///
   /// this method returns the mapped name.
   ///
   template <typename T>
-  elle::Status          Map<T>::Lookup(const T&                 value,
+  elle::Boolean         Map<T>::Lookup(const T&                 value,
                                        elle::String*&           name)
   {
     Map<T>::Scoutor     scoutor;
@@ -126,11 +126,11 @@ namespace lune
             // return the name.
             name = &entry->name;
 
-            return elle::Status::True;
+            return true;
           }
       }
 
-    return elle::Status::False;
+    return false;
   }
 
   ///

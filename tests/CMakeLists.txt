@@ -22,7 +22,6 @@ function(simple_test)
                  COMMAND ${_TARGET}
                  ${S_TEST_ARGS})
         if (S_TEST_LIB)
-                message(STATUS "${_TARGET}: linking with ${S_TEST_LIB}")
                 target_link_libraries(${_TARGET} ${S_TEST_LIB})
         endif()
         if (S_TEST_PASS_REGEX)

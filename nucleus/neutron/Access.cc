@@ -61,13 +61,13 @@ namespace nucleus
     ///
     /// this method tests if the given subject exists.
     ///
-    elle::Status        Access::Exist(const Subject&            subject) const
+    elle::Boolean       Access::Exist(const Subject&            subject) const
     {
       // test.
       if (this->_range.Exist(subject) == false)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -77,7 +77,7 @@ namespace nucleus
                                        Record const*& record) const
     {
       // look in the range.
-      if (this->_range.Lookup(subject, record) == elle::Status::Error)
+      if (this->_range.Lookup(subject, record) == false)
         escape("unable to retrieve the record");
 
       return elle::Status::Ok;
@@ -87,7 +87,7 @@ namespace nucleus
                                        Record*& record) const
     {
       // look in the range.
-      if (this->_range.Lookup(subject, record) == elle::Status::Error)
+      if (this->_range.Lookup(subject, record) == false)
         escape("unable to retrieve the record");
 
       return elle::Status::Ok;

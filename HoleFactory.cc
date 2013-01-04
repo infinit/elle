@@ -59,9 +59,22 @@ namespace infinit
             Infinit::Configuration["hole"].Get("slug.timeout", 5000);
           reactor::Duration timeout =
             boost::posix_time::milliseconds(timeout_int);
+          std::string protocol_str =
+            Infinit::Configuration["hole"].Get<std::string>("protocol", "tcp");
+          protocol_str =
+            Infinit::Configuration["hole"].Get<std::string>("slug.protocol",
+                                                            protocol_str);
+          reactor::network::Protocol protocol;
+          if (protocol_str == "tcp")
+            protocol = reactor::network::Protocol::tcp;
+          else if (protocol_str == "udt")
+            protocol = reactor::network::Protocol::udt;
+          else
+            throw elle::Exception
+              ("invalid transport protocol: %s", protocol_str);
           return std::unique_ptr<hole::Hole>(
             new hole::implementations::slug::Implementation(
-              storage, passport, authority, members, port, timeout));
+              storage, passport, authority, protocol, members, port, timeout));
         }
         case hole::Model::TypeCirkle:
         {

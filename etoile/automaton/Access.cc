@@ -123,7 +123,7 @@ namespace etoile
             escape("unable to open the access block");
 
           // look in the access object.
-          if (context.access->Exist(subject) == elle::Status::True)
+          if (context.access->Exist(subject) == true)
             {
               ELLE_TRACE("the target subject exists in the Access block");
 
@@ -444,10 +444,18 @@ namespace etoile
               if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access block");
 
-               // lookup the subject.
-              if (context.access->Lookup(subject,
-                                         record) == elle::Status::Error)
-                escape("unable to lookup in the access object");
+              // lookup the subject.
+              try
+                {
+                  if (context.access->Lookup(subject,
+                                             record) == elle::Status::Error)
+                    escape("unable to lookup in the access object");
+                }
+              catch (elle::Exception const& e)
+                {
+                  // XXX[return normally with a null-pointer record]
+                  record = nullptr;
+                }
             }
         }
 
@@ -545,7 +553,7 @@ namespace etoile
             escape("unable to open the access block");
 
           // remove the record associated with the given subject.
-          if (context.access->Remove(subject) == elle::Status::True)
+          if (context.access->Remove(subject) == elle::Status::Error)
             escape("unable to remove the subject's access record");
 
           // the object must be marked as administered i.e dirty so
@@ -996,7 +1004,7 @@ namespace etoile
 
             // check whether a record exist for the subject as it
             // could very well have been removed.
-            if (context.access->Exist(subject) == elle::Status::True)
+            if (context.access->Exist(subject) == true)
               {
                 nucleus::neutron::Record const* record;
 

@@ -59,22 +59,22 @@ namespace etoile
     /// this method returns true if the current venue derives the
     /// given base i.e the venue's elements also appears in the base.
     ///
-    elle::Status        Venue::Derives(const Venue&             base) const
+    elle::Boolean       Venue::Derives(const Venue&             base) const
     {
       auto              i = base.elements.begin();
       auto              j = this->elements.begin();
       auto              end = base.elements.end();
 
       if (base.elements.size() > this->elements.size())
-        return (elle::Status::False);
+        return (false);
 
       for(; i != end; ++i, ++j)
         {
           if (*i != *j)
-            return (elle::Status::False);
+            return (false);
         }
 
-      return (elle::Status::True);
+      return (true);
     }
 
     ///

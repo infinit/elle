@@ -54,7 +54,9 @@ static std::vector<elle::network::Locus> members()
 
 cryptography::KeyPair keys(cryptography::KeyPair::generate(1024));
 elle::Authority authority(keys);
-elle::Passport passport;
+cryptography::KeyPair user_keys(cryptography::KeyPair::generate(1024));
+elle::Passport passport("n'importe quoi", "n'importe quoi",
+                        user_keys.K(), authority);
 
 class Slug: public hole::implementations::slug::Implementation
 {
@@ -161,7 +163,5 @@ bool test_suite()
 int
 main(int argc, char** argv)
 {
-  passport.Seal(authority);
-
   return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

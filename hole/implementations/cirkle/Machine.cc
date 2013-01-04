@@ -481,7 +481,7 @@ namespace hole
 
             // check that the neighbour does not already exist in the
             // routing table i.e with this label.
-            if (this->routingtable.Exist(neighbour->label) == elle::Status::True)
+            if (this->routingtable.Exist(neighbour->label) == true)
               {
                 //
                 // this case is possible because a neighbour may have
@@ -648,7 +648,7 @@ namespace hole
             enterx(instance(neighbour));
 
             // check if this locus is already registered.
-            if (this->neighbourhood.Exist(locus) == elle::Status::True)
+            if (this->neighbourhood.Exist(locus) == true)
               continue;
 
             // allocate the neighbour.

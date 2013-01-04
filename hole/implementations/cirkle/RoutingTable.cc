@@ -64,10 +64,10 @@ namespace hole
       elle::Status      RoutingTable::Exist(const Label&        label)
       {
         // try to locate the label.
-        if (this->Locate(label) == elle::Status::True)
-          return elle::Status::True;
+        if (this->Locate(label) == true)
+          return true;
 
-        return elle::Status::False;
+        return false;
       }
 
       ///
@@ -79,7 +79,7 @@ namespace hole
         RoutingTable::Iterator  iterator;
 
         // try to locate the label.
-        if (this->Locate(label, &iterator) == elle::Status::False)
+        if (this->Locate(label, &iterator) == false)
           escape("unable to locate the given label");
 
         // return the associated neighbour.
@@ -99,7 +99,7 @@ namespace hole
         RoutingTable::Iterator  iterator;
 
         // try to locate the label.
-        if (this->Locate(label, &iterator) == elle::Status::False)
+        if (this->Locate(label, &iterator) == false)
           escape("unable to locate the given label");
 
         // erase the iterator.
@@ -122,10 +122,10 @@ namespace hole
             if (iterator != nullptr)
               *iterator = i;
 
-            return elle::Status::True;
+            return true;
           }
 
-        return elle::Status::False;
+        return false;
       }
 
 //

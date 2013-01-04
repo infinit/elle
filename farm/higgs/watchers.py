@@ -19,6 +19,7 @@ import smtplib as sml
 import subprocess as sp
 # import pygooglechart as pgc # XXX used in Graph class
 
+from higgs import constants
 from higgs import pool
 from higgs import infinitools
 from collections import namedtuple
@@ -26,12 +27,11 @@ from collections import OrderedDict
 
 MAIL_TARGETS = (
     "developers@infinit.io",
-    "raphael.londeix@infinit.io",
-    "fabien.pichot@infinit.io",
-    "antony.mechin@infinit.io",
-    "quentin.hocquet@infinit.io",
-    "julien.quintard@infinit.io",
-    "charles.guillot@infinit.io",
+    #"raphael.londeix@infinit.io",
+    #"fabien.pichot@infinit.io",
+    #"antony.mechin@infinit.io",
+    #"quentin.hocquet@infinit.io",
+    #"julien.quintard@infinit.io",
 )
 
 if "_INFINIT_USE_MANDRILL" in os.environ:
@@ -48,14 +48,8 @@ else:
 CHART_W_SIZE = 400
 CHART_H_SIZE = 250
 
-BASE = os.environ.get(
-    'DIR_SOURCE',
-    os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '../../source/'
-    )
-)
-mail_file = os.path.join(BASE, "farm", "mail_template.in")
+
+mail_file = os.path.join(constants.SOURCE, "farm", "mail_template.in")
 
 with open(mail_file) as template:
     mail_template = template.read()

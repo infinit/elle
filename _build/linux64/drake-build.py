@@ -8,6 +8,6 @@ cxx_config = drake.cxx.Config()
 cxx_config.flag('-fPIC')
 cxx_config.flag('-Wall')
 cxx_config.enable_debug_symbols()
-cxx_config.enable_optimization()
+cxx_config.enable_optimization(False)
 
 drake.run('../..', cxx_toolkit, cxx_config)

@@ -38,7 +38,7 @@ const elle::String              Infinit::Copyright(
                                   "Infinit " +
                                   elle::sprint(Infinit::version) +
                                   " " +
-                                  "Copyright (c) 2012 "
+                                  "Copyright (c) 2013 "
                                   "infinit.io All rights reserved.");
 
 // XXX[temporary: for cryptography]

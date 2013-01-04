@@ -3,6 +3,7 @@ if (NOT WIN32)
 set(NAT_LIB
     elle
     pthread
+    asio-udt
     ${Boost_LIBRARIES})
 
 endif()

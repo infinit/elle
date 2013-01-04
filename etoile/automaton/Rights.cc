@@ -94,7 +94,7 @@ namespace etoile
             escape("unable to open the access block");
 
           // check that the subject is referenced in the access block.
-          if (context.access->Exist(agent::Agent::Subject) == elle::Status::True)
+          if (context.access->Exist(agent::Agent::Subject) == true)
             {
               //
               // in this case, the subject is referenced in the ACL, hence

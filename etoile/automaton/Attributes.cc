@@ -39,7 +39,7 @@ namespace etoile
                "this object's attributes");
 
       // does the attribute already exist.
-      if (context.object->attributes().Exist(name) == elle::Status::True)
+      if (context.object->attributes().Exist(name) == true)
         {
           // update the trait, properly i.e by calling the Update() method.
           if (context.object->attributes().Update(
@@ -84,9 +84,17 @@ namespace etoile
                           nucleus::neutron::Trait const*& trait)
     {
       // lookup in the attributes object.
-      if (context.object->attributes().Lookup(name,
-                                                 trait) == elle::Status::Error)
-        escape("unable to lookup in the attributes");
+      try
+        {
+          if (context.object->attributes().Lookup(name,
+                                                  trait) == elle::Status::Error)
+            escape("unable to lookup in the attributes");
+        }
+      catch (elle::Exception const& e)
+        {
+          // XXX[return normally with a null-pointer trait]
+          trait = nullptr;
+        }
 
       return elle::Status::Ok;
     }
@@ -126,7 +134,7 @@ namespace etoile
                "this object's attributes");
 
       // remove the trait associated with the given name.
-      if (context.object->attributes().Remove(name) == elle::Status::True)
+      if (context.object->attributes().Remove(name) == elle::Status::Error)
         escape("unable to remove the trait");
 
       // administrate the object.

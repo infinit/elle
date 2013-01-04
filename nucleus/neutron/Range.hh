@@ -67,16 +67,16 @@ namespace nucleus
       /// XXX
       elle::Status
       Add(Range<T> const& other);
-      elle::Status      Exist(const Symbol&) const;
-      elle::Status      Lookup(const Symbol&,
+      elle::Boolean     Exist(const Symbol&) const;
+      elle::Boolean     Lookup(const Symbol&,
                                T const*& = Trash) const;
-      elle::Status      Lookup(const Symbol&,
+      elle::Boolean     Lookup(const Symbol&,
                                T*& = Trash) const;
       elle::Status      Remove(const Symbol&);
       elle::Status      Capacity(Size&) const;
-      elle::Status      Locate(const Symbol&,
+      elle::Boolean     Locate(const Symbol&,
                                Scoutor&) const;
-      elle::Status      Locate(const Symbol&,
+      elle::Boolean     Locate(const Symbol&,
                                Iterator&);
 
       elle::Status      Detach();

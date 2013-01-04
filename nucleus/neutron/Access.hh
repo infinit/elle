@@ -58,7 +58,7 @@ namespace nucleus
       //
     public:
       elle::Status      Add(Record*);
-      elle::Status      Exist(const Subject&) const;
+      elle::Boolean     Exist(const Subject&) const;
       elle::Status      Lookup(const Subject&,
                                Record const*&) const;
       elle::Status      Lookup(const Subject&,
