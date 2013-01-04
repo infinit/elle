@@ -51,9 +51,10 @@ namespace elle
     /// }
     /// -----------------------------------------------------------------------
     ///
-    template<typename T> inline
-    Pointer<T>
-    pointer(T*& ptr);
+    template <typename T>
+    inline
+    Pointer<typename std::remove_reference<T>::type>
+    pointer(T&& ptr);
 
     ///
     /// Infer the AlivePointer<T> type.
@@ -66,9 +67,10 @@ namespace elle
     /// }
     /// -----------------------------------------------------------------------
     ///
-    template<typename T> inline
-    AlivePointer<T>
-    alive_pointer(T*& ptr);
+    template <typename T>
+    inline
+    AlivePointer<typename std::remove_reference<T>::type>
+    alive_pointer(T&& ptr);
 
   }
 }
