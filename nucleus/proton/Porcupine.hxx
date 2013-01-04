@@ -45,6 +45,12 @@ namespace nucleus
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
 
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_value = nullptr;
+      this->_handle = nullptr;
+      this->_tree = nullptr;
+
       switch (this->_strategy)
         {
         case Strategy::none:

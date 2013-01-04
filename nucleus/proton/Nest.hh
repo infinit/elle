@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_NEST_HH
 
 # include <elle/types.hh>
-# include <elle/io/Dumpable.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Limits.hh>
@@ -17,8 +16,7 @@ namespace nucleus
   {
 
     /// XXX
-    class Nest:
-      public elle::io::Dumpable
+    class Nest
     {
       // XXX
     public:
@@ -32,7 +30,7 @@ namespace nucleus
     public:
       /// XXX: ownership is transferred
       virtual
-      Handle const
+      Handle
       attach(Contents* block) = 0;
       /// XXX
       virtual
@@ -40,7 +38,7 @@ namespace nucleus
       detach(Handle& handle) = 0;
       /// XXX
       virtual
-      std::shared_ptr<Contents>
+      void
       load(Handle& handle) = 0;
       /// XXX
       virtual
@@ -52,16 +50,11 @@ namespace nucleus
       limits() const;
 
       //
-      // interfaces
-      //
-    public:
-      //
       // attributes
       //
     private:
       nucleus::proton::Limits _limits;
     };
-
   }
 }
 

@@ -354,7 +354,7 @@ namespace nucleus
                            this->nest().limits().extent() *
                            this->nest().limits().contention());
 
-      // has not changed regarding the offset.
+      // Update the offset.
       right()._offset = this->_offset + this->capacity();
 
       // Set both values' state as dirty.

@@ -96,6 +96,7 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(limits::Porcupine, porcupine);
       ELLE_ATTRIBUTE_R(limits::Node, nodule);
       ELLE_ATTRIBUTE_R(limits::Node, value);
+      // XXX value ne devrait pas etre du type Node car les conditions sont differentes
 
       // XXX
     public:

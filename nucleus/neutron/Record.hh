@@ -12,10 +12,8 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents an access control record, composed
-    /// of the subject, its permissions and the token allowing the subject
-    /// to access the data.
+    /// Represent an access control record, composed of the subject, its
+    /// permissions and the token allowing the subject to access the data.
     ///
     /// Note that a record could contain no token, because there is no data
     /// to decrypt for example. In this case, a null pointer is returned
@@ -43,20 +41,6 @@ namespace nucleus
         null,
         valid
       };
-
-      /*------.
-      | Types |
-      `------*/
-    public:
-      typedef Subject Symbol;
-      struct Valid;
-
-      /*-----------.
-      | Attributes |
-      `-----------*/
-    private:
-      ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Valid*, valid);
 
       /*-------------.
       | Construction |
@@ -122,6 +106,7 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Record);
       // rangeable
+      typedef Subject Symbol;
       virtual
       Subject const&
       symbol() const;
@@ -134,7 +119,7 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Subject const& subject,
               Permissions permissions,
               Token const& token);
@@ -159,8 +144,14 @@ namespace nucleus
         /// permission.
         ELLE_ATTRIBUTE_R(Token*, token);
       };
-    };
 
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Valid*, valid);
+    };
   }
 }
 

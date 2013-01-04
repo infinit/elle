@@ -27,7 +27,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class abstracts the notion of storable block of data.
     ///
     /// Note that every block is identified by an address which can be
@@ -139,7 +138,6 @@ namespace nucleus
       /// example. This attribute is never serialized.
       ELLE_ATTRIBUTE_RW(State, state);
     };
-
   }
 }
 

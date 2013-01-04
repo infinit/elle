@@ -106,7 +106,7 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(elle::String const& name,
               elle::String const& value);
 

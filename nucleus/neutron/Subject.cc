@@ -80,6 +80,10 @@ namespace nucleus
       _type(Subject::TypeUnknown),
       _user(nullptr)
     {
+      // Manually set all the union pointers to null so as to make all
+      // the cases are handled.
+      this->_user = nullptr;
+      this->_group = nullptr;
     }
 
     Subject::Subject(typename User::Identity const& identity):
@@ -95,9 +99,13 @@ namespace nucleus
     }
 
     Subject::Subject(Subject const& other):
-      _type(other._type),
-      _user(nullptr)
+      _type(other._type)
     {
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_user = nullptr;
+      this->_group = nullptr;
+
       switch (other._type)
         {
         case Subject::TypeUser:

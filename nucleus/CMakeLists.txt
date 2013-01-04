@@ -9,6 +9,7 @@ add_library(nucleus ${LINK_METHOD}
   proton/Block.cc
   proton/ContentHashBlock.cc
   proton/Contents.cc
+  proton/Egg.cc
   proton/Family.cc
   proton/Flags.cc
   proton/Handle.cc
@@ -24,7 +25,6 @@ add_library(nucleus ${LINK_METHOD}
   proton/Network.cc
   proton/Node.cc
   proton/OwnerKeyBlock.cc
-  proton/Placement.cc
   proton/PublicKeyBlock.cc
   proton/Radix.cc
   proton/Revision.cc

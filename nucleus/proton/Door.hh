@@ -14,7 +14,7 @@ namespace nucleus
 {
   namespace proton
   {
-    /// Enable on to access a Value when retrieved from a Porcupine, no
+    /// Enable one to access a Value when retrieved from a Porcupine, no
     /// matter when the value is located: in main memory, in cache or
     /// on the storage layer in which case the value would be accessed
     /// through the nest.

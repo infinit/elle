@@ -4,70 +4,52 @@
 # include <elle/types.hh>
 
 # include <etoile/gear/fwd.hh>
-# include <etoile/nest/Pod.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Placement.hh>
 # include <nucleus/proton/Nest.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <map>
-# include <elle/idiom/Open.hh>
+# include <set>
+# include <map>
 
 namespace etoile
 {
   namespace nest
   {
-
+    /// Provide a nest implementation which keeps content blocks in main memory.
     ///
-    /// XXX les adresses gardees (si presentes) sont celles des blocks loaded du network. si un block est cree (orphan) et sealed, il n'aura tjs pas d'adresse ici.
-    ///
+    /// However, should a threshold be reached, the nest would pick the least
+    /// recently used blocks and pre-published them onto the storage layer.
     class Nest:
       public nucleus::proton::Nest
     {
-      //
-      // types
-      //
+      /*------.
+      | Types |
+      `------*/
     public:
-      struct P
-      {
-        typedef std::map<nucleus::proton::Placement const, Pod*> Container;
-        typedef typename Container::iterator Iterator;
-        typedef typename Container::const_iterator Scoutor;
-      };
+      typedef std::set<nucleus::proton::Egg*> Eggs;
+      typedef std::map<nucleus::proton::Address const,
+                       std::shared_ptr<nucleus::proton::Egg>> Permanents;
 
-      struct A
-      {
-        typedef std::map<nucleus::proton::Address const, Pod*> Container;
-        typedef typename Container::iterator Iterator;
-        typedef typename Container::const_iterator Scoutor;
-      };
-
-      //
-      // constructors & destructors
-      //
-      /// XXX
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
       Nest(nucleus::proton::Limits const& limits);
-      /// XXX
       ~Nest();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX
-      elle::Boolean
-      exists(nucleus::proton::Placement const& placememt) const;
-      /// XXX
+      /// Return true if the given address' block lies in the nest.
       elle::Boolean
       exists(nucleus::proton::Address const& address) const;
-      /// XXX
-      void
-      clear();
-      /// XXX
-      void
-      record(gear::Transcript& transcript);
-
+      /// Transcribe the nest's state into a transcript representing the
+      /// operations to perform on the storage layer: store a block, remove
+      /// another one etc.
+      gear::Transcript
+      transcribe();
     private:
       /// XXX
       void
@@ -94,31 +76,29 @@ namespace etoile
       void
       _optimize();
 
-      // XXX mettre les methodes privees ensembles
-
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
-      elle::Status      Dump(const elle::Natural32 = 0) const;
-
+      elle::Status
+      Dump(const elle::Natural32 = 0) const;
       // nest
-      nucleus::proton::Handle const
+      nucleus::proton::Handle
       attach(nucleus::proton::Contents* block);
       void
       detach(nucleus::proton::Handle& handle);
-      std::shared_ptr<nucleus::proton::Contents>
+      void
       load(nucleus::proton::Handle& handle);
       void
       unload(nucleus::proton::Handle& handle);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      P::Container _placements;
-      A::Container _addresses;
+      ELLE_ATTRIBUTE(Eggs, eggs);
+      ELLE_ATTRIBUTE(Permanents, permanents);
     };
 
   }

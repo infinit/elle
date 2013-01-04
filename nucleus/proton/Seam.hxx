@@ -891,11 +891,8 @@ namespace nucleus
               {
                 ELLE_TRACE_SCOPE("State::dirty");
 
-                // set the secret key.
-                inlet->value().secret(secret);
-
                 // seal recursively.
-                current().seal(inlet->value().secret());
+                current().seal(secret);
 
                 // Encrypt and bind the block.
                 current.contents().encrypt(secret);
@@ -904,7 +901,8 @@ namespace nucleus
                 current().state(State::consistent);
                 current.contents().state(State::consistent);
 
-                inlet->value().address(address);
+                // Reset the inlet's value with the new address and secret.
+                inlet->value().reset(address, secret);
                 inlet->state(State::consistent);
 
                 // set the current seam as dirty.

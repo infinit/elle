@@ -134,15 +134,15 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-    public:
       /*-----------.
       | Structures |
       `-----------*/
+    public:
       struct Valid
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Network const& network,
               Family const& family,
               neutron::Component const& component,

@@ -96,7 +96,7 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(cryptography::Code const& code);
 
       public:

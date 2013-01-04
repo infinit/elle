@@ -21,8 +21,8 @@ namespace nucleus
         ComponentGroup,
         ComponentEnsemble,
 
-        ComponentSeamCatalog,
-        ComponentQuillCatalog,
+        ComponentSeamCatalog, // XXX to remove
+        ComponentQuillCatalog, // XXX to remove
         // XXX
 
         Components // XXX

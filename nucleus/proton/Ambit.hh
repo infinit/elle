@@ -57,7 +57,7 @@ namespace nucleus
       ///
       /// The corollary is that the reference to the handle must remain valid
       /// throughout the life of the ambit. One must therefore take care not
-      /// to unload the block containing the given handle.
+      /// to destroy the block containing the given handle.
       Ambit(Nest& nest,
             Handle& handle,
             Mode const mode = Mode::automatic);
@@ -111,11 +111,14 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
+      /// The nest from which to load/unload the egg.
       ELLE_ATTRIBUTE_X(Nest&, nest);
+      /// The mode in which the ambit should be loaded/unloaded.
       ELLE_ATTRIBUTE(Mode, mode);
+      /// The current ambit state i.e loaded or unloaded.
       ELLE_ATTRIBUTE_R(State, state);
+      /// The handle to load and update with the egg.
       ELLE_ATTRIBUTE_RX(Handle&, handle);
-      ELLE_ATTRIBUTE_R(std::shared_ptr<Contents>, block);
 
       /*----------.
       | Operators |

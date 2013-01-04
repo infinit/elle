@@ -321,13 +321,13 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
 
       // create an inlet.
-      auto inlet =
-        std::unique_ptr<typename Quill<T>::I>(
-          new typename Quill<T>::I(k, v));
+      auto inlet = new typename Quill<T>::I(k, v);
+
+      ELLE_FINALLY_ACTION_DELETE(inlet);
 
       ELLE_TRACE_SCOPE("add(%s, %s)", k, v);
 
-      this->insert(inlet.get());
+      this->insert(inlet);
 
       // update the inlet's capacity and state.
       Ambit<T> value(this->nest(), inlet->value());
@@ -343,8 +343,11 @@ namespace nucleus
 
       value.unload();
 
-      // release the tracking.
-      inlet.release();
+      ELLE_FINALLY_ABORT(inlet);
+
+      // now, let us try to optimise the tree given the fact that its
+      // content has been altered.
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -380,6 +383,10 @@ namespace nucleus
 
       // delete the inlet from the nodule given its iterator.
       this->erase(iterator);
+
+      // now, let us try to optimise the tree given the fact that its
+      // content has been altered.
+      Nodule<T>::optimize(*this, inlet->key());
     }
 
     template <typename T>
@@ -765,9 +772,6 @@ namespace nucleus
               {
                 ELLE_TRACE_SCOPE("State::dirty");
 
-                // Set the secret.
-                inlet->value().secret(secret);
-
                 // Encrypt and bind the value block.
                 value.contents().encrypt(secret);
                 Address address{value.contents().bind()};
@@ -775,7 +779,8 @@ namespace nucleus
                 value().state(State::consistent);
                 value.contents().state(State::consistent);
 
-                inlet->value().address(address);
+                // Reset the inlet's value with the new address and secret.
+                inlet->value().reset(address, secret);
                 inlet->state(State::consistent);
 
                 // set the current quill as dirty.

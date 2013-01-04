@@ -15,7 +15,7 @@ namespace nucleus
     Radix::Radix():
       _strategy(Strategy::none)
     {
-      // Manually set all the union pointers to null so as to make all
+      // Manually set all the union pointers to null so as to make sure all
       // the cases are handled.
       this->_cipher = nullptr;
       this->_address = nullptr;
@@ -43,6 +43,12 @@ namespace nucleus
     Radix::Radix(Radix const& other):
       _strategy(other._strategy)
     {
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_cipher = nullptr;
+      this->_address = nullptr;
+      this->_root = nullptr;
+
       switch (this->_strategy)
         {
         case Strategy::none:

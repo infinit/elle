@@ -147,7 +147,7 @@ namespace nucleus
            Nest& nest);
       /// Destruct the tree.
       ///
-      /// Note that the representation is destructed, not its constutent
+      /// Note that the representation is destructed, not its constituent
       /// blocks. For these blocks to be destroyed, one must manually call
       /// the destroy() method.
       ~Tree();

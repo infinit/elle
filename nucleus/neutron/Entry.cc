@@ -96,13 +96,10 @@ namespace nucleus
              << "}";
     }
 
-//
-// ---------- rangeable -------------------------------------------------------
-//
+    /*----------.
+    | Rangeable |
+    `----------*/
 
-    ///
-    /// this method returns the symbol of an entry i.e the name.
-    ///
     elle::String const&
     Entry::symbol() const
     {

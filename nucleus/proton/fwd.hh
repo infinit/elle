@@ -14,6 +14,7 @@ namespace nucleus
     class Contents;
     template <typename T>
     class Door;
+    class Egg;
     class Handle;
     class History;
     class ImmutableBlock;
@@ -29,7 +30,6 @@ namespace nucleus
     template <typename T>
     class Nodule;
     class OwnerKeyBlock;
-    class Placement;
     template <typename T>
     class Porcupine;
     class PublicKeyBlock;

@@ -11,6 +11,7 @@
 # include <nucleus/proton/Contention.hh>
 # include <nucleus/proton/Contents.hh>
 # include <nucleus/proton/Door.hh>
+# include <nucleus/proton/Egg.hh>
 # include <nucleus/proton/Extent.hh>
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/Flags.hh>
@@ -31,7 +32,6 @@
 # include <nucleus/proton/Node.hh>
 # include <nucleus/proton/Nodule.hh>
 # include <nucleus/proton/OwnerKeyBlock.hh>
-# include <nucleus/proton/Placement.hh>
 # include <nucleus/proton/Porcupine.hh>
 # include <nucleus/proton/PublicKeyBlock.hh>
 # include <nucleus/proton/Quill.hh>

@@ -109,7 +109,7 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Subject const& subject,
               Token const& token);
         ~Valid();

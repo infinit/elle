@@ -20,8 +20,7 @@ namespace nucleus
       _nest(nest),
       _mode(mode),
       _state(State::unloaded),
-      _handle(handle),
-      _block(nullptr)
+      _handle(handle)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Ambit");
 
@@ -29,9 +28,6 @@ namespace nucleus
         {
         case Mode::transparent:
           {
-            // XXX
-            // ELLE_ASSERT(false && "should not be called: in an ideal world");
-
             ELLE_DEBUG("loading on construction");
 
             this->load();
@@ -57,9 +53,6 @@ namespace nucleus
           {
             if (this->_state == State::loaded)
               {
-                // XXX
-                // ELLE_ASSERT(false && "should not be called: in an ideal world");
-
                 ELLE_DEBUG("unloading on destruction");
 
                 this->unload();
@@ -86,16 +79,21 @@ namespace nucleus
       ELLE_DEBUG_METHOD("");
 
       ELLE_ASSERT(this->_state == State::unloaded);
-      ELLE_ASSERT(this->_block == nullptr);
 
-      // Load the block from the nest.
-      this->_block = this->_nest.load(this->_handle);
+      // Load the handle from the nest.
+      //
+      // This operation ensures that the handle's block gets loaded in main
+      // memory and referenced by the handle's egg.
+      this->_nest.load(this->_handle);
 
-      // Make sure the retrieved block is compatible with the type given
-      // at the ambit's construction.
-      if (dynamic_cast<T*>(&this->_block->node()) == nullptr)
+      // Make sure the retrieved block is compatible with the ambit's type.
+      if (dynamic_cast<T*>(&this->_handle.egg()->block()->node()) == nullptr)
         throw Exception("the referenced node block's type does not match the "
                         "given type");
+
+      // Lock the egg so as to make sure nobody unloads the block on the
+      // storage layer since it is being used right here.
+      this->_handle.egg()->lock();
 
       this->_state = State::loaded;
     }
@@ -108,13 +106,12 @@ namespace nucleus
       ELLE_DEBUG_METHOD("");
 
       ELLE_ASSERT(this->_state == State::loaded);
-      ELLE_ASSERT(this->_block != nullptr);
 
-      // Unload the block to the nest.
+      // Unlock the egg now that we no longer need it here.
+      this->_handle.egg()->unlock();
+
+      // Unload the handle for the nest to be able to manage its eggs.
       this->_nest.unload(this->_handle);
-
-      // Release the pointer.
-      this->_block.reset();
 
       this->_state = State::unloaded;
     }
@@ -123,14 +120,14 @@ namespace nucleus
     Contents const&
     Ambit<T>::contents() const
     {
-      return (*this->_block.get());
+      return (*this->_handle.egg()->block());
     }
 
     template <typename T>
     Contents&
     Ambit<T>::contents()
     {
-      return (*this->_block.get());
+      return (*this->_handle.egg()->block());
     }
 
     /*----------.
@@ -141,14 +138,14 @@ namespace nucleus
     T const&
     Ambit<T>::operator ()() const
     {
-      return (static_cast<T const&>(this->_block->node()));
+      return (static_cast<T const&>(this->contents().node()));
     }
 
     template <typename T>
     T&
     Ambit<T>::operator ()()
     {
-      return (static_cast<T&>(this->_block->node()));
+      return (static_cast<T&>(this->contents().node()));
     }
 
     /*---------.
@@ -171,20 +168,6 @@ namespace nucleus
 
       if (this->_handle.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the handle");
-
-      if (this->_block != nullptr)
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Block]" << std::endl;
-
-          if (this->_block->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the nodule");
-        }
-      else
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Block] " << elle::none << std::endl;
-        }
 
       return elle::Status::Ok;
     }

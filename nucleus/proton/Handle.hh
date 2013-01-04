@@ -7,92 +7,89 @@
 # include <elle/Printable.hh>
 
 # include <cryptography/fwd.hh>
+# include <cryptography/SecretKey.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Contents.hh>
-# include <nucleus/proton/Placement.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-    /// Represent the location of a block in the nest.
-    ///
-    /// In term of implementation, whenever the nest is requested for
-    /// loading the given handle, an _egg_ is set in the handle so as to
-    /// reference the block in its nest.
-    ///
-    /// A handle can be created two ways, either by providing the address
-    /// of the block along with the secret key for decrypting it or by
-    /// providing the egg to reference for accessing the block along with
-    /// a temporary address (required for computing the handle's footprint).
+    /// XXX
     class Handle:
       public elle::Printable
     {
-      /* XXX
-         permanent: address/secret
-         volatile: egg/footprint
-       */
-
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
-      /// XXX
-      Handle();
-      /// XXX
+      /// Define whether the block is located in the nest or not, in which
+      /// case only the address/secret tuple would be kept.
+      enum class State
+        {
+          unnested,
+          nested
+        };
+
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      Handle(); // XXX[to deserialize]
+      /// Construct a handle for a permanent block i.e by providing its
+      /// address and the secret for decrypting it.
       Handle(Address const& address,
              cryptography::SecretKey const& secret);
-      /// XXX
-      Handle(Placement const& placement,
-             Address const& address,
-             cryptography::SecretKey const& secret);
-      /// XXX
+      /// Construct a handle for a transient block i.e a block which has
+      /// not yet been published in the storage layer.
+      Handle(std::shared_ptr<Egg>& egg);
+      /// Copy constructor.
       Handle(Handle const& other);
-      /// XXX
+      /// Destructor.
       ~Handle();
 
-      //
-      // methods
-      //
+      /*--------.
+      | Methods |
+      `--------*/
     public:
-      /// XXX
-      Placement const&
-      placement() const;
-      /// XXX
-      void
-      placement(Placement const& placement) // XXX[to remove]
-      {
-        this->_placement = placement;
-      }
-      /// XXX
+      /// Return the address associated with the handle.
       Address const&
       address() const;
-      /// XXX
-      void
-      address(Address const& address);
-      /// XXX
+      /// Return the secret associated with the handle.
       cryptography::SecretKey const&
       secret() const;
-      /// XXX
+      /// Return the egg.
+      std::shared_ptr<Egg> const&
+      egg() const;
+      /// Return the egg.
+      std::shared_ptr<Egg>&
+      egg();
+      /// Indicate the handle that a place has been found in the nest
+      /// for the block associated with this handle.
+      ///
+      /// The given egg represents this place and can be used to directly
+      /// access the block.
       void
-      secret(cryptography::SecretKey const& secret);
+      place(std::shared_ptr<Egg>& egg);
+      /// Reset the handle with the given address/secret tuple, following
+      /// a sealing process for instance.
+      void
+      reset(Address const& address,
+            cryptography::SecretKey const& secret);
 
-      //
-      // operators
-      //
+      /*----------.
+      | Operators |
+      `----------*/
     public:
-      Handle&
-      operator=(Handle const&); // XXX? to remove
       elle::Boolean
-      operator!=(Handle const&) const;
-      elle::Boolean
-      operator==(Handle const&) const;
+      operator ==(Handle const&) const;
+      ELLE_OPERATOR_NEQ(Handle);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Handle);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
     public:
       // dumpable
       elle::Status
@@ -104,17 +101,70 @@ namespace nucleus
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Handle);
 
-      //
-      // attributes
-      //
+      /*-----------.
+      | Structures |
+      `-----------*/
+    public:
+      /// Identify a permanent block through its address in the storage layer
+      /// and the secret key required for decrypting the block content.
+      struct Identity:
+        public elle::Printable
+      {
+        // construction
+      public:
+        Identity(Address const& address,
+                 cryptography::SecretKey const& secret);
+        Identity(Identity const& other);
+
+        // interfaces
+      public:
+        // printable
+        virtual
+        void
+        print(std::ostream& stream) const;
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(Handle::Identity);
+
+        // attributes
+      private:
+        ELLE_ATTRIBUTE_R(Address, address);
+        ELLE_ATTRIBUTE_R(cryptography::SecretKey, secret);
+      };
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
-      // XXX Egg* egg;
-      // XXX[il devrait y avoir un type: memory, nest, storage layer]
-      // XXX[et une union? en fait non probablement pas car c'est bien de garder l'addresse]
-      Placement _placement;
-      Address _address;
-      cryptography::SecretKey* _secret;
+      ELLE_ATTRIBUTE(State, state);
+      union
+      {
+        /// Contain the address and secret of the block referenced
+        /// by the handle.
+        ///
+        /// As soon as the handle is requested to be loaded, the
+        /// identity structure can be deleted in favour of the egg
+        /// which represents the block's nested state.
+        Identity* _identity;
+        /// Reference the block descriptor directly within the
+        /// nest.
+        ///
+        /// This descriptor is shared by all the handles referencing
+        /// the same block.
+        ///
+        /// This way, the block can be directly accessed as long as
+        /// it remains in main memory. Otherwise, should the egg not
+        /// be present, it can be loaded from the nest.
+        std::shared_ptr<Egg> _egg;
+      };
     };
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Handle::State const state);
   }
 }
 

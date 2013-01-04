@@ -18,6 +18,45 @@
 
 ELLE_LOG_COMPONENT("infinit.etoile.nest.Nest");
 
+/* XXX
+      /// Compute a static temporary address which will be the same for every
+      /// block in the same nest since every such block belongs to the same
+      /// object hence within the same network.
+      ///
+      /// The idea behind this computation is to provide a temporary address
+      /// whose footprint (i.e size once serialized) is identical to the final
+      /// one. Therefore, it has to be somewhat ressemble the final one without
+      /// being valid.
+      static Address some(block->network(),
+                          block->family(),
+                          block->component());
+
+      ELLE_ASSERT(block->network() == some.network());
+      ELLE_ASSERT(block->family() == some.family());
+      ELLE_ASSERT(block->component() == some.component());
+*/
+
+/* XXX load()
+      // Act depending on the handle's state.
+      switch (this->_handle.state())
+        {
+        case Handle::Type::unnested:
+          {
+            // Load the egg from the nest, action which could end up retrieving
+            // the block from the storage layer for example.
+            this->_nest.load(this->_handle);
+
+            break;
+          }
+        case Handle::Type::unnested:
+          {
+            // XXX
+            this->_handle.egg()->
+            break;
+          }
+        }
+ */
+
 namespace etoile
 {
   namespace nest
@@ -363,8 +402,7 @@ namespace etoile
       static nucleus::proton::Footprint footprint{
         elle::serialize::footprint(some) + elle::serialize::footprint(secret)};
 
-      // XXX[future] nucleus::proton::Handle handle(pod->placement, footprint);
-      nucleus::proton::Handle handle(pod->placement, some, secret);
+      nucleus::proton::Handle handle(pod->placement, footprint);
 
       return (handle);
     }

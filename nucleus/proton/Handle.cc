@@ -8,197 +8,288 @@ namespace nucleus
   namespace proton
   {
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- Handle ----------------------------------------------------------
 //
 
+    /*-------------.
+    | Construction |
+    `-------------*/
+
     Handle::Handle():
-      _address(Address::null()),
-      _secret(nullptr)
+      _state(State::unnested),
+      _identity(nullptr)
     {
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_identity = nullptr;
+      this->_egg = nullptr;
     }
 
     Handle::Handle(Address const& address,
                    cryptography::SecretKey const& secret):
-      _address(address),
-      _secret(new cryptography::SecretKey{secret})
+      _state(State::unnested),
+      _identity(new Identity{address, secret})
     {
     }
 
-    Handle::Handle(Placement const& placement,
-                   Address const& address,
-                   cryptography::SecretKey const& secret):
-      _placement(placement),
-      _address(address),
-      _secret(new cryptography::SecretKey{secret})
+    Handle::Handle(std::shared_ptr<Egg>& egg):
+      _state(State::nested),
+      _egg(egg)
     {
     }
 
-    /// XXX[needless if it does not do anything special!]
-    /// the copy constructor.
-    ///
-    /// note that the block is not retrieved from the other in order
-    /// to force the cloned handle to be loaded before being used.
-    ///
     Handle::Handle(Handle const& other):
-      _placement(other._placement),
-      _address(other._address),
-      _secret(nullptr)
+      _state(other._state)
     {
-      ELLE_ASSERT(other._secret != nullptr);
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_identity = nullptr;
+      this->_egg = nullptr;
 
-      this->_secret = new cryptography::SecretKey{*other._secret};
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(other._identity != nullptr);
+
+            this->_identity = new Identity{*other._identity};
+
+            break;
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(other._egg != nullptr);
+
+            this->_egg = other._egg;
+
+            break;
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
     }
 
     Handle::~Handle()
     {
-      delete this->_secret;
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            delete this->_identity;
+
+            break;
+          }
+        case State::nested:
+          {
+            break;
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    Placement const&
-    Handle::placement() const
-    {
-      return (this->_placement);
-    }
+    /*--------.
+    | Methods |
+    `--------*/
 
     Address const&
     Handle::address() const
     {
-      return (this->_address);
-    }
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(this->_identity != nullptr);
 
-    void
-    Handle::address(Address const& address)
-    {
-      assert(this->_placement != Placement::Null);
+            return (this->_identity->address());
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(this->_egg != nullptr);
 
-      this->_address = address;
+            return (this->_egg->address());
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
     }
 
     cryptography::SecretKey const&
     Handle::secret() const
     {
-      ELLE_ASSERT(this->_secret != nullptr);
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(this->_identity != nullptr);
 
-      return (*this->_secret);
+            return (this->_identity->secret());
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(this->_egg != nullptr);
+
+            return (this->_egg->secret());
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
+    }
+
+    std::shared_ptr<Egg> const&
+    Handle::egg() const
+    {
+      ELLE_ASSERT(this->_state == State::nested);
+      ELLE_ASSERT(this->_egg != nullptr);
+
+      return (this->_egg);
+    }
+
+    std::shared_ptr<Egg>&
+    Handle::egg()
+    {
+      ELLE_ASSERT(this->_state == State::nested);
+      ELLE_ASSERT(this->_egg != nullptr);
+
+      return (this->_egg);
     }
 
     void
-    Handle::secret(cryptography::SecretKey const& secret)
+    Handle::place(std::shared_ptr<Egg>& egg)
     {
-      delete this->_secret;
-      this->_secret = new cryptography::SecretKey{secret};
+      ELLE_ASSERT(this->_state != State::nested);
+
+      // Delete the previous identity structure.
+      ELLE_ASSERT(this->_identity != nullptr);
+      delete this->_identity;
+      this->_identity = nullptr;
+
+      // Set the egg to reference to access the block.
+      this->_egg = egg;
+
+      // Update the state.
+      this->_state = State::nested;
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    Handle&
-    Handle::operator=(Handle const& object)
+    void
+    Handle::reset(Address const& address,
+                  cryptography::SecretKey const& secret)
     {
-      if (this == &object)
-        return (*this);
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(this->_identity != nullptr);
 
-      this->~Handle();
-      new (this) Handle(object);
+            // In this case, regenerate the identity.
+            delete this->_identity;
+            this->_identity = nullptr;
+            this->_identity = new Identity{address, secret};
 
-      return (*this);
+            break;
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(this->_egg != nullptr);
+
+            // In this case, reset the egg.
+            this->_egg->reset(address, secret);
+
+            break;
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
     }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
-    Handle::operator!=(Handle const& object) const
+    Handle::operator ==(Handle const& other) const
     {
-      return (!(this->operator==(object)));
-    }
-
-    elle::Boolean
-    Handle::operator==(Handle const& other) const
-    {
-      // check the address as this may actually be the same object.
       if (this == &other)
         return true;
 
-      // compare the placements, if possible.
-      if ((this->_placement != Placement::Null) &&
-          (other.placement() != Placement::Null))
+      // Compare the handles depending on their state.
+      if ((this->_state == State::nested) &&
+          (other._state == State::nested))
         {
-          //
-          // in this case, both handles reference blocks which have been
-          // retrieved from the network.
-          //
-          // however, that does not necessarily mean that the blocks have
-          // been loaded in main memory. therefore, the block addresses
-          // cannot be used for comparing the blocks.
-          //
-          // thus, the placements are compared as representing unique
-          // identifiers.
-          //
+          // In this case, both handles reference a transient block through
+          // an egg whose memory address can be compared to know if both track
+          // the same block.
 
-          if (this->_placement != other.placement())
-            return false;
+          return (this->_egg.get() == other._egg.get());
         }
       else
         {
+          // Otherwise, one of the two handles represent a block which
+          // has not yet been retrieved from the network. This block is
+          // therefore permanent i.e has an address.
           //
-          // otherwise, one of the two handles has not been retrieved from
-          // the network.
+          // Since transient blocks have a temporary address (until they get
+          // bound), it would not be wise to base the comparison on it
+          // as, if being extremely unlucky, the temporary address could
+          // end up being the same as another permanent block.
           //
-          // if both blocks have been created, they would both have had
-          // a placement. as a result, one or more of the handles represent
-          // a block which resides on the network storage layer.
+          // The following therefore considers that if one of the block is
+          // transient (this other cannot be otherwise the 'if' case would
+          // have been true), then the handles reference different blocks.
           //
-          // since a created block would have a special address (i.e
-          // Address::some) which would differ from normal addresses,
-          // one can rely on the address field for comparing the handles.
-          //
-          // in other words, addresses could be null in which case,
-          // if both are, they would be equal and everything would be fine.
-          //
-          // if both addresses are set to 'some', then, the handles would
-          // represent created blocks in which case both would have a placement
-          // and we would not be discussing in the branch of the condition.
-          //
-          // finally, if one handle is null or 'some' and the other one is
-          // not, then, the comparison will result in handles being different
-          // which they are.
-          //
+          // Otherwise, both blocks are permanent in which case their addresses
+          // can be compared, no matter the state of the handle.
 
-          if (this->_address != other.address())
-            return false;
+          // Check whether one of the handles reference a nested and transient
+          // block.
+          if (((this->_state == State::nested) &&
+               (this->_egg->type() == Egg::Type::transient)) ||
+              ((other._state == State::nested) &&
+               (other._egg->type() == Egg::Type::transient)))
+            return (false);
+
+          // At this point we know that both blocks are permanent being unnested
+          // or nested; their addresses can therefore be compared.
+          return (this->address() == other.address());
         }
 
-      return true;
+      elle::unreachable();
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    elle::Status            Handle::Dump(const elle::Natural32      margin) const
+    elle::Status
+    Handle::Dump(const elle::Natural32      margin) const
     {
-      elle::String          alignment(margin, ' ');
+      elle::String alignment(margin, ' ');
 
-      std::cout << alignment << "[Handle]" << std::endl;
+      std::cout << alignment << "[Handle] " << this->_state << std::endl;
 
-      // dump the placement.
-      if (this->_placement.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the placement");
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(this->_identity != nullptr);
 
-      // dump the address.
-      if (this->_address.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the address");
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Identity] " << *this->_identity << std::endl;
 
-      // dump the secret.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Secret] ";
-      if (this->_secret != nullptr)
-        std::cout << *this->_secret << std::endl;
-      else
-        std::cout << "null" << std::endl;
+            break;
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(this->_egg != nullptr);
+
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Egg] " << *this->_egg << std::endl;
+
+            break;
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
 
       return elle::Status::Ok;
     }
@@ -210,18 +301,93 @@ namespace nucleus
     void
     Handle::print(std::ostream& stream) const
     {
-      stream << "("
-             << this->_placement
-             << ", "
-             << this->_address;
+      stream << this->_state << "(";
 
-      if (this->_secret != nullptr)
-        stream << ", "
-               << *this->_secret;
-      else
-        stream << ", null";
+      switch (this->_state)
+        {
+        case State::unnested:
+          {
+            ELLE_ASSERT(this->_identity != nullptr);
+
+            stream << *this->_identity;
+
+            break;
+          }
+        case State::nested:
+          {
+            ELLE_ASSERT(this->_egg != nullptr);
+
+            stream << *this->_egg;
+
+            break;
+          }
+        default:
+          throw Exception("unknown state '%s'", this->_state);
+        }
 
       stream << ")";
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Handle::State const state)
+    {
+      switch (state)
+        {
+        case Handle::State::unnested:
+          {
+            stream << "unnested";
+            break;
+          }
+        case Handle::State::nested:
+          {
+            stream << "nested";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown state: '%s'", static_cast<int>(state));
+          }
+        }
+
+      return (stream);
+    }
+
+//
+// ---------- Identity --------------------------------------------------------
+//
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Handle::Identity::Identity(Address const& address,
+                               cryptography::SecretKey const& secret):
+      _address(address),
+      _secret(secret)
+    {
+    }
+
+    Handle::Identity::Identity(Identity const& other):
+      _address(other._address),
+      _secret(other._secret)
+    {
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Handle::Identity::print(std::ostream& stream) const
+    {
+      stream << this->_address
+             << ", "
+             << this->_secret;
     }
   }
 }
