@@ -2,10 +2,12 @@
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
 # include <elle/IOStream.hh>
-#include <elle/idiom/Close.hh>
+# include <elle/network/Locus.hh>
+# include <elle/idiom/Close.hh>
 
 # include <reactor/duration.hh>
 # include <reactor/network/fwd.hh>
+# include <reactor/network/Protocol.hh>
 
 namespace reactor
 {
@@ -31,6 +33,17 @@ namespace reactor
         Socket(Scheduler& sched);
         /// Destroy a socket.
         virtual ~Socket();
+        /** Create a socket for the given protocol.
+         *  @param protocol The transport protocl to use.
+         *  @param sched The underlying scheduler.
+         */
+        static
+        std::unique_ptr<Socket>
+        create(Protocol protocol,
+               Scheduler& sched,
+               const std::string& hostname,
+               int port,
+               DurationOpt connection_timeout);
 
       /*------.
       | Write |
@@ -56,11 +69,18 @@ namespace reactor
       private:
         Scheduler& _sched;
 
+     /*------.
+     | Locus |
+     `------*/
+      public:
+        virtual elle::network::Locus local_locus() const = 0;
+        virtual elle::network::Locus remote_locus() const = 0;
+
      /*----------------.
      | Pretty printing |
      `----------------*/
-    public:
-      virtual void print(std::ostream& s) const = 0;
+      public:
+        virtual void print(std::ostream& s) const = 0;
     };
     std::ostream& operator << (std::ostream& s, const Socket& socket);
 
@@ -102,6 +122,8 @@ namespace reactor
     | Properties |
     `-----------*/
     public:
+      virtual elle::network::Locus local_locus() const;
+      virtual elle::network::Locus remote_locus() const;
       EndPoint peer() const;
       EndPoint local_endpoint() const;
 

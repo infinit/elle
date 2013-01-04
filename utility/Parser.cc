@@ -178,7 +178,7 @@ namespace elle
     /// this method returns true and sets the pointer if the given
     /// named option has been located.
     ///
-    Status              Parser::Locate(const String&            name,
+    Boolean             Parser::Locate(const String&            name,
                                        Parser::Option*&         option)
     {
       Natural32         i;
@@ -192,18 +192,18 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return Status::True;
+              return true;
             }
         }
 
-      return Status::False;
+      return false;
     }
 
     ///
     /// this method returns true and sets the pointer if the given
     /// character option has been located.
     ///
-    Status              Parser::Locate(const Character&         character,
+    Boolean             Parser::Locate(const Character&         character,
                                        Parser::Option*&         option)
     {
       Natural32         i;
@@ -217,11 +217,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return Status::True;
+              return true;
             }
         }
 
-      return Status::False;
+      return false;
     }
 
     ///
@@ -357,7 +357,7 @@ namespace elle
             }
 
           // locate the option.
-          if (this->Locate(character, option) == Status::False)
+          if (this->Locate(character, option) == false)
             escape("unable to locate the option");
 
           // activate the option.
@@ -403,42 +403,42 @@ namespace elle
     /// this method returns true if the given option has been provided
     /// on the command line.
     ///
-    Status              Parser::Test(const String&              name)
+    Boolean             Parser::Test(const String&              name)
     {
       Parser::Option*   option;
 
       // locate the option.
-      if (this->Locate(name, option) == Status::False)
-        escape("unable to locate the option");
+      if (this->Locate(name, option) == false)
+        return false;
 
       // return true if the option has been activated.
       if (option->state == Parser::StateActivated)
-        return Status::True;
+        return true;
 
-      return Status::False;
+      return false;
     }
 
     ///
     /// this method returns true if the given option has been provided
     /// with an argument.
     ///
-    Status              Parser::Argument(const String&          name)
+    Boolean             Parser::Argument(const String&          name)
     {
       Parser::Option*   option;
 
       // locate the option.
-      if (this->Locate(name, option) == Status::False)
-        escape("unable to locate the option");
+      if (this->Locate(name, option) == false)
+        return false;
 
       // return true if the option has been activated.
       if (option->state == Parser::StateDeactivated)
-        escape("this option has not been activated");
+        return false;
 
       // return true if an argument has been provided.
       if (option->value != nullptr)
-        return Status::True;
+        return true;
 
-      return Status::False;
+      return false;
     }
 
     ///
