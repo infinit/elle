@@ -29,15 +29,25 @@ Configuring ``Boost``
 
 Boost can be downloaded from
 http://www.boost.org/users/download/. This library requires at least
-Boost 1.51.
+Boost 1.51. Follow instructions to build boost at
+http://www.boost.org/doc/html/bbv2/installation.html and set the
+environment variable BOOST_ROOT to the location of the installation.
 
 Configuring ``google-test``
 ---------------------------
+
+Instructions can be found here:
+http://googletest.googlecode.com/svn/trunk/README . In order to locate
+using cmake, set the environment ``GTEST_ROOT`` to the location of the
+installation.
 
 Building with CMake
 -------------------
 
 ::
+
+	$ set BOOST_ROOT=...
+	$ set GTEST_ROOT=...
 	$ mkdir _build
 	$ cd _build
 	$ cmake ..
@@ -47,12 +57,8 @@ Running the tests with CTest
 ----------------------------
 
 ::
+
 	$ ctest
-
-Examples
-========
-
-
 
 License
 =======
