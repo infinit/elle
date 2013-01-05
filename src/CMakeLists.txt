@@ -4,4 +4,4 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 set(Uri_SRCS uri.cpp uri_io.cpp uri_builder.cpp detail/uri_parse.cpp)
-add_library(network_uri ${Uri_SRCS})
+add_library(cppnetlib-uri ${Uri_SRCS})
