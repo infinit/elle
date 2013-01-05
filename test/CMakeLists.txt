@@ -19,7 +19,7 @@ set(
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
   add_dependencies(${test} network_uri)
-  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} network_uri)
+  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} network_uri)
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()

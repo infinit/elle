@@ -11,6 +11,7 @@
 #include <iterator>
 #include <cstring>
 #include <cassert>
+#include <algorithm>
 
 namespace network {
   namespace detail {
