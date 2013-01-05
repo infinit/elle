@@ -46,6 +46,17 @@ namespace etoile
       return (this->_container.empty());
     }
 
+    void
+    Transcript::merge(Transcript&& other)
+    {
+      // Insert the _other_'s actions.
+      for (auto action: other._container)
+        this->_container.push_back(action);
+
+      // Clear the container without deleting the actions.
+      other._container.clear();
+    }
+
     /*---------.
     | Dumpable |
     `---------*/

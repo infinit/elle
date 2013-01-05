@@ -5,6 +5,7 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <cryptography/fwd.hh>
 # include <cryptography/SecretKey.hh>
@@ -72,6 +73,13 @@ namespace nucleus
       /// access the block.
       void
       place(std::shared_ptr<Egg>& egg);
+      /// Instruct the handle to evolve to an egg by allocating one based
+      /// on the current handle's clef.
+      ///
+      /// This egg is the base of all the future ones which will also reference
+      /// it.
+      void
+      evolve();
       /// Reset the handle with the given address/secret tuple, following
       /// a sealing process for instance.
       void
@@ -102,36 +110,6 @@ namespace nucleus
       ELLE_SERIALIZE_FRIEND_FOR(Handle);
 
       /*-----------.
-      | Structures |
-      `-----------*/
-    public:
-      /// Identify a permanent block through its address in the storage layer
-      /// and the secret key required for decrypting the block content.
-      struct Identity:
-        public elle::Printable
-      {
-        // construction
-      public:
-        Identity(Address const& address,
-                 cryptography::SecretKey const& secret);
-        Identity(Identity const& other);
-
-        // interfaces
-      public:
-        // printable
-        virtual
-        void
-        print(std::ostream& stream) const;
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(Handle::Identity);
-
-        // attributes
-      private:
-        ELLE_ATTRIBUTE_R(Address, address);
-        ELLE_ATTRIBUTE_R(cryptography::SecretKey, secret);
-      };
-
-      /*-----------.
       | Attributes |
       `-----------*/
     private:
@@ -142,9 +120,8 @@ namespace nucleus
         /// by the handle.
         ///
         /// As soon as the handle is requested to be loaded, the
-        /// identity structure can be deleted in favour of the egg
-        /// which represents the block's nested state.
-        Identity* _identity;
+        /// clef is passed to the egg which represents the block's nested state.
+        Clef* _clef;
         /// Reference the block descriptor directly within the
         /// nest.
         ///

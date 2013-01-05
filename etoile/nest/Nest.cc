@@ -10,7 +10,6 @@
 
 #include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Handle.hh>
-#include <nucleus/proton/Placement.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Revision.hh>
 
@@ -61,10 +60,9 @@ namespace etoile
 {
   namespace nest
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Nest::Nest(nucleus::proton::Limits const& limits):
       nucleus::proton::Nest(limits)
@@ -73,46 +71,20 @@ namespace etoile
 
     Nest::~Nest()
     {
-      this->clear();
+      for (auto pod: this->_pods)
+        delete pod;
+
+      this->_pods.clear();
     }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
-    elle::Boolean
-    Nest::exists(nucleus::proton::Placement const& placement) const
+    gear::Transcript
+    Nest::transcribe()
     {
-      if (this->_placements.find(placement) == this->_placements.end())
-        return false;
-
-      return true;
-    }
-
-    elle::Boolean
-    Nest::exists(nucleus::proton::Address const& address) const
-    {
-      if (this->_addresses.find(address) == this->_addresses.end())
-        return false;
-
-      return true;
-    }
-
-    void
-    Nest::clear()
-    {
-      while (this->_placements.size() != 0)
-        {
-          auto iterator = this->_placements.begin();
-          Pod* pod = iterator->second;
-
-          this->_delete(pod->placement);
-        }
-    }
-
-    void
-    Nest::record(gear::Transcript& transcript)
-    {
+      /* XXX
       auto i = this->_placements.begin();
       auto e = this->_placements.end();
 
@@ -214,158 +186,128 @@ namespace etoile
               }
             }
         }
+      */
+    }
+
+    elle::Boolean
+    Nest::_exist(nucleus::proton::Address const& address) const
+    {
+      return (this->_addresses.find(address));
     }
 
     void
-    Nest::_insert(nucleus::proton::Placement const& placement,
-                  Pod* pod)
+    Nest::_insert(Pod* pod)
     {
-      std::pair<Nest::P::Iterator, elle::Boolean>   result;
-
-      // insert the pod in the container.
-      result =
-        this->_placements.insert(
-          std::pair<const nucleus::proton::Placement, Pod*>(placement, pod));
-
-      // check if the insertion was successful.
-      if (result.second == false)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Unable to insert the pod in the container");
+      // Insert the pod in the container.
+      if (this->_pods.insert(pod).second == false)
+        throw elle::Exception("unable to insert the pod");
     }
 
     void
-    Nest::_insert(nucleus::proton::Placement const& placement,
-                  nucleus::proton::Address const& address,
-                  Pod* pod)
+    Nest::_map(nucleus::proton::Address const& address,
+               Pod* pod)
     {
-      struct
-      {
-        std::pair<Nest::A::Iterator, elle::Boolean>         address;
-        std::pair<Nest::P::Iterator, elle::Boolean>         placement;
-      }                                                     result;
-
-      // insert the pod in the container.
-      result.placement =
-        this->_placements.insert(
-          std::pair<const nucleus::proton::Placement, Pod*>(placement, pod));
-
-      // check if the insertion was successful.
-      if (result.placement.second == false)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Unable to insert the pod in the container");
-
-      // insert the pod in the container.
-      result.address =
-        this->_addresses.insert(
-          std::pair<const nucleus::proton::Address, Pod*>(address, pod));
-
-      // check if the insertion was successful.
-      if (result.address.second == false)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Unable to insert the pod in the container");
+      // Insert a tuple address/pod in the container.
+      if (this->_addresses.insert(
+            std::pair<nucleus::proton::Address const, Pod*>(
+              address, pod)).second == false)
+        throw elle::Exception("unable to insert the address/pod tuple");
     }
 
     Pod*
-    Nest::_retrieve(nucleus::proton::Placement const& placement) const
+    Nest::_lookup(nucleus::proton::Address const& address)
     {
-      ELLE_TRACE_METHOD(placement);
-
-      Nest::P::Scoutor scoutor;
-
-      if ((scoutor = this->_placements.find(placement)) ==
-          this->_placements.end())
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "unable to locate a pod for the given "
-                                 "placement");
-      assert(scoutor->second != nullptr);
-
-      return (scoutor->second);
-    }
-
-    Pod*
-    Nest::_retrieve(nucleus::proton::Address const& address) const
-    {
-      ELLE_TRACE_METHOD(address);
-
-      Nest::A::Scoutor scoutor;
-
-      if ((scoutor = this->_addresses.find(address)) == this->_addresses.end())
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Unable to locate a pod for the given address");
-
-      assert(scoutor->second != nullptr);
-
-      return (scoutor->second);
+      // XXX
     }
 
     void
-    Nest::_delete(nucleus::proton::Placement const& placement)
+    Nest::_unmap(nucleus::proton::Address const& address)
     {
-      ELLE_TRACE_METHOD(placement);
-
-      Pod* pod;
-
-      //
-      // retrieve the pod.
-      //
-
-      pod = this->_retrieve(placement);
-
-      //
-      // remove the pod from the containers.
-      //
-
-      if (pod->address != nucleus::proton::Address::null())
-        this->_addresses.erase(pod->address);
-
-      this->_placements.erase(pod->placement);
-
-      //
-      // delete the pod.
-      //
-
-      delete pod;
+      // XXX
     }
 
     void
-    Nest::_delete(nucleus::proton::Address const& address)
+    Nest::_optimize()
     {
-      ELLE_TRACE_METHOD(address);
+//       // XXX[100 / 20]
+//       elle::Natural32 const limit_high = 0;
+//       elle::Natural32 const limit_low = 0;
 
-      Pod* pod;
+//       ELLE_TRACE_FUNCTION("");
 
-      //
-      // retrieve the pod.
-      //
+//       if (this->_placements.size() <= high_limit) // XXX
+//         {
+//           ELLE_TRACE("the nest does not need to be optimized");
+//           return;
+//         }
 
-      pod = this->_retrieve(address);
+//       ELLE_TRACE("look for unused pod so as to lighten the nest");
 
-      assert(pod->placement != nucleus::proton::Placement::Null);
+//       elle::Boolean traversed = false;
 
-      //
-      // remove the pod from the containers.
-      //
+//       while (traversed == false)
+//         {
+//           traversed = true;
 
-      this->_addresses.erase(pod->address);
+//           for (auto& pair: this->_placements)
+//             {
+//               auto& placement = pair.first;
+//               auto& pod = pair.second;
 
-      this->_placements.erase(pod->placement);
+//               // Handle volatile blocks (i.e just created) which have
+//               // been detached.
+//               if ((pod->nature == Pod::NatureVolatile) &&
+//                   (pod->link == Pod::LinkDetached) &&
+//                   (pod->counter == 0))
+//                 {
+//                   this->_delete(placement);
 
-      //
-      // delete the pod.
-      //
+//                   traversed = false;
 
-      delete pod;
+//                   break;
+//                 }
+
+//               // Ignore pod which are still in use.
+//               if (pod->state != Pod::StateUnloaded)
+//                 continue;
+
+//               ELLE_ASSERT(pod->counter == 0);
+
+//               // Ignore pod whose block has been unloaded on the storage layer.
+//               if (pod->block == nullptr)
+//                 continue;
+
+//               // Bind the block.
+//               // XXX pod->address = pod->block->bind();
+
+//               // XXX
+//             }
+//         }
     }
 
-//
-// ---------- interafaces -----------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
-    nucleus::proton::Handle const
+    elle::Status
+    Nest::Dump(const elle::Natural32 margin) const
+    {
+      elle::String alignment(margin, ' ');
+
+      // XXX
+
+      return elle::Status::Ok;
+    }
+
+    /*-----.
+    | Nest |
+    `-----*/
+
+    nucleus::proton::Handle
     Nest::attach(nucleus::proton::Contents* block)
     {
       ELLE_TRACE_METHOD(block);
-
+      /* XXX
       ELLE_FINALLY_ACTION_DELETE(block);
 
       nucleus::proton::Placement placement =
@@ -405,6 +347,7 @@ namespace etoile
       nucleus::proton::Handle handle(pod->placement, footprint);
 
       return (handle);
+      */
     }
 
     /// XXX detach then unload
@@ -412,7 +355,7 @@ namespace etoile
     Nest::detach(nucleus::proton::Handle& handle)
     {
       ELLE_TRACE_METHOD(handle);
-
+      /* XXX
       // make sure placement is non-null.
       assert(handle.placement() != nucleus::proton::Placement::Null);
 
@@ -424,13 +367,14 @@ namespace etoile
 
       // Try to optimize the nest.
       this->_optimize();
+      */
     }
 
     std::shared_ptr<nucleus::proton::Contents>
     Nest::load(nucleus::proton::Handle& handle)
     {
       ELLE_TRACE_METHOD(handle);
-
+      /* XXX
       std::shared_ptr<nucleus::proton::Contents> block;
 
       if (handle.placement() != nucleus::proton::Placement::Null)
@@ -502,13 +446,14 @@ namespace etoile
       assert(block != nullptr);
 
       return (block);
+      */
     }
 
     void
     Nest::unload(nucleus::proton::Handle& handle)
     {
       ELLE_TRACE_METHOD(handle);
-
+      /* XXX
       Pod* pod;
 
       // make sure the given handle is valid.
@@ -521,103 +466,7 @@ namespace etoile
       // If the block has been detached and is no longer used,
       // Try to optimize the nest.
       this->_optimize();
+      */
     }
-
-    void
-    Nest::_optimize()
-    {
-//       // XXX[100 / 20]
-//       elle::Natural32 const limit_high = 0;
-//       elle::Natural32 const limit_low = 0;
-
-//       ELLE_TRACE_FUNCTION("");
-
-//       if (this->_placements.size() <= high_limit) // XXX
-//         {
-//           ELLE_TRACE("the nest does not need to be optimized");
-//           return;
-//         }
-
-//       ELLE_TRACE("look for unused pod so as to lighten the nest");
-
-//       elle::Boolean traversed = false;
-
-//       while (traversed == false)
-//         {
-//           traversed = true;
-
-//           for (auto& pair: this->_placements)
-//             {
-//               auto& placement = pair.first;
-//               auto& pod = pair.second;
-
-//               // Handle volatile blocks (i.e just created) which have
-//               // been detached.
-//               if ((pod->nature == Pod::NatureVolatile) &&
-//                   (pod->link == Pod::LinkDetached) &&
-//                   (pod->counter == 0))
-//                 {
-//                   this->_delete(placement);
-
-//                   traversed = false;
-
-//                   break;
-//                 }
-
-//               // Ignore pod which are still in use.
-//               if (pod->state != Pod::StateUnloaded)
-//                 continue;
-
-//               ELLE_ASSERT(pod->counter == 0);
-
-//               // Ignore pod whose block has been unloaded on the storage layer.
-//               if (pod->block == nullptr)
-//                 continue;
-
-//               // Bind the block.
-//               // XXX pod->address = pod->block->bind();
-
-//               // XXX
-//             }
-//         }
-    }
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    elle::Status            Nest::Dump(const elle::Natural32    margin) const
-    {
-      elle::String alignment(margin, ' ');
-      auto i = this->_placements.begin();
-      auto e = this->_placements.end();
-
-      std::cout << alignment << "[Nest]" << std::endl;
-
-      std::cout << alignment << elle::io::Dumpable::Shift << "[_Placements] #"
-                << this->_placements.size() << std::endl;
-
-      for (; i != e; ++i)
-        {
-          if (i->second->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the pod");
-        }
-
-      auto                  j = this->_addresses.begin();
-      auto                  f = this->_addresses.end();
-
-      std::cout << alignment << elle::io::Dumpable::Shift << "[_Addresses] #"
-                << this->_addresses.size() << std::endl;
-
-      for (; j != f; ++j)
-        {
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << elle::io::Dumpable::Shift
-                    << "[Pod] " << std::hex << j->second << std::endl;
-        }
-
-      return elle::Status::Ok;
-    }
-
   }
 }

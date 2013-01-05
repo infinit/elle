@@ -6,6 +6,7 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <cryptography/fwd.hh>
 
@@ -62,6 +63,12 @@ namespace infinit
       SecretKey(elle::String const& password);
       /// Copy constructor.
       SecretKey(SecretKey const& other);
+      /// Derialization constructor.
+      ELLE_SERIALIZE_CONSTRUCT(SecretKey)
+      {
+        // XXX
+      }
+
     private:
       /// Construct a secret key based on a given buffer.
       SecretKey(elle::Buffer&& buffer);

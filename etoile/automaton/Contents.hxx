@@ -130,7 +130,7 @@ namespace etoile
 
                 ELLE_TRACE("mark the destroyed blocks as needed to be "
                            "removed from the storage layer");
-                context.nest->record(context.transcript());
+                context.transcript().merge(context.nest->transcribe());
 
                 break;
               }
@@ -281,7 +281,7 @@ namespace etoile
             escape("unable to update the object");
 
           // mark the new/modified blocks as needing to be stored.
-          context.nest->record(context.transcript());
+          context.transcript().merge(context.nest->transcribe());
 
           //
           // finally, since the data has been re-encrypted, the key must be

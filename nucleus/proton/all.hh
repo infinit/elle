@@ -7,6 +7,7 @@
 # include <nucleus/proton/Base.hh>
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Capacity.hh>
+# include <nucleus/proton/Clef.hh>
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Contention.hh>
 # include <nucleus/proton/Contents.hh>

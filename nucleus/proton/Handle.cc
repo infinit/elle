@@ -7,28 +7,24 @@ namespace nucleus
 {
   namespace proton
   {
-//
-// ---------- Handle ----------------------------------------------------------
-//
-
     /*-------------.
     | Construction |
     `-------------*/
 
     Handle::Handle():
       _state(State::unnested),
-      _identity(nullptr)
+      _clef(nullptr)
     {
       // Manually set all the union pointers to null so as to make sure all
       // the cases are handled.
-      this->_identity = nullptr;
+      this->_clef = nullptr;
       this->_egg = nullptr;
     }
 
     Handle::Handle(Address const& address,
                    cryptography::SecretKey const& secret):
       _state(State::unnested),
-      _identity(new Identity{address, secret})
+      _clef(new Clef{address, secret})
     {
     }
 
@@ -43,16 +39,16 @@ namespace nucleus
     {
       // Manually set all the union pointers to null so as to make sure all
       // the cases are handled.
-      this->_identity = nullptr;
+      this->_clef = nullptr;
       this->_egg = nullptr;
 
       switch (this->_state)
         {
         case State::unnested:
           {
-            ELLE_ASSERT(other._identity != nullptr);
+            ELLE_ASSERT(other._clef != nullptr);
 
-            this->_identity = new Identity{*other._identity};
+            this->_clef = new Clef{*other._clef};
 
             break;
           }
@@ -75,7 +71,7 @@ namespace nucleus
         {
         case State::unnested:
           {
-            delete this->_identity;
+            delete this->_clef;
 
             break;
           }
@@ -99,9 +95,9 @@ namespace nucleus
         {
         case State::unnested:
           {
-            ELLE_ASSERT(this->_identity != nullptr);
+            ELLE_ASSERT(this->_clef != nullptr);
 
-            return (this->_identity->address());
+            return (this->_clef->address());
           }
         case State::nested:
           {
@@ -121,9 +117,9 @@ namespace nucleus
         {
         case State::unnested:
           {
-            ELLE_ASSERT(this->_identity != nullptr);
+            ELLE_ASSERT(this->_clef != nullptr);
 
-            return (this->_identity->secret());
+            return (this->_clef->secret());
           }
         case State::nested:
           {
@@ -159,13 +155,30 @@ namespace nucleus
     {
       ELLE_ASSERT(this->_state != State::nested);
 
-      // Delete the previous identity structure.
-      ELLE_ASSERT(this->_identity != nullptr);
-      delete this->_identity;
-      this->_identity = nullptr;
+      // Delete the previous clef.
+      ELLE_ASSERT(this->_clef != nullptr);
+      delete this->_clef;
+      this->_clef = nullptr;
 
       // Set the egg to reference to access the block.
       this->_egg = egg;
+
+      // Update the state.
+      this->_state = State::nested;
+    }
+
+    void
+    Handle::evolve()
+    {
+      ELLE_ASSERT(this->_state != State::nested);
+      ELLE_ASSERT(this->_egg == nullptr);
+
+      // Keep the clef's memory address and reset the attribute.
+      Clef* clef = this->_clef;
+      this->_clef = nullptr;
+
+      // Allocate a new egg based on the handle's clef.
+      this->_egg.reset(new Egg{clef});
 
       // Update the state.
       this->_state = State::nested;
@@ -179,12 +192,12 @@ namespace nucleus
         {
         case State::unnested:
           {
-            ELLE_ASSERT(this->_identity != nullptr);
+            ELLE_ASSERT(this->_clef != nullptr);
 
-            // In this case, regenerate the identity.
-            delete this->_identity;
-            this->_identity = nullptr;
-            this->_identity = new Identity{address, secret};
+            // In this case, regenerate the clef.
+            delete this->_clef;
+            this->_clef = nullptr;
+            this->_clef = new Clef{address, secret};
 
             break;
           }
@@ -271,10 +284,10 @@ namespace nucleus
         {
         case State::unnested:
           {
-            ELLE_ASSERT(this->_identity != nullptr);
+            ELLE_ASSERT(this->_clef != nullptr);
 
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Identity] " << *this->_identity << std::endl;
+                      << "[Clef] " << *this->_clef << std::endl;
 
             break;
           }
@@ -307,9 +320,9 @@ namespace nucleus
         {
         case State::unnested:
           {
-            ELLE_ASSERT(this->_identity != nullptr);
+            ELLE_ASSERT(this->_clef != nullptr);
 
-            stream << *this->_identity;
+            stream << *this->_clef;
 
             break;
           }
@@ -355,39 +368,6 @@ namespace nucleus
         }
 
       return (stream);
-    }
-
-//
-// ---------- Identity --------------------------------------------------------
-//
-
-    /*-------------.
-    | Construction |
-    `-------------*/
-
-    Handle::Identity::Identity(Address const& address,
-                               cryptography::SecretKey const& secret):
-      _address(address),
-      _secret(secret)
-    {
-    }
-
-    Handle::Identity::Identity(Identity const& other):
-      _address(other._address),
-      _secret(other._secret)
-    {
-    }
-
-    /*----------.
-    | Printable |
-    `----------*/
-
-    void
-    Handle::Identity::print(std::ostream& stream) const
-    {
-      stream << this->_address
-             << ", "
-             << this->_secret;
     }
   }
 }

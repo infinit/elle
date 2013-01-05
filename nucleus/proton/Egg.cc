@@ -1,6 +1,7 @@
 #include <nucleus/proton/Egg.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/Clef.cc>
 #include <nucleus/Exception.hh>
 
 #include <cryptography/SecretKey.hh>
@@ -16,8 +17,14 @@ namespace nucleus
     Egg::Egg(Address const& address,
              cryptography::SecretKey const& secret):
       _type(Type::permanent),
-      _address(new Address{address}),
-      _secret(new cryptography::SecretKey{secret}),
+      _clef(new Clef{address, secret}),
+      _block(nullptr)
+    {
+    }
+
+    Egg::Egg(Clef* clef):
+      _type(Type::permanent),
+      _clef(clef),
       _block(nullptr)
     {
     }
@@ -26,16 +33,14 @@ namespace nucleus
              Address const& address,
              cryptography::SecretKey const& secret):
       _type(Type::transient),
-      _address(new Address{address}),
-      _secret(new cryptography::SecretKey{secret}),
+      _clef(new Clef{address, secret}),
       _block(block)
     {
     }
 
     Egg::~Egg()
     {
-      delete this->_address;
-      delete this->_secret;
+      delete this->_clef;
       delete this->_block;
     }
 
@@ -46,30 +51,27 @@ namespace nucleus
     Address const&
     Egg::address() const
     {
-      ELLE_ASSERT(this->_address != nullptr);
+      ELLE_ASSERT(this->_clef != nullptr);
 
-      return (*this->_address);
+      return (this->_clef->address());
     }
 
     cryptography::SecretKey const&
     Egg::secret() const
     {
-      ELLE_ASSERT(this->_secret != nullptr);
+      ELLE_ASSERT(this->_clef != nullptr);
 
-      return (*this->_secret);
+      return (this->_clef->secret());
     }
 
     void
     Egg::reset(Address const& address,
                cryptography::SecretKey const& secret)
     {
-      delete this->_address;
-      this->_address = nullptr;
-      this->_address = new Address{address};
-
-      delete this->_secret;
-      this->_secret = nullptr;
-      this->_secret = new cryptography::SecretKey{secret};
+      // Regenerate the clef with the new address and secret.
+      delete this->_clef;
+      this->_clef = nullptr;
+      this->_clef = new Clef{address, secret};
     }
 
     void
@@ -82,6 +84,18 @@ namespace nucleus
     Egg::unlock()
     {
       this->_mutex.write().release();
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Egg::print(std::ostream& stream) const
+    {
+      ELLE_ASSERT(this->_clef != nullptr);
+
+      stream << this->_type << "(" << *this->_clef << ")";
     }
 
     /*----------.

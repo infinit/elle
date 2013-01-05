@@ -58,6 +58,9 @@ namespace nucleus
       /// Constructor for permanent blocks i.e living in the storage layer.
       Egg(Address const& address,
           cryptography::SecretKey const& secret);
+      /// Constructor for permanent blocks through the block's clef which
+      /// is handed over, transferring the ownership to the egg.
+      Egg(Clef* clef);
       /// Constructor for transient blocks: the block is provided along with
       /// a temporary (and probably invalid) address and secret. The idea behind
       /// these temporary elements is to enable the system to compute their
@@ -122,8 +125,7 @@ namespace nucleus
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Address*, address);
-      ELLE_ATTRIBUTE(cryptography::SecretKey*, secret);
+      ELLE_ATTRIBUTE(Clef*, clef);
       ELLE_ATTRIBUTE_RWX(Contents*, block);
       ELLE_ATTRIBUTE(reactor::RWMutex, mutex);
     };

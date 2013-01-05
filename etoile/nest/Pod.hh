@@ -2,97 +2,43 @@
 # define ETOILE_NEST_POD_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Contents.hh>
-# include <nucleus/proton/Placement.hh>
-# include <nucleus/proton/Address.hh>
-
-# include <elle/idiom/Open.hh>
+# include <nucleus/proton/Egg.hh>
 
 namespace etoile
 {
   namespace nest
   {
-
-    ///
-    /// XXX
-    ///
-    class Pod:
-      public elle::radix::Object
+    /// Provide a overlay on top of an egg, especially by holding the
+    /// state of the egg's block to know whether it has been detached
+    /// from the nest or if it is still attached.
+    class Pod
     {
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
-      //
-      // enumerations
-      //
-      enum Nature
+      /// Define whether the block is attached to the nest.
+      enum class State
         {
-          NatureVolatile,
-          NaturePersistent
+          attached,
+          detached
         };
 
-      enum Link
-        {
-          LinkAttached,
-          LinkDetached
-        };
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      Pod(std::shared_ptr<nucleus::proton::Egg>& egg);
 
-      enum State
-        {
-          StateUnloaded,
-          StateLoaded
-        };
-
-      //
-      // constructors & destructors
-      //
-      Pod();
-      // XXX[ownership transferred]
-      Pod(const nucleus::proton::Placement&,
-          nucleus::proton::Contents*);
-      Pod(const nucleus::proton::Placement&,
-          const nucleus::proton::Address&,
-          nucleus::proton::Contents*);
-      Pod(const Pod&);
-
-      //
-      // methods
-      //
-      /// XXX
-      std::shared_ptr<nucleus::proton::Contents>
-      load(nucleus::proton::Handle&);
-      /// XXX
-      void
-      unload(nucleus::proton::Handle&);
-      /// XXX
-      void
-      release();
-
-      //
-      // interfaces
-      //
-
-      // object
-      declare(Pod);
-
-      // dumpable
-      elle::Status              Dump(const elle::Natural32 = 0) const;
-
-      //
-      // attributes
-      //
-      Nature nature;
-      Link link;
-      State state;
-
-      nucleus::proton::Placement placement;
-      nucleus::proton::Address address;
-
-      std::shared_ptr<nucleus::proton::Contents> block;
-      elle::Natural32 counter;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(State, state);
+      ELLE_ATTRIBUTE_RX(std::shared_ptr<nucleus::proton::Egg>, egg);
     };
-
   }
 }
 

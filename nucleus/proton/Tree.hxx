@@ -387,7 +387,7 @@ namespace nucleus
             root.unload();
 
             // Reset the handle with the new address and secret.
-            this->_root.reset(address, secret);
+            this->_root->reset(address, secret);
 
             // Return the type-independent tree's root.
             return (Root(this->_root->address(),

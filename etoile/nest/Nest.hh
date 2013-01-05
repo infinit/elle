@@ -3,10 +3,10 @@
 
 # include <elle/types.hh>
 
+# include <etoile/nest/Pod.hh>
 # include <etoile/gear/fwd.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Placement.hh>
 # include <nucleus/proton/Nest.hh>
 
 # include <set>
@@ -27,9 +27,9 @@ namespace etoile
       | Types |
       `------*/
     public:
-      typedef std::set<nucleus::proton::Egg*> Eggs;
-      typedef std::map<nucleus::proton::Address const,
-                       std::shared_ptr<nucleus::proton::Egg>> Permanents;
+      typedef std::set<Pod*> Pods;
+      typedef std::map<nucleus::proton::Address const, Pod*> Addresses;
+      typedef std::map<elle::Time, Pod*> Queue;
 
       /*-------------.
       | Construction |
@@ -42,37 +42,29 @@ namespace etoile
       | Methods |
       `--------*/
     public:
-      /// Return true if the given address' block lies in the nest.
-      elle::Boolean
-      exists(nucleus::proton::Address const& address) const;
       /// Transcribe the nest's state into a transcript representing the
       /// operations to perform on the storage layer: store a block, remove
       /// another one etc.
       gear::Transcript
       transcribe();
     private:
-      /// XXX
+      /// Return true if the given address' block lies in the nest.
+      elle::Boolean
+      _exist(nucleus::proton::Address const& address) const;
+      /// Insert the pod in the pods container.
       void
-      _insert(nucleus::proton::Placement const& placement,
-              Pod* pod);
-      /// XXX
+      _insert(Pod* pod);
+      /// Create a mapping between an address and an egg.
       void
-      _insert(nucleus::proton::Placement const& placement,
-              nucleus::proton::Address const& address,
-              Pod* pod);
-      /// XXX
+      _map(nucleus::proton::Address const& address,
+           Pod* pod);
+      /// Return the egg associated with the given address.
       Pod*
-      _retrieve(nucleus::proton::Placement const& placement) const;
-      /// XXX
-      Pod*
-      _retrieve(nucleus::proton::Address const& address) const;
-      /// XXX
+      _lookup(nucleus::proton::Address const& address) const;
+      /// Remove the mapping for the given address.
       void
-      _delete(nucleus::proton::Placement const& placement);
-      /// XXX
-      void
-      _delete(nucleus::proton::Address const& address);
-      /// XXX
+      _unmap(nucleus::proton::Address const& address);
+      /// Try to optimize the nest according to internal limits and conditions.
       void
       _optimize();
 
@@ -97,10 +89,14 @@ namespace etoile
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(Eggs, eggs);
-      ELLE_ATTRIBUTE(Permanents, permanents);
+      /// The set of pods tracking the various content blocks.
+      ELLE_ATTRIBUTE(Pods, pods);
+      /// Contain the addresses of the permanents blocks for which
+      /// an egg exist in the nest.
+      ELLE_ATTRIBUTE(Addresses, addresses);
+      /// The LRU-sorted queue of pods.
+      ELLE_ATTRIBUTE(Queue, queue);
     };
-
   }
 }
 

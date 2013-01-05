@@ -10,6 +10,7 @@ namespace nucleus
     class Ambit;
     class Base;
     class Block;
+    class Clef;
     class ContentHashBlock;
     class Contents;
     template <typename T>

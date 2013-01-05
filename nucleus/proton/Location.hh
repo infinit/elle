@@ -13,7 +13,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class represents a storage location both in space and time.
     ///
     /// Indeed, a location is composed of the address of the block along
@@ -61,7 +60,6 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(Address, address);
       ELLE_ATTRIBUTE_R(Revision, revision);
     };
-
   }
 }
 

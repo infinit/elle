@@ -1,10 +1,6 @@
 #ifndef NUCLEUS_PROTON_HANDLE_HXX
 # define NUCLEUS_PROTON_HANDLE_HXX
 
-//
-// ---------- Handle ----------------------------------------------------------
-//
-
 /*-------------.
 | Serializable |
 `-------------*/
@@ -13,6 +9,7 @@
 
 # include <cryptography/SecretKey.hh>
 
+# include <nucleus/proton/Clef.hh>
 # include <nucleus/proton/Egg.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::proton::Handle);
@@ -28,9 +25,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Handle,
     {
     case nucleus::proton::Handle::State::unnested:
       {
-        ELLE_ASSERT(value._identity != nullptr);
+        ELLE_ASSERT(value._clef != nullptr);
 
-        // XXX archive << elle::serialize::alive_pointer(value._identity);
+        // XXX archive << elle::serialize::alive_pointer(value._clef);
         ELLE_ASSERT(false);
 
         break;
@@ -59,30 +56,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Handle,
   enforce(version == 0);
 
   ELLE_ASSERT(value._state == nucleus::proton::Handle::State::unnested);
-  ELLE_ASSERT(value._identity == nullptr);
+  ELLE_ASSERT(value._clef == nullptr);
 
-  ELLE_ASSERT(false);
-  (void)archive;
-  // XXX archive >> elle::serialize::alive_pointer(value._identity);
-}
-
-//
-// ---------- Identity --------------------------------------------------------
-//
-
-/*-------------.
-| Serializable |
-`-------------*/
-
-ELLE_SERIALIZE_SIMPLE(nucleus::proton::Handle::Identity,
-                      archive,
-                      value,
-                      version)
-{
-  enforce(version == 0);
-
-  archive & value._address;
-  archive & value._secret;
+  value._clef = new nucleus::proton::Clef{archive};
 }
 
 #endif

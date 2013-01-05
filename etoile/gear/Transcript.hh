@@ -53,6 +53,9 @@ namespace etoile
       /// Return true if the transcript is empty.
       elle::Boolean
       empty() const;
+      /// Merge the given transcript's actions with the current's.
+      void
+      merge(Transcript&& other);
 
       /*-----------.
       | Interfaces |

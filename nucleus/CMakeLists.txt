@@ -7,6 +7,7 @@ add_library(nucleus ${LINK_METHOD}
   proton/Address.cc
   proton/Base.cc
   proton/Block.cc
+  proton/Clef.cc
   proton/ContentHashBlock.cc
   proton/Contents.cc
   proton/Egg.cc
