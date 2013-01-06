@@ -2,6 +2,7 @@
 # define ELLE_UTILITY_TIME_HH
 
 # include <elle/types.hh>
+# include <elle/Printable.hh>
 
 # include <elle/radix/Object.hh>
 
@@ -25,13 +26,24 @@ namespace elle
     /// since epoch.
     ///
     class Time:
-      public radix::Object
+      public radix::Object,
+      public Printable
     {
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
+      /// Return the current time.
+      static
+      Time
+      current();
+
       //
       // constructors & destructors
       //
+    public:
       Time();
+      Time(Time const&) = default;
 
       //
       // methods
@@ -65,18 +77,15 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+
       //
       // attributes
       //
       Natural64         nanoseconds;
-
-      /*---------------.
-      | Static members |
-      `---------------*/
-    public:
-      static
-      Time const&
-      get_current();
     };
 
   }
