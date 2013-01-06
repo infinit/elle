@@ -113,7 +113,7 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(State, state);
+      ELLE_ATTRIBUTE_R(State, state);
       union
       {
         /// Contain the address and secret of the block referenced

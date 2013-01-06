@@ -221,13 +221,12 @@ test_porcupine_catalog_serialize(
   cryptography::SecretKey& secret,
   std::vector<elle::String>& vector)
 {
-  etoile::gear::Transcript transcript;
   etoile::nest::Nest* nest1 =
     static_cast<etoile::nest::Nest*>(&porcupine1.nest());
 
   ELLE_TRACE_FUNCTION(radix1, porcupine1, secret, vector);
 
-  nest1->record(transcript);
+  etoile::gear::Transcript transcript = nest1->transcribe();
 
   for (auto action: transcript)
     action->apply<etoile::depot::Depot>();

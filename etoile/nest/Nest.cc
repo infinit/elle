@@ -35,27 +35,6 @@ ELLE_LOG_COMPONENT("infinit.etoile.nest.Nest");
       ELLE_ASSERT(block->component() == some.component());
 */
 
-/* XXX load()
-      // Act depending on the handle's state.
-      switch (this->_handle.state())
-        {
-        case Handle::Type::unnested:
-          {
-            // Load the egg from the nest, action which could end up retrieving
-            // the block from the storage layer for example.
-            this->_nest.load(this->_handle);
-
-            break;
-          }
-        case Handle::Type::unnested:
-          {
-            // XXX
-            this->_handle.egg()->
-            break;
-          }
-        }
- */
-
 namespace etoile
 {
   namespace nest
@@ -75,6 +54,8 @@ namespace etoile
         delete pod;
 
       this->_pods.clear();
+      this->_addresses.clear();
+      this->_queue.clear();
     }
 
     /*--------.
@@ -192,7 +173,7 @@ namespace etoile
     elle::Boolean
     Nest::_exist(nucleus::proton::Address const& address) const
     {
-      return (this->_addresses.find(address));
+      return (this->_addresses.find(address) != this->_addresses.end());
     }
 
     void
@@ -215,7 +196,7 @@ namespace etoile
     }
 
     Pod*
-    Nest::_lookup(nucleus::proton::Address const& address)
+    Nest::_lookup(nucleus::proton::Address const& address) const
     {
       // XXX
     }
@@ -370,10 +351,58 @@ namespace etoile
       */
     }
 
-    std::shared_ptr<nucleus::proton::Contents>
+    void
     Nest::load(nucleus::proton::Handle& handle)
     {
       ELLE_TRACE_METHOD(handle);
+
+      // Act depending on the handle's state.
+      switch (handle.state())
+        {
+        case nucleus::proton::Handle::State::unnested:
+          {
+            // In this case, this is the first time this handle
+            // instance is actually loaded.
+
+            // Note that this does not mean that the nest is not
+            // already tracking the associated block. Indeed, a
+            // copy of the given handle may have been previously
+            // loaded. In this case, try to retrieve the pod associated
+            // with the handle address so as to make it track the
+            // appropriate egg.
+            if (this->_exist(handle.address()) == true)
+              {
+                // Retrieve the existing pod.
+                Pod* pod = this->_lookup(handle.address());
+
+                ELLE_ASSERT(handle.address() == pod->egg()->address());
+                ELLE_ASSERT(handle.secret() == pod->egg()->secret());
+
+                // And make the handle track the block's existing egg.
+                handle.place(pod->egg());
+              }
+            else
+              {
+                // In this case, no egg exists. One must therefore create
+                // an egg, encapsulte it in a pod which must be tracked by
+                // the nest.
+
+                // Make the handle evolve so as to reference a newly
+                // created egg.
+                handle.evolve();
+
+                // XXX create a pod and insert it and map it
+              }
+
+            break;
+          }
+        case nucleus::proton::Handle::State::nested:
+          {
+            // There is nothing to do since the handle is already nest.
+            break;
+          }
+        }
+
       /* XXX
       std::shared_ptr<nucleus::proton::Contents> block;
 

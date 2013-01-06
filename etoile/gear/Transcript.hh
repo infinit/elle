@@ -35,6 +35,8 @@ namespace etoile
       | Construction |
       `-------------*/
     public:
+      Transcript() = default;
+      Transcript(Transcript&& other);
       ~Transcript();
 
       /*--------.

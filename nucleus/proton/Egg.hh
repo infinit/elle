@@ -85,6 +85,9 @@ namespace nucleus
       /// address(), the returned value may not be final i.e temporary.
       cryptography::SecretKey const&
       secret() const;
+      /// Return the clef (i.e address/secret) of the tracked block.
+      Clef const&
+      clef() const;
       /// Reset the address/secret tuple associated with the tracked block,
       /// following a sealing process for instance.
       void

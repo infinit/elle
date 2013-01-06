@@ -308,7 +308,7 @@ namespace satellite
         escape("unable to complete the path");
 
       // if the network exists, clear it and remove it.
-      if (elle::io::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == true)
         {
           // clear the network directory content.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)

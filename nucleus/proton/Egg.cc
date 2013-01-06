@@ -64,6 +64,14 @@ namespace nucleus
       return (this->_clef->secret());
     }
 
+    Clef const&
+    Egg::clef() const
+    {
+      ELLE_ASSERT(this->_clef != nullptr);
+
+      return (*this->_clef);
+    }
+
     void
     Egg::reset(Address const& address,
                cryptography::SecretKey const& secret)

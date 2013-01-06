@@ -2,6 +2,7 @@
 # define ETOILE_NEST_NEST_HH
 
 # include <elle/types.hh>
+# include <elle/utility/Time.hh>
 
 # include <etoile/nest/Pod.hh>
 # include <etoile/gear/fwd.hh>
@@ -29,7 +30,7 @@ namespace etoile
     public:
       typedef std::set<Pod*> Pods;
       typedef std::map<nucleus::proton::Address const, Pod*> Addresses;
-      typedef std::map<elle::Time, Pod*> Queue;
+      typedef std::map<elle::utility::Time, Pod*> Queue;
 
       /*-------------.
       | Construction |

@@ -27,8 +27,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Handle,
       {
         ELLE_ASSERT(value._clef != nullptr);
 
-        // XXX archive << elle::serialize::alive_pointer(value._clef);
-        ELLE_ASSERT(false);
+        archive << elle::serialize::alive_pointer(value._clef);
 
         break;
       }
@@ -36,10 +35,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Handle,
       {
         ELLE_ASSERT(value._egg != nullptr);
 
-        // In this case, extract the address and secret from the egg and
-        // serialize then.
-        archive << value._egg->address();
-        archive << value._egg->secret();
+        // In this case, extract the clef from the egg and serialize it.
+        archive << value._egg->clef();
 
         break;
       }

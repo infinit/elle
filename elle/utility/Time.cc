@@ -15,6 +15,19 @@ namespace elle
 {
   namespace utility
   {
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    Time
+    Time::current()
+    {
+      Time time;
+
+      time.Current();
+
+      return (time);
+    }
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -305,13 +318,27 @@ namespace elle
       return Status::Ok;
     }
 
-    Time const&
-    Time::get_current()
-    {
-      static Time _time;
-      _time.Current();
+    /*----------.
+    | Printable |
+    `----------*/
 
-      return _time;
+    void
+    Time::print(std::ostream& stream) const
+    {
+      ::tm* tm;
+      ::time_t time;
+
+      // Convert the nanoseconds in a time_t.
+      time = this->nanoseconds / 1000000000;
+
+      // Retrieve a _tm_ structure.
+      tm = ::gmtime(&time);
+
+      stream << std::dec
+             << (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
+             << "-" << (1 + tm->tm_mday) << " "
+             << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec
+             << "." << (this->nanoseconds % 1000);
     }
   }
 }

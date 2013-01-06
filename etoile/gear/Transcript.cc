@@ -12,6 +12,14 @@ namespace etoile
     | Construction |
     `-------------*/
 
+    Transcript::Transcript(Transcript&& other)
+    {
+      for (auto action: other._container)
+        this->_container.push_back(action);
+
+      other._container.clear();
+    }
+
     Transcript::~Transcript()
     {
       for (auto action: this->_container)
