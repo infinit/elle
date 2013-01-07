@@ -77,7 +77,7 @@ namespace elle
       else
         {
           std::cout << alignment << io::Dumpable::Shift
-                    << "[Value] " << none << std::endl;
+                    << "[Value] " << "none" << std::endl;
         }
 
       return Status::Ok;

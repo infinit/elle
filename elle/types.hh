@@ -40,11 +40,6 @@ namespace elle
 
     typedef std::basic_string<Character>  String;
 
-    enum class Null { Nil };
-    extern Null const none;
-
-    std::ostream& operator <<(std::ostream& out, elle::Null);
-
     typedef Natural64 Size;
 
     ///

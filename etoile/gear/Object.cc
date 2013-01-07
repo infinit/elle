@@ -92,7 +92,7 @@ namespace etoile
         {
           // dump none.
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Access] " << elle::none << std::endl;
+                    << "[Access] " << "none" << std::endl;
         }
 
       // dump the rights.

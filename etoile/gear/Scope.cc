@@ -424,7 +424,7 @@ namespace etoile
               {
                 std::cout << alignment << elle::io::Dumpable::Shift
                           << elle::io::Dumpable::Shift
-                          << "[Scope] " << elle::none << std::endl;
+                          << "[Scope] " << "none" << std::endl;
               }
             else
               {
@@ -454,7 +454,7 @@ namespace etoile
               {
                 std::cout << alignment << elle::io::Dumpable::Shift
                           << elle::io::Dumpable::Shift
-                          << "[Scope] " << elle::none << std::endl;
+                          << "[Scope] " << "none" << std::endl;
               }
             else
               {
@@ -1334,7 +1334,7 @@ namespace etoile
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Context] " << elle::none << std::endl;
+                    << "[Context] " << "none" << std::endl;
         }
 
       // dump the chronicle, if present.
@@ -1346,7 +1346,7 @@ namespace etoile
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Chronicle] " << elle::none << std::endl;
+                    << "[Chronicle] " << "none" << std::endl;
         }
 
       std::cout << alignment << elle::io::Dumpable::Shift

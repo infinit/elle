@@ -224,7 +224,7 @@ namespace nucleus
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << elle::io::Dumpable::Shift << "[Fellow] "
-                    << elle::none << std::endl;
+                    << "none" << std::endl;
         }
 
       if (this->_signature != nullptr)

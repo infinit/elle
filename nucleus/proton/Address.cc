@@ -213,7 +213,7 @@ namespace nucleus
         {
         case Address::Type::null:
           {
-            std::cout << alignment << "[Address] " << elle::none << std::endl;
+            std::cout << alignment << "[Address] " << "none" << std::endl;
 
             break;
           }

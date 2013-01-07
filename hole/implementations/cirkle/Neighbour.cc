@@ -269,7 +269,7 @@ namespace hole
         else
           {
             std::cout << alignment << elle::Dumpable::Shift
-                      << "[Gate] " << elle::none << std::endl;
+                      << "[Gate] " << "none" << std::endl;
           }
 
         return elle::Status::Ok;

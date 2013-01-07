@@ -54,7 +54,7 @@ namespace etoile
         {
           // dump none.
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Group] " << elle::none << std::endl;
+                    << "[Group] " << "none" << std::endl;
         }
 
       // dump the ensemble, if present.
@@ -68,7 +68,7 @@ namespace etoile
         {
           // dump none.
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Ensemble] " << elle::none << std::endl;
+                    << "[Ensemble] " << "none" << std::endl;
         }
 
       // dump the rights.

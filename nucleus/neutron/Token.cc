@@ -114,7 +114,7 @@ namespace nucleus
         {
         case Type::null:
           {
-            std::cout << alignment << "[Token] " << elle::none << std::endl;
+            std::cout << alignment << "[Token] " << "none" << std::endl;
 
             break;
           }

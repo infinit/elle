@@ -152,7 +152,7 @@ namespace nucleus
         {
         case Type::null:
           {
-            std::cout << alignment << "[Trait] " << elle::none << std::endl;
+            std::cout << alignment << "[Trait] " << "none" << std::endl;
 
             break;
           }

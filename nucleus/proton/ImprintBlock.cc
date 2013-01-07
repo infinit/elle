@@ -139,7 +139,7 @@ namespace nucleus
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << elle::io::Dumpable::Shift
-                    << "[Subject] " << elle::none << std::endl;
+                    << "[Subject] " << "none" << std::endl;
         }
 
       return elle::Status::Ok;

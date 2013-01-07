@@ -192,7 +192,7 @@ namespace nucleus
         {
         case Type::null:
           {
-            std::cout << alignment << "[Record] " << elle::none << std::endl;
+            std::cout << alignment << "[Record] " << "none" << std::endl;
 
             break;
           }
@@ -217,7 +217,7 @@ namespace nucleus
               }
             else
               std::cout << alignment << elle::io::Dumpable::Shift
-                        << "[Token] " << elle::none << std::endl;
+                        << "[Token] " << "none" << std::endl;
 
             break;
           }

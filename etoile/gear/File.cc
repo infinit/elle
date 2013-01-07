@@ -64,7 +64,7 @@ namespace etoile
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Porcupine] " << elle::none << std::endl;
+                    << "[Porcupine] " << "none" << std::endl;
         }
 
       return elle::Status::Ok;
