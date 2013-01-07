@@ -1,5 +1,6 @@
 #include <cryptography/oneway.hh>
 #include <cryptography/cryptography.hh>
+#include <cryptography/finally.hh>
 
 #include <elle/log.hh>
 
@@ -12,18 +13,9 @@ ELLE_LOG_COMPONENT("infinit.cryptograhy.oneway");
 | Macro-functions |
 `----------------*/
 
-#define INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(_name_)                    \
+#define INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(_name_)                    \
   case infinit::cryptography::oneway::Algorithm::_name_:                \
     return (::EVP_ ## _name_());
-
-#define INFINIT_CRYPTOGRAPHY_ONEWAY_RETURN(_message_)                   \
-  do                                                                    \
-    {                                                                   \
-      ::EVP_MD_CTX_cleanup(&context);                                   \
-      throw elle::Exception(_message_ " %s",                            \
-                            ::ERR_error_string(ERR_get_error(),         \
-                                               nullptr));               \
-    } while (0)
 
 namespace infinit
 {
@@ -42,13 +34,13 @@ namespace infinit
       {
         switch (name)
           {
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(md5);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha1);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha224);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha256);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha384);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_FUNCTION(sha512);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(md5);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha1);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha224);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha256);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha384);
+            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha512);
           default:
             throw elle::Exception("unable to resolve the given one-way "
                                   "function name");
@@ -72,19 +64,19 @@ namespace infinit
         ELLE_TRACE_FUNCTION(plain, algorithm);
 
         ::EVP_MD const* function = resolve(algorithm);
-
         Digest digest(EVP_MD_size(function));
-        ::EVP_MD_CTX context;
-        unsigned int size;
 
         // Initialise the context.
+        ::EVP_MD_CTX context;
+
         ::EVP_MD_CTX_init(&context);
 
-        // XXX[plutot que d'utiliser la macro _RETURN(), utiliser FINALLY]
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
         // Initialise the digest.
         if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
-          INFINIT_CRYPTOGRAPHY_ONEWAY_RETURN("unable to initialize the context");
+          throw elle::Exception("%s",
+                                ::ERR_error_string(ERR_get_error(), nullptr));
 
         ELLE_ASSERT(plain.buffer().contents() != nullptr);
 
@@ -92,13 +84,17 @@ namespace infinit
         if (::EVP_DigestUpdate(&context,
                                plain.buffer().contents(),
                                plain.buffer().size()) <= 0)
-          INFINIT_CRYPTOGRAPHY_ONEWAY_RETURN("unable to update the context");
+          throw elle::Exception("%s",
+                                ::ERR_error_string(ERR_get_error(), nullptr));
 
         // Finalise the digest.
+        unsigned int size;
+
         if (::EVP_DigestFinal_ex(&context,
                                  digest.buffer().mutable_contents(),
                                  &size) <=0)
-          INFINIT_CRYPTOGRAPHY_ONEWAY_RETURN("unable to finalize the context");
+          throw elle::Exception("%s",
+                                ::ERR_error_string(ERR_get_error(), nullptr));
 
         // Update the digest final size.
         digest.buffer().size(size);
@@ -107,6 +103,8 @@ namespace infinit
         if (::EVP_MD_CTX_cleanup(&context) <= 0)
           throw elle::Exception("unable to clean the context: %s",
                                 ::ERR_error_string(ERR_get_error(), nullptr));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         return (digest);
       }

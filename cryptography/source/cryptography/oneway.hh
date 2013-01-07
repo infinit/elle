@@ -40,6 +40,12 @@ namespace infinit
       hash(T const& value,
            Algorithm algorithm);
     }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    // XXX operator << for Algorithm
   }
 }
 
