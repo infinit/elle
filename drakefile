@@ -196,7 +196,6 @@ def configure(cxx_toolkit, cxx_config):
     'standalone/fwd.hh',
     'system/platform.hh',
     'system/system.hh',
-    'types.cc',
     'types.hh',
     'utility/Duration.cc',
     'utility/Duration.hh',

@@ -43,8 +43,6 @@ add_library(elle ${LINK_METHOD}
   io/Piece.cc
   io/Path.cc
 
-  types.cc
-
   concurrency/Program.cc
   concurrency/Scheduler.cc
 

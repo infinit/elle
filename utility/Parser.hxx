@@ -49,7 +49,6 @@ namespace elle
     /// these macro-function calls actually generate the specialized-templates
     /// for every basic type of the elle library.
     ///
-    ParserDeclare(Null);
     ParserDeclare(Boolean);
     ParserDeclare(Character);
     ParserDeclare(Real);
