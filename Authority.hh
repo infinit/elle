@@ -3,7 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
-
+# include <elle/io/Dumpable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 
@@ -27,7 +27,8 @@ namespace elle
   /// verify signatures.
   ///
   class Authority:
-    public elle::concept::MakeFileable<Authority>
+    public elle::concept::MakeFileable<Authority>,
+    public elle::io::Dumpable
   {
     /*-------------.
     | Enumerations |

@@ -268,7 +268,7 @@ namespace elle
       {
         // Otherwise chop it and display the begining and the end only.
         stream << hexadecimal.substr(0, length / 2)
-               << "..." << buffer.size() << " bytes" << "..."
+               << "..." << std::dec << buffer.size() << " bytes" << "..."
                << hexadecimal.substr(hexadecimal.length() - (length / 2));
       }
 
@@ -402,7 +402,7 @@ namespace elle
       {
         // Otherwise chop it and display the begining and the end only.
         stream << hexadecimal.substr(0, length / 2)
-               << "..." << buffer.size() << " bytes" << "..."
+               << "..." << std::dec << buffer.size() << " bytes" << "..."
                << hexadecimal.substr(hexadecimal.length() - (length / 2));
       }
 

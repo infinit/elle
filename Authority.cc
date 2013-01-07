@@ -121,23 +121,21 @@ namespace elle
     std::cout << alignment << elle::io::Dumpable::Shift
               << "[Type] " << this->type << std::endl;
 
-    // dump the public key.
-    if (this->_K.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the public key");
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[K] " << this->_K << std::endl;
 
     // if present...
     if (this->k != nullptr)
       {
-        // ...dump the private key.
-        if (this->k->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the private key");
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[k] " << *this->k << std::endl;
       }
 
     // dump the cipher.
     if (this->cipher != nullptr)
       {
-        if (this->cipher->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the cipher");
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Cipher] " << *this->cipher << std::endl;
       }
 
     return elle::Status::Ok;
