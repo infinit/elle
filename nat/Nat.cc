@@ -24,23 +24,24 @@ namespace elle
 
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
-             std::string const &port)
-      : _handle{new rnet::UDPSocket{sched, hostname, port}}
-      , _public_endpoint{"", 0}
+             std::string const &port):
+    _handle{new rnet::UDPSocket{sched, hostname, port}},
+    _public_endpoint{"", 0}
   {
   }
 
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
-             int port)
-      : _handle{new rnet::UDPSocket{sched, hostname, port}}
-      , _public_endpoint{"", 0}
+             int port):
+    _handle{new rnet::UDPSocket{sched, hostname, port}},
+    _public_endpoint{"", 0}
   {
   }
 
   Hole::Hole(Hole&& other):
     _handle{std::move(other._handle)}
-  {}
+  {
+  }
 
   Hole::~Hole()
   {
@@ -100,11 +101,13 @@ namespace elle
 
   KeepAlive::KeepAlive(reactor::Scheduler& sched,
                        u_ptr<rnet::UDPSocket>&& s):
-      sched(sched) , handle(std::move(s))
-  {}
+    sched(sched) , handle(std::move(s))
+  {
+  }
 
   KeepAlive::~KeepAlive()
-  {}
+  {
+  }
 
   void
   KeepAlive::run(void)
@@ -113,13 +116,13 @@ namespace elle
 
     buf.resize(128);
     while (this->running == true)
-    {
+      {
         reactor::Sleep s(this->sched, boost::posix_time::seconds(60));
 
         handle->write(rnet::Buffer(std::string("ping\n")));
         handle->read_some(rnet::Buffer(buf));
         s.run();
-    }
+      }
   }
 
   void
@@ -133,9 +136,10 @@ namespace elle
   // class NAT {{{
 
   NAT::NAT(reactor::Scheduler &s):
-      sched(s),
-      alive()
-  {}
+    sched(s),
+    alive()
+  {
+  }
 
   NAT::~NAT()
   {
