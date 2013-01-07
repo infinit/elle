@@ -11,9 +11,9 @@
 # include <cryptography/cryptography.hh>
 # include <cryptography/finally.hh>
 
-ELLE_SERIALIZE_SPLIT(elle::Large)
+ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
-ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,
+ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
                           archive,
                           value,
                           format)
@@ -44,7 +44,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,
 
 // Note that the big number (i.e _value_) must have been initialized either
 // through BN_new() or BN_init().
-ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
+ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
                           archive,
                           value,
                           format)

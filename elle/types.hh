@@ -6,8 +6,6 @@
 # include <string>
 # include <typeinfo>
 
-# include <openssl/bn.h> // XXX[to remove]
-
 // XXX demangle + types check for the following macros
 
 /// Returns a nice string for the given type
@@ -31,8 +29,6 @@ namespace elle
     typedef uint16_t                      Natural16;
     typedef uint32_t                      Natural32;
     typedef uint64_t                      Natural64;
-
-  typedef ::BIGNUM                      Large; // XXX[to remove]
 
     typedef void                          Void;
     typedef bool                          Bool;
