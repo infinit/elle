@@ -1,3 +1,4 @@
+/* XXX
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/PublicKey.hh>
 #include <cryptography/random.hh>
@@ -46,7 +47,7 @@ namespace infinit
       // XXX[change the attribute to a buffer]
       elle::Buffer buffer(random::generate<elle::Buffer>(size));
       if (this->region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
-        escape("XXX");
+        throw elle::Exception("XXX");
 
       return elle::Status::Ok;
     }
@@ -60,22 +61,20 @@ namespace infinit
     elle::Status              Seed::Rotate(const PrivateKey&          k,
                                      Seed&                      seed) const
     {
-      /* XXX
       Code              code;
 
       // encrypt the seed object with the given private key.
       if (k.Encrypt(*this, code) == elle::Status::Error)
-        escape("unable to 'encrypt' the seed");
+        throw elle::Exception("unable to 'encrypt' the seed");
 
       // detach the memory from the code.
       if (code.region.Detach() == elle::Status::Error)
-        escape("unable to detach the memory");
+        throw elle::Exception("unable to detach the memory");
 
       // assign the code's region to the output seed.
       if (seed.region.Acquire(code.region.contents,
                               code.region.size) == elle::Status::Error)
-        escape("unable to acquire the region");
-      */
+        throw elle::Exception("unable to acquire the region");
 
       return elle::Status::Ok;
     }
@@ -86,23 +85,22 @@ namespace infinit
     elle::Status              Seed::Derive(const PublicKey&           K,
                                      Seed&                      seed) const
     {
-      /* XXX
       Code              code;
       elle::standalone::Region chunk;
 
       // wrap the seed's region.
       if (chunk.Wrap(this->region.contents,
                      this->region.size) == elle::Status::Error)
-        escape("unable to wrap the region");
+        throw elle::Exception("unable to wrap the region");
 
       // create a code based on the chunk.
       if (code.Create(chunk) == elle::Status::Error)
-        escape("unable to create the code");
+        throw elle::Exception("unable to create the code");
 
       // decrypt the code with the given public key.
       if (K.Decrypt(code, seed) == elle::Status::Error)
-        escape("unable to 'decrypt' the seed");
-      */
+        throw elle::Exception("unable to 'decrypt' the seed");
+
       return elle::Status::Ok;
     }
 
@@ -113,7 +111,7 @@ namespace infinit
     ///
     /// this method check if two objects match.
     ///
-    elle::Boolean             Seed::operator==(const Seed&            element) const
+    elle::Boolean             Seed::operator ==(const Seed&            element) const
     {
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -142,10 +140,11 @@ namespace infinit
 
       // dump the region.
       if (this->region.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the region");
+        throw elle::Exception("unable to dump the region");
 
       return elle::Status::Ok;
     }
 
   }
 }
+*/

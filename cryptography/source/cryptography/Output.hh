@@ -6,8 +6,7 @@
 # include <elle/operator.hh>
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
-
-# include <elle/io/Dumpable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <cryptography/fwd.hh>
 
@@ -19,7 +18,6 @@ namespace infinit
     /// can retrieve the buffer embedded in this class so as to use it
     /// outside of the cryptography library.
     class Output:
-      public elle::io::Dumpable,
       public elle::Printable
     {
       /*-------------.
@@ -33,6 +31,7 @@ namespace infinit
       Output(elle::Natural64 const size);
       Output(Output const& other);
       Output(Output&& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
 
       /*----------.
       | Operators |
@@ -47,7 +46,7 @@ namespace infinit
       ELLE_OPERATOR_NEQ(Output);
       ELLE_OPERATOR_GT(Output);
       ELLE_OPERATOR_GTE(Output);
-      ELLE_OPERATOR_ASSIGNMENT(Output); // XXX
+      ELLE_OPERATOR_NO_ASSIGNMENT(Output);
 
       elle::Boolean
       operator ==(Input const& other) const;
@@ -63,9 +62,6 @@ namespace infinit
       | Interfaces |
       `-----------*/
     public:
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 = 0) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
       // printable

@@ -80,9 +80,13 @@ namespace infinit
         // Initialise the context.
         ::EVP_MD_CTX_init(&context);
 
+        // XXX[plutot que d'utiliser la macro _RETURN(), utiliser FINALLY]
+
         // Initialise the digest.
         if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
           INFINIT_CRYPTOGRAPHY_ONEWAY_RETURN("unable to initialize the context");
+
+        ELLE_ASSERT(plain.buffer().contents() != nullptr);
 
         // Update the digest with the given plain's data.
         if (::EVP_DigestUpdate(&context,

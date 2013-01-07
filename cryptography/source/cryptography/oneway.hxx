@@ -16,16 +16,20 @@ namespace infinit
   {
     namespace oneway
     {
+      /*----------.
+      | Functions |
+      `----------*/
+
       template <typename T>
       Digest
       hash(T const& value,
            Algorithm algorithm)
       {
-        ELLE_LOG_COMPONENT("cryptography.oneway");
-        ELLE_TRACE_FUNCTION(value);
+        ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
+        ELLE_DEBUG_FUNCTION(value);
 
         static_assert(!std::is_same<T, Plain>::value,
-                      "please use the Plain type for hashin");
+                      "this call should never have occured");
 
         elle::Buffer buffer;
         buffer.writer() << value;

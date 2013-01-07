@@ -3,13 +3,13 @@
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>
-#include <cryptography/SecretKey.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
 
 #include <elle/Exception.hh>
+#include <elle/log.hh>
 
 #include <comet/Comet.hh>
 
@@ -18,7 +18,7 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-#include <elle/idiom/Open.hh> // XXX
+ELLE_LOG_COMPONENT("infinit.cryptography.PrivateKey");
 
 namespace infinit
 {
@@ -28,8 +28,8 @@ namespace infinit
     | Constants |
     `----------*/
 
-    oneway::Algorithm const PrivateKey::Constants::oneway_algorithm(
-      oneway::Algorithm::sha256);
+    oneway::Algorithm const PrivateKey::Constants::oneway_algorithm =
+      oneway::Algorithm::sha256;
 
     /*-------------.
     | Construction |
@@ -37,7 +37,9 @@ namespace infinit
 
     PrivateKey::PrivateKey():
       _key(nullptr),
-      _contexts{nullptr, nullptr, nullptr}
+      _context_decrypt(nullptr),
+      _context_sign(nullptr),
+      _context_encrypt(nullptr)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -57,6 +59,39 @@ namespace infinit
       cryptography::require();
     }
 
+    PrivateKey::PrivateKey(PrivateKey const& other):
+      PrivateKey(other._key)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
+    {
+      this->_key = nullptr;
+      this->_context_decrypt = nullptr;
+      this->_context_sign = nullptr;
+      this->_context_encrypt = nullptr;
+
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    PrivateKey::~PrivateKey()
+    {
+      if (this->_key != nullptr)
+        ::EVP_PKEY_free(this->_key);
+
+      if (this->_context_decrypt != nullptr)
+        ::EVP_PKEY_CTX_free(this->_context_decrypt);
+
+      if (this->_context_sign != nullptr)
+        ::EVP_PKEY_CTX_free(this->_context_sign);
+
+      if (this->_context_encrypt != nullptr)
+        ::EVP_PKEY_CTX_free(this->_context_encrypt);
+    }
+
     PrivateKey::PrivateKey(::BIGNUM* n,
                            ::BIGNUM* e,
                            ::BIGNUM* d,
@@ -66,7 +101,9 @@ namespace infinit
                            ::BIGNUM* dmq1,
                            ::BIGNUM* iqmp):
       _key(nullptr),
-      _contexts{nullptr, nullptr, nullptr}
+      _context_decrypt(nullptr),
+      _context_sign(nullptr),
+      _context_encrypt(nullptr)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -79,31 +116,224 @@ namespace infinit
       ELLE_ASSERT(this->_key != nullptr);
     }
 
-    PrivateKey::PrivateKey(PrivateKey const& other):
-      PrivateKey(other._key)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-
-    PrivateKey::~PrivateKey()
-    {
-      if (this->_key != nullptr)
-        ::EVP_PKEY_free(this->_key);
-
-      if (this->_contexts.decrypt != nullptr)
-        ::EVP_PKEY_CTX_free(this->_contexts.decrypt);
-
-      if (this->_contexts.sign != nullptr)
-        ::EVP_PKEY_CTX_free(this->_contexts.sign);
-
-      if (this->_contexts.encrypt != nullptr)
-        ::EVP_PKEY_CTX_free(this->_contexts.encrypt);
-    }
-
     /*--------.
     | Methods |
     `--------*/
+
+    Clear
+    PrivateKey::decrypt(Code const& code) const
+    {
+      ELLE_TRACE_METHOD(code);
+
+      // 1) Extract the key and ciphered data from the code which
+      //    is supposed to be an archive.
+      Code key;
+      Cipher data;
+
+      code.buffer().reader() >> key >> data;
+
+      // 2) Decrypt the key so as to reveal the symmetric secret key.
+
+      // Compute the size of the decrypted portion to come.
+      ::size_t size;
+
+      ELLE_ASSERT(this->_context_decrypt != nullptr);
+      ELLE_ASSERT(key.buffer().contents() != nullptr);
+
+      if (::EVP_PKEY_decrypt(
+            this->_context_decrypt,
+            nullptr,
+            &size,
+            key.buffer().contents(),
+            key.buffer().size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Prepare the buffer for receiving the decrypted key's archive.
+      elle::Buffer buffer(size);
+
+      // Perform the decrypt operation.
+      if (::EVP_PKEY_decrypt(
+            this->_context_decrypt,
+            buffer.mutable_contents(),
+            &size,
+            key.buffer().contents(),
+            key.buffer().size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Set the final buffer size.
+      buffer.size(size);
+
+      // Finally extract the secret key since decrypted.
+      SecretKey secret;
+
+      buffer.reader() >> secret;
+
+      // 3) Decrypt the data with the secret key.
+      Clear clear = secret.decrypt(data);
+
+      return (clear);
+    }
+
+    Signature
+    PrivateKey::sign(Plain const& plain) const
+    {
+      ELLE_TRACE_METHOD(plain);
+
+      // Compute the plain's digest.
+      Digest digest{oneway::hash(plain,
+                                 PrivateKey::Constants::oneway_algorithm)};
+
+      // Retrieve information on the size of the output signature.
+      ::size_t size;
+
+      ELLE_ASSERT(this->_context_sign != nullptr);
+      ELLE_ASSERT(digest.buffer().contents() != nullptr);
+
+      if (::EVP_PKEY_sign(
+            this->_context_sign,
+            nullptr,
+            &size,
+            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
+            digest.buffer().size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Prepare the signature.
+      Signature signature{size};
+
+      // Perform the signing process.
+      if (::EVP_PKEY_sign(
+            this->_context_sign,
+            reinterpret_cast<unsigned char*>(
+              signature.buffer().mutable_contents()),
+            &size,
+            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
+            digest.buffer().size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Set the final signature size.
+      signature.buffer().size(size);
+
+      return (signature);
+    }
+
+    // Since the private key size limits the size of the data that can be
+    // encrypted and raising large data to large exponent is very slow;
+    // the algorithm below consists in (1) generating a secret key (2)
+    // ciphering the plain text with this key (3) encrypting the secret
+    // key with the private key and finally (4) returning an archive
+    // containing the asymetrically-encrypted secret key with the
+    // symmetrically-encrypted data.
+    Code
+    PrivateKey::encrypt(Plain const& plain) const
+    {
+      ELLE_TRACE_METHOD(plain);
+
+      // 1) Generate a secret key.
+      SecretKey secret = SecretKey::generate(256); // XXX[provide a length: not hard-coded]
+
+      // 2) Cipher the plain text with the secret key.
+      Cipher data = secret.encrypt(plain);
+
+      // 3) Serialize the secret and encrypt it with the private key.
+
+      // Serialize the secret key.
+      elle::Buffer buffer;
+
+      buffer.writer() << secret;
+
+      // Compute the size of the archived symmetric key.
+      ::size_t size;
+
+      ELLE_ASSERT(this->_context_encrypt != nullptr);
+      ELLE_ASSERT(buffer.contents() != nullptr);
+
+      if (::EVP_PKEY_sign(
+            this->_context_encrypt,
+            nullptr,
+            &size,
+            buffer.contents(),
+            buffer.size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Prepare the code for receiving the asymetrically encrypted symmetric
+      // key.
+      Code key{size};
+
+      // Encrypt the secret key's archive, storing the encrypted portion.
+      if (::EVP_PKEY_sign(
+            this->_context_encrypt,
+            key.buffer().mutable_contents(),
+            &size,
+            buffer.contents(),
+            buffer.size()) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Set the final size.
+      key.buffer().size(size);
+
+      // 4) Finally, serialize both the encrypted symmetric key and the
+      //    encrypted content.
+      Code code;
+
+      code.buffer().writer() << key << data;
+
+      return (code);
+    }
+
+    /* XXX
+    ///
+    /// this method derives a public key according to (i) its complementary
+    /// private key and (ii) the seed used for rotating this key pair.
+    ///
+    elle::Status              PrivateKey::Derive(const Seed&          seed,
+                                           PublicKey&           K) const
+    {
+      ELLE_TRACE_METHOD(seed, K);
+
+      struct Scope
+      {
+        ::EVP_PKEY*       key;
+        ::RSA*            rsa;
+
+        Scope() : key(nullptr), rsa(nullptr) {}
+        ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
+      } scope;
+
+      // create an EVP key.
+      if ((scope.key = ::EVP_PKEY_new()) == nullptr)
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // create a new RSA key.
+      if ((scope.rsa = ::RSA_new()) == nullptr)
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // derive the RSA key.
+      if (comet::RSA_derive(scope.rsa,
+                            this->_key->pkey.rsa->n,
+                            seed.region.contents,
+                            seed.region.size) <= 0)
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // assign the RSA key to the EVP's.
+      if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // stop tracking.
+      scope.rsa = nullptr;
+
+      // create the rotated public key according to the EVP structure.
+      if (K.Create(scope.key) == elle::Status::Error)
+        throw elle::Exception("unable to create the public key");
+
+      return elle::Status::Ok;
+    }
+    */
 
     void
     PrivateKey::_construct(::BIGNUM* n,
@@ -115,16 +345,18 @@ namespace infinit
                            ::BIGNUM* dmq1,
                            ::BIGNUM* iqmp)
     {
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
+      ELLE_TRACE_FUNCTION(n, e, d, p, q, dmp1, dmq1, iqmp);
 
-      // First, create the RSA key based on the given big numbers.
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
+
+      // 1) Create the RSA key based on the given big numbers.
 
       // Initialise the private key structure.
       if ((this->_key = ::EVP_PKEY_new()) == nullptr)
@@ -138,7 +370,7 @@ namespace infinit
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
       // Assign the big numbers relevant to the private key.
       rsa->n = n;
@@ -150,35 +382,35 @@ namespace infinit
       rsa->dmq1 = dmq1;
       rsa->iqmp = iqmp;
 
-      CRYPTOGRAPHY_FINALLY_ABORT(n);
-      CRYPTOGRAPHY_FINALLY_ABORT(e);
-      CRYPTOGRAPHY_FINALLY_ABORT(d);
-      CRYPTOGRAPHY_FINALLY_ABORT(p);
-      CRYPTOGRAPHY_FINALLY_ABORT(q);
-      CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
-      CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
-      CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(d);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(p);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(q);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
 
       // Set the rsa structure into the private key.
       if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-      // Second, initialize the contexts associated with the private key.
+      // 2) Initialize the contexts associated with the private key.
 
       // Prepare the decrypt context.
-      if ((this->_contexts.decrypt =
+      if ((this->_context_decrypt =
            ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_decrypt_init(this->_contexts.decrypt) <= 0)
+      if (::EVP_PKEY_decrypt_init(this->_context_decrypt) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_CTX_ctrl(this->_contexts.decrypt,
+      if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt,
                               EVP_PKEY_RSA,
                               -1,
                               EVP_PKEY_CTRL_RSA_PADDING,
@@ -188,16 +420,16 @@ namespace infinit
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Prepare the sign context.
-      if ((this->_contexts.sign =
+      if ((this->_context_sign =
            ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_sign_init(this->_contexts.sign) <= 0)
+      if (::EVP_PKEY_sign_init(this->_context_sign) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_CTX_ctrl(this->_contexts.sign,
+      if (::EVP_PKEY_CTX_ctrl(this->_context_sign,
                               EVP_PKEY_RSA,
                               -1,
                               EVP_PKEY_CTRL_RSA_PADDING,
@@ -207,16 +439,16 @@ namespace infinit
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Prepare the encrypt context.
-      if ((this->_contexts.encrypt =
+      if ((this->_context_encrypt =
            ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_sign_init(this->_contexts.encrypt) <= 0)
+      if (::EVP_PKEY_sign_init(this->_context_encrypt) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      if (::EVP_PKEY_CTX_ctrl(this->_contexts.encrypt,
+      if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt,
                               EVP_PKEY_RSA,
                               -1,
                               EVP_PKEY_CTRL_RSA_PADDING,
@@ -224,198 +456,6 @@ namespace infinit
                               nullptr) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
-    }
-
-    Clear
-    PrivateKey::decrypt(Code const& code) const
-    {
-      // 1) Extract the key and ciphered data from the code which
-      //    is supposed to be an archive.
-      Code key;
-      Cipher data;
-
-      code.buffer().reader() >> key >> data;
-
-      // 2) decrypt the key so as to reveal the symmetric secret key.
-      size_t size;
-
-      // Compute the size of the decrypted portion to come.
-      if (::EVP_PKEY_decrypt(
-            this->_contexts.decrypt,
-            nullptr,
-            &size,
-            key.buffer().contents(),
-            key.buffer().size()) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      elle::Buffer buffer(size);
-
-      // Perform the decrypt operation.
-      if (::EVP_PKEY_decrypt(
-            this->_contexts.decrypt,
-            buffer.mutable_contents(),
-            &size,
-            key.buffer().contents(),
-            key.buffer().size()) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Set the final buffer size.
-      buffer.size(size);
-
-      // Finally extract the secret key since decrypted.
-      SecretKey secret;
-      buffer.reader() >> secret;
-
-      // 3) Decrypt the data with the secret key.
-      Clear clear{secret.decrypt(data)};
-
-      return (clear);
-    }
-
-    Signature
-    PrivateKey::sign(elle::WeakBuffer const& buffer) const
-    {
-      Signature signature;
-      ::size_t size;
-
-      // XXX[remove Plain(buffer) in favor of plain which should be the argument]
-      // Compute the plain's digest.
-      Digest digest(oneway::hash(buffer,
-                                 PrivateKey::Constants::oneway_algorithm));
-
-      // Retrieve information on the size of the output signature.
-      if (::EVP_PKEY_sign(
-            this->_contexts.sign,
-            nullptr,
-            &size,
-            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
-            digest.buffer().size()) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Prepare the signature so it can receive the upcoming portion.
-      if (signature.region.Prepare(size) == elle::Status::Error)
-        throw elle::Exception("unable to prepare the signature");
-
-      // actually sign the portion.
-      if (::EVP_PKEY_sign(
-            this->_contexts.sign,
-            reinterpret_cast<unsigned char*>(signature.region.contents),
-            &size,
-            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
-            digest.buffer().size()) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // set the code size.
-      signature.region.size = size;
-
-      return (signature);
-    }
-
-    elle::Status PrivateKey::Encrypt(elle::WeakBuffer const& in,
-                               Code&                            out) const
-    {
-      Code key; // XXX[allocate later]
-
-      // (i) Generate a temporary secret key.
-      SecretKey secret{SecretKey::generate(512)}; // XXX[should not be static like that
-
-      // (ii) Cipher the plain text with the temporary secret key.
-      Cipher data{secret.encrypt(Plain{in})}; // XXX[remove plain]
-
-      // (iii)
-      {
-        size_t size;
-        elle::Buffer buffer;
-
-        // XXX
-        buffer.writer() << secret;
-
-        // compute the size of the archived symmetric key.
-        if (::EVP_PKEY_sign(
-              this->_contexts.encrypt,
-              nullptr,
-              &size,
-              buffer.contents(),
-              buffer.size()) <= 0)
-          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // allocate memory so the key can receive the upcoming
-        // encrypted portion.
-        key.buffer().size(size);
-
-        // actually encrypt the secret key's archive, storing the encrypted
-        // portion directly into the key object, without any re-copy.
-        //
-        // note that since the encryption is performed with the private key,
-        // the operation is equivalent to a signature.
-        if (::EVP_PKEY_sign(
-              this->_contexts.encrypt,
-              key.buffer().mutable_contents(),
-              &size,
-              buffer.contents(),
-              buffer.size()) <= 0)
-          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // set the key size.
-        key.buffer().size(size);
-      }
-
-      // (iv)
-      {
-        // XXX
-        out.buffer().writer() << key << data;
-      }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method derives a public key according to (i) its complementary
-    /// private key and (ii) the seed used for rotating this key pair.
-    ///
-    elle::Status              PrivateKey::Derive(const Seed&          seed,
-                                           PublicKey&           K) const
-    {
-      struct Scope
-      {
-        ::EVP_PKEY*       key;
-        ::RSA*            rsa;
-
-        Scope() : key(nullptr), rsa(nullptr) {}
-        ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
-      } scope;
-
-      // create an EVP key.
-      if ((scope.key = ::EVP_PKEY_new()) == nullptr)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // create a new RSA key.
-      if ((scope.rsa = ::RSA_new()) == nullptr)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // derive the RSA key.
-      if (comet::RSA_derive(scope.rsa,
-                            this->_key->pkey.rsa->n,
-                            seed.region.contents,
-                            seed.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // assign the RSA key to the EVP's.
-      if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // stop tracking.
-      scope.rsa = nullptr;
-
-      // create the rotated public key according to the EVP structure.
-      if (K.Create(scope.key) == elle::Status::Error)
-        escape("unable to create the public key");
-
-      return elle::Status::Ok;
     }
 
     /*----------.
@@ -442,33 +482,81 @@ namespace infinit
                         other._key->pkey.rsa->q) == 0));
     }
 
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status
-    PrivateKey::Dump(const elle::Natural32        margin) const
+    elle::Boolean
+    PrivateKey::operator <(PrivateKey const& other) const
     {
-      elle::String            alignment(margin, ' ');
-
-      std::cout << alignment << "[PrivateKey]" << std::endl;
+      if (this == &other)
+        return (true);
 
       ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(other._key != nullptr);
 
-      // dump the internal numbers.
-      std::cout << alignment << elle::io::Dumpable::Shift << "[n] "
-                << *this->_key->pkey.rsa->n << std::endl;
+      // Compare the internal numbers.
+      int cmp_n = ::BN_cmp(this->_key->pkey.rsa->n,
+                           other._key->pkey.rsa->n);
 
-      std::cout << alignment << elle::io::Dumpable::Shift << "[d] "
-                << *this->_key->pkey.rsa->d << std::endl;
+      if (cmp_n < 0)
+        return (true);
+      else if (cmp_n > 0)
+        return (false);
 
-      std::cout << alignment << elle::io::Dumpable::Shift << "[p] "
-                << *this->_key->pkey.rsa->p << std::endl;
+      int cmp_e = ::BN_cmp(this->_key->pkey.rsa->e,
+                           other._key->pkey.rsa->e);
 
-      std::cout << alignment << elle::io::Dumpable::Shift << "[q] "
-                << *this->_key->pkey.rsa->q << std::endl;
+      if (cmp_e < 0)
+        return (true);
+      else
+        return (false);
 
-      return elle::Status::Ok;
+      int cmp_d = ::BN_cmp(this->_key->pkey.rsa->d,
+                           other._key->pkey.rsa->d);
+
+      if (cmp_d < 0)
+        return (true);
+      else
+        return (false);
+
+      int cmp_p = ::BN_cmp(this->_key->pkey.rsa->p,
+                           other._key->pkey.rsa->p);
+
+      if (cmp_p < 0)
+        return (true);
+      else
+        return (false);
+
+      int cmp_q = ::BN_cmp(this->_key->pkey.rsa->q,
+                           other._key->pkey.rsa->q);
+
+      if (cmp_q < 0)
+        return (true);
+      else
+        return (false);
+
+      int cmp_dmp1 = ::BN_cmp(this->_key->pkey.rsa->dmp1,
+                              other._key->pkey.rsa->dmp1);
+
+      if (cmp_dmp1 < 0)
+        return (true);
+      else
+        return (false);
+
+      int cmp_dmq1 = ::BN_cmp(this->_key->pkey.rsa->dmq1,
+                              other._key->pkey.rsa->dmq1);
+
+      if (cmp_dmq1 < 0)
+        return (true);
+      else
+        return (false);
+
+      int cmp_iqmp = ::BN_cmp(this->_key->pkey.rsa->iqmp,
+                              other._key->pkey.rsa->iqmp);
+
+      if (cmp_iqmp < 0)
+        return (true);
+      else
+        return (false);
+
+      elle::unreachable();
     }
 
     /*----------.
@@ -478,11 +566,15 @@ namespace infinit
     void
     PrivateKey::print(std::ostream& stream) const
     {
-      stream << "k{"
+      stream << "("
              << *this->_key->pkey.rsa->n
              << ", "
              << *this->_key->pkey.rsa->d
-             << "}";
+             << ", "
+             << *this->_key->pkey.rsa->p
+             << ", "
+             << *this->_key->pkey.rsa->q
+             << ")";
     }
   }
 }

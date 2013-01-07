@@ -7,7 +7,6 @@
 #include <cryptography/finally.hh>
 
 #include <elle/types.hh>
-#include <elle/assert.hh>
 #include <elle/Exception.hh>
 
 #include <comet/Comet.hh>
@@ -68,6 +67,8 @@ namespace infinit
     KeyPair
     KeyPair::generate(elle::Natural32 const length) // XXX[add algorithm argument]
     {
+      ELLE_TRACE_FUNCTION(length);
+
       // Make sure the cryptographic system is set up.
       cryptography::require();
 
@@ -84,12 +85,14 @@ namespace infinit
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+
       ELLE_ASSERT(key != nullptr);
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
-      CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
       KeyPair pair(key);
-      CRYPTOGRAPHY_FINALLY_ABORT(key);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
       return (pair);
     }
@@ -113,6 +116,14 @@ namespace infinit
       cryptography::require();
     }
 
+    KeyPair::KeyPair(::EVP_PKEY const* key):
+      _K(key),
+      _k(key)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
     KeyPair::KeyPair(KeyPair const& pair):
       _K(pair._K),
       _k(pair._k)
@@ -121,14 +132,8 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(::EVP_PKEY const* key):
-      _k(key)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
     {
-      if (this->_K.Create(key) == elle::Status::Error) // XXX
-        throw elle::Exception("XXX");
-
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     /*--------.
@@ -146,6 +151,8 @@ namespace infinit
     elle::Status              KeyPair::Rotate(const Seed&             seed,
                                         KeyPair&                pair) const
     {
+      ELLE_TRACE_METHOD(seed, pair);
+
       struct Scope
       {
         ::EVP_PKEY*  key;
@@ -157,33 +164,33 @@ namespace infinit
 
       // create an EVP key.
       if ((scope.key = ::EVP_PKEY_new()) == nullptr)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // create a new RSA key.
       if ((scope.rsa = ::RSA_new()) == nullptr)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
                             ::BN_num_bits(this->_K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // stop tracking.
       scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
       if (pair._K.Create(scope.key) == elle::Status::Error)
-        escape("unable to create the public key");
+        throw elle::Exception("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
       if (pair.k.Create(scope.key) == elle::Status::Error)
-        escape("unable to create the private key");
+        throw elle::Exception("unable to create the private key");
 
       return elle::Status::Ok;
     }
@@ -202,29 +209,6 @@ namespace infinit
       return ((this->_K == other._K) && (this->_k == other._k));
     }
 
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status
-    KeyPair::Dump(const elle::Natural32           margin) const
-    {
-      elle::String            alignment(margin, ' ');
-
-      std::cout << alignment << "[KeyPair]" << std::endl;
-
-      // dump the public key.
-      if (this->_K.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the public key");
-
-      // dump the private key.
-      if (this->_k.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the public key");
-
-      return elle::Status::Ok;
-    }
-
-
     /*----------.
     | Printable |
     `----------*/
@@ -232,7 +216,7 @@ namespace infinit
     void
     KeyPair::print(std::ostream& stream) const
     {
-      stream << "XXX";
+      stream << "(" << this->_K << ", " << this->_k << ")";
     }
   }
 }
