@@ -27,9 +27,9 @@ namespace infinit
         sha512
       };
 
-      /*---------------.
-      | Static Methods |
-      `---------------*/
+      /*----------.
+      | Functions |
+      `----------*/
       /// Hash a plain text and return a digest.
       Digest
       hash(Plain const& plain,

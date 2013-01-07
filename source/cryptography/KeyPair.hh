@@ -25,8 +25,7 @@ namespace infinit
     /// while a private key is noted with a lower-case 'k'.
     class KeyPair:
       public elle::concept::MakeUniquable<KeyPair>,
-      public elle::Printable,
-      public elle::io::Dumpable
+      public elle::Printable
     {
       /*------------------.
       | Static Attributes |
@@ -62,11 +61,9 @@ namespace infinit
       KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
-      KeyPair(KeyPair const& pair);
-      // XXX
-      ELLE_SERIALIZE_CONSTRUCT(KeyPair) {}
-    private:
       KeyPair(::EVP_PKEY const* key);
+      KeyPair(KeyPair const& pair);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
 
       /*----------.
       | Operators |
@@ -74,14 +71,12 @@ namespace infinit
     public:
       elle::Boolean
       operator ==(KeyPair const& other) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(KeyPair);
 
       /*-----------.
       | Interfaces |
       `-----------*/
     public:
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 = 0) const;
       // printable
       virtual
       void
@@ -93,10 +88,11 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
+      /// The public key.
       ELLE_ATTRIBUTE_R(PublicKey, K);
+      /// The private key.
       ELLE_ATTRIBUTE_R(PrivateKey, k);
     };
-
   }
 }
 

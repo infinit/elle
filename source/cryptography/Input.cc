@@ -62,22 +62,6 @@ namespace infinit
       return (this->_buffer <= elle::WeakBuffer(other.buffer()));
     }
 
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status
-    Input::Dump(elle::Natural32           margin) const
-    {
-      elle::String      alignment(margin, ' ');
-
-      std::cout << alignment << "[Input] " << this << std::endl;
-
-      this->_buffer.dump(margin + 2);
-
-      return elle::Status::Ok;
-    }
-
     /*----------.
     | Printable |
     `----------*/
