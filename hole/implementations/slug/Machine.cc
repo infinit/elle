@@ -132,7 +132,7 @@ namespace hole
           auto& sched = elle::concurrency::scheduler();
           for (elle::network::Locus const& locus: this->hole().members())
             {
-              auto action = std::bind(&Machine::_connect_try, this, locus);
+              auto action = [&, locus] {this->_connect_try(locus);};
               auto thread = new reactor::Thread
                 (sched, elle::sprintf("connect %s", locus), action);
               connections.push_back(thread);
@@ -171,7 +171,7 @@ namespace hole
               ELLE_TRACE("listening on port %s", this->_port);
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
-                                                  boost::bind(&Machine::_accept, this)));
+                                                  [&] {this->_accept();}));
             }
           catch (reactor::Exception& e)
             {
