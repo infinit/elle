@@ -5,25 +5,21 @@
 using namespace infinit;
 
 #include <elle/assert.hh>
-#include <elle/idiom/Open.hh>
 
 #include <iostream>
 
 void test_encrypt()
 {
   std::string const my_secret_text =
-    "This is a very secret text. my gmail password is 'bite'"
-  ;
+    "This is a very secret text. my gmail password is 'bite'";
 
-  cryptography::Code code;
+  cryptography::KeyPair pair = cryptography::KeyPair::generate(1024);
 
-  cryptography::KeyPair pair(cryptography::KeyPair::generate(1024));
-
-  ELLE_ASSERT(pair.K().Encrypt(my_secret_text, code) == elle::Status::Ok);
+  cryptography::Code code = pair.K().encrypt(my_secret_text);
 
   std::cout << "encrypted size: " << code.buffer().size() << "\n";
 
-  std::string res{pair.k().decrypt<std::string>(code)};
+  std::string res = pair.k().decrypt<std::string>(code);
 }
 
 int main()

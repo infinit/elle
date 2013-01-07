@@ -34,6 +34,7 @@
 #include <nucleus/neutron/Range.hh>
 
 #include <elle/log.hh>
+#include <elle/standalone/Region.hh>
 
 ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
@@ -126,7 +127,7 @@ namespace horizon
     // user is found, the 'somebody' user is used instead,
     // indicating that the file belongs to someone, with the given
     // permissions, but cannot be mapped to a local user name.
-    if (Horizon::Dictionary.users.Lookup(abstract.keys.owner,
+    if (Horizon::Dictionary.users.Lookup(*abstract.keys.owner,
                                          name) == true)
       {
         // In this case, the object's owner is known locally.
@@ -553,7 +554,7 @@ namespace horizon
       etoile::wall::Object::information(subdirectory));
 
     // Create a temporary subject based on the object owner's key.
-    if (subject.Create(abstract.keys.owner) == elle::Status::Error)
+    if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
       return (-EPERM);
 
     // Check that the subject is the owner of the object.
@@ -743,7 +744,7 @@ namespace horizon
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Create a temporary subject based on the object owner's key.
-    if (subject.Create(abstract.keys.owner) == elle::Status::Error)
+    if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
       return (-EPERM);
 
     // Check that the subject is the owner of the object.
@@ -865,7 +866,7 @@ namespace horizon
       etoile::wall::Object::information(identifier));
 
     // Create a temporary subject based on the object owner's key.
-    if (subject.Create(abstract.keys.owner) == elle::Status::Error)
+    if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
       return (-EPERM);
 
     // Check that the subject is the owner of the object.
@@ -1025,7 +1026,7 @@ namespace horizon
       etoile::wall::Object::information(identifier));
 
     // Create a temporary subject based on the object owner's key.
-    if (subject.Create(abstract.keys.owner) == elle::Status::Error)
+    if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
       return (-EPERM);
 
     // Check that the subject is the owner of the object.
@@ -1817,7 +1818,7 @@ namespace horizon
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Create a temporary subject based on the object owner's key.
-    if (subject.Create(abstract.keys.owner) == elle::Status::Error)
+    if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
       return (-EPERM);
 
     // Check that the subject is the owner of the object.

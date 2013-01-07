@@ -37,14 +37,14 @@ namespace nucleus
       _component(component),
       _creator(cryptography::oneway::hash(creator_K,
                                           Block::Constants::oneway_algorithm)),
+      _creation_timestamp(elle::utility::Time::current()),
       _salt(cryptography::random::generate<elle::Natural64>()),
       _state(State::clean)
     {
-      // XXX[to improve and put in the list above]
+    }
 
-      // Compute the creation timetimestamp.
-      if (this->_creation_timestamp.Current() == elle::Status::Error)
-        throw Exception("unable to retrieve the current time");
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Block)
+    {
     }
 
     /*-----------.
@@ -67,8 +67,8 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
                 << std::dec << this->_component << std::endl;
 
-      if (this->_creator.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the creator's digest");
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Creator K] "
+                << this->_creator << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Creation Timestamp]" << std::endl;

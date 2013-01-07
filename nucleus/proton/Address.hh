@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_ADDRESS_HH
 
 # include <elle/Printable.hh>
+# include <elle/io/Dumpable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/construct.hh>
 
@@ -39,6 +40,7 @@ namespace nucleus
     /// in the generation of the address' digest.
     class Address:
       public elle::Printable,
+      public elle::io::Dumpable,
       public elle::concept::MakeUniquable<Address>
     {
       /*----------.
@@ -74,16 +76,13 @@ namespace nucleus
       `-------------*/
     public:
       Address(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(Address)
-      {
-        _valid = nullptr;
-      }
       template <typename... T>
       Address(Network const& network,
               const Family&,
               const neutron::Component&,
               const T&...);
       Address(Address const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Address);
       ~Address();
     private:
       Address(Type const type);

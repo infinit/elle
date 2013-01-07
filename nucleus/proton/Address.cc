@@ -79,6 +79,11 @@ namespace nucleus
         }
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Address)
+    {
+      this->_valid = nullptr;
+    }
+
     Address::~Address()
     {
       delete this->_valid;
@@ -232,8 +237,8 @@ namespace nucleus
                       << this->_valid->component() << std::endl;
 
             // dump the digest.
-            if (this->_valid->digest().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the digest");
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Digest] " << this->_valid->digest() << std::endl;
 
             break;
           }

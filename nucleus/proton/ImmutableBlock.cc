@@ -9,7 +9,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -25,6 +24,10 @@ namespace nucleus
         neutron::Component const component,
         cryptography::PublicKey const& creator_K):
       Block(network, family, component, creator_K)
+    {
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(ImmutableBlock, Block)
     {
     }
 

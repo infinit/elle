@@ -195,28 +195,18 @@ namespace etoile
                           // a token be present though.
                           if (context.rights.record->token() != nullptr)
                             {
-                              cryptography::PrivateKey pass_k;
-
                               ELLE_TRACE("the access token is present");
 
                               ELLE_TRACE("decrypting the private pass");
 
-                              // XXX[remove try/catch in the future]
-                              try
-                                {
-                                  nucleus::neutron::Token token =
-                                    group->manager_token();
+                              nucleus::neutron::Token token =
+                                group->manager_token();
 
-                                  // First, extract the private pass from the
-                                  // manager's fellow.
-                                  pass_k =
-                                    token.extract<cryptography::PrivateKey>(
-                                      agent::Agent::Identity.pair().k());
-                                }
-                              catch (std::exception const& e)
-                                {
-                                  escape("%s", e.what());
-                                }
+                              // First, extract the private pass from the
+                              // manager's fellow.
+                              cryptography::PrivateKey pass_k =
+                                token.extract<cryptography::PrivateKey>(
+                                  agent::Agent::Identity.pair().k());
 
                               ELLE_TRACE("decrypting the access token");
 
@@ -293,8 +283,6 @@ namespace etoile
                                   // content, should a token be present though.
                                   if (context.rights.record->token() != nullptr)
                                     {
-                                      cryptography::PrivateKey pass_k;
-
                                       ELLE_TRACE("the access token is present");
 
                                       ELLE_TRACE("decrypting the private pass");
@@ -303,7 +291,7 @@ namespace etoile
 
                                       // First, extract the private pass
                                       // from the fellow.
-                                      pass_k =
+                                      cryptography::PrivateKey pass_k =
                                         token.extract<cryptography::PrivateKey>(
                                           agent::Agent::Identity.pair().k());
 

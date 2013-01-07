@@ -1,47 +1,25 @@
 #ifndef NUCLEUS_NEUTRON_GROUP_HXX
 # define NUCLEUS_NEUTRON_GROUP_HXX
 
-# include <stdexcept>
-
 # include <elle/serialize/Serializer.hh>
+# include <elle/serialize/Pointer.hh>
 
-ELLE_SERIALIZE_SPLIT(nucleus::neutron::Group);
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Group,
-                          archive,
-                          value,
-                          version)
+ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Group,
+                      archive,
+                      value,
+                      version)
 {
   enforce(version == 0);
 
-  archive >> base_class<nucleus::proton::ImprintBlock>(value);
+  archive & base_class<nucleus::proton::ImprintBlock>(value);
 
-  archive >> value._description;
-  archive >> value._pass_K;
-  archive >> value._size;
-  archive >> value._modification_timestamp;
-  archive >> value._ensemble;
-  archive >> value._manager_token;
-  archive >> value._signature;
-}
-
-ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Group,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-  enforce(value._signature != cryptography::Signature::Null);
-
-  archive << base_class<nucleus::proton::ImprintBlock>(value);
-
-  archive << value._description;
-  archive << value._pass_K;
-  archive << value._size;
-  archive << value._modification_timestamp;
-  archive << value._ensemble;
-  archive << value._manager_token;
-  archive << value._signature;
+  archive & value._description;
+  archive & elle::serialize::alive_pointer(value._pass_K);
+  archive & value._size;
+  archive & value._modification_timestamp;
+  archive & value._ensemble;
+  archive & value._manager_token;
+  archive & elle::serialize::alive_pointer(value._signature);
 }
 
 #endif

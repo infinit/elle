@@ -97,10 +97,8 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
-      std::cout << alignment << elle::io::Dumpable::Shift << "[K]" << std::endl;
-
-      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the public key");
+      std::cout << alignment << elle::io::Dumpable::Shift << "[K] "
+                << this->_block_K << std::endl;
 
       return elle::Status::Ok;
     }

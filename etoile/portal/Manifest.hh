@@ -1,6 +1,9 @@
 #ifndef ETOILE_PORTAL_MANIFEST_HH
 # define ETOILE_PORTAL_MANIFEST_HH
 
+# include <elle/types.hh>
+# include <elle/standalone/Region.hh>
+
 # include <etoile/fwd.hh>
 # include <etoile/path/Chemin.hh>
 # include <etoile/path/Way.hh>

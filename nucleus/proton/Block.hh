@@ -4,6 +4,7 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
+# include <elle/io/Dumpable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/construct.hh>
@@ -65,12 +66,11 @@ namespace nucleus
       `-------------*/
     public:
       Block(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(Block)
-      {}
       Block(Network const network,
             Family const family,
             neutron::Component const component,
             cryptography::PublicKey const& creator_K);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Block);
 
       /*--------.
       | Methods |

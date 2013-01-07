@@ -23,17 +23,8 @@ namespace nucleus
     Token::Token(T const& secret,
                  cryptography::PublicKey const& K):
       _type(Type::valid),
-      _valid(nullptr)
+      _valid(new Valid{K.encrypt(secret)})
     {
-      cryptography::Code code;
-
-      // Encrypt the given secret with the given public key.
-      if (K.Encrypt(secret, code) == elle::Status::Error)
-        escape("unable to encrypt the secret");
-
-      // XXX[this could be improved by putting it directly in the
-      //     initialization list]
-      this->_valid = new Valid(code);
     }
 
     /*--------.

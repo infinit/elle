@@ -67,7 +67,8 @@ namespace lune
 
     // create the entry.
     entry->name = name;
-    entry->value = value;
+    // XXX entry->value = value;
+    ELLE_ASSERT(false && "to fix with a pointer to value for copying");
 
     // add a new entry.
     this->container.push_back(entry);
@@ -198,10 +199,6 @@ namespace lune
         // dump the name.
         std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
                   << entry->name << std::endl;
-
-        // dump the value.
-        if (entry->value.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the value");
       }
 
     return elle::Status::Ok;

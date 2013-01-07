@@ -292,20 +292,14 @@ namespace nucleus
         case Subject::TypeUser:
           {
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Identifier]" << std::endl;
-
-            if (this->_user->Dump(margin + 4) == elle::Status::Error)
-              escape("unable to dump the user's public key");
+                      << "[Identifier] " << *this->_user << std::endl;
 
             break;
           }
         case Subject::TypeGroup:
           {
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Identifier]" << std::endl;
-
-            if (this->_group->Dump(margin + 4) == elle::Status::Error)
-              escape("unable to dump the group address");
+                      << "[Identifier] " << *this->_group << std::endl;
 
             break;
           }

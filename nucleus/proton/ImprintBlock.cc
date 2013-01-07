@@ -14,7 +14,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -34,6 +33,11 @@ namespace nucleus
       _owner_K(creator_K),
       _owner_subject(nullptr)
     {
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(ImprintBlock, MutableBlock)
+    {
+      this->_owner_subject = nullptr;
     }
 
     ImprintBlock::~ImprintBlock()
@@ -123,8 +127,8 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Owner]" << std::endl;
 
-      if (this->_owner_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the owner's public key");
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[K] " << this->_owner_K << std::endl;
 
       if (this->_owner_subject != nullptr)
         {
@@ -140,6 +144,5 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
   }
 }

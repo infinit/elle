@@ -24,13 +24,13 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
   archive & value._meta.attributes;
   archive & value._meta.access;
   archive & value._meta.revision;
-  archive & value._meta.signature;
+  archive & elle::serialize::alive_pointer(value._meta.signature);
 
   archive & elle::serialize::alive_pointer(value._data.contents);
   archive & value._data.size;
   archive & value._data.modification_timestamp;
   archive & value._data.revision;
-  archive & value._data.signature;
+  archive & elle::serialize::alive_pointer(value._data.signature);
 }
 
 #endif

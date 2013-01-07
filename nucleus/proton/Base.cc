@@ -77,8 +77,8 @@ namespace nucleus
         escape("unable to dump the revision");
 
       // dump the digest.
-      if (this->_digest.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the digest");
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Digest] " << this->_digest << std::endl;
 
       return elle::Status::Ok;
     }

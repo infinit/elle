@@ -38,11 +38,13 @@ namespace nucleus
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
       this->_meta.revision = 0;
+      this->_meta.signature = nullptr;
 
       this->_data.contents = nullptr;
       this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
+      this->_data.signature = nullptr;
     }
 
     ///
@@ -104,10 +106,20 @@ namespace nucleus
       }
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Object, ImprintBlock)
+    {
+      this->_author = nullptr;
+      this->_meta.owner.record = nullptr;
+      this->_data.contents = nullptr;
+    }
+
     Object::~Object()
     {
       delete this->_author;
       delete this->_meta.owner.record;
+      delete this->_meta.signature;
+      delete this->_data.contents;
+      delete this->_data.signature;
     }
 
 //
@@ -218,14 +230,14 @@ namespace nucleus
           this->_data.revision += 1;
 
           // sign the archive with the author key.
-          this->_data.signature =
+          this->_data.signature = new cryptography::Signature{
             k.sign(elle::serialize::make_tuple(
                      *this->_data.contents,
                      this->_data.size,
                      this->_data.modification_timestamp,
                      this->_data.revision,
                      this->_meta.owner.token,
-                     this->_meta.access));
+                     this->_meta.access))};
 
           // mark the section as consistent.
           this->_data.state = proton::State::consistent;
@@ -262,14 +274,14 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
-              this->_meta.signature =
+              this->_meta.signature = new cryptography::Signature{
                 k.sign(elle::serialize::make_tuple(
                          this->_meta.owner.permissions,
                          this->_meta.genre,
                          this->_meta.modification_timestamp,
                          this->_meta.attributes,
                          this->_meta.revision,
-                         fingerprint));
+                         fingerprint))};
             }
           else
             {
@@ -279,13 +291,13 @@ namespace nucleus
               //
 
               // sign the meta data.
-              this->_meta.signature =
+              this->_meta.signature = new cryptography::Signature{
                 k.sign(elle::serialize::make_tuple(
                          this->_meta.owner.permissions,
                          this->_meta.genre,
                          this->_meta.modification_timestamp,
                          this->_meta.attributes,
-                         this->_meta.revision));
+                         this->_meta.revision))};
             }
 
           // mark the section as consistent.
@@ -430,7 +442,7 @@ namespace nucleus
       /// (v) verifies the data signature and (vi) verify that the mutable
       /// block's general revision number matches the object's revisions.
 
-      cryptography::PublicKey author;
+      cryptography::PublicKey const* author = nullptr;
 
       // (i)
       {
@@ -452,28 +464,32 @@ namespace nucleus
             cryptography::Digest fingerprint(access->fingerprint());
 
             // verify the meta part, including the access fingerprint.
-            if (this->owner_K().Verify(
-                  this->_meta.signature,
+            ELLE_ASSERT(this->_meta.signature != nullptr);
+
+            if (this->owner_K().verify(
+                  *this->_meta.signature,
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
                     this->_meta.modification_timestamp,
                     this->_meta.attributes,
                     this->_meta.revision,
-                    fingerprint)) == elle::Status::Error)
+                    fingerprint)) == false)
               throw Exception("unable to verify the meta's signature");
           }
         else
           {
             // verify the meta part.
-            if (this->owner_K().Verify(
-                  this->_meta.signature,
+            ELLE_ASSERT(this->_meta.signature != nullptr);
+
+            if (this->owner_K().verify(
+                  *this->_meta.signature,
                   elle::serialize::make_tuple(
                     this->_meta.owner.permissions,
                     this->_meta.genre,
                     this->_meta.modification_timestamp,
                     this->_meta.attributes,
-                    this->_meta.revision)) == elle::Status::Error)
+                    this->_meta.revision)) == false)
               throw Exception("unable to verify the meta's signature");
           }
       }
@@ -485,7 +501,7 @@ namespace nucleus
           case Object::RoleOwner:
             {
               // copy the public key.
-              author = this->owner_K();
+              author = &this->owner_K();
 
               //
               // note that the owner's permission to write the object
@@ -535,7 +551,7 @@ namespace nucleus
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = record.subject().user();
+              author = &record.subject().user();
 
               break;
             }
@@ -553,17 +569,21 @@ namespace nucleus
           }
       }
 
+      ELLE_ASSERT(author != nullptr);
+
       // (iv)
       {
         // verify the signature.
-        if (author.Verify(this->_data.signature,
-                          elle::serialize::make_tuple(
-                            *this->_data.contents,
-                            this->_data.size,
-                            this->_data.modification_timestamp,
-                            this->_data.revision,
-                            this->_meta.owner.token,
-                            this->_meta.access)) == elle::Status::Error)
+        ELLE_ASSERT(this->_data.signature != nullptr);
+
+        if (author->verify(*this->_data.signature,
+                           elle::serialize::make_tuple(
+                             *this->_data.contents,
+                             this->_data.size,
+                             this->_data.modification_timestamp,
+                             this->_data.revision,
+                             this->_meta.owner.token,
+                             this->_meta.access)) == false)
           throw Exception("unable to verify the data signature");
       }
 
@@ -636,11 +656,10 @@ namespace nucleus
       if (this->_meta.revision.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta revision");
 
+      ELLE_ASSERT(this->_meta.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-      if (this->_meta.signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta signature");
+                << "[Signature] " << *this->_meta.signature << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -667,11 +686,10 @@ namespace nucleus
       if (this->_data.revision.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the data revision");
 
+      ELLE_ASSERT(this->_data.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-      if (this->_data.signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the data signature");
+                << "[Signature] " << *this->_data.signature << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift

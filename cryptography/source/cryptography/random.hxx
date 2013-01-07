@@ -16,6 +16,10 @@ namespace infinit
   {
     namespace random
     {
+      /*-----------.
+      | Generators |
+      `-----------*/
+
       /// Contain all the Generator structure specializations.
       namespace
       {
@@ -324,6 +328,10 @@ namespace infinit
           }
         };
       }
+
+      /*----------.
+      | Functions |
+      `----------*/
 
       template <typename T>
       T

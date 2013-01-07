@@ -32,10 +32,10 @@ namespace nucleus
       `-------------*/
     public:
       ContentHashBlock(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(ContentHashBlock, ImmutableBlock) {}
       ContentHashBlock(Network const& network,
                        neutron::Component const component,
                        cryptography::PublicKey const& creator_K);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(ContentHashBlock);
 
       /*-----------.
       | Interfaces |

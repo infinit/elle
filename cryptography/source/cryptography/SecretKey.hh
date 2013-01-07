@@ -64,10 +64,7 @@ namespace infinit
       /// Copy constructor.
       SecretKey(SecretKey const& other);
       /// Derialization constructor.
-      ELLE_SERIALIZE_CONSTRUCT(SecretKey)
-      {
-        // XXX
-      }
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
 
     private:
       /// Construct a secret key based on a given buffer.
@@ -84,7 +81,7 @@ namespace infinit
       /// of its archive.
       template <typename T>
       Cipher
-      encrypt(T const& plain) const;
+      encrypt(T const& value) const;
       /// Decrypt the given cipher and return a clear text i.e the
       /// equivalent of the plain text provided as input to the
       /// encryption process.
@@ -137,7 +134,6 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE(elle::Buffer, buffer);
     };
-
   }
 }
 

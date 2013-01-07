@@ -75,6 +75,10 @@ namespace infinit
       cryptography::require();
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey)
+    {
+    }
+
     /*--------.
     | Methods |
     `--------*/
@@ -113,7 +117,7 @@ namespace infinit
 
       ::EVP_CIPHER_CTX_init(&context);
 
-      CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
       // Initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&context,
@@ -125,7 +129,7 @@ namespace infinit
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Retreive the cipher-specific block size.
-      elle::Natural32 block_size = ::EVP_CIPHER_CTX_block_size(&context);
+      int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
       // Allocate the cipher.
       Cipher cipher(sizeof (Constants::magic) -
@@ -150,6 +154,8 @@ namespace infinit
 
       // Cipher the plain text.
       int size_update(0);
+
+      ELLE_ASSERT(plain.buffer().contents() != nullptr);
 
       if (::EVP_EncryptUpdate(&context,
                               cipher.buffer().mutable_contents() +
@@ -176,7 +182,7 @@ namespace infinit
       // Clean up the cipher context.
       ::EVP_CIPHER_CTX_cleanup(&context);
 
-      CRYPTOGRAPHY_FINALLY_ABORT(context);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
       return (cipher);
     }
@@ -185,6 +191,8 @@ namespace infinit
     SecretKey::decrypt(Cipher const& cipher) const
     {
       ELLE_TRACE_METHOD(cipher);
+
+      ELLE_ASSERT(cipher.buffer().contents() != nullptr);
 
       // Check whether the cipher was produced with a salt.
       if (::memcmp(Constants::magic,
@@ -223,7 +231,7 @@ namespace infinit
 
       ::EVP_CIPHER_CTX_init(&context);
 
-      CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
       // Initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&context,
@@ -235,7 +243,7 @@ namespace infinit
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
       // Retreive the cipher-specific block size.
-      elle::Natural32 block_size = ::EVP_CIPHER_CTX_block_size(&context);
+      int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
       // Allocate the clear;
       Clear clear(cipher.buffer().size() -
@@ -272,7 +280,7 @@ namespace infinit
       // Clean up the cipher context.
       ::EVP_CIPHER_CTX_cleanup(&context);
 
-      CRYPTOGRAPHY_FINALLY_ABORT(context);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
       return (clear);
     }

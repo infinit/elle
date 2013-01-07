@@ -103,8 +103,8 @@ namespace nucleus
                         "public key");
 
       // verify the owner's key signature with the block's public key.
-      if (this->_block_K.Verify(this->_owner_signature,
-                                this->_owner_K) == elle::Status::Error)
+      if (this->_block_K.verify(this->_owner_signature,
+                                this->_owner_K) == false)
         throw Exception("unable to verify the owner's signature");
     }
 
@@ -139,10 +139,7 @@ namespace nucleus
 
       // dump the OKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Block K]" << std::endl;
-
-      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the public key");
+                << "[Block K]" << this->_block_K << std::endl;
 
       // dump the owner part.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Owner]"
@@ -150,21 +147,17 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[K]" << std::endl;
-
-      if (this->_owner_K.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the owner's public key");
+                << "[K] " << this->_owner_K << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-
-      if (this->_owner_signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the owner's signature");
+                << "[Signature] " << this->_owner_signature << std::endl;
 
       if (this->_owner_subject != nullptr)
-        if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the subject");
+        {
+          if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
+            escape("unable to dump the subject");
+        }
 
       return elle::Status::Ok;
     }

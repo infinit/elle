@@ -149,9 +149,7 @@ namespace nucleus
       if (this->_cipher != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Cipher]" << std::endl;
-
-          this->_cipher->Dump(margin + 4);
+                    << "[Cipher] " << *this->_cipher << std::endl;
         }
       else
         std::cout << alignment << elle::io::Dumpable::Shift

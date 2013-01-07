@@ -39,7 +39,13 @@ namespace nucleus
     class Stamp:
       public elle::Printable
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
+      Stamp();
+      ~Stamp();
+
       //
       // methods
       //
@@ -70,6 +76,8 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Stamp);
 
       //
       // attributes
@@ -77,8 +85,7 @@ namespace nucleus
 
       Location          master;
       Location          slave;
-
-      cryptography::Signature   signature;
+      ELLE_ATTRIBUTE(cryptography::Signature*, signature);
     };
 
   }

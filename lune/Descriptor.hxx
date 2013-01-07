@@ -1,10 +1,12 @@
-#ifndef  LUNE_DESCRIPTOR_HXX
+#ifndef LUNE_DESCRIPTOR_HXX
 # define LUNE_DESCRIPTOR_HXX
 
-# include <cassert>
+# include <elle/serialize/Pointer.hh>
 
 # include <cryptography/Signature.hh>
+
 # include <nucleus/proton/Address.hxx>
+
 # include <hole/Model.hh>
 
 ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
@@ -21,7 +23,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
   archive & value._meta._everybody.identity;
   archive & value._meta._history;
   archive & value._meta._extent;
-  archive & value._meta._signature;
+  archive & elle::serialize::alive_pointer(value._meta._signature);
 
   archive & value._data._name;
   archive & value._data._openness;
@@ -46,10 +48,10 @@ ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
   archive & value._data._formats.user;
   archive & value._data._formats.identity;
   archive & value._data._formats.descriptor;
-  archive & value._data._signature;
+  archive & elle::serialize::alive_pointer(value._data._signature);
 }
 
-/* XXX
+/* XXX[upgrader]
 template <typename T, typename... Args>
 struct Upgrader<T, i, Args>
 {

@@ -49,14 +49,11 @@ namespace nucleus
       //
     public:
       MutableBlock(); /// XXX[to deserialization]
-
-      ELLE_SERIALIZE_CONSTRUCT(MutableBlock, Block)
-      {}
-
       MutableBlock(Network const network,
                    Family const family,
                    neutron::Component const component,
                    cryptography::PublicKey const& creator_K);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(MutableBlock);
 
       //
       // methods

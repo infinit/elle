@@ -21,8 +21,8 @@ namespace nucleus
     {
     }
 
-    ELLE_SERIALIZE_CONSTRUCT_DEF(Clef,
-                                 _address, _secret)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Clef,
+                                    _address, _secret)
     {
     }
 

@@ -12,15 +12,14 @@ int main()
 
   // This string has been generated as follows:
   //
-  //     elle::io::Unique unique;
-  //     cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
-  //     if (kp.Save(unique) == elle::Status::Error)
-  //       escape("XXX");
-  //     std::cout << unique << std::endl;
-  std::string string("AAAAAAAAgADEfggzknOW/UsxKwhRszX+Ie3IWsFKQwQt9S6vJn98fUi13CXGub6OwOAezIhab004FB3tsC+LcPd7xz6ZNxUcGDwhWgmezS0DeopgwFvMEPASrNW2IcPebGKBC6BdX4x+Artx1O8JUBLd7vGfMkxVlS7VWgaYi9fa21klif6/JwAAAwABAAEAAAAAgADEfggzknOW/UsxKwhRszX+Ie3IWsFKQwQt9S6vJn98fUi13CXGub6OwOAezIhab004FB3tsC+LcPd7xz6ZNxUcGDwhWgmezS0DeopgwFvMEPASrNW2IcPebGKBC6BdX4x+Artx1O8JUBLd7vGfMkxVlS7VWgaYi9fa21klif6/JwAAAwABAAEAAIAAvl0wCu7W57BsGa2MOML8C0LJwPMUEqNMuE2yteQBXRVvzSkEvDwV/u2j9JLJg3wTfsIWoMGxvlFqo1PMNNolqsiNMvixi7RYw1g4Mj6vh7lDavdzja9q6jJx/7LYK04StXs1DSrNQe343G95TRQ5FNVyL02X+uCrAePSMONwE4EAAEAA56zqzeRE/tULy0Secx/F8+VwVmhk/yU0g7BL254qAIySaWisJz1lC1eVzxJpm9ZbpIKDBHWl+FyCfxq90NuWQQAAQADZH3IRQBGhdUsGYmmAse2i6NJEDB5PB3i1tBDfWqxFmjl2zsoEd7Y615F0weYfx6/54MMVlhMEvU86ilsjEItnAABAAA08M63PfKGSSjoykVrCVey5DtHg5OQum/FqAOtq/btKTJL5B9y2BS/AsS5DPwVIGbQsQI/gqLqnjkz0miN0aAEAAEAABc0QSCO1FOJEYeRJO1YFql+cFpNYT/Y8JGauOLl8dtObC3CU9y+Xn9TYnwz7MAguzHdT3wTGd07zifXeX352qwAAQAARXLikv1SNErdzah7icGFyf6RhegmU2wJ6bJ8Snx5Fu9Y1upSd68L9oXhb1jW+AbzSPBBvJ1ZmRx8ONW315m1i");
+//       elle::io::Unique unique;
+//       cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+//       if (kp.Save(unique) == elle::Status::Error)
+//         throw elle::Exception("unable XXX");
+//       std::cout << unique << std::endl;
 
+  std::string string("AAAAAAAAgAAAALkv7mFyDOrSVRPH/aitVp0yk8eFzHtswUp6am4j4Ka8vGP4gDKHVzpEUGsr4IzFLJxsDCUGfLcWmfyqUru4Z6+ipspxZ89wiu1+/1mKSYL+B4iPLta7YAa/zVwKSyBuV+i34ez0lpJMLXea6iEb4f6DWXgLYceN0aVdndjEZpvZAAADAAAAAQABAAAAAIAAAAC5L+5hcgzq0lUTx/2orVadMpPHhcx7bMFKempuI+CmvLxj+IAyh1c6RFBrK+CMxSycbAwlBny3Fpn8qlK7uGevoqbKcWfPcIrtfv9ZikmC/geIjy7Wu2AGv81cCksgblfot+Hs9JaSTC13muohG+H+g1l4C2HHjdGlXZ3YxGab2QAAAwAAAAEAAQAAgAAAAHAdaafLQbDE6EcSlCqTztVa8ocgJR0wSZGKrXbC99Zae3/Wyd5Ne+zFwR4xMUBoe0q0S2H7HHRIFbAXegE2cmakw1c3i+9BZ/hODl2tdb6RiY59yF34XJVOpzSmJj+egjzp5HXIxHmy+sXxfYkXyy4tIXFGmJs7bj7AZvTmyy9lAABAAAAA8zcgSbmoo0lekrye6GcNsFZn+VwrWfX5fNBl+HP3eOS4uzRb+RpA0J2tpRyPSTnBTpdz9H3f35dty8zlbkOFTwAAQAAAAMLr8E82GT5kaG+aDAol2AGC2kZGoNH3tA9SpkzR3UOpyfI6yRnsyc4RbnRsIfeWVa7v88qJb0wK71WK5ervUlcAAEAAAAC5G1Coq/QMaq/e8E3lRWGmvuydXafk7Q+4Dgg9400LJtDuMfh6C6Ae5pMdYjIvohRc02o+P3se+mpnPQe1NxCDAABAAAAAu6WNQ4ROCv14eK+xFXfXGaVR4kOOAHRY2EN1qxCB1Oi4a8Ph415L7GBlmBidHo+QTwfbB0kFZwxD2XMM4f2gowAAQAAAADQPoWzQB3ic+G63B/YYlrkn7yEJxYgm7Uk7mMiZBmB8zq1q01JWaSDNORmTjE3B3Y7fdyDnEjW7uHEeThrUXPQ=");
   auto extractor = from_string<InputBase64Archive>(string);
-
   cryptography::KeyPair pair{extractor};
 
   std::cout << "tests done." << std::endl;

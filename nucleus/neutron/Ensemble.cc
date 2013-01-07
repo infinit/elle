@@ -150,7 +150,7 @@ namespace nucleus
           if ((i >= index) && (i < (index + size)))
             {
               // Insert the entry to the range.
-              // XXX[need shared_ptr] range.insert(fellow);
+              // XXX[porcupine: need shared_ptr] range.insert(fellow);
               ELLE_ASSERT(false);
             }
 

@@ -122,10 +122,8 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            std::cout << alignment << "[Token] " << std::endl;
-
-            if (this->_valid->code().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the code");
+            std::cout << alignment << "[Token] "
+                      << this->_valid->code() << std::endl;
 
             break;
           }

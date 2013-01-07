@@ -23,7 +23,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Identity,
 
   archive & value._id;
   archive & value.name;
-  archive & value.signature;
+  archive & elle::serialize::alive_pointer(value._signature);
 }
 
 #endif

@@ -27,8 +27,7 @@ using namespace infinit;
 
 namespace lune
 {
-
-  /// This class represents a network descriptor which, as the name
+  /// Represent a network descriptor which, as the name
   /// indicates, describes a network's parameters such as the
   /// administrator's public key, the network unique identifier etc.
   /// along with configuration values which could change over time
@@ -156,8 +155,7 @@ namespace lune
                elle::Natural32 extent,
                elle::Version const& version,
                elle::Authority const& authority);
-
-    ELLE_SERIALIZE_CONSTRUCT(Descriptor) {}
+    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Descriptor);
 
     /*--------.
     | Methods |
@@ -303,7 +301,7 @@ namespace lune
       elle::Boolean _history;
       elle::Natural32 _extent;
 
-      cryptography::Signature _signature;
+      cryptography::Signature* _signature;
     };
 
     struct Data:
@@ -319,6 +317,7 @@ namespace lune
            hole::Openness const& openness,
            horizon::Policy const& policy,
            elle::Version const& version);
+      ~Data();
 
       //
       // methods
@@ -426,7 +425,7 @@ namespace lune
         elle::serialize::Format descriptor;
       } _formats;
 
-      cryptography::Signature _signature;
+      cryptography::Signature* _signature;
     };
 
     /*-----------.
@@ -436,7 +435,6 @@ namespace lune
     ELLE_ATTRIBUTE(Meta, meta);
     ELLE_ATTRIBUTE(Data, data);
   };
-
 }
 
 # include <lune/Descriptor.hxx>

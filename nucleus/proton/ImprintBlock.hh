@@ -16,7 +16,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class associates a owner to the mutable block.
     ///
     /// The functionalities offered by this construct are equivalent to
@@ -41,14 +40,10 @@ namespace nucleus
       `-------------*/
     public:
       ImprintBlock(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(ImprintBlock, MutableBlock)
-      {
-        this->_owner_subject = nullptr;
-      }
-
       ImprintBlock(Network const& network,
                    neutron::Component const component,
                    cryptography::PublicKey const& creator_K);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(ImprintBlock);
       ~ImprintBlock();
 
       /*--------.
@@ -94,7 +89,6 @@ namespace nucleus
       /// serialized.
       ELLE_ATTRIBUTE(neutron::Subject*, owner_subject);
     };
-
   }
 }
 

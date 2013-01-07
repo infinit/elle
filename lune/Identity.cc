@@ -28,6 +28,7 @@ namespace lune
   ///
   Identity::Identity():
     _pair(nullptr),
+    _signature(nullptr),
     cipher(nullptr)
   {
   }
@@ -37,6 +38,7 @@ namespace lune
   ///
   Identity::~Identity()
   {
+    delete this->_signature;
     delete this->_pair;
     delete this->cipher;
   }
@@ -53,18 +55,11 @@ namespace lune
                    const elle::String& user_name,
                    cryptography::KeyPair const& pair)
   {
-    // One does not simply ...
-    assert(pair.k().key() != nullptr);
-    assert(pair.K().key() != nullptr);
-
     this->_id = user_id;
     this->name = user_name;
 
     delete this->_pair;
     this->_pair = new cryptography::KeyPair{pair};
-
-    assert(this->_pair->k().key() != nullptr);
-    assert(this->_pair->K().key() != nullptr);
 
     return elle::Status::Ok;
   }
@@ -133,9 +128,11 @@ namespace lune
       escape("unable to seal an unencrypted identity");
 
     // sign with the authority.
-    this->signature =
+    delete this->_signature;
+    this->_signature = nullptr;
+    this->_signature = new cryptography::Signature{
       authority.k->sign(
-        elle::serialize::make_tuple(this->_id, this->name, *this->cipher));
+        elle::serialize::make_tuple(this->_id, this->name, *this->cipher))};
 
     return elle::Status::Ok;
   }
@@ -152,11 +149,13 @@ namespace lune
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
-    if (authority.K().Verify(
-          this->signature,
+    ELLE_ASSERT(this->_signature != nullptr);
+
+    if (authority.K().verify(
+          *this->_signature,
           elle::serialize::make_tuple(this->_id,
                                       this->name,
-                                      *this->cipher)) == elle::Status::Error)
+                                      *this->cipher)) == false)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
@@ -204,19 +203,22 @@ namespace lune
     // dump the pair.
     if (this->_pair != nullptr)
       {
-        if (this->_pair->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the pair");
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Pair] " << this->_pair << std::endl;
       }
 
     // dump the signature.
-    if (this->signature.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the signature");
+    if (this->_signature != nullptr)
+      {
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Signature] " << *this->_signature << std::endl;
+      }
 
     // dump the cipher.
     if (this->cipher != nullptr)
       {
-        if (this->cipher->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the cipher");
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Cipher] " << this->cipher << std::endl;
       }
 
     return elle::Status::Ok;

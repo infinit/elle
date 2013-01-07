@@ -26,7 +26,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
     ///
     /// this class is the most important of the whole Infinit project
     /// as it describes file system objects being files, directories and
@@ -84,19 +83,11 @@ namespace nucleus
       // constructors & destructors
       //
     public:
+      Object(); // XXX[use deserialize constructor]
       Object(proton::Network const& network,
              cryptography::PublicKey const& owner_K,
              Genre const genre);
-
-      Object(); // XXX[use deserialize constructor]
-
-      ELLE_SERIALIZE_CONSTRUCT(Object, ImprintBlock)
-      {
-        this->_author = nullptr;
-        this->_meta.owner.record = nullptr;
-        this->_data.contents = nullptr;
-      }
-
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Object);
       ~Object();
 
       //
@@ -211,7 +202,7 @@ namespace nucleus
         proton::Address access;
 
         proton::Revision revision;
-        cryptography::Signature signature;
+        cryptography::Signature* signature;
 
         proton::State state;
       } _meta;
@@ -226,16 +217,19 @@ namespace nucleus
         elle::utility::Time modification_timestamp;
 
         proton::Revision revision;
-        cryptography::Signature signature;
+        cryptography::Signature* signature;
 
         proton::State state;
       } _data;
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
     std::ostream&
     operator <<(std::ostream& stream,
                 Object::Role const role);
-
   }
 }
 

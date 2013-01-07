@@ -19,7 +19,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
     /// A group represents a set of users and subgroups. Groups are used
     /// mainly to ease the process of managing accesses on files and
     /// directories by grouping entities (users for instance) together.
@@ -104,12 +103,12 @@ namespace nucleus
       //
     private:
       ELLE_ATTRIBUTE_R(elle::String, description);
-      ELLE_ATTRIBUTE_R(cryptography::PublicKey, pass_K);
+      ELLE_ATTRIBUTE(cryptography::PublicKey*, pass_K);
       ELLE_ATTRIBUTE_RW(Size, size);
       ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
       ELLE_ATTRIBUTE_R(proton::Address, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
-      ELLE_ATTRIBUTE(cryptography::Signature, signature);
+      ELLE_ATTRIBUTE(cryptography::Signature*, signature);
       // XXX[not serialized]
       ELLE_ATTRIBUTE(Fellow*, manager_fellow); //XXX unique_ptr
 
@@ -118,13 +117,10 @@ namespace nucleus
       //
     public:
       Group();
-      ELLE_SERIALIZE_CONSTRUCT(Group, ImprintBlock)
-      {
-        _manager_fellow = nullptr;
-      }
       Group(proton::Network const& network,
             cryptography::PublicKey const& manager_K,
             elle::String const& description);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Group);
       ~Group();
 
       //
@@ -146,6 +142,9 @@ namespace nucleus
       /// private key.
       void
       seal(cryptography::PrivateKey const& manager_k);
+      /// Return the pass associated with the group.
+      cryptography::PublicKey const&
+      pass_K() const;
       /// Returns the public key of the group manager.
       cryptography::PublicKey const&
       manager_K() const;
@@ -171,9 +170,7 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
       ELLE_SERIALIZE_FRIEND_FOR(Group);
-
     };
-
   }
 }
 

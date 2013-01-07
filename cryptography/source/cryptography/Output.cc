@@ -23,6 +23,10 @@ namespace infinit
     {
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output)
+    {
+    }
+
     /*----------.
     | Operators |
     `----------*/
@@ -70,22 +74,6 @@ namespace infinit
     Output::operator <=(Input const& other) const
     {
       return (elle::WeakBuffer(this->_buffer) <= other.buffer());
-    }
-
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status
-    Output::Dump(elle::Natural32           margin) const
-    {
-      elle::String      alignment(margin, ' ');
-
-      std::cout << alignment << "[Output] " << this << std::endl;
-
-      this->_buffer.dump(margin + 2);
-
-      return elle::Status::Ok;
     }
 
     /*----------.

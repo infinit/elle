@@ -44,9 +44,9 @@ namespace lune
   public: // XXX
     elle::String                name;
   private: // XXX
-    cryptography::KeyPair* _pair;
+    ELLE_ATTRIBUTE(cryptography::KeyPair*, pair);
+    ELLE_ATTRIBUTE(cryptography::Signature*, signature);
   public: // XXX
-    cryptography::Signature     signature;
     cryptography::Cipher*       cipher;
 
   public:

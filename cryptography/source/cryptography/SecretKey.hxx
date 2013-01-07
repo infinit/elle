@@ -3,8 +3,6 @@
 
 # include <elle/Buffer.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace infinit
 {
   namespace cryptography
@@ -15,14 +13,17 @@ namespace infinit
 
     template <typename T>
     Cipher
-    SecretKey::encrypt(T const& plain) const
+    SecretKey::encrypt(T const& value) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_TRACE_METHOD(plain);
+      ELLE_DEBUG_FUNCTION(value);
 
-      // Serialize the plain object.
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
+
+      // Serialize the value.
       elle::Buffer buffer;
-      buffer.writer() << plain;
+      buffer.writer() << value;
 
       // Encrypt the archive.
       return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
@@ -33,7 +34,10 @@ namespace infinit
     SecretKey::decrypt(Cipher const& cipher) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_TRACE_METHOD(cipher);
+      ELLE_DEBUG_FUNCTION(cipher);
+
+      static_assert(!std::is_same<T, Clear>::value,
+                    "this call should never have occured");
 
       // Decrypt the cipher leading to a clear containing an archive.
       Clear clear{this->decrypt(cipher)};
@@ -56,9 +60,9 @@ namespace infinit
 ELLE_SERIALIZE_SIMPLE(infinit::cryptography::SecretKey,
                       archive,
                       value,
-                      version)
+                      format)
 {
-  enforce(version == 0);
+  enforce(format == 0);
 
   archive & value._buffer;
 }

@@ -17,6 +17,14 @@ namespace etoile
     ///
     Object::Object()
     {
+      this->keys.owner = nullptr;
+      this->keys.author = nullptr;
+    }
+
+    Object::~Object()
+    {
+      delete this->keys.owner;
+      delete this->keys.author;
     }
 
 //
@@ -42,14 +50,16 @@ namespace etoile
       this->size = object.size();
 
       // set the owner.
-      this->keys.owner = object.owner_K();
+      ELLE_ASSERT(this->keys.owner == nullptr);
+      this->keys.owner = new cryptography::PublicKey{object.owner_K()};
 
       // set the author depending on the mode.
+      ELLE_ASSERT(this->keys.author == nullptr);
       switch (object.author().role)
         {
         case nucleus::neutron::Object::RoleOwner:
           {
-            this->keys.author = object.owner_K();
+            this->keys.author = new cryptography::PublicKey{object.owner_K()};
 
             break;
           }
@@ -58,6 +68,7 @@ namespace etoile
             // XXX to implement.
           }
         }
+      ELLE_ASSERT(this->keys.author != nullptr);
 
       // set the permissions.
       this->permissions.owner = object.owner_permissions();
@@ -83,13 +94,18 @@ namespace etoile
       if (this == &element)
         return true;
 
+      ELLE_ASSERT(this->keys.owner != nullptr);
+      ELLE_ASSERT(element.keys.owner != nullptr);
+      ELLE_ASSERT(this->keys.author != nullptr);
+      ELLE_ASSERT(element.keys.author != nullptr);
+
       // compare the attributes.
       if ((this->genre != element.genre) ||
           (this->timestamps.creation != element.timestamps.creation) ||
           (this->timestamps.modification != element.timestamps.modification) ||
           (this->size != element.size) ||
-          (this->keys.owner != element.keys.owner) ||
-          (this->keys.author != element.keys.author) ||
+          (*this->keys.owner != *element.keys.owner) ||
+          (*this->keys.author != *element.keys.author) ||
           (this->permissions.owner != element.permissions.owner) ||
           (this->revisions.meta != element.revisions.meta) ||
           (this->revisions.data != element.revisions.data))
@@ -156,20 +172,16 @@ namespace etoile
                   << "[Keys]" << std::endl;
 
         // dump the owner public key.
+        ELLE_ASSERT(this->keys.owner != nullptr);
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
-                  << "[Owner]" << std::endl;
-
-        if (this->keys.owner.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the owner public key");
+                  << "[Owner] " << this->keys.owner << std::endl;
 
         // dump the author public key.
+        ELLE_ASSERT(this->keys.author != nullptr);
         std::cout << alignment << elle::io::Dumpable::Shift
                   << elle::io::Dumpable::Shift
-                  << "[Author]" << std::endl;
-
-        if (this->keys.author.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the author public key");
+                  << "[Author] " << this->keys.author << std::endl;
       }
 
       //

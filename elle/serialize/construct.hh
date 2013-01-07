@@ -47,9 +47,9 @@
 // --------------------------------------------
 // struct D
 // {
-//   ELLE_SERIALIZE_CONSTRUCT_DECL(D);
+//   ELLE_SERIALIZE_CONSTRUCT_DECLARE(D);
 // }
-// ELLE_SERIALIZE_CONSTRUCT_DEF(D)
+// ELLE_SERIALIZE_CONSTRUCT_DEFINE(D)
 // {
 //    // here we go
 // }
@@ -73,7 +73,7 @@
 // };
 // --------------------------------------------
 # define ELLE_SERIALIZE_CONSTRUCT(...)                                  \
-  ELLE_SERIALIZE_CONSTRUCT_DECL(__ESC_HEAD(__VA_ARGS__))                \
+  ELLE_SERIALIZE_CONSTRUCT_DECLARE(__ESC_HEAD(__VA_ARGS__))             \
   __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                \
 /**/
 
@@ -84,7 +84,7 @@
 /// XXX: Should not work with templated types, use ELLE_SERIALIZE_CONSTRUCT
 ///      instead.
 ///
-# define ELLE_SERIALIZE_CONSTRUCT_DECL(__T)                                   \
+# define ELLE_SERIALIZE_CONSTRUCT_DECLARE(__T)                                \
   template <typename Archive>                                                 \
   explicit                                                                    \
   __T(Archive&& archive,                                                      \
@@ -102,7 +102,7 @@
 /**/
 
 /// Define implementation of the pre-deserialization constructor.
-# define ELLE_SERIALIZE_CONSTRUCT_DEF(...)                                    \
+# define ELLE_SERIALIZE_CONSTRUCT_DEFINE(...)                                 \
   __ESC_HEAD(__VA_ARGS__)                                                     \
     ::__ESC_HEAD(__VA_ARGS__)(elle::serialize::NoInit)                        \
   __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                      \
@@ -116,9 +116,7 @@ namespace elle
 {
   namespace serialize
   {
-
     enum NoInit { no_init };
-
   }
 }
 
