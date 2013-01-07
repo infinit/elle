@@ -62,7 +62,7 @@ namespace infinit
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
       KeyPair(::EVP_PKEY const* key);
-      KeyPair(KeyPair const& pair);
+      KeyPair(KeyPair const& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
 
       /*----------.

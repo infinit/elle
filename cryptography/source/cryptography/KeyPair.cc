@@ -124,9 +124,9 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(KeyPair const& pair):
-      _K(pair._K),
-      _k(pair._k)
+    KeyPair::KeyPair(KeyPair const& other):
+      _K(other._K),
+      _k(other._k)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();

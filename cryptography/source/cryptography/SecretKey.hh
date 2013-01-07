@@ -65,7 +65,6 @@ namespace infinit
       SecretKey(SecretKey const& other);
       /// Derialization constructor.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
-
     private:
       /// Construct a secret key based on a given buffer.
       SecretKey(elle::Buffer&& buffer);
