@@ -20,7 +20,7 @@ void test_encryption()
 {
   cryptography::KeyPair kp = cryptography::KeyPair::generate(2048);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
-  cryptography::Plain plain = elle::WeakBuffer{buffer};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Code code = kp.K().encrypt(plain);
   cryptography::Clear clear = kp.k().decrypt(code);
 
@@ -31,7 +31,7 @@ void test_noitpyrcne()
 {
   cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
-  cryptography::Plain plain = elle::WeakBuffer{buffer};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Code code = kp.k().encrypt(plain);
   cryptography::Clear clear = kp.K().decrypt(code);
 
@@ -42,7 +42,7 @@ void test_signature()
 {
   cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
-  cryptography::Plain plain = elle::WeakBuffer{buffer};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Signature signature = kp.k().sign(plain);
 
   ELLE_ASSERT(kp.K().verify(signature, plain) == true);
@@ -51,7 +51,7 @@ void test_signature()
 void test_cipher()
 {
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
-  cryptography::Plain plain = elle::WeakBuffer{buffer};
+  cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::SecretKey secret = cryptography::SecretKey::generate(256);
   cryptography::Cipher cipher = secret.encrypt(plain);
   cryptography::Clear clear = secret.decrypt(cipher);

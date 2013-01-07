@@ -67,7 +67,7 @@ namespace lune
 
     // create the entry.
     entry->name = name;
-    // XXX entry->value = value;
+    // XXX[to fix for dictionary to work] entry->value = value;
     ELLE_ASSERT(false && "to fix with a pointer to value for copying");
 
     // add a new entry.

@@ -94,5 +94,7 @@ namespace infinit
                                    str(fmt % descriptor.meta().model().type));
         }
       }
+
+    elle::unreachable();
   }
 }
