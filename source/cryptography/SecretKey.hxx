@@ -43,6 +43,7 @@ namespace infinit
       Clear clear{this->decrypt(cipher)};
 
       // Deserialize the object from the clear.
+      // XXX[this is should be used] T value{clear.buffer().reader()};
       T value;
       clear.buffer().reader() >> value;
 
