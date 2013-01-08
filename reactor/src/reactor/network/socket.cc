@@ -115,7 +115,6 @@ namespace reactor
                                          AsioSocket* socket)
       : Super(sched)
       , _socket(socket)
-      , _peer(socket->remote_endpoint())
     {}
 
     template <typename AsioSocket>
