@@ -87,6 +87,7 @@ add_library(elle ${LINK_METHOD}
 
   print.cc
 
+  CrashReporter.cc
   log.cc
 
   log/Logger.cc
