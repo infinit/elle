@@ -13,6 +13,8 @@ SESSION_HEADER_NAME = 'Authorization'
 
 # Name of the mongo collection.
 COLLECTION_NAME = os.environ.get("META_COLLECTION_NAME", 'meta')
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
 
 INFINIT_AUTHORITY_PATH = os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
@@ -25,3 +27,7 @@ MANDRILL_USERNAME = 'infinitdotio'
 MANDRILL_PASSWORD = 'ca159fe5-a0f7-47eb-b9e1-2a8f03b9da86'
 MANDRILL_SMTP_HOST = 'smtp.mandrillapp.com'
 MANDRILL_SMTP_PORT = 587
+
+LISTEN_TCP_PORT = int(os.environ.get('META_SERVER_PORT', 12345))
+TROPHONIUS_LISTEN_SSL_PORT = int(os.environ.get('TROPHONIUS_NOTIFICATION_PORT', 23456))
+TROPHONIUS_HOST = "localhost"

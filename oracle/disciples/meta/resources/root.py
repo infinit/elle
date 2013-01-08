@@ -48,3 +48,20 @@ class ScratchDB(Page):
     def GET(self):
 
         return self.success({})
+
+class GetBacktrace(Page):
+    """
+    Debug function to scratch db and start back to 0.
+    """
+    __pattern__ = "/debug/report"
+
+    def PUT(self):
+        import meta.mail
+
+        _id = self.user and self.user.get('_id', 'anonymous') or 'anonymous'
+
+        meta.mail.send(
+            "antony.mechin@infinit.io",
+            meta.mail.BACKTRACE_SUBJECT % {"user": _id},
+            meta.mail.BACKTRACE_CONTENT % {"user": _id, "bt": self.data.reverse()}
+        )

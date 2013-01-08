@@ -466,7 +466,7 @@ class Cancel(Page):
         if self.user['_id'] not in (transaction['sender_id'], transaction['recipient_id']):
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
-        if not transaction['status'] in (PENDING, STARTED) :
+        if not transaction['status'] in (ACCEPTED, PENDING, STARTED) :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
                               "This transaction can't be %s. Current status : %s"
                               % (_status_to_string[CANCELED], _status_to_string[transaction['status']])

@@ -497,6 +497,10 @@ class Delete(_Page):
         ('network_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID))
     ]
 
+    _mendatory_fields = [
+        ('force', bool)
+    ]
+
     def POST(self):
         self.requireLoggedIn()
 
@@ -510,6 +514,7 @@ class Delete(_Page):
 
         if network is None:
             if self.data['force']:
+                print("Network doesn't exist but force is enable, no error !!")
                 return self.success({
                     'deleted_network_id': self.data['network_id']
                 });
@@ -518,6 +523,7 @@ class Delete(_Page):
 
         # for each user in network, remove this network from his network list.
         for user_id in network['users']:
+            print("user: ", user_id)
             database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
 
         database.networks().find_and_modify(

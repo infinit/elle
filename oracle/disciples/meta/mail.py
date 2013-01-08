@@ -174,3 +174,11 @@ All the best,
 The Infinit Team
 infinit.io
 """.strip()
+
+
+BACKTRACE_SUBJECT = u"bt %(user)s"
+BACKTRACE_CONTENT = u"""
+%(user)s
+----------
+%(bt)s
+""".strip()
