@@ -166,6 +166,10 @@ namespace nucleus
       this->footprint(initial);
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Catalog, proton::Value)
+    {
+    }
+
     /*--------.
     | Methods |
     `--------*/

@@ -24,6 +24,11 @@ namespace nucleus
     {
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Node)
+    {
+      this->_nest = nullptr;
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //

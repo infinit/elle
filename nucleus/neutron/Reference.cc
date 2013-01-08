@@ -31,6 +31,10 @@ namespace nucleus
       this->footprint(0); // XXX[initial catalog footprint]
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Reference, proton::Value)
+    {
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //

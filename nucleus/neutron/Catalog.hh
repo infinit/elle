@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/operator.hh>
 # include <elle/attribute.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Handle.hh>
@@ -81,6 +82,7 @@ namespace nucleus
     public:
       Catalog();
       Catalog(Catalog const&) = default;
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Catalog);
 
       /*--------.
       | Methods |

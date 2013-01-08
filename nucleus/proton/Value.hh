@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_VALUE_HH
 
 # include <elle/types.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/Node.hh>
 
@@ -48,6 +49,7 @@ namespace nucleus
     public:
       Value();
       Value(Value const&) = default;
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Value);
 
       /*-----------.
       | Interfaces |

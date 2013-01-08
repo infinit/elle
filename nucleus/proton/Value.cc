@@ -13,6 +13,10 @@ namespace nucleus
     {
     }
 
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Value, Node)
+    {
+    }
+
     /*---------.
     | Dumpable |
     `---------*/

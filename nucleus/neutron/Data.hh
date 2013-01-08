@@ -5,6 +5,7 @@
 # include <elle/operator.hh>
 # include <elle/attribute.hh>
 # include <elle/Buffer.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Capacity.hh>
@@ -77,6 +78,7 @@ namespace nucleus
       Data();
       Data(Offset const& offset);
       Data(Data const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Data);
 
       /*--------.
       | Methods |

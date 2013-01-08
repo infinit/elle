@@ -5,6 +5,7 @@
 # include <elle/attribute.hh>
 # include <elle/io/Dumpable.hh>
 # include <elle/utility/Factory.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Component.hh>
@@ -27,6 +28,7 @@ namespace nucleus
     public:
       Node();
       Node(Node const&) = default;
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Node);
 
       //
       // methods

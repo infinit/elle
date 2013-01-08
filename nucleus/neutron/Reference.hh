@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_REFERENCE_HH
 
 # include <elle/types.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
@@ -50,6 +51,7 @@ namespace nucleus
       // constructors & destructors
       //
       Reference();
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Reference);
 
       //
       // methods
