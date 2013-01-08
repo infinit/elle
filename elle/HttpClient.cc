@@ -343,4 +343,25 @@ namespace elle
       }
   }
 
+  bool
+  HttpClient::put(std::string const& url,
+                  elle::format::json::Object const& req)
+  {
+    ELLE_LOG_COMPONENT("elle.HttpClient");
+
+    std::stringstream res;
+
+    // http request
+    try
+      { this->_request(url, "PUT", req.repr(), res); }
+    catch (std::exception const& err)
+      {
+        ELLE_TRACE("PUT %s %s threw an error", url, req.repr());
+        throw HTTPException(ResponseCode::internal_server_error, err.what());
+      }
+
+    (void) res;
+
+    return true;
+  }
 }

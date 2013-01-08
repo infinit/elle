@@ -121,6 +121,8 @@ namespace elle
 
     void fire(Request& request);
 
+    bool put(std::string const& url, elle::format::json::Object const& req);
+
   private:
     ///XXX Remove this
     void
