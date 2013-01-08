@@ -91,6 +91,13 @@ def notifications(conn=None):
         _notifications = database(conn)['notifications']
     return _notifications
 
+_crashes = None
+def crashes(conn=None):
+    global _crashes
+    if _crashes is None:
+        _crashes = database(conn)['crashes']
+    return _crashes
+
 # functions
 def byId(collection, _id):
     """
