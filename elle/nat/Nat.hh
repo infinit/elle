@@ -34,6 +34,8 @@ private:
     s_ptr<rnet::UDPSocket> _handle;
 
     std::pair<std::string, uint16_t> _public_endpoint;
+    boost::asio::ip::udp::endpoint _endpoint;
+
 public:
     Hole() = delete;
     Hole(Hole const& hole) = delete;

@@ -1,3 +1,4 @@
+#include <string>
 #include <sstream>
 #include <elle/nat/Nat.hh>
 #include <elle/concurrency/Scheduler.hh>
@@ -7,6 +8,10 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+
+#include <boost/asio/ip/udp.hpp>
+
+ELLE_LOG_COMPONENT("Elle.NAT");
 
 namespace elle
 {
@@ -25,16 +30,18 @@ namespace elle
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
              std::string const &port)
-      : _handle{new rnet::UDPSocket{sched, hostname, port}}
+      : _handle{new rnet::UDPSocket{sched}}
       , _public_endpoint{"", 0}
+      , _endpoint{boost::asio::ip::address::from_string(hostname), std::stoi(port)}
   {
   }
 
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
              int port)
-      : _handle{new rnet::UDPSocket{sched, hostname, port}}
+      : _handle{new rnet::UDPSocket{sched}}
       , _public_endpoint{"", 0}
+      , _endpoint{boost::asio::ip::address::from_string(hostname), port}
   {
   }
 
@@ -58,7 +65,14 @@ namespace elle
   {
     if (this->_handle)
       {
-        this->_handle->write(rnet::Buffer(msg + "\n"));
+        ELLE_TRACE("sending %s to %s", msg, this->_endpoint);
+        this->_handle->send_to(rnet::Buffer(msg + "\n"), this->_endpoint);
+      }
+    else
+      {
+        ELLE_TRACE("not sending %s to %s because handle is invalid",
+                   msg,
+                   this->_endpoint);
       }
   }
 
@@ -66,9 +80,10 @@ namespace elle
   Hole::get()
   {
     std::string resp;
+    rnet::UDPSocket::EndPoint p;
 
     resp.resize(512);
-    this->_handle->read_some(rnet::Buffer(resp));
+    this->_handle->receive_from(rnet::Buffer(resp), p);
     return resp;
   }
 
