@@ -28,6 +28,7 @@ namespace infinit
 
       Clear clear{this->decrypt(code)};
 
+      // XXX[this is the way it should be] T value{clear.buffer().reader()};
       T value;
       clear.buffer().reader() >> value;
 
