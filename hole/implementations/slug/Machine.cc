@@ -266,7 +266,8 @@ namespace hole
                   // FIXME: handling via loci is very wrong. IPs are
                   // not uniques, and this reconstruction is lame and
                   // non-injective.
-                  _connect(std::move(socket), socket->remote_locus(), false);
+                  auto locus = socket->remote_locus();
+                  _connect(std::move(socket), locus, false);
                   break;
                 }
                 default:
