@@ -5,6 +5,7 @@
 
 #include <reactor/network/buffer.hh>
 #include <reactor/sleep.hh>
+#include <reactor/network/resolve.hh>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -32,7 +33,7 @@ namespace elle
              std::string const &port)
       : _handle{new rnet::UDPSocket{sched}}
       , _public_endpoint{"", 0}
-      , _endpoint{boost::asio::ip::address::from_string(hostname), std::stoi(port)}
+      , _endpoint{rnet::resolve_udp(sched, hostname, port)}
   {
   }
 
@@ -41,7 +42,7 @@ namespace elle
              int port)
       : _handle{new rnet::UDPSocket{sched}}
       , _public_endpoint{"", 0}
-      , _endpoint{boost::asio::ip::address::from_string(hostname), port}
+      , _endpoint{rnet::resolve_udp(sched, hostname, std::to_string(port))}
   {
   }
 
