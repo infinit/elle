@@ -31,11 +31,8 @@ namespace elle
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
              std::string const &port)
-      : _handle{new rnet::UDPSocket{sched}}
-      , _public_endpoint{"", 0}
-      , _endpoint{rnet::resolve_udp(sched, hostname, port)}
-  {
-  }
+      : Hole(sched, hostname, std::stoi(port))
+  {}
 
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
