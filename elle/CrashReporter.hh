@@ -3,43 +3,53 @@
 
 # include <cstring>
 
-#include <signal.h>
-
-#define HANDLED_CRASH_MAIN(module)                                             \
-                                                                               \
-  template<int sig>                                                            \
-  void                                                                         \
-  signal_callback_handler(int)                                                 \
-  {                                                                            \
-    elle::report_crash(module, std::to_string(sig));                           \
-    exit(sig);                                                                 \
-  }                                                                            \
-                                                                               \
-  int                                                                          \
-  main(int argc, char* argv[])                                                 \
-  {                                                                            \
-    /* Register signals and signal handler */               \
-    signal(SIGINT,  signal_callback_handler<SIGINT>);       \
-    signal(SIGTERM, signal_callback_handler<SIGTERM>);       \
-    signal(SIGSEGV, signal_callback_handler<SIGSEGV>);       \
-    signal(SIGKILL, signal_callback_handler<SIGKILL>);       \
-                                                             \
-    try                                                       \
-    {                                                         \
-      return _main(argc, argv);                               \
-    }                                                         \
-    catch(std::exception const& e)                            \
-    {                                                         \
-      elle::report_crash(module, e.what());                   \
-    }                                                         \
-    \
-  }                                                        \
-/**/
+# include <boost/system/error_code.hpp>
+# include <boost/asio/signal_set.hpp>
+# include <boost/signals.hpp>
 
 namespace elle
 {
-  bool report_crash(std::string const& module,
-                    std::string const& signal);
+  namespace crash
+  {
+    void
+    report_handler(boost::system::error_code const& error,
+                   int sig);
+    void
+    exiting_report_handler(boost::system::error_code const& error,
+                           int sig);
+    bool
+    report(std::string const& module,
+           std::string const& signal = "");
+  }
+
+  namespace signal
+  {
+    class ScoppedGuard:
+      private boost::noncopyable
+    {
+      /// Types.
+    private:
+      typedef
+      boost::function<void(boost::system::error_code const&, int)> Handler;
+
+     /// Attributes.
+    private:
+      boost::asio::signal_set _signals;
+
+    public:
+      ScoppedGuard();
+
+      ScoppedGuard(std::vector<int> const& sig,
+                   Handler const& handler);
+
+      void
+      init(std::vector<int> const& sig,
+           Handler const& handler);
+
+      void
+      release();
+    };
+  }
 }
 
 #endif

@@ -27,6 +27,8 @@
 
 #include <HoleFactory.hh>
 
+#include "elle/CrashReporter.hh"
+
 ELLE_LOG_COMPONENT("infinit");
 
 void
@@ -302,10 +304,10 @@ Main(elle::Natural32 argc, elle::Character* argv[])
       Infinit(argc, argv);
     }
   catch (elle::utility::ParserException const &e)
-  {
+    {
       std::cerr << e.what() << std::endl;
       Infinit::Parser->Usage();
-  }
+    }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
@@ -313,6 +315,7 @@ Main(elle::Natural32 argc, elle::Character* argv[])
           dynamic_cast<reactor::Exception const*>(&e))
         std::cerr << re->backtrace() << std::endl;
 
+      elle::crash::report("8infinit", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -323,6 +326,11 @@ Main(elle::Natural32 argc, elle::Character* argv[])
 int
 main(int argc, char* argv[])
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<elle::Status> main(sched,
                                       "Infinit main",

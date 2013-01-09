@@ -14,6 +14,7 @@
 #include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/CrashReporter.hh>
 
 #include <lune/Lune.hh>
 #include <elle/Authority.hh>
@@ -635,6 +636,11 @@ namespace satellite
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   try
     {
       if (satellite::Main(argc, argv) == elle::Status::Error)
@@ -644,6 +650,8 @@ int                     main(int                                argc,
     {
       std::cout << "The program has been terminated following "
                 << "a fatal error (" << e.what() << ")." << std::endl;
+
+      elle::crash::report("8network", e.what());
 
       return (1);
     }
