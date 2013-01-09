@@ -41,7 +41,7 @@ class Search(Page):
                 {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
                 fields=["_id"],
                 limit=count + offset
-        )
+            )
 
         result = list(user['_id'] for user in users[offset:])
 

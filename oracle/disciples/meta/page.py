@@ -78,6 +78,7 @@ class Page(object):
         return ()
 
     def logout(self):
+        print("user %s logged out.", self.user)
         self.session.kill()
 
     def authenticate(self, email, password):

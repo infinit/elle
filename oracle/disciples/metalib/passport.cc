@@ -31,13 +31,8 @@ static elle::Passport create_passport(elle::String const& id,
                                       elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
-  elle::io::Path      authority_path;
-
-  if (authority_path.Create(authority_file) == elle::Status::Error)
-    throw std::runtime_error("unable to create authority path");
-
   // Load the authority file.
-  elle::Authority authority(authority_path);
+  elle::Authority authority{elle::io::Path{authority_file}};
 
   // decrypt the authority.
   if (authority.Decrypt(authority_password) == elle::Status::Error)
@@ -91,6 +86,7 @@ metalib_generate_passport(PyObject*, PyObject* args)
     }
   catch(std::exception const& err)
     {
+      std::cerr << err.what() << std::endl;
       PyErr_SetString(metalib_MetaError, err.what());
     }
 

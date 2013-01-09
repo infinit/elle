@@ -5,7 +5,7 @@ import json
 
 import meta.page
 import database
-from meta.constants import *
+from meta import conf
 
 from twisted.python import log
 import time
@@ -35,7 +35,7 @@ class TrophoniusNotify(Notifier):
         self.conn = socket.socket()
 
     def open(self):
-        self.conn.connect(("localhost", int(TROPHONIUS_LISTEN_SSL_PORT)))
+        self.conn.connect((conf.TROPHONIUS_HOST, int(conf.TROPHONIUS_LISTEN_SSL_PORT)))
 
     def send_notification(self, message):
         if isinstance(message, dict):

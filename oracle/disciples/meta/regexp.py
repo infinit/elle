@@ -1,19 +1,23 @@
 import re
 import meta.error as error
 
-Email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]{2,20}\.[a-zA-Z]{2,5}$'
-Handle = r'^.{3,50}$'
-Password = r'^.{64}$'
-Device = r'^.{3,50}$'
-ID = r'^[a-zA-Z0-9]{24,40}$'
-DeviceID = r'^[a-zA-Z0-9]{24,40}$'
-NetworkID = r'^[a-zA-Z0-9]{24,40}$'
-TransactionID = r'^[a-zA-Z0-9]{24,40}$'
-NotNull = r'^.+$'
+Email = re.compile(
+    r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+    r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+    r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$', re.IGNORECASE)  # domain
+
+Handle = re.compile(r'^.{3,50}$')
+Password = re.compile(r'^.{64}$')
+Device = re.compile(r'^.{3,50}$')
+ID = re.compile(r'^[a-zA-Z0-9]{24,40}$')
+DeviceID = re.compile(r'^[a-zA-Z0-9]{24,40}$')
+NetworkID = re.compile(r'^[a-zA-Z0-9]{24,40}$')
+TransactionID = re.compile(r'^[a-zA-Z0-9]{24,40}$')
+NotNull = re.compile(r'^.+$')
 
 class Validator:
     def __init__(self, rexp, error_code = error.UNKNOWN):
-        self.rexp = re.compile(rexp)
+        self.rexp = rexp
         self.error_code = error_code
 
     def __call__(self, value):

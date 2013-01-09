@@ -4,7 +4,7 @@
 from __future__ import print_function
 
 import sys
-from constants import *
+import conf
 
 if "bsd" in sys.platform:
 	from twisted.internet import kqreactor as _platform_reactor
@@ -40,7 +40,7 @@ class Message(object):
 		self.type = type
 
 class Application(object):
-	def __init__(self, ip="127.0.0.1", port=TROPHONIUS_LISTEN_TCP_PORT, ssl_port=TROPHONIUS_LISTEN_SSL_PORT, logfile=sys.stderr):
+	def __init__(self, ip="127.0.0.1", port=conf.LISTEN_TCP_PORT, ssl_port=conf.LISTEN_SSL_PORT, logfile=sys.stderr):
 		self.ip = ip
 		self.port = port
 		self.logfile = logfile
@@ -73,15 +73,15 @@ class Application(object):
 		cert.set_pubkey(k)
 		cert.sign(k, 'sha256')
 
-		self.ssl_key_path = os.path.join(cert_dir, TROPHONIUS_SSL_KEY)
-		self.ssl_cert_path = os.path.join(cert_dir, TROPHONIUS_SSL_CERT)
+		self.ssl_key_path = os.path.join(cert_dir, conf.SSL_KEY)
+		self.ssl_cert_path = os.path.join(cert_dir, conf.SSL_CERT)
 		open(self.ssl_cert_path, "wt").write(
 				crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
 		open(self.ssl_key_path, "wt").write(
 				crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
 
 	def run(self):
-		if not all(os.path.exists(file) for file in (TROPHONIUS_SSL_KEY, TROPHONIUS_SSL_CERT)):
+		if not all(os.path.exists(file) for file in (conf.SSL_KEY, conf.SSL_CERT)):
 			self.create_self_signed_cert(".")
 		notifier = inotify.INotify()
 		notifier.startReading()

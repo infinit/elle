@@ -13,7 +13,7 @@ Define database collections and their constraints
 """
 
 _connection = None
-def connection(host="localhost", port=27017):
+def connection(host=conf.MONGO_HOST, port=conf.MONGO_PORT):
     global _connection
     if _connection is None:
         _connection = pymongo.Connection(host, port)
@@ -90,6 +90,13 @@ def notifications(conn=None):
     if _notifications is None:
         _notifications = database(conn)['notifications']
     return _notifications
+
+_crashes = None
+def crashes(conn=None):
+    global _crashes
+    if _crashes is None:
+        _crashes = database(conn)['crashes']
+    return _crashes
 
 # functions
 def byId(collection, _id):
