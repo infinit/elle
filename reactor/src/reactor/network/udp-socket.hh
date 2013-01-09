@@ -29,6 +29,12 @@ namespace reactor
         UDPSocket(Scheduler& sched);
         virtual ~UDPSocket();
 
+      /*--------------.
+      | Configuration |
+      `--------------*/
+      public:
+        void bind(boost::asio::ip::udp::endpoint const& endpoint);
+
       /*-----------.
       | Connection |
       `-----------*/

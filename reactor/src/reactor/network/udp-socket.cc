@@ -44,6 +44,16 @@ namespace reactor
     UDPSocket::~UDPSocket()
     {}
 
+    /*--------------.
+    | Configuration |
+    `--------------*/
+
+    void
+    UDPSocket::bind(boost::asio::ip::udp::endpoint const& endpoint)
+    {
+      socket()->bind(endpoint);
+    }
+
     /*-----------.
     | Connection |
     `-----------*/
