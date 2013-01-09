@@ -18,7 +18,7 @@ MONGO_PORT = 27017
 
 INFINIT_AUTHORITY_PATH = os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
-    "../../infinit.auth"
+    "../../../oracle/infinit.auth"
 )
 
 INFINIT_AUTHORITY_PASSWORD = ""
