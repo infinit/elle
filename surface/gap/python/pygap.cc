@@ -316,6 +316,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("user_fullname", &gap_user_fullname, by_value());
   py::def("user_email", &gap_user_email, by_value());
   py::def("_id", &gap_self_id, by_value());
+  py::def("email", &gap_self_email, by_value());
   py::def("search_users", &_search_users);
   py::def("get_swaggers", &_get_swaggers);
 

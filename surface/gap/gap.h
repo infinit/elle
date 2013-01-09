@@ -283,9 +283,15 @@ extern "C" {
 
   /// - Self ------------------------------------------------------------------
 
+  /// Get current user token.
   char const*
   gap_user_token(gap_State* state);
 
+  /// Get current user email.
+  char const*
+  gap_self_email(gap_State* state);
+
+  /// Get current user id.
   char const*
   gap_self_id(gap_State* state);
 

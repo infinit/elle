@@ -116,9 +116,12 @@ namespace surface
       elle::Buffer
       user_icon(std::string const& id);
 
+
+      /// Retrieve current user data.
       User const&
       get_me();
 
+      /// Retrieve current user token.
       std::string const&
       get_token();
 

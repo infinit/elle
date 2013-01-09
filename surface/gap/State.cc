@@ -27,6 +27,7 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 #include <elle/HttpClient.hh>
+#include <elle/CrashReporter.hh>
 
 #include <common/common.hh>
 #include <elle/os/path.hh>
@@ -71,15 +72,14 @@ namespace surface
 
     State::State()
       : _meta{
-          new plasma::meta::Client{
-            common::meta::host(),
-            common::meta::port(),
-            true,
-          }
-        }
-      , _logged{false}
+      new plasma::meta::Client{
+        common::meta::host(),
+        common::meta::port(),
+        true,
+      }}
       , _trophonius{nullptr}
       , _users{}
+      , _logged{false}
       , _swaggers_dirty{true}
       , _output_dir{common::system::download_directory()}
       , _files_infos{}
@@ -102,7 +102,6 @@ namespace surface
           elle::log::Logger::Level::debug
       );
       ELLE_LOG("Creating a new State");
-
 
       namespace p = std::placeholders;
       this->transaction_callback(
@@ -1857,6 +1856,5 @@ namespace surface
           return;
       }
     }
-
   }
 }

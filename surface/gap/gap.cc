@@ -429,6 +429,22 @@ extern "C"
   }
 
   char const*
+  gap_self_email(gap_State* state)
+  {
+    assert(state != nullptr);
+    gap_Status ret;
+    try
+      {
+        auto email = __TO_CPP(state)->get_me().email;
+        return email.c_str();
+      }
+    CATCH_ALL(user_email);
+
+    (void) ret;
+    return nullptr;
+  }
+
+  char const*
   gap_self_id(gap_State* state)
   {
     assert(state != nullptr);
