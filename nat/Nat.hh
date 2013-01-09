@@ -50,7 +50,8 @@ public:
 
     Hole(reactor::Scheduler &sched,
          std::string const &hostname,
-         int port);
+         int port,
+         int local_port = 0);
 
 private:
     void
@@ -122,7 +123,8 @@ public:
 public:
     Hole
     punch(std::string const &hostname,
-          int port);
+          int port,
+          int local_port = 0);
 
 private:
     reactor::Scheduler &sched;
