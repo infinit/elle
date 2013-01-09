@@ -18,6 +18,10 @@ namespace elle
 {
   namespace concurrency
   {
+//
+// ---------- static attribules --------------------------------------------------
+//
+    elle::signal::ScoppedGuard Program::_signal_guard{};
 
 //
 // ---------- static methods --------------------------------------------------
@@ -28,17 +32,21 @@ namespace elle
     ///
     Status              Program::Setup()
     {
+      Program::_signal_guard.init(
+        {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      // set the signal handlers.
-      ::signal(SIGINT, &Program::Exception);
-      ::signal(SIGQUIT, &Program::Exception);
-      ::signal(SIGABRT, &Program::Exception);
-      ::signal(SIGTERM, &Program::Exception);
+          SIGQUIT,
 #elif defined(INFINIT_WINDOWS)
-      // XXX to implement
+            // Nothing.
 #else
 # error "unsupported platform"
 #endif
+          SIGINT, SIGABRT, SIGTERM, SIGSEGV},
+        [] (boost::system::error_code const&, int sig)
+        {
+          Program::Exception(sig);
+        }
+      );
 
       return Status::Ok;
     }
@@ -80,6 +88,8 @@ namespace elle
         case SIGABRT:
         case SIGTERM:
           {
+            Program::_signal_guard.release();
+
             // exit properly by finishing processing the last events.
             Program::Exit();
 

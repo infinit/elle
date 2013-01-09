@@ -2,6 +2,7 @@
 # define ELLE_CONCURRENCY_PROGRAM_HH
 
 # include <elle/types.hh>
+# include <elle/CrashReporter.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <reactor/signal.hh>
@@ -24,6 +25,11 @@ namespace elle
     class Program
     {
     public:
+      //XXX: Static SCOPPED guard suxx a bit.
+      static signal::ScoppedGuard _signal_guard;
+
+    public:
+      Program();
       //
       // static methods
       //
