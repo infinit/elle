@@ -39,11 +39,16 @@ namespace elle
 
   Hole::Hole(reactor::Scheduler &sched,
              std::string const &hostname,
-             int port)
+             int port,
+             int local_port)
       : _handle{new rnet::UDPSocket{sched}}
       , _public_endpoint{"", 0}
       , _endpoint{rnet::resolve_udp(sched, hostname, std::to_string(port))}
   {
+    // FIXME: What about ipv6 ?
+    if (local_port != 0)
+      _handle->bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),
+                                                   local_port));
   }
 
   Hole::Hole(Hole&& other):
@@ -161,9 +166,10 @@ namespace elle
 
   Hole
   NAT::punch(std::string const &hostname,
-             int port)
+             int port,
+             int local_port)
   {
-    Hole h(sched, hostname, port);
+    Hole h(sched, hostname, port, local_port);
 
     h.drill();
     return h;
