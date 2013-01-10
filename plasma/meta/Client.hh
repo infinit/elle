@@ -190,6 +190,9 @@ namespace plasma
     typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
     typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
+
+    typedef elle::Buffer UserIcon;
+
     class Client
     {
     private:
@@ -226,6 +229,9 @@ namespace plasma
 
       UserResponse
       user(std::string const& id);
+
+      UserIcon
+      user_icon(std::string const& id);
 
       SelfResponse
       self();

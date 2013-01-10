@@ -255,6 +255,12 @@ namespace surface
       return *(user.release());
     }
 
+    elle::Buffer
+    State::user_icon(std::string const& id)
+    {
+      return this->_meta->user_icon(id);
+    }
+
     User const&
     State::get_me()
     {

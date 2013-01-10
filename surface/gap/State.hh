@@ -113,6 +113,9 @@ namespace surface
       User const&
       user(std::string const& id);
 
+      elle::Buffer
+      user_icon(std::string const& id);
+
       User const&
       get_me();
 
