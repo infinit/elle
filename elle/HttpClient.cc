@@ -21,8 +21,28 @@ namespace elle
                          bool check_errors)
     : _impl{new Impl{server, port, check_errors}}
     , _token{}
-    {
-    }
+  {}
+
+  HttpClient::~HttpClient()
+  {}
+
+  std::string
+  HttpClient::get_string(std::string const& url)
+  {
+    std::stringstream ss;
+    this->_request(url, "GET", "", ss);
+    return ss.str();
+  }
+
+  elle::Buffer
+  HttpClient::get_buffer(std::string const& url)
+  {
+    // XXX not optimized (mulptiple copies).
+    std::stringstream ss;
+    this->_request(url, "GET", "", ss);
+    std::string res = ss.str();
+    return elle::Buffer{(elle::Byte*) res.data(), res.size()};
+  }
 
   void
   HttpClient::_request(std::string const& url,

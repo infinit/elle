@@ -473,6 +473,31 @@ extern "C"
     return nullptr;
   }
 
+  gap_Status
+  gap_user_icon(gap_State* state,
+                char const* user_id,
+                void** data,
+                size_t* size)
+  {
+    assert(state != nullptr);
+    assert(user_id != nullptr);
+    *data = nullptr;
+    *size = 0;
+    gap_Status ret = gap_ok;
+    try
+      {
+        auto pair = __TO_CPP(state)->user_icon(user_id).release();
+        *data = pair.first.release();
+        *size = pair.second;
+      }
+    CATCH_ALL(user_icon);
+    return ret;
+  }
+
+  void gap_user_icon_free(void* data)
+  {
+
+  }
   char const* gap_user_by_email(gap_State* state, char const* email)
   {
     assert(state != nullptr);

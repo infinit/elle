@@ -317,6 +317,12 @@ namespace plasma
       return this->_client.get<UserResponse>("/user/" + id + "/view");
     }
 
+    UserIcon
+    Client::user_icon(std::string const& id)
+    {
+      return this->_client.get_buffer("/user/" + id + "/icon");
+    }
+
     SelfResponse
     Client::self()
     {

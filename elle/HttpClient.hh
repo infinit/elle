@@ -1,8 +1,8 @@
 #ifndef ELLE_HTTPCLIENT_HH
 # define ELLE_HTTPCLIENT_HH
 
+# include <elle/Buffer.hh>
 # include <elle/format/json.hh>
-# include <elle/format/json/fwd.hh>
 
 namespace elle
 {
@@ -41,13 +41,14 @@ namespace elle
   {
   private:
     struct Impl;
-    Impl* _impl;
+    std::unique_ptr<Impl> _impl;
     std::string _token;
 
   public:
     HttpClient(std::string const& server,
                uint16_t port,
                bool check_errors);
+    ~HttpClient();
 
     void
     token(std::string const& token) { _token = token; }
@@ -61,6 +62,12 @@ namespace elle
 
     template<typename T>
     T post(std::string const& url, elle::format::json::Object const& req);
+
+    std::string
+    get_string(std::string const& url);
+
+    elle::Buffer
+    get_buffer(std::string const& url);
 
   private:
     void
