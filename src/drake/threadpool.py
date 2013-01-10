@@ -27,7 +27,12 @@ class ThreadPool:
             self.__cond.wait()
           if self.__stop:
             #print('%s: stop' % self, file = sys.stderr)
-            self.__pool._ThreadPool__threads.remove(self)
+            try:
+              self.__pool._ThreadPool__threads.remove(self)
+            except:
+              # If the thread was starting a job, it was already
+              # removed from the set, but that's OK.
+              pass
             return
         #print('%s: run job' % self, file = sys.stderr)
         self.__f()
