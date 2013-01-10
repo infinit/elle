@@ -228,7 +228,7 @@ class Toolkit(metaclass = _ToolkitType):
 
 def concatenate(chunks, prefix = ''):
 
-    return ''.join(map(lambda v: ' %s%s' %(prefix, v), chunks))
+    return ''.join(map(lambda v: ' %s%s' % (prefix, utils.shell_escape(v)), chunks))
 
 class GccToolkit(Toolkit):
 
