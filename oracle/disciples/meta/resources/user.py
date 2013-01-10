@@ -266,7 +266,7 @@ class Icon(Page):
     def GET(self, id_):
         if _id not in self.user.swaggers:
             raise web.forbidden()
-        with open(os.path.join(os.path.dirname(__file__), "pif.png")), 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
             data = f.read(4096)
             if data:
                 yield data
