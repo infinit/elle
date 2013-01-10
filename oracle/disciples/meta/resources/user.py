@@ -11,6 +11,7 @@ from meta import regexp
 
 import meta.mail
 
+import os
 import re
 
 import metalib
@@ -263,13 +264,18 @@ class Icon(Page):
             -> RAW_DATA (png 256x256)
     """
 
-    def GET(self, id_):
-        if _id not in self.user.swaggers:
+    __pattern__ = "/user/(.+)/icon"
+
+    def GET(self, _id):
+        if not self.user or _id not in self.user.swaggers:
             raise web.forbidden()
         with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
-            data = f.read(4096)
-            if data:
-                yield data
+            while 1:
+                data = f.read(4096)
+                if data:
+                    yield data
+                else:
+                    break
 
 class Register(Page):
     """
