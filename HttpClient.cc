@@ -6,6 +6,8 @@
 
 # define CRLF "\r\n"
 
+ELLE_LOG_COMPONENT("elle.httpClient");
+
 namespace elle
 {
   //- Exception ---------------------------------------------------------------
@@ -60,6 +62,9 @@ namespace elle
       {
         if (!first)
           body += "&";
+        else
+          first = false;
+
         body += pair.first + "=" + pair.second; //XXX must be encoded.
       }
     return body;
@@ -184,6 +189,7 @@ namespace elle
     {
       boost::asio::streambuf request_buf;
       std::ostream request_stream(&request_buf);
+
       request_stream << request.method() << ' ' << request.url() << " HTTP/1.0" CRLF
                      << "Host: " << _impl->server << CRLF
                      << "User-Agent: MetaClient" CRLF
@@ -353,12 +359,14 @@ namespace elle
 
     // http request
     try
-      { this->_request(url, "PUT", req.repr(), res); }
+    {
+      this->_request(url, "PUT", req.repr(), res);
+    }
     catch (std::exception const& err)
-      {
-        ELLE_TRACE("PUT %s %s threw an error", url, req.repr());
-        throw HTTPException(ResponseCode::internal_server_error, err.what());
-      }
+    {
+      ELLE_TRACE("PUT %s %s threw an error", url, req.repr());
+      throw HTTPException(ResponseCode::internal_server_error, err.what());
+    }
 
     (void) res;
 

@@ -93,6 +93,7 @@ namespace elle
     struct Impl;
     std::unique_ptr<Impl> _impl;
     std::string _token;
+    std::string _user_agent;
 
   public:
     HttpClient(std::string const& server,
@@ -113,6 +114,10 @@ namespace elle
     template<typename T>
     T post(std::string const& url, elle::format::json::Object const& req);
 
+    bool
+    put(std::string const& url,
+        elle::format::json::Object const& req);
+
     elle::Buffer
     get_buffer(std::string const& url);
 
@@ -120,8 +125,6 @@ namespace elle
     request(std::string const& method, std::string const& url);
 
     void fire(Request& request);
-
-    bool put(std::string const& url, elle::format::json::Object const& req);
 
   private:
     ///XXX Remove this
