@@ -124,8 +124,10 @@ class Config:
         if path == Path('/lib') or path == Path('/usr/lib'):
             return
         p = Path(path)
+        # if not p.absolute():
+        #     p = srctree() / prefix() / p
         if not p.absolute():
-            p = srctree() / prefix() / p
+            p = prefix() / p
         self.lib_paths[p] = runtime
 
 
