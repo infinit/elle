@@ -26,6 +26,8 @@ namespace elle
     unknown_error = 666
   };
 
+  //- Exception ---------------------------------------------------------------
+
   /// Exception thrown by HttpClient methods
   class HTTPException
     : public std::runtime_error
@@ -37,6 +39,54 @@ namespace elle
     HTTPException(ResponseCode code, std::string const& message);
   }; // ! HTTPException
 
+  class HttpClient;
+
+  //- Request -----------------------------------------------------------------
+  class Request
+  {
+  private:
+    struct Impl;
+    std::unique_ptr<Impl> _this;
+
+  public:
+    Request(HttpClient& client,
+            std::string const& method,
+            std::string const& url);
+    Request(Request&& other);
+    ~Request();
+
+  public:
+    std::string const& method() const;
+    std::string const& url() const;
+    std::string body_string() const;
+    std::string headers_string() const;
+    std::string const& content_type() const;
+
+  public:
+    bool
+    has_header(std::string const& key) const;
+
+    std::string const&
+    header(std::string const& key);
+
+    Request&
+    header(std::string const& key, std::string const& value);
+
+    Request&
+    post_field(std::string const& key,
+               std::string const& value);
+
+    Request&
+    content_type(std::string const& str);
+
+    void fire();
+
+    std::stringstream&
+    response();
+
+  };
+
+  //- HttpClient --------------------------------------------------------------
   class HttpClient
   {
   private:
@@ -63,13 +113,16 @@ namespace elle
     template<typename T>
     T post(std::string const& url, elle::format::json::Object const& req);
 
-    std::string
-    get_string(std::string const& url);
-
     elle::Buffer
     get_buffer(std::string const& url);
 
+    Request
+    request(std::string const& method, std::string const& url);
+
+    void fire(Request& request);
+
   private:
+    ///XXX Remove this
     void
     _request(std::string const& url,
              std::string const& method,
