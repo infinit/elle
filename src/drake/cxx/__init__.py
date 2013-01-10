@@ -652,37 +652,49 @@ class Linker(Builder):
     name = 'executable linkage'
 
     def hash(self):
+        h = {}
         flags = self.config.flags
         flags.sort()
+        h['flags'] = flags
         frameworks = list(self.config.frameworks())
         frameworks.sort()
+        h['frameworks'] = frameworks
         lib_paths = list(((path, self.config.lib_paths[path]) for path in self.config.lib_paths))
         lib_paths.sort()
+        h['lib_paths'] = lib_paths
+        rpath = self.config._Config__rpath
+        rpath.sort()
+        h['rpath'] = rpath
         libs = self.config.libs
         libs.sort()
-        objs = ' '.join(sorted(map(str, self.objs)))
-        return '\n'.join(map(str, (objs, flags, frameworks, lib_paths, libs)))
+        h['libs'] = libs
+        dynlibs = ' '.join(map(lambda lib: lib.lib_name, self.exe.dynamic_libraries))
+        h['dynlibs'] = dynlibs
+        return repr(h)
 
     def dependencies(self):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
 
-    def __init__(self, objs, exe, tk, cfg):
+    def __init__(self, exe, tk, cfg):
 
+        # FIXME: factor with DynLibLinker
         self.exe = exe
         self.toolkit = tk
-        self.config = cfg
-        # This duplicates self.__sources, but preserves the order.
-        self.objs = objs
-        Builder.__init__(self, objs, [exe])
-
+        self.config = drake.cxx.Config(cfg)
+        for lib in exe.dynamic_libraries:
+            path = drake.Path(lib.path())
+            path.strip_prefix(drake.prefix())
+            self.config.lib_path(path.dirname())
+            self.config.lib(lib.lib_name)
+        Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
 
     def execute(self):
 
         return self.cmd('Link %s' % self.exe,
                         self.toolkit.link(self.config,
-                                          self.objs + list(self.sources_dynamic()),
+                                          self.exe.sources + list(self.sources_dynamic()),
                                           self.exe))
 
     def __repr__(self):
@@ -704,25 +716,33 @@ class DynLibLinker(Builder):
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
 
-    def __init__(self, objs, lib, tk, cfg):
+    def __init__(self, lib, tk, cfg):
 
         self.lib = lib
         self.toolkit = tk
-        self.config = cfg
+        self.config = Config(cfg)
+        self.__library = lib
+        for sublib in self.lib.dynamic_libraries:
+            self.config.lib_path(sublib.path().dirname())
+            self.config.lib(sublib.lib_name)
         # This duplicates self.__sources, but preserves the order.
-        self.objs = objs
-        Builder.__init__(self, objs, [lib])
+        self.__objects = lib.sources
+        Builder.__init__(self, self.__objects + lib.dynamic_libraries, [lib])
 
     def execute(self):
 
         return self.cmd('Link %s' % self.lib,
                         self.toolkit.dynlink(self.config,
-                                             self.objs + list(self.sources_dynamic()),
+                                             self.__objects + list(self.sources_dynamic()),
                                              self.lib))
 
     def __repr__(self):
 
         return 'Linker for %s' % self.lib
+
+    def hash(self):
+
+        return ' '.join(map(lambda lib: lib.lib_name, self.lib.dynamic_libraries))
 
 
 class StaticLibLinker(ShellCommand):
@@ -830,13 +850,19 @@ class Binary(Node):
         Node.__init__(self, path)
 
         self.sources = []
+        self.__dynamic_libraries = []
 
         for source in sources:
             self.src_add(source, self.tk, self.cfg)
 
+
     def clone(self, path):
 
         return Binary(path, self.sources, self.tk, self.cfg)
+
+    @property
+    def dynamic_libraries(self):
+        return self.__dynamic_libraries
 
     def src_add(self, source, tk, cfg):
 
@@ -856,7 +882,7 @@ class Binary(Node):
         elif source.__class__ == Header:
             pass
         elif isinstance(source, DynLib):
-            self.sources.append(source)
+            self.__dynamic_libraries.append(source)
         else:
             for consumer in source.consumers:
                 if isinstance(consumer, Expander):
@@ -877,10 +903,23 @@ class Binary(Node):
 
 class DynLib(Binary):
 
-    def __init__(self, path, sources, tk, cfg):
+    def __init__(self, path, sources, tk, cfg, preserve_filename = False):
+        path = Path(path)
+        self.__lib_name = str(path.basename())
+        if not preserve_filename:
+            path = tk.libname_dyn(cfg, path)
+        Binary.__init__(self, path, sources, tk, cfg)
+        DynLibLinker(self, self.tk, self.cfg)
 
-        Binary.__init__(self, tk.libname_dyn(cfg, path), sources, tk, cfg)
-        DynLibLinker(self.sources, self, self.tk, self.cfg)
+    def clone(self, path):
+        path = Path(path)
+        res = DynLib(path, self.sources, self.tk, self.cfg, preserve_filename = True)
+        res.__lib_name = self.__lib_name
+        return res
+
+    @property
+    def lib_name(self):
+        return self.__lib_name
 
 class Module(Binary):
 
@@ -902,7 +941,7 @@ class Executable(Binary):
 
         path = tk.exename(cfg, path)
         Binary.__init__(self, path, sources, tk, cfg)
-        Linker(self.sources, self, self.tk, self.cfg)
+        Linker(self, self.tk, self.cfg)
 
 def deps_merge(nodes):
 
