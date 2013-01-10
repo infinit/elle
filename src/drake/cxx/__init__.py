@@ -297,9 +297,13 @@ class GccToolkit(Toolkit):
             raise Exception('Unknown C++ standard: %s' % std)
         return res
 
-    def compile(self, cfg, src, obj, c = False):
-        return ' '.join([c and self.c or self.cxx] + cfg.flags + self.cppflags(cfg) + self.cflags(cfg)
-                        + ['-c', str(src), '-o', str(obj)])
+    def compile(self, cfg, src, obj, c = False, pic = False):
+        extraflags = []
+        if pic:
+            extraflags.append('-fPIC')
+        return ' '.join([c and self.c or self.cxx] + cfg.flags +
+                        self.cppflags(cfg) + self.cflags(cfg) +
+                        extraflags + ['-c', str(src), '-o', str(obj)])
 
 
     def archive(self, cfg, objs, lib):
@@ -598,7 +602,16 @@ class Compiler(Builder):
                         self.toolkit.compile(self.config,
                                              self.src.path(),
                                              self.obj.path(),
-                                             c = self.__c))
+                                             c = self.__c,
+                                             pic = self.pic))
+
+    @property
+    def pic(self):
+        for consumer in self.obj.consumers:
+            if isinstance(consumer, DynLibLinker):
+                return True
+        return False
+
 
     def hash(self):
         flags = self.config.flags
@@ -609,7 +622,8 @@ class Compiler(Builder):
         cflags.sort()
         include_local = list(map(str, self.config.local_include_path()))
         include_system = list(map(str, self.config.system_include_path()))
-        res = '%s\n%s\n%s\n%s\n%s\n' % (cppflags, cflags, flags, include_local, include_system)
+        res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
+            (cppflags, cflags, flags, include_local, include_system, self.pic)
         return res
 
     def mkdeps(self):
