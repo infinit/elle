@@ -35,6 +35,7 @@ class Config:
             self._framework = {}
             self._defines = {}
             self.__standard = None
+            self.__rpath = []
         else:
             self.__debug = model.__debug
             self._includes = deepcopy(model._includes)
@@ -48,6 +49,7 @@ class Config:
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
             self.__standard = model.__standard
+            self.__rpath = deepcopy(model.__rpath)
 
     def enable_debug_symbols(self, val = True):
         self.__debug = val
@@ -125,6 +127,11 @@ class Config:
         if not p.absolute():
             p = srctree() / prefix() / p
         self.lib_paths[p] = runtime
+
+
+    def lib_path_runtime(self, path):
+
+        self.__rpath.append(drake.Path(path))
 
 
     def lib(self, lib):
@@ -302,12 +309,18 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        lib_rpaths = (path for path in cfg.lib_paths if cfg.lib_paths[path])
-        return '%s %s%s%s%s %s -o %s %s' % \
+        lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
+        for path in cfg._Config__rpath:
+            if not path.absolute():
+                path = drake.Path('$ORIGIN') / path
+            lib_rpaths.append(path)
+
+        return '%s %s%s%s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
+                concatenate(cfg.lib_paths, '-Wl,-rpath-link '),
                 concatenate(lib_rpaths, '-Wl,-rpath='),
                 concatenate(objs),
                 exe,
@@ -315,7 +328,12 @@ class GccToolkit(Toolkit):
 
     def dynlink(self, cfg, objs, exe):
 
-        lib_rpaths = (path for path in cfg.lib_paths if cfg.lib_paths[path])
+        lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
+        for path in cfg._Config__rpath:
+            if not path.absolute():
+                path = drake.Path('$ORIGIN') / path
+            lib_rpaths.append(path)
+
         return '%s %s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
