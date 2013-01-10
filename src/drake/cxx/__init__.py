@@ -321,6 +321,8 @@ class GccToolkit(Toolkit):
                 path = drake.Path('$ORIGIN') / path
             lib_rpaths.append(path)
 
+        (obj.sub_libraries for obj in objs)
+
         return '%s %s%s%s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
