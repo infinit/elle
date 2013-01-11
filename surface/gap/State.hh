@@ -177,13 +177,46 @@ namespace surface
       transaction(std::string const& transaction_id);
 
     public:
+      /// A process is indexed with a unique identifier.
+      typedef size_t ProcessId;
+
+      /// The status of a process. failure or success implies that the process
+      /// is terminated.
+      enum class ProcessStatus : int { failure = 0, success = 1, running = 2};
+    private:
+      struct Process;
+      typedef std::unique_ptr<Process> ProcessPtr;
+      typedef std::unordered_map<ProcessId, ProcessPtr> ProcessMap;
+      ProcessMap _processes;
+
+    public:
+      /// Retreive the status of an existing process.
+      ProcessStatus
+      process_status(ProcessId const id) const;
+
+      /// @brief Remove a process and throw the exception if any.
+      ///
+      /// @throw if the process does not exist or if it is still running.
+      void process_finalize(ProcessId const id);
+
+    private:
+      ProcessId
+      _add_process(std::string const& name,
+                   std::function<void(void)> const& cb);
+
+    public:
       /// @brief Send a file list to a specified user.
       ///
       /// Create a network, copy files locally, create transaction.
-      void
+      ProcessId
       send_files(std::string const& recipient_id_or_email,
                  std::unordered_set<std::string> const& files);
+    private:
+      void
+      _send_files(std::string const& recipient,
+                  std::unordered_set<std::string> const& files);
 
+    public:
       /// @brief Update transaction status.
       ///
       /// Used to answer a transaction (accept or deny).

@@ -46,6 +46,11 @@ extern "C"
       ELLE_ERR(#_func_ " error: %s", err.what());                              \
       ret = gap_internal_error;                                                \
     }                                                                          \
+  catch (...)                                                                  \
+    {                                                                          \
+      ELLE_ERR(#_func_ " unknown error");                                      \
+      ret = gap_internal_error;                                                \
+    }                                                                          \
   /**/
 
 // automate cpp wrapping

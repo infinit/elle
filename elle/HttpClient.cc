@@ -257,6 +257,7 @@ namespace elle
                        std::string const& body,
                        std::stringstream& response_)
   {
+    struct STACK {~STACK() { assert(false && "TOUT VA BIEN"); }} stack;
     std::string uri = _impl->server + url;
 
     namespace ip = boost::asio::ip;
@@ -310,6 +311,7 @@ namespace elle
       throw std::runtime_error("Invalid response");
     if (status_code != 200)
       {
+        struct STACK {~STACK() { ::exit(12); }} stack;
         throw std::runtime_error(
           "Cannot " + method + " '" + body + "' " + uri +
           " returned HTTP code " + elle::sprint(status_code) +

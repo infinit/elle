@@ -4,6 +4,7 @@
 #include <pwd.h>
 #include <stdexcept>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 
 #include <boost/algorithm/string.hpp>
@@ -524,9 +525,103 @@ namespace surface
       return response._id;
     }
 
+    //- Network process -------------------------------------------------------
+
+    struct State::Process
+    {
+      typedef std::function<void(void)> Callback;
+
+      Callback            callback;
+      std::thread         thread;
+      std::string         name;
+      bool                done;
+      bool                success;
+      std::exception_ptr  exception;
+
+      Process(std::string const& name,
+              Callback const& cb)
+        : callback{cb}
+        , thread{}
+        , name{name}
+        , done{false}
+        , success{false}
+        , exception{}
+      {
+        this->thread = std::move(std::thread{&Process::_run, this});
+      }
+
+    private:
+      void _run()
+      {
+        try
+          {
+            (this->callback)();
+            success = true;
+          }
+        catch (...)
+          {
+            this->exception = std::current_exception();
+          }
+        done = true;
+      }
+    };
+
+    State::ProcessStatus
+    State::process_status(ProcessId const id) const
+    {
+      auto it = _processes.find(id);
+      if (it == _processes.end())
+        throw elle::Exception{
+            "Couldn't find any process with id " + std::to_string(id)
+        };
+      if (!it->second->done)
+        return ProcessStatus::running;
+      // the process is terminated.
+      if (it->second->success)
+        return ProcessStatus::success;
+      return ProcessStatus::failure;
+    }
+
     void
+    State::process_finalize(ProcessId const id)
+    {
+      auto it = _processes.find(id);
+      if (it == _processes.end())
+        throw elle::Exception{
+            "Couldn't find any process with id " + std::to_string(id)
+        };
+      if (!it->second->done)
+        throw elle::Exception{"Process not finished"};
+      ProcessPtr ptr{it->second.release()};
+      _processes.erase(it);
+      if (!ptr->success)
+        std::rethrow_exception(ptr->exception); // XXX exception_ptr deleted !
+    }
+
+    State::ProcessId
+    State::_add_process(std::string const& name,
+                        std::function<void(void)> const& cb)
+    {
+      //auto process = elle::make_unique<Process>(*this, name, cb);
+      // XXX leak if emplace() fails.
+      static ProcessId id = 0;
+      _processes[id].reset(new Process{name, cb});
+      return id++;
+    }
+
+    State::ProcessId
     State::send_files(std::string const& recipient_id_or_email,
                       std::unordered_set<std::string> const& files)
+    {
+      return this->_add_process(
+        "send_files",
+        std::bind(&State::_send_files, this, recipient_id_or_email, files)
+      );
+    }
+
+    void
+    State::_send_files(std::string const& recipient_id_or_email,
+                       std::unordered_set<std::string> const& files)
     {
       ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
 
@@ -552,16 +647,9 @@ namespace surface
       elle::utility::Time time;
       time.Current();
 
-      // Create an ostream to convert timestamp to string.
-      std::ostringstream oss;
-      oss << time.nanoseconds;
-
-      // FIXME: How to compute network name ?
-      /// XXX: Something fucked my id.
-      std::string network_name =
-        std::string(recipient_id_or_email)
-        + "-"
-        + oss.str();
+      std::string network_name = elle::sprintf("%s-%s",
+                                               recipient_id_or_email,
+                                               time.nanoseconds);
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
@@ -616,12 +704,9 @@ namespace surface
       catch (elle::Exception const&)
       {
         // Something went wrong, we need to destroy the network.
-        this->delete_network(network_id,
-                             false);
-
+        this->delete_network(network_id, false);
         throw;
       }
-
     }
 
     //- Transactions ----------------------------------------------------------
