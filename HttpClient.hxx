@@ -79,7 +79,7 @@ namespace elle
 // http request
     try
       { this->_request(url, "GET", "", res); }
-    catch (std::exception const& err)
+    catch (std::runtime_error const& err)
       {
         ELLE_TRACE("GET %s threw an error", url);
         throw HTTPException(ResponseCode::internal_server_error, err.what());
