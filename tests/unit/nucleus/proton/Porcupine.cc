@@ -331,10 +331,7 @@ test_porcupine_catalog()
 {
   ELLE_TRACE_FUNCTION("");
 
-  // A test with N = 1000 and an extent of 1024 leads to a porcupine
-  // with 6 levels which is enough to test all cases.
-
-  elle::Natural32 const N = 1000;
+  elle::Natural32 const N = 128;
 
   std::vector<elle::String> vector = test_porcupine_catalog_prepare(N);
 
@@ -433,7 +430,7 @@ test_porcupine_data_write(
 {
   ELLE_TRACE_FUNCTION(porcupine);
 
-  elle::Natural32 const N = 25360;
+  elle::Natural32 const N = 12360;
 
   elle::Buffer buffer{N};
 
