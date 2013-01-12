@@ -345,7 +345,7 @@ namespace infinit
                            ::BIGNUM* dmq1,
                            ::BIGNUM* iqmp)
     {
-      ELLE_TRACE_FUNCTION(n, e, d, p, q, dmp1, dmq1, iqmp);
+      ELLE_DEBUG_FUNCTION(n, e, d, p, q, dmp1, dmq1, iqmp);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
