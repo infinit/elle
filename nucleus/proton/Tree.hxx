@@ -240,10 +240,14 @@ namespace nucleus
 
       root.load();
 
+      // Recursively check the tree's validity.
+      if (flags & flags::recursive)
+        root().check(flags);
+
       // Check the address.
       if (flags & flags::address)
         {
-          ELLE_DEBUG_SCOPE("checking addresses");
+          ELLE_TRACE_SCOPE("checking addresses");
 
           // Compute the address of the root block.
           Address address{root.contents().bind()};
@@ -254,14 +258,10 @@ namespace nucleus
                             this->_root->address(), address);
         }
 
-      // Recursively check the tree's validity.
-      if (flags & flags::recursive)
-        root().check(flags);
-
       // Check the capacity.
       if (flags & flags::capacity)
         {
-          ELLE_DEBUG_SCOPE("checking capacities");
+          ELLE_TRACE_SCOPE("checking capacities");
 
           if (this->_capacity != root().capacity())
             throw Exception("invalid capacity: this(%s) versus root(%s)",
@@ -271,7 +271,7 @@ namespace nucleus
       // Check the footprint.
       if (flags & flags::footprint)
         {
-          ELLE_DEBUG_SCOPE("checking footprints");
+          ELLE_TRACE_SCOPE("checking footprints");
 
           if (root().footprint() == 0)
             throw Exception("the footprint is null");
@@ -291,7 +291,7 @@ namespace nucleus
       // Check the state.
       if (flags & flags::state)
         {
-          ELLE_DEBUG_SCOPE("checking states");
+          ELLE_TRACE_SCOPE("checking states");
 
           if (this->_state != root().state())
             throw Exception("invalid state: this(%s) versus root(%s)",
@@ -450,7 +450,7 @@ namespace nucleus
     Tree<T>::_search(typename T::K const& k)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
-      ELLE_TRACE_METHOD(k);
+      ELLE_DEBUG_METHOD(k);
 
       ELLE_ASSERT(this->_root != nullptr);
 
@@ -484,7 +484,7 @@ namespace nucleus
     Tree<T>::_optimize()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
-      ELLE_TRACE_METHOD("");
+      ELLE_DEBUG_METHOD("");
 
       ELLE_ASSERT(this->_root != nullptr);
 
@@ -495,7 +495,7 @@ namespace nucleus
       // Check if the root nodule's footprint exceeds the limit.
       if ((root().footprint()) > this->_nest.limits().extent())
         {
-          ELLE_TRACE("root nodule extent hight limit reached: %s > %s",
+          ELLE_DEBUG("root nodule extent hight limit reached: %s > %s",
                      root().footprint(),
                      this->_nest.limits().extent());
 
@@ -636,7 +636,7 @@ namespace nucleus
           // Try to reduce the tree's height.
           if (this->_height > 1)
             {
-              ELLE_TRACE("the tree contains several levels of hierarchy");
+              ELLE_DEBUG("the tree contains several levels of hierarchy");
 
               // Start by unloading the root nodule so as to reload it as
               // a seam. Indeed, since the tree's height is higher than 1,
@@ -651,7 +651,7 @@ namespace nucleus
               // case this entry could become the new root.
               if (seam().single() == true)
                 {
-                  ELLE_TRACE("the root seam contains a single entry");
+                  ELLE_DEBUG("the root seam contains a single entry");
 
                   // Retrieve the handle associated with the maiden key.
                   Handle orphan{seam().locate_handle(seam().maiden())};
@@ -669,7 +669,7 @@ namespace nucleus
                   // Decrease the tree's height.
                   this->_height--;
 
-                  ELLE_TRACE("try to optimize further the tree");
+                  ELLE_DEBUG("try to optimize further the tree");
 
                   // Note that it may be possible to optimize the tree further.
                   // For example, the tree, following a removal for instance,
@@ -689,7 +689,7 @@ namespace nucleus
             }
           else
             {
-              ELLE_TRACE("the tree contains a single level of hierarchy and "
+              ELLE_DEBUG("the tree contains a single level of hierarchy and "
                          "cannot be optimized further");
 
               root.unload();

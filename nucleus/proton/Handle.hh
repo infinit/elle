@@ -131,7 +131,7 @@ namespace nucleus
         /// This way, the block can be directly accessed as long as
         /// it remains in main memory. Otherwise, should the egg not
         /// be present, it can be loaded from the nest.
-        std::shared_ptr<Egg> _egg;
+        std::shared_ptr<Egg>* _egg;
       };
     };
 

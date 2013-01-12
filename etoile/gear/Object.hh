@@ -89,8 +89,8 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      std::shared_ptr<nucleus::neutron::Object> object;
-      std::shared_ptr<nucleus::neutron::Access> access;
+      std::unique_ptr<nucleus::neutron::Object> object;
+      std::unique_ptr<nucleus::neutron::Access> access;
 
       struct
       {

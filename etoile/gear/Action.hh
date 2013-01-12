@@ -70,8 +70,9 @@ namespace etoile
         | Construction |
         `-------------*/
       public:
+        /// Construct a push action by taking ownership on the given block.
         Push(nucleus::proton::Address const& address,
-             std::shared_ptr<nucleus::proton::Block const> block);
+             std::unique_ptr<nucleus::proton::Block const>&& block);
 
         /*--------.
         | Methods |
@@ -99,7 +100,7 @@ namespace etoile
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(nucleus::proton::Address const, address);
-        ELLE_ATTRIBUTE(std::shared_ptr<nucleus::proton::Block const>, block);
+        ELLE_ATTRIBUTE(std::unique_ptr<nucleus::proton::Block const>, block);
       };
 
       /// Represent an action consisting in removing an existing block from the

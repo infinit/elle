@@ -338,19 +338,8 @@ namespace nucleus
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Data> right{this->nest(), orphan};
 
-      // XXX
-      printf("BEFORE\n");
-      this->Dump();
-      elle::String s1{(const char*)this->_buffer.contents(), this->_buffer.size()};
-      std::cout << s1 << std::endl;
-
       // Load the new right data.
       right.load();
-
-      // XXX
-      elle::printf("CONTENTION: %s\n",
-                   this->nest().limits().extent() *
-                   this->nest().limits().contention());
 
       // Export part of the buffer from the current data into the new data.
       Data::transfer_right(*this,
@@ -364,13 +353,6 @@ namespace nucleus
       // Set both values' state as dirty.
       this->state(proton::State::dirty);
       right().state(proton::State::dirty);
-
-      // XXX
-      printf("AFTER\n");
-      this->Dump();
-      std::cout << elle::String{(const char*)this->_buffer.contents(), this->_buffer.size()} << std::endl;
-      right().Dump();
-      std::cout << elle::String{(const char*)right()._buffer.contents(), right()._buffer.size()} << std::endl;
 
       // Unload the new right data.
       right.unload();

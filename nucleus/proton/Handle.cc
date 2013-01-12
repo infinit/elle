@@ -30,7 +30,7 @@ namespace nucleus
 
     Handle::Handle(std::shared_ptr<Egg>& egg):
       _state(State::nested),
-      _egg(egg)
+      _egg(new std::shared_ptr<Egg>{egg})
     {
     }
 
@@ -55,8 +55,9 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(other._egg != nullptr);
+            ELLE_ASSERT(*other._egg != nullptr);
 
-            this->_egg = other._egg;
+            this->_egg = new std::shared_ptr<Egg>{*other._egg};
 
             break;
           }
@@ -102,8 +103,9 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(this->_egg != nullptr);
+            ELLE_ASSERT(*this->_egg != nullptr);
 
-            return (this->_egg->address());
+            return ((*this->_egg)->address());
           }
         default:
           throw Exception("unknown state '%s'", this->_state);
@@ -124,8 +126,9 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(this->_egg != nullptr);
+            ELLE_ASSERT(*this->_egg != nullptr);
 
-            return (this->_egg->secret());
+            return ((*this->_egg)->secret());
           }
         default:
           throw Exception("unknown state '%s'", this->_state);
@@ -137,8 +140,9 @@ namespace nucleus
     {
       ELLE_ASSERT(this->_state == State::nested);
       ELLE_ASSERT(this->_egg != nullptr);
+      ELLE_ASSERT(*this->_egg != nullptr);
 
-      return (this->_egg);
+      return (*this->_egg);
     }
 
     std::shared_ptr<Egg>&
@@ -146,14 +150,15 @@ namespace nucleus
     {
       ELLE_ASSERT(this->_state == State::nested);
       ELLE_ASSERT(this->_egg != nullptr);
+      ELLE_ASSERT(*this->_egg != nullptr);
 
-      return (this->_egg);
+      return (*this->_egg);
     }
 
     void
     Handle::place(std::shared_ptr<Egg>& egg)
     {
-      ELLE_ASSERT(this->_state != State::nested);
+      ELLE_ASSERT(this->_state == State::unnested);
 
       // Delete the previous clef.
       ELLE_ASSERT(this->_clef != nullptr);
@@ -161,7 +166,7 @@ namespace nucleus
       this->_clef = nullptr;
 
       // Set the egg to reference to access the block.
-      this->_egg = egg;
+      this->_egg = new std::shared_ptr<Egg>{egg};
 
       // Update the state.
       this->_state = State::nested;
@@ -170,15 +175,15 @@ namespace nucleus
     void
     Handle::evolve()
     {
-      ELLE_ASSERT(this->_state != State::nested);
-      ELLE_ASSERT(this->_egg == nullptr);
+      ELLE_ASSERT(this->_state == State::unnested);
 
       // Keep the clef's memory address and reset the attribute.
+      ELLE_ASSERT(this->_clef != nullptr);
       Clef* clef = this->_clef;
       this->_clef = nullptr;
 
       // Allocate a new egg based on the handle's clef.
-      this->_egg.reset(new Egg{clef});
+      this->_egg = new std::shared_ptr<Egg>{new Egg{clef}};
 
       // Update the state.
       this->_state = State::nested;
@@ -204,9 +209,10 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(this->_egg != nullptr);
+            ELLE_ASSERT(*this->_egg != nullptr);
 
             // In this case, reset the egg.
-            this->_egg->reset(address, secret);
+            (*this->_egg)->reset(address, secret);
 
             break;
           }
@@ -232,8 +238,12 @@ namespace nucleus
           // In this case, both handles reference a transient block through
           // an egg whose memory address can be compared to know if both track
           // the same block.
+          ELLE_ASSERT(this->_egg != nullptr);
+          ELLE_ASSERT(other._egg != nullptr);
+          ELLE_ASSERT(*this->_egg != nullptr);
+          ELLE_ASSERT(*other._egg != nullptr);
 
-          return (this->_egg.get() == other._egg.get());
+          return ((*this->_egg).get() == (*other._egg).get());
         }
       else
         {
@@ -256,9 +266,9 @@ namespace nucleus
           // Check whether one of the handles reference a nested and transient
           // block.
           if (((this->_state == State::nested) &&
-               (this->_egg->type() == Egg::Type::transient)) ||
+               ((*this->_egg)->type() == Egg::Type::transient)) ||
               ((other._state == State::nested) &&
-               (other._egg->type() == Egg::Type::transient)))
+               ((*other._egg)->type() == Egg::Type::transient)))
             return (false);
 
           // At this point we know that both blocks are permanent being unnested
@@ -294,9 +304,10 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(this->_egg != nullptr);
+            ELLE_ASSERT(*this->_egg != nullptr);
 
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Egg] " << *this->_egg << std::endl;
+                      << "[Egg] " << *(*this->_egg) << std::endl;
 
             break;
           }
@@ -329,8 +340,9 @@ namespace nucleus
         case State::nested:
           {
             ELLE_ASSERT(this->_egg != nullptr);
+            ELLE_ASSERT(*this->_egg != nullptr);
 
-            stream << *this->_egg;
+            stream << *(*this->_egg);
 
             break;
           }

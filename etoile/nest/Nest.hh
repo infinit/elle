@@ -10,7 +10,8 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Nest.hh>
 
-# include <set>
+# include <boost/noncopyable.hpp>
+
 # include <map>
 
 namespace etoile
@@ -22,13 +23,14 @@ namespace etoile
     /// However, should a threshold be reached, the nest would pick the least
     /// recently used blocks and pre-published them onto the storage layer.
     class Nest:
-      public nucleus::proton::Nest
+      public nucleus::proton::Nest,
+      private boost::noncopyable
     {
       /*------.
       | Types |
       `------*/
     public:
-      typedef std::set<Pod*> Pods;
+      typedef std::map<nucleus::proton::Egg*, Pod*> Pods;
       typedef std::map<nucleus::proton::Address const, Pod*> Addresses;
       typedef std::map<elle::utility::Time, Pod*> Queue;
 
@@ -36,7 +38,10 @@ namespace etoile
       | Construction |
       `-------------*/
     public:
-      Nest(nucleus::proton::Limits const& limits);
+      /// Construct a nest by providing the length of the secret key with which
+      // the modified blocks will be encrypted.
+      Nest(elle::Natural32 const secret_length,
+           nucleus::proton::Limits const& limits);
       ~Nest();
 
       /*--------.
@@ -59,7 +64,10 @@ namespace etoile
       void
       _map(nucleus::proton::Address const& address,
            Pod* pod);
-      /// Return the egg associated with the given address.
+      /// Return the pod associated with the given egg.
+      Pod*
+      _lookup(std::shared_ptr<nucleus::proton::Egg> const& egg) const;
+      /// Return the pod associated with the given address.
       Pod*
       _lookup(nucleus::proton::Address const& address) const;
       /// Remove the mapping for the given address.
@@ -68,6 +76,9 @@ namespace etoile
       /// Try to optimize the nest according to internal limits and conditions.
       void
       _optimize();
+      /// Load the block from the depot, if necessary, and set it in the egg.
+      void
+      _load(std::shared_ptr<nucleus::proton::Egg>& egg);
 
       /*-----------.
       | Interfaces |
@@ -91,12 +102,18 @@ namespace etoile
       `-----------*/
     private:
       /// The set of pods tracking the various content blocks.
+      ///
+      /// Note that this container is index by the address of the egg tracked
+      /// by the pod so as to retrieve a pod based on an egg.
       ELLE_ATTRIBUTE(Pods, pods);
       /// Contain the addresses of the permanents blocks for which
       /// an egg exist in the nest.
       ELLE_ATTRIBUTE(Addresses, addresses);
       /// The LRU-sorted queue of pods.
       ELLE_ATTRIBUTE(Queue, queue);
+      /// The length of the secret key with which the blocks having been
+      /// created or modified will be encrypted.
+      ELLE_ATTRIBUTE(elle::Natural32, secret_length);
     };
   }
 }

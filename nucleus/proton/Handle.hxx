@@ -34,9 +34,10 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::proton::Handle,
     case nucleus::proton::Handle::State::nested:
       {
         ELLE_ASSERT(value._egg != nullptr);
+        ELLE_ASSERT(*value._egg != nullptr);
 
         // In this case, extract the clef from the egg and serialize it.
-        archive << value._egg->clef();
+        archive << (*value._egg)->clef();
 
         break;
       }

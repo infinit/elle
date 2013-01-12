@@ -2,10 +2,6 @@
 
 #include <nucleus/proton/Egg.hh>
 
-#include <elle/log.hh>
-
-ELLE_LOG_COMPONENT("infinit.etoile.nest.Pod");
-
 namespace etoile
 {
   namespace nest
@@ -14,10 +10,17 @@ namespace etoile
     | Construction |
     `-------------*/
 
-    Pod::Pod(nucleus::proton::Egg* egg):
+    Pod::Pod(std::shared_ptr<nucleus::proton::Egg>& egg):
       _state(State::attached),
       _accessed(elle::utility::Time::current()),
       _egg(egg)
+    {
+    }
+
+    Pod::Pod(std::shared_ptr<nucleus::proton::Egg>&& egg):
+      _state(State::attached),
+      _accessed(elle::utility::Time::current()),
+      _egg(std::move(egg))
     {
     }
 

@@ -11,7 +11,7 @@ namespace etoile
   namespace gear
   {
 //
-// ---------- action ----------------------------------------------------------
+// ---------- Action ----------------------------------------------------------
 //
 
     /*-------------.
@@ -26,7 +26,7 @@ namespace etoile
     namespace action
     {
 //
-// ---------- push ------------------------------------------------------------
+// ---------- Push ------------------------------------------------------------
 //
 
       /*-------------.
@@ -34,11 +34,11 @@ namespace etoile
       `-------------*/
 
       Push::Push(nucleus::proton::Address const& address,
-                 std::shared_ptr<nucleus::proton::Block const> block):
+                 std::unique_ptr<nucleus::proton::Block const>&& block):
         Action(Action::Type::push),
 
         _address(address),
-        _block(block)
+        _block(std::move(block))
       {
         ELLE_ASSERT(this->_block != nullptr);
       }
@@ -88,7 +88,7 @@ namespace etoile
       }
 
 //
-// ---------- wipe ------------------------------------------------------------
+// ---------- Wipe ------------------------------------------------------------
 //
 
       /*-------------.

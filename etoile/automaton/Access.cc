@@ -865,7 +865,8 @@ namespace etoile
           ELLE_TRACE("record the Access block '%s' for storing", address);
 
           context.transcript().record(
-            new gear::action::Push(address, context.access));
+            new gear::action::Push(address,
+                                   std::move(context.access)));
         }
 
       return elle::Status::Ok;

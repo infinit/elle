@@ -5,6 +5,7 @@ add_library(nucleus ${LINK_METHOD}
   Derivable.cc
 
   proton/Address.cc
+  proton/Annals.cc
   proton/Base.cc
   proton/Block.cc
   proton/Clef.cc

@@ -32,6 +32,16 @@ namespace hole
       this->_container.clear();
     }
 
+    /*--------.
+    | Methods |
+    `--------*/
+
+    elle::Boolean
+    Memory::empty() const
+    {
+      return (this->_container.empty());
+    }
+
     /*----------.
     | Printable |
     `----------*/
@@ -39,7 +49,7 @@ namespace hole
     void
     Memory::dump() const
     {
-      std::cout << "Memory #" << this->_container.size() << std::endl;
+      std::cout << "[Memory] #" << this->_container.size() << std::endl;
 
       for (auto& pair: this->_container)
         {
@@ -50,7 +60,7 @@ namespace hole
     void
     Memory::print(std::ostream& stream) const
     {
-      stream << "Memory #" << this->_container.size();
+      stream << "#" << this->_container.size();
     }
 
     /*--------.

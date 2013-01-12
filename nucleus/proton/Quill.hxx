@@ -366,6 +366,8 @@ namespace nucleus
       // retrieve the inlet.
       inlet = iterator->second;
 
+      ELLE_ASSERT(inlet->key() == k);
+
       //
       // update the capacity.
       //
@@ -381,12 +383,12 @@ namespace nucleus
         this->capacity(this->capacity() - inlet->capacity());
       }
 
-      // delete the inlet from the nodule given its iterator.
-      this->erase(iterator);
-
       // now, let us try to optimise the tree given the fact that its
       // content has been altered.
       Nodule<T>::optimize(*this, inlet->key());
+
+      // delete the inlet from the nodule given its iterator.
+      this->erase(iterator);
     }
 
     template <typename T>
@@ -602,7 +604,7 @@ namespace nucleus
       Capacity capacity(0);
       elle::Boolean dirty(false);
 
-      ELLE_DEBUG_SCOPE("check(%s)", flags);
+      ELLE_TRACE_SCOPE("check(%s)", flags);
 
       // go through the container.
       for (; scoutor != end; ++scoutor)
@@ -610,7 +612,7 @@ namespace nucleus
           Quill<T>::I* inlet = scoutor->second;
           Ambit<T> value(this->nest(), inlet->value());
 
-          ELLE_DEBUG_SCOPE("checking inlet %s", inlet);
+          ELLE_TRACE_SCOPE("checking inlet %s", inlet);
 
           // load the value block.
           value.load();
@@ -618,7 +620,7 @@ namespace nucleus
           // check the address, if required.
           if (flags & flags::address)
             {
-              ELLE_DEBUG_SCOPE("checking addresses");
+              ELLE_TRACE_SCOPE("checking addresses");
 
               // bind the value block.
               Address address{value.contents().bind()};
@@ -632,7 +634,7 @@ namespace nucleus
           // check the keys, if required.
           if (flags & flags::key)
             {
-              ELLE_DEBUG_SCOPE("checking keys");
+              ELLE_TRACE_SCOPE("checking keys");
 
               // check the key.
               if (inlet->key() != scoutor->first)
@@ -643,7 +645,7 @@ namespace nucleus
           // check the capacities, if required.
           if (flags & flags::capacity)
             {
-              ELLE_DEBUG_SCOPE("checking capacities");
+              ELLE_TRACE_SCOPE("checking capacities");
 
               if (inlet->capacity() != value().capacity())
                 throw Exception("the recorded inlet capacity does not match "
@@ -657,7 +659,7 @@ namespace nucleus
           // check the footprint.
           if (flags & flags::footprint)
             {
-              ELLE_DEBUG_SCOPE("checking footprints");
+              ELLE_TRACE_SCOPE("checking footprints");
 
               if (value().footprint() == 0)
                 throw Exception("the footprint is null");
@@ -677,7 +679,7 @@ namespace nucleus
           // check the state.
           if (flags & flags::state)
             {
-              ELLE_DEBUG_SCOPE("checking states");
+              ELLE_TRACE_SCOPE("checking states");
 
               if (inlet->state() != value().state())
                 throw Exception("invalid state: inlet(%s) versus value(%s)",
@@ -720,7 +722,7 @@ namespace nucleus
       // compare the quill capacity.
       if (flags & flags::capacity)
         {
-          ELLE_DEBUG_SCOPE("checking capacities");
+          ELLE_TRACE_SCOPE("checking capacities");
 
           if (this->capacity() != capacity)
             throw Exception("invalid capacity: this(%s) versus inlets(%s)",
@@ -731,7 +733,7 @@ namespace nucleus
       // inlet is.
       if (flags & flags::state)
         {
-          ELLE_DEBUG_SCOPE("checking states");
+          ELLE_TRACE_SCOPE("checking states");
 
           if ((this->state() == State::dirty) && (dirty == false))
             throw Exception("none of the inlet seems to be dirty");

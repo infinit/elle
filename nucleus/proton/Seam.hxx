@@ -708,7 +708,7 @@ namespace nucleus
       Capacity capacity(0);
       elle::Boolean dirty(false);
 
-      ELLE_DEBUG_SCOPE("check(%s)", flags);
+      ELLE_TRACE_SCOPE("check(%s)", flags);
 
       // go through the inlets.
       for (; scoutor != end; ++scoutor)
@@ -716,7 +716,7 @@ namespace nucleus
           Seam<T>::I* inlet = scoutor->second;
           Ambit<Nodule<T>> current(this->nest(), inlet->value());
 
-          ELLE_DEBUG_SCOPE("checking inlet %s", inlet);
+          ELLE_TRACE_SCOPE("checking inlet %s", inlet);
 
           // load the value block.
           current.load();
@@ -724,7 +724,7 @@ namespace nucleus
           // check the address, if required.
           if (flags & flags::address)
             {
-              ELLE_DEBUG_SCOPE("checking addresses");
+              ELLE_TRACE_SCOPE("checking addresses");
 
               // bind the current block.
               Address address{current.contents().bind()};
@@ -738,7 +738,7 @@ namespace nucleus
           // check the keys, if required.
           if (flags & flags::key)
             {
-              ELLE_DEBUG_SCOPE("checking keys");
+              ELLE_TRACE_SCOPE("checking keys");
 
               // check the key.
               if (inlet->key() != scoutor->first)
@@ -759,7 +759,7 @@ namespace nucleus
           // check the capacities, if required.
           if (flags & flags::capacity)
             {
-              ELLE_DEBUG_SCOPE("checking capacities");
+              ELLE_TRACE_SCOPE("checking capacities");
 
               if (inlet->capacity() != current().capacity())
                 throw Exception("invalid inlet capacity: inlet(%s) "
@@ -772,7 +772,7 @@ namespace nucleus
           // check the footprint.
           if (flags & flags::footprint)
             {
-              ELLE_DEBUG_SCOPE("checking footprints");
+              ELLE_TRACE_SCOPE("checking footprints");
 
               if (current().footprint() == 0)
                 throw Exception("the footprint is null");
@@ -793,7 +793,7 @@ namespace nucleus
           // check the state.
           if (flags & flags::state)
             {
-              ELLE_DEBUG_SCOPE("checking states");
+              ELLE_TRACE_SCOPE("checking states");
 
               if (inlet->state() != current().state())
                 throw Exception("invalid state: inlet(%s) versus nodule(%s)",
@@ -836,7 +836,7 @@ namespace nucleus
       // compare the seam capacity.
       if (flags & flags::capacity)
         {
-          ELLE_DEBUG_SCOPE("checking capacities");
+          ELLE_TRACE_SCOPE("checking capacities");
 
           if (this->capacity() != capacity)
             throw Exception("invalid capacity: this(%s) versus inlets(%s)",
@@ -847,7 +847,7 @@ namespace nucleus
       // inlet is.
       if (flags & flags::state)
         {
-          ELLE_DEBUG_SCOPE("checking states");
+          ELLE_TRACE_SCOPE("checking states");
 
           if ((this->state() == State::dirty) && (dirty == false))
             throw Exception("none of the inlet seems to be dirty");

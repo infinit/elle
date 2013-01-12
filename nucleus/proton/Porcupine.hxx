@@ -733,6 +733,15 @@ namespace nucleus
                                   this->_nest.limits().extent());
               }
 
+            // Check the state.
+            if (flags & flags::state)
+              {
+                if (this->_state != this->_value->state())
+                  throw Exception("the porcupine state does not match the "
+                                  "value's: porcupine(%s) versus value(%s)",
+                                  this->_state, this->_value->state());
+              }
+
             return;
           }
         case Strategy::block:
@@ -777,6 +786,16 @@ namespace nucleus
                                   this->_nest.limits().extent());
               }
 
+            // Check the state.
+            if (flags & flags::state)
+              {
+                if (this->_state != value().state())
+                  throw Exception("the porcupine state does not match the "
+                                  "value block's: porcupine(%s) versus "
+                                  "block(%s)",
+                                  this->_state, value().state());
+              }
+
             value.unload();
 
             return;
@@ -787,6 +806,15 @@ namespace nucleus
 
             // Check the validity of the tree.
             this->_tree->check(flags);
+
+            // Check the state.
+            if (flags & flags::state)
+              {
+                if (this->_state != this->_tree->state())
+                  throw Exception("the porcupine state does not match the "
+                                  "tree: porcupine(%s) versus tree(%s)",
+                                  this->_state, this->_tree->state());
+              }
 
             return;
           }
@@ -1193,7 +1221,7 @@ namespace nucleus
     Porcupine<T>::_create()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-      ELLE_TRACE_METHOD("");
+      ELLE_DEBUG_METHOD("");
 
       // Make sure the porcupine is none.
       ELLE_ASSERT(this->_strategy == Strategy::none);
@@ -1212,9 +1240,9 @@ namespace nucleus
     Porcupine<T>::_optimize()
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
-      ELLE_TRACE_METHOD("");
+      ELLE_DEBUG_METHOD("");
 
-      ELLE_TRACE("strategy: %s", this->_strategy);
+      ELLE_DEBUG("strategy: %s", this->_strategy);
 
       switch (this->_strategy)
         {
@@ -1229,7 +1257,7 @@ namespace nucleus
             // as to lighten the containing block.
             if ((this->_value->footprint()) > this->_nest.limits().extent())
               {
-                ELLE_TRACE("value's high limit reached: %s > %s",
+                ELLE_DEBUG("value's high limit reached: %s > %s",
                            this->_value->footprint(),
                            this->_nest.limits().extent());
 
@@ -1257,7 +1285,7 @@ namespace nucleus
                       (this->_nest.limits().extent() *
                        this->_nest.limits().balancing())))
               {
-                ELLE_TRACE("value's low limit reached: %s < %s",
+                ELLE_DEBUG("value's low limit reached: %s < %s",
                            this->_value->footprint(),
                            this->_nest.limits().extent() *
                            this->_nest.limits().balancing());
@@ -1265,7 +1293,7 @@ namespace nucleus
                 // Check if the value is empty.
                 if (this->_value->empty() == true)
                   {
-                    ELLE_TRACE("the value is empty");
+                    ELLE_DEBUG("the value is empty");
 
                     // Delete the value and set the strategy to none.
                     delete this->_value;
@@ -1277,7 +1305,7 @@ namespace nucleus
               }
             else
               {
-                ELLE_TRACE("no optimization to perform");
+                ELLE_DEBUG("no optimization to perform");
               }
 
             return;
@@ -1296,7 +1324,7 @@ namespace nucleus
             // referencing two value blocks.
             if ((value().footprint()) > this->_nest.limits().extent())
               {
-                ELLE_TRACE("value block extent high limit reached: %s > %s",
+                ELLE_DEBUG("value block extent high limit reached: %s > %s",
                            value().footprint(),
                            this->_nest.limits().extent());
 
@@ -1345,7 +1373,7 @@ namespace nucleus
                       (this->_nest.limits().extent() *
                        this->_nest.limits().balancing())))
               {
-                ELLE_TRACE("value block extent low limit reached: %s < %s",
+                ELLE_DEBUG("value block extent low limit reached: %s < %s",
                            value().footprint(),
                            this->_nest.limits().extent() *
                            this->_nest.limits().balancing());
@@ -1354,7 +1382,7 @@ namespace nucleus
                 // to be embedded directly in its parent block.
                 if (value().footprint() < 1024) // XXX need limits: low/high - same as above
                   {
-                    ELLE_TRACE("the block's value could be embedded");
+                    ELLE_DEBUG("the block's value could be embedded");
 
                     // Ask the value block to cede the ownership on the value
                     // node.
@@ -1385,14 +1413,14 @@ namespace nucleus
                   }
                 else
                   {
-                    ELLE_TRACE("no optimization to perform");
+                    ELLE_DEBUG("no optimization to perform");
 
                     value.unload();
                   }
               }
             else
               {
-                ELLE_TRACE("no optimization to perform");
+                ELLE_DEBUG("no optimization to perform");
 
                 value.unload();
               }
@@ -1417,7 +1445,7 @@ namespace nucleus
             // to a single block.
             if (this->_tree->height() == 1)
               {
-                ELLE_TRACE("the tree contains a single level");
+                ELLE_DEBUG("the tree contains a single level");
 
                 // Manually load the root nodule, which in this case, is a
                 // quill.
@@ -1428,7 +1456,7 @@ namespace nucleus
                 // Does the quill contain a single value.
                 if (quill().single() == true)
                   {
-                    ELLE_TRACE("the root quill contains a single entry");
+                    ELLE_DEBUG("the root quill contains a single entry");
 
                     // If the root nodule contains a single block, retrieve
                     // the handle of this block so as to manage it directly
@@ -1460,7 +1488,7 @@ namespace nucleus
                   }
                 else
                   {
-                    ELLE_TRACE("the root has too many inlets to be transformed "
+                    ELLE_DEBUG("the root has too many inlets to be transformed "
                                "back into a single block value");
 
                     quill.unload();
@@ -1468,7 +1496,7 @@ namespace nucleus
               }
             else
               {
-                ELLE_TRACE("the tree has too many levels to be transformed "
+                ELLE_DEBUG("the tree has too many levels to be transformed "
                            "back into a single block value");
               }
 

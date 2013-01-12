@@ -203,7 +203,8 @@ namespace etoile
 
           // mark the block as needing to be stored.
           context.transcript().record(
-            new gear::action::Push(address, context.ensemble));
+            new gear::action::Push(address,
+                                   std::move(context.ensemble)));
 
           // ugrade the group.
 

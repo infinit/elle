@@ -78,7 +78,7 @@ namespace infinit
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
-      ::EVP_PKEY* key{nullptr};
+      ::EVP_PKEY* key = nullptr;
 
       // Generate the EVP key.
       if (::EVP_PKEY_keygen(KeyPair::Contexts::generate, &key) <= 0)
@@ -91,6 +91,9 @@ namespace infinit
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
       KeyPair pair(key);
+
+      // Release the EVP_PKEY.
+      ::EVP_PKEY_free(key);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 

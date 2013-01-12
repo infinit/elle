@@ -39,9 +39,17 @@ namespace hole
     private:
       ELLE_ATTRIBUTE(Container, container);
 
-    /*----------.
-    | Printable |
-    `----------*/
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// Return true if the storage is empty.
+      elle::Boolean
+      empty() const;
+
+      /*----------.
+      | Printable |
+      `----------*/
     public:
       // XXX[to remove?]
       void
@@ -50,9 +58,9 @@ namespace hole
       void
       print(std::ostream& stream) const;
 
-    /*--------.
-    | Storage |
-    `--------*/
+      /*--------.
+      | Storage |
+      `--------*/
     protected:
       /// The overridden exist implementation.
       virtual

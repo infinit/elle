@@ -9,6 +9,8 @@
 
 # include <nucleus/proton/fwd.hh>
 
+# include <boost/noncopyable.hpp>
+
 namespace etoile
 {
   namespace nest
@@ -17,7 +19,8 @@ namespace etoile
     /// state of the egg's block to know whether it has been detached
     /// from the nest or if it is still attached.
     class Pod:
-      public elle::Printable
+      public elle::Printable,
+      private boost::noncopyable
     {
       /*-------------.
       | Enumerations |
@@ -36,7 +39,9 @@ namespace etoile
     public:
       /// Construct a pod from the given egg whose ownership is lost
       /// in favor of the pod.
-      Pod(nucleus::proton::Egg* egg);
+      Pod(std::shared_ptr<nucleus::proton::Egg>& egg);
+      /// Likewise but through a rvalue.
+      Pod(std::shared_ptr<nucleus::proton::Egg>&& egg);
 
       /*----------.
       | Operators |

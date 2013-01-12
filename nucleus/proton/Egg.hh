@@ -13,6 +13,7 @@
 using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Annals.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -50,6 +51,14 @@ namespace nucleus
           transient,
           permanent
         };
+      /// Define the reason why the egg is being locked: either to simply access
+      /// the egg's content, especially the block, or to modify the block
+      /// address.
+      enum class Reason
+        {
+          access,
+          move
+        };
 
       /*-------------.
       | Construction |
@@ -60,7 +69,7 @@ namespace nucleus
           cryptography::SecretKey const& secret);
       /// Constructor for permanent blocks through the block's clef which
       /// is handed over, transferring the ownership to the egg.
-      Egg(Clef* clef);
+      Egg(Clef const* clef);
       /// Constructor for transient blocks: the block is provided along with
       /// a temporary (and probably invalid) address and secret. The idea behind
       /// these temporary elements is to enable the system to compute their
@@ -71,8 +80,6 @@ namespace nucleus
       Egg(Contents* block,
           Address const& address,
           cryptography::SecretKey const& secret);
-      /// Destrutor.
-      ~Egg();
 
       /*--------.
       | Methods |
@@ -100,10 +107,10 @@ namespace nucleus
       /// prevently publishing a block onto the storage layer even though still
       /// in use.
       void
-      lock();
+      lock(Reason const reason);
       /// Release the exclusive access.
       void
-      unlock();
+      unlock(Reason const reason);
 
       /*----------.
       | Operators |
@@ -128,8 +135,16 @@ namespace nucleus
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Clef*, clef);
-      ELLE_ATTRIBUTE_RWX(Contents*, block);
+      /// The current clef for accessing the block.
+      ELLE_ATTRIBUTE(std::unique_ptr<Clef const>, clef);
+      /// The clefs which led to previous version of the block.
+      ELLE_ATTRIBUTE_R(Annals, annals);
+      /// The actual block though the pointer may be null should
+      /// have the block been moved somewhere else, on the disk
+      /// for example, so as to reduce the main memory consumption.
+      ELLE_ATTRIBUTE_RX(std::unique_ptr<Contents>, block);
+      /// A mutex so as to control moving the block somewhere else
+      /// without impacting the other trying to access the block.
       ELLE_ATTRIBUTE(reactor::RWMutex, mutex);
     };
 

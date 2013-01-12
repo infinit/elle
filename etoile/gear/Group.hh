@@ -53,8 +53,8 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      std::shared_ptr<nucleus::neutron::Group> group;
-      std::shared_ptr<nucleus::neutron::Ensemble> ensemble;
+      std::unique_ptr<nucleus::neutron::Group> group;
+      std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
 
       struct
       {

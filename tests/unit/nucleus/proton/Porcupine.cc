@@ -38,20 +38,26 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 
 // To define in order to make the checks stronger and so as to
 // detect inconsistencies early on.
-#define PORCUPINE_THOROUGH_CHECK
+#undef PORCUPINE_THOROUGH_CHECK
 
 // To define to test the serialization mechanism with porcupines.
-#undef PORCUPINE_SERIALIZE_TEST
+#define PORCUPINE_SERIALIZE_TEST
 
 // To define to dump the porcupine's statistcs.
 #undef PORCUPINE_STATISTICS
+
+// Define the length (in bits) of the secret key for encrypting content blocks.
+#define PORCUPINE_SECRET_LENGTH 256
+
+// XXX
+hole::storage::Memory* _storage = nullptr;
 
 //
 // ---------- Catalog ---------------------------------------------------------
 //
 
 std::vector<elle::String>
-test_porcupine_prepare_catalog(elle::Natural32 const n)
+test_porcupine_catalog_prepare(elle::Natural32 const n)
 {
   std::vector<elle::String> vector(n);
 
@@ -66,6 +72,13 @@ test_porcupine_prepare_catalog(elle::Natural32 const n)
     }
 
   return (vector);
+}
+
+void
+test_porcupine_catalog_vector_dump(std::vector<elle::String> const& vector)
+{
+  for (auto& s: vector)
+    std::cout << s << std::endl;
 }
 
 void
@@ -122,6 +135,8 @@ test_porcupine_catalog_lookup(
 {
   ELLE_TRACE_FUNCTION(porcupine, vector);
 
+  ELLE_ASSERT(vector.size() == porcupine.size());
+
   for (elle::Natural32 i = 0; i < vector.size(); i++)
     {
       ELLE_TRACE_SCOPE("[%s] lookup(%s)", i, vector[i]);
@@ -133,8 +148,7 @@ test_porcupine_catalog_lookup(
 
       ELLE_ASSERT(catalog().exist(vector[i]) == true);
 
-      ELLE_ASSERT(
-        porcupine.exist(vector[i]) == true);
+      ELLE_ASSERT(porcupine.exist(vector[i]) == true);
 
       catalog.close();
 
@@ -178,6 +192,8 @@ test_porcupine_catalog_seek(
 {
   ELLE_TRACE_FUNCTION(porcupine, vector);
 
+  ELLE_ASSERT(vector.size() == porcupine.size());
+
   std::vector<elle::String> w(vector.size());
 
   for (elle::Natural32 i = 0; i < vector.size();)
@@ -188,9 +204,13 @@ test_porcupine_catalog_seek(
       auto& catalog = pair.first;
       auto& base = pair.second;
 
+      catalog.open();
+
       nucleus::neutron::Range<nucleus::neutron::Entry> range{
         catalog().consult(i - base,
                           catalog().capacity() - (i - base))};
+
+      catalog.close();
 
       for (auto& entry: range)
         w[i++] = entry->name();
@@ -238,7 +258,8 @@ test_porcupine_catalog_serialize(
   buffer.reader() >> radix2;
 
   etoile::nest::Nest* nest2 =
-    new etoile::nest::Nest(porcupine1.nest().limits());
+    new etoile::nest::Nest(PORCUPINE_SECRET_LENGTH,
+                           porcupine1.nest().limits());
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix2,
                                                               secret,
@@ -265,6 +286,8 @@ test_porcupine_catalog_remove(
   elle::Natural32 const size)
 {
   ELLE_TRACE_FUNCTION(porcupine, vector, index, size);
+
+  ELLE_ASSERT(vector.size() == porcupine.size());
 
   for (elle::Natural32 i = index; i < (index + size); i++)
     {
@@ -311,13 +334,14 @@ test_porcupine_catalog()
   // A test with N = 1000 and an extent of 1024 leads to a porcupine
   // with 6 levels which is enough to test all cases.
 
-  elle::Natural32 const N = 200;
+  elle::Natural32 const N = 1000;
 
-  std::vector<elle::String> vector = test_porcupine_prepare_catalog(N);
+  std::vector<elle::String> vector = test_porcupine_catalog_prepare(N);
 
   // XXX[provide a path to where blocks should be stored i.e another
   //     hole storage]
   etoile::nest::Nest nest1{
+    PORCUPINE_SECRET_LENGTH,
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2})};
@@ -338,7 +362,8 @@ test_porcupine_catalog()
   stats.Dump();
 #endif
 
-  cryptography::SecretKey secret1{cryptography::SecretKey::generate(256)};
+  cryptography::SecretKey secret1 =
+    cryptography::SecretKey::generate(PORCUPINE_SECRET_LENGTH);
 
   nucleus::proton::Radix radix1{
     test_porcupine_catalog_seal(*porcupine1, secret1)};
@@ -351,7 +376,10 @@ test_porcupine_catalog()
 
   test_porcupine_catalog_remove(*porcupine2, vector, N / 3, N / 3);
 
-  cryptography::SecretKey secret2{cryptography::SecretKey::generate(256)};
+  test_porcupine_catalog_lookup(*porcupine2, vector);
+
+  cryptography::SecretKey secret2 =
+    cryptography::SecretKey::generate(PORCUPINE_SECRET_LENGTH);
 
   nucleus::proton::Radix radix2{
     test_porcupine_catalog_seal(*porcupine2, secret2)};
@@ -360,12 +388,39 @@ test_porcupine_catalog()
     test_porcupine_catalog_serialize(radix2, *porcupine2, secret2, vector);
 
   delete porcupine3;
+
   delete porcupine2;
+
+  etoile::nest::Nest nest4(PORCUPINE_SECRET_LENGTH,
+                           nest1.limits());
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine4 =
+    new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix2,
+                                                              secret2,
+                                                              nest4);
+#else
+  etoile::nest::Nest nest4(PORCUPINE_SECRET_LENGTH,
+                           nest1.limits());
+  nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine4 =
+    new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix1,
+                                                              secret1,
+                                                              nest4);
 #endif
 
-  test_porcupine_catalog_remove(*porcupine1, vector, 0, vector.size());
-
   delete porcupine1;
+
+  test_porcupine_catalog_lookup(*porcupine4, vector);
+
+  test_porcupine_catalog_remove(*porcupine4, vector, 0, vector.size());
+
+  etoile::gear::Transcript transcript = nest4.transcribe();
+
+  for (auto action: transcript)
+    action->apply<etoile::depot::Depot>();
+
+  ELLE_ASSERT(porcupine4->empty() == true);
+  ELLE_ASSERT(_storage->empty() == true);
+
+  delete porcupine4;
 }
 
 //
@@ -432,11 +487,11 @@ test_porcupine_data_resize(
         {
           end.open();
 
-          nucleus::neutron::Offset _key = end().mayor();
+          nucleus::neutron::Offset key = end().mayor();
 
           end.close();
 
-          porcupine.tree().remove(_key);
+          porcupine.tree().remove(key);
         }
     }
 
@@ -464,6 +519,7 @@ test_porcupine_data()
   // XXX[provide a path to where blocks should be stored i.e another
   //     hole storage]
   etoile::nest::Nest nest1{
+    PORCUPINE_SECRET_LENGTH,
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 1.0, 0.0},
                             nucleus::proton::limits::Node{1024, 1.0, 0.0})};
@@ -500,10 +556,10 @@ Main(elle::Natural32,
                               pair_user.K(),
                               authority);
 
-      hole::storage::Memory storage;
+      _storage = new hole::storage::Memory;
       hole::Hole* hole{
         new hole::implementations::local::Implementation(
-          storage, passport, authority)};
+          *_storage, passport, authority)};
       ELLE_FINALLY_ACTION_DELETE(hole);
 
       etoile::depot::hole(hole);
@@ -512,7 +568,7 @@ Main(elle::Natural32,
       hole->join();
 #endif
 
-      // XXX test_porcupine_catalog();
+      test_porcupine_catalog();
       test_porcupine_data();
 
 #ifdef PORCUPINE_SERIALIZE_TEST

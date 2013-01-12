@@ -373,7 +373,8 @@ namespace etoile
 
           // mark the block as needing to be stored.
           context.transcript().record(
-            new gear::action::Push(context.location.address(), context.group));
+            new gear::action::Push(context.location.address(),
+                                   std::move(context.group)));
         }
 
       // set the context's state.

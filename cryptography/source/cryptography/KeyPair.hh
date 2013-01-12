@@ -61,6 +61,10 @@ namespace infinit
       KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
+      /// Construct a key pair based on the given EVP_PKEY.
+      ///
+      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
+      /// call remains the owner of the given EVP_PKEY.
       KeyPair(::EVP_PKEY const* key);
       KeyPair(KeyPair const& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);

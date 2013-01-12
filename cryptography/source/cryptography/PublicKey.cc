@@ -261,7 +261,7 @@ namespace infinit
     PublicKey::_construct(::BIGNUM* n,
                           ::BIGNUM* e)
     {
-      ELLE_TRACE_FUNCTION(n, e);
+      ELLE_DEBUG_FUNCTION(n, e);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);

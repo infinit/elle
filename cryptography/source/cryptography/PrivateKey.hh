@@ -40,6 +40,10 @@ namespace infinit
       `-------------*/
     public:
       PrivateKey(); // XXX[deserialize]
+      /// Construct a private key based on the given EVP_PKEY.
+      ///
+      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
+      /// call remains the owner of the given EVP_PKEY.
       PrivateKey(::EVP_PKEY const* key);
       PrivateKey(PrivateKey const& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);

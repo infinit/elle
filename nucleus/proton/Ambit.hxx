@@ -93,7 +93,7 @@ namespace nucleus
 
       // Lock the egg so as to make sure nobody unloads the block on the
       // storage layer since it is being used right here.
-      this->_handle.egg()->lock();
+      // XXX[automatic locking when loading is better] this->_handle.egg()->lock();
 
       this->_state = State::loaded;
     }
@@ -108,7 +108,7 @@ namespace nucleus
       ELLE_ASSERT(this->_state == State::loaded);
 
       // Unlock the egg now that we no longer need it here.
-      this->_handle.egg()->unlock();
+      // XXX[unlock when unloading] this->_handle.egg()->unlock();
 
       // Unload the handle for the nest to be able to manage its eggs.
       this->_nest.unload(this->_handle);

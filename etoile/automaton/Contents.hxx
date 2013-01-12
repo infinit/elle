@@ -27,6 +27,9 @@ using namespace infinit;
 # include <hole/Hole.hh>
 # include <agent/Agent.hh>
 
+// XXX
+#define SECRET_KEY_LENGTH 256
+
 namespace etoile
 {
   namespace automaton
@@ -60,7 +63,8 @@ namespace etoile
               nucleus::neutron::permissions::read)
             {
               // Instanciate a nest.
-              context.nest = new etoile::nest::Nest{context.limits};
+              context.nest =
+                new etoile::nest::Nest{SECRET_KEY_LENGTH, context.limits};
 
               // Instanciate a porcupine.
               context.porcupine =
@@ -79,7 +83,8 @@ namespace etoile
       else
         {
           // Instanciate a nest.
-          context.nest = new etoile::nest::Nest{context.limits};
+          context.nest =
+            new etoile::nest::Nest{SECRET_KEY_LENGTH, context.limits};
 
           // otherwise create a new empty porcupine.
           context.porcupine =
@@ -269,7 +274,7 @@ namespace etoile
           */
 
           // XXX[should provide a len but with a static const value]
-          cryptography::SecretKey key{cryptography::SecretKey::generate(256)};
+          cryptography::SecretKey key{cryptography::SecretKey::generate(SECRET_KEY_LENGTH)}; // XXX
 
           // update the object.
           if (context.object->Update(
