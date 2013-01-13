@@ -146,6 +146,7 @@ namespace elle
                          bool check_errors)
     : _impl{new Impl{server, port, check_errors}}
     , _token{}
+    , _user_agent{"MetaServer"}
   {}
 
   HttpClient::~HttpClient()
@@ -192,7 +193,7 @@ namespace elle
 
       request_stream << request.method() << ' ' << request.url() << " HTTP/1.0" CRLF
                      << "Host: " << _impl->server << CRLF
-                     << "User-Agent: MetaClient" CRLF
+                     << "User-Agent: " << this->_user_agent << CRLF
                      << "Connection: close" CRLF
                      << request.headers_string();
 
