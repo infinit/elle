@@ -248,7 +248,12 @@ namespace etoile
       // Initialize the _offset which will move forward until it reaches
       // _size.
       nucleus::neutron::Offset _offset = offset;
-      nucleus::neutron::Size _size = offset + size;
+      nucleus::neutron::Size _size =
+        size > (context.porcupine->size() - _offset) ?
+        (context.porcupine->size() - _offset) : size;
+
+      ELLE_TRACE("about to read %s bytes of data at offset %s",
+                 _size, _offset);
 
       // Read the content [offset, offset + size[ which may span over
       // several data blocks.
@@ -276,6 +281,9 @@ namespace etoile
 
           ELLE_ASSERT(data_size != 0);
 
+          ELLE_TRACE("read % bytes in the data block at the relative offset %s",
+                     data_size, data_offset);
+
           // Read the content in the appropriate data node.
           data().read(data_offset, data_size, buffer);
 
@@ -284,17 +292,9 @@ namespace etoile
           // Update the current offset so as to move on to the
           // next block until the requested content has been read.
           _offset = _offset + data_size;
+          ELLE_TRACE("proceed to the next block at the absolute offset %s",
+                     _offset);
           ELLE_ASSERT(_offset <= _size);
-
-          // If the end of the content has been reached, stop.
-          ELLE_ASSERT(_offset <= context.porcupine->size());
-          if (_offset == context.porcupine->size())
-            {
-              ELLE_TRACE("the end offset '%s' of the content has been "
-                         "reached", _offset);
-
-              break;
-            }
 
           ELLE_TRACE("proceeed to the next data block");
         }

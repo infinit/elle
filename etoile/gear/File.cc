@@ -24,8 +24,8 @@ namespace etoile
       porcupine(nullptr),
       nest(nullptr),
       limits(nucleus::proton::limits::Porcupine{},
-             nucleus::proton::limits::Node{1024, 1.0, 0.0},
-             nucleus::proton::limits::Node{1024, 1.0, 0.0})
+             nucleus::proton::limits::Node{1048576, 1.0, 0.0},
+             nucleus::proton::limits::Node{1048576, 1.0, 0.0})
     {
     }
 
