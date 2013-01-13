@@ -2,12 +2,14 @@
 #include <nucleus/Exception.hh>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace nucleus
 {
   namespace neutron
   {
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,
@@ -32,12 +34,11 @@ namespace nucleus
           }
         default:
           {
-            throw Exception("unknown genre '%s'", genre);
+            throw Exception("unknown genre '%s'", static_cast<int>(genre));
           }
         }
 
       return (stream);
     }
-
   }
 }

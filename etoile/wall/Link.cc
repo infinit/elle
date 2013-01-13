@@ -257,8 +257,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return elle::Status::Ok;
+          }
       }
 
       // depending on the context's state.
@@ -346,8 +354,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -436,8 +452,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return elle::Status::Ok;
+          }
       }
 
       // depending on the context's state.

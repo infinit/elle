@@ -69,8 +69,9 @@ namespace nucleus
 
       // verify with the recorded address.
       if (address != self)
-        throw Exception("the address does not correspond to the "
-                        "block's public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
 
       //
       // at this point the node knows that the recorded address corresponds

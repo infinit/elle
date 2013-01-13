@@ -155,8 +155,6 @@ namespace nucleus
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
       ELLE_TRACE_METHOD(target);
 
-      // XXX[check sur target >= capacity -> error]
-
       // Initialize the base.
       Capacity base(0);
 

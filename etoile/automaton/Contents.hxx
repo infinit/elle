@@ -285,6 +285,8 @@ namespace etoile
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
+          ELLE_DECLARE(context.porcupine->check(nucleus::proton::flags::all));
+
           // mark the new/modified blocks as needing to be stored.
           context.transcript().merge(context.nest->transcribe());
 

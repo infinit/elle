@@ -21,6 +21,14 @@ namespace etoile
     {
     }
 
+    Group::Group(Group const& other):
+      elle::radix::Object(other),
+
+      manager{new cryptography::PublicKey{*other.manager}},
+      pass_K{new cryptography::PublicKey{*other.pass_K}}
+    {
+    }
+
     Group::~Group()
     {
       delete this->manager;

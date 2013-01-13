@@ -634,8 +634,7 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Genre] " << std::dec
-                << static_cast<elle::Natural32>(this->_meta.genre)
+                << "[Genre] " << this->_meta.genre
                 << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift

@@ -226,8 +226,8 @@ namespace etoile
 
       // Seek the catalog responsible for the given index.
       auto _index = static_cast<nucleus::proton::Capacity>(index);
-      auto _size = size > context.porcupine->size() ?
-        context.porcupine->size() : size;
+      auto _size = size > (context.porcupine->size() - _index) ?
+        (context.porcupine->size() - _index) : size;
 
       while (_size > 0)
         {

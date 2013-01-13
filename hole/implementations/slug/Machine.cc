@@ -354,6 +354,8 @@ namespace hole
       Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::ImmutableBlock& block)
       {
+        ELLE_TRACE_METHOD(address, block);
+
         // depending on the machine's state.
         switch (this->_state)
           {
@@ -408,7 +410,7 @@ namespace hole
       Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::MutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("%s: put(%s, %s)", *this, address, block);
+        ELLE_TRACE_METHOD(address, block);
 
         // depending on the machine's state.
         switch (this->_state)
@@ -571,7 +573,7 @@ namespace hole
       std::unique_ptr<nucleus::proton::Block>
       Machine::get(const nucleus::proton::Address& address)
       {
-        ELLE_TRACE_SCOPE("%s: get(%s)", *this, address);
+        ELLE_TRACE_METHOD(address);
 
         using nucleus::proton::ImmutableBlock;
 
@@ -678,6 +680,8 @@ namespace hole
       Ptr<nucleus::proton::Block>
       Machine::_get_latest(const nucleus::proton::Address&    address)
       {
+        ELLE_DEBUG_METHOD(address);
+
         // Contact all the hosts in order to retrieve the latest
         // revision of the block.
         //
@@ -753,7 +757,7 @@ namespace hole
         }
 #endif
 
-        ELLE_TRACE_SCOPE("%s: retrieving the block '%s' from the network",
+        ELLE_DEBUG_SCOPE("%s: retrieving the block '%s' from the network",
                          this, address);
 
         for (auto neighbour: this->_hosts)
@@ -853,15 +857,15 @@ namespace hole
               }
 
             // XXX It force conflict to be public. Can we change that ?
-            ELLE_TRACE("Check if the block derives the current block")
+            ELLE_DEBUG("Check if the block derives the current block")
               if (this->_hole.storage().conflict(address, *block))
                 {
-                  ELLE_TRACE("the block %p does not derive the local one",
+                  ELLE_DEBUG("the block %p does not derive the local one",
                              block);
                   continue;
                 }
 
-            ELLE_TRACE("storing the remote block %s locally", address)
+            ELLE_DEBUG("storing the remote block %s locally", address)
               this->_hole.storage().store(address, *block);
           }
 
@@ -875,7 +879,7 @@ namespace hole
         Ptr<MutableBlock> block;
 
         // load the block.
-        ELLE_TRACE("loading the local block at %s", address);
+        ELLE_DEBUG("loading the local block at %s", address);
 
         block = elle::cast<MutableBlock>::runtime(
           this->_hole.storage().load(address));
@@ -883,7 +887,7 @@ namespace hole
         ELLE_DEBUG("loaded block %s has revision %s",
                    block, block->revision());
 
-        ELLE_TRACE("validating the block")
+        ELLE_DEBUG("validating the block")
         // Validate the block, depending on its component.
         // although every stored block has been checked, the block
         // may have been corrupt while on the hard disk.
@@ -950,7 +954,7 @@ namespace hole
             {
               elle::String unique = address.unique();
 
-              ELLE_TRACE("%s: register %s", *this, unique);
+              ELLE_DEBUG("%s: register %s", *this, unique);
 
               elle::utility::Time current;
 
@@ -972,7 +976,7 @@ namespace hole
             {
               elle::utility::Time current;
 
-              ELLE_TRACE("%s: update %s", *this, unique);
+              ELLE_DEBUG("%s: update %s", *this, unique);
 
               if (current.Current() == elle::Status::Error)
                 throw reactor::Exception(elle::concurrency::scheduler(),
@@ -1186,7 +1190,7 @@ namespace hole
       Machine::get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Revision&    revision)
       {
-        ELLE_TRACE_FUNCTION(address, revision);
+        ELLE_DEBUG_METHOD(address, revision);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
@@ -1205,7 +1209,7 @@ namespace hole
       void
       Machine::wipe(const nucleus::proton::Address&   address)
       {
-        ELLE_TRACE_FUNCTION(address);
+        ELLE_TRACE_METHOD(address);
 
         // depending on the machine's state.
         switch (this->_state)

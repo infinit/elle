@@ -110,6 +110,9 @@ namespace etoile
                         transcript.record(
                           new gear::action::Wipe(clef->address()));
 
+                      ELLE_ASSERT(pod->egg()->block()->bind() ==
+                                  pod->egg()->address());
+
                       // Finally, push the final version of the block.
                       transcript.record(
                         new gear::action::Push(pod->egg()->address(),

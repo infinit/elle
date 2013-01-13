@@ -1081,6 +1081,9 @@ namespace nucleus
 
                   value.unload();
 
+                  // Reset the handle with the new address and secret.
+                  this->_handle->reset(address, secret);
+
                   return (Radix(address));
                 }
               case Strategy::tree:

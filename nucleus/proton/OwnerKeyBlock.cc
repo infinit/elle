@@ -99,8 +99,9 @@ namespace nucleus
 
       // verify with the recorded address.
       if (address != self)
-        throw Exception("the address does not correspond to the block's "
-                        "public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
 
       // verify the owner's key signature with the block's public key.
       if (this->_block_K.verify(this->_owner_signature,

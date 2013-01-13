@@ -21,6 +21,25 @@ namespace etoile
       this->keys.author = nullptr;
     }
 
+    Object::Object(Object const& other):
+      elle::radix::Object(other)
+    {
+      this->genre = other.genre;
+
+      this->timestamps.creation = other.timestamps.creation;
+      this->timestamps.modification = other.timestamps.modification;
+
+      this->size = other.size;
+
+      this->keys.owner = new cryptography::PublicKey{*other.keys.owner};
+      this->keys.author = new cryptography::PublicKey{*other.keys.author};
+
+      this->permissions.owner = other.permissions.owner;
+
+      this->revisions.data = other.revisions.data;
+      this->revisions.meta = other.revisions.meta;
+    }
+
     Object::~Object()
     {
       delete this->keys.owner;

@@ -139,6 +139,10 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
+      // XXX[very ugly hack: following the Access::Close(), we lose the pointer
+      //     to the Access block. therefore we keep a copy here!]
+      nucleus::neutron::Access* _access = context.access.get();
+
       // close the access.
       if (Access::Close(context) == elle::Status::Error)
         escape("unable to close the access");
@@ -146,14 +150,19 @@ namespace etoile
       // if the object has been modified i.e is dirty.
       if (context.object->state() == nucleus::proton::State::dirty)
         {
-          // make sure the access block is loaded.
-          if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access");
+          // XXX[following the ugly hack: try to Access::Open() only if the
+          //     block has not bee loaded before, hence has not been closed,
+          //     hence the pointer has not been moved to an Action]
+          if (_access == nullptr)
+            {
+              Access::Open(context);
+              _access = context.access.get();
+            }
 
           // seal the object alone with the access block.
           if (context.object->Seal(
                 agent::Agent::Identity.pair().k(),
-                context.access.get()) == elle::Status::Error)
+                _access) == elle::Status::Error)
             escape("unable to seal the object");
 
           // mark the block as needing to be stored.

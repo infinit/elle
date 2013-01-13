@@ -102,8 +102,9 @@ namespace nucleus
       // Finally, compare the recomputed address with the theoretical address
       // of the block.
       if (address != self)
-        throw Exception("the address does not correspond to the block's "
-                        "public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
     }
 
     void

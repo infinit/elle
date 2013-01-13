@@ -33,6 +33,7 @@ namespace etoile
       // constructors & destructors
       //
       Object();
+      Object(Object const& other);
       ~Object();
 
       //

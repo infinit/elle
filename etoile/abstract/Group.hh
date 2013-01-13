@@ -30,6 +30,7 @@ namespace etoile
       // constructors & destructors
       //
       Group();
+      Group(Group const& other);
       ~Group();
 
       //
