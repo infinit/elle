@@ -93,6 +93,7 @@ namespace elle
     struct Impl;
     std::unique_ptr<Impl> _impl;
     std::string _token;
+  public:
     std::string _user_agent;
 
   public:
