@@ -39,6 +39,10 @@ namespace network {
 
   public:
 
+    uri_category_impl();
+
+    virtual ~uri_category_impl();
+
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
     virtual const char *name() const;
 #else

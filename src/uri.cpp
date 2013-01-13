@@ -26,6 +26,14 @@
 #include <vector>
 
 namespace network {
+  uri_category_impl::uri_category_impl() {
+
+  }
+
+  uri_category_impl::~uri_category_impl() {
+
+  }
+
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
   const char *uri_category_impl::name() const {
 #else
@@ -492,11 +500,12 @@ namespace network {
 	boost::optional<Source> prev_segment;
 	boost::remove_erase_if(normalized_segments,
 			       [&prev_segment] (const Source &segment) {
-				 if ((prev_segment && prev_segment->empty()) && segment.empty()) {
-				   return true;
+				 bool has_adjacent_slash =
+				   ((prev_segment && prev_segment->empty()) && segment.empty());
+				 if (!has_adjacent_slash) {
+				   prev_segment.reset(segment);
 				 }
-				 prev_segment.reset(segment);
-				 return false;
+				 return has_adjacent_slash;
 			       });
 
 	path = boost::join(normalized_segments, "/");
