@@ -41,7 +41,11 @@ namespace network {
 
     uri_category_impl();
 
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
     virtual ~uri_category_impl();
+#else
+    virtual ~uri_category_impl() noexcept;
+#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
 
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
     virtual const char *name() const;

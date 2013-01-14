@@ -30,7 +30,11 @@ namespace network {
 
   }
 
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
   uri_category_impl::~uri_category_impl() {
+#else
+  uri_category_impl::~uri_category_impl() noexcept {
+#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
 
   }
 
