@@ -12,7 +12,7 @@
 
 # include <plasma/plasma.hh>
 
-# include <elle/HttpClient.hxx>
+# include <elle/HttpClient.hh>
 # include <surface/gap/gap.h>
 
 namespace plasma
@@ -196,7 +196,7 @@ namespace plasma
     class Client
     {
     private:
-      elle::HttpClient  _client;
+      elle::HTTPClient  _client;
       std::string       _token;
       std::string       _identity;
       std::string       _email;

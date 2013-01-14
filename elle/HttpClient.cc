@@ -1,4 +1,4 @@
-#include "HttpClient.hxx"
+#include <elle/HttpClient.hh>
 
 #include <elle/log.hh>
 #include <elle/print.hh>
@@ -21,7 +21,7 @@ namespace elle
 
   struct Request::Impl
   {
-    HttpClient&                                   client;
+    HTTPClient&                                   client;
     std::string                                   method;
     std::string                                   url;
     std::string                                   content_type;
@@ -29,7 +29,7 @@ namespace elle
     std::unordered_map<std::string, std::string>  post_fields;
     std::stringstream                             response;
 
-    Impl(HttpClient& client,
+    Impl(HTTPClient& client,
          std::string const& method,
          std::string const& url)
       : client(client)
@@ -38,7 +38,7 @@ namespace elle
     {}
   };
 
-  Request::Request(HttpClient& client,
+  Request::Request(HTTPClient& client,
                    std::string const& method,
                    std::string const& url)
     : _this{new Impl{client, method, url}}
@@ -87,7 +87,6 @@ namespace elle
         headers += pair.first + ": " + pair.second + CRLF;
     return headers;
   }
-
   // content type, headers and body
 
   bool
@@ -103,6 +102,14 @@ namespace elle
     if (it == _this->headers.end())
       throw std::runtime_error{"Cannot find header '" + key + "'"};
     return it->second;
+  }
+
+  Request&
+  Request::user_agent(std::string const& str)
+  {
+    _this->headers.insert(std::make_pair("User-Agent", str));
+
+    return *this;
   }
 
   Request&
@@ -140,20 +147,52 @@ namespace elle
     return _this->response;
   }
 
-  //- HttpClient --------------------------------------------------------------
-  HttpClient::HttpClient(std::string const& server,
+  //- HTTPClient --------------------------------------------------------------
+  struct HTTPClient::Impl
+  {
+    /*-----------.
+    | Attributes |
+    `-----------*/
+    boost::asio::io_service   io_service;
+    std::string               server;
+    uint16_t                  port;
+    bool                      check_errors;
+    std::string               user_agent;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+    Impl(std::string const& server,
+         uint16_t port,
+         std::string const& user_agent,
+         bool check_errors)
+      : io_service{}
+      , server{server}
+      , port{port}
+      , check_errors{check_errors}
+      , user_agent{user_agent}
+    {}
+  };
+
+  HTTPClient::HTTPClient(std::string const& server,
                          uint16_t port,
+                         std::string const& user_agent,
                          bool check_errors)
-    : _impl{new Impl{server, port, check_errors}}
+    : _impl{new Impl{server, port, user_agent, check_errors}}
     , _token{}
-    , _user_agent{"MetaServer"}
   {}
 
-  HttpClient::~HttpClient()
+  HTTPClient::~HTTPClient()
   {}
+
+  bool
+  HTTPClient::_check_errors()
+  {
+    return this->_impl->check_errors;
+  }
 
   elle::Buffer
-  HttpClient::get_buffer(std::string const& url)
+  HTTPClient::get_buffer(std::string const& url)
   {
     // XXX not optimized (mulptiple copies).
     std::stringstream ss;
@@ -163,16 +202,15 @@ namespace elle
   }
 
   Request
-  HttpClient::request(std::string const& method,
+  HTTPClient::request(std::string const& method,
                       std::string const& url)
   {
     return Request{*this, method, url};
   }
 
   void
-  HttpClient::fire(Request& request)
+  HTTPClient::fire(Request& request)
   {
-
     std::string uri = _impl->server + request.url();
 
     namespace ip = boost::asio::ip;
@@ -193,7 +231,9 @@ namespace elle
 
       request_stream << request.method() << ' ' << request.url() << " HTTP/1.0" CRLF
                      << "Host: " << _impl->server << CRLF
-                     << "User-Agent: " << this->_user_agent << CRLF
+                     << (request.has_header("User-Agent")
+                         ? std::string("")
+                         : std::string("User-Agent: ") + this->_impl->user_agent + std::string(CRLF))
                      << "Connection: close" CRLF
                      << request.headers_string();
 
@@ -259,7 +299,7 @@ namespace elle
 
   /// XXX Remove this
   void
-  HttpClient::_request(std::string const& url,
+  HTTPClient::_request(std::string const& url,
                        std::string const& method,
                        std::string const& body,
                        std::stringstream& response_)
@@ -282,7 +322,8 @@ namespace elle
       boost::asio::streambuf request;
       std::ostream request_stream(&request);
       request_stream << method << ' ' << url << " HTTP/1.0" CRLF
-                     << "Host: " << _impl->server << CRLF
+                     << "Host: " << this->_impl->server << CRLF
+        // User agent management suxx.
                      << "User-Agent: MetaClient" CRLF
                      << "Connection: close" CRLF;
       if (_token.size())
@@ -351,10 +392,10 @@ namespace elle
   }
 
   bool
-  HttpClient::put(std::string const& url,
+  HTTPClient::put(std::string const& url,
                   elle::format::json::Object const& req)
   {
-    ELLE_LOG_COMPONENT("elle.HttpClient");
+    ELLE_LOG_COMPONENT("elle.HTTPClient");
 
     std::stringstream res;
 

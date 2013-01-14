@@ -246,7 +246,7 @@ namespace plasma
     Client::Client(std::string const& server,
                    uint16_t port,
                    bool check_errors)
-      : _client{server, port, check_errors}
+      : _client{server, port, "MetaClient", check_errors}
       , _token{}
       , _identity{}
       , _email{}
