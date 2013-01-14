@@ -772,7 +772,7 @@ namespace satellite
           "Path",
           'p',
           "path",
-          "the directory path where the data must be copied from/to",
+          "the path where the data must be copied from/to",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 

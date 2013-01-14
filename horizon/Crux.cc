@@ -110,8 +110,8 @@ namespace horizon
   {
     ELLE_TRACE_FUNCTION(path, stat);
 
-    Handle*                           handle;
-    elle::String*                     name;
+    Handle* handle;
+    elle::String* name;
 
     // Clear the stat structure.
     ::memset(stat, 0x0, sizeof (struct ::stat));
@@ -393,10 +393,16 @@ namespace horizon
 
     // Set the handle pointer to the file handle that has been
     // filled by Opendir().
-    std::unique_ptr<Handle> handle(reinterpret_cast<Handle*>(info->fh));
+    Handle* handle = reinterpret_cast<Handle*>(info->fh);
+
+    ELLE_FINALLY_ACTION_DELETE(handle);
 
     // Discard the object.
     etoile::wall::Directory::discard(handle->identifier);
+
+    delete handle;
+
+    ELLE_FINALLY_ABORT(handle);
 
     // Reset the file handle, just to make sure it is not used
     // anymore.
@@ -1337,17 +1343,19 @@ namespace horizon
       permissions |= nucleus::neutron::permissions::write;
 
     // Store the identifier in the file handle.
-    info->fh =
-      reinterpret_cast<uint64_t>(new Handle(Handle::OperationCreate,
-                                            identifier,
-                                            permissions));
+    Handle* handle = new Handle(Handle::OperationCreate,
+                                identifier,
+                                permissions);
+
+    ELLE_FINALLY_ACTION_DELETE(handle);
 
     // Add the created and opened file in the crib.
-    if (Crib::Add(elle::String(path),
-                  reinterpret_cast<Handle*>(info->fh)) == elle::Status::Error)
+    if (Crib::Add(elle::String(path), handle) == elle::Status::Error)
       return (-EBADF);
-    // XXX[if this fail, one could end up with an orphan Handle and therefore
-    //     an non-closed file. TO TEST]
+
+    info->fh = reinterpret_cast<uint64_t>(handle);
+
+    ELLE_FINALLY_ABORT(handle);
 
     return (0);
   }
@@ -1534,18 +1542,14 @@ namespace horizon
     return (0);
   }
 
-  /// This method closes a file.
-  int
-  Crux::release(const char* path,
-                struct ::fuse_file_info* info)
+  /// XXX
+  void
+  _release(etoile::path::Way const way,
+           Handle* handle)
   {
-    ELLE_TRACE_FUNCTION(path, info);
+    ELLE_DEBUG_FUNCTION(way, handle);
 
-    etoile::path::Way way(path);
-    Handle*           handle;
-
-    // Retrieve the handle.
-    handle = reinterpret_cast<Handle*>(info->fh);
+    ELLE_FINALLY_ACTION_DELETE(handle);
 
     // Perform final actions depending on the initial operation.
     switch (handle->operation)
@@ -1553,8 +1557,11 @@ namespace horizon
       case Handle::OperationCreate:
         {
           // Remove the created and opened file in the crib.
-          if (Crib::Remove(elle::String(path)) == elle::Status::Error)
-            return (-EBADF);
+          if (Crib::Remove(way.path) == elle::Status::Error)
+            {
+              ELLE_WARN("unable to remove the path from the crib");
+              return;
+            }
 
           // The permissions settings have been delayed in order to
           // support a read-only file being copied in which case a
@@ -1571,7 +1578,10 @@ namespace horizon
                 handle->identifier,
                 agent::Agent::Subject,
                 handle->permissions) == elle::Status::Error)
-            return (-EPERM);
+            {
+              ELLE_WARN("unable to grant permissions on the released object");
+              return;
+            }
 
           break;
         }
@@ -1588,6 +1598,43 @@ namespace horizon
 
     // Delete the handle.
     delete handle;
+
+    ELLE_FINALLY_ABORT(handle);
+  }
+
+  /// This method closes a file.
+  int
+  Crux::release(const char* path,
+                struct ::fuse_file_info* info)
+  {
+    ELLE_TRACE_FUNCTION(path, info);
+
+    etoile::path::Way way(path);
+    Handle* handle;
+
+    // Retrieve the handle.
+    handle = reinterpret_cast<Handle*>(info->fh);
+
+    ELLE_FINALLY_ACTION_DELETE(handle);
+
+    try
+      {
+        // Spawn a thread so as to asynchronously handle the release.
+        //
+        // This is conveniently made possible because FUSE ignores the
+        // return value release().
+        new reactor::Thread(elle::concurrency::scheduler(),
+                            "_release",
+                            boost::bind(&_release, way, handle),
+                            true);
+
+        ELLE_FINALLY_ABORT(handle);
+      }
+    catch (std::exception const& e)
+      {
+        ELLE_ERR("unable to spawn a new thread: '%s'", e.what());
+        return (-EIO);
+      }
 
     // Reset the file handle.
     info->fh = 0;

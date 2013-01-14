@@ -570,7 +570,13 @@ namespace nucleus
       switch (this->_strategy)
         {
         case Strategy::none:
-          throw Exception("unable to trim an empty porcupine");
+          {
+            // Create a value.
+            this->_create();
+
+            // Do not break and proceed with the lookup in a value.
+            ELLE_ASSERT(this->_strategy == Strategy::value);
+          }
         case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);
@@ -612,7 +618,13 @@ namespace nucleus
       switch (this->_strategy)
         {
         case Strategy::none:
-          throw Exception("unable to trim an empty porcupine");
+          {
+            // Create a value.
+            this->_create();
+
+            // Do not break and proceed with the lookup in a value.
+            ELLE_ASSERT(this->_strategy == Strategy::value);
+          }
         case Strategy::value:
           {
             ELLE_ASSERT(this->_value != nullptr);

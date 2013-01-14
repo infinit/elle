@@ -82,6 +82,9 @@ namespace etoile
                 if (pod->egg()->block() == nullptr)
                   continue;
 
+                // XXX[check that the block is not in the timestamps queue as it
+                //     would mean someone is using it!]
+
                 // Note that only dirty blocks need to be published onto the
                 // storage layer.
                 switch (pod->egg()->block()->state())
@@ -110,8 +113,10 @@ namespace etoile
                         transcript.record(
                           new gear::action::Wipe(clef->address()));
 
+                      /* XXX[to slow without an optimization. to activate later]
                       ELLE_ASSERT(pod->egg()->block()->bind() ==
                                   pod->egg()->address());
+                      */
 
                       // Finally, push the final version of the block.
                       transcript.record(

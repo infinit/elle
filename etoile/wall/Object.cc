@@ -44,6 +44,8 @@ namespace etoile
 
       gear::Guard guard(scope);
 
+      // XXX[tout ce bloc devrait probablement etre locke]
+
       // If the scope is new i.e there is no attached context, the system
       // needs to know what is the genre of the object, e.g directory, in
       // order allocate an appropriate context.
@@ -150,9 +152,7 @@ namespace etoile
               {
                 // XXX[this whole code should probably be put within the
                 //     critical section?]
-                printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
-                object.get()->Dump();
-
+                ELLE_DECLARE(object.get()->Dump());
                 throw elle::Exception("unable to allocate the proper context");
               }
             }

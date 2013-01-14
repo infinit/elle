@@ -72,7 +72,7 @@ namespace etoile
 
           delete transcript;
 
-          escape("unable to spawn a new thread; reason: '%s'", err.what());
+          escape("unable to spawn a new thread: '%s'", err.what());
         }
 
       // Update the context's state.
@@ -94,7 +94,7 @@ namespace etoile
 
       for (auto transcript: Journal::_queue)
         {
-          ELLE_TRACE_SCOPE("exploring transcript %s", *transcript);
+          ELLE_TRACE_SCOPE("exploring transcript");
 
           for (auto action: *transcript)
             {
@@ -171,47 +171,53 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(transcript);
 
-      ELLE_TRACE("pushing the blocks")
+      ELLE_TRACE("pushing blocks");
+
+      // XXX[to improve in the future]
+      // Go through the blocks which needs to be pushed.
+      for (auto action: *transcript)
         {
-          // XXX[to improve in the future]
-          // Go through the blocks which needs to be pushed.
-          for (auto action: *transcript)
+          switch (action->type())
             {
-              switch (action->type())
-                {
-                case gear::Action::Type::push:
-                  {
-                    action->apply<depot::Depot>();
-                    break;
-                  }
-                case gear::Action::Type::wipe:
-                  break;
-                }
+            case gear::Action::Type::push:
+              {
+                action->apply<depot::Depot>();
+                break;
+              }
+            case gear::Action::Type::wipe:
+              break;
             }
+
+          // XXX[to remove once file system I/Os are asynchronous]
+          elle::concurrency::scheduler().current()->yield();
         }
 
-      ELLE_TRACE("wiping the blocks")
+      ELLE_TRACE("wiping blocks");
+
+      // Then, process the blocks to wipe.
+      for (auto action: *transcript)
         {
-          // Then, process the blocks to wipe.
-          for (auto action: *transcript)
+          switch (action->type())
             {
-              switch (action->type())
-                {
-                case gear::Action::Type::push:
-                  break;
-                case gear::Action::Type::wipe:
-                  {
-                    action->apply<depot::Depot>();
-                    break;
-                  }
-                }
+            case gear::Action::Type::push:
+              break;
+            case gear::Action::Type::wipe:
+              {
+                action->apply<depot::Depot>();
+                break;
+              }
             }
+
+          // XXX[to remove once file system I/Os are asynchronous]
+          elle::concurrency::scheduler().current()->yield();
         }
 
       // Remove the transcript from the queue.
       Journal::_queue.erase(transcript);
 
       delete transcript;
+
+      ELLE_TRACE("transcript processed successfully");
     }
 
     std::unique_ptr<nucleus::proton::Block>
