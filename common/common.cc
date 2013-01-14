@@ -430,4 +430,23 @@ namespace common
       return std::stoi(port_string);
     }
   }
+
+  namespace metrics
+  {
+    std::string const&
+    id_path()
+    {
+      static std::string const id_path = path::join(common::infinit::home(),
+                                                    "ga.id");
+      return id_path;
+    }
+
+    std::string const&
+    google_server()
+    {
+      static std::string const analytics = "www.google-analytics.com";
+
+      return analytics;
+    }
+  }
 }

@@ -18,7 +18,7 @@ include_directories("${PYTHON3_INCLUDE_DIR}")
 set(LIBRARY_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH}/python")
 
 add_definitions(-fPIC -fno-strict-aliasing)
-file(GLOB gap_srcs ../*.cc)
+file(GLOB gap_srcs ../State.cc ../gap.cc ../MetricReporter.cc)
 list(APPEND gap_srcs pygap.cc)
 add_library(_gap SHARED ${gap_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})

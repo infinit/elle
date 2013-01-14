@@ -6,6 +6,7 @@ include_directories(${QT_INCLUDES})
 file(GLOB gap_srcs
   gap.cc
   State.cc
+  MetricReporter.cc
 )
 
 add_library(gap SHARED ${gap_srcs})
