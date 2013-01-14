@@ -125,6 +125,10 @@ namespace etoile
 
       this->rpcs->slug_connect.operator=(&hole::implementations::slug::portal_connect);
 
+      // XXX[temporary]
+      this->rpcs->transferto = &wall::File::transferto;
+      this->rpcs->transferfrom = &wall::File::transferfrom;
+
       new reactor::Thread(elle::concurrency::scheduler(),
                           elle::sprintf("RPC %s", *this),
                           std::bind(&Application::_run, this), true);

@@ -537,5 +537,68 @@ namespace etoile
 
       return elle::Status::Ok;
     }
+
+//
+// ---------- XXX -------------------------------------------------------------
+//
+
+    // XXX[to remove as soon as possible i.e when etoile will be instanciable]
+
+    nucleus::neutron::Size
+    File::transferto(elle::String const& source,
+                     gear::Identifier const& destination,
+                     nucleus::neutron::Offset const& offset)
+    {
+      std::streamsize N = 5242880;
+      std::ifstream stream(source, std::ios::binary);
+      nucleus::neutron::Offset _offset(offset);
+      unsigned char* buffer = new unsigned char[N];
+
+      while (stream.good())
+        {
+          stream.read((char*)buffer, N);
+
+          elle::standalone::Region data(buffer, N);
+
+          data.size = stream.gcount();
+
+          File::write(destination, _offset, data);
+
+          _offset += data.size;
+        }
+
+      stream.close();
+
+      delete[] buffer;
+
+      return (_offset - offset);
+    }
+
+    nucleus::neutron::Size
+    File::transferfrom(gear::Identifier const& source,
+                       elle::String const& destination,
+                       nucleus::neutron::Offset const& offset,
+                       nucleus::neutron::Size const& size)
+    {
+      std::ofstream stream(destination, std::ios::binary);
+      nucleus::neutron::Offset _offset(offset);
+
+      stream.seekp(offset);
+
+      while (_offset < (offset + size))
+        {
+          elle::standalone::Region data{
+            File::read(source, _offset, size)};
+
+          stream.write((const char*)data.contents,
+                       static_cast<std::streamsize>(data.size));
+
+          _offset += data.size;
+        }
+
+      stream.close();
+
+      return (_offset - offset);
+    }
   }
 }

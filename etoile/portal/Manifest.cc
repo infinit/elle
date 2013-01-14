@@ -61,6 +61,8 @@ namespace etoile
       groupstore("groupstore", *this),
       groupdestroy("groupdestroy", *this),
       slug_connect("slug_connect", *this)
+      transferto("transferto", *this),
+      transferfrom("transferfrom", *this)
     {}
   }
 }

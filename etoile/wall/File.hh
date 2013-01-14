@@ -13,7 +13,6 @@ namespace etoile
 {
   namespace wall
   {
-
     ///
     /// this class provides functionalities for managing file objects.
     ///
@@ -61,8 +60,20 @@ namespace etoile
       store(gear::Identifier const& identifier);
 
       static elle::Status       Destroy(const gear::Identifier&);
-    };
 
+      // XXX[to remove as soon as possible i.e when etoile will be instanciable]
+      static
+      nucleus::neutron::Size
+      transferto(elle::String const& source,
+                 gear::Identifier const& destination,
+                 nucleus::neutron::Offset const& offset);
+      static
+      nucleus::neutron::Size
+      transferfrom(gear::Identifier const& source,
+                   elle::String const& destination,
+                   nucleus::neutron::Offset const& offset,
+                   nucleus::neutron::Size const& size);
+    };
   }
 }
 

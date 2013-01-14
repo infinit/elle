@@ -39,6 +39,14 @@
 
 ELLE_LOG_COMPONENT("infinit.satellites.transfer.Transfer");
 
+// Through this hack, the etoile's portal API is used for triggering
+// specific RPCs for reading/writing files without having to transfer
+// the content through a socket.
+//
+// XXX[to remove as soon as possible, especially when etoile will be
+//     instantiable]
+#define TRANSFER_UGLY_PERFORMANCE_HACK
+
 namespace satellite
 {
   reactor::network::TCPSocket* Transfer::socket = nullptr;
@@ -369,9 +377,23 @@ namespace satellite
               // 1MB seems large enough for the performance to remain
               // good while ensuring a smooth progress i.e no jump from
               // 4% to 38% for reasonable large files.
-              std::streamsize N = 1048576;
-              std::ofstream stream(path, std::ios::binary);
+              std::streamsize N = 5048576;
               nucleus::neutron::Offset offset(0);
+
+#ifndef TRANSFER_UGLY_PERFORMANCE_HACK // XXX
+              // Transfer is too slow: this hack consists in using a specific
+              // RPC for reading a whole file.
+              while (offset < abstrict.size)
+                {
+                  nucleus::neutron::Size size =
+                    Transfer::rpcs->transferfrom(child, path, offset, N);
+
+                  offset += size;
+
+                  Transfer::from_progress(size);
+                }
+#else
+              std::ofstream stream(path, std::ios::binary);
 
               ELLE_TRACE("file %s", path.c_str());
 
@@ -394,6 +416,7 @@ namespace satellite
               assert(offset == abstract.size);
 
               stream.close();
+#endif
 
               // Discard the child.
               Transfer::rpcs->objectdiscard(child);
@@ -502,10 +525,16 @@ namespace satellite
 
     Ward ward_directory(directory);
 
+    nucleus::neutron::Offset offset(0);
+
+#ifdef TRANSFER_UGLY_PERFORMANCE_HACK
+    // Transfer is too slow: this hack consists in using a specific
+    // RPC for writing a whole file.
+    offset += Transfer::rpcs->transferto(source, file, 0);
+#else
     // Write the source file's content into the Infinit file freshly created.
     std::streamsize N = 5242880;
     std::ifstream stream(source, std::ios::binary);
-    nucleus::neutron::Offset offset(0);
     unsigned char* buffer = new unsigned char[N];
 
     while (stream.good())
@@ -524,6 +553,7 @@ namespace satellite
     stream.close();
 
     delete[] buffer;
+#endif
 
     // Store file.
     Transfer::rpcs->filestore(file);
