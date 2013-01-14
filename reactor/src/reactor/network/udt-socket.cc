@@ -32,6 +32,18 @@ namespace reactor
     {}
 
     UDTSocket::UDTSocket(Scheduler& sched,
+                         int fd,
+                         const std::string& hostname,
+                         const std::string& port,
+                         DurationOpt timeout)
+      : Super(sched, new boost::asio::ip::udt::socket(sched.io_service()))
+      , _write_mutex()
+    {
+      this->socket()->_bind_fd(fd);
+      _connect(resolve_udp(sched, hostname, port), timeout);
+    }
+
+    UDTSocket::UDTSocket(Scheduler& sched,
                          const std::string& hostname,
                          int port,
                          DurationOpt timeout)

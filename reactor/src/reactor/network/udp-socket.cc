@@ -35,11 +35,23 @@ namespace reactor
                                  boost::lexical_cast<std::string>(port)))
     {}
 
+    UDPSocket::UDPSocket(Scheduler& sched,
+                         int local_port,
+                         const std::string& hostname,
+                         int port)
+      : Super(sched, new AsioSocket(sched.io_service()))
+    {
+      this->_socket->open(boost::asio::ip::udp::v4());
+      boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
+                                           local_port);
+      this->_socket->bind(local);
+      this->_connect(resolve_udp(sched, hostname,
+                                 boost::lexical_cast<std::string>(port)));
+    }
+
     UDPSocket::UDPSocket(Scheduler& sched)
       : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
-    {
-        this->_socket->open(boost::asio::ip::udp::v4()); // XXX
-    }
+    {}
 
     UDPSocket::~UDPSocket()
     {}
@@ -51,6 +63,7 @@ namespace reactor
     void
     UDPSocket::bind(boost::asio::ip::udp::endpoint const& endpoint)
     {
+      socket()->open(boost::asio::ip::udp::v4());
       socket()->bind(endpoint);
     }
 

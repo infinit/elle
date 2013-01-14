@@ -23,9 +23,15 @@ namespace reactor
       `-------------*/
       public:
         UDPSocket(Scheduler& sched,
-                  const std::string& hostname, const std::string& port);
+                  const std::string& hostname,
+                  const std::string& port);
         UDPSocket(Scheduler& sched,
-                  const std::string& hostname, int port);
+                  const std::string& hostname,
+                  int port);
+        UDPSocket(Scheduler& sched,
+                  int local_port,
+                  const std::string& hostname,
+                  int port);
         UDPSocket(Scheduler& sched);
         virtual ~UDPSocket();
 
