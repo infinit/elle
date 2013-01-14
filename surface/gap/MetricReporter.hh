@@ -50,10 +50,9 @@ namespace surface
             std::string const& key,
             std::string const& value);
 
-      // Sugar to generate a new transaction event.
+      // Sugar to update a new transaction event.
       void
-      store_transaction(std::string const& name, Metric const&);
-
+      update_transaction(std::string const& transaction_id, Metric const&);
 
       // Defaultly, user is anonymous.
       void
@@ -68,7 +67,7 @@ namespace surface
       `-----------*/
     private:
       std::queue<Metric> _requests;
-      std::unique_ptr<elle::HttpClient> _server;
+      std::unique_ptr<elle::HTTPClient> _server;
       std::string _user_id;
     };
 
@@ -77,8 +76,7 @@ namespace surface
       namespace google
       {
         //XXX: create an enum and a map that list with a user friendly name the
-        // key of the field such as Key::session_control instead of "sc"
-
+        // key of the field such as Key::session_control instead of "sc".
         static const std::pair<std::string, std::string> Success{"cd1", "success"};
         static const std::pair<std::string, std::string> Failure{"cd1", "failure"};
         static const std::pair<std::string, std::string> Pending{"cd1", "pending"};

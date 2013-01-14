@@ -41,7 +41,6 @@ namespace surface
 
           id_file.close();
           // should be checked by regex but std regex suxx.
-          return id;
         }
 
       return id;
@@ -50,7 +49,7 @@ namespace surface
 
     MetricReporter::MetricReporter(std::string const& server,
                                    uint16_t port)
-      : _server{new elle::HttpClient{server, port, true}}
+      : _server{new elle::HTTPClient{server, port, "MetricReport", true}}
       , _user_id(retrieve_id())
     {}
 
@@ -96,21 +95,15 @@ namespace surface
     }
 
     void
-    MetricReporter::store_transaction(std::string const& transaction_id, Metric const& metric)
+    MetricReporter::update_transaction(std::string const& transaction_id, Metric const& metric)
     {
       ELLE_TRACE("Storing new metric");
 
       this->_requests.push(metric);
-
-      // Erase "cd" if set in metric.
-      // Note that if we want the ability to use initializer list for metric,
-      // we can declare it as non const.
-      // So we need to push "cd":caller pair after insertion in the map.
-      this->_requests.back().insert(std::pair<std::string, std::string>{"ti", transaction_id});
-
-      //XXX: events seem not working.
       // Erase "t":"appview"
-      this->_requests.back().insert(std::pair<std::string, std::string>{"t", "event"});
+      this->_requests.back().insert(std::pair<std::string, std::string>{"cd", "Transaction"});
+      this->_requests.back().insert(std::pair<std::string, std::string>{"cd2", transaction_id});
+      //   this->_requests.back().insert(std::pair<std::string, std::string>{"ti", transaction_id});
 
       //XXX: We should bufferize data instead of instant push it.
       this->_send_data();
@@ -170,6 +163,7 @@ namespace surface
         auto request = this->_server->request("POST", "/collect");
         request
           .content_type("application/x-www-form-urlencoded")
+          .user_agent("Infinit/1.0 (Linux x86_64)")
           .post_field("dh", "infinit.io")      // Test.
           .post_field("av", "1.0.0")           // Type of interraction.
           .post_field("an", "Infinit")         // Application name.

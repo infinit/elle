@@ -463,7 +463,6 @@ namespace surface
 
       void
       _reload_networks();
-
     };
 
   }
