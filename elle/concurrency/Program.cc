@@ -11,6 +11,7 @@
 #include <elle/idiom/Open.hh>
 
 #include <elle/log.hh>
+#include <elle/CrashReporter.hh>
 
 ELLE_LOG_COMPONENT("elle.concurrency.Program");
 
@@ -18,10 +19,6 @@ namespace elle
 {
   namespace concurrency
   {
-//
-// ---------- static attribules --------------------------------------------------
-//
-    elle::signal::ScoppedGuard Program::_signal_guard{};
 
 //
 // ---------- static methods --------------------------------------------------
@@ -32,21 +29,18 @@ namespace elle
     ///
     Status              Program::Setup()
     {
-      Program::_signal_guard.init(
-        {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-          SIGQUIT,
+      // set the signal handlers.
+      ::signal(SIGINT, &Program::Exception);
+      ::signal(SIGQUIT, &Program::Exception);
+      ::signal(SIGABRT, &Program::Exception);
+      ::signal(SIGTERM, &Program::Exception);
+      ::signal(SIGSEGV, &Program::Exception);
 #elif defined(INFINIT_WINDOWS)
-            // Nothing.
+      // XXX to implement
 #else
 # error "unsupported platform"
 #endif
-          SIGINT, SIGABRT, SIGTERM, SIGSEGV},
-        [] (boost::system::error_code const&, int sig)
-        {
-          Program::Exception(sig);
-        }
-      );
 
       return Status::Ok;
     }
@@ -88,9 +82,15 @@ namespace elle
         case SIGABRT:
         case SIGTERM:
           {
-            Program::_signal_guard.release();
-
             // exit properly by finishing processing the last events.
+            Program::Exit();
+
+            break;
+          }
+        case SIGSEGV: // Probability to send succesfully data is small but try.
+          {
+            elle::crash::report("Program", "SIGSEGV", reactor::Backtrace::current());
+
             Program::Exit();
 
             break;
