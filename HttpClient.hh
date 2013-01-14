@@ -3,6 +3,7 @@
 
 # include <elle/Buffer.hh>
 # include <elle/format/json.hh>
+# include <elle/attribute.hh>
 
 namespace elle
 {
@@ -39,20 +40,22 @@ namespace elle
     HTTPException(ResponseCode code, std::string const& message);
   }; // ! HTTPException
 
-  class HttpClient;
+  class HTTPClient;
 
   //- Request -----------------------------------------------------------------
   class Request
   {
-  private:
-    struct Impl;
-    std::unique_ptr<Impl> _this;
-
+    /*-------------.
+    | Construction |
+    `-------------*/
   public:
-    Request(HttpClient& client,
+    /// Initialize request like METHOD on server/url
+    Request(HTTPClient& client,
             std::string const& method,
             std::string const& url);
+    /// Initialize Request by copy.
     Request(Request&& other);
+    /// Destroy instance.
     ~Request();
 
   public:
@@ -73,6 +76,9 @@ namespace elle
     header(std::string const& key, std::string const& value);
 
     Request&
+    user_agent(std::string const& str);
+
+    Request&
     post_field(std::string const& key,
                std::string const& value);
 
@@ -84,47 +90,54 @@ namespace elle
     std::stringstream&
     response();
 
-  };
-
-  //- HttpClient --------------------------------------------------------------
-  class HttpClient
-  {
   private:
     struct Impl;
-    std::unique_ptr<Impl> _impl;
-    std::string _token;
-  public:
-    std::string _user_agent;
+    std::unique_ptr<Impl> _this;
+  };
 
+  //- HTTPClient --------------------------------------------------------------
+  class HTTPClient
+  {
+    /*-------------.
+    | Construction |
+    `-------------*/
   public:
-    HttpClient(std::string const& server,
+    /// Initialize the client to server:port.
+    HTTPClient(std::string const& server,
                uint16_t port,
+               std::string const& user_agent,
                bool check_errors);
-    ~HttpClient();
-
-    void
-    token(std::string const& token) { _token = token; }
-
-    std::string const&
-    token() const { return _token; }
+    /// Destroy client.
+    ~HTTPClient();
+    /// Wrapper to impl::check_error
+    bool
+    _check_errors();
 
   public:
+    /// Use a get method to server.
+    /// T must be serializable by elle::serialize::InputJSONArchive
     template<typename T>
     T get(std::string const& url);
 
+    /// Use a post method to server.
+    /// T must be serializable by elle::serialize::InputJSONArchive
     template<typename T>
     T post(std::string const& url, elle::format::json::Object const& req);
 
+    /// Use a put method to server.
     bool
     put(std::string const& url,
         elle::format::json::Object const& req);
 
+    /// Use a simple get to url.
     elle::Buffer
     get_buffer(std::string const& url);
 
+    /// Construct a request bind to this server.
     Request
     request(std::string const& method, std::string const& url);
 
+    /// Fire a prebuild request.
     void fire(Request& request);
 
   private:
@@ -134,7 +147,19 @@ namespace elle
              std::string const& method,
              std::string const& body,
              std::stringstream& response);
+
+    /*-----------.
+    | Attributes |
+    `-----------*/
+  private:
+    /// Forward to avoid including asio.
+    struct Impl;
+    std::unique_ptr<Impl> _impl;
+
+    ELLE_ATTRIBUTE_RW(std::string, token);
   };
 }
+
+# include <elle/HttpClient.hxx>
 
 #endif
