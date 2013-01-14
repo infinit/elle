@@ -195,8 +195,8 @@ namespace elle
         static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
         if (location)
           {
-            static boost::format fmt("%s:%s: %s (%s)");
-            this->_send(level, type, str(fmt % file % line % msg % function));
+            static boost::format fmt("%s (at %s:%s in %s)");
+            this->_send(level, type, str(fmt % msg % file % line % function));
           }
         else
           this->_send(level, type, msg);

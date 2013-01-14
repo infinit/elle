@@ -259,7 +259,11 @@ namespace elle
     String hexadecimal = format::hexadecimal::encode(buffer);
 
     // Display the string, depending on its length.
-    if (hexadecimal.length() < length)
+    if (hexadecimal.length() == 0)
+      {
+        stream << "empty";
+      }
+    else if (hexadecimal.length() < length)
       {
         // If the string is short enough, display it in its entirety.
         stream << hexadecimal;
@@ -393,7 +397,11 @@ namespace elle
     String hexadecimal = format::hexadecimal::encode(buffer);
 
     // Display the string, depending on its length.
-    if (hexadecimal.length() < length)
+    if (hexadecimal.length() == 0)
+      {
+        stream << "empty";
+      }
+    else if (hexadecimal.length() < length)
       {
         // If the string is short enough, display it in its entirety.
         stream << hexadecimal;
