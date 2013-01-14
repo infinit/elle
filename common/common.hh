@@ -179,7 +179,7 @@ namespace common
   }
   // XXX scheduled for deletion
   /// Returns the path to the passport file.
-  std::string const&
+  std::string
   passport_path(std::string const& user);
 
 } // !common
