@@ -163,7 +163,8 @@ namespace reactor
     PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint, DurationOpt timeout)
     {
       ELLE_TRACE("%s: connecting to %s", *this, endpoint);
-      _socket = new AsioSocket(this->scheduler().io_service());
+      if (!this->_socket)
+        this->_socket = new AsioSocket(this->scheduler().io_service());
       Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
       try
       {

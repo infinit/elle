@@ -1,6 +1,13 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/udt-server.hh>
 
+// FIXME
+#include <common/common.hh>
+#include <elle/io/Piece.hh>
+#include <lune/Lune.hh>
+#include <lune/Descriptor.hh>
+#include <plasma/meta/Client.hh>
+
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -41,6 +48,18 @@ namespace hole
   {
     namespace slug
     {
+      // FIXME
+      static Machine* machine(nullptr);
+      void portal_connect(std::string const& addr, int port)
+      {
+        machine->portal_connect(addr, port);
+      }
+
+      void
+      Machine::portal_connect(std::string const& host, int port)
+      {
+        _server->accept(host, port);
+      }
 
       /*----------.
       | Variables |
@@ -122,6 +141,7 @@ namespace hole
                   (hole.protocol(), elle::concurrency::scheduler()))
         , _acceptor()
       {
+        machine = this; // FIXME
         elle::network::Locus     locus;
         ELLE_TRACE_SCOPE("launch");
 
@@ -179,6 +199,51 @@ namespace hole
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
+            }
+        }
+
+
+        // Send addresses to meta.
+        {
+          lune::Descriptor descriptor(Infinit::User, Infinit::Network);
+          plasma::meta::Client client(common::meta::host(), common::meta::port());
+          try
+            {
+              elle::io::Path passport_path(lune::Lune::Passport);
+              passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
+              elle::Passport passport;
+              passport.load(passport_path);
+
+              std::vector<std::pair<std::string, uint16_t>> addresses;
+              auto interfaces = elle::network::Interface::get_map(
+                elle::network::Interface::Filter::only_up
+                | elle::network::Interface::Filter::no_loopback
+                );
+              for (auto const& pair: interfaces)
+                if (pair.second.ipv4_address.size() > 0 &&
+                    pair.second.mac_address.size() > 0)
+                  {
+                    addresses.emplace_back(pair.second.ipv4_address,
+                                           _server->port());
+                    break;
+                  }
+
+              std::vector<std::pair<std::string, uint16_t>> public_addresses;
+              auto ep = dynamic_cast<reactor::network::UDTServer*>
+                (_server.get())->public_endpoint();
+              public_addresses.push_back(std::pair<std::string, uint16_t>
+                                         (ep.address().to_string(),
+                                          ep.port()));
+              client.token(agent::Agent::meta_token);
+              client.network_connect_device(descriptor.meta().id(),
+                                            passport.id(),
+                                            addresses,
+                                            public_addresses);
+            }
+          catch (std::exception const& err)
+            {
+              ELLE_ERR("Cannot update device port: %s",
+                       err.what()); // XXX[to improve]
             }
         }
       }

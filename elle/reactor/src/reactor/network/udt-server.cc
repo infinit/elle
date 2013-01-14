@@ -1,3 +1,9 @@
+#include <algorithm>
+
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <common/common.hh>
 
 #include <elle/printf.hh>
@@ -7,6 +13,8 @@
 
 #include <asio-udt/acceptor.hh>
 #include <reactor/exception.hh>
+#include <reactor/network/buffer.hh>
+#include <reactor/network/resolve.hh>
 #include <reactor/network/udt-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
@@ -25,14 +33,13 @@ namespace reactor
 
     UDTServer::UDTServer(Scheduler& sched)
       : Super(sched)
-      , _acceptor(0)
-      , _nat(sched)
+      , _accepted()
+      , _sockets()
+      , _udp_socket(nullptr)
     {}
 
     UDTServer::~UDTServer()
-    {
-      delete _acceptor;
-    }
+    {}
 
     /*----------.
     | Accepting |
@@ -93,87 +100,146 @@ namespace reactor
     UDTSocket*
     UDTServer::accept()
     {
-      // FIXME: server should listen in ctor to avoid this crappy state ?
-      assert(_acceptor);
-      UDTAccept accept(scheduler(), *_acceptor);
-      accept.run();
-      UDTSocket* socket = new UDTSocket(scheduler(), accept.socket());
-      return socket;
+      if (this->_sockets.empty())
+        this->scheduler().current()->wait(_accepted);
+      UDTSocket* res = this->_sockets.back().release();
+      this->_sockets.pop_back();
+      return res;
+    }
+
+    void
+    UDTServer::accept(std::string const& addr, int port)
+    {
+      this->_sockets.push_back(std::unique_ptr<UDTSocket>
+                               (new UDTSocket(this->scheduler(), addr, port)));
+      this->_accepted.signal_one();
     }
 
     /*----------.
     | Listening |
     `----------*/
 
+    static std::string escape(std::string const& str)
+    {
+      std::string res("\"");
+      std::for_each(str.begin(), str.end(),
+                     [&res](char c)
+                     {
+                       if (c == '\n')
+                         res += "\\n";
+                       else
+                         res += c;
+                     });
+      return res + "\"";
+    }
+
     void
-    UDTServer::listen(int port)
+    UDTServer::listen(int desired_port)
     {
       // Punch the potential firewall
       {
+        int port = desired_port;
         try
           {
-            auto shost = common::longinus::host();
-            auto sport = common::longinus::port();
-            ELLE_TRACE_SCOPE("punch hole through %s:%d", shost, sport);
-            elle::nat::Hole pokey = _nat.punch(shost, sport, port);
-            _udp_socket = pokey.punched_handle();
-            auto local_endpoint = _udp_socket->socket()->local_endpoint();
-            auto remote_endpoint_host = pokey.public_endpoint().first;
-            auto remote_endpoint_port = pokey.public_endpoint().second;
-            ELLE_DEBUG_SCOPE("punched hole on %s:%s -> %s",
-                             remote_endpoint_host, remote_endpoint_port,
-                             local_endpoint);
+            auto lhost = common::longinus::host();
+            auto lport = common::longinus::port();
+            auto longinus =
+              resolve_udp(this->scheduler(), lhost,
+                          boost::lexical_cast<std::string>(lport));
+            ELLE_TRACE_SCOPE("punch hole with %s:%d", lhost, lport);
+            int tries = 0;
+            while (true)
+              {
+                if (tries++ == 10)
+                  {
+                    ELLE_WARN("too many tries, giving up");
+                    break;
+                  }
+                ELLE_DEBUG_SCOPE("try punching port %s", port);
+                boost::asio::ip::udp::endpoint local_endpoint
+                  (boost::asio::ip::udp::v4(), port);
+                std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
+                socket->bind(local_endpoint);
+                std::stringstream ss;
+                ss << "local " << socket->local_endpoint() << std::endl;
+                std::string question = ss.str();
+                ELLE_DUMP("longinus question: %s", escape(question));
+                socket->send_to(Buffer(question), longinus);
+
+                std::string buffer_data(1024, ' ');
+                Buffer buffer(buffer_data);
+                auto size = socket->read_some(buffer);
+                std::string answer(buffer_data.c_str(), size);
+                ELLE_DUMP("longinus answer: %s", escape(answer));
+
+                std::vector<std::string> splitted;
+                boost::split(splitted, answer, boost::is_any_of(" :\n"));
+                boost::asio::ip::udp::endpoint public_endpoint
+                  (boost::asio::ip::address::from_string(splitted[1]),
+                   boost::lexical_cast<int>(splitted[2]));
+                if (public_endpoint.port() == port)
+                  {
+                    _public_endpoint = public_endpoint;
+                    _udp_socket = std::move(socket);
+                    ELLE_DEBUG("punched right port %s", port);
+                    break;
+                  }
+                ELLE_DEBUG("punched different port %s", public_endpoint.port());
+                ++port;
+              }
           }
         catch (std::runtime_error const& e)
           {
             ELLE_WARN("NAT punching error: %s", e.what());
           }
       }
-
-      try
+      if (this->_udp_socket == nullptr)
         {
-          if (_udp_socket)
-            {
-              auto fd = _udp_socket->socket()->native_handle();
-              _acceptor = new boost::asio::ip::udt::acceptor
-                (scheduler().io_service(), port, fd);
-            }
-          else
-            _acceptor = new boost::asio::ip::udt::acceptor
-              (scheduler().io_service(), port);
+          this->_udp_socket =
+            std::unique_ptr<UDPSocket>(new UDPSocket(this->scheduler()));
+          this->_udp_socket->bind(boost::asio::ip::udp::endpoint
+                                  (boost::asio::ip::udp::v4(), desired_port));
         }
-      catch (boost::system::system_error& e)
-        {
-          throw Exception(scheduler(),
-                          elle::sprintf("unable to listen on %s: %s",
-                                        port, e.what()));
-        }
+      // try
+      //   {
+      //     if (_udp_socket)
+      //       {
+      //         auto fd = _udp_socket->socket()->native_handle();
+      //         _acceptor = new boost::asio::ip::udt::acceptor
+      //           (scheduler().io_service(), port, fd);
+      //       }
+      //     else
+      //       _acceptor = new boost::asio::ip::udt::acceptor
+      //         (scheduler().io_service(), port);
+      //   }
+      // catch (boost::system::system_error& e)
+      //   {
+      //     throw Exception(scheduler(),
+      //                     elle::sprintf("unable to listen on %s: %s",
+      //                                   port, e.what()));
+      //   }
     }
 
-    void
-    UDTServer::listen_fd(int port, int fd)
-    {
-      try
-        {
-          _acceptor = new boost::asio::ip::udt::acceptor
-            (scheduler().io_service(), port, fd);
-        }
-      catch (boost::system::system_error& e)
-        {
-          throw Exception(scheduler(),
-                          elle::sprintf("unable to listen on %s: %s",
-                                        port, e.what()));
-        }
-    }
+    // void
+    // UDTServer::listen_fd(int port, int fd)
+    // {
+    //   try
+    //     {
+    //       _acceptor = new boost::asio::ip::udt::acceptor
+    //         (scheduler().io_service(), port, fd);
+    //     }
+    //   catch (boost::system::system_error& e)
+    //     {
+    //       throw Exception(scheduler(),
+    //                       elle::sprintf("unable to listen on %s: %s",
+    //                                     port, e.what()));
+    //     }
+    // }
 
     UDTServer::EndPoint
     UDTServer::local_endpoint() const
     {
-      if (_acceptor == nullptr)
-        throw Exception(
-            const_cast<UDTServer*>(this)->scheduler(), //XXX
-            "The server is not listening.");
-      return EndPoint(boost::asio::ip::address_v4(), _acceptor->port());
+      return this->_udp_socket->local_endpoint();
     }
 
     int
