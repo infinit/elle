@@ -65,18 +65,18 @@ namespace surface
     Exception::Exception(gap_Status code, std::string const& msg)
       : std::runtime_error(msg)
       , code(code)
-    {
-    }
+    {}
 
     // - State ----------------------------------------------------------------
 
     State::State()
       : _meta{
-      new plasma::meta::Client{
-        common::meta::host(),
-        common::meta::port(),
-        true,
-      }}
+          new plasma::meta::Client{
+            common::meta::host(),
+            common::meta::port(),
+            true,
+          }
+        }
       , _logged{false}
       , _trophonius{nullptr}
       , _users{}
@@ -88,6 +88,18 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
+      // XXX degeu !
+      static std::ofstream* out = new std::ofstream{
+          elle::os::path::join(common::infinit::home(), "state.log"),
+          std::fstream::app | std::fstream::out
+      };
+      elle::log::logger("infinit.surface.gap.State").output(*out);
+      elle::log::logger("infinit.surface.gap.State").level(
+          elle::log::Logger::Level::debug
+      );
+      ELLE_LOG("Creating a new State");
+
+
       namespace p = std::placeholders;
       this->transaction_callback(
         std::bind(&State::_on_transaction, this, p::_1, p::_2)
@@ -532,22 +544,22 @@ namespace surface
       typedef std::function<void(void)> Callback;
 
       Callback            callback;
-      std::thread         thread;
       std::string         name;
       bool                done;
       bool                success;
       std::exception_ptr  exception;
+      std::thread         thread;
 
       Process(std::string const& name,
               Callback const& cb)
         : callback{cb}
-        , thread{}
         , name{name}
         , done{false}
         , success{false}
         , exception{}
+        , thread{&Process::_run, this}
       {
-        this->thread = std::move(std::thread{&Process::_run, this});
+        ELLE_LOG("Creating long operation: %s", this->name);
       }
 
     private:
@@ -555,6 +567,7 @@ namespace surface
       {
         try
           {
+            ELLE_LOG("Running long operation: %s", this->name);
             (this->callback)();
             success = true;
           }
@@ -613,6 +626,11 @@ namespace surface
     State::send_files(std::string const& recipient_id_or_email,
                       std::unordered_set<std::string> const& files)
     {
+      ELLE_WARN("Sending files to %s", recipient_id_or_email);
+      ELLE_LOG("LOG:Sending files to %s", recipient_id_or_email);
+      ELLE_DEBUG("DBG:Sending files to %s", recipient_id_or_email);
+      sleep(10);
+      ELLE_DEBUG("DBG:SLEEP DONE:Sending files to %s", recipient_id_or_email);
       return this->_add_process(
         "send_files",
         std::bind(&State::_send_files, this, recipient_id_or_email, files)

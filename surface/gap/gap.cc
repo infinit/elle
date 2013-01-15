@@ -985,18 +985,17 @@ extern "C"
       {
         std::unordered_set<std::string> s;
 
-        while(*files != nullptr)
+        while (*files != nullptr)
           {
             s.insert(*files);
             ++files;
           }
 
-        __TO_CPP(state)->send_files(recipient_id,
-                                    s);
+        __TO_CPP(state)->send_files(recipient_id, s);
       }
-    CATCH_ALL(send_files)
+    CATCH_ALL(send_files);
 
-      return ret;
+    return ret;
   }
 
   gap_Status
