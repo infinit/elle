@@ -27,12 +27,19 @@
 #include <elle/io/Piece.hh>
 #include <elle/HttpClient.hh>
 
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/sleep.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/ChanneledStream.hh>
+#include <etoile/portal/Portal.hh>
+
 #include <common/common.hh>
 #include <elle/os/path.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 #include <lune/Lune.hh>
+#include <lune/Phrase.hh>
 
 #include <nucleus/neutron/Permissions.hh>
 
@@ -89,11 +96,26 @@ namespace surface
     {
       namespace p = std::placeholders;
       this->transaction_callback(
-        std::bind(&State::_on_transaction, this, p::_1, p::_2)
+          [&] (TransactionNotification const &n, bool is_new) -> void {
+            this->_on_transaction(n, is_new);
+          }
       );
       this->transaction_status_callback(
-        std::bind(&State::_on_transaction_status, this, p::_1)
+          [&] (TransactionStatusNotification const &n, bool) -> void {
+            this->_on_transaction_status(n);
+          }
       );
+      this->user_status_callback(
+          [&] (UserStatusNotification const &n) -> void {
+            this->_on_user_status_callback(n);
+          }
+      );
+
+      /*
+        rajouter on_swagger_online
+        dans swagger_online -> foreach network ; if swagger in network then
+        call RPC qui informe 8infinit
+       */
 
       std::string user = elle::os::getenv("INFINIT_USER", "");
 
@@ -1742,6 +1764,101 @@ namespace surface
         default:
           ELLE_WARN("The status '%s' is unknown.", notif.status);
           return;
+      }
+    }
+
+    void
+    State::_on_login_impl(UserStatusNotification notif)
+    {
+      namespace proto = infinit::protocol;
+
+      ELLE_TRACE("_on_login_impl({%d, %s, %d})",
+                 (int)notif.notification_type,
+                 notif.user_id,
+                 notif.status);
+      for (auto &network_desc: this->_networks)
+      {
+          ELLE_DEBUG("check %s", network_desc.first);
+          for (auto const &user: network_desc.second->users)
+          {
+              ELLE_DEBUG("looking for %s in %s", user, network_desc.first);
+              // It's not the user you're looking for. *wave hand*
+              if (user != notif.user_id)
+                  continue;
+
+              lune::Phrase phrase;
+              phrase.load(this->_me._id, network_desc.first, "portal");
+
+              // Connect to the server.
+              reactor::network::TCPSocket   socket{elle::concurrency::scheduler(),
+                                                   elle::String("127.0.0.1"),
+                                                   phrase.port};
+
+              proto::Serializer             serializer{elle::concurrency::scheduler(),
+                                                       socket};
+
+              proto::ChanneledStream        channels{elle::concurrency::scheduler(),
+                                                     serializer,
+                                                     true};
+
+              etoile::portal::RPC           rpcs{channels};
+
+              if (rpcs.authenticate(phrase.pass))
+                  throw reactor::Exception(elle::concurrency::scheduler(),
+                                           "unable to authenticate to Etoile");
+          }
+      }
+    }
+
+    void
+    State::_on_user_status_callback(UserStatusNotification const& notif)
+    {
+      ELLE_TRACE("_on_notification: gap_UserStatusNotification");
+      enum {
+          USER_OFFLINE = 0,
+          USER_LOGIN = 1, 
+          USER_IDLE = 2,
+          UNKNOWN = 0xff,
+      } status;
+
+      switch (notif.status)
+      {
+          case 0:
+              status = USER_OFFLINE;
+              break;
+          case 1:
+              status = USER_LOGIN;
+              break;
+          case 2:
+              status = USER_IDLE;
+              break;
+          default:
+              status = UNKNOWN;
+              break;
+      }
+
+      if (status == USER_LOGIN)
+      {
+          reactor::Scheduler& sched = elle::concurrency::scheduler();
+          reactor::Thread sync(sched,
+                               "ephemeral thread",
+                               [&] {
+                                 ELLE_TRACE("Hello !");
+                                 this->_on_login_impl(notif);
+                                 ELLE_TRACE("Good Bye.");
+                                 return 0;
+                               });
+          sched.run();
+          while (1)
+          {
+              if (sync.state() == reactor::Thread::state::done)
+              {
+                  ELLE_TRACE("terminating thread");
+                  sync.terminate();
+                  break;
+              }
+          }
+
       }
     }
 

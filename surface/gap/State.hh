@@ -401,6 +401,13 @@ namespace surface
       _on_transaction_status(TransactionStatusNotification const& notif);
 
     public:
+      void
+      _on_user_status_callback(UserStatusNotification const &notif);
+
+      void
+      _on_login_impl(UserStatusNotification notif);
+
+    public:
       size_t
       poll(size_t max = 10);
 
