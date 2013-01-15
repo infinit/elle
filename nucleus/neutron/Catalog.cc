@@ -1,6 +1,5 @@
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Range.hh>
-#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/Ambit.hh>
 #include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Contents.hh>
@@ -122,10 +121,8 @@ namespace nucleus
           if (footprint >= size)
             break;
 
-          //
           // Otherwise, leave this entry in the catalog.
           //
-
           // Note however that another check is performed in order to make
           // sure that adding this entry will not make the container too large.
           if ((footprint + entry->footprint()) > extent)
@@ -238,6 +235,10 @@ namespace nucleus
       // Check if the insertion was successful.
       if (result.second == false)
         throw Exception("unable to re-insert the entry in the container");
+
+
+      // Update the state.
+      this->state(proton::State::dirty);
     }
 
     Entry const&
@@ -247,17 +248,6 @@ namespace nucleus
 
       auto scoutor = this->_iterator(name);
       auto& entry = scoutor->second;
-
-      return (*entry);
-    }
-
-    Entry&
-    Catalog::locate(elle::String const& name)
-    {
-      ELLE_TRACE_METHOD(name);
-
-      auto iterator = this->_iterator(name);
-      auto& entry = iterator->second;
 
       return (*entry);
     }
@@ -303,8 +293,8 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(name);
 
-      // Call take out and forget about the returned
-      // entry, hence (possibly) deleting it.
+      // Call take out and forget about the returned entry, hence (possibly)
+      // deleting it.
       this->takeout(name);
     }
 

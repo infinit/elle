@@ -4,6 +4,7 @@
 # include <elle/serialize/Serializer.hh>
 
 # include <nucleus/Exception.hh>
+# include <nucleus/neutron/Entry.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::neutron::Catalog);
 
@@ -26,9 +27,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
       std::shared_ptr<nucleus::neutron::Entry> entry{
         archive.template Construct<nucleus::neutron::Entry>().release()};
 
-      // Compute the entry's footprint because the entry proper
-      // constructor has not been called. Instead, the default
-      // constructor has been used before deserializing the entry.
+      // Compute the entry's footprint because the entry has been
+      // created through the load constructor which does not have
+      // the information to compute such a footprint.
       entry->footprint(elle::serialize::footprint(*entry));
 
       // Inject the entry in the catalog, taking care not to update

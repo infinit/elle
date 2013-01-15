@@ -272,5 +272,34 @@ namespace nucleus
       return (this->_valid->subject());
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Record::Type const type)
+    {
+      switch (type)
+        {
+        case Record::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Record::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown record type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

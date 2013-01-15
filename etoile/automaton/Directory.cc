@@ -98,13 +98,13 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
       // Retrieve a door on the catalog.
       nucleus::proton::Door<nucleus::neutron::Catalog> door{
-        context.porcupine->lookup(name)};
+        context.contents_porcupine->lookup(name)};
 
       door.open();
 
@@ -114,13 +114,13 @@ namespace etoile
       door.close();
 
       // Update the porcupine.
-      context.porcupine->update(name);
+      context.contents_porcupine->update(name);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            context.porcupine->size(),
+            context.contents_porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
@@ -159,13 +159,13 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
       // Retrieve a door on the catalog.
       nucleus::proton::Door<nucleus::neutron::Catalog> door{
-        context.porcupine->lookup(name)};
+        context.contents_porcupine->lookup(name)};
 
       door.open();
 
@@ -216,22 +216,22 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
       // Check if the index is out of range.
-      if (index >= context.porcupine->size())
+      if (index >= context.contents_porcupine->size())
         return elle::Status::Ok;
 
       // Seek the catalog responsible for the given index.
       auto _index = static_cast<nucleus::proton::Capacity>(index);
-      auto _size = size > (context.porcupine->size() - _index) ?
-        (context.porcupine->size() - _index) : size;
+      auto _size = size > (context.contents_porcupine->size() - _index) ?
+        (context.contents_porcupine->size() - _index) : size;
 
       while (_size > 0)
         {
-          auto pair = context.porcupine->seek(_index);
+          auto pair = context.contents_porcupine->seek(_index);
           auto& door = pair.first;
           auto& base = pair.second;
 
@@ -287,7 +287,7 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
@@ -296,7 +296,7 @@ namespace etoile
       // catalog.
       //
       // Otherwise, the catalogs have to be located in the tree.
-      switch (context.porcupine->strategy())
+      switch (context.contents_porcupine->strategy())
         {
         case nucleus::proton::Strategy::none:
           throw elle::Exception("invalid 'none' strategy");
@@ -304,7 +304,7 @@ namespace etoile
         case nucleus::proton::Strategy::block:
           {
             nucleus::proton::Door<nucleus::neutron::Catalog> door{
-              context.porcupine->lookup(from)};
+              context.contents_porcupine->lookup(from)};
 
             door.open();
 
@@ -320,9 +320,9 @@ namespace etoile
             // Retrieve a doors on the catalogs containing the _from_ entry
             // and the one responsible for the range in which the _to_ lies.
             nucleus::proton::Door<nucleus::neutron::Catalog> door_from{
-              context.porcupine->lookup(from)};
+              context.contents_porcupine->lookup(from)};
             nucleus::proton::Door<nucleus::neutron::Catalog> door_to{
-              context.porcupine->lookup(to)};
+              context.contents_porcupine->lookup(to)};
 
             if (door_from == door_to)
               {
@@ -345,7 +345,7 @@ namespace etoile
                 // updated call. We never know how the tree may be optimized
                 // to perform special operations with the mayor key (which
                 // the highest of both may actually be).
-                context.porcupine->update(from > to ? from : to);
+                context.contents_porcupine->update(from > to ? from : to);
               }
             else
               {
@@ -372,15 +372,15 @@ namespace etoile
                 //
                 // Note that both optimizations are requested at the end and
                 // not after each operation: takeout/insert.
-                context.porcupine->update(from);
-                context.porcupine->update(to);
+                context.contents_porcupine->update(from);
+                context.contents_porcupine->update(to);
               }
 
             break;
           }
         default:
           throw elle::Exception("unknown strategy '%s'",
-                                context.porcupine->strategy());
+                                context.contents_porcupine->strategy());
         }
 
       // update the object though renaming an entry may not impact
@@ -388,7 +388,7 @@ namespace etoile
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            context.porcupine->size(),
+            context.contents_porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
@@ -424,13 +424,13 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "directory");
 
       // Retrieve a door on the catalog.
       nucleus::proton::Door<nucleus::neutron::Catalog> door{
-        context.porcupine->lookup(name)};
+        context.contents_porcupine->lookup(name)};
 
       door.open();
 
@@ -440,13 +440,13 @@ namespace etoile
       door.close();
 
       // Update the porcupine.
-      context.porcupine->update(name);
+      context.contents_porcupine->update(name);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            context.porcupine->size(),
+            context.contents_porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");

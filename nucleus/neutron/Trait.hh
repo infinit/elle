@@ -6,16 +6,16 @@
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
+
+# include <nucleus/proton/Footprint.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents an attribute entry i.e a trait.
-    ///
-    /// A trait is characterised by a string name and while a value string
-    /// is associated with it.
+    /// Represent an extended attribute characterised by a name and string-based
+    /// value.
     class Trait:
       public elle::Printable
     {
@@ -23,7 +23,7 @@ namespace nucleus
       | Static Methods |
       `---------------*/
     public:
-      /// Return a null trait i.e a trait which represent an non-applicable
+      /// Return a null trait i.e a trait which represents an non-applicable
       /// value.
       static
       Trait const&
@@ -33,17 +33,12 @@ namespace nucleus
       | Enumerations |
       `-------------*/
     public:
+      /// Define the type of trait either valid or not.
       enum class Type
-      {
-        null,
-        valid
-      };
-
-      /*------.
-      | Types |
-      `------*/
-    public:
-      typedef elle::String Symbol;
+        {
+          null,
+          valid
+        };
 
       /*-------------.
       | Construction |
@@ -53,6 +48,7 @@ namespace nucleus
       Trait(elle::String const& name,
             elle::String const& value);
       Trait(Trait const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Trait);
       ~Trait();
     private:
       Trait(Type const type);
@@ -64,6 +60,9 @@ namespace nucleus
       /// Return the trait's name.
       elle::String const&
       name() const;
+      /// Update the trait's name.
+      void
+      name(elle::String const& name);
       /// Return the trait's value.
       elle::String const&
       value() const;
@@ -84,16 +83,14 @@ namespace nucleus
       | Interfaces |
       `-----------*/
     public:
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(Trait);
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 = 0) const;
       // printable
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Trait);
       // rangeable
+      typedef elle::String Symbol;
       virtual
       elle::String const&
       symbol() const;
@@ -109,6 +106,7 @@ namespace nucleus
         Valid(); // XXX
         Valid(elle::String const& name,
               elle::String const& value);
+        Valid(Valid const& other) = default;
 
       public:
         // serializable
@@ -116,7 +114,7 @@ namespace nucleus
 
         // attributes
       private:
-        ELLE_ATTRIBUTE_R(elle::String, name);
+        ELLE_ATTRIBUTE_RW(elle::String, name);
         ELLE_ATTRIBUTE_RW(elle::String, value);
       };
 
@@ -126,8 +124,16 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE_R(Type, type)
       ELLE_ATTRIBUTE(Valid*, valid);
+      ELLE_ATTRIBUTE_RW(proton::Footprint, footprint);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Trait::Type const type);
   }
 }
 

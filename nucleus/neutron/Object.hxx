@@ -21,7 +21,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
   archive & value._meta.owner.token;
   archive & value._meta.genre;
   archive & value._meta.modification_timestamp;
-  archive & value._meta.attributes;
+  archive & elle::serialize::alive_pointer(value._meta.attributes);
   archive & value._meta.access;
   archive & value._meta.revision;
   archive & elle::serialize::alive_pointer(value._meta.signature);

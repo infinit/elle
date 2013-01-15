@@ -100,8 +100,8 @@ namespace nucleus
                                const proton::Address& access,
                                const Token& owner_token);
 
-      elle::Status      Administrate(const Attributes&,
-                                     const Permissions&);
+      elle::Status      Administrate(proton::Radix const& attributes,
+                                     Permissions const permissions);
 
       elle::Status      Seal(cryptography::PrivateKey const&,
                              Access const* access);
@@ -129,11 +129,8 @@ namespace nucleus
       proton::Radix const&
       contents() const;
       /// Returns the attributes associated with the object.
-      Attributes const&
+      proton::Radix const&
       attributes() const;
-      /// Returns the attributes associated with the object.
-      Attributes&
-      attributes();
       /// Returns the size of the object's content.
       Size const&
       size() const;
@@ -197,7 +194,7 @@ namespace nucleus
         Genre genre;
         elle::utility::Time modification_timestamp;
 
-        Attributes attributes;
+        proton::Radix* attributes;
 
         proton::Address access;
 

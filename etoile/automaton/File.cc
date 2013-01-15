@@ -105,7 +105,7 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
@@ -116,9 +116,9 @@ namespace etoile
       // the expanding process taking place afterwards.
       nucleus::neutron::Offset absolute_offset = offset;
       nucleus::neutron::Size absolute_size =
-        offset < context.porcupine->size() ?
-          ((offset + region.size) < context.porcupine->size() ?
-           region.size : (context.porcupine->size() - offset)) :
+        offset < context.contents_porcupine->size() ?
+          ((offset + region.size) < context.contents_porcupine->size() ?
+           region.size : (context.contents_porcupine->size() - offset)) :
           0;
 
       // Write the content [offset, offset + size[ which may span over
@@ -127,7 +127,7 @@ namespace etoile
         {
           // Retrieve a door on the data.
           nucleus::proton::Door<nucleus::neutron::Data> data{
-            context.porcupine->lookup(absolute_offset)};
+            context.contents_porcupine->lookup(absolute_offset)};
 
           data.open();
 
@@ -156,7 +156,7 @@ namespace etoile
 
           data.close();
 
-          context.porcupine->update(absolute_offset);
+          context.contents_porcupine->update(absolute_offset);
 
           // Update the current offset so as to move on to the
           // next block until the requested content has been written.
@@ -173,12 +173,12 @@ namespace etoile
       // If the end of the current content has been reached (i.e the
       // last block) and data remains to be written, extend the last
       // block with the remaining content and finally stop.
-      ELLE_ASSERT(absolute_offset <= context.porcupine->size());
+      ELLE_ASSERT(absolute_offset <= context.contents_porcupine->size());
 
       ELLE_TRACE("the writing reached offset %s of the total size %s",
-                 absolute_offset, context.porcupine->size());
+                 absolute_offset, context.contents_porcupine->size());
 
-      if (absolute_offset == context.porcupine->size())
+      if (absolute_offset == context.contents_porcupine->size())
         {
           // Compute the expanding size.
           nucleus::neutron::Size expanding_size = region.size;
@@ -189,14 +189,14 @@ namespace etoile
                      expanding_size - (absolute_offset - offset));
 
           // Check if content remains to be written.
-          if ((offset + expanding_size) > context.porcupine->size())
+          if ((offset + expanding_size) > context.contents_porcupine->size())
             {
               ELLE_TRACE("expand the last data block with %s bytes of data",
                          expanding_size - (absolute_offset - offset));
 
               // Retrieve the very last data block.
               nucleus::proton::Door<nucleus::neutron::Data> end{
-                context.porcupine->tail()};
+                context.contents_porcupine->tail()};
 
               // Write the remaining content at the end of the last
               // data block.
@@ -205,19 +205,19 @@ namespace etoile
                            region.contents + (absolute_offset - offset),
                            expanding_size - (absolute_offset - offset)});
 
-              context.porcupine->update(absolute_offset);
+              context.contents_porcupine->update(absolute_offset);
 
               end.close();
             }
         }
 
-      ELLE_ASSERT(context.porcupine->size() >= region.size);
+      ELLE_ASSERT(context.contents_porcupine->size() >= region.size);
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            context.porcupine->size(),
+            context.contents_porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
@@ -258,20 +258,20 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
       // Check that there is enough data to be read.
-      if (offset > context.porcupine->size())
+      if (offset > context.contents_porcupine->size())
         return elle::Status::Ok;
 
       // Initialize the offset which will move forward until it reaches
       // the size.
       nucleus::neutron::Offset absolute_offset = offset;
       nucleus::neutron::Size absolute_size =
-        (offset + size) < context.porcupine->size() ?
-        size : (context.porcupine->size() - offset);
+        (offset + size) < context.contents_porcupine->size() ?
+        size : (context.contents_porcupine->size() - offset);
 
       ELLE_TRACE("about to read %s bytes of data at offset %s",
                  absolute_size, absolute_offset);
@@ -284,7 +284,7 @@ namespace etoile
         {
           // Retrieve a door on the data.
           nucleus::proton::Door<nucleus::neutron::Data> data{
-            context.porcupine->lookup(absolute_offset)};
+            context.contents_porcupine->lookup(absolute_offset)};
 
           data.open();
 
@@ -355,19 +355,19 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.porcupine == nullptr)
+      if (context.contents_porcupine == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
       // Ignore the call should the requested size be identical to the existing
       // one.
-      if (size == context.porcupine->size())
+      if (size == context.contents_porcupine->size())
         return elle::Status::Ok;
 
       // Trim the porcupine manually depending on the content strategy. In other
       // words, triming a tree is a bit specific as blocks must be removed
       // manually.
-      switch (context.porcupine->strategy())
+      switch (context.contents_porcupine->strategy())
         {
         case nucleus::proton::Strategy::none:
           throw elle::Exception("invalid 'none' strategy");
@@ -376,7 +376,7 @@ namespace etoile
           {
             // Retrieve a door on the only block.
             nucleus::proton::Door<nucleus::neutron::Data> door{
-              context.porcupine->lookup(size)};
+              context.contents_porcupine->lookup(size)};
 
             // Directly adjust the size, relatively i.e size - door.offset.
             door.open();
@@ -387,7 +387,7 @@ namespace etoile
             door.close();
 
             // Update the porcupine.
-            context.porcupine->update(size);
+            context.contents_porcupine->update(size);
 
             break;
           }
@@ -396,13 +396,13 @@ namespace etoile
             // Retrieve a door on the data responsible for the
             // offset _size_.
             nucleus::proton::Door<nucleus::neutron::Data> base{
-              context.porcupine->lookup(size)};
+              context.contents_porcupine->lookup(size)};
 
             // Act depending on the fact that the file is shrunk or
             // extended.
-            ELLE_ASSERT(size != context.porcupine->size());
+            ELLE_ASSERT(size != context.contents_porcupine->size());
 
-            if (size < context.porcupine->size())
+            if (size < context.contents_porcupine->size())
               {
                 // The file is shrunk.
                 //
@@ -413,7 +413,7 @@ namespace etoile
                   {
                     // Retrieve the door on the last data node.
                     nucleus::proton::Door<nucleus::neutron::Data> end{
-                      context.porcupine->tail()};
+                      context.contents_porcupine->tail()};
 
                     // If this node is the same as _base_, this means
                     // _base_ is the last node; hence stop.
@@ -432,7 +432,7 @@ namespace etoile
                         end.close();
 
                         // Remove the data block.
-                        context.porcupine->tree().remove(_key);
+                        context.contents_porcupine->tree().remove(_key);
 
                         // Although the remove() operation updates the
                         // tree, the porcupine needs updating as well so
@@ -458,7 +458,7 @@ namespace etoile
 
                 // Retrieve the door on the last data node.
                 nucleus::proton::Door<nucleus::neutron::Data> end{
-                  context.porcupine->tail()};
+                  context.contents_porcupine->tail()};
 
                 // Adjust the size of the last node, relatively i.e
                 // size - end.offset.
@@ -471,20 +471,20 @@ namespace etoile
 
             // Update the porcupine because the tree needs to be optimised
             // following the adjustment of the data node.
-            context.porcupine->update(size);
+            context.contents_porcupine->update(size);
 
             break;
           }
         default:
           throw elle::Exception("unknown strategy '%s'",
-                                context.porcupine->strategy());
+                                context.contents_porcupine->strategy());
         }
 
       // update the object.
       if (context.object->Update(
             context.object->author(),
             context.object->contents(),
-            context.porcupine->size(),
+            context.contents_porcupine->size(),
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");

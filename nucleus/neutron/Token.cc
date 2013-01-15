@@ -163,5 +163,34 @@ namespace nucleus
         }
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Token::Type const type)
+    {
+      switch (type)
+        {
+        case Token::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Token::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown token type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

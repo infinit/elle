@@ -1,5 +1,6 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Access.hh>
+#include <etoile/automaton/Attributes.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/abstract/Object.hh>
 #include <etoile/depot/Depot.hh>
@@ -138,6 +139,8 @@ namespace etoile
                           gear::Object&                         context)
     {
       ELLE_TRACE_FUNCTION(context);
+
+      Attributes::close(context);
 
       // XXX[very ugly hack: following the Access::Close(), we lose the pointer
       //     to the Access block. therefore we keep a copy here!]

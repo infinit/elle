@@ -12,11 +12,9 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents a group member and is defined by
-    /// a subject (which can be either a user or a group i.e a subgroup),
-    /// and a token which is the encrypted version of the group's private
-    /// pass.
+    /// Represent a group member and is defined by a subject (which can
+    /// be either a user or a group i.e a subgroup), and a token which
+    /// is the encrypted version of the group's private pass.
     class Fellow:
       public elle::Printable,
       public elle::io::Dumpable
@@ -147,6 +145,13 @@ namespace nucleus
       ELLE_ATTRIBUTE(Valid*, valid);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Fellow::Type const type);
   }
 }
 

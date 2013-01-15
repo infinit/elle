@@ -152,6 +152,14 @@ namespace nucleus
       ELLE_ATTRIBUTE_R(Type, type);
       ELLE_ATTRIBUTE(Valid*, valid);
     };
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Record::Type const type);
   }
 }
 

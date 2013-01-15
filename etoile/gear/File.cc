@@ -21,11 +21,11 @@ namespace etoile
     File::File():
       Object(NatureFile),
 
-      porcupine(nullptr),
-      nest(nullptr),
-      limits(nucleus::proton::limits::Porcupine{},
-             nucleus::proton::limits::Node{1048576, 1.0, 0.0},
-             nucleus::proton::limits::Node{1048576, 1.0, 0.0})
+      contents_porcupine(nullptr),
+      contents_nest(nullptr),
+      contents_limits(nucleus::proton::limits::Porcupine{},
+                      nucleus::proton::limits::Node{1048576, 1.0, 0.0},
+                      nucleus::proton::limits::Node{1048576, 1.0, 0.0})
     {
     }
 
@@ -34,8 +34,8 @@ namespace etoile
     ///
     File::~File()
     {
-      delete this->porcupine;
-      delete this->nest;
+      delete this->contents_porcupine;
+      delete this->contents_nest;
     }
 
 //
@@ -56,15 +56,15 @@ namespace etoile
         escape("unable to dump the inherited object");
 
       // dump the porcupine.
-      if (this->porcupine != nullptr)
+      if (this->contents_porcupine != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Porcupine] " << *this->porcupine << std::endl;
+                    << "[Contents] " << *this->contents_porcupine << std::endl;
         }
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Porcupine] " << "none" << std::endl;
+                    << "[Contents] " << "none" << std::endl;
         }
 
       return elle::Status::Ok;

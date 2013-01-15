@@ -23,7 +23,10 @@ namespace nucleus
         catalog_value,
         reference_seam,
         reference_quill,
-        reference_value
+        reference_value,
+        attributes_seam,
+        attributes_quill,
+        attributes_value
       };
 
     /*----------.

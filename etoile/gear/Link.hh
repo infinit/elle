@@ -59,9 +59,9 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::proton::Porcupine<nucleus::neutron::Reference>* porcupine;
-      etoile::nest::Nest* nest;
-      nucleus::proton::Limits limits;
+      nucleus::proton::Porcupine<nucleus::neutron::Reference>* contents_porcupine;
+      etoile::nest::Nest* contents_nest;
+      nucleus::proton::Limits contents_limits;
     };
 
   }

@@ -1,9 +1,12 @@
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Nature.hh>
+#include <etoile/nest/Nest.hh>
 
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Author.hh>
+#include <nucleus/neutron/Attributes.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -22,6 +25,12 @@ namespace etoile
     Object::Object():
       Context(NatureObject),
 
+      attributes_porcupine(nullptr),
+      attributes_nest(nullptr),
+      attributes_limits(nucleus::proton::limits::Porcupine{},
+                        nucleus::proton::limits::Node{1048576, 0.5, 0.2},
+                        nucleus::proton::limits::Node{1048576, 0.5, 0.2}),
+
       author(nullptr)
     {
       // initialize the rights structure.
@@ -37,6 +46,12 @@ namespace etoile
     Object::Object(const Nature                                 nature):
       Context(nature),
 
+      attributes_porcupine(nullptr),
+      attributes_nest(nullptr),
+      attributes_limits(nucleus::proton::limits::Porcupine{},
+                        nucleus::proton::limits::Node{1048576, 0.5, 0.2},
+                        nucleus::proton::limits::Node{1048576, 0.5, 0.2}),
+
       author(nullptr)
     {
       // initialize the rights structure.
@@ -51,6 +66,8 @@ namespace etoile
     ///
     Object::~Object()
     {
+      delete this->attributes_porcupine;
+      delete this->attributes_nest;
       delete this->rights.key;
       delete this->rights.record;
       delete this->author;

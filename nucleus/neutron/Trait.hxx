@@ -12,6 +12,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Trait,
   enforce(version == 0);
 
   archive & value._type;
+
   switch (value._type)
     {
     case nucleus::neutron::Trait::Type::null:

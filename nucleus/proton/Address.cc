@@ -306,9 +306,9 @@ namespace nucleus
     {
     }
 
-//
-// ---------- Operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,

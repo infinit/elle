@@ -82,6 +82,9 @@ namespace nucleus
     public:
       Catalog();
       Catalog(Catalog const&) = default;
+      /// Load constructor. Note that the catalog's footprint cannot be
+      /// computed by this contructor and should therefore be manually following
+      /// the deserialization.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Catalog);
 
       /*--------.
@@ -108,9 +111,6 @@ namespace nucleus
       /// Return the entry associated with the given name.
       Entry const&
       locate(elle::String const& name) const;
-      /// Return the entry associated with the given name.
-      Entry&
-      locate(elle::String const& name);
       /// Return a subset of the catalog i.e [index, index + size[.
       ///
       /// Note that the index is relative to the catalog.
@@ -130,9 +130,9 @@ namespace nucleus
       Size
       size() const;
     private:
-      /// Take the give entry and inject it into the catalog's container.
+      /// Take the given entry and inject it into the catalog's container.
       ///
-      /// Note that this method does not update the other catalog attributes
+      /// Note that this method does not update the other catalog properties
       /// (except the footprint) so as to be used by the deserializer as well.
       void
       _inject(std::shared_ptr<Entry> const& entry);
@@ -191,7 +191,6 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE(Container, container);
     };
-
   }
 }
 

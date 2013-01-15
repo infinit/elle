@@ -37,6 +37,7 @@ namespace nucleus
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
       this->_meta.revision = 0;
       this->_meta.signature = nullptr;
 
@@ -75,6 +76,7 @@ namespace nucleus
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
       this->_meta.revision = 0;
 
       this->_data.contents = nullptr;
@@ -89,7 +91,7 @@ namespace nucleus
 
         // set the initial owner permissions to all with an empty key.
         if (this->Administrate(
-              this->_meta.attributes,
+              proton::Radix{},
               permissions::read | permissions::write) == elle::Status::Error)
           throw Exception("unable to set the initial meta data");
       }
@@ -110,6 +112,7 @@ namespace nucleus
     {
       this->_author = nullptr;
       this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
       this->_data.contents = nullptr;
     }
 
@@ -117,6 +120,7 @@ namespace nucleus
     {
       delete this->_author;
       delete this->_meta.owner.record;
+      delete this->_meta.attributes;
       delete this->_meta.signature;
       delete this->_data.contents;
       delete this->_data.signature;
@@ -147,8 +151,8 @@ namespace nucleus
         if (this->_data.modification_timestamp.Current() == elle::Status::Error)
           escape("unable to set the last update time");
 
-        // set the address.
-        if (this->_data.contents != &contents) // XXX[hack to prevent to much allocations]
+        // XXX[hack to prevent too much allocations]
+        if (this->_data.contents != &contents)
           {
             delete this->_data.contents;
             this->_data.contents = new proton::Radix{contents};
@@ -182,15 +186,19 @@ namespace nucleus
     ///
     /// this method updates the meta section.
     ///
-    elle::Status        Object::Administrate(const Attributes&  attributes,
-                                             const Permissions& permissions)
+    elle::Status        Object::Administrate(proton::Radix const& attributes,
+                                             Permissions const permissions)
     {
       // set the last management time.
       if (this->_meta.modification_timestamp.Current() == elle::Status::Error)
         escape("unable to set the last management time");
 
-      // set the attributes.
-      this->_meta.attributes = attributes;
+      // XXX[hack to prevent too much allocations]
+      if (this->_meta.attributes != &attributes)
+        {
+          delete this->_meta.attributes;
+          this->_meta.attributes = new proton::Radix{attributes};
+        }
 
       // set the owner permissions.
       this->_meta.owner.permissions = permissions;
@@ -230,6 +238,8 @@ namespace nucleus
           this->_data.revision += 1;
 
           // sign the archive with the author key.
+          ELLE_ASSERT(this->_data.contents != nullptr);
+
           this->_data.signature = new cryptography::Signature{
             k.sign(elle::serialize::make_tuple(
                      *this->_data.contents,
@@ -274,12 +284,14 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
+              ELLE_ASSERT(this->_meta.attributes != nullptr);
+
               this->_meta.signature = new cryptography::Signature{
                 k.sign(elle::serialize::make_tuple(
                          this->_meta.owner.permissions,
                          this->_meta.genre,
                          this->_meta.modification_timestamp,
-                         this->_meta.attributes,
+                         *this->_meta.attributes,
                          this->_meta.revision,
                          fingerprint))};
             }
@@ -291,12 +303,14 @@ namespace nucleus
               //
 
               // sign the meta data.
+              ELLE_ASSERT(this->_meta.attributes != nullptr);
+
               this->_meta.signature = new cryptography::Signature{
                 k.sign(elle::serialize::make_tuple(
                          this->_meta.owner.permissions,
                          this->_meta.genre,
                          this->_meta.modification_timestamp,
-                         this->_meta.attributes,
+                         *this->_meta.attributes,
                          this->_meta.revision))};
             }
 
@@ -362,16 +376,12 @@ namespace nucleus
       return (*this->_data.contents);
     }
 
-    Attributes const&
+    proton::Radix const&
     Object::attributes() const
     {
-      return (this->_meta.attributes);
-    }
+      ELLE_ASSERT(this->_meta.attributes);
 
-    Attributes&
-    Object::attributes()
-    {
-      return (this->_meta.attributes);
+      return (*this->_meta.attributes);
     }
 
     Size const&
@@ -464,6 +474,7 @@ namespace nucleus
             cryptography::Digest fingerprint(access->fingerprint());
 
             // verify the meta part, including the access fingerprint.
+            ELLE_ASSERT(this->_meta.attributes != nullptr);
             ELLE_ASSERT(this->_meta.signature != nullptr);
 
             if (this->owner_K().verify(
@@ -472,7 +483,7 @@ namespace nucleus
                     this->_meta.owner.permissions,
                     this->_meta.genre,
                     this->_meta.modification_timestamp,
-                    this->_meta.attributes,
+                    *this->_meta.attributes,
                     this->_meta.revision,
                     fingerprint)) == false)
               throw Exception("unable to verify the meta's signature");
@@ -480,6 +491,7 @@ namespace nucleus
         else
           {
             // verify the meta part.
+            ELLE_ASSERT(this->_meta.attributes != nullptr);
             ELLE_ASSERT(this->_meta.signature != nullptr);
 
             if (this->owner_K().verify(
@@ -488,7 +500,7 @@ namespace nucleus
                     this->_meta.owner.permissions,
                     this->_meta.genre,
                     this->_meta.modification_timestamp,
-                    this->_meta.attributes,
+                    *this->_meta.attributes,
                     this->_meta.revision)) == false)
               throw Exception("unable to verify the meta's signature");
           }
@@ -574,6 +586,7 @@ namespace nucleus
       // (iv)
       {
         // verify the signature.
+        ELLE_ASSERT(this->_data.contents != nullptr);
         ELLE_ASSERT(this->_data.signature != nullptr);
 
         if (author->verify(*this->_data.signature,
@@ -643,8 +656,10 @@ namespace nucleus
       if (this->_meta.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta timestamp");
 
-      if (this->_meta.attributes.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the meta attributess");
+      ELLE_ASSERT(this->_meta.attributes != nullptr);
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
+                << "[Attributes] " << *this->_meta.attributes << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -668,6 +683,7 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Data]" << std::endl;
 
+      ELLE_ASSERT(this->_data.contents != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
                 << "[Contents] " << *this->_data.contents << std::endl;

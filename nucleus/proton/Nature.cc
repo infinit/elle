@@ -62,6 +62,21 @@ namespace nucleus
             stream << "value<reference>";
             break;
           }
+        case Nature::attributes_seam:
+          {
+            stream << "seam<attributes>";
+            break;
+          }
+        case Nature::attributes_quill:
+          {
+            stream << "quill<attributes>";
+            break;
+          }
+        case Nature::attributes_value:
+          {
+            stream << "value<attributes>";
+            break;
+          }
         default:
           {
             throw Exception("unknown nature: '%s'", static_cast<int>(nature));

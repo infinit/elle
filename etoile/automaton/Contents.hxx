@@ -28,7 +28,7 @@ using namespace infinit;
 # include <agent/Agent.hh>
 
 // XXX
-#define SECRET_KEY_LENGTH 256
+#define CONTENTS_SECRET_KEY_LENGTH 256
 
 namespace etoile
 {
@@ -47,7 +47,7 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // if the contents is already opened, return.
-      if (context.porcupine != nullptr)
+      if (context.contents_porcupine != nullptr)
         return elle::Status::Ok;
 
       // Check if there exists a contents. if so, instanciate a porcupine.
@@ -63,15 +63,16 @@ namespace etoile
               nucleus::neutron::permissions::read)
             {
               // Instanciate a nest.
-              context.nest =
-                new etoile::nest::Nest{SECRET_KEY_LENGTH, context.limits};
+              context.contents_nest =
+                new etoile::nest::Nest{CONTENTS_SECRET_KEY_LENGTH,
+                                       context.contents_limits};
 
               // Instanciate a porcupine.
-              context.porcupine =
+              context.contents_porcupine =
                 new nucleus::proton::Porcupine<typename T::C>{
                   context.object->contents(),
                   *context.rights.key,
-                  *context.nest};
+                  *context.contents_nest};
             }
           else
             {
@@ -83,12 +84,13 @@ namespace etoile
       else
         {
           // Instanciate a nest.
-          context.nest =
-            new etoile::nest::Nest{SECRET_KEY_LENGTH, context.limits};
+          context.contents_nest =
+            new etoile::nest::Nest{CONTENTS_SECRET_KEY_LENGTH,
+                                   context.contents_limits};
 
           // otherwise create a new empty porcupine.
-          context.porcupine =
-            new nucleus::proton::Porcupine<typename T::C>{*context.nest};
+          context.contents_porcupine =
+            new nucleus::proton::Porcupine<typename T::C>{*context.contents_nest};
         }
 
       return elle::Status::Ok;
@@ -130,12 +132,12 @@ namespace etoile
                   escape("unable to open the contents");
 
                 ELLE_TRACE("record the content blocks for removal");
-                ELLE_ASSERT(context.porcupine != nullptr);
-                context.porcupine->destroy();
+                ELLE_ASSERT(context.contents_porcupine != nullptr);
+                context.contents_porcupine->destroy();
 
                 ELLE_TRACE("mark the destroyed blocks as needed to be "
                            "removed from the storage layer");
-                context.transcript().merge(context.nest->transcribe());
+                context.transcript().merge(context.contents_nest->transcribe());
 
                 break;
               }
@@ -167,18 +169,18 @@ namespace etoile
       {
         // if there is no loaded contents or accessible content, then there
         // is nothing to do.
-        if (context.porcupine == nullptr)
+        if (context.contents_porcupine == nullptr)
           return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.
-        if (context.porcupine->state() == nucleus::proton::State::clean)
+        if (context.contents_porcupine->state() == nucleus::proton::State::clean)
           return elle::Status::Ok;
       }
 
       ELLE_TRACE("the content seems to have been modified");
 
       // retrieve the contents's size.
-      nucleus::neutron::Size size = context.porcupine->size();
+      nucleus::neutron::Size size = context.contents_porcupine->size();
 
       //
       // at this point, the contents is known to have been modified.
@@ -274,22 +276,22 @@ namespace etoile
           */
 
           // XXX[should provide a len but with a static const value]
-          cryptography::SecretKey key{cryptography::SecretKey::generate(SECRET_KEY_LENGTH)}; // XXX
+          cryptography::SecretKey key{cryptography::SecretKey::generate(CONTENTS_SECRET_KEY_LENGTH)}; // XXX
 
           // update the object.
           if (context.object->Update(
                 *context.author,
-                context.porcupine->seal(key),
+                context.contents_porcupine->seal(key),
                 size,
                 context.object->access(),
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
           // XXX[to slow without a nest optimization: to activate later]
-          //ELLE_DECLARE(context.porcupine->check(nucleus::proton::flags::all));
+          //ELLE_DECLARE(context.contents_porcupine->check(nucleus::proton::flags::all));
 
           // mark the new/modified blocks as needing to be stored.
-          context.transcript().merge(context.nest->transcribe());
+          context.transcript().merge(context.contents_nest->transcribe());
 
           //
           // finally, since the data has been re-encrypted, the key must be

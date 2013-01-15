@@ -53,6 +53,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
   enforce(version == 0);
 
   archive & value._type;
+
   switch (value._type)
     {
     case nucleus::proton::Address::Type::null:

@@ -238,5 +238,34 @@ namespace nucleus
       return (this->_valid->subject());
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Fellow::Type const type)
+    {
+      switch (type)
+        {
+        case Fellow::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Fellow::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown fellow type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

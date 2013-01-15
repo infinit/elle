@@ -116,6 +116,13 @@ namespace nucleus
       ELLE_ATTRIBUTE(Valid*, valid);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Token::Type const type);
   }
 }
 
