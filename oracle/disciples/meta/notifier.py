@@ -16,7 +16,9 @@ FILE_TRANSFER = 7
 FILE_TRANSFER_STATUS = 11
 USER_STATUS = 8
 MESSAGE = 217
-LOGGED_IN = 666
+LOGGED_IN = -666
+NETWORK_CHANGED = 128
+
 
 class Notifier(object):
     def open(self):
@@ -81,6 +83,7 @@ class TrophoniusNotify(Notifier):
         if not isinstance(recipients_id, list):
             return self.notify_one(notification_type, recipients_id, message)
 
+        print("Notifying some", recipients_id)
         # Recipients empty.
         if not recipients_id:
             return

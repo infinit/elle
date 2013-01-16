@@ -94,7 +94,8 @@ class Page(object):
             self.notifySwaggers(
                 notifier.USER_STATUS,
                 {
-                    'status': 1,
+                    'status': 1, #Connected.
+
                 }
             )
             return True

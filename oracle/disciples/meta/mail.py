@@ -101,7 +101,7 @@ http://infinit.io
 USER_INVITATION_CONTENT = """
 Dear user,
 
-%(invited_fullname) (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
+%(inviter_fullname)s (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
 
 %(message)s
 

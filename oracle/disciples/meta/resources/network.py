@@ -11,7 +11,7 @@ from meta.page import Page
 from meta import database, conf
 from meta import error
 from meta import regexp
-
+from meta import notifier
 
 class _Page(Page):
     """Common tools for network calls."""
@@ -115,9 +115,14 @@ class AddUser(_Page):
         database.networks().save(network)
         to_add_user['networks'].append(network['_id'])
         database.users().save(to_add_user)
+
+        notifier.notify_one(notifier.NETWORK_CHANGED, user_id, {"network_id": network_id, "what": "added"})
+
         return self.success({
             'updated_network_id': network['_id'],
         })
+
+#XXX: Remove user from network.
 
 class All(_Page):
     """
@@ -189,8 +194,53 @@ class Nodes(_Page):
                         )
         res['nodes'] = list(addrs['locals'].union(addrs['externals']))
         #print("Find nodes of %s: " % network['name'], res['nodes'])
+
         return self.success(res)
 
+class Endpoints(_Page):
+    """
+    Return ip port for a selected node in device.
+        POST
+               {
+                'device_id':
+               }
+            -> {
+                'success': True,
+                'externals': ['69.69.69.69:38293', '69.69.69.69:38323']
+                'locals': ['69.69.69.69:33293', '69.69.69.69:9323']
+            }
+    """
+    __pattern__ = "/network/(.+)/endpoints"
+
+    def POST(self, _id):
+        self.requireLoggedIn()
+
+        device_id = self.data['device_id']
+        network_id = _id
+
+        network = self.network(network_id)
+        if not self.user['_id'] in network['users']:
+            raise web.Forbidden("You cannot get endpoint for a user in a"
+                                "network that does not belong to you")
+
+        if not device_id in network['nodes'].keys():
+            raise self.error(error.DEVICE_NOT_FOUND,
+                             "This user is not connected in this network")
+
+        addrs = {'locals': list(), 'externals': list()}
+        user_node = network['nodes'][device_id];
+
+        for addr_kind in ['locals', 'externals']:
+            if user_node[addr_kind] is None:
+                continue
+            for a in user_node[addr_kind]:
+                if a and a["ip"] and a["port"]:
+                    addrs[addr_kind].append(
+                        a["ip"] + ':' + str(a["port"]))
+        res['externals'] = addrs['externals']
+        res['locals'] = addrs['locals']
+
+        return self.success(res)
 
 class Update(_Page):
     """
@@ -508,7 +558,8 @@ class Delete(_Page):
         if status:
             return self.error(*status)
 
-        _id = database.ObjectId(self.data['network_id'])
+        network_id = self.data['network_id']
+        _id = database.ObjectId(network_id)
 
         network = database.networks().find_one(_id)
 
@@ -516,15 +567,23 @@ class Delete(_Page):
             if self.data['force']:
                 print("Network doesn't exist but force is enable, no error !!")
                 return self.success({
-                    'deleted_network_id': self.data['network_id']
+                    'deleted_network_id': network_id
                 });
             else:
                 return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
 
+        users = network['users'][::]
+
         # for each user in network, remove this network from his network list.
         for user_id in network['users']:
-            print("user: ", user_id)
+            #XXX: with many devices connected, should we notify the owner ?
             database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
+
+        self.notifier.notify_some(
+            notifier.NETWORK_CHANGED,
+            users,
+            {"network_id": network_id, "what": "added"}
+        )
 
         database.networks().find_and_modify(
             {
@@ -534,5 +593,5 @@ class Delete(_Page):
         )
 
         return  self.success({
-            'deleted_network_id': self.data['network_id'],
+            'deleted_network_id': network_id,
         })

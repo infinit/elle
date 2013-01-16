@@ -21,6 +21,8 @@ class Search(Page):
     __pattern__ = "/user/search"
 
     def POST(self):
+        self.requireLoggedIn()
+
         text = self.data["text"]
         count = 'count' in self.data and self.data['count'] or 5
         offset = 'offset' in self.data and self.data['offset'] or 0
@@ -32,7 +34,8 @@ class Search(Page):
                     '$or' : [
                         {'fullname' : {'$regex' : '^%s' % text,  '$options': 'i'}},
                         {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
-                    ]
+                    ],
+                    'register_status':'ok',
                 },
                 fields=["_id"],
                 limit=count + offset
@@ -44,7 +47,7 @@ class Search(Page):
                 limit=count + offset
             )
 
-        result = list(user['_id'] for user in users[offset:])
+        result = list(user['_id'] for user in users[offset:count])
 
         return self.success({
             'users': result,
@@ -54,6 +57,7 @@ class Message(Page):
     __pattern__ = "/debug"
 
     def POST(self):
+        self.requireLoggedIn()
         self.notifier.notify_one(
             notifier.MESSAGE,
             self.data["recipient_id"],
@@ -242,6 +246,7 @@ class One(Page):
     __pattern__ = "/user/(.+)/view"
 
     def GET(self, id_or_email):
+        self.requireLoggedIn()
         if '@' in id_or_email:
             user = database.users().find_one({'email': id_or_email})
         else:
@@ -254,7 +259,7 @@ class One(Page):
             'public_key': user['public_key'],
             'fullname': user['fullname'],
             # XXX: user['connected']
-            'status': 1, #user['status']
+            'status': 'connected' in user and user['connected'] or 0
         })
 
 class Icon(Page):
