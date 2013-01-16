@@ -145,8 +145,8 @@ namespace reactor
         int port = desired_port;
         try
           {
-            auto lhost = common::longinus::host();
-            auto lport = common::longinus::port();
+            auto lhost = "development.infinit.io";//common::longinus::host();
+            auto lport = 9999;//common::longinus::port();
             auto longinus =
               resolve_udp(this->scheduler(), lhost,
                           boost::lexical_cast<std::string>(lport));
