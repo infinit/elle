@@ -69,6 +69,14 @@ namespace elle
       // attributes
       //
       Natural64         nanoseconds;
+
+      /*---------------.
+      | Static members |
+      `---------------*/
+    public:
+      static
+      Time const&
+      get_current();
     };
 
   }
