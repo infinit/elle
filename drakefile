@@ -279,6 +279,22 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   protocol_lib = drake.cxx.DynLib('lib/protocol', protocol_sources,
                                   cxx_toolkit, cxx_config)
 
+  # RCP caller
+  rpc_sources = drake.nodes(
+    'protocol/8rpc.cc'
+    )
+  rpc_cxx_config = drake.cxx.Config(cxx_config)
+  rpc_cxx_config.lib_path_runtime('../lib')
+  rpc_bin = drake.cxx.Executable('bin/8rpc', rpc_sources + [reactor_lib,
+                                                            asio_udt_lib,
+                                                            udt_lib, # FIXME
+                                                            elle_lib,
+                                                            cryptography_lib,
+                                                            comet_lib,
+                                                            protocol_lib,
+                                                            ],
+                                 cxx_toolkit, rpc_cxx_config)
+
   # Plasma
   plasma_sources = drake.nodes(
     # 'plasma/watchdog/Application.hh',
@@ -640,7 +656,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   network_bin = drake.cxx.Executable('bin/8network',
                                      network_sources + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
-
 
   # Trophonius
 

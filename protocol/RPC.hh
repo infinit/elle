@@ -82,12 +82,12 @@ namespace infinit
                         RPC<ISerializer, OSerializer>& owner);
         R operator() (Args ...);
         void operator = (boost::function<R (Args...)> const& implem);
-      private:
         template <typename I, typename O>
         friend class RPC;
         RemoteProcedure(std::string const& name,
                         RPC<ISerializer, OSerializer>& owner,
                         uint32_t id);
+      private:
         uint32_t _id;
         std::string _name;
         RPC<ISerializer, OSerializer>& _owner;
