@@ -60,6 +60,5 @@ namespace nucleus
 
       return (stream);
     }
-
   }
 }

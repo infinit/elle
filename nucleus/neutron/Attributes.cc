@@ -220,6 +220,11 @@ namespace nucleus
       // Retrieve the trait.
       std::shared_ptr<Trait> trait = iterator->second;
 
+      // Substract the trait's current footprint.
+      ELLE_ASSERT(trait->footprint() != 0);
+      ELLE_ASSERT(this->footprint() >= trait->footprint());
+      this->footprint(this->footprint() - trait->footprint());
+
       // Rename the trait.
       trait->name(to);
 
@@ -235,6 +240,10 @@ namespace nucleus
       // Check if the insertion was successful.
       if (result.second == false)
         throw Exception("unable to re-insert the trait in the container");
+
+      // Add the trait's new footprint.
+      ELLE_ASSERT(trait->footprint() != 0);
+      this->footprint(this->footprint() + trait->footprint());
 
       // Update the state.
       this->state(proton::State::dirty);
@@ -252,8 +261,17 @@ namespace nucleus
       // Retrieve the trait.
       auto& trait = iterator->second;
 
+      // Substract the trait's current footprint.
+      ELLE_ASSERT(trait->footprint() != 0);
+      ELLE_ASSERT(this->footprint() >= trait->footprint());
+      this->footprint(this->footprint() - trait->footprint());
+
       // Update the trait.
       trait->value(value);
+
+      // Add the trait's new footprint.
+      ELLE_ASSERT(trait->footprint() != 0);
+      this->footprint(this->footprint() + trait->footprint());
 
       // Update the state.
       this->state(proton::State::dirty);

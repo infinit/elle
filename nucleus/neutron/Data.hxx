@@ -21,6 +21,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Data,
   value.footprint(value.footprint() + value._buffer.size());
 
   ELLE_ASSERT(value.state() == nucleus::proton::State::clean);
+  ELLE_ASSERT(value.footprint() == elle::serialize::footprint(value));
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Data,

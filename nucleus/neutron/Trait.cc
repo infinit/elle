@@ -114,7 +114,15 @@ namespace nucleus
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
+      // Substract the current name's footprint.
+      ELLE_ASSERT(this->_footprint >= elle::serialize::footprint(name));
+      this->_footprint -= elle::serialize::footprint(name);
+
+      // Update the name;
       this->_valid->name(name);
+
+      // Add the new name's footprint.
+      this->_footprint += elle::serialize::footprint(name);
     }
 
     elle::String const&
@@ -127,12 +135,22 @@ namespace nucleus
     }
 
     void
-    Trait::value(elle::String const& value) const
+    Trait::value(elle::String const& value)
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
+      // Substract the current value's footprint.
+      ELLE_ASSERT(this->_footprint >=
+                  elle::serialize::footprint(this->_valid->value()));
+      this->_footprint -=
+        elle::serialize::footprint(this->_valid->value());
+
+      // Update the value;
       this->_valid->value(value);
+
+      // Add the new value's footprint.
+      this->_footprint += elle::serialize::footprint(value);
     }
 
     /*----------.
@@ -179,11 +197,13 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            stream << "("
+            stream << "\""
                    << this->_valid->name()
-                   << ", "
+                   << "\""
+                   << ": "
+                   << "\""
                    << this->_valid->value()
-                   << ")";
+                   << "\"";
 
             break;
           }

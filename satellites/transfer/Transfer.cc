@@ -380,17 +380,20 @@ namespace satellite
               std::streamsize N = 5048576;
               nucleus::neutron::Offset offset(0);
 
-#ifndef TRANSFER_UGLY_PERFORMANCE_HACK // XXX
+#ifdef TRANSFER_UGLY_PERFORMANCE_HACK
               // Transfer is too slow: this hack consists in using a specific
               // RPC for reading a whole file.
-              while (offset < abstrict.size)
+              while (offset < abstract.size)
                 {
-                  nucleus::neutron::Size size =
-                    Transfer::rpcs->transferfrom(child, path, offset, N);
+                  nucleus::neutron::Size toread =
+                    (offset + N) > abstract.size ? (abstract.size - offset) : N;
 
-                  offset += size;
+                  nucleus::neutron::Size read =
+                    Transfer::rpcs->transferfrom(child, path, offset, toread);
 
-                  Transfer::from_progress(size);
+                  offset += read;
+
+                  Transfer::from_progress(read);
                 }
 #else
               std::ofstream stream(path, std::ios::binary);

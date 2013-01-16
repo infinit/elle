@@ -8,6 +8,7 @@
 
 # include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Address.hh>
+# include <nucleus/neutron/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -24,11 +25,6 @@ namespace nucleus
       public elle::Printable
     {
     public:
-      //
-      // constants
-      //
-      static const Entry                Null;
-
       //
       // types
       //
@@ -62,21 +58,21 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Entry);
+      ELLE_SERIALIZE_FRIEND_FOR(Catalog);
       // rangeable
       virtual
       elle::String const&
       symbol() const;
 
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(Entry);
-
       //
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_RW(elle::String, name);
+      ELLE_ATTRIBUTE_RW(elle::String, name); // XXX[method rename instead: update footprint]
       ELLE_ATTRIBUTE_R(proton::Address, address);
-      ELLE_ATTRIBUTE_RW(proton::Footprint, footprint);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
   }

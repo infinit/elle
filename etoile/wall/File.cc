@@ -7,6 +7,7 @@
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Rights.hh>
 #include <etoile/journal/Journal.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
@@ -549,6 +550,8 @@ namespace etoile
                      gear::Identifier const& destination,
                      nucleus::neutron::Offset const& offset)
     {
+      ELLE_TRACE_FUNCTION(source, destination, offset);
+
       std::streamsize N = 5242880;
       std::ifstream stream(source, std::ios::binary);
       nucleus::neutron::Offset _offset(offset);
@@ -580,6 +583,8 @@ namespace etoile
                        nucleus::neutron::Offset const& offset,
                        nucleus::neutron::Size const& size)
     {
+      ELLE_TRACE_FUNCTION(source, destination, offset, size);
+
       std::ofstream stream(destination, std::ios::binary);
       nucleus::neutron::Offset _offset(offset);
 
@@ -587,8 +592,13 @@ namespace etoile
 
       while (_offset < (offset + size))
         {
+          ELLE_TRACE("reading %s bytes at offset %s",
+                     size, _offset);
+
           elle::standalone::Region data{
             File::read(source, _offset, size)};
+
+          ELLE_ASSERT(data.size != 0);
 
           stream.write((const char*)data.contents,
                        static_cast<std::streamsize>(data.size));

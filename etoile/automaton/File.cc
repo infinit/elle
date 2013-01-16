@@ -86,6 +86,7 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, offset, region);
 
+      // Ignore such zero-sized requests
       if (region.size == 0)
         return elle::Status::Ok;
 
@@ -239,6 +240,7 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, offset, size);
 
+      // Ignore such zero-sized requests.
       if (size == 0)
         return elle::Status::Ok;
 
@@ -273,8 +275,14 @@ namespace etoile
         (offset + size) < context.contents_porcupine->size() ?
         size : (context.contents_porcupine->size() - offset);
 
-      ELLE_TRACE("about to read %s bytes of data at offset %s",
-                 absolute_size, absolute_offset);
+      // Return if there is no more data to read.
+      if (absolute_size == 0)
+        return elle::Status::Ok;
+
+      ELLE_TRACE("about to read %s bytes of data at offset %s from "
+                 "a porcupine of size %s",
+                 absolute_size, absolute_offset,
+                 context.contents_porcupine->size());
 
       // Read the content [offset, offset + size[ which may span over
       // several data blocks.
@@ -320,6 +328,7 @@ namespace etoile
           ELLE_ASSERT(absolute_offset <= (offset + absolute_size));
         }
 
+      ELLE_ASSERT(buffer.size() != 0);
       ELLE_ASSERT(buffer.size() <= size);
 
       // XXX[not optimized: migrate to elle::Buffer so as to avoid

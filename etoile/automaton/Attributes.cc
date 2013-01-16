@@ -409,7 +409,7 @@ namespace etoile
             escape("unable to update the object");
 
           // XXX[too slow without a nest optimization: to activate later]
-          //ELLE_DECLARE(context.attributes_porcupine->check(nucleus::proton::flags::all));
+          ELLE_STATEMENT(context.attributes_porcupine->check(nucleus::proton::flags::all));
 
           // mark the new/modified blocks as needing to be stored.
           context.transcript().merge(context.attributes_nest->transcribe());

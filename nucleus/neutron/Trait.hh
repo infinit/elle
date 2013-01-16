@@ -9,6 +9,7 @@
 # include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/Footprint.hh>
+# include <nucleus/neutron/fwd.hh>
 
 namespace nucleus
 {
@@ -68,7 +69,7 @@ namespace nucleus
       value() const;
       /// Update the trait's value.
       void
-      value(elle::String const& value) const;
+      value(elle::String const& value);
 
       /*----------.
       | Operators |
@@ -89,6 +90,7 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Trait);
+      ELLE_SERIALIZE_FRIEND_FOR(Attributes);
       // rangeable
       typedef elle::String Symbol;
       virtual
@@ -124,7 +126,7 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE_R(Type, type)
       ELLE_ATTRIBUTE(Valid*, valid);
-      ELLE_ATTRIBUTE_RW(proton::Footprint, footprint);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
     /*----------.

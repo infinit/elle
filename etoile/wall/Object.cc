@@ -152,7 +152,7 @@ namespace etoile
               {
                 // XXX[this whole code should probably be put within the
                 //     critical section?]
-                ELLE_DECLARE(object.get()->Dump());
+                ELLE_STATEMENT(object.get()->Dump());
                 throw elle::Exception("unable to allocate the proper context");
               }
             }

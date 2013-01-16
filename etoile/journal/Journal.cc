@@ -19,6 +19,9 @@
 
 ELLE_LOG_COMPONENT("infinit.etoile.journal.Journal");
 
+/// XXX[to remove when file system I/Os while be async]
+#undef ETOILE_JOURNAL_THREAD
+
 namespace etoile
 {
   namespace journal
@@ -51,6 +54,7 @@ namespace etoile
       // Retrieve the transcript from the context.
       gear::Transcript* transcript = scope->context->cede();
 
+#ifdef ETOILE_JOURNAL_THREAD
       try
        {
          // Insert the transcript in the journal's queue.
@@ -74,6 +78,9 @@ namespace etoile
 
           escape("unable to spawn a new thread: '%s'", err.what());
         }
+#else
+      Journal::_process(transcript);
+#endif
 
       // Update the context's state.
       scope->context->state = gear::Context::StateJournaled;
@@ -92,6 +99,7 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(address, revision);
 
+#ifdef ETOILE_JOURNAL_THREAD
       for (auto transcript: Journal::_queue)
         {
           ELLE_TRACE_SCOPE("exploring transcript");
@@ -160,6 +168,7 @@ namespace etoile
                 }
             }
         }
+#endif
 
       ELLE_TRACE("the requested block is not present in the journal");
 
@@ -212,8 +221,10 @@ namespace etoile
           elle::concurrency::scheduler().current()->yield();
         }
 
+#ifdef ETOILE_JOURNAL_THREAD
       // Remove the transcript from the queue.
       Journal::_queue.erase(transcript);
+#endif
 
       delete transcript;
 

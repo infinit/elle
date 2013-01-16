@@ -17,6 +17,7 @@
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Data.hh>
+#include <nucleus/neutron/Attributes.hh>
 
 #include <etoile/Etoile.hh>
 #include <etoile/gear/Transcript.hh>
@@ -529,6 +530,54 @@ test_porcupine_data()
   delete porcupine;
 }
 
+//
+// ---------- Attributes ------------------------------------------------------
+//
+
+void
+test_porcupine_attributes()
+{
+  ELLE_TRACE_FUNCTION("");
+
+  // XXX[provide a path to where blocks should be stored i.e another
+  //     hole storage]
+  etoile::nest::Nest nest1{
+    PORCUPINE_SECRET_LENGTH,
+    nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0},
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0})};
+  nucleus::proton::Porcupine<nucleus::neutron::Attributes>* porcupine =
+    new nucleus::proton::Porcupine<nucleus::neutron::Attributes>(nest1);
+
+  std::vector<elle::String> const vector({"suce", "avale", "leche",
+                                          "ingurgite"});
+
+  for (auto& name: vector)
+    {
+      nucleus::proton::Door<nucleus::neutron::Attributes> door{
+        porcupine->lookup(name)};
+
+      door.open();
+
+      nucleus::neutron::Trait* trait =
+        new nucleus::neutron::Trait(name, name);
+
+      door().insert(trait);
+
+      door.close();
+
+      porcupine->update(name);
+    }
+
+  porcupine->check(nucleus::proton::flags::all);
+
+  delete porcupine;
+}
+
+//
+// ---------- Main ------------------------------------------------------------
+//
+
 int
 Main(elle::Natural32,
      elle::Character* argv[])
@@ -567,6 +616,7 @@ Main(elle::Natural32,
 
       test_porcupine_catalog();
       test_porcupine_data();
+      test_porcupine_attributes();
 
 #ifdef PORCUPINE_SERIALIZE_TEST
       etoile::Etoile::Clean();

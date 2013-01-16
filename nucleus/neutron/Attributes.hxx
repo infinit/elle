@@ -30,7 +30,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Attributes,
       // Compute the trait's footprint because the trait has been
       // created through the load constructor which does not have
       // the information to compute such a footprint.
-      trait->footprint(elle::serialize::footprint(*trait));
+      trait->_footprint = elle::serialize::footprint(*trait);
 
       // Inject the trait in the attributes, taking care not to update
       // the state (the block must remain cleaned since deserialized).
@@ -38,6 +38,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Attributes,
     }
 
   ELLE_ASSERT(value.state() == nucleus::proton::State::clean);
+  ELLE_ASSERT(value.footprint() == elle::serialize::footprint(value));
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Attributes,

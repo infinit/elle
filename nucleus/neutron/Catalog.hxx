@@ -30,7 +30,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
       // Compute the entry's footprint because the entry has been
       // created through the load constructor which does not have
       // the information to compute such a footprint.
-      entry->footprint(elle::serialize::footprint(*entry));
+      entry->_footprint = elle::serialize::footprint(*entry);
 
       // Inject the entry in the catalog, taking care not to update
       // the state (the block must remain cleaned since deserialized).
@@ -38,6 +38,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Catalog,
     }
 
   ELLE_ASSERT(value.state() == nucleus::proton::State::clean);
+  ELLE_ASSERT(value.footprint() == elle::serialize::footprint(value));
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Catalog,
