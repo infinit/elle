@@ -35,6 +35,11 @@ namespace reactor
                 const std::string& hostname,
                 int port,
                 DurationOpt timeout = DurationOpt());
+      UDTSocket(Scheduler& sched,
+                const std::string& hostname,
+                int port,
+                int local_port,
+                DurationOpt timeout = DurationOpt());
       virtual ~UDTSocket();
     private:
       friend class UDTServer;

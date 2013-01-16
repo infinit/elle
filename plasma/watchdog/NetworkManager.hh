@@ -6,8 +6,6 @@
 # include <memory>
 # include <string>
 
-# include <QApplication>
-
 namespace plasma
 {
   namespace watchdog

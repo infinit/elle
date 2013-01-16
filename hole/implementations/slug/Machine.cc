@@ -229,8 +229,10 @@ namespace hole
                   }
 
               std::vector<std::pair<std::string, uint16_t>> public_addresses;
-              auto ep = dynamic_cast<reactor::network::UDTServer*>
-                (_server.get())->public_endpoint();
+              auto udt = dynamic_cast<reactor::network::UDTServer*>
+                (_server.get());
+              assert(udt);
+              auto ep = udt->public_endpoint();
               public_addresses.push_back(std::pair<std::string, uint16_t>
                                          (ep.address().to_string(),
                                           ep.port()));
