@@ -110,8 +110,12 @@ namespace reactor
     void
     UDTServer::accept(std::string const& addr, int port)
     {
-      this->_sockets.push_back(std::unique_ptr<UDTSocket>
-                               (new UDTSocket(this->scheduler(), addr, port)));
+      this->_sockets.push_back
+        (std::unique_ptr<UDTSocket>
+         (new UDTSocket(this->scheduler(),
+                        this->_udp_socket->socket()->native_handle(),
+                        addr,
+                        boost::lexical_cast<std::string>(port))));
       this->_accepted.signal_one();
     }
 
