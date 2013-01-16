@@ -52,8 +52,9 @@ namespace infinit
         case hole::Model::TypeSlug:
         {
           std::vector<elle::network::Locus> members;
-          for (elle::network::Locus const& locus: set.loci)
-            members.push_back(locus);
+          // FIXME: Restore sets at some point. Maybe.
+          // for (elle::network::Locus const& locus: set.loci)
+          //   members.push_back(locus);
           int port = Infinit::Configuration["hole"].Get("slug.port", 0);
           int timeout_int =
             Infinit::Configuration["hole"].Get("slug.timeout", 5000);
