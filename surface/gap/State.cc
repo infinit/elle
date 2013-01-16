@@ -97,6 +97,10 @@ namespace surface
       elle::log::logger("infinit.surface.gap.State").level(
           elle::log::Logger::Level::debug
       );
+      elle::log::logger("elle.HttpClient").output(*out);
+      elle::log::logger("elle.HttpClient").level(
+          elle::log::Logger::Level::debug
+      );
       ELLE_LOG("Creating a new State");
 
 
@@ -626,11 +630,7 @@ namespace surface
     State::send_files(std::string const& recipient_id_or_email,
                       std::unordered_set<std::string> const& files)
     {
-      ELLE_WARN("Sending files to %s", recipient_id_or_email);
-      ELLE_LOG("LOG:Sending files to %s", recipient_id_or_email);
-      ELLE_DEBUG("DBG:Sending files to %s", recipient_id_or_email);
-      sleep(10);
-      ELLE_DEBUG("DBG:SLEEP DONE:Sending files to %s", recipient_id_or_email);
+      ELLE_TRACE("Sending files to %s", recipient_id_or_email);
       return this->_add_process(
         "send_files",
         std::bind(&State::_send_files, this, recipient_id_or_email, files)
@@ -684,13 +684,17 @@ namespace surface
         {
           if (fs::exists(portal_path))
             break;
+          ELLE_DEBUG("Waiting for portal file");
           ::sleep(1);
         }
 
+      ELLE_DEBUG("Portal file found? %s", fs::exists(portal_path));
       if (!fs::exists(portal_path))
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
+      ELLE_DEBUG("Retrieving 8transfert binary path...");
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
+      ELLE_DEBUG("Using 8transfert binary '%s'", transfer_binary);
 
       QStringList arguments;
       arguments << "-n" << network_id.c_str()
@@ -699,8 +703,8 @@ namespace surface
                 << "--to"
       ;
       ELLE_DEBUG("LAUNCH: %s %s",
-                      transfer_binary,
-                      arguments.join(" ").toStdString());
+                 transfer_binary,
+                 arguments.join(" ").toStdString());
 
       QProcess p;
       p.start(transfer_binary.c_str(), arguments);
