@@ -23,6 +23,7 @@ namespace plasma
       transaction_status = 11,
       message = 217,
       connection_enabled = -666,
+      network_update = 128,
     };
 
     /// Base class for all notifications.
@@ -51,6 +52,13 @@ namespace plasma
     {
       std::string transaction_id;
       int         status;
+    };
+
+    struct NetworkUpdatedNotification:
+      public Notification
+    {
+      std::string network_id;
+      std::string what;
     };
 
     struct MessageNotification:

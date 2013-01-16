@@ -69,6 +69,17 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, val
   ar & named("status", value.status);
 }
 
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::NetworkUpdatedNotification);
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::NetworkUpdatedNotification, ar, value, version)
+{
+  enforce(version == 0);
+
+  //ar & base_class<plasma::trophonius::Notification>(value);
+  XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE();
+  ar & named("network_id", value.network_id);
+  ar & named("what", value.what);
+}
+
 ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::MessageNotification);
 ELLE_SERIALIZE_SIMPLE(plasma::trophonius::MessageNotification, ar, value, version)
 {
