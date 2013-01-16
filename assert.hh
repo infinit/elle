@@ -30,7 +30,7 @@ namespace elle
 }
 
 /// Throw if the condition is unmet.
-#  define ELLE_ASSERT(_condition_)                                            \
+# define ELLE_ASSERT(_condition_)                                             \
   do                                                                          \
     {                                                                         \
       if (!(_condition_))                                                     \
@@ -45,10 +45,10 @@ namespace elle
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
 # if defined(DEBUG) || !defined(NDEBUG)
-#  define ELLE_DECLARE(...)                                             \
+#  define ELLE_STATEMENT(...)                                           \
   __VA_ARGS__
 # else
-#  define ELLE_DECLARE(...)
+#  define ELLE_STATEMENT(...)
 # endif
 
 namespace elle
