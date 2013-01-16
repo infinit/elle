@@ -3,6 +3,7 @@
 #include <elle/serialize/JSONArchive.hh>
 #include <elle/format/json/Dictionary.hxx>
 #include <elle/serialize/ListSerializer.hxx>
+#include <elle/serialize/MapSerializer.hxx>
 
 #include "Client.hh"
 
@@ -190,6 +191,12 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkNodesResponse, ar, res)
   ar & named("nodes", res.nodes);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::EndpointNodeResponse, ar, res)
+{
+  ar & named("externals", res.externals);
+  ar & named("locals", res.locals);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
 {
   ar & named("created_network_id", res.created_network_id);
@@ -243,7 +250,7 @@ namespace plasma
     namespace json = elle::format::json;
 
      // - Ctor & dtor ----------------------------------------------------------
-    Client::Client(std::string const& server,
+    Client::Client(string const& server,
                    uint16_t port,
                    bool check_errors)
       : _client{server, port, check_errors}
@@ -260,10 +267,10 @@ namespace plasma
 
     // - API calls ------------------------------------------------------------
     // XXX add login with token method.
-    LoginResponse Client::login(std::string const& email,
-                                std::string const& password)
+    LoginResponse Client::login(string const& email,
+                                string const& password)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
         {"email", email},
         {"password", password},
       }};
@@ -291,14 +298,14 @@ namespace plasma
     }
 
     RegisterResponse
-    Client::register_(std::string const& email,
-                      std::string const& fullname,
-                      std::string const& password,
-                      std::string const& activation_code,
-                      std::string const& picture_name,
-                      std::string const& picture_data)
+    Client::register_(string const& email,
+                      string const& fullname,
+                      string const& password,
+                      string const& activation_code,
+                      string const& picture_name,
+                      string const& picture_data)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
         {"email", email},
         {"fullname", fullname},
         {"password", password},
@@ -310,7 +317,7 @@ namespace plasma
     }
 
     UserResponse
-    Client::user(std::string const& id)
+    Client::user(string const& id)
     {
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
@@ -318,7 +325,7 @@ namespace plasma
     }
 
     UserIcon
-    Client::user_icon(std::string const& id)
+    Client::user_icon(string const& id)
     {
       return this->_client.get_buffer("/user/" + id + "/icon");
     }
@@ -330,7 +337,7 @@ namespace plasma
     }
 
     UserResponse
-    Client::user_from_public_key(std::string const& public_key)
+    Client::user_from_public_key(string const& public_key)
     {
       if (public_key.size() == 0)
         throw std::runtime_error("empty public key!");
@@ -340,7 +347,7 @@ namespace plasma
     }
 
     UsersResponse
-    Client::search_users(std::string const& text)
+    Client::search_users(string const& text)
     {
       json::Dictionary request;
       request["text"] = text;
@@ -354,7 +361,7 @@ namespace plasma
     }
 
     // SwaggerResponse
-    // Client::get_swagger(std::string const& id)
+    // Client::get_swagger(string const& id)
     // {
     //   return this->_client.get<SwaggerResponse>("/user/" + id + "/view");
     // }
@@ -363,19 +370,19 @@ namespace plasma
     //- Devices ---------------------------------------------------------------
 
     CreateDeviceResponse
-    Client::create_device(std::string const& name)
+    Client::create_device(string const& name)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"name", name},
       }};
       return this->_client.post<CreateDeviceResponse>("/device/create", request);
     }
 
     UpdateDeviceResponse
-    Client::update_device(std::string const& _id,
-                          std::string const& name)
+    Client::update_device(string const& _id,
+                          string const& name)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
             {"_id", _id},
             {"name", name},
       }};
@@ -385,9 +392,9 @@ namespace plasma
     }
 
     InviteUserResponse
-    Client::invite_user(std::string const& email)
+    Client::invite_user(string const& email)
     {
-      json::Dictionary request{std::map<std::string, std::string>
+      json::Dictionary request{map<string, string>
         {
           {"email", email}
         }};
@@ -398,15 +405,15 @@ namespace plasma
     }
 
     CreateTransactionResponse
-    Client::create_transaction(std::string const& recipient_id_or_email,
-                               std::string const& first_filename,
+    Client::create_transaction(string const& recipient_id_or_email,
+                               string const& first_filename,
                                size_t count,
                                size_t size,
                                bool is_dir,
-                               std::string const& network_id,
-                               std::string const& device_id)
+                               string const& network_id,
+                               string const& device_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"recipient_id_or_email", recipient_id_or_email},
           {"first_filename", first_filename},
           {"device_id", device_id},
@@ -422,12 +429,12 @@ namespace plasma
     }
 
     UpdateTransactionResponse
-    Client::update_transaction(std::string const& transaction_id,
+    Client::update_transaction(string const& transaction_id,
                                int status,
-                               std::string const& device_id,
-                               std::string const& device_name)
+                               string const& device_id,
+                               string const& device_name)
     {
-      json::Dictionary request{std::map<std::string, std::string>
+      json::Dictionary request{map<string, string>
         {
           {"transaction_id", transaction_id},
         }};
@@ -469,7 +476,7 @@ namespace plasma
     }
 
     TransactionResponse
-    Client::transaction(std::string const& _id)
+    Client::transaction(string const& _id)
     {
       return this->_client.get<TransactionResponse>("/transaction/" + _id + "/view");
     }
@@ -481,11 +488,11 @@ namespace plasma
     }
 
     MessageResponse
-    Client::send_message(std::string const& recipient_id,
-                         std::string const& sender_id,
-                         std::string const& message)
+    Client::send_message(string const& recipient_id,
+                         string const& sender_id,
+                         string const& message)
     {
-      json::Dictionary request{std::map<std::string, std::string>
+      json::Dictionary request{map<string, string>
         {
           {"recipient_id", recipient_id},
           {"sender_id", sender_id},
@@ -511,7 +518,7 @@ namespace plasma
     PullNotificationResponse
     Client::pull_notifications(int count, int offset)
     {
-      json::Dictionary request{std::map<std::string, std::string>
+      json::Dictionary request{map<string, string>
       {
       }};
 
@@ -539,31 +546,31 @@ namespace plasma
     }
 
     NetworkResponse
-    Client::network(std::string const& _id)
+    Client::network(string const& _id)
     {
       return this->_client.get<NetworkResponse>("/network/" + _id + "/view");
     }
 
     NetworkNodesResponse
-    Client::network_nodes(std::string const& _id)
+    Client::network_nodes(string const& _id)
     {
       return this->_client.get<NetworkNodesResponse>("/network/" + _id + "/nodes");
     }
 
     CreateNetworkResponse
-    Client::create_network(std::string const& network_id)
+    Client::create_network(string const& network_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"name", network_id},
       }};
       return this->_client.post<CreateNetworkResponse>("/network/create", request);
     }
 
     DeleteNetworkResponse
-    Client::delete_network(std::string const& network_id,
+    Client::delete_network(string const& network_id,
                            bool force)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"network_id", network_id},
       }};
       request["force"] = force;
@@ -571,16 +578,16 @@ namespace plasma
     }
 
     UpdateNetworkResponse
-    Client::update_network(std::string const& _id,
-                           std::string const* name,
-                           std::string const* root_block,
-                           std::string const* root_address,
-                           std::string const* access_block,
-                           std::string const* access_address,
-                           std::string const* group_block,
-                           std::string const* group_address)
+    Client::update_network(string const& _id,
+                           string const* name,
+                           string const* root_block,
+                           string const* root_address,
+                           string const* access_block,
+                           string const* access_address,
+                           string const* group_block,
+                           string const* group_address)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
             {"_id", _id},
       }};
       if (name != nullptr)
@@ -623,20 +630,20 @@ namespace plasma
     }
 
     NetworkAddUserResponse
-    Client::network_add_user(std::string const& network_id,
-                             std::string const& user_id)
+    Client::network_add_user(string const& network_id,
+                             string const& user_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"_id", network_id},
           {"user_id", user_id},
       }};
       return this->_client.post<NetworkAddUserResponse>("/network/add_user", request);
     }
     NetworkAddDeviceResponse
-    Client::network_add_device(std::string const& network_id,
-                               std::string const& device_id)
+    Client::network_add_device(string const& network_id,
+                               string const& device_id)
     {
-      json::Dictionary request{std::map<std::string, std::string>{
+      json::Dictionary request{map<string, string>{
           {"_id", network_id},
           {"device_id", device_id},
       }};
@@ -644,11 +651,11 @@ namespace plasma
     }
 
     NetworkConnectDeviceResponse
-    Client::network_connect_device(std::string const& network_id,
-                                   std::string const& device_id,
-                                   std::string const* local_ip,
+    Client::network_connect_device(string const& network_id,
+                                   string const& device_id,
+                                   string const* local_ip,
                                    uint16_t local_port,
-                                   std::string const* external_ip,
+                                   string const* external_ip,
                                    uint16_t external_port)
     {
         adapter_type local_adapter;
@@ -664,13 +671,13 @@ namespace plasma
     }
 
     NetworkConnectDeviceResponse
-    Client::_network_connect_device(std::string const& network_id,
-                                    std::string const& device_id,
+    Client::_network_connect_device(string const& network_id,
+                                    string const& device_id,
                                     adapter_type const& local_endpoints,
                                     adapter_type const& public_endpoints)
       {
         json::Dictionary request{
-          std::map<std::string, std::string>{
+          map<string, string>{
                 {"_id", network_id},
                 {"device_id", device_id},
           }
@@ -706,40 +713,55 @@ namespace plasma
         );
       }
 
+      EndpointNodeResponse
+      Client::device_endpoints(string const& network_id, string const& device_id)
+      {
+        json::Dictionary request{
+          map<string, string>{
+                {"device_id", device_id},
+          }
+        };
+
+        return this->_client.post<EndpointNodeResponse>(
+            "/network/" + network_id + "/endpoints",
+            request
+        );
+      }
+
     //- Properties ------------------------------------------------------------
 
     void
-    Client::token(std::string const& tok)
+    Client::token(string const& tok)
     {
       _token = tok;
       _client.token(tok);
     }
 
-    std::string const&
+    string const&
     Client::token() const
     {
       return _client.token();
     }
 
-    std::string const&
+    string const&
     Client::identity() const
     {
       return _identity;
     }
 
     void
-    Client::identity(std::string const& str)
+    Client::identity(string const& str)
     {
       _identity = str;
     }
 
-    std::string const&
+    string const&
     Client::email() const
     {
       return _email;
     }
     void
-    Client::email(std::string const& str)
+    Client::email(string const& str)
     {
       _email = str;
     }

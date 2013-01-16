@@ -84,9 +84,9 @@ namespace surface
             true,
           }
         }
-      , _logged{false}
       , _trophonius{nullptr}
       , _users{}
+      , _logged{false}
       , _swaggers_dirty{true}
       , _output_dir{common::system::download_directory()}
       , _files_infos{}
@@ -116,11 +116,6 @@ namespace surface
       this->transaction_status_callback(
           [&] (TransactionStatusNotification const &n, bool) -> void {
             this->_on_transaction_status(n);
-          }
-      );
-      this->user_status_callback(
-          [&] (UserStatusNotification const &n) -> void {
-            this->_on_user_status_callback(n);
           }
       );
 
@@ -695,21 +690,8 @@ namespace surface
 
       std::string network_id = this->create_network(network_name);
 
-      // Ensure the network status is available
-      (void) this->network_status(network_id);
-
-      auto portal_path = common::infinit::portal_path(
-        this->_me._id,
-        network_id
-      );
-      for (int i = 0; i < 10; ++i)
-        {
-          if (fs::exists(portal_path))
-            break;
-          ::sleep(1);
-        }
-
-      if (!fs::exists(portal_path))
+      ELLE_DEBUG("created network id is %s", network_id);
+      if (this->_wait_portal(this->_me._id, network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
@@ -764,11 +746,6 @@ namespace surface
         return;
 
       Transaction const& trans = pair->second;
-
-      (void) this->refresh_networks();
-
-      // Ensure the network status is available
-      (void) this->network_status(trans.network_id);
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
@@ -1118,14 +1095,28 @@ namespace surface
     }
 
     void
-    State::_on_transaction_started(Transaction const& transaction)
+    State::_on_transaction_started(Transaction const& trans)
     {
-      ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
+      ELLE_DEBUG("Started trans '%s'", trans.transaction_id);
 
-      if (transaction.recipient_id != this->_me._id)
+      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      reactor::Thread sync(sched,
+                           "ephemeral thread",
+                           [&] /*lambda the ultimate*/ {
+                               this->_notify_8infinit(trans);
+                               return 0;
+                           });
+      sched.run();
+      // Wait for it ..!
+
+      // TODO: Do this only on the current device for sender and recipient.
+      if (this->_wait_portal(trans.sender_id, trans.network_id) == false)
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
+      if (trans.recipient_id != this->_me._id)
         return;
 
-      _download_files(transaction.transaction_id);
+      _download_files(trans.transaction_id);
     }
 
     void
@@ -1277,6 +1268,28 @@ namespace surface
     }
 
     //- Network management ----------------------------------------------------
+
+    bool
+    State::_wait_portal(std::string const& user_id,
+                        std::string const& network_id)
+    {
+        (void) this->refresh_networks();
+        (void) this->network_status(network_id);
+        bool result = false;
+
+        auto portal_path = common::infinit::portal_path(user_id,
+                                                        network_id);
+        for (int i = 0; i < 299; ++i)
+        {
+            if (fs::exists(portal_path))
+            {
+                result = true;
+                break;
+            }
+            ::sleep(1);
+        }
+        return result;
+    }
 
     std::string
     State::create_network(std::string const& name)
@@ -1877,99 +1890,64 @@ namespace surface
     }
 
     void
-    State::_on_login_impl(UserStatusNotification notif)
+    State::_notify_8infinit(Transaction const& trans)
     {
+      ELLE_TRACE("%s", __func__);
+
       namespace proto = infinit::protocol;
+      std::string const& sender_device = trans.sender_device_id;
+      std::string const& network_id = trans.network_id;
 
-      ELLE_TRACE("_on_login_impl({%d, %s, %d})",
-                 (int)notif.notification_type,
-                 notif.user_id,
-                 notif.status);
-      for (auto &network_desc: this->_networks)
+      /// Check if network is valid
       {
-          ELLE_DEBUG("check %s", network_desc.first);
-          for (auto const &user: network_desc.second->users)
-          {
-              ELLE_DEBUG("looking for %s in %s", user, network_desc.first);
-              // It's not the user you're looking for. *wave hand*
-              if (user != notif.user_id)
-                  continue;
+          auto network = this->networks().find(network_id);
 
-              lune::Phrase phrase;
-              phrase.load(this->_me._id, network_desc.first, "portal");
+          if (network == this->networks().end())
+              throw gap::Exception{gap_internal_error, "Unable to find network"};
 
-              // Connect to the server.
-              reactor::network::TCPSocket   socket{elle::concurrency::scheduler(),
-                                                   elle::String("127.0.0.1"),
-                                                   phrase.port};
+      }
 
-              proto::Serializer             serializer{elle::concurrency::scheduler(),
-                                                       socket};
+      // Fetch Nodes and find the correct one to contact
+      std::list<std::string> externals;
+      std::list<std::string> locals;
+      {
+          Endpoint e = this->_meta->device_endpoints(network_id, sender_device);
 
-              proto::ChanneledStream        channels{elle::concurrency::scheduler(),
-                                                     serializer,
-                                                     true};
+          externals = std::move(e.externals);
+          locals = std::move(e.locals);
+      }
 
-              etoile::portal::RPC           rpcs{channels};
 
-              if (rpcs.authenticate(phrase.pass))
-                  throw reactor::Exception(elle::concurrency::scheduler(),
-                                           "unable to authenticate to Etoile");
-          }
+      // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
+      {
+        lune::Phrase phrase;
+        phrase.load(this->_me._id, network_id, "portal");
+
+        // Connect to the server.
+        reactor::network::TCPSocket   socket{elle::concurrency::scheduler(),
+                                             elle::String("127.0.0.1"),
+                                             phrase.port};
+
+        proto::Serializer             serializer{elle::concurrency::scheduler(),
+                                                 socket};
+
+        proto::ChanneledStream        channels{elle::concurrency::scheduler(),
+                                               serializer,
+                                               true /*master?*/};
+
+        etoile::portal::RPC           rpcs{channels};
+
+        auto send_to_slug = [&] (std::string const &endpoint)
+        {
+            std::vector<std::string> result;
+
+            boost::split(result, endpoint, boost::is_any_of(":"));
+            rpcs.slug_connect(result[0], std::stoi(result[1]));
+        };
+
+        std::for_each(begin(externals), end(externals), send_to_slug);
+        std::for_each(begin(locals), end(locals), send_to_slug);
       }
     }
-
-    void
-    State::_on_user_status_callback(UserStatusNotification const& notif)
-    {
-      ELLE_TRACE("_on_notification: gap_UserStatusNotification");
-      enum {
-          USER_OFFLINE = 0,
-          USER_LOGIN = 1, 
-          USER_IDLE = 2,
-          UNKNOWN = 0xff,
-      } status;
-
-      switch (notif.status)
-      {
-          case 0:
-              status = USER_OFFLINE;
-              break;
-          case 1:
-              status = USER_LOGIN;
-              break;
-          case 2:
-              status = USER_IDLE;
-              break;
-          default:
-              status = UNKNOWN;
-              break;
-      }
-
-      if (status == USER_LOGIN)
-      {
-          reactor::Scheduler& sched = elle::concurrency::scheduler();
-          reactor::Thread sync(sched,
-                               "ephemeral thread",
-                               [&] {
-                                 ELLE_TRACE("Hello !");
-                                 this->_on_login_impl(notif);
-                                 ELLE_TRACE("Good Bye.");
-                                 return 0;
-                               });
-          sched.run();
-          while (1)
-          {
-              if (sync.state() == reactor::Thread::state::done)
-              {
-                  ELLE_TRACE("terminating thread");
-                  sync.terminate();
-                  break;
-              }
-          }
-
-      }
-    }
-
   }
 }
