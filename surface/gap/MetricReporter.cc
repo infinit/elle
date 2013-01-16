@@ -56,7 +56,7 @@ namespace surface
     MetricReporter::~MetricReporter()
     {
       ELLE_ERR(__FUNCTION__);
-      this->_send_data();
+      this->_flush();
     }
 
     void
@@ -64,16 +64,16 @@ namespace surface
     {
       ELLE_TRACE("Storing new metric");
 
-      this->_requests.push(metric);
+      Metric& m = this->_push(metric);
 
       // Erase "cd" if set in metric.
       // Note that if we want the ability to use initializer list for metric,
       // we can declare it as non const.
       // So we need to push "cd":caller pair after insertion in the map.
-      this->_requests.back().insert(std::pair<std::string, std::string>{"cd", caller});
+      m.insert(std::pair<std::string, std::string>{"cd", caller});
 
       //XXX: We should bufferize data instead of instant push it.
-      this->_send_data();
+      this->_flush();
     }
 
     void
@@ -88,10 +88,20 @@ namespace surface
                           std::string const& value)
     {
       Metric metric;
-
       metric.insert(std::make_pair(key, value));
 
       this->store(name, metric);
+    }
+
+    // Push data directly to server, without enqueuing.
+    void
+    MetricReporter::publish(std::string const& name,
+                            Metric const& metric)
+    {
+      Metric m = metric;
+      m.insert(std::pair<std::string, std::string>("cd", name));
+
+      this->_send_data(TimeMetricPair(elle::utility::Time::get_current(), m));
     }
 
     void
@@ -99,14 +109,15 @@ namespace surface
     {
       ELLE_TRACE("Storing new metric");
 
-      this->_requests.push(metric);
+      Metric& m = this->_push(metric);
+
       // Erase "t":"appview"
-      this->_requests.back().insert(std::pair<std::string, std::string>{"cd", "Transaction"});
-      this->_requests.back().insert(std::pair<std::string, std::string>{"cd2", transaction_id});
+      m.insert(std::pair<std::string, std::string>{"cd", "Transaction"});
+      m.insert(std::pair<std::string, std::string>{"cd2", transaction_id});
       //   this->_requests.back().insert(std::pair<std::string, std::string>{"ti", transaction_id});
 
       //XXX: We should bufferize data instead of instant push it.
-      this->_send_data();
+      this->_flush();
     }
 
     // Defaultly.
@@ -153,14 +164,31 @@ namespace surface
       this->_user_id = hashed_id;
     }
 
-    void
-    MetricReporter::_send_data()
+    MetricReporter::Metric&
+    MetricReporter::_push(Metric const& metric)
     {
-      ELLE_TRACE("sending metric");
+      this->_requests.push(std::make_pair(elle::utility::Time::get_current(),
+                                          metric));
+
+      return this->_requests.back().second;
+    }
+
+    void
+    MetricReporter::_flush()
+    {
+      ELLE_TRACE("Flushing the metrics to server");
 
       while(this->_requests.size())
       {
-        auto request = this->_server->request("POST", "/collect");
+        this->_send_data(this->_requests.front());
+        this->_requests.pop();
+      }
+    }
+
+    void
+    MetricReporter::_send_data(TimeMetricPair const& metric)
+    {
+      auto request = this->_server->request("POST", "/collect");
         request
           .content_type("application/x-www-form-urlencoded")
           .user_agent("Infinit/1.0 (Linux x86_64)")
@@ -172,15 +200,15 @@ namespace surface
           .post_field("tid", "UA-31957100-2")  // Tracking ID.
           .post_field("v", "1");               // Api version.
 
-        auto const& metric = this->_requests.front();
-
         typedef Metric::value_type Field;
-        std::for_each(metric.begin(), metric.end(), [&](Field const& f)
+        std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
                       { request.post_field(f.first, f.second); });
-        request.fire();
 
-        this->_requests.pop();
-      }
+        _last_sent.Current();
+        request.post_field("q",
+                           std::to_string((_last_sent - metric.first).nanoseconds / 1000));
+
+        request.fire();
     }
 
     namespace metrics

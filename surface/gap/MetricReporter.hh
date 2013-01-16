@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/print.hh>
 # include <elle/HttpClient.hh>
+# include <elle/utility/Time.hh>
 # include <queue>
 # include <map>
 
@@ -19,7 +20,7 @@ namespace surface
       `------*/
     public:
       typedef std::map<std::string, std::string> Metric;
-
+      typedef std::pair<elle::utility::Time, Metric> TimeMetricPair;
       /*-------------.
       | Construction |
       `-------------*/
@@ -50,6 +51,11 @@ namespace surface
             std::string const& key,
             std::string const& value);
 
+      // Push data directly to server, without enqueuing.
+      void
+      publish(std::string const& name,
+              Metric const&);
+
       // Sugar to update a new transaction event.
       void
       update_transaction(std::string const& transaction_id, Metric const&);
@@ -59,16 +65,23 @@ namespace surface
       update_user(std::string const&);
 
     private:
+      Metric&
+      _push(Metric const&);
+
       void
-      _send_data();
+      _flush();
+
+      void
+      _send_data(TimeMetricPair const&);
 
       /*-----------.
       | Attributes |
       `-----------*/
     private:
-      std::queue<Metric> _requests;
+      std::queue<TimeMetricPair> _requests;
       std::unique_ptr<elle::HTTPClient> _server;
       std::string _user_id;
+      elle::utility::Time _last_sent;
     };
 
     namespace metrics
