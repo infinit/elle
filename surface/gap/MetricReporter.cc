@@ -205,7 +205,7 @@ namespace surface
                       { request.post_field(f.first, f.second); });
 
         _last_sent.Current();
-        request.post_field("q",
+        request.post_field("qt",
                            std::to_string((_last_sent - metric.first).nanoseconds / 1000));
 
         request.fire();
