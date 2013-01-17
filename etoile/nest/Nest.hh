@@ -10,6 +10,8 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Nest.hh>
 
+# include <cryptography/fwd.hh>
+
 # include <boost/noncopyable.hpp>
 
 # include <map>
@@ -41,7 +43,10 @@ namespace etoile
       /// Construct a nest by providing the length of the secret key with which
       // the modified blocks will be encrypted.
       Nest(elle::Natural32 const secret_length,
-           nucleus::proton::Limits const& limits);
+           nucleus::proton::Limits const& limits,
+           nucleus::proton::Network const& network,
+           cryptography::PublicKey const& agent_K);
+      virtual
       ~Nest();
 
       /*--------.

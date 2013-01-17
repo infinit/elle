@@ -30,16 +30,10 @@ namespace nucleus
     }
 
     template <typename T>
-    Porcupine<T>::Porcupine(/* XXX Network const& network,
-                               cryptography::PublicKey const& agent_K,*/
-                            Radix const& radix,
+    Porcupine<T>::Porcupine(Radix const& radix,
                             cryptography::SecretKey const& secret,
                             Nest& nest):
       _strategy(radix.strategy()),
-      /* XXX
-      _network(network),
-      _agent_K(agent_K),
-      */
       _nest(nest),
       _state(State::clean)
     {
@@ -1283,7 +1277,10 @@ namespace nucleus
                 //
                 // Note that the value's ownership has been transferred to
                 // the Contents block. This is why the value is not deleted.
-                Contents* contents{new Contents{this->_value}};
+                Contents* contents =
+                  new Contents{this->_nest.network(),
+                               this->_nest.agent_K(),
+                               this->_value};
                 this->_handle = new Handle{this->_nest.attach(contents)};
 
                 // And set the new strategy.

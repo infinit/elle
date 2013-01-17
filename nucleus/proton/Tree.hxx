@@ -18,7 +18,9 @@ namespace nucleus
 
     template <typename T>
     Tree<T>::Tree(Nest& nest):
-      _root(new Handle{nest.attach(new Contents(new Quill<T>))}),
+      _root(new Handle{nest.attach(new Contents(nest.network(),
+                                                nest.agent_K(),
+                                                new Quill<T>))}),
       _height(1),
       _capacity(0),
       _nest(nest),
@@ -547,7 +549,10 @@ namespace nucleus
 
           // Allocate a new root block: a seam since there was already
           // a root nodule i.e either a quill or a seam.
-          Contents* contents(new Contents(new Seam<T>));
+          Contents* contents =
+            new Contents{this->_nest.network(),
+                         this->_nest.agent_K(),
+                         new Seam<T>};
 
           ELLE_FINALLY_ACTION_DELETE(contents);
 

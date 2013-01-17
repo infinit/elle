@@ -333,7 +333,10 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new right data.
-      proton::Contents* contents{new proton::Contents{new Data{0}}};
+      proton::Contents* contents =
+        new proton::Contents{this->nest().network(),
+                             this->nest().agent_K(),
+                             new Data{0}};
       // XXX[change to extent * contention though contention = 100%]
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Data> right{this->nest(), orphan};

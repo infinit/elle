@@ -4,29 +4,17 @@ namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    Nest::Nest(Limits const& limits):
-      _limits(limits)
+    Nest::Nest(Limits const& limits,
+               Network const& network,
+               cryptography::PublicKey const& agent_K):
+      _limits(limits),
+      _network(network),
+      _agent_K(agent_K)
     {
     }
-
-    Nest::~Nest()
-    {
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    Limits const&
-    Nest::limits() const
-    {
-      return (this->_limits);
-    }
-
   }
 }

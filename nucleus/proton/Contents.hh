@@ -66,20 +66,6 @@ namespace nucleus
       /// Destructor.
       ~Contents();
 
-      // XXX
-      template <typename T>
-      Contents(T* node): // XXX[TEMPORARY!!! TO ANNIHILATE]
-        proton::ContentHashBlock(Network("test"),
-                                 neutron::ComponentContents,
-                                 cryptography::KeyPair::generate(1024).K()),
-
-        _nature(T::Constants::nature),
-        _node(node),
-        _cipher(nullptr)
-      {
-      }
-      // XXX
-
       /*--------.
       | Methods |
       `--------*/

@@ -476,7 +476,10 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new right catalog.
-      proton::Contents* contents{new proton::Contents{new Catalog}};
+      proton::Contents* contents =
+        new proton::Contents{this->nest().network(),
+                             this->nest().agent_K(),
+                             new Catalog};
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Catalog> right{this->nest(), orphan};
 

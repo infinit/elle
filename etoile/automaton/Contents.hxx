@@ -19,9 +19,7 @@ using namespace infinit;
 # include <etoile/automaton/Rights.hh>
 # include <etoile/automaton/Author.hh>
 # include <etoile/automaton/Access.hh>
-
 # include <etoile/nest/Nest.hh>
-
 # include <etoile/depot/Depot.hh>
 
 # include <hole/Hole.hh>
@@ -64,8 +62,10 @@ namespace etoile
             {
               // Instanciate a nest.
               context.contents_nest =
-                new etoile::nest::Nest{CONTENTS_SECRET_KEY_LENGTH,
-                                       context.contents_limits};
+                new etoile::nest::Nest(CONTENTS_SECRET_KEY_LENGTH,
+                                       context.contents_limits,
+                                       depot::hole().storage().network(),
+                                       agent::Agent::Subject.user());
 
               // Instanciate a porcupine.
               context.contents_porcupine =
@@ -85,8 +85,10 @@ namespace etoile
         {
           // Instanciate a nest.
           context.contents_nest =
-            new etoile::nest::Nest{CONTENTS_SECRET_KEY_LENGTH,
-                                   context.contents_limits};
+            new etoile::nest::Nest(CONTENTS_SECRET_KEY_LENGTH,
+                                   context.contents_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
           // otherwise create a new empty porcupine.
           context.contents_porcupine =

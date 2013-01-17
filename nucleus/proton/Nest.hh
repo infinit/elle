@@ -2,27 +2,30 @@
 # define NUCLEUS_PROTON_NEST_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Limits.hh>
+# include <nucleus/proton/Network.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <functional>
-# include <elle/idiom/Open.hh>
+# include <cryptography/PublicKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 namespace nucleus
 {
   namespace proton
   {
-
     /// XXX
     class Nest
     {
       // XXX
     public:
-      Nest(Limits const& limits);
+      Nest(Limits const& limits,
+           Network const& network,
+           cryptography::PublicKey const& agent_K);
       virtual
-      ~Nest();
+      ~Nest() = default;
 
       //
       // methods
@@ -44,16 +47,14 @@ namespace nucleus
       virtual
       void
       unload(Handle& handle) = 0;
-      /// XXX
-      virtual
-      Limits const&
-      limits() const;
 
       //
       // attributes
       //
     private:
-      nucleus::proton::Limits _limits;
+      ELLE_ATTRIBUTE_R(nucleus::proton::Limits, limits);
+      ELLE_ATTRIBUTE_R(Network, network); // XXX
+      ELLE_ATTRIBUTE_R(cryptography::PublicKey, agent_K); // XXX
     };
   }
 }

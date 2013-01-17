@@ -27,8 +27,10 @@ namespace etoile
     `-------------*/
 
     Nest::Nest(elle::Natural32 const secret_length,
-               nucleus::proton::Limits const& limits):
-      nucleus::proton::Nest(limits),
+               nucleus::proton::Limits const& limits,
+               nucleus::proton::Network const& network,
+               cryptography::PublicKey const& agent_K):
+      nucleus::proton::Nest(limits, network, agent_K),
 
       _secret_length(secret_length)
     {

@@ -34,14 +34,9 @@ namespace nucleus
     public:
       /// Construct an empty porcupine.
       Porcupine(Nest& nest);
-      /// XXX[here the agent_K represents the current user which will happen to
-      ///     be the creator of every new block]
-      /// XXX[on pourrait passer la secretkey pour dechiffrer plutot que
-      ///     d'appeler unseal()]
+      /// XXX[explain]
       Porcupine(Radix const& radix,
                 cryptography::SecretKey const& secret,
-                /* XXX Network const& network,
-                   cryptography::PublicKey const& agent_K,*/
                 Nest& nest);
       ~Porcupine();
 
@@ -223,10 +218,6 @@ namespace nucleus
         /// handling large amount of data.
         Tree<T>* _tree;
       };
-
-      ELLE_ATTRIBUTE(Network, network); // XXX
-      ELLE_ATTRIBUTE(cryptography::PublicKey, agent_K); // XXX
-
       ELLE_ATTRIBUTE_X(Nest&, nest);
       ELLE_ATTRIBUTE_R(State, state);
     };

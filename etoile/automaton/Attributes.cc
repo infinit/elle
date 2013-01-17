@@ -2,6 +2,7 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/nest/Nest.hh>
+#include <etoile/depot/Depot.hh>
 
 #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/Door.hh>
@@ -11,6 +12,8 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Attributes.hh>
+
+#include <agent/Agent.hh>
 
 #include <elle/log.hh>
 
@@ -49,8 +52,10 @@ namespace etoile
         {
           // Instanciate a nest.
           context.attributes_nest =
-            new etoile::nest::Nest{ATTRIBUTES_SECRET_KEY_LENGTH,
-                                   context.attributes_limits};
+            new etoile::nest::Nest(ATTRIBUTES_SECRET_KEY_LENGTH,
+                                   context.attributes_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
           // Instanciate a porcupine.
           context.attributes_porcupine =
@@ -63,8 +68,10 @@ namespace etoile
         {
           // Instanciate a nest.
           context.attributes_nest =
-            new etoile::nest::Nest{ATTRIBUTES_SECRET_KEY_LENGTH,
-                                   context.attributes_limits};
+            new etoile::nest::Nest(ATTRIBUTES_SECRET_KEY_LENGTH,
+                                   context.attributes_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
           // otherwise create a new empty porcupine.
           context.attributes_porcupine =

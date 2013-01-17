@@ -50,7 +50,9 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 // Define the length (in bits) of the secret key for encrypting content blocks.
 #define PORCUPINE_SECRET_LENGTH 256
 
-hole::storage::Memory* _storage = nullptr;
+std::unique_ptr<hole::storage::Memory> _storage(nullptr);
+std::unique_ptr<nucleus::proton::Network> _network(nullptr);
+std::unique_ptr<cryptography::KeyPair> _user(nullptr);
 
 //
 // ---------- Catalog ---------------------------------------------------------
@@ -259,7 +261,9 @@ test_porcupine_catalog_serialize(
 
   etoile::nest::Nest* nest2 =
     new etoile::nest::Nest(PORCUPINE_SECRET_LENGTH,
-                           porcupine1.nest().limits());
+                           porcupine1.nest().limits(),
+                           *_network,
+                           _user->K());
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine2 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix2,
                                                               secret,
@@ -341,7 +345,10 @@ test_porcupine_catalog()
     PORCUPINE_SECRET_LENGTH,
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 0.5, 0.2},
-                            nucleus::proton::limits::Node{1024, 0.5, 0.2})};
+                            nucleus::proton::limits::Node{1024, 0.5, 0.2}),
+      *_network,
+      _user->K()};
+
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine1 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(nest1);
 
@@ -389,14 +396,18 @@ test_porcupine_catalog()
   delete porcupine2;
 
   etoile::nest::Nest nest4(PORCUPINE_SECRET_LENGTH,
-                           nest1.limits());
+                           nest1.limits(),
+                           *_network,
+                           _user->K());
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine4 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix2,
                                                               secret2,
                                                               nest4);
 #else
   etoile::nest::Nest nest4(PORCUPINE_SECRET_LENGTH,
-                           nest1.limits());
+                           nest1.limits(),
+                           *_network,
+                           _user->K());
   nucleus::proton::Porcupine<nucleus::neutron::Catalog>* porcupine4 =
     new nucleus::proton::Porcupine<nucleus::neutron::Catalog>(radix1,
                                                               secret1,
@@ -519,7 +530,9 @@ test_porcupine_data()
     PORCUPINE_SECRET_LENGTH,
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 1.0, 0.0},
-                            nucleus::proton::limits::Node{1024, 1.0, 0.0})};
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0}),
+      *_network,
+      _user->K()};
   nucleus::proton::Porcupine<nucleus::neutron::Data>* porcupine =
     new nucleus::proton::Porcupine<nucleus::neutron::Data>(nest1);
 
@@ -544,7 +557,10 @@ test_porcupine_attributes()
     PORCUPINE_SECRET_LENGTH,
     nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
                             nucleus::proton::limits::Node{1024, 1.0, 0.0},
-                            nucleus::proton::limits::Node{1024, 1.0, 0.0})};
+                            nucleus::proton::limits::Node{1024, 1.0, 0.0}),
+      *_network,
+      _user->K()};
+
   nucleus::proton::Porcupine<nucleus::neutron::Attributes>* porcupine =
     new nucleus::proton::Porcupine<nucleus::neutron::Attributes>(nest1);
 
@@ -589,24 +605,26 @@ Main(elle::Natural32,
       Infinit::Initialize();
       // XXX
 
+      _network.reset(new nucleus::proton::Network(Infinit::Network));
+      _user.reset(
+        new cryptography::KeyPair(
+          cryptography::KeyPair::generate(1024)));
+
 #ifdef PORCUPINE_SERIALIZE_TEST
       cryptography::KeyPair pair_authority{
         cryptography::KeyPair::generate(1024)};
       elle::Authority authority(pair_authority);
-      cryptography::KeyPair pair_user{
-        cryptography::KeyPair::generate(1024)};
 
       elle::Passport passport(elle::String{"node"},
                               elle::String{"me"},
-                              pair_user.K(),
+                              _user->K(),
                               authority);
 
-      nucleus::proton::Network network(Infinit::Network);
-      _storage = new hole::storage::Memory(network);
+      _storage.reset(new hole::storage::Memory(*_network));
 
-      hole::Hole* hole{
+      hole::Hole* hole =
         new hole::implementations::local::Implementation(
-          *_storage, passport, authority)};
+          *_storage, passport, authority);
 
       ELLE_FINALLY_ACTION_DELETE(hole);
 

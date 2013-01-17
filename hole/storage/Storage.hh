@@ -139,7 +139,7 @@ namespace hole
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(nucleus::proton::Network, network);
+      ELLE_ATTRIBUTE_R(nucleus::proton::Network, network);
     };
   }
 }

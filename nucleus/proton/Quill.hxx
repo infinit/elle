@@ -480,7 +480,10 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new quill.
-      Contents* contents{new Contents{new Quill<T>}};
+      Contents* contents =
+        new Contents{this->nest().network(),
+                     this->nest().agent_K(),
+                     new Quill<T>};
       Handle orphan{this->nest().attach(contents)};
       Ambit<Quill<T>> newright{this->nest(), orphan};
 

@@ -533,7 +533,10 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new seam.
-      Contents* contents{new Contents{new Seam<T>}};
+      Contents* contents =
+        new Contents{this->nest().network(),
+                     this->nest().agent_K(),
+                     new Seam<T>};
       Handle orphan{this->nest().attach(contents)};
       Ambit<Seam<T>> newright{this->nest(), orphan};
 

@@ -512,7 +512,10 @@ namespace nucleus
       ELLE_TRACE_METHOD("");
 
       // Allocate a new right attributes.
-      proton::Contents* contents{new proton::Contents{new Attributes}};
+      proton::Contents* contents =
+        new proton::Contents{this->nest().network(),
+                             this->nest().agent_K(),
+                             new Attributes};
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Attributes> right{this->nest(), orphan};
 

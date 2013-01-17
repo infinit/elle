@@ -92,6 +92,8 @@ namespace satellite
   void
   Transfer::connect()
   {
+    ELLE_TRACE_FUNCTION("");
+
     // Load the phrase.
     lune::Phrase phrase;
     phrase.load(Infinit::User, Infinit::Network, "portal");
@@ -118,6 +120,8 @@ namespace satellite
   Transfer::attach(etoile::gear::Identifier const& object,
                    elle::String const& path)
   {
+    ELLE_TRACE_FUNCTION(object, path);
+
     etoile::path::Slab name;
     etoile::path::Way way(etoile::path::Way(path), name);
 
@@ -196,6 +200,8 @@ namespace satellite
   etoile::path::Chemin
   Transfer::from_setup()
   {
+    ELLE_TRACE_FUNCTION("");
+
     // (1) Get the transfer size from the root directory.
     {
       // Resolve the path to the root directory.
@@ -279,6 +285,8 @@ namespace satellite
   void
   Transfer::from_progress(elle::Natural64 increment)
   {
+    ELLE_TRACE_FUNCTION(increment);
+
     // The difference between the current progress and the last
     // one which has been pushed in the attributes. Once this
     // difference is reached, the attributes are updated.
@@ -334,6 +342,8 @@ namespace satellite
   Transfer::from_traverse(etoile::path::Way const& source,
                           elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Resolve the directory.
     etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(source));
 
@@ -483,6 +493,8 @@ namespace satellite
   void
   Transfer::from(elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(target);
+
     // Connect to Etoile.
     Transfer::connect();
 
@@ -494,6 +506,8 @@ namespace satellite
   void
   Transfer::to_update(elle::Natural64 const size)
   {
+    ELLE_TRACE_FUNCTION(size);
+
     etoile::path::Way root(elle::system::path::separator);
 
     // Resolve the root directory.
@@ -518,6 +532,8 @@ namespace satellite
   Transfer::to_create(elle::String const& source,
                       elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Create file.
     etoile::gear::Identifier file(Transfer::rpcs->filecreate());
 
@@ -576,6 +592,8 @@ namespace satellite
   elle::Natural64
   Transfer::to_dig(elle::String const& path)
   {
+    ELLE_TRACE_FUNCTION(path);
+
     // Create directory.
     etoile::gear::Identifier subdirectory(Transfer::rpcs->directorycreate());
 
@@ -606,6 +624,8 @@ namespace satellite
   Transfer::to_symlink(elle::String const& source,
                        elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Create symlink.
     etoile::gear::Identifier link(Transfer::rpcs->linkcreate());
 
@@ -638,6 +658,8 @@ namespace satellite
   void
   Transfer::to(elle::String const& source)
   {
+    ELLE_TRACE_FUNCTION(source);
+
     elle::Natural64 size(0);
 
     // Connect to Etoile.

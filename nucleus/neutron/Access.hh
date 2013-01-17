@@ -21,9 +21,8 @@ namespace nucleus
 {
   namespace neutron
   {
-    /// This class represents an access control list which contains
-    /// tuples representing the subject (user or group) having been
-    /// granted permssion on the object associated with this ACL.
+    /// Represent an access control list which contains tuples of subjects
+    /// (user or group) having been granted permssion on the object.
     class Access:
       public proton::ContentHashBlock,
       public elle::serialize::SerializableMixin<Access>,
