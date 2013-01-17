@@ -171,10 +171,11 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   //     ELLE_WARN("NAT punching error: %s", e.what());
   //   }
 
+  nucleus::proton::Network network(Infinit::Network);
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
                         elle::io::Piece{"%NETWORK%", Infinit::Network});
-  hole::storage::Directory storage(shelter_path.string());
+  hole::storage::Directory storage(network, shelter_path.string());
 
   elle::io::Path passport_path(lune::Lune::Passport);
   passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});

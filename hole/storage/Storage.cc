@@ -15,7 +15,8 @@ namespace hole
     | Construction |
     `-------------*/
 
-    Storage::Storage()
+    Storage::Storage(nucleus::proton::Network const& network):
+      _network(network)
     {}
 
     Storage::~Storage()
@@ -29,6 +30,10 @@ namespace hole
     Storage::exist(Address const& address,
                    nucleus::proton::Revision const& revision) const
     {
+      ELLE_TRACE_METHOD(address, revision);
+
+      ELLE_ASSERT(address.network() == this->_network);
+
       return this->_exist(this->_identifier(address, revision));
     }
 
@@ -51,10 +56,12 @@ namespace hole
     Storage::store(const nucleus::proton::Address& address,
                    const nucleus::proton::ImmutableBlock& block)
     {
-      ELLE_TRACE_SCOPE("Storing immutable '%s' at '%s'.", block, address);
+      ELLE_TRACE_METHOD(address, block);
+
+      ELLE_ASSERT(address.network() == this->_network);
 
       if (this->_exist(this->_identifier(address)))
-        throw elle::Exception("This block seems to already exists.");
+        throw elle::Exception("this block seems to already exists.");
 
       this->_store(address, block);
     }
@@ -63,11 +70,12 @@ namespace hole
     Storage::store(const nucleus::proton::Address& address,
                    const nucleus::proton::MutableBlock& block)
     {
-      ELLE_TRACE_SCOPE("Storing mutable '%s' at '%s'.", block, address);
+      ELLE_TRACE_METHOD(address, block);
+
+      ELLE_ASSERT(address.network() == this->_network);
 
       if (conflict(address, block))
-        throw elle::Exception(
-          "The block does not derive the local one.");
+        throw elle::Exception("the block does not derive the local one.");
 
       this->_store(address, block);
     }
@@ -75,10 +83,12 @@ namespace hole
     std::unique_ptr<nucleus::proton::Block>
     Storage::load(nucleus::proton::Address const& address) const
     {
-      ELLE_TRACE_SCOPE("%s: retrieving block at @'%s'.", *this, address);
+      ELLE_TRACE_METHOD(address);
+
+      ELLE_ASSERT(address.network() == this->_network);
 
       if (!this->_exist(this->_identifier(address)))
-        throw elle::Exception("The block does not seem to exist.");
+        throw elle::Exception("the block does not seem to exist.");
 
       return this->_load(address);
     }
@@ -87,14 +97,15 @@ namespace hole
     Storage::load(nucleus::proton::Address const& address,
                   nucleus::proton::Revision const& revision) const
     {
-      ELLE_TRACE_SCOPE("%s: retrieving block at @'%s' and revision '%s'.",
-                       *this, address, revision);
+      ELLE_TRACE_METHOD(address, revision);
+
+      ELLE_ASSERT(address.network() == this->_network);
 
       // Since block history is not supported yet...
       ELLE_ASSERT(revision == nucleus::proton::Revision::Last);
 
       if (!this->_exist(this->_identifier(address, revision)))
-        throw elle::Exception("The block does not seem to exist.");
+        throw elle::Exception("the block does not seem to exist.");
 
       return this->_load(address, revision);
     }
@@ -102,11 +113,13 @@ namespace hole
     void
     Storage::erase(nucleus::proton::Address const& address)
     {
-      ELLE_TRACE_SCOPE("%s: deleting block at @'%s'.", *this, address);
+      ELLE_TRACE_METHOD(address);
+
+      ELLE_ASSERT(address.network() == this->_network);
 
       // Check block existence before trying to delete it.
       if(!this->_exist(this->_identifier(address)))
-        throw elle::Exception("The block you tried to erase doesn't exist.");
+        throw elle::Exception("the block you tried to erase doesn't exist.");
 
       this->_erase(address);
     }
@@ -117,17 +130,17 @@ namespace hole
 
     bool
     Storage::conflict(nucleus::proton::Address const& address,
-                   nucleus::proton::MutableBlock const& block) const
+                      nucleus::proton::MutableBlock const& block) const
     {
       // If the block doesn't exist locally, this is the first version
       // we know of and there is no conflict.
       if (!this->_exist(this->_identifier(address)))
         {
-          ELLE_DEBUG("This is the first revision of the block.");
+          ELLE_DEBUG("this is the first revision of the block.");
           return false;
         }
 
-      ELLE_DEBUG_SCOPE("The mutable block seems to exist "
+      ELLE_DEBUG_SCOPE("the mutable block seems to exist "
                        "locally: make sure it derives the "
                        "current revision");
 
@@ -135,7 +148,7 @@ namespace hole
         elle::cast<nucleus::proton::MutableBlock>::runtime(
           load(address));
 
-      ELLE_DEBUG("Current block revision '%s' and given block "
+      ELLE_DEBUG("current block revision '%s' and given block "
                  "revision is '%s'.",
                  current->revision(), block.revision());
 
@@ -143,7 +156,7 @@ namespace hole
       if (block.revision() != current->revision())
         return !block.derives(*current);
 
-      ELLE_DEBUG("Block have same revision, we need to distinguish them "
+      ELLE_DEBUG("block have same revision, we need to distinguish them "
                  "as the latest.");
 
       // We check if contents are the same.
@@ -159,13 +172,13 @@ namespace hole
         /// every hosts.
         if (b1 == b2)
           {
-            ELLE_TRACE("Both block contents match. Let's say the remote one "
+            ELLE_TRACE("both block contents match. Let's say the remote one "
                        "doesn't derive the local one");
             return false;
           }
 
-        ELLE_WARN("Conflict detected: blocks have the same revision but"
-                  " different content; assuming the latest revision is '%s'.",
+        ELLE_WARN("conflict detected: blocks have the same revision but "
+                  "different content; assuming the latest revision is '%s'.",
                   (b1 < b2 ? block : *current));
 
         return (b1 < b2);

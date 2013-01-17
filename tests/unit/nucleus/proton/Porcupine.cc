@@ -50,7 +50,6 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.proton.Porcupine");
 // Define the length (in bits) of the secret key for encrypting content blocks.
 #define PORCUPINE_SECRET_LENGTH 256
 
-// XXX
 hole::storage::Memory* _storage = nullptr;
 
 //
@@ -602,10 +601,13 @@ Main(elle::Natural32,
                               pair_user.K(),
                               authority);
 
-      _storage = new hole::storage::Memory;
+      nucleus::proton::Network network(Infinit::Network);
+      _storage = new hole::storage::Memory(network);
+
       hole::Hole* hole{
         new hole::implementations::local::Implementation(
           *_storage, passport, authority)};
+
       ELLE_FINALLY_ACTION_DELETE(hole);
 
       etoile::depot::hole(hole);
@@ -622,7 +624,9 @@ Main(elle::Natural32,
       etoile::Etoile::Clean();
 
       hole->leave();
+
       ELLE_FINALLY_ABORT(hole);
+
       delete hole;
 #endif
 
@@ -661,12 +665,9 @@ int
 main(int argc,
      char* argv[])
 {
-  /* XXX
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&Main, argc, argv));
   sched.run();
   return main.result();
-  */
-  return Main(argc, argv);
 }

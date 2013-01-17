@@ -75,7 +75,8 @@ namespace infinit
               ("invalid transport protocol: %s", protocol_str);
           return std::unique_ptr<hole::Hole>(
             new hole::implementations::slug::Implementation(
-              storage, passport, authority, protocol, members, port, timeout));
+              storage, passport, authority,
+              protocol, members, port, timeout));
         }
         case hole::Model::TypeCirkle:
         {

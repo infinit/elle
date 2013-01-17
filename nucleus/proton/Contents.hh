@@ -69,7 +69,7 @@ namespace nucleus
       // XXX
       template <typename T>
       Contents(T* node): // XXX[TEMPORARY!!! TO ANNIHILATE]
-        proton::ContentHashBlock(Network("local"),
+        proton::ContentHashBlock(Network("test"),
                                  neutron::ComponentContents,
                                  cryptography::KeyPair::generate(1024).K()),
 

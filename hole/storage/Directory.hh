@@ -26,7 +26,8 @@ namespace hole
       /// Create a Directory storage.
       ///
       /// @param path The directory where to stock blocks.
-      Directory(std::string const& root);
+      Directory(nucleus::proton::Network const& network,
+                std::string const& root);
       /// Delete a directory.
       ~Directory();
     private:

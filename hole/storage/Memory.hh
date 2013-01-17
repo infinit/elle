@@ -33,7 +33,7 @@ namespace hole
       `-------------*/
     public:
       /// Create a main-memory-basedstorage.
-      Memory();
+      Memory(nucleus::proton::Network const& network);
       /// Delete a directory.
       ~Memory();
     private:

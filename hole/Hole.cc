@@ -9,7 +9,6 @@ using namespace infinit;
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
-#include <nucleus/proton/Network.hh>
 
 #include <Infinit.hh>
 
@@ -27,11 +26,11 @@ namespace hole
 
   Hole::Hole(storage::Storage& storage,
              elle::Passport const& passport,
-             elle::Authority const& authority)
-    : _storage(storage)
-    , _passport(passport)
-    , _authority(authority)
-    , _state(State::offline)
+             elle::Authority const& authority):
+    _storage(storage),
+    _passport(passport),
+    _authority(authority),
+    _state(State::offline)
   {
     // Disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
@@ -93,7 +92,6 @@ namespace hole
              const nucleus::proton::Block& block)
   {
     ELLE_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, address, block);
-    // XXX check the block's footprint which should not exceed Extent
 
     // Forward the request depending on the nature of the block which
     // the address indicates.

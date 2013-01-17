@@ -1,12 +1,15 @@
 #ifndef HOLE_STORAGE_STORAGE_HH
 # define HOLE_STORAGE_STORAGE_HH
 
-# include <string>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/ImmutableBlock.hh>
 # include <nucleus/proton/MutableBlock.hh>
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Revision.hh>
+# include <nucleus/proton/Network.hh>
+
+# include <string>
 
 namespace hole
 {
@@ -30,7 +33,8 @@ namespace hole
     `-------------*/
     public:
       /// Create a Storage.
-      Storage();
+      Storage(nucleus::proton::Network const& network);
+
       /// Destroy a Storage.
       virtual
       ~Storage();
@@ -130,6 +134,12 @@ namespace hole
       virtual
       void
       _erase(nucleus::proton::Address const& address) = 0;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(nucleus::proton::Network, network);
     };
   }
 }

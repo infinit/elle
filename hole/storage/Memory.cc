@@ -23,8 +23,8 @@ namespace hole
     | Construction |
     `-------------*/
 
-    Memory::Memory():
-      Storage()
+    Memory::Memory(nucleus::proton::Network const& network):
+      Storage(network)
     {}
 
     Memory::~Memory()
@@ -131,6 +131,8 @@ namespace hole
       // Convert the address to a string.
       elle::io::Unique unique_address{address.unique()};
 
+      ELLE_ASSERT(this->_exist(unique_address) == true);
+
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
         nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
@@ -165,6 +167,8 @@ namespace hole
                               % unique_address
                               % revision.number));
 
+      ELLE_ASSERT(this->_exist(unique) == true);
+
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
         nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
@@ -192,6 +196,8 @@ namespace hole
 
       // Convert the address to a string.
       elle::io::Unique unique_address{address.unique()};
+
+      ELLE_ASSERT(this->_exist(unique_address) == true);
 
       this->_container.erase(unique_address);
     }

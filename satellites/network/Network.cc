@@ -127,7 +127,7 @@ namespace satellite
     elle::io::Path shelter_path(lune::Lune::Shelter);
     shelter_path.Complete(elle::io::Piece{"%USER%", administrator},
                           elle::io::Piece{"%NETWORK%", name});
-    hole::storage::Directory storage(shelter_path.string());
+    hole::storage::Directory storage(network, shelter_path.string());
 
     group.seal(identity.pair().k());
 

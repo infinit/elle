@@ -95,10 +95,11 @@ namespace hole
       }
 
     // initialize the Hole library.
+  nucleus::proton::Network network(Infinit::Network);
     elle::io::Path shelter_path(lune::Lune::Shelter);
     shelter_path.Complete(elle::io::Piece("%USERK%", Infinit::User),
                           elle::io::Piece("%NETWORK%", Infinit::Network));
-    hole::storage::Directory storage(shelter_path.string());
+    hole::storage::Directory storage(network, shelter_path.string());
 
     elle::io::Path passport_path(lune::Lune::Passport);
     passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});

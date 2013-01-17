@@ -20,8 +20,9 @@ namespace hole
     | Construction |
     `-------------*/
 
-    Directory::Directory(std::string const& root):
-      Storage(),
+    Directory::Directory(nucleus::proton::Network const& network,
+                         std::string const& root):
+      Storage(network),
       _root(root)
     {}
 
