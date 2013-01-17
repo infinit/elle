@@ -5,6 +5,7 @@
 #include <elle/os/path.hh>
 #include <elle/log.hh>
 #include <elle/HttpClient.hh>
+#include <elle/system/platform.hh>
 
 #include "CrashReporter.hh"
 
@@ -15,8 +16,6 @@
 #include <elle/system/platform.hh>
 #if defined(INFINIT_MACOSX)
 extern char** environ;
-#else
-// # include <environ.h>
 #endif
 
 ELLE_LOG_COMPONENT("elle.CrashReporter");
