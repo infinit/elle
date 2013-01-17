@@ -514,7 +514,7 @@ class All(Page):
     def GET(self):
         self.requireLoggedIn()
 
-        filter_ = CANCELED #'transaction_filter' in self.data and self.data['transaction_filter'] or CANCELED
+        filter_ = [CANCELED, FINISHED]  #'transaction_filter' in self.data and self.data['transaction_filter'] or CANCELED
 
         transactions = list(database.transactions().find(
             {
@@ -525,7 +525,7 @@ class All(Page):
                     ],
                 'status':
                     {
-                        '$ne': filter_
+                        '$nin': filter_
                     }
             },
             ['_id'] #Take only id field.

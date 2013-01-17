@@ -33,19 +33,19 @@ class Search(Page):
                 {
                     '$or' : [
                         {'fullname' : {'$regex' : '^%s' % text,  '$options': 'i'}},
-                        {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
-                    ],
+#                        {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
+                        ],
                     'register_status':'ok',
                 },
                 fields=["_id"],
                 limit=count + offset
             )
-        else:
-            users = database.users().find(
-                {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
-                fields=["_id"],
-                limit=count + offset
-            )
+        # else:
+        #     users = database.users().find(
+        #         {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
+        #         fields=["_id"],
+        #         limit=count + offset
+        #     )
 
         result = list(user['_id'] for user in users[offset:count])
 
@@ -255,7 +255,7 @@ class One(Page):
             return self.error(error.UNKNOWN_USER, "Couldn't find user for id '%s'" % str(id_or_email))
         return self.success({
             '_id': user['_id'],
-            'email': user['email'],
+            'email': user['_id'] in self.user["swaggers"].keys() and user['email'] or '',
             'public_key': user['public_key'],
             'fullname': user['fullname'],
             # XXX: user['connected']
