@@ -6,82 +6,136 @@
 # include <elle/HttpClient.hh>
 # include <elle/utility/Time.hh>
 # include <queue>
-# include <map>
+# include <list>
+# include <fstream>
 
 namespace surface
 {
   namespace gap
   {
-    class MetricReporter:
-      private boost::noncopyable
+
+    class MetricReporter
     {
       /*------.
       | Types |
       `------*/
     public:
-      typedef std::map<std::string, std::string> Metric;
+      typedef std::list<std::pair<std::string, std::string>> Metric;
       typedef std::pair<elle::utility::Time, Metric> TimeMetricPair;
+
       /*-------------.
       | Construction |
       `-------------*/
-    public:
-      /// Default constructor.
-      //XXX: Ctor with choosable server.
-      MetricReporter(std::string const& server,
-                     uint16_t port);
+      public:
+      MetricReporter(std::string const& tag,
+                     std::string const& default_user);
 
-      // Destroy analyzer after sending data to server or storing localy if
-      // connection was lost.
+      virtual
       ~MetricReporter();
 
-      /*--------.
-      | Methods |
-      `--------*/
     public:
-      // Enqueue uri acces.
+      // Push data directly, without enqueuing.
+      virtual
+      void
+      publish(std::string const& name,
+              Metric const&);
+
+      // Enqueue data.
+      virtual
       void
       store(std::string const& name, Metric const&);
 
+      // Sugar: Store(name, {})
       void
       store(std::string const& caller);
 
-      // Sugar to avoid store(name, {{key, value}}).
+      // Sugar: Store(name, {key, value})
       void
       store(std::string const& name,
             std::string const& key,
             std::string const& value);
 
-      // Push data directly to server, without enqueuing.
-      void
-      publish(std::string const& name,
-              Metric const&);
-
-      // Sugar to update a new transaction event.
-      void
-      update_transaction(std::string const& transaction_id, Metric const&);
-
       // Defaultly, user is anonymous.
       void
       update_user(std::string const&);
 
-    private:
-      Metric&
-      _push(Metric const&);
+    protected:
+      // Do send to destination.
+      virtual
+      void
+      _send_data(TimeMetricPair const&) = 0;
 
+      // Enqueue a metric timestamped.
+      Metric&
+      _push(Metric const& metric);
+
+      virtual
       void
       _flush();
 
+    protected:
+      std::queue<TimeMetricPair> _requests;
+      elle::utility::Time _last_sent;
+      std::string _tag;
+      std::string _user_id;
+    };
+
+    class ServerReporter:
+      public MetricReporter,
+      private boost::noncopyable
+    {
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      /// Default constructor.
+      ServerReporter(std::string const& tag,
+                     std::string const& default_user,
+                     std::string const& server,
+                     uint16_t port);
+
+      ~ServerReporter();
+      /*--------.
+      | Methods |
+      `--------*/
+    private:
+      virtual
       void
-      _send_data(TimeMetricPair const&);
+      _send_data(TimeMetricPair const&) override;
+
+      void
+      _flush() override;
 
       /*-----------.
       | Attributes |
       `-----------*/
     private:
-      std::queue<TimeMetricPair> _requests;
+      std::string _host;
+      uint16_t _port;
       std::unique_ptr<elle::HTTPClient> _server;
-      std::string _user_id;
-      elle::utility::Time _last_sent;
+      std::queue<TimeMetricPair> _fallback_storage;
+    };
+
+    class NoConnectionReporter:
+      public MetricReporter,
+      private boost::noncopyable
+    {
+    public:
+      NoConnectionReporter(std::string const& tag,
+                           std::string const& default_user,
+                           std::string const& path);
+
+      ~ServerReporter();
+    private:
+      void
+      _send_data(MetricReporter::TimeMetricPair const&) override;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      // Flush here, cause it's offline.
+      std::ofstream _file_storage;
     };
 
     namespace metrics
