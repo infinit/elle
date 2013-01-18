@@ -134,22 +134,24 @@ namespace elle
 # include <boost/preprocessor/variadic/size.hpp>
 # include <boost/preprocessor/variadic/to_seq.hpp>
 
-# define __ESC_INITIALIZATION_LIST_REPEAT(__r, __data, __i, __elem)           \
-  BOOST_PP_IF(__i, BOOST_PP_COMMA, :)                                         \
-  __elem{elle::serialize::no_init}                                            \
-/**/
+# define __ESC_INITIALIZATION_LIST_TRANSFORM(__s, __data, __elem)             \
+  __elem{elle::serialize::no_init}
+
+# define __ESC_INITIALIZATION_LIST_PROCESS(...)                               \
+  :                                                                           \
+  BOOST_PP_SEQ_ENUM(                                                          \
+    BOOST_PP_SEQ_TRANSFORM(                                                   \
+      __ESC_INITIALIZATION_LIST_TRANSFORM,                                    \
+      _,                                                                      \
+      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))))                     \
+
+# define __ESC_INITIALIZATION_LIST_EMPTY(...)
 
 # define __ESC_INITIALIZATION_LIST(...)                                       \
   BOOST_PP_IF(                                                                \
     BOOST_PP_DEC(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__)),                        \
-    BOOST_PP_SEQ_FOR_EACH_I(                                                  \
-      __ESC_INITIALIZATION_LIST_REPEAT,                                       \
-      _,                                                                      \
-      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))                       \
-      ),                                                                      \
-    BOOST_PP_EMPTY()                                                          \
-    )                                                                         \
-/**/
+    __ESC_INITIALIZATION_LIST_PROCESS,                                        \
+    __ESC_INITIALIZATION_LIST_EMPTY)(__VA_ARGS__)
 
 #define __ESC_HEAD(F, ...) F
 #define __ESC_TAIL(F, ...) __VA_ARGS__
