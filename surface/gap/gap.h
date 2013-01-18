@@ -59,7 +59,7 @@ extern "C" {
   struct gap_State;
   typedef struct gap_State gap_State;
 
-  /// - gap ctor & dtor -----------------------------------------------------
+  // - gap ctor & dtor --------------------------------------------------------
 
   /// Create a new state.
   /// Returns NULL on failure.
@@ -75,7 +75,7 @@ extern "C" {
   /// Debug func.
   gap_Status gap_debug(gap_State* state);
 
-  /// - Services status -----------------------------------------------------
+  // - Services status --------------------------------------------------------
 
   /// Check if meta is alive.
   gap_Status gap_meta_status(gap_State* state);
@@ -89,7 +89,35 @@ extern "C" {
   gap_Status
   gap_notifications_read(gap_State*);
 
-  /// - Authentication & registration ---------------------------------------
+  //- Process interface -------------------------------------------------------
+
+  /// Identifier for a process launch by gap.
+  typedef int gap_ProcessId;
+
+  /// Status of a process.
+  typedef int gap_ProcessStatus;
+
+  /// The process ended with an error.
+  extern gap_ProcessStatus gap_process_status_failure;
+
+  /// The process successfully ended.
+  extern gap_ProcessStatus gap_process_status_success;
+
+  /// The process is still running.
+  extern gap_ProcessStatus gap_process_status_running;
+
+  /// Returns the process status.
+  gap_ProcessStatus
+  gap_process_status(gap_State* state,
+                     gap_ProcessId const pid);
+
+  /// Try to finalize a process. Returns an error if the process
+  /// does not exist, or if it's still running.
+  gap_Status
+  gap_process_finalize(gap_State* state,
+                       gap_ProcessId const pid);
+
+  //- Authentication & registration -------------------------------------------
 
   /// Generate a hash for the password.
   /// NOTE: You are responsible to free the returned pointer with
@@ -113,7 +141,9 @@ extern "C" {
   /// Logout from meta.
   gap_Status gap_logout(gap_State* state);
 
-  /// Register to meta. If the device name is not NULL, it will also create
+  /// @brief Register to meta.
+  ///
+  /// If the device name is not NULL, it will also create
   /// the local device with specified name. The password hash is obtained via
   /// gap_hash_password() function.
   gap_Status gap_register(gap_State* state,
@@ -127,7 +157,7 @@ extern "C" {
   gap_Status
   gap_trophonius_connect(gap_State* state);
 
-  /// - Swaggers ------------------------------------------------------------
+  //- Swaggers ----------------------------------------------------------------
 
   typedef enum
   {
@@ -136,26 +166,41 @@ extern "C" {
     gap_user_status_busy = 2,
   } gap_UserStatus;
 
-  typedef void (*gap_user_status_callback_t)(char const*, gap_UserStatus const);
+  typedef void (*gap_user_status_callback_t)(char const*,
+                                             gap_UserStatus const);
 
   gap_Status
   gap_user_status_callback(gap_State* state,
                            gap_user_status_callback_t cb);
 
-  /// - Transaction ------------------------------------------------------------
+  //- Transaction -------------------------------------------------------------
+
   typedef enum
   {
     gap_transaction_status_none = 0,
-    gap_transaction_status_pending,   // Waiting for the recipient to accept.
-    gap_transaction_status_accepted,  // The recipient accepted the file transfer.
-    gap_transaction_status_started,   // The sender has set writes and the recipient can start 8transfer.
-    gap_transaction_status_canceled,  // The sender or the recipient cancel transaciton (before it start or while downloading).
-    gap_transaction_status_finished,  // The transaction is done.
+
+    /// Waiting for the recipient to accept.
+    gap_transaction_status_pending,
+
+    /// The recipient accepted the file transfer.
+    gap_transaction_status_accepted,
+
+    /// The sender has set writes and the recipient can start 8transfer.
+    gap_transaction_status_started,
+
+    /// The sender or the recipient cancel transaciton (before it start or
+    /// while downloading).
+    gap_transaction_status_canceled,
+
+    /// The transaction is done.
+    gap_transaction_status_finished,
+
     _gap_transaction_status_count,
   } gap_TransactionStatus;
 
   /// New transaction callback.
-  typedef void (*gap_transaction_callback_t)(char const* transaction_id, int new_);
+  typedef void (*gap_transaction_callback_t)(char const* transaction_id,
+                                             int is_new);
   gap_Status
   gap_transaction_callback(gap_State* state,
                            gap_transaction_callback_t cb);
@@ -221,7 +266,7 @@ extern "C" {
                           char const*);
 
 
-  /// Message
+  /// - Message ---------------------------------------------------------------
   gap_Status
   gap_message(gap_State* state,
               char const* recipient_id,
@@ -241,7 +286,8 @@ extern "C" {
   gap_invite_user(gap_State* state,
                   char const* email);
 
-  /// - Device --------------------------------------------------------------
+  /// - Device ----------------------------------------------------------------
+
   /// Returns the local device status.
   gap_Status gap_device_status(gap_State* state);
 
@@ -389,10 +435,13 @@ extern "C" {
   gap_transactions_free(char** transactions);
 
   /// Send files to a specific user.
-  gap_Status
+  ///
+  /// @returns a unique identifier or -1 on error.
+  gap_ProcessId
   gap_send_files(gap_State* state,
                  char const* recipient_id,
                  char const* const* files);
+
 
   /// Update transaction status.
   gap_Status

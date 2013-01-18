@@ -116,11 +116,16 @@ extern "C"
         ELLE_ERR("Cannot initialize gap state: %s", err.what());
         return nullptr;
       }
+    catch (...)
+      {
+        ELLE_ERR("Cannot initialize gap state");
+        return nullptr;
+      }
   }
 
   gap_State* gap_new_with_token(char const* token)
-
-{    static bool initialized = false;
+  {
+    static bool initialized = false;
     if (!initialized)
       {
         initialized = true;
@@ -138,6 +143,11 @@ extern "C"
     catch (std::exception const& err)
       {
         ELLE_ERR("Cannot initialize gap state: %s", err.what());
+        return nullptr;
+      }
+    catch (...)
+      {
+        ELLE_ERR("Cannot initialize gap state");
         return nullptr;
       }
   }
@@ -184,7 +194,41 @@ extern "C"
     WRAP_CPP(state, send_message, recipient_id, message);
   }
 
-  /// - Authentication ------------------------------------------------------
+  //- Process interface -------------------------------------------------------
+
+  gap_ProcessStatus gap_process_status_failure =
+    (gap_ProcessStatus) surface::gap::State::ProcessStatus::failure;
+
+  gap_ProcessStatus gap_process_status_success =
+    (gap_ProcessStatus) surface::gap::State::ProcessStatus::success;
+
+  gap_ProcessStatus gap_process_status_running =
+    (gap_ProcessStatus) surface::gap::State::ProcessStatus::running;
+
+  gap_ProcessStatus
+  gap_process_status(gap_State* state,
+                     gap_ProcessId const pid)
+  {
+    assert(state != nullptr);
+    gap_Status ret = gap_ok;
+    try
+      {
+        return (gap_ProcessStatus) __TO_CPP(state)->process_status(pid);
+      }
+    CATCH_ALL(process_status);
+    return ret;
+  }
+
+  /// Try to finalize a process. Returns an error if the process
+  /// does not exist, or if it's still running.
+  gap_Status
+  gap_process_finalize(gap_State* state,
+                       gap_ProcessId const pid)
+  {
+    WRAP_CPP(state, process_finalize, pid);
+  }
+
+  //- Authentication ----------------------------------------------------------
 
   char* gap_hash_password(gap_State* state,
                           char const* email,
@@ -986,7 +1030,7 @@ extern "C"
     ::free(transactions);
   }
 
-  gap_Status
+  gap_ProcessStatus
   gap_send_files(gap_State* state,
                  char const* recipient_id,
                  char const* const* files)
@@ -1007,7 +1051,7 @@ extern "C"
             ++files;
           }
 
-        __TO_CPP(state)->send_files(recipient_id, s);
+        return (gap_ProcessStatus) __TO_CPP(state)->send_files(recipient_id, s);
       }
     CATCH_ALL(send_files);
 
