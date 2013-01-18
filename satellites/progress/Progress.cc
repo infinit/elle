@@ -77,7 +77,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Progress::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Progress::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Progress::rpcs->authenticate(phrase.pass))
