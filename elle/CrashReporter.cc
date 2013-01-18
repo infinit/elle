@@ -12,6 +12,7 @@
 #include <map>
 #include <signal.h>
 
+#include <elle/system/platform.hh>
 #if defined(INFINIT_MACOSX)
 extern char** environ;
 #else
