@@ -116,7 +116,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Group::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Group::rpcs = new etoile::portal::RPC(*channels);
 
     // Authenticate.

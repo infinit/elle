@@ -1,6 +1,13 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/udt-server.hh>
 
+// FIXME
+#include <common/common.hh>
+#include <elle/io/Piece.hh>
+#include <lune/Lune.hh>
+#include <lune/Descriptor.hh>
+#include <plasma/meta/Client.hh>
+
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -41,6 +48,18 @@ namespace hole
   {
     namespace slug
     {
+      // FIXME
+      static Machine* machine(nullptr);
+      void portal_connect(std::string const& addr, int port)
+      {
+        machine->portal_connect(addr, port);
+      }
+
+      void
+      Machine::portal_connect(std::string const& host, int port)
+      {
+        _server->accept(host, port);
+      }
 
       /*----------.
       | Variables |
@@ -72,8 +91,7 @@ namespace hole
       Machine::_connect(std::unique_ptr<reactor::network::Socket> socket,
                         elle::network::Locus const& locus, bool opener)
       {
-        std::unique_ptr<Host> host(new Host(*this, locus,
-                                            std::move(socket), opener));
+        std::unique_ptr<Host> host(new Host(*this, locus, std::move(socket)));
         ELLE_TRACE("%s: authenticate to host: %s", *this, locus);
         auto loci = host->authenticate(this->_hole.passport());
         if (this->_state == State::detached)
@@ -122,6 +140,7 @@ namespace hole
                   (hole.protocol(), elle::concurrency::scheduler()))
         , _acceptor()
       {
+        machine = this; // FIXME
         elle::network::Locus     locus;
         ELLE_TRACE_SCOPE("launch");
 
@@ -164,8 +183,8 @@ namespace hole
           try
             {
               _server->listen(this->_port);
-              // In case we asked for a random port to be picked up
-              // (by using 0), retrieve the actual listening port.
+              // In case we asked for a random port to be picked up (by using 0)
+              // or hole punching happened, retrieve the actual listening port.
               this->_port = _server->port();
               ELLE_ASSERT(this->_port != 0);
               ELLE_TRACE("listening on port %s", this->_port);
@@ -179,6 +198,53 @@ namespace hole
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
+            }
+        }
+
+
+        // Send addresses to meta.
+        {
+          lune::Descriptor descriptor(Infinit::User, Infinit::Network);
+          plasma::meta::Client client(common::meta::host(), common::meta::port());
+          try
+            {
+              elle::io::Path passport_path(lune::Lune::Passport);
+              passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
+              elle::Passport passport;
+              passport.load(passport_path);
+
+              std::vector<std::pair<std::string, uint16_t>> addresses;
+              auto interfaces = elle::network::Interface::get_map(
+                elle::network::Interface::Filter::only_up
+                | elle::network::Interface::Filter::no_loopback
+                );
+              for (auto const& pair: interfaces)
+                if (pair.second.ipv4_address.size() > 0 &&
+                    pair.second.mac_address.size() > 0)
+                  {
+                    addresses.emplace_back(pair.second.ipv4_address,
+                                           _server->port());
+                    break;
+                  }
+
+              std::vector<std::pair<std::string, uint16_t>> public_addresses;
+              auto udt = dynamic_cast<reactor::network::UDTServer*>
+                (_server.get());
+              assert(udt);
+              auto ep = udt->public_endpoint();
+              public_addresses.push_back(std::pair<std::string, uint16_t>
+                                         (ep.address().to_string(),
+                                          ep.port()));
+              client.token(agent::Agent::meta_token);
+              client.network_connect_device(descriptor.meta().id(),
+                                            passport.id(),
+                                            addresses,
+                                            public_addresses);
+            }
+          catch (std::exception const& err)
+            {
+              ELLE_ERR("Cannot update device port: %s",
+                       err.what()); // XXX[to improve]
             }
         }
       }
@@ -266,7 +332,8 @@ namespace hole
                   // FIXME: handling via loci is very wrong. IPs are
                   // not uniques, and this reconstruction is lame and
                   // non-injective.
-                  _connect(std::move(socket), socket->remote_locus(), false);
+                  auto locus = socket->remote_locus();
+                  _connect(std::move(socket), locus, false);
                   break;
                 }
                 default:

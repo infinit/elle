@@ -24,7 +24,7 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
-      ChanneledStream(reactor::Scheduler& scheduler, Stream& backend, bool master);
+      ChanneledStream(reactor::Scheduler& scheduler, Stream& backend);
 
     /*----.
     | IDs |

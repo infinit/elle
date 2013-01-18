@@ -30,8 +30,10 @@ namespace surface
     };
 
     // Used to represent all users in the state class.
-    typedef ::plasma::meta::User User;
-    typedef ::plasma::meta::NetworkResponse Network;
+    using User = ::plasma::meta::User;
+    using Nodes = ::plasma::meta::NetworkNodesResponse;
+    using Network = ::plasma::meta::NetworkResponse;
+    using Endpoint = ::plasma::meta::EndpointNodeResponse;
 
     struct NetworkStatus
     {
@@ -228,6 +230,7 @@ namespace surface
       update_transaction(std::string const& transaction_id,
                          gap_TransactionStatus status);
 
+    private:
       /// @brief Start the transfer process on recipient.
       ///
       void
@@ -361,6 +364,11 @@ namespace surface
       std::map<std::string, NetworkStatus*> _networks_status;
       bool                                  _networks_status_dirty;
 
+    private:
+      bool
+      _wait_portal(std::string const& user_id,
+                   std::string const& network_id);
+
     public:
       /// Retrieve all networks.
       std::map<std::string, Network*> const& networks();
@@ -439,6 +447,10 @@ namespace surface
 
       void
       _on_transaction_status(TransactionStatusNotification const& notif);
+
+    public:
+      void
+      _notify_8infinit(Transaction const& trans);
 
     public:
       size_t

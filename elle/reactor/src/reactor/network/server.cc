@@ -13,6 +13,12 @@ namespace reactor
     Server::~Server()
     {}
 
+    void
+    Server::accept(std::string const&, int)
+    {
+      // Nothing.
+    }
+
     Scheduler&
     Server::scheduler()
     {

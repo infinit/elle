@@ -33,7 +33,7 @@ def configure(cxx_toolkit, cxx_config):
     'src/reactor/mutex.cc',
     # 'src/reactor/network/udp-server-socket.cc',
     'src/reactor/network/exception.cc',
-    # 'src/reactor/network/udp-socket.cc',
+    'src/reactor/network/udp-socket.cc',
     'src/reactor/network/tcp-socket.cc',
     'src/reactor/network/udt-socket.cc',
     'src/reactor/network/resolve.cc',

@@ -28,7 +28,7 @@ int     main(int ac, char* av[])
 
   if (ac != 2 || av[1] == nullptr)
     {
-      fprintf(stderr, "usage: %s user_id", av[0]);
+      std::cerr << "usage: " << av[0] << " user_id" << std::endl;
       return EXIT_FAILURE;
     }
 

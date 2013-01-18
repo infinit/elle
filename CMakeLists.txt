@@ -315,19 +315,19 @@ set(INFINIT_LIBRARIES
   lune
   nucleus # circular dependency with lune
 
-  hole
   nucleus
   ${HORIZON_LIB}
   etoile
-
-  metal
-  agent
 
   nucleus # circular dependency with etoile
   common
   protocol
   infinit
   hole
+
+  agent
+  metal
+
   cryptography
   lune
   elle

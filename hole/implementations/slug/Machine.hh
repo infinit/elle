@@ -29,6 +29,8 @@ namespace hole
   {
     namespace slug
     {
+      void portal_connect(std::string const& host, int port);
+
 
       ///
       /// XXX represents the current host
@@ -86,6 +88,7 @@ namespace hole
       `-------*/
       public:
         elle::network::Port port() const;
+        void portal_connect(std::string const& host, int port);
       private:
         elle::network::Port _port;
         void _accept();

@@ -27,11 +27,18 @@
 #include <elle/HttpClient.hh>
 #include <elle/CrashReporter.hh>
 
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/sleep.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/ChanneledStream.hh>
+#include <etoile/portal/Portal.hh>
+
 #include <common/common.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 #include <lune/Lune.hh>
+#include <lune/Phrase.hh>
 
 #include <nucleus/neutron/Permissions.hh>
 
@@ -58,14 +65,15 @@ namespace surface
 
     // - State ----------------------------------------------------------------
     State::State()
-      : _meta{
-      new plasma::meta::Client{
+      : _meta{new plasma::meta::Client{
         common::meta::host(),
-        common::meta::port(),
-        true,
-      }}
+          common::meta::port(),
+          true,
+          }
+        }
       , _trophonius{nullptr}
       , _users{}
+      , _logged{false}
       , _swaggers_dirty{true}
       , _output_dir{common::system::download_directory()}
       , _files_infos{}
@@ -79,11 +87,21 @@ namespace surface
 
       namespace p = std::placeholders;
       this->transaction_callback(
-        std::bind(&State::_on_transaction, this, p::_1, p::_2)
+          [&] (TransactionNotification const &n, bool is_new) -> void {
+            this->_on_transaction(n, is_new);
+          }
       );
       this->transaction_status_callback(
-        std::bind(&State::_on_transaction_status, this, p::_1)
+          [&] (TransactionStatusNotification const &n, bool) -> void {
+            this->_on_transaction_status(n);
+          }
       );
+
+      /*
+        rajouter on_swagger_online
+        dans swagger_online -> foreach network ; if swagger in network then
+        call RPC qui informe 8infinit
+       */
 
       std::string user = elle::os::getenv("INFINIT_USER", "");
 
@@ -729,23 +747,8 @@ namespace surface
 
       std::string network_id = this->create_network(network_name);
 
-      // Ensure the network status is available
-      (void) this->network_status(network_id);
-
-      auto portal_path = common::infinit::portal_path(
-        this->_me._id,
-        network_id
-      );
-      for (int i = 0; i < 50; ++i)
-        {
-          if (fs::exists(portal_path))
-            break;
-          ELLE_DEBUG("Waiting for portal file");
-          ::sleep(1);
-        }
-
-      ELLE_DEBUG("Portal file found? %s", fs::exists(portal_path));
-      if (!fs::exists(portal_path))
+      ELLE_DEBUG("created network id is %s", network_id);
+      if (this->_wait_portal(this->_me._id, network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       ELLE_DEBUG("Retrieving 8transfert binary path...");
@@ -811,21 +814,6 @@ namespace surface
         return;
 
       Transaction const& trans = pair->second;
-
-      // Ensure the network status is available
-      (void) this->refresh_networks();
-      (void) this->network_status(trans.network_id);
-
-      auto portal_path = common::infinit::portal_path(
-        trans.sender_id,
-        trans.network_id
-      );
-      for (int i = 0; i < 10; ++i)
-        {
-          if (fs::exists(portal_path))
-            break;
-          ::sleep(1);
-        }
 
       std::string const& transfer_binary = common::infinit::binary_path("8transfer");
 
@@ -1205,14 +1193,28 @@ namespace surface
     }
 
     void
-    State::_on_transaction_started(Transaction const& transaction)
+    State::_on_transaction_started(Transaction const& trans)
     {
-      ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
+      ELLE_DEBUG("Started trans '%s'", trans.transaction_id);
+
+      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      reactor::Thread sync(sched,
+                           "ephemeral thread",
+                           [&] /*lambda the ultimate*/ {
+                               this->_notify_8infinit(trans);
+                               return 0;
+                           });
+      sched.run();
+      // Wait for it ..!
+
+      // TODO: Do this only on the current device for sender and recipient.
+      if (this->_wait_portal(trans.sender_id, trans.network_id) == false)
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       if (transaction.recipient_device_id != this->device_id())
         return;
 
-      _download_files(transaction.transaction_id);
+      _download_files(trans.transaction_id);
     }
 
     void
@@ -1368,6 +1370,28 @@ namespace surface
     }
 
     //- Network management ----------------------------------------------------
+
+    bool
+    State::_wait_portal(std::string const& user_id,
+                        std::string const& network_id)
+    {
+        (void) this->refresh_networks();
+        (void) this->network_status(network_id);
+        bool result = false;
+
+        auto portal_path = common::infinit::portal_path(user_id,
+                                                        network_id);
+        for (int i = 0; i < 299; ++i)
+        {
+            if (fs::exists(portal_path))
+            {
+                result = true;
+                break;
+            }
+            ::sleep(1);
+        }
+        return result;
+    }
 
     std::string
     State::create_network(std::string const& name)
@@ -1983,6 +2007,65 @@ namespace surface
       }
     }
 
-    #undef _REGISTER_HANDLERS
+    void
+    State::_notify_8infinit(Transaction const& trans)
+    {
+      ELLE_TRACE("%s", __func__);
+
+      namespace proto = infinit::protocol;
+      std::string const& sender_device = trans.sender_device_id;
+      std::string const& network_id = trans.network_id;
+
+      /// Check if network is valid
+      {
+          auto network = this->networks().find(network_id);
+
+          if (network == this->networks().end())
+              throw gap::Exception{gap_internal_error, "Unable to find network"};
+
+      }
+
+      // Fetch Nodes and find the correct one to contact
+      std::list<std::string> externals;
+      std::list<std::string> locals;
+      {
+          Endpoint e = this->_meta->device_endpoints(network_id, sender_device);
+
+          externals = std::move(e.externals);
+          locals = std::move(e.locals);
+      }
+
+
+      // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
+      {
+        lune::Phrase phrase;
+        phrase.load(this->_me._id, network_id, "portal");
+
+        // Connect to the server.
+        reactor::network::TCPSocket   socket{elle::concurrency::scheduler(),
+                                             elle::String("127.0.0.1"),
+                                             phrase.port};
+
+        proto::Serializer             serializer{elle::concurrency::scheduler(),
+                                                 socket};
+
+        proto::ChanneledStream        channels{elle::concurrency::scheduler(),
+                                               serializer,
+                                               true /*master?*/};
+
+        etoile::portal::RPC           rpcs{channels};
+
+        auto send_to_slug = [&] (std::string const &endpoint)
+        {
+            std::vector<std::string> result;
+
+            boost::split(result, endpoint, boost::is_any_of(":"));
+            rpcs.slug_connect(result[0], std::stoi(result[1]));
+        };
+
+        std::for_each(begin(externals), end(externals), send_to_slug);
+        std::for_each(begin(locals), end(locals), send_to_slug);
+      }
+    }
   }
 }

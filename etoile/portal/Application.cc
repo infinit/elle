@@ -18,6 +18,8 @@
 #include <etoile/wall/Path.hh>
 #include <etoile/wall/Attributes.hh>
 
+#include <hole/implementations/slug/Machine.hh> // FIXME
+
 ELLE_LOG_COMPONENT("infinit.etoile.portal.Application");
 
 namespace etoile
@@ -74,10 +76,11 @@ namespace etoile
         new infinit::protocol::Serializer(elle::concurrency::scheduler(), *this->socket);
       this->channels =
         new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                               *this->serializer, false);
+                                               *this->serializer);
 
       // Setup RPCs.
       this->rpcs = new etoile::portal::RPC(*this->channels);
+
 
       this->rpcs->accessconsult = &wall::Access::consult;
       this->rpcs->accessgrant = &wall::Access::Grant;
@@ -119,6 +122,8 @@ namespace etoile
       this->rpcs->attributesset = &wall::Attributes::set;
       this->rpcs->attributesget = &wall::Attributes::get;
       this->rpcs->attributesfetch = &wall::Attributes::fetch;
+
+      this->rpcs->slug_connect.operator=(&hole::implementations::slug::portal_connect);
 
       new reactor::Thread(elle::concurrency::scheduler(),
                           elle::sprintf("RPC %s", *this),

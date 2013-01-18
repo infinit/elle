@@ -46,9 +46,13 @@ TEST=tests/test
 OBJECTS = $(SOURCES:.cc=.o)
 TEST_OBJECTS = $(TEST_SOURCES:.cc=.o)
 
-CPPFLAGS += -I src -include boost/foreach.hpp -Dforeach=BOOST_FOREACH
+CPPFLAGS += -I src -I $(shell git rev-parse --show-toplevel)
+CPPFLAGS += -include boost/foreach.hpp
+CPPFLAGS += -Dforeach=BOOST_FOREACH
 #CPPFLAGS += -DINFINIT_REACTOR_ENABLE_DEBUG
-CXXFLAGS += -g -Woverloaded-virtual -Wall -Wno-parentheses
+CXXFLAGS += -std=c++11
+CXXFLAGS += -g
+CXXFLAGS += -Woverloaded-virtual -Wall -Wno-parentheses
 LDFLAGS += -lboost_system -lboost_thread -lboost_signals
 LDFLAGS += -lpthread
 

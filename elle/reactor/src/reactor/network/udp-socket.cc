@@ -35,8 +35,37 @@ namespace reactor
                                  boost::lexical_cast<std::string>(port)))
     {}
 
+    UDPSocket::UDPSocket(Scheduler& sched,
+                         int local_port,
+                         const std::string& hostname,
+                         int port)
+      : Super(sched, new AsioSocket(sched.io_service()))
+    {
+      this->_socket->open(boost::asio::ip::udp::v4());
+      boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
+                                           local_port);
+      this->_socket->bind(local);
+      this->_connect(resolve_udp(sched, hostname,
+                                 boost::lexical_cast<std::string>(port)));
+    }
+
+    UDPSocket::UDPSocket(Scheduler& sched)
+      : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
+    {}
+
     UDPSocket::~UDPSocket()
     {}
+
+    /*--------------.
+    | Configuration |
+    `--------------*/
+
+    void
+    UDPSocket::bind(boost::asio::ip::udp::endpoint const& endpoint)
+    {
+      socket()->open(boost::asio::ip::udp::v4());
+      socket()->bind(endpoint);
+    }
 
     /*-----------.
     | Connection |
@@ -131,6 +160,86 @@ namespace reactor
       return read.read();
     }
 
+
+    class UDPRecvFrom: public SocketOperation<boost::asio::ip::udp::socket>
+    {
+      public:
+        typedef boost::asio::ip::udp::socket AsioSocket;
+        typedef boost::asio::ip::udp::endpoint EndPoint;
+        typedef SocketOperation<AsioSocket> Super;
+        UDPRecvFrom(Scheduler& scheduler,
+                    PlainSocket<AsioSocket>* socket,
+                    Buffer& buffer,
+                    boost::asio::ip::udp::endpoint & endpoint)
+          : Super(scheduler, socket)
+          , _buffer(buffer)
+          , _read(0)
+          , _endpoint(endpoint)
+        {}
+
+        virtual const char* type_name() const
+        {
+          static const char* name = "socket recv_from";
+          return name;
+        }
+
+        Size
+        read()
+        {
+          return _read;
+        }
+
+      protected:
+
+        virtual void _start()
+        {
+          auto wake = [&] (boost::system::error_code const e, std::size_t w) {
+            this->_wakeup(e, w);
+          };
+
+          this->socket()->async_receive_from(
+            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            this->_endpoint,
+            wake);
+        }
+
+      private:
+        void _wakeup(const boost::system::error_code& error,
+                     std::size_t read)
+        {
+          if (error == boost::system::errc::operation_canceled)
+            return;
+          _read = read;
+          if (error == boost::asio::error::eof)
+            this->_raise(new ConnectionClosed(scheduler()));
+          else if (error)
+            this->_raise(new Exception(scheduler(), error.message()));
+          this->_signal();
+        }
+
+        Buffer& _buffer;
+        Size _read;
+        boost::asio::ip::udp::endpoint &_endpoint;
+    };
+
+    Size
+    UDPSocket::receive_from(Buffer buffer,
+                            boost::asio::ip::udp::endpoint &endpoint,
+                            DurationOpt timeout)
+    {
+      if (timeout)
+        ELLE_TRACE("%s: read at most %s bytes with timeout %s",
+                       *this, buffer.size(), timeout);
+      else
+        ELLE_TRACE("%s: read at most %s bytes",
+                       *this, buffer.size());
+      UDPRecvFrom recvfrom(scheduler(), this, buffer, endpoint);
+      if (!recvfrom.run(timeout))
+        throw TimeOut(scheduler());
+      return recvfrom.read();
+    }
+
+
     /*------.
     | Write |
     `------*/
@@ -174,6 +283,52 @@ namespace reactor
         Size _written;
     };
 
+    class UDPSendTo: public SocketOperation<boost::asio::ip::udp::socket>
+    {
+      public:
+        typedef boost::asio::ip::udp::socket AsioSocket;
+        typedef boost::asio::ip::udp::endpoint EndPoint;
+        typedef SocketOperation<AsioSocket> Super;
+        UDPSendTo(Scheduler& scheduler,
+                  PlainSocket<AsioSocket>* socket,
+                  Buffer& buffer,
+                  EndPoint const & endpoint)
+          : Super(scheduler, socket)
+          , _buffer(buffer)
+          , _written(0)
+          , _endpoint(endpoint)
+        {}
+
+      protected:
+        virtual void _start()
+        {
+          auto wake = [&] (boost::system::error_code const e, std::size_t w) {
+            this->_wakeup(e, w);
+          };
+
+          this->socket()->async_send_to(boost::asio::buffer(_buffer.data(),
+                                                         _buffer.size()),
+                                        this->_endpoint,
+                                        wake);
+        }
+
+      private:
+        void _wakeup(const boost::system::error_code& error,
+                     std::size_t written)
+        {
+          _written = written;
+          if (error == boost::asio::error::eof)
+            this->_raise(new ConnectionClosed(scheduler()));
+          else if (error)
+            this->_raise(new Exception(scheduler(), error.message()));
+          this->_signal();
+        }
+
+        Buffer& _buffer;
+        Size _written;
+        EndPoint _endpoint;
+    };
+
     void
     UDPSocket::write(Buffer buffer)
     {
@@ -181,6 +336,16 @@ namespace reactor
                      *this, buffer.size(), _socket->remote_endpoint());
       UDPWrite write(scheduler(), this, buffer);
       write.run();
+    }
+
+    void
+    UDPSocket::send_to(Buffer buffer,
+                       EndPoint endpoint)
+    {
+      ELLE_TRACE("%s: send_to %s bytes to %s",
+                     *this, buffer.size(), endpoint);
+      UDPSendTo sendto(scheduler(), this, buffer, endpoint);
+      sendto.run();
     }
 
     /*----------------.
