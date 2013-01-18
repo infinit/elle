@@ -738,15 +738,18 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   install << drake.copy(infinit_bin, prefix)
   install << drake.copy(infinit_libs + [udt_lib, asio_udt_lib], prefix)
 
-  # # Tests
-  # tests_cxx_config = drake.cxx.Config(cxx_config)
-  # tests_cxx_config += boost.config_test()
-  # tests = ['tests/unit/protocol/rpc.cc']
-  # for test in tests:
-  #   bin_path = drake.Path(test)
-  #   bin_path.extension = ''
-  #   bin = drake.cxx.Executable(bin_path,
-  #                              drake.nodes(test) + [
+  # Tests
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += boost.config_test()
+  tests_cxx_config.lib_path_runtime('../../../lib')
+  tests = ['tests/unit/protocol/rpc.cc']
+  for test in tests:
+    bin_path = drake.Path(test)
+    bin_path.extension = ''
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test) + infinit_libs,
+                               cxx_toolkit,
+                               tests_cxx_config)
 
   #       infinit_lib,
   #       elle.lib_dynamic,
