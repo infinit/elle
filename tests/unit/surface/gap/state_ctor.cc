@@ -55,7 +55,8 @@ auto make_worker = []
         while (1)
         {
             s.poll();
-            ::nanosleep((struct timespec[]){{0, 500000000L}}, NULL);
+            ::sleep(1);
+            // ::nanosleep((struct timespec[]){{0, 500000000L}}, NULL);
         }
     };
     std::cerr << __PRETTY_FUNCTION__ << std::endl;
@@ -103,7 +104,7 @@ int main()
 
   //auto fn = [&] (TransactionNotification const &tn, bool) {
   //    on_transaction_accepted_cb(tn, s2);
-  //}; 
+  //};
   //s2.transaction_callback(fn);
 
   s1.send_files(email2, {"/tmp/lol"});
@@ -117,4 +118,3 @@ int main()
   elle::print("tests done.");
   return 0;
 }
-
