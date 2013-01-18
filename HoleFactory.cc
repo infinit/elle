@@ -61,7 +61,7 @@ namespace infinit
           reactor::Duration timeout =
             boost::posix_time::milliseconds(timeout_int);
           std::string protocol_str =
-            Infinit::Configuration["hole"].Get<std::string>("protocol", "tcp");
+            Infinit::Configuration["hole"].Get<std::string>("protocol", "udt");
           protocol_str =
             Infinit::Configuration["hole"].Get<std::string>("slug.protocol",
                                                             protocol_str);
