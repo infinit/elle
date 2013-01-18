@@ -94,7 +94,7 @@ _hash_password(gap_State* state, std::string email, std::string password)
 }
 
 static
-gap_Status
+gap_ProcessStatus
 _send_files(gap_State* state,
             std::string const& recipient,
             boost::python::list const& files)
@@ -110,9 +110,9 @@ _send_files(gap_State* state,
       list[i] = boost::python::extract<char const*>(files[i]);
     }
 
-  gap_Status res = gap_send_files(state,
-                                  recipient.c_str(),
-                                  list);
+  auto res = gap_send_files(state,
+                            recipient.c_str(),
+                            list);
 
   free(list);
 
