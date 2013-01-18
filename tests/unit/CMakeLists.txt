@@ -1,5 +1,5 @@
 add_subdirectory(elle) # Elle unit test are safe from INFINIT_LIBRARIES
-add_subdirectory(lune)
+# XXX add_subdirectory(lune)
 add_subdirectory(surface)
 
 link_libraries(${INFINIT_LIBRARIES})

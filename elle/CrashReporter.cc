@@ -12,6 +12,12 @@
 #include <map>
 #include <signal.h>
 
+#if defined(INFINIT_MACOSX)
+extern char** environ;
+#else
+# include <environ.h>
+#endif
+
 ELLE_LOG_COMPONENT("elle.CrashReporter");
 
 namespace elle
