@@ -46,6 +46,8 @@
 #include <surface/gap/MetricReporter.hh>
 #include "State.hh"
 
+#include <boost/algorithm/string.hpp>
+
 #include <signal.h>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap.State");
@@ -1193,28 +1195,28 @@ namespace surface
     }
 
     void
-    State::_on_transaction_started(Transaction const& trans)
+    State::_on_transaction_started(Transaction const& transaction)
     {
-      ELLE_DEBUG("Started trans '%s'", trans.transaction_id);
+      ELLE_DEBUG("Started trans '%s'", transaction.transaction_id);
 
       reactor::Scheduler& sched = elle::concurrency::scheduler();
       reactor::Thread sync(sched,
                            "ephemeral thread",
                            [&] /*lambda the ultimate*/ {
-                               this->_notify_8infinit(trans);
+                               this->_notify_8infinit(transaction);
                                return 0;
                            });
       sched.run();
       // Wait for it ..!
 
       // TODO: Do this only on the current device for sender and recipient.
-      if (this->_wait_portal(trans.sender_id, trans.network_id) == false)
+      if (this->_wait_portal(transaction.sender_id, transaction.network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       if (transaction.recipient_device_id != this->device_id())
         return;
 
-      _download_files(trans.transaction_id);
+      _download_files(transaction.transaction_id);
     }
 
     void
@@ -2050,8 +2052,7 @@ namespace surface
                                                  socket};
 
         proto::ChanneledStream        channels{elle::concurrency::scheduler(),
-                                               serializer,
-                                               true /*master?*/};
+                                               serializer};
 
         etoile::portal::RPC           rpcs{channels};
 
