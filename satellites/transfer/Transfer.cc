@@ -97,7 +97,7 @@ namespace satellite
                                         *socket);
     Transfer::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Transfer::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Transfer::rpcs->authenticate(phrase.pass))
