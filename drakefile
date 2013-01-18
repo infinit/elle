@@ -657,6 +657,15 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                      network_sources + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
 
+  # 8transfer
+  transfer_sources = drake.nodes(
+    'satellites/transfer/Transfer.cc',
+    'satellites/transfer/Transfer.hh',
+    )
+  transfer_bin = drake.cxx.Executable('bin/8transfer',
+                                   transfer_sources + infinit_libs,
+                                   cxx_toolkit, infinit_bin_config)
+
   # Trophonius
 
   tropho_cxx_config = drake.cxx.Config(cxx_config)
