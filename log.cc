@@ -253,7 +253,8 @@ namespace elle
           fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
         else
           fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
-        logger(this->_component).message(level, type, str(fmt));
+        std::string pid = "[" + std::to_string(getpid()) + "]";
+        logger(this->_component).message(level, type, pid + str(fmt));
       }
 
       void
