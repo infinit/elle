@@ -1,5 +1,7 @@
 #include <common/common.hh>
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include <elle/os/path.hh>
 #include <elle/utility/Time.hh>
 #include <elle/Buffer.hh>
@@ -25,16 +27,13 @@ namespace surface
                                    std::string const& user)
       : _tag(tag)
       , _user_id(user)
-    {
-    }
+    {}
 
     MetricReporter::~MetricReporter()
     {
-      ELLE_WARN(__PRETTY_FUNCTION__);
-
-      // This cant be done here, call it calls send_data for this object
+      // Flush cant be done here, call it calls send_data for this object
       // which is pure virtual;
-      this->_flush();
+      // this->_flush();
     }
 
     // Push data directly to server, without enqueuing.
@@ -152,10 +151,10 @@ namespace surface
       MetricReporter::_flush();
     }
 
-    // ServerReporter::~ServerReporter()
-    // {
-    //   this->_flush();
-    // }
+    ServerReporter::~ServerReporter()
+    {
+      this->_flush();
+    }
 
     void
     ServerReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
@@ -174,11 +173,17 @@ namespace surface
 
       typedef MetricReporter::Metric::value_type Field;
       std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
-                    { request.post_field(f.first, f.second); });
+                    {
+                      std::string value=f.second;
+                      int pos;
+                      // Replace "/" by a %20 (space)
+                      while ((pos = value.find('/')) != std::string::npos)
+                        value.replace(pos, 1, "%20");
+                      request.post_field(f.first, value); });
 
       _last_sent.Current();
       request.post_field("qt",
-                         std::to_string((_last_sent - metric.first).nanoseconds / 1000));
+                         std::to_string((_last_sent - metric.first).nanoseconds / 1000000));
       try
       {
         request.fire();

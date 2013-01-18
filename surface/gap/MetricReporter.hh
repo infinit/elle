@@ -95,6 +95,7 @@ namespace surface
                      uint16_t port);
 
       ~ServerReporter();
+
       /*--------.
       | Methods |
       `--------*/
@@ -125,7 +126,8 @@ namespace surface
                            std::string const& default_user,
                            std::string const& path);
 
-      ~ServerReporter();
+      ~NoConnectionReporter();
+
     private:
       void
       _send_data(MetricReporter::TimeMetricPair const&) override;
