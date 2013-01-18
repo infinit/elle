@@ -91,8 +91,7 @@ namespace hole
       Machine::_connect(std::unique_ptr<reactor::network::Socket> socket,
                         elle::network::Locus const& locus, bool opener)
       {
-        std::unique_ptr<Host> host(new Host(*this, locus,
-                                            std::move(socket), opener));
+        std::unique_ptr<Host> host(new Host(*this, locus, std::move(socket)));
         ELLE_TRACE("%s: authenticate to host: %s", *this, locus);
         auto loci = host->authenticate(this->_hole.passport());
         if (this->_state == State::detached)

@@ -34,7 +34,7 @@ namespace hole
         : _state(State::connected)
         , _stream(elle::concurrency::scheduler(), host, port)
         , _serializer(elle::concurrency::scheduler(), _stream)
-        , _channels(elle::concurrency::scheduler(), _serializer, true)
+        , _channels(elle::concurrency::scheduler(), _serializer)
         , _rpc(_channels)
       {
         ELLE_TRACE("Authenticate to the server")

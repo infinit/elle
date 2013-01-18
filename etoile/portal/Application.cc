@@ -76,7 +76,7 @@ namespace etoile
         new infinit::protocol::Serializer(elle::concurrency::scheduler(), *this->socket);
       this->channels =
         new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                               *this->serializer, false);
+                                               *this->serializer);
 
       // Setup RPCs.
       this->rpcs = new etoile::portal::RPC(*this->channels);

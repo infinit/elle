@@ -40,8 +40,7 @@ namespace hole
       public:
         Host(Machine& machine,
              elle::network::Locus const& locus,
-             std::unique_ptr<reactor::network::Socket> socket,
-             bool opener);
+             std::unique_ptr<reactor::network::Socket> socket);
         ~Host();
 
       /*-----------.

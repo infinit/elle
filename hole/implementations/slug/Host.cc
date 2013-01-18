@@ -35,14 +35,13 @@ namespace hole
 
       Host::Host(Machine& machine,
                  elle::network::Locus const& locus,
-                 std::unique_ptr<reactor::network::Socket> socket,
-                 bool opener)
+                 std::unique_ptr<reactor::network::Socket> socket)
         : _locus(locus)
         , _machine(machine)
         , _state(State::connected)
         , _socket(std::move(socket))
         , _serializer(elle::concurrency::scheduler(), *_socket)
-        , _channels(elle::concurrency::scheduler(), _serializer, opener)
+        , _channels(elle::concurrency::scheduler(), _serializer)
         , _rpcs(_channels)
         , _rpcs_handler(new reactor::Thread(elle::concurrency::scheduler(),
                                             elle::sprintf("RPC %s", *this),
