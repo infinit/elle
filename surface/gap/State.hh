@@ -90,7 +90,7 @@ namespace surface
       _logged;
     public:
       bool
-      is_logged() { return this->_logged; }
+      is_logged() { return this->_meta->token().length() > 0; }
 
       /// Logout from meta.
       void

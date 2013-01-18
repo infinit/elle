@@ -66,7 +66,6 @@ namespace surface
       }}
       , _trophonius{nullptr}
       , _users{}
-      , _logged{false}
       , _swaggers_dirty{true}
       , _output_dir{common::system::download_directory()}
       , _files_infos{}
@@ -129,8 +128,6 @@ namespace surface
           this->_meta->email(mail);
 
           this->_me = static_cast<User const&>(this->_meta->self());
-
-          this->_logged = true;
         }
       }
     }
@@ -144,10 +141,6 @@ namespace surface
       this->_meta->email(res.email);
       //XXX factorize that shit
       this->_me = static_cast<User const&>(res);
-
-      // Auto started session.
-      // G0OGLE("Login", {"sc", "start"}, {"cd1", "auto"});
-      this->_logged = true;
     }
 
 
@@ -358,9 +351,16 @@ namespace surface
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
     {
+      std::string lower_email = email;
+
+      std::transform(lower_email.begin(),
+                     lower_email.end(),
+                     lower_email.begin(),
+                     ::tolower);
+
       unsigned char hash[SHA256_DIGEST_LENGTH];
       SHA256_CTX context;
-      std::string to_hash = email + "MEGABIET" + password + email + "MEGABIET";
+      std::string to_hash = lower_email + "MEGABIET" + password + lower_email + "MEGABIET";
 
       if (SHA256_Init(&context) == 0 ||
           SHA256_Update(&context, to_hash.c_str(), to_hash.size()) == 0 ||
@@ -378,7 +378,15 @@ namespace surface
     void State::login(std::string const& email, std::string const& password)
     {
       this->_meta->token("");
-      auto res = this->_meta->login(email, password);
+
+      std::string lower_email = email;
+
+      std::transform(lower_email.begin(),
+                     lower_email.end(),
+                     lower_email.begin(),
+                     ::tolower);
+
+      auto res = this->_meta->login(lower_email, password);
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
 
@@ -387,7 +395,7 @@ namespace surface
       this->_me.email = res.email.c_str();
       this->_me.public_key = "";
 
-      ELLE_DEBUG("id: '%s' - fullname: '%s' - email: '%s'.",
+      ELLE_DEBUG("id: '%s' - fullname: '%s' - lower_email: '%s'.",
                  this->_me._id,
                  this->_me.fullname,
                  this->_me.email);
@@ -424,8 +432,6 @@ namespace surface
 
         // Begin the session.
         metrics::google::server().store("Login", "cs", "start");
-
-        this->_logged = true;
     }
 
     void
@@ -434,10 +440,8 @@ namespace surface
       // End session the session.
       metrics::google::server().store("Logout", "cs", "end");
 
-      if (this->_logged)
+      if (this->_meta->token().length())
         this->_meta->logout();
-
-      this->_logged = false;
     }
 
     static
@@ -732,10 +736,11 @@ namespace surface
                                                           network_id,
                                                           this->device_id());
 
-        metrics::google::server().update_transaction(res.created_transaction_id,
-                                                     {{"cd1", "Created"},
-                                                      {"cm1", std::to_string(files.size())},
-                                                      {"cm2", std::to_string(size)}});
+        metrics::google::server().store("transaction",
+                                        {{"cd1", "Created"},
+                                         {"cd2", res.created_transaction_id},
+                                         {"cm1", std::to_string(files.size())},
+                                         {"cm2", std::to_string(size)}});
       }
       catch (elle::Exception const&)
       {
@@ -804,8 +809,9 @@ namespace surface
       update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
 
-      metrics::google::server().update_transaction(transaction_id,
-                                                   {{"cd1", "Finished"}});
+      // metrics::google::server().store("transaction",
+      //                                 {{"cd1", "Finished"},
+      //                                  {"cd2", transaction_id}});
     }
 
     void
@@ -959,11 +965,6 @@ namespace surface
       }
 
       // Send file request successful.
-      metrics::google::server().store(
-        "Update-transaction",
-        {{"cd1", std::to_string(transaction.status)},
-         {"cd2", std::to_string(status)}});
-
     } // !update_transaction()
 
     void
@@ -982,10 +983,9 @@ namespace surface
                                       this->device_id(),
                                       this->device_name());
 
-      metrics::google::server().update_transaction(
-        transaction.transaction_id,
-        {{"cd1", "Accept"}});
-
+      // metrics::google::server().store("transaction",
+      //                                 {{"cd1", "Accept"},
+      //                                  {"cd2", transaction_id}});
       // Could be improve.
       _swaggers_dirty = true;
     }
@@ -995,7 +995,7 @@ namespace surface
     {
       ELLE_DEBUG("Start transaction '%s'", transaction.transaction_id);
 
-      if (transaction.sender_id != this->_me._id)
+      if (transaction.sender_device_id != this->device_id())
       {
         throw Exception{gap_error,
             "Only sender can start transaction."};
@@ -1004,10 +1004,9 @@ namespace surface
       this->_meta->update_transaction(transaction.transaction_id,
                                       gap_transaction_status_started);
 
-      metrics::google::server().update_transaction(
-        transaction.transaction_id,
-        {{"cd1", "Start"}});
-
+      // metrics::google::server().store("transaction",
+      //                                 {{"cd1", "Start"},
+      //                                  {"cd2", transaction_id}});
     }
 
     void
@@ -1022,11 +1021,9 @@ namespace surface
         this->_meta->update_transaction(transaction.transaction_id,
                                         gap_transaction_status_canceled);
 
-        metrics::google::server().update_transaction(
-          transaction.transaction_id,
-          {{"cd1", "Cancel"},
-           {"cd2", "Sender"}
-        });
+        // metrics::google::server().store("transaction",
+        //                                {{"cd1", "Cancel"},
+        //                                 {"cd2", transaction_id}});
       }
       else
       {
@@ -1034,11 +1031,9 @@ namespace surface
         this->_meta->update_transaction(transaction.transaction_id,
                                         gap_transaction_status_canceled);
 
-        metrics::google::server().update_transaction(
-          transaction.transaction_id,
-          {{"cd1", "Cancel"},
-           {"cd2", "Recipient"}
-        });
+        // metrics::google::server().store("transaction",
+        //                               {{"cd1", "Cancel"},
+        //                                {"cd2", transaction_id}});
       }
     }
 
@@ -1047,14 +1042,15 @@ namespace surface
     {
       ELLE_DEBUG("Close transaction '%s'", transaction.transaction_id);
 
-      if(transaction.recipient_id != this->_me._id)
+      if(transaction.recipient_device_id != this->device_id())
       {
         throw Exception{gap_error,
             "Only recipient can close transaction."};
       }
 
-      metrics::google::server().update_transaction(transaction.transaction_id,
-                                                   {{"cd1", "Finish"}});
+      // metrics::google::server().store("transaction",
+      //                                 {{"cd1", "Finish"},
+      //                                  {"cd2", transaction_id}});
 
       this->_meta->update_transaction(transaction.transaction_id,
                                       gap_TransactionStatus::gap_transaction_status_finished);
@@ -1080,13 +1076,20 @@ namespace surface
       // Send file request successful.
       metrics::google::server().store("Register");
 
+      std::string lower_email = email;
+
+      std::transform(lower_email.begin(),
+                     lower_email.end(),
+                     lower_email.begin(),
+                     ::tolower);
+
       // Logout first, and ignore errors.
       try { this->logout(); } catch (elle::HTTPException const&) {}
 
-      this->_meta->register_(email, fullname, password, activation_code);
+      this->_meta->register_(lower_email, fullname, password, activation_code);
 
-      ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
-      this->login(email, password);
+      ELLE_DEBUG("Registered new user %s <%s>", fullname, lower_email);
+      this->login(lower_email, password);
     }
 
     State::TransactionsMap const&
@@ -1132,7 +1135,7 @@ namespace surface
       ELLE_DEBUG("On transaction accepted '%s'", transaction.transaction_id);
 
 
-      if (transaction.sender_id != this->_me._id)
+      if (transaction.sender_device_id != this->device_id())
         return;
 
       ELLE_DEBUG("Giving '%s' acces to the network '%s'.",
@@ -1163,7 +1166,7 @@ namespace surface
     {
       ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
 
-      if (transaction.recipient_id != this->_me._id)
+      if (transaction.recipient_device_id != this->device_id())
         return;
 
       _download_files(transaction.transaction_id);
@@ -1191,8 +1194,9 @@ namespace surface
       // Delete networks.
       (void) this->delete_network(transaction.network_id);
 
-        metrics::google::server().update_transaction(transaction.transaction_id,
-                                                     {{"cd1", "Finished"}});
+      // metrics::google::server().store("transaction",
+      //                                 {{"cd1", "Closed"},
+      //                                  {"cd2", transaction_id}});
 
       (void) this->refresh_networks();
     }
