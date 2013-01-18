@@ -77,7 +77,8 @@ namespace elle
       }
 
     if (!ret.success() && this->_check_errors())
-      throw HTTPException(ResponseCode::internal_server_error, ret.response_details);
+      throw HTTPException(ResponseCode::internal_server_error,
+                          ret.response_details);
 
     return ret;
   }

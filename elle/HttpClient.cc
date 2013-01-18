@@ -6,7 +6,7 @@
 
 # define CRLF "\r\n"
 
-ELLE_LOG_COMPONENT("elle.httpClient");
+ELLE_LOG_COMPONENT("elle.HTTPClient");
 
 namespace elle
 {
@@ -395,8 +395,6 @@ namespace elle
   HTTPClient::put(std::string const& url,
                   elle::format::json::Object const& req)
   {
-    ELLE_LOG_COMPONENT("elle.HTTPClient");
-
     std::stringstream res;
 
     // http request
