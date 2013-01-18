@@ -4,6 +4,7 @@
 #include <pwd.h>
 #include <stdexcept>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 
 #include <boost/algorithm/string.hpp>
@@ -71,18 +72,18 @@ namespace surface
     Exception::Exception(gap_Status code, std::string const& msg)
       : std::runtime_error(msg)
       , code(code)
-    {
-    }
+    {}
 
     // - State ----------------------------------------------------------------
 
     State::State()
       : _meta{
-      new plasma::meta::Client{
-        common::meta::host(),
-        common::meta::port(),
-        true,
-      }}
+          new plasma::meta::Client{
+            common::meta::host(),
+            common::meta::port(),
+            true,
+          }
+        }
       , _logged{false}
       , _trophonius{nullptr}
       , _users{}
@@ -94,6 +95,18 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
+      // XXX degeu !
+      static std::ofstream* out = new std::ofstream{
+          elle::os::path::join(common::infinit::home(), "state.log"),
+          std::fstream::app | std::fstream::out
+      };
+      elle::log::logger("infinit.surface.gap.State").output(*out);
+      elle::log::logger("infinit.surface.gap.State").level(
+          elle::log::Logger::Level::debug
+      );
+      ELLE_LOG("Creating a new State");
+
+
       namespace p = std::placeholders;
       this->transaction_callback(
           [&] (TransactionNotification const &n, bool is_new) -> void {
@@ -275,6 +288,12 @@ namespace surface
 
       this->_users[response._id] = user.get();
       return *(user.release());
+    }
+
+    elle::Buffer
+    State::user_icon(std::string const& id)
+    {
+      return this->_meta->user_icon(id);
     }
 
     User const&
@@ -540,9 +559,109 @@ namespace surface
       return response._id;
     }
 
+    //- Network process -------------------------------------------------------
+
+    struct State::Process
+    {
+      typedef std::function<void(void)> Callback;
+
+      Callback            callback;
+      std::string         name;
+      bool                done;
+      bool                success;
+      std::exception_ptr  exception;
+      std::thread         thread;
+
+      Process(std::string const& name,
+              Callback const& cb)
+        : callback{cb}
+        , name{name}
+        , done{false}
+        , success{false}
+        , exception{}
+        , thread{&Process::_run, this}
+      {
+        ELLE_LOG("Creating long operation: %s", this->name);
+      }
+
+    private:
+      void _run()
+      {
+        try
+          {
+            ELLE_LOG("Running long operation: %s", this->name);
+            (this->callback)();
+            success = true;
+          }
+        catch (...)
+          {
+            this->exception = std::current_exception();
+          }
+        done = true;
+      }
+    };
+
+    State::ProcessStatus
+    State::process_status(ProcessId const id) const
+    {
+      auto it = _processes.find(id);
+      if (it == _processes.end())
+        throw elle::Exception{
+            "Couldn't find any process with id " + std::to_string(id)
+        };
+      if (!it->second->done)
+        return ProcessStatus::running;
+      // the process is terminated.
+      if (it->second->success)
+        return ProcessStatus::success;
+      return ProcessStatus::failure;
+    }
+
     void
+    State::process_finalize(ProcessId const id)
+    {
+      auto it = _processes.find(id);
+      if (it == _processes.end())
+        throw elle::Exception{
+            "Couldn't find any process with id " + std::to_string(id)
+        };
+      if (!it->second->done)
+        throw elle::Exception{"Process not finished"};
+      ProcessPtr ptr{it->second.release()};
+      _processes.erase(it);
+      if (!ptr->success)
+        std::rethrow_exception(ptr->exception); // XXX exception_ptr deleted !
+    }
+
+    State::ProcessId
+    State::_add_process(std::string const& name,
+                        std::function<void(void)> const& cb)
+    {
+      //auto process = elle::make_unique<Process>(*this, name, cb);
+      // XXX leak if emplace() fails.
+      static ProcessId id = 0;
+      _processes[id].reset(new Process{name, cb});
+      return id++;
+    }
+
+    State::ProcessId
     State::send_files(std::string const& recipient_id_or_email,
                       std::unordered_set<std::string> const& files)
+    {
+      ELLE_WARN("Sending files to %s", recipient_id_or_email);
+      ELLE_LOG("LOG:Sending files to %s", recipient_id_or_email);
+      ELLE_DEBUG("DBG:Sending files to %s", recipient_id_or_email);
+      sleep(10);
+      ELLE_DEBUG("DBG:SLEEP DONE:Sending files to %s", recipient_id_or_email);
+      return this->_add_process(
+        "send_files",
+        std::bind(&State::_send_files, this, recipient_id_or_email, files)
+      );
+    }
+
+    void
+    State::_send_files(std::string const& recipient_id_or_email,
+                       std::unordered_set<std::string> const& files)
     {
       ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
 
@@ -568,16 +687,9 @@ namespace surface
       elle::utility::Time time;
       time.Current();
 
-      // Create an ostream to convert timestamp to string.
-      std::ostringstream oss;
-      oss << time.nanoseconds;
-
-      // FIXME: How to compute network name ?
-      /// XXX: Something fucked my id.
-      std::string network_name =
-        std::string(recipient_id_or_email)
-        + "-"
-        + oss.str();
+      std::string network_name = elle::sprintf("%s-%s",
+                                               recipient_id_or_email,
+                                               time.nanoseconds);
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
@@ -632,12 +744,9 @@ namespace surface
       catch (elle::Exception const&)
       {
         // Something went wrong, we need to destroy the network.
-        this->delete_network(network_id,
-                             false);
-
+        this->delete_network(network_id, false);
         throw;
       }
-
     }
 
     //- Transactions ----------------------------------------------------------

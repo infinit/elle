@@ -297,6 +297,22 @@ extern "C" {
   /// Retrieve user email address.
   char const* gap_user_email(gap_State* state, char const* id);
 
+  /// Retrieve user status.
+  gap_UserStatus
+  gap_user_status(gap_State* state, char const* user_id);
+
+  /// @brief Retrieve user icon from a user_id
+  /// @note data with be freed with gap_user_icon_free when the call is
+  /// successfull.
+  gap_Status
+  gap_user_icon(gap_State* state,
+                char const* user_id,
+                void** data,
+                size_t* size);
+
+  /// Free a previously allocated user icon.
+  void gap_user_icon_free(void* data);
+
   /// Retrieve user with its email.
   char const* gap_user_by_email(gap_State* state, char const* email);
 
@@ -305,10 +321,6 @@ extern "C" {
 
   /// Free the search users result.
   void gap_search_users_free(char** users);
-
-  /// Retrieve user status.
-  gap_UserStatus
-  gap_user_status(gap_State* state, char const* user_id);
 
   /// - Swaggers --------------------------------------------------------------
 

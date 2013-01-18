@@ -1,17 +1,21 @@
 # Generic.
-NOT_LOGGED_IN = -5
-BAD_REQUEST = -9
-ALREADY_LOGGED_IN = -10
-EMAIL_NOT_VALID = -500
-HANDLE_NOT_VALID = -501
-DEVICE_NOT_VALID = -502
-PASSWORD_NOT_VALID = -503
-USER_ID_NOT_VALID = -504
-NETWORK_ID_NOT_VALID = -505
-DEVICE_ID_NOT_VALID = -506
-FIELD_IS_EMPTY = -507
-ACTIVATION_CODE_NOT_VALID = -508
-TRANSACTION_ID_NOT_VALID = -509
+NOT_LOGGED_IN = -101
+ALREADY_LOGGED_IN = -102
+UNKNOWN_USER = -103
+
+# Field error.
+BAD_REQUEST = -200
+FIELD_IS_EMPTY = -201
+
+EMAIL_NOT_VALID = -210
+HANDLE_NOT_VALID = -211
+DEVICE_NOT_VALID = -212
+PASSWORD_NOT_VALID = -213
+USER_ID_NOT_VALID = -214
+NETWORK_ID_NOT_VALID = -215
+DEVICE_ID_NOT_VALID = -216
+ACTIVATION_CODE_NOT_VALID = -218
+TRANSACTION_ID_NOT_VALID = -219
 
 DEPRECATED = -888
 
@@ -26,11 +30,7 @@ ACTIVATION_CODE_DOESNT_EXIST = -10009
 # Login.
 EMAIL_PASSWORD_DONT_MATCH = -10101
 
-# Search.
-UNKNOWN_USER = -10201
-
 # Swaggers.
-
 
 ############
 ## Network.
@@ -61,9 +61,13 @@ TRANSACTION_CANT_BE_ACCEPTED = -50004
 UNKNOWN = -666666
 
 error_details = {
-    BAD_REQUEST: "This request is bad formed.",
-    ALREADY_LOGGED_IN: "You are already logged in.",
     NOT_LOGGED_IN: "You must be logged in.",
+    ALREADY_LOGGED_IN: "You are already logged in.",
+    UNKNOWN_USER: "This user doesn't seems to exist.",
+
+    BAD_REQUEST: "This request is bad formed.",
+    FIELD_IS_EMPTY: "This field is empty.",
+
     EMAIL_NOT_VALID: "This email is not valid.",
     HANDLE_NOT_VALID: "This handle is not valid, must be 3 to 50 long.",
     PASSWORD_NOT_VALID: "This password is not valid.", #pswd hashed client side.
@@ -72,7 +76,7 @@ error_details = {
     DEVICE_ID_NOT_VALID: "This device id is not valid.",
     ACTIVATION_CODE_NOT_VALID: "This activation code is not valid.",
     TRANSACTION_ID_NOT_VALID: "This transaction id si not valid.",
-    FIELD_IS_EMPTY: "This field is empty.",
+
     DEPRECATED: "Some args are deprecated.",
 
     # Register.
@@ -83,9 +87,6 @@ error_details = {
 
     # Login.
     EMAIL_PASSWORD_DONT_MATCH: "Login/Password don't match.",
-
-    # Search.
-    UNKNOWN_USER: "This user doesn't seems to exist.",
 
     # Network.
     USER_ALREADY_IN_NETWORK: "This user is already in the network.",

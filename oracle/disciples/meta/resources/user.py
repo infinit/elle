@@ -11,6 +11,7 @@ from meta import regexp
 
 import meta.mail
 
+import os
 import re
 
 import metalib
@@ -41,7 +42,7 @@ class Search(Page):
                 {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
                 fields=["_id"],
                 limit=count + offset
-        )
+            )
 
         result = list(user['_id'] for user in users[offset:])
 
@@ -255,6 +256,26 @@ class One(Page):
             # XXX: user['connected']
             'status': 1, #user['status']
         })
+
+class Icon(Page):
+    """
+        Get the icon of an user.
+        GET
+            -> RAW_DATA (png 256x256)
+    """
+
+    __pattern__ = "/user/(.+)/icon"
+
+    def GET(self, _id):
+        if not self.user or _id not in self.user.swaggers:
+            raise web.forbidden()
+        with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
+            while 1:
+                data = f.read(4096)
+                if data:
+                    yield data
+                else:
+                    break
 
 class Register(Page):
     """

@@ -46,6 +46,11 @@ extern "C"
       ELLE_ERR(#_func_ " error: %s", err.what());                              \
       ret = gap_internal_error;                                                \
     }                                                                          \
+  catch (...)                                                                  \
+    {                                                                          \
+      ELLE_ERR(#_func_ " unknown error");                                      \
+      ret = gap_internal_error;                                                \
+    }                                                                          \
   /**/
 
 // automate cpp wrapping
@@ -473,6 +478,31 @@ extern "C"
     return nullptr;
   }
 
+  gap_Status
+  gap_user_icon(gap_State* state,
+                char const* user_id,
+                void** data,
+                size_t* size)
+  {
+    assert(state != nullptr);
+    assert(user_id != nullptr);
+    *data = nullptr;
+    *size = 0;
+    gap_Status ret = gap_ok;
+    try
+      {
+        auto pair = __TO_CPP(state)->user_icon(user_id).release();
+        *data = pair.first.release();
+        *size = pair.second;
+      }
+    CATCH_ALL(user_icon);
+    return ret;
+  }
+
+  void gap_user_icon_free(void* data)
+  {
+
+  }
   char const* gap_user_by_email(gap_State* state, char const* email)
   {
     assert(state != nullptr);
@@ -955,18 +985,17 @@ extern "C"
       {
         std::unordered_set<std::string> s;
 
-        while(*files != nullptr)
+        while (*files != nullptr)
           {
             s.insert(*files);
             ++files;
           }
 
-        __TO_CPP(state)->send_files(recipient_id,
-                                    s);
+        __TO_CPP(state)->send_files(recipient_id, s);
       }
-    CATCH_ALL(send_files)
+    CATCH_ALL(send_files);
 
-      return ret;
+    return ret;
   }
 
   gap_Status

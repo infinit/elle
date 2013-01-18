@@ -71,6 +71,10 @@ namespace elle
                    elle::sprint(elle::iomanip::Separator(','),          \
                                 ##__VA_ARGS__))
 
+    /// @brief Retreive a logger by its name.
+    Logger&
+    logger(std::string const& name);
+
     namespace detail
     {
 
