@@ -72,9 +72,10 @@ namespace surface
       void
       debug();
 
-    ///
-    /// Login & register
-    ///
+      void
+      output_log_file(std::string const& path);
+
+    //- Login & register ------------------------------------------------------
     private:
       std::map<std::string, User*> _users;
       User _me;

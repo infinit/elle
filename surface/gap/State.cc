@@ -75,18 +75,6 @@ namespace surface
       , _networks_status_dirty{true}
     {
       // XXX degeu !
-      static std::ofstream* out = new std::ofstream{
-          elle::os::path::join(common::infinit::home(), "state.log"),
-          std::fstream::app | std::fstream::out
-      };
-      elle::log::logger("infinit.surface.gap.State").output(*out);
-      elle::log::logger("infinit.surface.gap.State").level(
-          elle::log::Logger::Level::debug
-      );
-      elle::log::logger("elle.HttpClient").output(*out);
-      elle::log::logger("elle.HttpClient").level(
-          elle::log::Logger::Level::debug
-      );
       ELLE_LOG("Creating a new State");
 
       namespace p = std::placeholders;
@@ -132,9 +120,35 @@ namespace surface
       }
     }
 
+    void
+    State::output_log_file(std::string const& path)
+    {
+      static std::ofstream* out = new std::ofstream{
+          path,
+          std::fstream::app | std::fstream::out
+      };
+      char const* components[] = {
+          "infinit.surface.gap",
+          "infinit.surface.gap.State",
+          "infinit.surface.gap.MetricReporter",
+          "infinit.plasma.trophonius.Client",
+          "infinit.plasma.meta.Client",
+          "elle.HTTPClient",
+      };
+
+      for (auto component : components)
+        {
+          elle::log::logger(component).output(*out);
+          elle::log::logger(component).level(
+              elle::log::Logger::Level::debug
+          );
+        }
+    }
+
     State::State(std::string const& token):
       State{}
     {
+      ELLE_LOG("Creating a new State with token");
       this->_meta->token(token);
       auto res = this->_meta->self();
       this->_meta->identity(res.identity);
@@ -474,21 +488,30 @@ namespace surface
           break;
 
         case NotificationType::transaction:
-          transaction->transaction.transaction_id = d["transaction"]["transaction_id"].as_string();
-          transaction->transaction.sender_id = d["transaction"]["sender_id"].as_string();
-          transaction->transaction.sender_fullname = d["transaction"]["sender_fullname"].as_string();
-          transaction->transaction.sender_device_id = d["transaction"]["sender_device_id"].as_string();
-          transaction->transaction.recipient_id = d["transaction"]["recipient_id"].as_string();
-          transaction->transaction.recipient_fullname = d["transaction"]["recipient_fullname"].as_string();
-          transaction->transaction.recipient_device_id = d["transaction"]["recipient_device_id"].as_string();
-          transaction->transaction.recipient_device_name = d["transaction"]["recipient_device_name"].as_string();
-          transaction->transaction.network_id = d["transaction"]["network_id"].as_string();
-          transaction->transaction.message = d["transaction"]["message"].as_string();
-          transaction->transaction.first_filename = d["transaction"]["first_filename"].as_string();
-          transaction->transaction.files_count = d["transaction"]["files_count"].as_integer();
-          transaction->transaction.total_size = d["transaction"]["total_size"].as_integer();
-          transaction->transaction.is_directory = d["transaction"]["is_directory"].as_integer();
-          transaction->transaction.status = d["transaction"]["status"].as_integer();
+#define GET_TR_FIELD(f, type) \
+          try { \
+              ELLE_DEBUG("Get transaction field " #f);\
+              transaction->transaction.f = d["transaction"][#f].as_ ## type ();\
+          } catch (...) { \
+              ELLE_ERR("Couldn't get field " #f);\
+          } \
+/**/
+
+          GET_TR_FIELD(transaction_id, string);
+          GET_TR_FIELD(sender_id, string);
+          GET_TR_FIELD(sender_fullname, string);
+          GET_TR_FIELD(sender_device_id, string);
+          GET_TR_FIELD(recipient_id, string);
+          GET_TR_FIELD(recipient_fullname, string);
+          GET_TR_FIELD(recipient_device_id, string);
+          GET_TR_FIELD(recipient_device_name, string);
+          GET_TR_FIELD(network_id, string);
+          GET_TR_FIELD(message, string);
+          GET_TR_FIELD(first_filename, string);
+          GET_TR_FIELD(files_count, integer);
+          GET_TR_FIELD(total_size, integer);
+          GET_TR_FIELD(is_directory, integer);
+          GET_TR_FIELD(status, integer);
           res = std::move(transaction);
           break;
 
@@ -521,20 +544,40 @@ namespace surface
     void
     State::pull_notifications(int count, int offset)
     {
+      ELLE_TRACE("pull_notifications(%s, %s)", count, offset);
+
       if (count < 1)
         return;
 
       if (offset < 0)
         return;
 
+      ELLE_DEBUG("Pulling from meta");
       auto res = this->_meta->pull_notifications(count, offset);
 
       // Handle old notif first to act like a queue.
       for (auto& dict : res.old_notifs)
-        this->_handle_notification(*_xxx_dict_to_notification(dict), false);
+        {
+          ELLE_DEBUG("Handling old notif %s", dict.repr());
+          this->_handle_notification(*_xxx_dict_to_notification(dict), false);
+        }
 
       for (auto& dict : res.notifs)
-        this->_handle_notification(*_xxx_dict_to_notification(dict), true);
+        {
+          ELLE_DEBUG("Handling new notif %s", dict.repr());
+          try {
+            this->_handle_notification(*_xxx_dict_to_notification(dict), true);
+          } catch (std::bad_cast const&) {
+              ELLE_ERR("COULDN'T CAST: %s", dict.repr());
+          } catch (std::ios_base::failure const&) {
+              ELLE_ERR(" IOS FAILURE: %s", dict.repr());
+          } catch (std::exception const& e) {
+              ELLE_ERR(" EXCEPTIOJN: %s: %s", dict.repr(), e.what());
+          } catch (...) {
+              ELLE_ERR("COULDN'T HANDle: %s", dict.repr());
+          }
+
+        }
     }
 
     void
@@ -632,8 +675,8 @@ namespace surface
       //auto process = elle::make_unique<Process>(*this, name, cb);
       // XXX leak if emplace() fails.
       static ProcessId id = 0;
-      _processes[id].reset(new Process{name, cb});
-      return id++;
+      _processes[++id].reset(new Process{name, cb});
+      return id;
     }
 
     State::ProcessId
@@ -693,7 +736,7 @@ namespace surface
         this->_me._id,
         network_id
       );
-      for (int i = 0; i < 10; ++i)
+      for (int i = 0; i < 50; ++i)
         {
           if (fs::exists(portal_path))
             break;
