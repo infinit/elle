@@ -175,7 +175,7 @@ namespace surface
       std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
                     {
                       std::string value=f.second;
-                      int pos;
+                      size_t pos;
                       // Replace "/" by a %20 (space)
                       while ((pos = value.find('/')) != std::string::npos)
                         value.replace(pos, 1, "%20");
