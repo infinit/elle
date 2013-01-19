@@ -43,7 +43,7 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-        escape("the file does not seem to exist");
+        escape("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
@@ -150,7 +150,7 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-        escape("the file does not seem to exist");
+         escape("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
@@ -260,7 +260,7 @@ namespace elle
     {
       // does the file exist.
       if (File::Exist(path) == false)
-        escape("the file does not seem to exist");
+        escape("the file '%s' does not seem to exist", path);
 
       // unlink the file.
       ::unlink(path.string().c_str());
