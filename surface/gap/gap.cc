@@ -561,8 +561,9 @@ extern "C"
 
   void gap_user_icon_free(void* data)
   {
-
+    free(data);
   }
+
   char const* gap_user_by_email(gap_State* state, char const* email)
   {
     assert(state != nullptr);
