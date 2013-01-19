@@ -110,12 +110,14 @@ namespace reactor
     void
     UDTServer::accept(std::string const& addr, int port)
     {
+      ELLE_TRACE("%s: rendezvous connection with %s:%s", this, addr, port);
       this->_sockets.push_back
         (std::unique_ptr<UDTSocket>
          (new UDTSocket(this->scheduler(),
                         this->_udp_socket->socket()->native_handle(),
                         addr,
                         boost::lexical_cast<std::string>(port))));
+      ELLE_DEBUG("%s: rendezvous attended", this);
       this->_accepted.signal_one();
     }
 
