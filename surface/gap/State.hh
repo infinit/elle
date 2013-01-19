@@ -243,8 +243,8 @@ namespace surface
       void
       output_dir(std::string const& dir);
 
-      std::string
-      output_dir();
+      std::string const&
+      output_dir() const;
 
     private:
       // Functions callback on each status (set and get).

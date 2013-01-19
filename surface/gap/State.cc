@@ -254,11 +254,15 @@ namespace surface
           ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
           return;
         }
+
+      ELLE_DEBUG("Waiting for response.");
+
       if (!conn.waitForReadyRead(1000)) // Infinit is maybe too long, or not.
         throw Exception{
             gap_internal_error,
             "Couldn't read response of '" + cmd + "' command"
         };
+
       QByteArray response_data = conn.readLine();
       std::stringstream ss{
           std::string{
@@ -420,13 +424,19 @@ namespace surface
                      lower_email.begin(),
                      ::tolower);
 
+      metrics::google::server().store("login:attempt");
+
       auto res = this->_meta->login(lower_email, password);
+
+      metrics::google::server().update_user(res._id);
+      metrics::google::server().store("login:succeed", "cs", "start");
+
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
 
-      this->_me._id = res._id.c_str();
-      this->_me.fullname = res.fullname.c_str();
-      this->_me.email = res.email.c_str();
+      this->_me._id = res._id;
+      this->_me.fullname = res.fullname;
+      this->_me.email = res.email;
       this->_me.public_key = "";
 
       ELLE_DEBUG("id: '%s' - fullname: '%s' - lower_email: '%s'.",
@@ -461,21 +471,19 @@ namespace surface
 
           dictionary.store(res._id);
         }
-
-        metrics::google::server().update_user(this->_me._id);
-
-        // Begin the session.
-        metrics::google::server().store("Login", "cs", "start");
     }
 
     void
     State::logout()
     {
       // End session the session.
-      metrics::google::server().store("Logout", "cs", "end");
+      metrics::google::server().store("logout::attempt", "cs", "end");
 
       if (this->_meta->token().length())
         this->_meta->logout();
+
+      // End session the session.
+      metrics::google::server().store("logout::succeed");
     }
 
     static
@@ -579,7 +587,17 @@ namespace surface
       for (auto& dict : res.old_notifs)
         {
           ELLE_DEBUG("Handling old notif %s", dict.repr());
-          this->_handle_notification(*_xxx_dict_to_notification(dict), false);
+          try {
+            this->_handle_notification(*_xxx_dict_to_notification(dict), false);
+          } catch (std::bad_cast const&) {
+              ELLE_ERR("COULDN'T CAST: %s", dict.repr());
+          } catch (std::ios_base::failure const&) {
+              ELLE_ERR(" IOS FAILURE: %s", dict.repr());
+          } catch (std::exception const& e) {
+              ELLE_ERR(" EXCEPTIOJN: %s: %s", dict.repr(), e.what());
+          } catch (...) {
+              ELLE_ERR("COULDN'T HANDle: %s", dict.repr());
+          }
         }
 
       for (auto& dict : res.notifs)
@@ -692,6 +710,7 @@ namespace surface
     State::_add_process(std::string const& name,
                         std::function<void(void)> const& cb)
     {
+      ELLE_TRACE("Adding process.");
       //auto process = elle::make_unique<Process>(*this, name, cb);
       // XXX leak if emplace() fails.
       static ProcessId id = 0;
@@ -714,7 +733,7 @@ namespace surface
     State::_send_files(std::string const& recipient_id_or_email,
                        std::unordered_set<std::string> const& files)
     {
-      ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
+      ELLE_TRACE("_Sending file to '%s'.", recipient_id_or_email);
 
       if (files.empty())
         throw Exception(gap_no_file,
@@ -729,9 +748,6 @@ namespace surface
 
           size += get_size(path);
         }
-
-      // Send file request.
-      metrics::google::server().store("Send-files");
 
       std::string first_filename = fs::path(*(files.cbegin())).filename().string();
 
@@ -776,6 +792,11 @@ namespace surface
 
       try
       {
+        metrics::google::server().store("transaction:create:attempt",
+                                        {{"cm1", std::to_string(files.size())},
+                                         {"cm2", std::to_string(size)}});
+
+
         auto const& res = this->_meta->create_transaction(recipient_id_or_email,
                                                           first_filename,
                                                           files.size(),
@@ -784,9 +805,8 @@ namespace surface
                                                           network_id,
                                                           this->device_id());
 
-        metrics::google::server().store("transaction",
-                                        {{"cd1", "Created"},
-                                         {"cd2", res.created_transaction_id},
+        metrics::google::server().store("transaction:create:succeed",
+                                        {{"cd2", res.created_transaction_id},
                                          {"cm1", std::to_string(files.size())},
                                          {"cm2", std::to_string(size)}});
       }
@@ -803,11 +823,6 @@ namespace surface
     void
     State::_download_files(std::string const& transaction_id)
     {
-      ELLE_ASSERT(this->_output_dir.length() != 0);
-
-      // Send file request.
-      metrics::google::server().store("Download-files");
-
       auto pair = State::transactions().find(transaction_id);
 
       ELLE_ASSERT(pair != State::transactions().end());
@@ -841,10 +856,6 @@ namespace surface
 
       update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
-
-      // metrics::google::server().store("transaction",
-      //                                 {{"cd1", "Finished"},
-      //                                  {"cd2", transaction_id}});
     }
 
     void
@@ -861,8 +872,8 @@ namespace surface
       this->_output_dir = dir;
     }
 
-    std::string
-    State::output_dir()
+    std::string const&
+    State::output_dir() const
     {
       return this->_output_dir;
     }
@@ -1011,14 +1022,17 @@ namespace surface
             "Only recipient can accept transaction."};
       }
 
+      metrics::google::server().store("transaction:accept:attempt",
+                                      {{"cd2", transaction.transaction_id}});
+
       this->_meta->update_transaction(transaction.transaction_id,
                                       gap_transaction_status_accepted,
                                       this->device_id(),
                                       this->device_name());
 
-      // metrics::google::server().store("transaction",
-      //                                 {{"cd1", "Accept"},
-      //                                  {"cd2", transaction_id}});
+      metrics::google::server().store("transaction:accept:succeed",
+                                      {{"cd2", transaction.transaction_id}});
+
       // Could be improve.
       _swaggers_dirty = true;
     }
@@ -1034,12 +1048,14 @@ namespace surface
             "Only sender can start transaction."};
       }
 
+      metrics::google::server().store("transaction:start:attempt",
+                                      {{"cd2", transaction.transaction_id}});
+
       this->_meta->update_transaction(transaction.transaction_id,
                                       gap_transaction_status_started);
 
-      // metrics::google::server().store("transaction",
-      //                                 {{"cd1", "Start"},
-      //                                  {"cd2", transaction_id}});
+      metrics::google::server().store("transaction:start:succeed",
+                                      {{"cd2", transaction.transaction_id}});
     }
 
     void
@@ -1050,23 +1066,30 @@ namespace surface
       //XXX: If download has started, cancel it, delete files, ...
       if (transaction.sender_id == this->_me._id)
       {
-        //XXX
+        metrics::google::server().store("transaction:cancel:sender:attempt",
+                                        {{"cd1", std::to_string(transaction.status)},
+                                         {"cd2", transaction.transaction_id}});
+
         this->_meta->update_transaction(transaction.transaction_id,
                                         gap_transaction_status_canceled);
 
-        // metrics::google::server().store("transaction",
-        //                                {{"cd1", "Cancel"},
-        //                                 {"cd2", transaction_id}});
+        metrics::google::server().store("transaction:cancel:sender:succeed",
+                                        {{"cd1", std::to_string(transaction.status)},
+                                         {"cd2", transaction.transaction_id}});
       }
       else
       {
+        metrics::google::server().store("transaction:cancel:recipient:attempt",
+                                        {{"cd1", std::to_string(transaction.status)},
+                                         {"cd2", transaction.transaction_id}});
+
         //XXX
         this->_meta->update_transaction(transaction.transaction_id,
                                         gap_transaction_status_canceled);
 
-        // metrics::google::server().store("transaction",
-        //                               {{"cd1", "Cancel"},
-        //                                {"cd2", transaction_id}});
+        metrics::google::server().store("transaction:cancel:recipient:succeed",
+                                        {{"cd1", std::to_string(transaction.status)},
+                                         {"cd2", transaction.transaction_id}});
       }
     }
 
@@ -1081,12 +1104,14 @@ namespace surface
             "Only recipient can close transaction."};
       }
 
-      // metrics::google::server().store("transaction",
-      //                                 {{"cd1", "Finish"},
-      //                                  {"cd2", transaction_id}});
+      metrics::google::server().store("transaction:finish:attempt",
+                                      {{"cd2", transaction.transaction_id}});
 
       this->_meta->update_transaction(transaction.transaction_id,
                                       gap_TransactionStatus::gap_transaction_status_finished);
+
+      metrics::google::server().store("transaction:finish:succeed",
+                                      {{"cd2", transaction.transaction_id}});
 
     }
 
@@ -1107,7 +1132,7 @@ namespace surface
                      std::string const& activation_code)
     {
       // Send file request successful.
-      metrics::google::server().store("Register");
+      metrics::google::server().store("register:attempt");
 
       std::string lower_email = email;
 
@@ -1120,6 +1145,9 @@ namespace surface
       try { this->logout(); } catch (elle::HTTPException const&) {}
 
       this->_meta->register_(lower_email, fullname, password, activation_code);
+
+      // Send file request successful.
+      metrics::google::server().store("register:succeed");
 
       ELLE_DEBUG("Registered new user %s <%s>", fullname, lower_email);
       this->login(lower_email, password);
@@ -1240,10 +1268,6 @@ namespace surface
 
       // Delete networks.
       (void) this->delete_network(transaction.network_id);
-
-      // metrics::google::server().store("transaction",
-      //                                 {{"cd1", "Closed"},
-      //                                  {"cd2", transaction_id}});
 
       (void) this->refresh_networks();
     }
@@ -1377,32 +1401,41 @@ namespace surface
     State::_wait_portal(std::string const& user_id,
                         std::string const& network_id)
     {
-        (void) this->refresh_networks();
-        (void) this->network_status(network_id);
-        bool result = false;
+      ELLE_TRACE("_wait_portal for network %s", network_id);
+      (void) this->refresh_networks();
 
-        auto portal_path = common::infinit::portal_path(user_id,
-                                                        network_id);
-        for (int i = 0; i < 299; ++i)
+      // XXX: threaded "sendfiles" has some strange effect on QLocalSocket...
+      // "network status" forces watchdog to update data of
+      // (void) this->network_status(network_id);
+      bool result = false;
+
+      ELLE_DEBUG("retrieving portal path");
+      auto portal_path = common::infinit::portal_path(user_id,
+                                                      network_id);
+
+      ELLE_DEBUG("portal path is %s", portal_path);
+
+      for (int i = 0; i < 30; ++i)
         {
-            if (fs::exists(portal_path))
+          ELLE_DEBUG("Waiting for portal.");
+          if (fs::exists(portal_path))
             {
-                result = true;
-                break;
+              result = true;
+              break;
             }
-            ::sleep(1);
+          ::sleep(1);
         }
-        return result;
+      return result;
     }
 
     std::string
     State::create_network(std::string const& name)
     {
-      metrics::google::server().store("Network-Creation");
+      metrics::google::server().store("network:create:attempt");
 
       auto response = this->_meta->create_network(name);
 
-      metrics::google::server().store("Created-Networks");
+      metrics::google::server().store("network:create:succeed");
 
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
@@ -1421,12 +1454,11 @@ namespace surface
         this->_networks.erase(net);
       }
 
-      //
-      metrics::google::server().store("Network-Deletion");
+      metrics::google::server().store("network:delete:attempt");
 
       auto response = this->_meta->delete_network(network_id, force);
 
-      metrics::google::server().store("Deleted-Network");
+      metrics::google::server().store("network:delete:succeed");
 
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
@@ -1469,7 +1501,7 @@ namespace surface
     State::network_add_user(std::string const& network_id,
                             std::string const& user)
     {
-      metrics::google::server().store("Add-User-To-Network", {{"cd2", network_id}});
+      metrics::google::server().store("network:user:add:attempt");
 
       // makes user we have an id
       std::string user_id = this->user(user)._id;
@@ -1503,17 +1535,21 @@ namespace surface
                     user_id) == network->users.end())
         network->users.push_back(user_id);
 
-      metrics::google::server().store("Added-User-In-Network", {{"cd2", network_id}});
+      metrics::google::server().store("network:user:add:succeed");;
     }
 
     std::map<std::string, NetworkStatus*> const&
     State::networks_status()
     {
+      ELLE_TRACE("getting networks status from watchdog");
       if (this->_networks_status_dirty)
         {
           json::Dictionary response;
+
+          ELLE_DEBUG("waiting for response");
           this->_send_watchdog_cmd("status", nullptr, &response);
 
+          ELLE_DEBUG("reading response");
           auto& networks = response["networks"].as_array();
 
           for (size_t i = 0; i < networks.size(); ++i)
