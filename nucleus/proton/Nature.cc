@@ -77,6 +77,21 @@ namespace nucleus
             stream << "value<attributes>";
             break;
           }
+        case Nature::access_seam:
+          {
+            stream << "seam<access>";
+            break;
+          }
+        case Nature::access_quill:
+          {
+            stream << "quill<access>";
+            break;
+          }
+        case Nature::access_value:
+          {
+            stream << "value<access>";
+            break;
+          }
         default:
           {
             throw Exception("unknown nature: '%s'", static_cast<int>(nature));

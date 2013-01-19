@@ -37,10 +37,10 @@ namespace nucleus
       `-------------*/
     public:
       enum class Type
-      {
-        null,
-        valid
-      };
+        {
+          null,
+          valid
+        };
 
       /*-------------.
       | Construction |

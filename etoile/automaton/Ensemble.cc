@@ -201,11 +201,6 @@ namespace etoile
           // set the content as consistent.
           context.ensemble->state(nucleus::proton::State::consistent);
 
-          // mark the block as needing to be stored.
-          context.transcript().record(
-            new gear::action::Push(address,
-                                   std::move(context.ensemble)));
-
           // ugrade the group.
 
           // The group size equals the number of fellows in the
@@ -219,6 +214,11 @@ namespace etoile
             context.group->manager_subject().user());
 
           context.group->upgrade(address, pass->K(), manager_token);
+
+          // mark the block as needing to be stored.
+          context.transcript().record(
+            new gear::action::Push(address,
+                                   std::move(context.ensemble)));
 
           ELLE_FINALLY_ABORT(pass);
 

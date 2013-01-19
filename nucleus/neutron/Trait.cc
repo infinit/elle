@@ -45,12 +45,8 @@ namespace nucleus
       _footprint(other._footprint)
     {
       if (other._valid != nullptr)
-        {
-          ELLE_ASSERT(other._valid != nullptr);
-
-          this->_valid = new Valid(other._valid->name(),
-                                   other._valid->value());
-        }
+        this->_valid = new Valid(other._valid->name(),
+                                 other._valid->value());
     }
 
     Trait::Trait(Type const type):

@@ -57,10 +57,7 @@ namespace nucleus
       `-------------*/
     public:
       Range();
-      /// Construct a range with the given initialize size.
-      explicit
-      Range(nucleus::neutron::Size const size);
-      Range(Range<T> const& other);
+      Range(Range<T> const&) = default;
 
       /*--------.
       | Methods |

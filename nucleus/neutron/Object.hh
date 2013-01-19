@@ -11,7 +11,6 @@
 using namespace infinit;
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/proton/Address.hh> // XXX
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -19,14 +18,12 @@ using namespace infinit;
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
-# include <nucleus/neutron/Attributes.hh>
-# include <nucleus/neutron/Record.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-    ///
+    /// XXX[to rewrite]
     /// this class is the most important of the whole Infinit project
     /// as it describes file system objects being files, directories and
     /// references.
@@ -95,19 +92,19 @@ namespace nucleus
       //
     public:
       elle::Status      Update(const Author& author,
-                               const proton::Radix& contents,
+                               proton::Radix const& contents,
                                const Size& size,
-                               const proton::Address& access,
+                               proton::Radix const& access,
                                const Token& owner_token);
 
       elle::Status      Administrate(proton::Radix const& attributes,
                                      Permissions const permissions);
 
       elle::Status      Seal(cryptography::PrivateKey const&,
-                             Access const* access);
+                             cryptography::Digest const& fingerprint);
 
-      /// Returns the address of the referenced Access block.
-      proton::Address const&
+      /// XXX
+      proton::Radix const&
       access() const;
       /// Returns the record associated with the object owner.
       /// XXX[the const on the return type needs to be added]
@@ -162,7 +159,7 @@ namespace nucleus
       validate(proton::Address const& address) const;
       void
       validate(proton::Address const& address,
-               Access const* access) const;
+               cryptography::Digest const& fingerprint) const;
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
@@ -195,8 +192,7 @@ namespace nucleus
         elle::utility::Time modification_timestamp;
 
         proton::Radix* attributes;
-
-        proton::Address access;
+        proton::Radix* access;
 
         proton::Revision revision;
         cryptography::Signature* signature;

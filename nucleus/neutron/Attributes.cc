@@ -454,34 +454,6 @@ namespace nucleus
              << ")";
     }
 
-    /*---------.
-    | Iterable |
-    `---------*/
-
-    typename Attributes::Scoutor
-    Attributes::begin() const
-    {
-      return (this->_container.begin());
-    }
-
-    typename Attributes::Scoutor
-    Attributes::end() const
-    {
-      return (this->_container.end());
-    }
-
-    typename Attributes::Iterator
-    Attributes::begin()
-    {
-      return (this->_container.begin());
-    }
-
-    typename Attributes::Iterator
-    Attributes::end()
-    {
-      return (this->_container.end());
-    }
-
     /*------.
     | Value |
     `------*/
@@ -577,6 +549,34 @@ namespace nucleus
 
       // Unload the given attributes.
       attributes.unload();
+    }
+
+    /*---------.
+    | Iterable |
+    `---------*/
+
+    typename Attributes::Scoutor
+    Attributes::begin() const
+    {
+      return (this->_container.begin());
+    }
+
+    typename Attributes::Scoutor
+    Attributes::end() const
+    {
+      return (this->_container.end());
+    }
+
+    typename Attributes::Iterator
+    Attributes::begin()
+    {
+      return (this->_container.begin());
+    }
+
+    typename Attributes::Iterator
+    Attributes::end()
+    {
+      return (this->_container.end());
     }
   }
 }

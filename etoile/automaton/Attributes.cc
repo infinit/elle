@@ -215,7 +215,7 @@ namespace etoile
 
           door.close();
 
-          // Inject the retrieved entries into the main range.
+          // Inject the retrieved traits into the main range.
           range.add(subrange);
 
           // Update the variables _index and _size.

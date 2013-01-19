@@ -94,7 +94,10 @@ namespace etoile
       nucleus::proton::Location location;
 
       std::unique_ptr<nucleus::neutron::Object> object;
-      std::unique_ptr<nucleus::neutron::Access> access;
+
+      nucleus::proton::Porcupine<nucleus::neutron::Access>* access_porcupine;
+      etoile::nest::Nest* access_nest;
+      nucleus::proton::Limits access_limits;
 
       nucleus::proton::Porcupine<nucleus::neutron::Attributes>* attributes_porcupine;
       etoile::nest::Nest* attributes_nest;

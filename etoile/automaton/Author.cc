@@ -55,12 +55,20 @@ namespace etoile
             if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access");
 
+            /* XXX
+            //context.access_porcupine->find(agent::Agent::Subject)};
+
+            door.open();
+
             // lookup the user's subject in the access records.
-            nucleus::neutron::Index index{
-              context.access->seek(agent::Agent::Subject)};
+            nucleus::neutron::Index index =
+              door().seek(agent::Agent::Subject) + door.;
+
+            door.close();
 
             // Create a lord author.
             context.author = new nucleus::neutron::Author(index);
+            */
 
             break;
           }

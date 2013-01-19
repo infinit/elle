@@ -115,10 +115,8 @@ namespace etoile
                         transcript.record(
                           new gear::action::Wipe(clef->address()));
 
-                      /* XXX[to slow without an optimization. to activate later]
                       ELLE_ASSERT(pod->egg()->block()->bind() ==
                                   pod->egg()->address());
-                      */
 
                       // Finally, push the final version of the block.
                       transcript.record(

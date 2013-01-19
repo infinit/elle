@@ -1,6 +1,10 @@
 #ifndef NUCLEUS_NEUTRON_CATALOG_HXX
 # define NUCLEUS_NEUTRON_CATALOG_HXX
 
+/*-------------.
+| Serializable |
+`-------------*/
+
 # include <elle/serialize/Serializer.hh>
 
 # include <nucleus/Exception.hh>

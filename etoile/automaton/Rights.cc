@@ -5,6 +5,8 @@
 #include <etoile/depot/Depot.hh>
 
 #include <nucleus/proton/Revision.hh>
+#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/proton/Door.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Permissions.hh>
@@ -77,6 +79,7 @@ namespace etoile
 
           // set the record for ease purpose.
           delete context.rights.record;
+          context.rights.record = nullptr;
           context.rights.record =
             new nucleus::neutron::Record(context.object->owner_record());
         }
@@ -94,8 +97,13 @@ namespace etoile
           if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
-          // check that the subject is referenced in the access block.
-          if (context.access->exist(agent::Agent::Subject) == true)
+          // Retrieve a door on the access.
+          nucleus::proton::Door<nucleus::neutron::Access> door =
+            context.access_porcupine->lookup(agent::Agent::Subject);
+
+          door.open();
+
+          if (door().exist(agent::Agent::Subject) == true)
             {
               //
               // in this case, the subject is referenced in the ACL, hence
@@ -107,7 +115,7 @@ namespace etoile
 
               // retrieve the record associated with this subject.
               nucleus::neutron::Record const& record =
-                context.access->locate(agent::Agent::Subject);
+                door().locate(agent::Agent::Subject);
 
               // set the role.
               context.rights.role = nucleus::neutron::Object::RoleLord;
@@ -121,13 +129,13 @@ namespace etoile
                 new nucleus::neutron::Record(record);
 
               // if a token is present, decrypt it.
-              if (context.rights.record->token() != nullptr)
+              if (context.rights.record->token() != nucleus::neutron::Token::null())
                 {
                   // extract the secret key from the token.
                   delete context.rights.key;
                   context.rights.key =
                     new cryptography::SecretKey{
-                      context.rights.record->token()->
+                      context.rights.record->token().
                         extract<cryptography::SecretKey>(
                           agent::Agent::Identity.pair().k())};
                 }
@@ -141,125 +149,125 @@ namespace etoile
               //
 
               ELLE_TRACE("the subject does _not_ seem to be present "
-                             "in the Access block: look in the groups");
+                         "in the Access block: look in the groups");
 
               // Go through the Access records in order to explore the groups
               // which have been granted some permissions over the object.
-              for (auto& pair: *context.access)
+
+              nucleus::proton::Capacity _index = 0;
+              auto _size = context.access_porcupine->size();
+
+              while (_size > 0)
                 {
-                  auto& record = pair.second;
+                  auto pair = context.access_porcupine->seek(_index);
+                  auto& door = pair.first;
+                  auto const& door_const = pair.first;
+                  auto& base = pair.second;
 
-                  if (record->subject().type() ==
-                      nucleus::neutron::Subject::TypeGroup)
+                  ELLE_ASSERT(_index == base);
+
+                  door.open();
+
+                  // Update the variables _index and _size.
+                  _index += door().size();
+                  _size -= door().size();
+
+                  for (auto& _pair: door_const())
                     {
-                      std::unique_ptr<nucleus::neutron::Group> group;
+                      auto& record = _pair.second;
 
-                      ELLE_TRACE_SCOPE("looking at the group '%s'",
-                                       record->subject().group());
-
-                      // XXX[remove try/catch later]
-                      try
+                      if (record->subject().type() ==
+                          nucleus::neutron::Subject::TypeGroup)
                         {
+                          std::unique_ptr<nucleus::neutron::Group> group;
+
+                          ELLE_TRACE_SCOPE("looking at the group '%s'",
+                                           record->subject().group());
+
                           // Retrieve the group block.
                           group =
                             depot::Depot::pull_group(
                               record->subject().group(),
                               nucleus::proton::Revision::Last);
-                        }
-                      catch (std::exception const& e)
-                        {
-                          escape("%s", e.what());
-                        }
 
-                      // Check if the subject is actually the group manager.
-                      if (agent::Agent::Subject == group->manager_subject())
-                        {
-                          ELLE_TRACE("the subject is the manager of "
-                                     "the group '%s'",
-                                     record->subject().group());
-
-                          context.rights.role = nucleus::neutron::Object::RoleVassal;
-                          context.rights.permissions = record->permissions();
-
-                          // Compute a token with the appropriate information taken
-                          // from the group and the access record.
-                          delete context.rights.record;
-                          context.rights.record =
-                            new nucleus::neutron::Record(
-                              group->manager_subject(),
-                              record->permissions(),
-                              record->token());
-
-                          // Finally, extract the key from the record so as
-                          // to be able to decrypt the object's content, should
-                          // a token be present though.
-                          if (context.rights.record->token() != nullptr)
+                          // Check if the subject is actually the group manager.
+                          if (agent::Agent::Subject == group->manager_subject())
                             {
-                              ELLE_TRACE("the access token is present");
+                              ELLE_TRACE("the subject is the manager of "
+                                         "the group '%s'",
+                                         record->subject().group());
 
-                              ELLE_TRACE("decrypting the private pass");
+                              context.rights.role = nucleus::neutron::Object::RoleVassal;
+                              context.rights.permissions = record->permissions();
 
-                              nucleus::neutron::Token token =
-                                group->manager_token();
+                              // Compute a token with the appropriate information taken
+                              // from the group and the access record.
+                              delete context.rights.record;
+                              context.rights.record =
+                                new nucleus::neutron::Record(
+                                  group->manager_subject(),
+                                  record->permissions(),
+                                  record->token());
 
-                              // First, extract the private pass from the
-                              // manager's fellow.
-                              cryptography::PrivateKey pass_k =
-                                token.extract<cryptography::PrivateKey>(
-                                  agent::Agent::Identity.pair().k());
+                              // Finally, extract the key from the record so as
+                              // to be able to decrypt the object's content, should
+                              // a token be present though.
+                              if (context.rights.record->token() != nucleus::neutron::Token::null())
+                                {
+                                  ELLE_TRACE("the access token is present");
 
-                              ELLE_TRACE("decrypting the access token");
+                                  ELLE_TRACE("decrypting the private pass");
 
-                              // With the private pass, one can decrypt the
-                              // access token associated with the group.
-                              delete context.rights.key;
-                              context.rights.key =
-                                new cryptography::SecretKey{
-                                  context.rights.record->token()->extract<cryptography::SecretKey>(
-                                    pass_k)};
+                                  nucleus::neutron::Token const& token =
+                                    group->manager_token();
+
+                                  // First, extract the private pass from the
+                                  // manager's fellow.
+                                  cryptography::PrivateKey pass_k =
+                                    token.extract<cryptography::PrivateKey>(
+                                      agent::Agent::Identity.pair().k());
+
+                                  ELLE_TRACE("decrypting the access token");
+
+                                  // With the private pass, one can decrypt the
+                                  // access token associated with the group.
+                                  delete context.rights.key;
+                                  context.rights.key =
+                                    new cryptography::SecretKey{
+                                      context.rights.record->token().extract<cryptography::SecretKey>(
+                                        pass_k)};
+                                }
+                              else
+                                {
+                                  ELLE_TRACE("the access token is _not_ present");
+                                }
                             }
                           else
                             {
-                              ELLE_TRACE("the access token is _not_ present");
-                            }
-                        }
-                      else
-                        {
-                          // In this case, the subject is not the group manager. We must
-                          // therefore look in the group's ensemble so as to locate the
-                          // subject's fellow entry.
+                              // In this case, the subject is not the group manager. We must
+                              // therefore look in the group's ensemble so as to locate the
+                              // subject's fellow entry.
 
-                          ELLE_TRACE("the subject is _not_ the group manager");
+                              ELLE_TRACE("the subject is _not_ the group manager");
 
-                          if (group->ensemble() != nucleus::proton::Address::null())
-                            {
-                              std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
-
-                              ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
-
-                              // XXX[remove try/catch later]
-                              try
+                              if (group->ensemble() != nucleus::proton::Address::null())
                                 {
+                                  std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
+
+                                  ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
+
                                   // Retrieve the ensemble which contains the list of
                                   // the subjects belonging to the group.
                                   ensemble =
                                     depot::Depot::pull_ensemble(group->ensemble());
-                                }
-                              catch (std::exception const& e)
-                                {
-                                  escape("%s", e.what());
-                                }
 
-                              // Look for the user's subject in the ensemble.
-                              if (ensemble->exist(agent::Agent::Subject) == false)
-                                {
-                                  ELLE_TRACE("the subject does not exist in the ensemble");
-                                  continue;
-                                }
+                                  // Look for the user's subject in the ensemble.
+                                  if (ensemble->exist(agent::Agent::Subject) == false)
+                                    {
+                                      ELLE_TRACE("the subject does not exist in the ensemble");
+                                      continue;
+                                    }
 
-                              // XXX[remove the try/catch later]
-                              try
-                                {
                                   nucleus::neutron::Fellow const& fellow =
                                     ensemble->locate(agent::Agent::Subject);
 
@@ -281,13 +289,13 @@ namespace etoile
                                   // Finally, extract the key from the record so
                                   // as to be able to decrypt the object's
                                   // content, should a token be present though.
-                                  if (context.rights.record->token() != nullptr)
+                                  if (context.rights.record->token() != nucleus::neutron::Token::null())
                                     {
                                       ELLE_TRACE("the access token is present");
 
                                       ELLE_TRACE("decrypting the private pass");
 
-                                      nucleus::neutron::Token token = fellow.token();
+                                      nucleus::neutron::Token const& token = fellow.token();
 
                                       // First, extract the private pass
                                       // from the fellow.
@@ -301,24 +309,22 @@ namespace etoile
                                       delete context.rights.key;
                                       context.rights.key =
                                         new cryptography::SecretKey{
-                                          context.rights.record->token()->extract<cryptography::SecretKey>(pass_k)};
+                                          context.rights.record->token().extract<cryptography::SecretKey>(pass_k)};
                                     }
                                   else
                                     {
                                       ELLE_TRACE("the access token is _not_ present");
                                     }
                                 }
-                              catch (std::exception const& e)
+                              else
                                 {
-                                  escape("%s", e.what());
+                                  ELLE_TRACE("the Ensemble block is _not_ present: skip this group");
                                 }
-                            }
-                          else
-                            {
-                              ELLE_TRACE("the Ensemble block is _not_ present: skip this group");
                             }
                         }
                     }
+
+                  door.close();
                 }
 
               // if the system failed at defining the user's role, one can

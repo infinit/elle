@@ -76,7 +76,6 @@ namespace nucleus
       `-------------*/
     public:
       Data();
-      Data(Offset const& offset);
       Data(Data const& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Data);
 
@@ -151,7 +150,7 @@ namespace nucleus
     private:
       /// The absolute offset of the content zone which the buffer below
       /// represent.
-      ELLE_ATTRIBUTE_RW(Offset, offset);
+      ELLE_ATTRIBUTE_R(Offset, offset);
       /// The actual data buffer.
       ELLE_ATTRIBUTE(elle::Buffer, buffer);
     };

@@ -163,15 +163,6 @@ namespace nucleus
       // serialize
       ELLE_SERIALIZE_FRIEND_FOR(Catalog);
       ELLE_SERIALIZE_SERIALIZABLE_METHODS(Catalog);
-      // iterable
-      Scoutor
-      begin() const;
-      Scoutor
-      end() const;
-      Iterator
-      begin();
-      Iterator
-      end();
       // value
       typedef elle::String K;
       elle::Boolean
@@ -184,6 +175,16 @@ namespace nucleus
       split();
       void
       merge(proton::Handle& other);
+      // iterable
+      Scoutor
+      begin() const;
+      Scoutor
+      end() const;
+    private:
+      Iterator
+      begin();
+      Iterator
+      end();
 
       /*-----------.
       | Attributes |

@@ -256,10 +256,10 @@ namespace nucleus
     Catalog::consult(Index const& index,
                      Size const& size) const
     {
+      ELLE_TRACE_METHOD(index, size);
+
       Range<Entry> range;
       Index i(0);
-
-      ELLE_TRACE_METHOD(index, size);
 
       for (auto& pair: this->_container)
         {
@@ -313,10 +313,12 @@ namespace nucleus
       ELLE_ASSERT(entry->footprint() != 0);
       ELLE_ASSERT(this->footprint() >= entry->footprint());
       this->footprint(this->footprint() - entry->footprint());
-      this->state(proton::State::dirty);
 
       // Remove the entry from the container.
       this->_container.erase(iterator);
+
+      // Update the state.
+      this->state(proton::State::dirty);
 
       // And finally return the pointer.
       return (entry);
@@ -325,6 +327,8 @@ namespace nucleus
     Size
     Catalog::size() const
     {
+      ELLE_TRACE_METHOD("");
+
       return (static_cast<Size>(this->_container.size()));
     }
 
@@ -416,34 +420,6 @@ namespace nucleus
       stream << "catalog(#"
              << this->_container.size()
              << ")";
-    }
-
-    /*---------.
-    | Iterable |
-    `---------*/
-
-    typename Catalog::Scoutor
-    Catalog::begin() const
-    {
-      return (this->_container.begin());
-    }
-
-    typename Catalog::Scoutor
-    Catalog::end() const
-    {
-      return (this->_container.end());
-    }
-
-    typename Catalog::Iterator
-    Catalog::begin()
-    {
-      return (this->_container.begin());
-    }
-
-    typename Catalog::Iterator
-    Catalog::end()
-    {
-      return (this->_container.end());
     }
 
     /*------.
@@ -541,6 +517,34 @@ namespace nucleus
 
       // Unload the given catalog.
       catalog.unload();
+    }
+
+    /*---------.
+    | Iterable |
+    `---------*/
+
+    typename Catalog::Scoutor
+    Catalog::begin() const
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Scoutor
+    Catalog::end() const
+    {
+      return (this->_container.end());
+    }
+
+    typename Catalog::Iterator
+    Catalog::begin()
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Iterator
+    Catalog::end()
+    {
+      return (this->_container.end());
     }
   }
 }

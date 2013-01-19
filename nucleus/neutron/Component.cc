@@ -32,11 +32,6 @@ namespace nucleus
             stream << "contents";
             break;
           }
-        case ComponentAccess:
-          {
-            stream << "access";
-            break;
-          }
         case ComponentGroup:
           {
             stream << "group";
@@ -47,17 +42,6 @@ namespace nucleus
             stream << "ensemble";
             break;
           }
-        case ComponentSeamCatalog:
-          {
-            stream << "seam(catalog)";
-            break;
-          }
-        case ComponentQuillCatalog:
-          {
-            stream << "quill(catalog)";
-            break;
-          }
-          // XXX
         default:
           {
             throw Exception("unknown component: '%s'", component);

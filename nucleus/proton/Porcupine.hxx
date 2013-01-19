@@ -127,7 +127,7 @@ namespace nucleus
 
     template <typename T>
     elle::Boolean
-    Porcupine<T>::exist(typename T::K const& k)
+    Porcupine<T>::exist(typename T::K const& k) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
@@ -177,7 +177,7 @@ namespace nucleus
 
     template <typename T>
     Door<T>
-    Porcupine<T>::lookup(typename T::K const& k)
+    Porcupine<T>::lookup(typename T::K const& k) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(k);
@@ -226,7 +226,7 @@ namespace nucleus
 
     template <typename T>
     std::pair<Door<T>, Capacity>
-    Porcupine<T>::seek(Capacity const target)
+    Porcupine<T>::seek(Capacity const target) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(target);
@@ -554,7 +554,7 @@ namespace nucleus
 
     template <typename T>
     Door<T>
-    Porcupine<T>::head()
+    Porcupine<T>::head() const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
@@ -602,7 +602,7 @@ namespace nucleus
 
     template <typename T>
     Door<T>
-    Porcupine<T>::tail()
+    Porcupine<T>::tail() const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
@@ -701,7 +701,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine<T>::check(Flags const flags)
+    Porcupine<T>::check(Flags const flags) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(flags);
@@ -834,7 +834,7 @@ namespace nucleus
 
     template <typename T>
     Statistics
-    Porcupine<T>::statistics()
+    Porcupine<T>::statistics() const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD("");
@@ -972,7 +972,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine<T>::dump(elle::Natural32 const margin)
+    Porcupine<T>::dump(elle::Natural32 const margin) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_TRACE_METHOD(margin);
@@ -1227,7 +1227,7 @@ namespace nucleus
 
     template <typename T>
     void
-    Porcupine<T>::_create()
+    Porcupine<T>::_create() const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
       ELLE_DEBUG_METHOD("");

@@ -615,11 +615,9 @@ namespace horizon
     nucleus::neutron::Record record(
       etoile::wall::Access::lookup(identifier, agent::Agent::Subject));
 
-#ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Check the record.
     if (record == nucleus::neutron::Record::null())
       goto _access;
-#endif
 
     // Retrieve information on the object.
     abstract = etoile::wall::Object::information(identifier);
@@ -696,6 +694,8 @@ namespace horizon
 
     // Discard the identifier.
     etoile::wall::Object::discard(identifier);
+
+    HORIZON_FINALLY_ABORT(identifier);
 
     return (-EACCES);
   }

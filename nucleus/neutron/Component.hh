@@ -17,13 +17,8 @@ namespace nucleus
 
         ComponentObject,
         ComponentContents,
-        ComponentAccess,
         ComponentGroup,
         ComponentEnsemble,
-
-        ComponentSeamCatalog, // XXX to remove
-        ComponentQuillCatalog, // XXX to remove
-        // XXX
 
         Components // XXX
       };

@@ -11,6 +11,7 @@ namespace nucleus
     /*-------.
     | Values |
     `-------*/
+
     namespace permissions
     {
       Permissions const none = 0;
@@ -44,13 +45,11 @@ namespace nucleus
             break;
           }
         default:
-          {
-            throw Exception("unknown permissions '%s'", permissions);
-          }
+          throw Exception("unknown permissions '%s'",
+                          static_cast<int>(permissions));
         }
 
       return (stream);
     }
-
   }
 }

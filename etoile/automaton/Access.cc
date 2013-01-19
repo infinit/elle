@@ -5,10 +5,12 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Action.hh>
+#include <etoile/nest/Nest.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/State.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Permissions.hh>
 #include <nucleus/neutron/Subject.hh>
@@ -40,32 +42,46 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
+      // XXX
+      static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+
       // check if the access has already been opened.
-      if (context.access != nullptr)
+      if (context.access_porcupine != nullptr)
         return elle::Status::Ok;
 
-      // if an access block is referenced in the object.
-      if (context.object->access() != nucleus::proton::Address::null())
+      // Check if there exists access. if so, instanciate a porcupine.
+      if (context.object->access().empty() == false)
         {
-          ELLE_TRACE("the Object references an Access block at '%s'",
-                     context.object->access());
+          // Instanciate a nest.
+          context.access_nest =
+            new etoile::nest::Nest(ACCESS_SECRET_KEY_LENGTH,
+                                   context.access_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
-          // retrieve the access block.
-          // XXX[the context should make use of unique_ptr instead
-          //     of releasing here.]
-          context.access.reset(
-            depot::Depot::pull_access(context.object->access()).release());
+          // Instanciate a porcupine.
+          context.access_porcupine =
+            new nucleus::proton::Porcupine<nucleus::neutron::Access>{
+              context.object->access(),
+              secret_key,
+              *context.access_nest};
         }
       else
         {
-          ELLE_TRACE("the Object does _not_ reference an Access block: "
-                     "allocate one");
+          // Instanciate a nest.
+          context.access_nest =
+            new etoile::nest::Nest(ACCESS_SECRET_KEY_LENGTH,
+                                   context.access_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
-          context.access.reset(
-            new nucleus::neutron::Access(
-              nucleus::proton::Network(Infinit::Network),
-              agent::Agent::Identity.pair().K()));
+          // otherwise create a new empty porcupine.
+          context.access_porcupine =
+            new nucleus::proton::Porcupine<nucleus::neutron::Access>{
+              *context.access_nest};
         }
+
+      ELLE_ASSERT(context.access_porcupine != nullptr);
 
       return elle::Status::Ok;
     }
@@ -117,8 +133,13 @@ namespace etoile
           if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
-          // look in the access object.
-          if (context.access->exist(subject) == true)
+          // Retrieve a door on the access.
+          nucleus::proton::Door<nucleus::neutron::Access> door{
+            context.access_porcupine->lookup(subject)};
+
+          door.open();
+
+          if (door().exist(subject) == true)
             {
               ELLE_TRACE("the target subject exists in the Access block");
 
@@ -139,9 +160,18 @@ namespace etoile
 
                   ELLE_TRACE("the target subject has no permission");
 
-                  // remove the record.
-                  if (Access::Revoke(context, subject) == elle::Status::Error)
-                    escape("unable to revoke the subject's accesses");
+                  // remove the record associated with the given subject.
+                  door().erase(subject);
+
+                  // the object must be marked as administered i.e dirty so
+                  // that the meta signature gets re-computed i.e the access
+                  // fingerprint has probably changed.
+                  //
+                  // for more information, please refer to the Object class.
+                  if (context.object->Administrate(
+                        context.object->attributes(),
+                        context.object->owner_permissions()) == elle::Status::Error)
+                    escape("unable to administrate the object");
                 }
               else
                 {
@@ -171,11 +201,8 @@ namespace etoile
                           nucleus::neutron::Token(*context.rights.key,
                                                   subject.user());
 
-                        nucleus::neutron::Record& record =
-                          context.access->locate(subject);
-
-                        record.permissions(permissions);
-                        record.token(token);
+                        door().update(subject, permissions);
+                        door().update(subject, token);
 
                         break;
                       }
@@ -200,11 +227,8 @@ namespace etoile
                           nucleus::neutron::Token(*context.rights.key,
                                                   group->pass_K());
 
-                        nucleus::neutron::Record& record =
-                          context.access->locate(subject);
-
-                        record.permissions(permissions);
-                        record.token(token);
+                        door().update(subject, permissions);
+                        door().update(subject, token);
 
                         break;
                       }
@@ -278,32 +302,35 @@ namespace etoile
               ELLE_ASSERT(record != nullptr);
 
               ELLE_TRACE("add the record to the Access block");
-              context.access->insert(record);
+              door().insert(record);
 
               ELLE_FINALLY_ABORT(record);
             }
 
-          ELLE_TRACE("administrate the Object so as to mark it as dirty")
-            {
-              // in any case, the object must be marked as administered i.e dirty
-              // so that the meta signature gets re-computed i.e the access
-              // fingerprint has probably changed.
-              //
-              // for more information, please refer to the Object class.
-              if (context.object->Administrate(
-                    context.object->attributes(),
-                    context.object->owner_permissions()) == elle::Status::Error)
-                escape("unable to administrate the object");
-            }
+          door.close();
+
+          // Update the porcupine.
+          context.access_porcupine->update(subject);
+
+          ELLE_TRACE("administrate the Object so as to mark it as dirty");
+
+          // in any case, the object must be marked as administered i.e dirty
+          // so that the meta signature gets re-computed i.e the access
+          // fingerprint has probably changed.
+          //
+          // for more information, please refer to the Object class.
+          if (context.object->Administrate(
+                context.object->attributes(),
+                context.object->owner_permissions()) == elle::Status::Error)
+            escape("unable to administrate the object");
         }
 
-      ELLE_TRACE("audit the Object")
-        {
-          // try to audit the object because the current author may have
-          // lost its write permission in the process.
-          if (Access::Audit(context, subject) == elle::Status::Error)
-            escape("unable to audit the object");
-        }
+      ELLE_TRACE("audit the Object");
+
+      // try to audit the object because the current author may have
+      // lost its write permission in the process.
+      if (Access::Audit(context, subject) == elle::Status::Error)
+        escape("unable to audit the object");
 
       // is the target subject the user i.e the object owner in this case.
       if (agent::Agent::Subject == subject)
@@ -390,8 +417,25 @@ namespace etoile
               if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access block");
 
-              // lookup the subject.
-              record = context.access->lookup(subject);
+              // Retrieve a door on the access.
+              nucleus::proton::Door<nucleus::neutron::Access> door{
+                context.access_porcupine->lookup(subject)};
+
+              door.open();
+
+              // XXX[does the record exist: if not, return a null pointer]
+              if (door().exist(subject) == false)
+                {
+                  record = nullptr;
+                }
+              else
+                {
+                  // Look up the record.
+                  // XXX[we take the address of the reference: wrong]
+                  record = &(door().locate(subject));
+                }
+
+              door.close();
             }
         }
 
@@ -410,39 +454,57 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, index, size);
 
+      nucleus::neutron::Index _index = index;
+
+      if (Access::Open(context) == elle::Status::Error)
+        escape("unable to open the access block");
+
       // if the index starts with 0, include the owner by creating
       // a record for him.
-      if (index == 0)
+      if (_index == 0)
         {
-          // XXX optimize so as not to open if size == 1
-          if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access block");
-
           // add the record to the range.
           range.insert(
             std::shared_ptr<nucleus::neutron::Record>{
               new nucleus::neutron::Record{context.object->owner_record()}});
 
-          // consult the access object by taking care of consulting one
-          // record less.
-          nucleus::neutron::Range<nucleus::neutron::Record> subrange{
-            context.access->consult(index, size - 1)};
-
-          // XXX merge both ranges OR better:
-          //       range = consult() and then insert(owner)
-          assert(false && "better way to do it: read above");
-          range.add(subrange);
+          _index++;
         }
-      else
-        {
-          if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access block");
 
-          // consult the access object by taking care of starting the
-          // consultation one index before since the owner record, which
-          // is not located in the access block, counts as one record.
-          range =
-            context.access->consult(index - 1, size);
+      // Seek the access responsible for the given index.
+      auto _size = context.access_porcupine->size();
+
+      // Decrement index because an index of 1 is actually 0 relative to the
+      // porcupine because the record index-0 is the owner's.
+      _index--;
+
+      while (_size > 0)
+        {
+          auto pair = context.access_porcupine->seek(_index);
+          auto& door = pair.first;
+          auto& base = pair.second;
+
+          door.open();
+
+          auto start = _index - base;
+          auto length = _size > (door().size() - start) ?
+            (door().size() - start) : _size;
+
+          ELLE_ASSERT(length != 0);
+
+          // Retrieve the records falling in the requested
+          // range [index, index + size[.
+          nucleus::neutron::Range<nucleus::neutron::Record> subrange{
+            door().consult(start, length)};
+
+          door.close();
+
+          // Inject the retrieved records into the main range.
+          range.add(subrange);
+
+          // Update the variables _index and _size.
+          _index += length;
+          _size -= length;
         }
 
       return elle::Status::Ok;
@@ -489,8 +551,19 @@ namespace etoile
           if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
-          // remove the record associated with the given subject.
-          context.access->erase(subject);
+          // Retrieve a door on the access.
+          nucleus::proton::Door<nucleus::neutron::Access> door{
+            context.access_porcupine->lookup(subject)};
+
+          door.open();
+
+          // remove the record.
+          door().erase(subject);
+
+          door.close();
+
+          // Update the porcupine.
+          context.access_porcupine->update(subject);
 
           // the object must be marked as administered i.e dirty so
           // that the meta signature gets re-computed i.e the access
@@ -552,65 +625,81 @@ namespace etoile
       //     likewise for Downgrade() below, the loop was in a method in
       //     nucleus::neutron::Access.]
 
-      // Go through the access block's records.
-      for (auto& pair: *context.access)
+      // Seek the access responsible for the given index.
+      nucleus::proton::Capacity _index = 0;
+      auto _size = context.access_porcupine->size();
+
+      while (_size > 0)
         {
-          auto& record = pair.second;
+          auto pair = context.access_porcupine->seek(_index);
+          auto& door = pair.first;
+          auto const& door_const = pair.first;
+          auto& base = pair.second;
 
-          // Ignore records which relate to subjects which do not have
-          // the read permission; these ones do not have a token.
-          if ((record->permissions() & nucleus::neutron::permissions::read) !=
-              nucleus::neutron::permissions::read)
-            continue;
+          ELLE_ASSERT(_index == base);
 
-          switch (record->subject().type())
+          door.open();
+
+          // Update the variables _index and _size.
+          _index += door().size();
+          _size -= door().size();
+
+          for (auto& _pair: door_const())
             {
-            case nucleus::neutron::Subject::TypeUser:
-              {
-                // If the subject is a user, encrypt the key with the
-                // user's public key so that she will be the only one
-                // capable of decrypting it.
+              auto& record = _pair.second;
 
-                record->token(
-                  nucleus::neutron::Token(key, record->subject().user()));
+              // Ignore records which relate to subjects which do not have
+              // the read permission; these ones do not have a token.
+              if ((record->permissions() & nucleus::neutron::permissions::read) !=
+                  nucleus::neutron::permissions::read)
+                continue;
 
-                break;
-              }
-            case nucleus::neutron::Subject::TypeGroup:
-              {
-                // If the subject is a group, the key is encrypted with the
-                // group's public pass. This way, the group members will be
-                // able to decrypt it since they have been distributed the
-                // private pass.
+              switch (record->subject().type())
+                {
+                case nucleus::neutron::Subject::TypeUser:
+                  {
+                    // If the subject is a user, encrypt the key with the
+                    // user's public key so that she will be the only one
+                    // capable of decrypting it.
 
-                std::unique_ptr<nucleus::neutron::Group> group;
+                    door().update(record->subject(),
+                                  nucleus::neutron::Token(key, record->subject().user()));
 
-                // XXX[the context should make use of unique_ptr instead
-                //     of releasing here.]
-                group =
-                  depot::Depot::pull_group(
-                    record->subject().group(),
-                    nucleus::proton::Revision::Last);
+                    context.access_porcupine->update(record->subject());
 
-                record->token(
-                  nucleus::neutron::Token(key, group->pass_K()));
+                    break;
+                  }
+                case nucleus::neutron::Subject::TypeGroup:
+                  {
+                    // If the subject is a group, the key is encrypted with the
+                    // group's public pass. This way, the group members will be
+                    // able to decrypt it since they have been distributed the
+                    // private pass.
 
-                break;
-              }
-            default:
-              {
-                escape("the access block contains unknown entries");
-              }
+                    std::unique_ptr<nucleus::neutron::Group> group;
+
+                    // XXX[the context should make use of unique_ptr instead
+                    //     of releasing here.]
+                    group =
+                      depot::Depot::pull_group(
+                        record->subject().group(),
+                        nucleus::proton::Revision::Last);
+
+                    door().update(record->subject(),
+                                  nucleus::neutron::Token(key, group->pass_K()));
+
+                    context.access_porcupine->update(record->subject());
+
+                    break;
+                  }
+                default:
+                  {
+                    escape("the access block contains unknown entries");
+                  }
+                }
+
+              door.close();
             }
-
-          // Set the access block as being dirty.
-          //
-          // Note that this operation is done in the loop. This is because,
-          // should the access be empty (because it has been opened but no
-          // Acccess block is referenced, hence a new one is created), we
-          // do not want the new block to be added to the storage layer,
-          // since unreferenced.
-          context.access->state(nucleus::proton::State::dirty);
         }
 
       // then, create a new object's owner token.
@@ -672,42 +761,56 @@ namespace etoile
         escape("unable to open the access");
 
       ELLE_TRACE("set the Access #%s records with a null token",
-                 context.access->size());
+                 context.access_porcupine->size());
 
-      // Go through the Access records.
-      for (auto& pair: *context.access)
+      // Seek the access responsible for the given index.
+      nucleus::proton::Capacity _index = 0;
+      auto _size = context.access_porcupine->size();
+
+      while (_size > 0)
         {
-          auto& record = pair.second;
+          auto pair = context.access_porcupine->seek(_index);
+          auto& door = pair.first;
+          auto const& door_const = pair.first;
+          auto& base = pair.second;
 
-          // Check if the subject has the proper permissions.
-          if ((record->permissions() & nucleus::neutron::permissions::read) !=
-              nucleus::neutron::permissions::read)
-            continue;
+          ELLE_ASSERT(_index == base);
 
-          // Reset the token.
-          record->token(nucleus::neutron::Token::null());
+          door.open();
 
-          // Set the access block as being dirty.
-          //
-          // Note that this operation is done in the loop. This is because,
-          // should the access be empty (because it has been opened but no
-          // Acccess block is referenced, hence a new one is created), we
-          // do not want the new block to be added to the storage layer,
-          // since unreferenced.
-          context.access->state(nucleus::proton::State::dirty);
+          // Update the variables _index and _size.
+          _index += door().size();
+          _size -= door().size();
+
+          for (auto& _pair: door_const())
+            {
+              auto& record = _pair.second;
+
+              // Check if the subject has the proper permissions.
+              if ((record->permissions() & nucleus::neutron::permissions::read) !=
+                  nucleus::neutron::permissions::read)
+                continue;
+
+              // Reset the token.
+              door().update(record->subject(),
+                            nucleus::neutron::Token::null());
+
+              context.access_porcupine->update(record->subject());
+            }
+
+          door.close();
         }
 
-      ELLE_TRACE("update the Object's owner token to null")
-        {
-          // also update the owner's token.
-          if (context.object->Update(
-                context.object->author(),
-                context.object->contents(),
-                context.object->size(),
-                context.object->access(),
-                nucleus::neutron::Token::null()) == elle::Status::Error)
-            escape("unable to update the object");
-        }
+      ELLE_TRACE("update the Object's owner token to null");
+
+      // also update the owner's token.
+      if (context.object->Update(
+            context.object->author(),
+            context.object->contents(),
+            context.object->size(),
+            context.object->access(),
+            nucleus::neutron::Token::null()) == elle::Status::Error)
+        escape("unable to update the object");
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -737,14 +840,45 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context);
 
-      // if the block is present.
-      if (context.object->access() != nucleus::proton::Address::null())
+      // If the object holds some records, mark the blocks as
+      // needing removal.
+      if (context.object->access().empty() == false)
         {
-          ELLE_TRACE("record the Access block '%s' for removal",
-                     context.object->access());
+          // Optimisation: only proceed if the access strategy is block-based:
+          switch (context.object->access().strategy())
+            {
+            case nucleus::proton::Strategy::none:
+              throw elle::Exception("unable to destroy an empty content");
+            case nucleus::proton::Strategy::value:
+              {
+                // Nothing to do in this case since there is no block for
+                // holding the access.
+                //
+                // The optimization makes us save some time since the content
+                // is not deserialized.
 
-          context.transcript().record(
-            new gear::action::Wipe(context.object->access()));
+                break;
+              }
+            case nucleus::proton::Strategy::block:
+            case nucleus::proton::Strategy::tree:
+              {
+                Access::Open(context);
+
+                ELLE_TRACE("record the access blocks for removal");
+                ELLE_ASSERT(context.access_porcupine != nullptr);
+                context.access_porcupine->destroy();
+
+                ELLE_TRACE("mark the destroyed blocks as needed to be "
+                           "removed from the storage layer");
+                context.transcript().merge(
+                  context.access_nest->transcribe());
+
+                break;
+              }
+            default:
+              throw elle::Exception("unknown strategy '%s'",
+                                    context.object->access().strategy());
+            }
         }
 
       return elle::Status::Ok;
@@ -768,18 +902,18 @@ namespace etoile
       //
       {
         // if there is no loaded access, then there is nothing to do.
-        if (context.access == nullptr)
+        if (context.access_porcupine == nullptr)
           return elle::Status::Ok;
 
         // if the access has not changed, do nothing.
-        if (context.access->state() == nucleus::proton::State::clean)
+        if (context.access_porcupine->state() == nucleus::proton::State::clean)
           return elle::Status::Ok;
       }
 
       ELLE_TRACE("the Access block seems to have been modified");
 
       // retrieve the access's size.
-      nucleus::neutron::Size size{context.access->size()};
+      nucleus::neutron::Size size = context.access_porcupine->size();
 
       //
       // at this point, this access block is known to have been modified.
@@ -821,7 +955,7 @@ namespace etoile
                 context.object->author(),
                 context.object->contents(),
                 context.object->size(),
-                nucleus::proton::Address::null(),
+                nucleus::proton::Radix{},
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
         }
@@ -840,33 +974,32 @@ namespace etoile
           // XXX: restore history handling
           // does the network support the history?
           // if (depot::hole().descriptor().meta().history() == false)
+          /* XXX[porcupine: now the ancient blocks are not removed but
+                 replaced and everithing is handled by porcupine/nest]
             {
               // destroy the access block.
               if (Access::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the access block");
             }
+          */
 
-          // bind the access as, since the block has changed, its address
-          // is going to be different.
-          nucleus::proton::Address address(context.access->bind());
-
-          // set the state as consistent.
-          context.access->state(nucleus::proton::State::consistent);
+          // XXX
+          static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
 
           // finally, update the object with the new access address.
           if (context.object->Update(
                 context.object->author(),
                 context.object->contents(),
                 context.object->size(),
-                address,
+                context.access_porcupine->seal(secret_key),
                 context.object->owner_token()) == elle::Status::Error)
             escape("unable to update the object");
 
-          ELLE_TRACE("record the Access block '%s' for storing", address);
+          // XXX[too slow without a nest optimization: to activate later]
+          ELLE_STATEMENT(context.access_porcupine->check(nucleus::proton::flags::all));
 
-          context.transcript().record(
-            new gear::action::Push(address,
-                                   std::move(context.access)));
+          // mark the new/modified blocks as needing to be stored.
+          context.transcript().merge(context.access_nest->transcribe());
         }
 
       return elle::Status::Ok;
@@ -909,6 +1042,9 @@ namespace etoile
           }
         case nucleus::neutron::Object::RoleLord:
           {
+            // XXX[cf neutron::Object]
+            ELLE_ASSERT(false);
+            /* XXX
             //
             // in this case however, the author is a lord.
             //
@@ -946,6 +1082,7 @@ namespace etoile
             // control mechanism is regulated.
             if (Access::Regulate(context) == elle::Status::Error)
               escape("unable to regulate the object");
+            */
 
             break;
           }
@@ -982,7 +1119,7 @@ namespace etoile
       // update the object with a new author. since the object gets updated,
       // it will be re-signed during the object's sealing process.
       if (context.object->Update(
-            nucleus::neutron::Author(),
+            nucleus::neutron::Author{},
             context.object->contents(),
             context.object->size(),
             context.object->access(),
@@ -992,5 +1129,14 @@ namespace etoile
       return elle::Status::Ok;
     }
 
+    cryptography::Digest
+    Access::fingerprint(gear::Object& context)
+    {
+      ELLE_TRACE_FUNCTION(context);
+
+      Access::Open(context);
+
+      return (nucleus::neutron::access::fingerprint(*context.access_porcupine));
+    }
   }
 }

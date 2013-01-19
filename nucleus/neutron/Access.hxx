@@ -1,11 +1,14 @@
 #ifndef NUCLEUS_NEUTRON_ACCESS_HXX
 # define NUCLEUS_NEUTRON_ACCESS_HXX
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
+
+# include <nucleus/Exception.hh>
+# include <nucleus/neutron/Record.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::neutron::Access);
 
@@ -19,28 +22,27 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Access,
 
   enforce(version == 0);
 
-  archive >> base_class<nucleus::proton::ContentHashBlock>(value);
+  archive >> base_class<nucleus::proton::Value>(value);
 
   archive >> size;
 
-  for (i = 0; i < size; ++i)
+  for (i = 0; i< size; i++)
     {
       std::shared_ptr<nucleus::neutron::Record> record{
         archive.template Construct<nucleus::neutron::Record>().release()};
 
-      if (value._container.find(record->subject()) != value._container.end())
-        throw nucleus::Exception("the record's subject '%s' seems to already "
-                                 "exist", record->subject());
+      // Compute the record's footprint because the record has been
+      // created through the load constructor which does not have
+      // the information to compute such a footprint.
+      record->_footprint = elle::serialize::footprint(*record);
 
-      auto result =
-        value._container.insert(
-          std::pair<nucleus::neutron::Subject const,
-                    std::shared_ptr<nucleus::neutron::Record>>{
-            record->subject(), record});
-
-      if (result.second == false)
-        throw Exception("unable to insert the record the container");
+      // Inject the record in the access, taking care not to update
+      // the state (the block must remain cleaned since deserialized).
+      value._inject(record);
     }
+
+  ELLE_ASSERT(value.state() == nucleus::proton::State::clean);
+  ELLE_ASSERT(value.footprint() == elle::serialize::footprint(value));
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Access,
@@ -50,7 +52,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Access,
 {
   enforce(version == 0);
 
-  archive << base_class<nucleus::proton::ContentHashBlock const>(value);
+  archive << base_class<nucleus::proton::Value>(value);
 
   archive << static_cast<nucleus::neutron::Size>(value._container.size());
 

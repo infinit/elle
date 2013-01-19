@@ -142,36 +142,31 @@ namespace etoile
 
       Attributes::close(context);
 
-      // XXX[very ugly hack: following the Access::Close(), we lose the pointer
-      //     to the Access block. therefore we keep a copy here!]
-      nucleus::neutron::Access* _access = context.access.get();
-
-      // close the access.
-      if (Access::Close(context) == elle::Status::Error)
-        escape("unable to close the access");
-
       // if the object has been modified i.e is dirty.
       if (context.object->state() == nucleus::proton::State::dirty)
         {
-          // XXX[following the ugly hack: try to Access::Open() only if the
-          //     block has not bee loaded before, hence has not been closed,
-          //     hence the pointer has not been moved to an Action]
-          if (_access == nullptr)
-            {
-              Access::Open(context);
-              _access = context.access.get();
-            }
+          Access::Open(context);
+
+          // XXX[not optimized: we should compute the fingerprint while
+          //     Upgrade()ing the access tokens]
+          cryptography::Digest fingerprint = Access::fingerprint(context);
+
+          Access::Close(context);
 
           // seal the object alone with the access block.
           if (context.object->Seal(
                 agent::Agent::Identity.pair().k(),
-                _access) == elle::Status::Error)
+                fingerprint) == elle::Status::Error)
             escape("unable to seal the object");
 
           // mark the block as needing to be stored.
           context.transcript().record(
             new gear::action::Push(context.location.address(),
                                    std::move(context.object)));
+        }
+      else
+        {
+          Access::Close(context);
         }
 
       // set the context's state.

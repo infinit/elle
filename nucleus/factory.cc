@@ -10,6 +10,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
+#include <nucleus/neutron/Attributes.hh>
 
 #include <elle/assert.hh>
 #include <elle/log.hh>
@@ -36,7 +37,6 @@ namespace nucleus
       factory->record<neutron::Object>(neutron::ComponentObject);
       // XXX[shouldn't be in neutron?]
       factory->record<proton::Contents>(neutron::ComponentContents);
-      factory->record<neutron::Access>(neutron::ComponentAccess);
       factory->record<neutron::Group>(neutron::ComponentGroup);
       factory->record<neutron::Ensemble>(neutron::ComponentEnsemble);
 
@@ -58,14 +58,30 @@ namespace nucleus
         proton::Nature::data_quill);
       factory->record<neutron::Data>(
         proton::Nature::data_value);
+
       factory->record<proton::Seam<neutron::Catalog>>(
         proton::Nature::catalog_seam);
       factory->record<proton::Quill<neutron::Catalog>>(
         proton::Nature::catalog_quill);
       factory->record<neutron::Catalog>(
         proton::Nature::catalog_value);
+
       // XXX[reference]
-      // XXX[access]
+
+      factory->record<proton::Seam<neutron::Attributes>>(
+        proton::Nature::attributes_seam);
+      factory->record<proton::Quill<neutron::Attributes>>(
+        proton::Nature::attributes_quill);
+      factory->record<neutron::Attributes>(
+        proton::Nature::attributes_value);
+
+      factory->record<proton::Seam<neutron::Access>>(
+        proton::Nature::access_seam);
+      factory->record<proton::Quill<neutron::Access>>(
+        proton::Nature::access_quill);
+      factory->record<neutron::Access>(
+        proton::Nature::access_value);
+
       // XXX[ensemble]
 
       return (factory);

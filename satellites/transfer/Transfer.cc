@@ -816,7 +816,7 @@ namespace satellite
     if (Infinit::Parser->Register(
           "To",
           't',
-          "too",
+          "to",
           "specifies that the file is copied from the local file system to "
           "the Infinit network",
           elle::utility::Parser::KindNone) == elle::Status::Error)

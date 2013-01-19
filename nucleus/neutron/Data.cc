@@ -82,7 +82,6 @@ namespace nucleus
     {
       ELLE_TRACE_FUNCTION(left, right, size);
 
-      // XXX[Data() should not be used]
       static proton::Footprint const initial =
         elle::serialize::footprint<Data>();
       proton::Footprint footprint(initial);
@@ -123,17 +122,6 @@ namespace nucleus
       Value::Value(),
 
       _offset(0)
-    {
-      static proton::Footprint const initial =
-        elle::serialize::footprint(*this);
-
-      this->footprint(initial);
-    }
-
-    Data::Data(Offset const& offset):
-      Value::Value(),
-
-      _offset(offset)
     {
       static proton::Footprint const initial =
         elle::serialize::footprint(*this);
@@ -336,7 +324,7 @@ namespace nucleus
       proton::Contents* contents =
         new proton::Contents{this->nest().network(),
                              this->nest().agent_K(),
-                             new Data{0}};
+                             new Data};
       // XXX[change to extent * contention though contention = 100%]
       proton::Handle orphan{this->nest().attach(contents)};
       proton::Ambit<Data> right{this->nest(), orphan};

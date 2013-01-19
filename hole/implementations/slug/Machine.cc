@@ -437,9 +437,10 @@ namespace hole
                   {
                   case nucleus::neutron::ComponentObject:
                     {
+                      /* XXX[need to change the way validation works by relying
+                             on a callback]
                       const nucleus::neutron::Object* object =
                         static_cast<const nucleus::neutron::Object*>(&block);
-
                       assert(dynamic_cast<const nucleus::neutron::Object*>(
                                &block) != nullptr);
 
@@ -468,6 +469,7 @@ namespace hole
                           // validate the object.
                           object->validate(address, nullptr);
                         }
+                      */
 
                       break;
                     }
@@ -785,6 +787,8 @@ namespace hole
               {
               case nucleus::neutron::ComponentObject:
                 {
+                  /* XXX[need to change the way validation works by relying
+                         on a callback]
                   assert(dynamic_cast<Object const*>(block.get()) != nullptr);
                   Object const& object = *static_cast<Object*>(block.get());
 
@@ -828,6 +832,7 @@ namespace hole
                           continue;
                         }
                     }
+                  */
 
                   break;
                 }
@@ -898,9 +903,12 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               const Object* object =
                 static_cast<const Object*>(block.get());
               assert(dynamic_cast<const Object*>(block.get()) != nullptr);
+
               // Validate the object according to the presence of
               // a referenced access block.
               if (object->access() != nucleus::proton::Address::null())
@@ -921,6 +929,7 @@ namespace hole
                   // Validate the object.
                   object->validate(address, nullptr);
                 }
+              */
 
               break;
             }
@@ -1035,6 +1044,8 @@ namespace hole
                   {
                   case nucleus::neutron::ComponentObject:
                     {
+                      /* XXX[need to change the way validation works by relying
+                             on a callback]
                       Object const&  object =
                         static_cast<Object const&>(derivable.block());
                       assert(dynamic_cast<Object const*>(
@@ -1083,6 +1094,7 @@ namespace hole
                               continue;
                             }
                         }
+                      */
 
                       break;
                     }
@@ -1140,6 +1152,8 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               assert(dynamic_cast<const Object*>(block.get()) != nullptr);
               const Object* object = static_cast<const Object*>(block.get());
 
@@ -1165,6 +1179,7 @@ namespace hole
                   // validate the object.
                   object->validate(address, nullptr);
                 }
+              */
 
               break;
             }

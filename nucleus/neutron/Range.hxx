@@ -21,19 +21,6 @@ namespace nucleus
     {
     }
 
-    template <typename T>
-    Range<T>::Range(nucleus::neutron::Size const size):
-      _container(size)
-    {
-    }
-
-    template <typename T>
-    Range<T>::Range(Range<T> const& other)
-    {
-      for (auto& item: other._container)
-        this->insert(item);
-    }
-
     /*--------.
     | Methods |
     `--------*/

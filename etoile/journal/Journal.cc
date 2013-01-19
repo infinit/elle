@@ -47,7 +47,6 @@ namespace etoile
       if (scope->context->transcript().empty() == true)
         {
           ELLE_TRACE("ignore this scope because it has an empty transcript");
-
           return elle::Status::Ok;
         }
 
@@ -196,9 +195,6 @@ namespace etoile
             case gear::Action::Type::wipe:
               break;
             }
-
-          // XXX[to remove once file system I/Os are asynchronous]
-          elle::concurrency::scheduler().current()->yield();
         }
 
       ELLE_TRACE("wiping blocks");
@@ -216,9 +212,6 @@ namespace etoile
                 break;
               }
             }
-
-          // XXX[to remove once file system I/Os are asynchronous]
-          elle::concurrency::scheduler().current()->yield();
         }
 
 #ifdef ETOILE_JOURNAL_THREAD

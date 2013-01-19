@@ -17,6 +17,14 @@
 # include <nucleus/proton/Door.hh>
 
 # include <boost/noncopyable.hpp>
+# include <boost/preprocessor/cat.hpp>
+
+/*----------------.
+| Macro-functions |
+`----------------*/
+
+/// XXX[the porcupine should not be modified
+# define NUCLEUS_PROTON_PORCUPINE_FOREACH(_porcupine_, _door_)
 
 namespace nucleus
 {
@@ -49,10 +57,10 @@ namespace nucleus
       empty() const;
       /// Return true of the given key is associated with a value.
       elle::Boolean
-      exist(typename T::K const& k);
+      exist(typename T::K const& k) const;
       /// Return the value associated with the given key _k_.
       Door<T>
-      lookup(typename T::K const& k);
+      lookup(typename T::K const& k) const;
       /// Take the target index capacity and return the value responsible
       /// for it along with its base capacity index i.e the capacity index
       /// of the first element in the returned value.
@@ -62,7 +70,7 @@ namespace nucleus
       /// for directories whose entries are often retrieved according to
       /// a range [index, size].
       std::pair<Door<T>, Capacity>
-      seek(Capacity const target);
+      seek(Capacity const target) const;
       /// Insert the given element E in the value responsible for the
       /// given key _k_.
       ///
@@ -92,10 +100,10 @@ namespace nucleus
       update(typename T::K const& k);
       /// Return a door on the very first node.
       Door<T>
-      head();
+      head() const;
       /// Return a door on the last node composing the content.
       Door<T>
-      tail();
+      tail() const;
       /// Return the number of elements being stored in the porcupine.
       elle::Size
       size() const;
@@ -109,14 +117,14 @@ namespace nucleus
       /// takes: all the blocks are retrieved from the storage layer and loaded
       /// in memory for checking.
       void
-      check(Flags const flags = flags::all);
+      check(Flags const flags = flags::all) const;
       /// Return statistics on the porcupine such as the number of blocks
       /// composing it, the average footprint, minimum/maximum capacity etc.
       Statistics
-      statistics();
+      statistics() const;
       /// Display a detailed state of the porcupine.
       void
-      dump(elle::Natural32 const margin = 0);
+      dump(elle::Natural32 const margin = 0) const;
       /// Return the radix of the porcupine, once encrypted and sealed.
       ///
       /// The radix could then be serialized or used for instantiate a
@@ -173,8 +181,11 @@ namespace nucleus
       /// Transform an empty porcupine into a value-based porcupine so
       /// as to be able to return the caller a value on which to operate,
       /// for inserting or exploring for example.
+      ///
+      /// Note that this method is const because const-methods call it
+      /// though only mutable attributes are being modified.
       void
-      _create();
+      _create() const;
       /// Represent the key functionality of the porcupine abstraction. This
       /// method does one fundamental thing: it transforms content from one
       /// strategy to another e.g from a direct value to a block-based value
@@ -204,12 +215,14 @@ namespace nucleus
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Strategy, strategy);
+      /// XXX
+      ELLE_ATTRIBUTE_RP(Strategy, strategy, mutable);
+      /// XXX
       union
       {
         /// Represent the directly embedded value when in evolving in
         /// the strategy 'value'.
-        T* _value;
+        mutable T* _value;
         /// When evolving in strategy 'block', this handle reference the
         /// block which actually holds the data.
         Handle* _handle;

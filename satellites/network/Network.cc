@@ -3,6 +3,8 @@
 #include <Infinit.hh>
 
 #include <etoile/Etoile.hh>
+#include <etoile/nest/Nest.hh>
+#include <etoile/automaton/Access.hh>
 
 #include <hole/Hole.hh>
 #include <hole/Openness.hh>
@@ -24,6 +26,8 @@
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/proton/Door.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Genre.hh>
@@ -135,8 +139,15 @@ namespace satellite
 
     storage.store(group_address, group);
 
-    nucleus::neutron::Access access(network, identity.pair().K());
-    nucleus::proton::Address* access_address(nullptr);
+    // XXX[we should use a null nest in this case because no block should be loaded/unloded]
+    etoile::nest::Nest nest(ACCESS_SECRET_KEY_LENGTH,
+                            nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
+                                                    nucleus::proton::limits::Node{1024, 0.5, 0.2},
+                                                    nucleus::proton::limits::Node{1024, 0.5, 0.2}),
+                            network,
+                            identity.pair().K());
+    nucleus::proton::Porcupine<nucleus::neutron::Access> access(nest);
+    nucleus::proton::Radix* access_radix = nullptr;
 
     // depending on the policy.
     switch (policy)
@@ -182,13 +193,23 @@ namespace satellite
           if (subject.Create(group_address) == elle::Status::Error)
             escape("unable to create the group subject");
 
+          nucleus::proton::Door<nucleus::neutron::Access> door =
+            access.lookup(subject);
+
+          door.open();
+
           // Note that a null token is provided because the root directory
           // contains no data.
-          access.insert(new nucleus::neutron::Record{subject, permissions});
+          door().insert(new nucleus::neutron::Record{subject, permissions});
 
-          access_address = new nucleus::proton::Address(access.bind());
+          door.close();
 
-          storage.store(*access_address, access);
+          access.update(subject);
+
+          // XXX
+          static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+
+          access_radix = new nucleus::proton::Radix{access.seal(secret_key)};
 
           break;
         }
@@ -198,7 +219,11 @@ namespace satellite
         }
       }
 
-    assert(access_address != nullptr);
+    cryptography::Digest fingerprint =
+      nucleus::neutron::access::fingerprint(access);
+
+    ELLE_ASSERT(access_radix->strategy() == nucleus::proton::Strategy::value);
+    assert(access_radix != nullptr);
 
     //
     // create the root directory.
@@ -210,12 +235,12 @@ namespace satellite
     if (directory.Update(directory.author(),
                          directory.contents(),
                          directory.size(),
-                         *access_address,
+                         *access_radix,
                          directory.owner_token()) == elle::Status::Error)
       escape("unable to update the directory");
 
     // seal the directory.
-    if (directory.Seal(identity.pair().k(), &access) == elle::Status::Error)
+    if (directory.Seal(identity.pair().k(), fingerprint) == elle::Status::Error)
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());
