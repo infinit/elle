@@ -139,43 +139,14 @@ namespace elle
     {
       ELLE_TRACE("Report crash");
 
-      std::unique_ptr<elle::HTTPClient> server;
-      try
-      {
-        server.reset(new elle::HTTPClient{
+      std::unique_ptr<elle::HTTPClient> server{
+        new elle::HTTPClient{
           common::meta::host(),
           common::meta::port(),
           "InfinitDesktop", // User agent
-          false,
-        });
-      }
-      catch(...) //XXX
-      {
-        ELLE_WARN("Unable to reach server.");
-        return false;
-      }
+          false}};
 
-      std::string user, destination = "/debug/report";
-
-      // If the user has already logged, use the "normal" way to send the report.
-      if (user.length() > 0)
-      {
-        std::string identity_path = common::watchdog::identity_path(user);
-
-        if (identity_path.length() > 0 && elle::os::path::exists(identity_path))
-        {
-          std::ifstream identity;
-          identity.open(identity_path);
-
-          if (identity.good())
-           {
-            std::string token;
-            std::getline(identity, token);
-
-            server->token(token);
-          }
-        }
-      }
+      std::string destination = "/debug/report";
 
       elle::format::json::Dictionary request{
         std::map<std::string, std::string>{
