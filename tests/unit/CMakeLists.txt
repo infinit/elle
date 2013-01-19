@@ -4,4 +4,5 @@ add_subdirectory(surface)
 
 link_libraries(${INFINIT_LIBRARIES})
 add_subdirectory(nucleus)
+add_subdirectory(plasma)
 add_subdirectory(protocol)
