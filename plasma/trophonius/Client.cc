@@ -206,15 +206,12 @@ namespace plasma
                 notification = std::move(ar.Construct<Notification>());
                 break;
               default:
-                throw elle::Exception{
-                    "Unknown notification type %s", notification_type
+                ELLE_WARN("unknown notification %s", notification_type);
                 };
-              }
           }
 
-          ELLE_ASSERT(notification != nullptr);
-
-          this->_notifications.push(std::move(notification));
+          if (notification)
+            this->_notifications.push(std::move(notification));
 
           this->_read_socket();
         }
