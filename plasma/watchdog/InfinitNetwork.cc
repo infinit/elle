@@ -399,51 +399,8 @@ void InfinitNetwork::_start_process()
 {
   if (this->_process.state() != QProcess::NotRunning)
     return;
-
   LOG("Starting infinit process (mount point: %s)", this->_mount_point);
 
-  if (!path::exists(this->_mount_point))
-    path::make_path(this->_mount_point);
-
-  ELLE_DEBUG("Create mount point link");
-  {
-    std::string mnt_link_dir = path::join(
-      common::system::home_directory(),
-      "Infinit"
-    );
-
-    if (!path::exists(mnt_link_dir))
-      path::make_directory(mnt_link_dir);
-
-    std::string owner_email = this->_manager.meta().user(
-        this->_description.owner
-    ).email;
-
-    std::string mnt_link = path::join(
-      mnt_link_dir,
-      elle::sprintf("%s (%s)", this->_description.name, owner_email)
-    );
-
-    if (!path::exists(mnt_link))
-      path::make_symlink(this->_mount_point, mnt_link);
-  }
-
-  LOG("exec: %s -n %s -m %s -u %s",
-      common::infinit::binary_path("8infinit"),
-      this->_description._id.c_str(),
-      this->_mount_point,
-      this->_manager.user_id().c_str());
-
-  QStringList arguments;
-  arguments << "-n" << this->_description._id.c_str()
-            << "-m" << this->_mount_point.c_str()
-            << "-u" << this->_manager.user_id().c_str()
-            ;
-
-  LOG("8infinit arguments created.")
-  // XXX[rename into [network-name].log]
-  std::string log_out = path::join(this->_network_dir, "out.log").c_str();
-  std::string log_err = path::join(this->_network_dir, "err.log").c_str();
   std::string pid_file = path::join(this->_network_dir, "run.pid").c_str();
 
   LOG("Set out files paths.")
@@ -501,6 +458,59 @@ void InfinitNetwork::_start_process()
           out.close();
         }
     }
+
+  try
+  {
+    if (!path::exists(this->_mount_point))
+      path::make_path(this->_mount_point);
+  }
+  catch(std::runtime_error const& e)
+  {
+    ELLE_WARN("mount point couldn't be created at '%s': %s",
+              this->_mount_point, e.what());
+
+    return;
+  }
+
+  ELLE_DEBUG("Create mount point link");
+  {
+    std::string mnt_link_dir = path::join(
+      common::system::home_directory(),
+      "Infinit"
+    );
+
+    if (!path::exists(mnt_link_dir))
+      path::make_directory(mnt_link_dir);
+
+    std::string owner_email = this->_manager.meta().user(
+        this->_description.owner
+    ).email;
+
+    std::string mnt_link = path::join(
+      mnt_link_dir,
+      elle::sprintf("%s (%s)", this->_description.name, owner_email)
+    );
+
+    if (!path::exists(mnt_link))
+      path::make_symlink(this->_mount_point, mnt_link);
+  }
+
+  LOG("exec: %s -n %s -m %s -u %s",
+      common::infinit::binary_path("8infinit"),
+      this->_description._id.c_str(),
+      this->_mount_point,
+      this->_manager.user_id().c_str());
+
+  QStringList arguments;
+  arguments << "-n" << this->_description._id.c_str()
+            << "-m" << this->_mount_point.c_str()
+            << "-u" << this->_manager.user_id().c_str()
+            ;
+
+  LOG("8infinit arguments created.")
+  // XXX[rename into [network-name].log]
+  std::string log_out = path::join(this->_network_dir, "out.log").c_str();
+  std::string log_err = path::join(this->_network_dir, "err.log").c_str();
 
   LOG("Setting output files to process.");
   this->_process.setStandardOutputFile(log_out.c_str());
