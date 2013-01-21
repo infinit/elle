@@ -142,16 +142,23 @@ namespace reactor
     bool
     UDTServer::_punch(int port)
     {
+      boost::asio::ip::udp::endpoint local_endpoint
+        (boost::asio::ip::udp::v4(), port);
+      std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
+      socket->bind(local_endpoint);
+      return this->_punch(port, socket);
+    }
+
+    bool
+    UDTServer::_punch(int port, std::unique_ptr<UDPSocket>& socket)
+    {
+      ELLE_DEBUG_SCOPE("try punching port %s", port);
       static auto lhost = "development.infinit.io";//common::longinus::host();
       static auto lport = 9999;//common::longinus::port();
       static auto longinus =
         resolve_udp(this->scheduler(), lhost,
                     boost::lexical_cast<std::string>(lport));
-      ELLE_DEBUG_SCOPE("try punching port %s", port);
-      boost::asio::ip::udp::endpoint local_endpoint
-        (boost::asio::ip::udp::v4(), port);
-      std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
-      socket->bind(local_endpoint);
+
       std::stringstream ss;
       ss << "local " << socket->local_endpoint() << std::endl;
       std::string question = ss.str();
@@ -171,14 +178,33 @@ namespace reactor
          boost::lexical_cast<int>(splitted[2]));
       if (public_endpoint.port() == port)
         {
-          _public_endpoint = public_endpoint;
-          _udp_socket = std::move(socket);
           ELLE_DEBUG("punched right port %s", port);
+          if (!_udp_socket)
+            {
+              _public_endpoint = public_endpoint;
+              _udp_socket = std::move(socket);
+              _heartbeat.reset
+                (new reactor::Thread
+                 (this->scheduler(),
+                  elle::sprintf("%s punch heartbeat", *this),
+                  [this] ()
+                  {
+                    while (true)
+                      {
+                        this->scheduler().current()->sleep
+                          (boost::posix_time::seconds(15));
+                        this->_punch(this->port(),
+                                     std::ref(this->_udp_socket));
+                      }
+                  }));
+            }
           return true;
         }
       else
         {
           ELLE_DEBUG("punched different port %s", public_endpoint.port());
+          if (_udp_socket)
+            ;  // FIXME: we lost the NAT, do something.
           return false;
         }
     }
@@ -264,6 +290,12 @@ namespace reactor
     UDTServer::port() const
     {
       return local_endpoint().port();
+    }
+
+    void
+    UDTServer::print(std::ostream& s) const
+    {
+      s << "UDTServer " << this->local_endpoint();
     }
 
   }
