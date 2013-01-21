@@ -22,9 +22,6 @@ namespace infinit
       static_assert(!std::is_same<T, Plain>::value,
                     "this call should never have occured");
 
-      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_TRACE_METHOD(value);
-
       // Serialize the value.
       elle::Buffer buffer;
       buffer.writer() << value;
@@ -42,9 +39,6 @@ namespace infinit
 
       static_assert(!std::is_same<T, Clear>::value,
                     "this call should never have occured");
-
-      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_TRACE_METHOD(cipher);
 
       // Decrypt the cipher leading to a clear containing an archive.
       Clear clear{this->decrypt(cipher)};
