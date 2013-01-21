@@ -337,7 +337,6 @@ set(INFINIT_LIBRARIES
   ${INFINIT_OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  #  readline
 
   nucleus
   elle
@@ -365,7 +364,6 @@ add_executable(8infinit
 )
 target_link_libraries(8infinit LINK_PRIVATE
 	${INFINIT_LIBRARIES}
-	readline
 )
 add_dependencies(8infinit dependencies)
 

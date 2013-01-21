@@ -3,9 +3,9 @@
 #include <elle/idiom/Close.hh>
 # include <stdio.h>
 # include <unistd.h>
-# include <readline/readline.h>
-# include <readline/history.h>
 #include <elle/idiom/Open.hh>
+
+#include <iostream>
 
 namespace elle
 {
@@ -29,16 +29,16 @@ namespace elle
         case OptionPassword:
           {
             // retrieve the input and assign it.
-            text.assign(::readline(prompt.c_str()));
-
+            std::cout << prompt << std::endl;
+            std::getline(std::cin, text);
             break;
           }
         case OptionNone:
         default:
           {
             // retrieve the input and assign it.
-            text.assign(::readline(prompt.c_str()));
-
+            std::cout << prompt << std::endl;
+            std::getline(std::cin, text);
             break;
           }
         }
