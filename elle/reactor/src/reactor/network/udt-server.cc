@@ -4,14 +4,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <common/common.hh>
-
-#include <elle/printf.hh>
-#include <elle/idiom/Close.hh>
-#include <elle/log.hh>
-#include <elle/nat/Nat.hh>
-
 #include <asio-udt/acceptor.hh>
+
 #include <reactor/exception.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
@@ -19,6 +13,14 @@
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 
+#include <elle/printf.hh>
+#include <elle/idiom/Close.hh>
+#include <elle/log.hh>
+#include <elle/nat/Nat.hh>
+
+#include <common/common.hh>
+
+#include <cryptography/random.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
@@ -39,7 +41,10 @@ namespace reactor
     {}
 
     UDTServer::~UDTServer()
-    {}
+    {
+      if (_heartbeat)
+        _heartbeat->terminate();
+    }
 
     /*----------.
     | Accepting |
@@ -212,6 +217,12 @@ namespace reactor
     void
     UDTServer::listen(int desired_port)
     {
+      // Randomize port manually
+      if (desired_port == 0)
+        while (desired_port <= 1024)
+          desired_port =
+            infinit::cryptography::random::generate<elle::Natural16>();
+
       // Punch the potential firewall
       ELLE_TRACE("punch hole in the firewall")
       {
