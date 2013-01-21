@@ -9,44 +9,30 @@
 # include <boost/asio/signal_set.hpp>
 # include <boost/signals.hpp>
 
-
 namespace elle
 {
-  namespace crash
-  {
-    void
-    report_handler(boost::system::error_code const& error,
-                   int sig);
-    void
-    exiting_report_handler(boost::system::error_code const& error,
-                           int sig);
-    bool
-    report(std::string const& module,
-           std::string const& signal = "",
-           reactor::Backtrace const& b = reactor::Backtrace::current());
-  }
-
   namespace signal
   {
+
     class ScoppedGuard:
       private boost::noncopyable
     {
-    /*---------.
-    | Typedefs |
-    `---------*/
+      /*---------.
+      | Typedefs |
+      `---------*/
     private:
-    /// Handler prototype.
+      /// Handler prototype.
       typedef
       boost::function<void(boost::system::error_code const&, int)> Handler;
 
-     /// Attributes.
+      /// Attributes.
     private:
       boost::asio::signal_set _signals;
       Handler _handler;
 
-  /*-------------.
-  | Construction |
-  `-------------*/
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       /// Initialize signal list with scheduler io_service.
       ScoppedGuard();
@@ -56,9 +42,9 @@ namespace elle
       /// Destroy current handlers.
       ~ScoppedGuard();
 
-  /*---------------.
-  | Initialization |
-  `---------------*/
+      /*---------------.
+      | Initialization |
+      `---------------*/
     public:
       /// Register signals with handler.
       void
@@ -69,15 +55,43 @@ namespace elle
       void
       launch();
 
-  /*------------.
-  | Destruction |
-  `------------*/
-     public:
+      /*------------.
+      | Destruction |
+      `------------*/
+    public:
       /// Clear handler list.
       void
       release();
     };
+  } // End of signal.
+
+  namespace crash
+  {
+
+    class Handler
+    {
+    public:
+      Handler(std::string const& name,
+              bool quit);
+
+      virtual ~Handler();
+
+      virtual
+      void
+      operator() (boost::system::error_code const& error,
+                  int sig);
+
+    private:
+      std::string _name;
+      bool _quit;
+    };
+
+    bool
+    report(std::string const& module,
+           std::string const& signal = "",
+           reactor::Backtrace const& b = reactor::Backtrace::current());
   }
+
 }
 
 #endif

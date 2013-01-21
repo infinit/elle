@@ -25,14 +25,14 @@ namespace elle
 {
   namespace signal
   {
-    ScoppedGuard::ScoppedGuard()
-      : _signals{elle::concurrency::scheduler().io_service()}
+    ScoppedGuard::ScoppedGuard():
+      _signals{elle::concurrency::scheduler().io_service()}
     {
     }
 
     ScoppedGuard::ScoppedGuard(std::vector<int> const& sig,
-                               Handler const& handler)
-      : ScoppedGuard{}
+                               Handler const& handler):
+      ScoppedGuard{}
     {
       this->init(sig, handler);
     }
@@ -58,15 +58,15 @@ namespace elle
     void
     ScoppedGuard::launch()
     {
-      ELLE_WARN("launching");
-      this->_signals.async_wait(this->_handler);
+      ELLE_WARN("launching signal scopped guard");
+      this->_signals.async_wait( this->_handler);
     }
 
 
     void
     ScoppedGuard::release()
     {
-      ELLE_WARN("releasing");
+      ELLE_WARN("releasing signal scopped guard");
       this->_signals.cancel();
     }
 
@@ -102,34 +102,38 @@ namespace elle
 
         return bind[signal];
       }
-    }
-  }
+    } // End of anonymous namespace.
+  } // End of signal.
 
   namespace crash
   {
+
+    Handler::Handler(std::string const& name,
+                     bool quit):
+      _name{name},
+      _quit{quit}
+    {}
+
+    Handler::~Handler()
+    {}
+
     void
-    report_handler(boost::system::error_code const& error,
-                   int sig)
+    Handler::operator() (boost::system::error_code const& error,
+                         int sig)
     {
       if (!error)
       {
         ELLE_DEBUG("signal caught: %s.", elle::signal::strsignal(sig));
 
-        elle::crash::report("castor", elle::signal::strsignal(sig));
+        elle::crash::report(this->_name, elle::signal::strsignal(sig));
+
+        if (this->_quit)
+          exit(sig);
       }
       else
       {
         ELLE_WARN("Error: %d - Sig: %d", error, sig);
       }
-    }
-
-    void
-    exiting_report_handler(boost::system::error_code const& error,
-                           int sig)
-    {
-      report_handler(error, sig);
-
-      exit(sig);
     }
 
     bool
@@ -182,5 +186,5 @@ namespace elle
 
       return true;
     }
-  }
-}
+  } // End of crash.
+} // End of elle.

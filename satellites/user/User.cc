@@ -211,7 +211,7 @@ namespace satellite
     User::Operation     operation;
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("User") == elle::Status::Error)
       throw std::runtime_error("unable to set up the program");
 
     // initialize the Lune library.
@@ -409,7 +409,7 @@ main(int argc, char** argv)
 {
   elle::signal::ScoppedGuard guard{
     {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
-    elle::crash::report_handler  // Capture signal and send email without exiting.
+    elle::crash::Handler("8user", false)  // Capture signal and send email without exiting.
   };
 
   try

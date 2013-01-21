@@ -32,7 +32,7 @@ void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
   // set up the program.
-  if (elle::concurrency::Program::Setup() == elle::Status::Error)
+  if (elle::concurrency::Program::Setup("Infinit") == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to set up the program");
 

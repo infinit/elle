@@ -699,7 +699,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Transfer") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -945,7 +945,7 @@ int                     main(int                                argc,
 {
   elle::signal::ScoppedGuard guard{
     {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
-    elle::crash::report_handler  // Capture signal and send email without exiting.
+    elle::crash::Handler("8transfer", false)  // Capture signal and send email without exiting.
   };
 
   reactor::Scheduler& sched = elle::concurrency::scheduler();
