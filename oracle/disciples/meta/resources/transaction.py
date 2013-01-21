@@ -1,5 +1,7 @@
 import json
 import web
+import os.path
+import sys
 
 from meta.page import Page
 from meta import notifier
@@ -15,21 +17,24 @@ import metalib
 # Possible transaction status.
 # XXX: Should be change to a bitfield to improve filter in the Getter.
 # XXX: Should also be defined in metalib.
-NONE = 0
-PENDING = 1
-ACCEPTED = 2
-STARTED = 3
-CANCELED = 4
-FINISHED = 5
 
-_status_to_string = {
-    NONE:     "none",
-    PENDING:  "pending",
-    ACCEPTED: "accepted",
-    STARTED:  "started",
-    CANCELED: "canceled",
-    FINISHED: "finished",
-}
+_macro_matcher = re.compile(r'(.*\()(\S+)(,.*\))')
+
+def replacer(match):
+    field = match.group(2)
+    return match.group(1) + "'" + field + "'" + match.group(3)
+
+_status_to_string = dict();
+
+def TRANSACTION_STATUS(name, value):
+    globals()[name.upper()] = value
+    _status_to_string[name.upper()] = str(name)
+
+filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'transaction_status.hh.inc'))
+
+configfile = open(filepath, 'r')
+for line in configfile:
+    eval(_macro_matcher.sub(replacer, line))
 
 class Create(Page):
     """
@@ -197,10 +202,9 @@ class Create(Page):
 
                     # File info.
                     'first_filename': first_filename,
-                    'files_count': self.data['files_count'],
-                    'total_size': self.data['total_size'],
+                    'files_count': int(self.data['files_count']),
+                    'total_size': int(self.data['total_size']),
                     'is_directory': int(self.data['is_directory']),
-
 
                     'status': int(PENDING),
                 }
@@ -354,7 +358,7 @@ class Start(Page):
             notifier.FILE_TRANSFER_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
-                'transaction_id': str(transaction['_id']),
+                'transaction_id': str(updated_transaction_id),
 
                 # Status.
                 'status': STARTED,

@@ -7,6 +7,7 @@ message(STATUS "copying troll to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying static to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying trophonius to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying longinus to ${LIBRARY_OUTPUT_PATH}/python/")
+
 file(
     COPY creosus meta pythia troll static trophonius longinus
     DESTINATION ${LIBRARY_OUTPUT_PATH}/python/
@@ -18,6 +19,7 @@ file(
         PATTERN "*.jpg"
         PATTERN "*.css"
         PATTERN "*.less"
+        PATTERN "*.hh.inc"
 )
 
 message(STATUS "copying creosus-server to ${LIBRARY_OUTPUT_PATH}/python/")

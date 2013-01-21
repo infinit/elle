@@ -116,10 +116,10 @@ class AddUser(_Page):
         to_add_user['networks'].append(network['_id'])
         database.users().save(to_add_user)
 
-        notifier.notify_one(notifier.NETWORK_CHANGED, user_id, {"network_id": network_id, "what": "added"})
+        # notifier.notify_one(notifier.NETWORK_CHANGED, user_id, {"network_id": network_id, "what": "added"})
 
         return self.success({
-            'updated_network_id': network['_id'],
+            'updated_network_id': str(network['_id']),
         })
 
 #XXX: Remove user from network.
@@ -226,6 +226,8 @@ class Endpoints(_Page):
         if not device_id in network['nodes'].keys():
             raise self.error(error.DEVICE_NOT_FOUND,
                              "This user is not connected in this network")
+
+        res = dict();
 
         addrs = {'locals': list(), 'externals': list()}
         user_node = network['nodes'][device_id];
@@ -579,11 +581,11 @@ class Delete(_Page):
             #XXX: with many devices connected, should we notify the owner ?
             database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
 
-        self.notifier.notify_some(
-            notifier.NETWORK_CHANGED,
-            users,
-            {"network_id": network_id, "what": "added"}
-        )
+        # self.notifier.notify_some(
+        #     notifier.NETWORK_CHANGED,
+        #     users,
+        #     {"network_id": network_id, "what": "added"}
+        # )
 
         database.networks().find_and_modify(
             {

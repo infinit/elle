@@ -28,6 +28,7 @@ class Search(Page):
         offset = 'offset' in self.data and self.data['offset'] or 0
 
         # While not sure it's an email or a fullname, search in both.
+        users = []
         if not '@' in text:
             users = database.users().find(
                 {
