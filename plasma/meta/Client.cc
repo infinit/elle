@@ -253,7 +253,6 @@ namespace plasma
                    uint16_t port,
                    bool check_errors)
       : _client{server, port, "MetaClient", check_errors}
-      , _token{}
       , _identity{}
       , _email{}
     {
@@ -277,8 +276,8 @@ namespace plasma
       if (res.success())
         {
           this->token(res.token);
-          _identity = res.identity;
-          _email = email;
+          this->_identity = res.identity;
+          this->_email = email;
         }
       return res;
     }
@@ -289,9 +288,9 @@ namespace plasma
       auto res = this->_client.get<LogoutResponse>("/user/logout");
       if (res.success())
         {
-          _token = "";
-          _identity = "";
-          _email = "";
+          this->token("");
+          this->_identity = "";
+          this->_email = "";
         }
       return res;
     }
@@ -732,7 +731,6 @@ namespace plasma
     void
     Client::token(string const& tok)
     {
-      _token = tok;
       _client.token(tok);
     }
 

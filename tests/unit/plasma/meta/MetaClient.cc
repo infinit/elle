@@ -114,9 +114,11 @@ test_logout(Users const& users)
                   if (res.success() != true)
                     throw;
 
-                  if (u.client->email().length() != 0 ||
-                      u.client->token().length() != 0 ||
-                      u.client->identity().length() != 0);
+                  if (u.client->email().length() != 0)
+                    throw;
+                  if (u.client->token().length() != 0)
+                    throw;
+                  if (u.client->identity().length() != 0)
                     throw;
 
                   std::cout << "logout user " << u.user.fullname << std::endl;

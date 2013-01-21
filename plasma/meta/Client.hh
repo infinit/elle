@@ -215,9 +215,8 @@ namespace plasma
     {
     private:
       elle::HTTPClient  _client;
-      std::string _token;
-      std::string _identity;
-      std::string _email;
+      string            _identity;
+      string            _email;
 
     public:
       Client(string const& server,
