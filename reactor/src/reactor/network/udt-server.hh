@@ -49,7 +49,7 @@ namespace reactor
       | NAT |
       `----*/
       private:
-        std::shared_ptr<reactor::network::UDPSocket> _udp_socket;
+        std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
     };
   }
 }
