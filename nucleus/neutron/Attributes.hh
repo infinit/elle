@@ -73,8 +73,8 @@ namespace nucleus
       Attributes();
       Attributes(Attributes const&) = default;
       /// Load constructor. Note that the attributes' footprint cannot be
-      /// computed by this contructor and should therefore be manually following
-      /// the deserialization.
+      /// computed by this contructor and should therefore be manually set
+      /// following the deserialization.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Attributes);
 
       /*--------.

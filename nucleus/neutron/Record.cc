@@ -115,7 +115,7 @@ namespace nucleus
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
-      // Substract the current value's footprint.
+      // Substract the current permissions' footprint.
       ELLE_ASSERT(this->_footprint >=
                   elle::serialize::footprint(this->_valid->permissions()));
       this->_footprint -=
@@ -124,7 +124,7 @@ namespace nucleus
       // Update the permissions.
       this->_valid->permissions(permissions);
 
-      // Add the new value's footprint.
+      // Add the new permissions' footprint.
       this->_footprint += elle::serialize::footprint(permissions);
     }
 
@@ -143,7 +143,7 @@ namespace nucleus
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
-      // Substract the current value's footprint.
+      // Substract the current token's footprint.
       ELLE_ASSERT(this->_footprint >=
                   elle::serialize::footprint(this->_valid->token()));
       this->_footprint -=
@@ -152,7 +152,7 @@ namespace nucleus
       // Update the token.
       this->_valid->token(token);
 
-      // Add the new value's footprint.
+      // Add the new token's footprint.
       this->_footprint += elle::serialize::footprint(token);
     }
 

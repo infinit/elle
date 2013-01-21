@@ -50,7 +50,7 @@ namespace nucleus
       | Construction |
       `-------------*/
     public:
-      Record();
+      Record(); // XXX[to deserialize]
       /// Construct a record with a subject/permissions. Note that the token
       /// can be left meaning that the record will not allow the referenced
       /// user to retrieve a secret.

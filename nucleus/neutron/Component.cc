@@ -37,11 +37,6 @@ namespace nucleus
             stream << "group";
             break;
           }
-        case ComponentEnsemble:
-          {
-            stream << "ensemble";
-            break;
-          }
         default:
           {
             throw Exception("unknown component: '%s'", component);

@@ -29,7 +29,10 @@ namespace nucleus
         attributes_value,
         access_seam,
         access_quill,
-        access_value
+        access_value,
+        ensemble_seam,
+        ensemble_quill,
+        ensemble_value
       };
 
     /*----------.

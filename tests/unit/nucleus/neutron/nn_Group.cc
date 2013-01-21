@@ -26,6 +26,7 @@ void test1()
 
   cryptography::KeyPair pass(cryptography::KeyPair::generate(2048));
 
+  /* XXX
   nucleus::neutron::Ensemble ensemble(network, owner.K());
 
   ELLE_TRACE("Add subjects in the ensemble")
@@ -91,6 +92,7 @@ void test1()
   ELLE_TRACE("Validate the ensemble")
     e.validate(ensemble_address);
   }
+  */
 }
 
 void test2()

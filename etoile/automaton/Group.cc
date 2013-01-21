@@ -5,6 +5,8 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/abstract/Group.hh>
 
+#include <nucleus/proton/Door.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
@@ -131,14 +133,26 @@ namespace etoile
           if (Ensemble::Open(context) == elle::Status::Error)
             escape("unable to open the ensemble block");
 
+          // Retrieve a door on the ensemble.
+          nucleus::proton::Door<nucleus::neutron::Ensemble> door{
+            context.ensemble_porcupine->lookup(subject)};
+
+          door.open();
+
+          if (door().exist(subject) == true)
+            throw elle::Exception("this subject already exist");
+
           /// Deliberately provide a null token because the right token
           /// will be generated when the group is closed. This improves
           /// the performance by delaying the cryptographic operations.
-          context.ensemble->add(
-            std::move(std::unique_ptr<nucleus::neutron::Fellow>(
-                        new nucleus::neutron::Fellow(
+          door().insert(new nucleus::neutron::Fellow{
                           subject,
-                          nucleus::neutron::Token::null()))));
+                          nucleus::neutron::Token::null()});
+
+          door.close();
+
+          // Update the porcupine.
+          context.ensemble_porcupine->update(subject);
         }
 
       // is the target subject the user i.e the group manager in this case.
@@ -187,8 +201,8 @@ namespace etoile
               ELLE_TRACE("The target subject is the group manager");
 
               // If the target subject is the object owner, retrieve the
-              // access record from the owner's meta section. Note that
-              // this record is not part of the object but has been generated
+              // ensemble fellow from the owner's meta section. Note that
+              // this fellow is not part of the object but has been generated
               // automatically when the object was extracted.
 
               fellow = &context.group->manager_fellow();
@@ -204,7 +218,25 @@ namespace etoile
               if (Ensemble::Open(context) == elle::Status::Error)
                 escape("unable to open the ensemble block");
 
-              fellow = &context.ensemble->locate(subject);
+              // Retrieve a door on the ensemble.
+              nucleus::proton::Door<nucleus::neutron::Ensemble> door{
+                context.ensemble_porcupine->lookup(subject)};
+
+              door.open();
+
+              // XXX[does the fellow exist: if not, return a null pointer]
+              if (door().exist(subject) == false)
+                {
+                  fellow = nullptr;
+                }
+              else
+                {
+                  // Look up the fellow.
+                  // XXX[we take the address of the reference: wrong]
+                  fellow = &(door().locate(subject));
+                }
+
+              door.close();
             }
         }
 
@@ -219,38 +251,57 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, index, size);
 
-      // If the index starts with 0, include the manager by creating
-      // a record for him.
-      if (index == 0)
-        {
-          // XXX Optimize so as to open only if size > 1.
-          if (Ensemble::Open(context) == elle::Status::Error)
-            escape("unable to open the ensemble");
+      nucleus::neutron::Index _index = index;
 
-          // Add the manager's fellow to the range.
+      if (Ensemble::Open(context) == elle::Status::Error)
+        escape("unable to open the ensemble");
+
+      // if the index starts with 0, include the manager by creating
+      // a fellow for him.
+      if (_index == 0)
+        {
+          // add the fellow to the range.
           range.insert(
             std::shared_ptr<nucleus::neutron::Fellow>{
               new nucleus::neutron::Fellow{context.group->manager_fellow()}});
 
-          // Consult the ensemble by taking care of consulting one fellow
-          // less i.e the manager's.
-
-          nucleus::neutron::Range<nucleus::neutron::Fellow> subrange{
-            context.ensemble->consult(index, size - 1)};
-
-          // XXX[this is not optimised: insert the manager afterwards]
-          range.add(subrange);
+          _index++;
         }
-      else
+
+      // Seek the group responsible for the given index.
+      auto _size = context.ensemble_porcupine->size();
+
+      // Decrement index because an index of 1 is actually 0 relative to the
+      // porcupine because the fellow index-0 is the manager's.
+      _index--;
+
+      while (_size > 0)
         {
-          if (Ensemble::Open(context) == elle::Status::Error)
-            escape("unable to open the ensemble");
+          auto pair = context.ensemble_porcupine->seek(_index);
+          auto& door = pair.first;
+          auto& base = pair.second;
 
-          // Consult the ensemble by taking care of starting the consultation
-          // one index before since the manager's fellow, which is not located
-          // in the ensemble block, counts as one fellow.
+          door.open();
 
-          range = context.ensemble->consult(index - 1, size);
+          auto start = _index - base;
+          auto length = _size > (door().size() - start) ?
+            (door().size() - start) : _size;
+
+          ELLE_ASSERT(length != 0);
+
+          // Retrieve the fellows falling in the requested
+          // range [index, index + size[.
+          nucleus::neutron::Range<nucleus::neutron::Fellow> subrange{
+            door().consult(start, length)};
+
+          door.close();
+
+          // Inject the retrieved fellows into the main range.
+          range.add(subrange);
+
+          // Update the variables _index and _size.
+          _index += length;
+          _size -= length;
         }
 
       return elle::Status::Ok;
@@ -289,7 +340,19 @@ namespace etoile
           if (Ensemble::Open(context) == elle::Status::Error)
             escape("unable to open the ensemble block");
 
-          context.ensemble->remove(subject);
+          // Retrieve a door on the ensemble.
+          nucleus::proton::Door<nucleus::neutron::Ensemble> door{
+            context.ensemble_porcupine->lookup(subject)};
+
+          door.open();
+
+          // remove the fellowt.
+          door().erase(subject);
+
+          door.close();
+
+          // Update the porcupine.
+          context.ensemble_porcupine->update(subject);
         }
 
       // is the target subject the user i.e the group manager in this case.
@@ -365,7 +428,7 @@ namespace etoile
       if (context.group->state() == nucleus::proton::State::dirty)
         {
           // seal the group, depending on the presence of a referenced
-          // access block.
+          // ensemble block.
 
           ELLE_TRACE_SCOPE("the group is dirty");
 

@@ -8,7 +8,6 @@
 #include <nucleus/proton/Contents.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Group.hh>
-#include <nucleus/neutron/Ensemble.hh>
 
 #include <hole/Hole.hh>
 
@@ -84,12 +83,6 @@ namespace etoile
                       nucleus::proton::Revision const& revision)
     {
       return (Depot::pull<nucleus::neutron::Group>(address, revision));
-    }
-
-    std::unique_ptr<nucleus::neutron::Ensemble>
-    Depot::pull_ensemble(nucleus::proton::Address const& address)
-    {
-      return (Depot::pull<nucleus::neutron::Ensemble>(address));
     }
 
     std::unique_ptr<nucleus::proton::Contents>

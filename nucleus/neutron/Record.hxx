@@ -1,5 +1,9 @@
-#ifndef  NUCLEUS_NEUTRON_RECORD_HXX
+#ifndef NUCLEUS_NEUTRON_RECORD_HXX
 # define NUCLEUS_NEUTRON_RECORD_HXX
+
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
@@ -11,6 +15,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Record,
   enforce(version == 0);
 
   archive & value._type;
+
   switch (value._type)
     {
     case nucleus::neutron::Record::Type::null:

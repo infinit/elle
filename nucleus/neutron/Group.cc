@@ -1,5 +1,6 @@
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Fellow.hh>
+#include <nucleus/proton/Radix.hh>
 #include <nucleus/Exception.hh>
 
 #include <cryptography/KeyPair.hh>
@@ -28,6 +29,7 @@ namespace nucleus
 
       _pass_K(nullptr),
       _size(1),
+      _ensemble(nullptr),
       _signature(nullptr),
       _manager_fellow(nullptr)
     {
@@ -41,6 +43,7 @@ namespace nucleus
       _description(description),
       _pass_K(nullptr),
       _size(1),
+      _ensemble(nullptr),
       _signature(nullptr),
       _manager_fellow(nullptr)
     {
@@ -58,6 +61,7 @@ namespace nucleus
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(Group, ImprintBlock)
     {
       this->_pass_K = nullptr;
+      this->_ensemble = nullptr;
       this->_signature = nullptr;
       this->_manager_fellow = nullptr;
     }
@@ -65,6 +69,7 @@ namespace nucleus
     Group::~Group()
     {
       delete this->_pass_K;
+      delete this->_ensemble;
       delete this->_signature;
       delete this->_manager_fellow;
     }
@@ -73,8 +78,16 @@ namespace nucleus
 // ---------- methods ---------------------------------------------------------
 //
 
+    proton::Radix const&
+    Group::ensemble() const
+    {
+      ELLE_ASSERT(this->_ensemble != nullptr);
+
+      return (*this->_ensemble);
+    }
+
     void
-    Group::upgrade(proton::Address const& ensemble,
+    Group::upgrade(proton::Radix const& ensemble,
                    cryptography::PublicKey const& pass_K,
                    Token const& manager_token)
     {
@@ -82,10 +95,13 @@ namespace nucleus
       this->_pass_K = nullptr;
       this->_pass_K = new cryptography::PublicKey{pass_K};
 
+      delete this->_ensemble;
+      this->_ensemble = nullptr;
+      this->_ensemble = new proton::Radix{ensemble};
+
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = ensemble;
       this->_manager_token = manager_token;
 
       this->state(proton::State::dirty);
@@ -97,7 +113,9 @@ namespace nucleus
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = proton::Address::null();
+      delete this->_ensemble;
+      this->_ensemble = nullptr;
+      this->_ensemble = new proton::Radix{};
 
       this->state(proton::State::dirty);
     }
@@ -117,6 +135,7 @@ namespace nucleus
         case proton::State::dirty:
           {
             ELLE_ASSERT(this->_pass_K != nullptr);
+            ELLE_ASSERT(this->_ensemble != nullptr);
 
             delete this->_signature;
             this->_signature = nullptr;
@@ -126,7 +145,7 @@ namespace nucleus
                              *this->_pass_K,
                              this->_size,
                              this->_modification_timestamp,
-                             this->_ensemble,
+                             *this->_ensemble,
                              this->_manager_token))};
 
             // Increase the mutable block's revision.
@@ -209,8 +228,10 @@ namespace nucleus
       if (this->_modification_timestamp.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the timestamp");
 
-      if (this->_ensemble.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the ensemble's address");
+      ELLE_ASSERT(this->_ensemble != nullptr);
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift << "[Ensemble] "
+                << *this->_ensemble << std::endl;
 
       if (this->_manager_token.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");

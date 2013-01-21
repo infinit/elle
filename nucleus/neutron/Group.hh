@@ -106,7 +106,7 @@ namespace nucleus
       ELLE_ATTRIBUTE(cryptography::PublicKey*, pass_K);
       ELLE_ATTRIBUTE_RW(Size, size);
       ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
-      ELLE_ATTRIBUTE_R(proton::Address, ensemble);
+      ELLE_ATTRIBUTE(proton::Radix*, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
       ELLE_ATTRIBUTE(cryptography::Signature*, signature);
       // XXX[not serialized]
@@ -127,11 +127,16 @@ namespace nucleus
       // methods
       //
     public:
+      /// XXX
+      proton::Radix const&
+      ensemble() const;
       /// Specifies the address of the new Ensemble block and thus
       /// instructs the group to upgrade itself by updating the public
       /// pass with the given one.
+      /// XXX[rewrite: -address +radix, meme chose pour description generale]
+      /// XXX[des methodes pour mettre a jour chaque attribut?]
       void
-      upgrade(proton::Address const& ensemble,
+      upgrade(proton::Radix const& ensemble,
               cryptography::PublicKey const& pass_K,
               Token const& manager_token);
       /// Indicates that the group no longer references an Ensemble
@@ -168,8 +173,8 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
       // serialize
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
       ELLE_SERIALIZE_FRIEND_FOR(Group);
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
     };
   }
 }

@@ -54,9 +54,6 @@ namespace etoile
       pull_group(nucleus::proton::Address const& address,
                  nucleus::proton::Revision const& revision);
       /// XXX
-      static std::unique_ptr<nucleus::neutron::Ensemble>
-      pull_ensemble(nucleus::proton::Address const& address);
-      /// XXX
       static std::unique_ptr<nucleus::proton::Contents>
       pull_contents(nucleus::proton::Address const& address);
 

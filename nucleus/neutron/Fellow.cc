@@ -1,51 +1,41 @@
 #include <nucleus/neutron/Fellow.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron
   {
-
-    /*---------------.
-    | Static Methods |
-    `---------------*/
-
-    Fellow const&
-    Fellow::null()
-    {
-      static Fellow fellow(Fellow::Type::null);
-
-      return (fellow);
-    }
+//
+// ---------- Fellow ----------------------------------------------------------
+//
 
     /*-------------.
     | Construction |
     `-------------*/
 
     Fellow::Fellow():
-      _valid(nullptr)
+      _valid(nullptr),
+      _footprint(0)
     {
     }
 
     Fellow::Fellow(Subject const& subject,
                    Token const& token):
       _type(Type::valid),
-      _valid(new Valid(subject, token))
+      _valid(new Valid(subject, token)),
+      _footprint(0)
     {
+      // Compute the initial footprint.
+      this->_footprint = elle::serialize::footprint(*this);
     }
 
     Fellow::Fellow(Fellow const& other):
       _type(other._type),
-      _valid(nullptr)
+      _valid(nullptr),
+      _footprint(other._footprint)
     {
       if (other._valid != nullptr)
-        {
-          ELLE_ASSERT(other._valid->token() != nullptr);
-
-          this->_valid = new Valid(other._valid->subject(),
-                                   *other._valid->token());
-        }
+        this->_valid = new Valid(other._valid->subject(),
+                                 other._valid->token());
     }
 
     Fellow::Fellow(Type const type):
@@ -68,28 +58,19 @@ namespace nucleus
         default:
           throw Exception("unknown fellow type '%s'", this->_type);
         }
+
+      // Compute the initial footprint.
+      this->_footprint = elle::serialize::footprint(*this);
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Fellow)
+    {
+      this->_valid = nullptr;
     }
 
     Fellow::~Fellow()
     {
       delete this->_valid;
-    }
-
-    Fellow::Valid::Valid():
-      _token(nullptr)
-    {
-    }
-
-    Fellow::Valid::Valid(Subject const& subject,
-                         Token const& token):
-      _subject(subject),
-      _token(new Token(token))
-    {
-    }
-
-    Fellow::Valid::~Valid()
-    {
-      delete this->_token;
     }
 
     /*--------.
@@ -110,11 +91,8 @@ namespace nucleus
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
-      ELLE_ASSERT(this->_valid->token() != nullptr);
 
-      // A const reference is returned because fellows are always
-      // supposed to contain a valid token.
-      return (*this->_valid->token());
+      return (this->_valid->token());
     }
 
     void
@@ -123,14 +101,17 @@ namespace nucleus
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
-      this->_valid->token(token);
-    }
+      // Substract the current token's footprint.
+      ELLE_ASSERT(this->_footprint >=
+                  elle::serialize::footprint(this->_valid->token()));
+      this->_footprint -=
+        elle::serialize::footprint(this->_valid->token());
 
-    void
-    Fellow::Valid::token(Token const& token)
-    {
-      delete this->_token;
-      this->_token = new Token(token);
+      // Update the token.
+      this->_valid->token(token);
+
+      // Add the new token's footprint.
+      this->_footprint += elle::serialize::footprint(token);
     }
 
     /*----------.
@@ -178,14 +159,8 @@ namespace nucleus
             if (this->_valid->subject().Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the subject");
 
-            if (this->_valid->token() != nullptr)
-              {
-                if (this->_valid->token()->Dump(margin + 2) == elle::Status::Error)
-                  escape("unable to dump the token");
-              }
-            else
-              std::cout << alignment << elle::io::Dumpable::Shift
-                        << "[Token] " << "none" << std::endl;
+            if (this->_valid->token().Dump(margin + 2) == elle::Status::Error)
+              escape("unable to dump the token");
 
             break;
           }
@@ -236,6 +211,67 @@ namespace nucleus
       ELLE_ASSERT(this->_valid != nullptr);
 
       return (this->_valid->subject());
+    }
+
+//
+// ---------- Valid -----------------------------------------------------------
+//
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Fellow::Valid::Valid():
+      _token(nullptr)
+    {
+    }
+
+    Fellow::Valid::Valid(Subject const& subject,
+                         Token const& token):
+      _subject(subject),
+      _token(new Token(token))
+    {
+    }
+
+    Fellow::Valid::~Valid()
+    {
+      delete this->_token;
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    Token const&
+    Fellow::Valid::token() const
+    {
+      ELLE_ASSERT(this->_token != nullptr);
+
+      return (*this->_token);
+    }
+
+    void
+    Fellow::Valid::token(Token const& token)
+    {
+      delete this->_token;
+      this->_token = nullptr;
+      this->_token = new Token(token);
+    }
+
+//
+// ---------- Other -----------------------------------------------------------
+//
+
+    /*---------------.
+    | Static Methods |
+    `---------------*/
+
+    Fellow const&
+    Fellow::null()
+    {
+      static Fellow fellow(Fellow::Type::null);
+
+      return (fellow);
     }
 
     /*----------.

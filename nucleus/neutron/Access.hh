@@ -5,9 +5,6 @@
 # include <elle/operator.hh>
 # include <elle/attribute.hh>
 # include <elle/serialize/Serializable.hh>
-# include <elle/concept/Uniquable.hh>
-
-# include <nucleus/proton/ContentHashBlock.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Value.hh>
@@ -54,8 +51,8 @@ namespace nucleus
       /// The process stops when the _left_ access is left with _size_ bytes of
       /// records i.e footprint.
       ///
-      /// Note that the _right_ accesss is supposed to contain higher names
-      /// so that the records from the _left_ access with the highest names
+      /// Note that the _right_ accesss is supposed to contain higher subjects
+      /// so that the records from the _left_ access with the highest subjects
       /// are moved to _right_ in order to maintain consistency.
       static
       void
@@ -77,8 +74,8 @@ namespace nucleus
       Access();
       Access(Access const&) = default;
       /// Load constructor. Note that the access's footprint cannot be
-      /// computed by this contructor and should therefore be manually following
-      /// the deserialization.
+      /// computed by this contructor and should therefore be manually set
+      /// following the deserialization.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Access);
 
       /*--------.
@@ -180,7 +177,7 @@ namespace nucleus
       begin() const;
       Scoutor
       end() const;
-    private:
+      // XXX private: XXX[to reinstate]
       Iterator
       begin();
       Iterator

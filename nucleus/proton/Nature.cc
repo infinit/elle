@@ -92,6 +92,21 @@ namespace nucleus
             stream << "value<access>";
             break;
           }
+        case Nature::ensemble_seam:
+          {
+            stream << "seam<ensemble>";
+            break;
+          }
+        case Nature::ensemble_quill:
+          {
+            stream << "quill<ensemble>";
+            break;
+          }
+        case Nature::ensemble_value:
+          {
+            stream << "value<ensemble>";
+            break;
+          }
         default:
           {
             throw Exception("unknown nature: '%s'", static_cast<int>(nature));

@@ -1,6 +1,9 @@
 #ifndef NUCLEUS_NEUTRON_FELLOW_HXX
 # define NUCLEUS_NEUTRON_FELLOW_HXX
 
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
@@ -12,6 +15,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Fellow,
   enforce(version == 0);
 
   archive & value._type;
+
   switch (value._type)
     {
     case nucleus::neutron::Fellow::Type::null:

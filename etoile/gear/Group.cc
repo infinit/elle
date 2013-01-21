@@ -1,7 +1,9 @@
 #include <etoile/gear/Group.hh>
 #include <etoile/gear/Nature.hh>
+#include <etoile/nest/Nest.hh>
 
-# include <nucleus/neutron/Group.hh>
+#include <nucleus/neutron/Group.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
 #include <elle/idiom/Open.hh>
@@ -19,10 +21,22 @@ namespace etoile
     /// the default constructor.
     ///
     Group::Group():
-      Context(NatureGroup)
+      Context(NatureGroup),
+
+      ensemble_porcupine(nullptr),
+      ensemble_nest(nullptr),
+      ensemble_limits(nucleus::proton::limits::Porcupine{},
+                      nucleus::proton::limits::Node{1048576, 0.5, 0.2},
+                      nucleus::proton::limits::Node{1048576, 0.5, 0.2})
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::Group::RoleUnknown;
+    }
+
+    Group::~Group()
+    {
+      delete this->ensemble_porcupine;
+      delete this->ensemble_nest;
     }
 
 //
@@ -55,20 +69,6 @@ namespace etoile
           // dump none.
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Group] " << "none" << std::endl;
-        }
-
-      // dump the ensemble, if present.
-      if (this->ensemble != nullptr)
-        {
-          // dump the ensemble block.
-          if (this->ensemble->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the ensemble");
-        }
-      else
-        {
-          // dump none.
-          std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Ensemble] " << "none" << std::endl;
         }
 
       // dump the rights.

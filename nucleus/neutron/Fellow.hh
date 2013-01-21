@@ -39,12 +39,6 @@ namespace nucleus
         valid
       };
 
-      /*------.
-      | Types |
-      `------*/
-    public:
-      typedef Subject Symbol;
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -54,6 +48,7 @@ namespace nucleus
       Fellow(Subject const& subject,
              Token const& token);
       Fellow(Fellow const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Fellow);
       ~Fellow();
     private:
       Fellow(Type const type);
@@ -65,7 +60,6 @@ namespace nucleus
       elle::Boolean
       operator ==(Fellow const& other) const;
       ELLE_OPERATOR_NEQ(Fellow);
-      /// Do not allow fellow assignment: use the copy constructor instead.
       ELLE_OPERATOR_NO_ASSIGNMENT(Fellow);
 
       /*--------.
@@ -95,7 +89,10 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
+      ELLE_SERIALIZE_FRIEND_FOR(Ensemble);
       // rangeable
+      typedef Subject Symbol;
+      virtual
       Subject const&
       symbol() const;
 
@@ -114,7 +111,8 @@ namespace nucleus
 
         // methods
       public:
-        /// Update the token.
+        Token const&
+        token() const;
         void
         token(Token const& token);
 
@@ -134,7 +132,7 @@ namespace nucleus
         /// a token, following the modification of the group's
         /// pass for example, the token is represented through
         /// a pointer.
-        ELLE_ATTRIBUTE_RW(Token*, token);
+        ELLE_ATTRIBUTE(Token*, token);
       };
 
       /*-----------.
@@ -143,6 +141,7 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE_R(Type, type)
       ELLE_ATTRIBUTE(Valid*, valid);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
     /*----------.

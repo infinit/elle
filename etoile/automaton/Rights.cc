@@ -1,11 +1,15 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/automaton/Access.hh>
+#include <etoile/automaton/Ensemble.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
+#include <etoile/nest/Nest.hh>
 
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Porcupine.hh>
+#include <nucleus/proton/Limits.hh>
+#include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Door.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Record.hh>
@@ -250,26 +254,44 @@ namespace etoile
 
                               ELLE_TRACE("the subject is _not_ the group manager");
 
-                              if (group->ensemble() != nucleus::proton::Address::null())
+                              if (group->ensemble().empty() == false)
                                 {
-                                  std::unique_ptr<nucleus::neutron::Ensemble> ensemble;
-
                                   ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
 
-                                  // Retrieve the ensemble which contains the list of
-                                  // the subjects belonging to the group.
-                                  ensemble =
-                                    depot::Depot::pull_ensemble(group->ensemble());
+                                  // XXX
+                                  static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+
+                                  nucleus::proton::Limits ensemble_limits{
+                                    nucleus::proton::limits::Porcupine{},
+                                    nucleus::proton::limits::Node{1048576, 0.5, 0.2},
+                                    nucleus::proton::limits::Node{1048576, 0.5, 0.2}};
+
+                                  etoile::nest::Nest ensemble_nest{
+                                    ENSEMBLE_SECRET_KEY_LENGTH,
+                                    ensemble_limits,
+                                    depot::hole().storage().network(),
+                                    agent::Agent::Subject.user()};
+
+                                  nucleus::proton::Porcupine<nucleus::neutron::Ensemble> ensemble_porcupine{
+                                    group->ensemble(),
+                                    secret_key,
+                                    ensemble_nest};
+
+                                  // Retrieve a door on the ensemble.
+                                  nucleus::proton::Door<nucleus::neutron::Ensemble> _door{
+                                    ensemble_porcupine.lookup(agent::Agent::Subject)};
+
+                                  _door.open();
 
                                   // Look for the user's subject in the ensemble.
-                                  if (ensemble->exist(agent::Agent::Subject) == false)
+                                  if (_door().exist(agent::Agent::Subject) == false)
                                     {
                                       ELLE_TRACE("the subject does not exist in the ensemble");
                                       continue;
                                     }
 
                                   nucleus::neutron::Fellow const& fellow =
-                                    ensemble->locate(agent::Agent::Subject);
+                                    _door().locate(agent::Agent::Subject);
 
                                   context.rights.role =
                                     nucleus::neutron::Object::RoleVassal;
@@ -315,6 +337,8 @@ namespace etoile
                                     {
                                       ELLE_TRACE("the access token is _not_ present");
                                     }
+
+                                  _door.close();
                                 }
                               else
                                 {

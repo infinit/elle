@@ -191,7 +191,7 @@ namespace etoile
       Attributes::open(context);
 
       // Seek the attributes responsible for the given index.
-      auto _index = 0;
+      nucleus::proton::Capacity _index = 0;
       auto _size = context.attributes_porcupine->size();
 
       while (_size > 0)

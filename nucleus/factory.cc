@@ -38,7 +38,6 @@ namespace nucleus
       // XXX[shouldn't be in neutron?]
       factory->record<proton::Contents>(neutron::ComponentContents);
       factory->record<neutron::Group>(neutron::ComponentGroup);
-      factory->record<neutron::Ensemble>(neutron::ComponentEnsemble);
 
       return (factory);
     }
@@ -82,7 +81,12 @@ namespace nucleus
       factory->record<neutron::Access>(
         proton::Nature::access_value);
 
-      // XXX[ensemble]
+      factory->record<proton::Seam<neutron::Ensemble>>(
+        proton::Nature::ensemble_seam);
+      factory->record<proton::Quill<neutron::Ensemble>>(
+        proton::Nature::ensemble_quill);
+      factory->record<neutron::Ensemble>(
+        proton::Nature::ensemble_value);
 
       return (factory);
     }

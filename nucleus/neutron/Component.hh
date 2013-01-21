@@ -18,7 +18,6 @@ namespace nucleus
         ComponentObject,
         ComponentContents,
         ComponentGroup,
-        ComponentEnsemble,
 
         Components // XXX
       };

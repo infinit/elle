@@ -3,6 +3,7 @@
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Fellow.hh>
 #include <nucleus/proton/Ambit.hh>
 #include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Contents.hh>
@@ -74,7 +75,7 @@ namespace nucleus
             break;
 
           // Otherwise, leave this item in the left record.
-
+          //
           // Note however that another check is performed in order to make
           // sure that adding this record will not make the container too large.
           if ((footprint + record->footprint()) > extent)
@@ -220,7 +221,7 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(subject, permissions);
 
-      // Locate the trait.
+      // Locate the record.
       auto iterator = this->_iterator(subject);
 
       // Retrieve the record.
@@ -248,7 +249,7 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(subject, token);
 
-      // Locate the trait.
+      // Locate the record.
       auto iterator = this->_iterator(subject);
 
       // Retrieve the record.
@@ -613,9 +614,12 @@ namespace nucleus
         for (proton::Capacity index = 0; index < porcupine.size(); )
           {
             auto pair = porcupine.seek(index);
-            auto const& door = pair.first;
+            // XXX[what we want] proton::Door<Fellow const>& door = pair.first;
+            auto& door = pair.first;
 
             ELLE_ASSERT(index == pair.second);
+
+            door.open();
 
             for (auto _pair: door())
               {
@@ -626,6 +630,8 @@ namespace nucleus
               }
 
             index += door().size();
+
+            door.close();
           }
 
         return (cryptography::oneway::hash(
