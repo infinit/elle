@@ -52,6 +52,8 @@ namespace surface
     std::string
     State::create_network(std::string const& name)
     {
+
+
       metrics::google::server().store("network:create:attempt");
 
       auto response = this->_meta->create_network(name);
@@ -122,15 +124,21 @@ namespace surface
     State::network_add_user(std::string const& network_id,
                             std::string const& user)
     {
+      ELLE_TRACE("adding user '%s' to network '%s'", user, network_id);
+
       metrics::google::server().store("network:user:add:attempt");
 
-      // makes user we have an id
+      // Retrieve user, ensuring he is on the user list.
       std::string user_id = this->user(user)._id;
+
+      ELLE_DEBUG("adding user '%s'", user);
+
       auto it = this->networks().find(network_id);
       ELLE_ASSERT(it != this->networks().end());
       Network* network = it->second;
       ELLE_ASSERT(network != nullptr);
 
+      ELLE_DEBUG("locating 8 group");
       std::string const& group_binary = common::infinit::binary_path("8group");
 
       QStringList arguments;
@@ -149,6 +157,8 @@ namespace surface
         throw Exception(gap_internal_error, "8group binary failed");
       if (p.exitCode())
         throw Exception(gap_internal_error, "8group binary exited with errors");
+
+      ELLE_DEBUG("set user in network in meta.");
 
       auto res = this->_meta->network_add_user(network_id, user_id);
       if (std::find(network->users.begin(),

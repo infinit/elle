@@ -490,7 +490,7 @@ namespace surface
       if (transaction.sender_device_id != this->device_id())
         return;
 
-      ELLE_DEBUG("Giving '%s' acces to the network '%s'.",
+      ELLE_DEBUG("giving '%s' access to the network '%s'",
                 transaction.recipient_id,
                 transaction.network_id);
 
