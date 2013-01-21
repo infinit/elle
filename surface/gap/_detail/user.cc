@@ -104,12 +104,12 @@ namespace surface
                      lower_email.begin(),
                      ::tolower);
 
-      metrics::google::server().store("login:attempt");
+      metrics::google::server().store("user:login:attempt");
 
       auto res = this->_meta->login(lower_email, password);
 
       metrics::google::server().update_user(res._id);
-      metrics::google::server().store("login:succeed", "cs", "start");
+      metrics::google::server().store("user:login:succeed", "cs", "start");
 
 
       ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
@@ -157,13 +157,13 @@ namespace surface
     State::logout()
     {
       // End session the session.
-      metrics::google::server().store("logout::attempt", "cs", "end");
+      metrics::google::server().store("user:logout::attempt", "cs", "end");
 
       if (this->_meta->token().length())
         this->_meta->logout();
 
       // End session the session.
-      metrics::google::server().store("logout::succeed");
+      metrics::google::server().store("user:logout::succeed");
     }
 
     void
@@ -173,7 +173,7 @@ namespace surface
                      std::string const& activation_code)
     {
       // Send file request successful.
-      metrics::google::server().store("register:attempt");
+      metrics::google::server().store("user:register:attempt");
 
       std::string lower_email = email;
 
@@ -188,7 +188,7 @@ namespace surface
       this->_meta->register_(lower_email, fullname, password, activation_code);
 
       // Send file request successful.
-      metrics::google::server().store("register:succeed");
+      metrics::google::server().store("user:register:succeed");
 
       ELLE_DEBUG("Registered new user %s <%s>", fullname, lower_email);
       this->login(lower_email, password);
@@ -240,7 +240,7 @@ namespace surface
       if (it != this->_users.end())
       {
         // Search user.
-        metrics::google::server().store("Search-user", {{"cd1", "local"}, {"cd2", id}});
+        // metrics::google::server().store("Search-user", {{"cd1", "local"}, {"cd2", id}});
 
         return *(it->second);
       }
@@ -252,7 +252,7 @@ namespace surface
           response.public_key,
           response.status}};
 
-      metrics::google::server().store("Search-user", {{"cd1", "server"}, {"cd2", id}});
+      // metrics::google::server().store("Search-user", {{"cd1", "server"}, {"cd2", id}});
 
       this->_users[response._id] = user.get();
       return *(user.release());
@@ -300,4 +300,3 @@ namespace surface
 
   }
 }
-
