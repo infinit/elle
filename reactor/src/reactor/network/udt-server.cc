@@ -139,20 +139,59 @@ namespace reactor
       return res + "\"";
     }
 
+    bool
+    UDTServer::_punch(int port)
+    {
+      static auto lhost = "development.infinit.io";//common::longinus::host();
+      static auto lport = 9999;//common::longinus::port();
+      static auto longinus =
+        resolve_udp(this->scheduler(), lhost,
+                    boost::lexical_cast<std::string>(lport));
+      ELLE_DEBUG_SCOPE("try punching port %s", port);
+      boost::asio::ip::udp::endpoint local_endpoint
+        (boost::asio::ip::udp::v4(), port);
+      std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
+      socket->bind(local_endpoint);
+      std::stringstream ss;
+      ss << "local " << socket->local_endpoint() << std::endl;
+      std::string question = ss.str();
+      ELLE_DUMP("longinus question: %s", escape(question));
+      socket->send_to(Buffer(question), longinus);
+
+      std::string buffer_data(1024, ' ');
+      Buffer buffer(buffer_data);
+      auto size = socket->read_some(buffer);
+      std::string answer(buffer_data.c_str(), size);
+      ELLE_DUMP("longinus answer: %s", escape(answer));
+
+      std::vector<std::string> splitted;
+      boost::split(splitted, answer, boost::is_any_of(" :\n"));
+      boost::asio::ip::udp::endpoint public_endpoint
+        (boost::asio::ip::address::from_string(splitted[1]),
+         boost::lexical_cast<int>(splitted[2]));
+      if (public_endpoint.port() == port)
+        {
+          _public_endpoint = public_endpoint;
+          _udp_socket = std::move(socket);
+          ELLE_DEBUG("punched right port %s", port);
+          return true;
+        }
+      else
+        {
+          ELLE_DEBUG("punched different port %s", public_endpoint.port());
+          return false;
+        }
+    }
+
     void
     UDTServer::listen(int desired_port)
     {
       // Punch the potential firewall
+      ELLE_TRACE("punch hole in the firewall")
       {
         int port = desired_port;
         try
           {
-            auto lhost = "development.infinit.io";//common::longinus::host();
-            auto lport = 9999;//common::longinus::port();
-            auto longinus =
-              resolve_udp(this->scheduler(), lhost,
-                          boost::lexical_cast<std::string>(lport));
-            ELLE_TRACE_SCOPE("punch hole with %s:%d", lhost, lport);
             int tries = 0;
             while (true)
               {
@@ -161,38 +200,11 @@ namespace reactor
                     ELLE_WARN("too many tries, giving up");
                     break;
                   }
-                ELLE_DEBUG_SCOPE("try punching port %s", port);
-                boost::asio::ip::udp::endpoint local_endpoint
-                  (boost::asio::ip::udp::v4(), port);
-                std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
-                socket->bind(local_endpoint);
-                std::stringstream ss;
-                ss << "local " << socket->local_endpoint() << std::endl;
-                std::string question = ss.str();
-                ELLE_DUMP("longinus question: %s", escape(question));
-                socket->send_to(Buffer(question), longinus);
-
-                std::string buffer_data(1024, ' ');
-                Buffer buffer(buffer_data);
-                auto size = socket->read_some(buffer);
-                std::string answer(buffer_data.c_str(), size);
-                ELLE_DUMP("longinus answer: %s", escape(answer));
-
-                std::vector<std::string> splitted;
-                boost::split(splitted, answer, boost::is_any_of(" :\n"));
-                boost::asio::ip::udp::endpoint public_endpoint
-                  (boost::asio::ip::address::from_string(splitted[1]),
-                   boost::lexical_cast<int>(splitted[2]));
-                if (public_endpoint.port() == port)
-                  {
-                    _public_endpoint = public_endpoint;
-                    _udp_socket = std::move(socket);
-                    ELLE_DEBUG("punched right port %s", port);
-                    break;
-                  }
-                ELLE_DEBUG("punched different port %s", public_endpoint.port());
+                if (this->_punch(port))
+                  break;
                 ++port;
               }
+
           }
         catch (std::runtime_error const& e)
           {

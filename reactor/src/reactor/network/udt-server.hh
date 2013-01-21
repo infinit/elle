@@ -49,6 +49,7 @@ namespace reactor
       | NAT |
       `----*/
       private:
+        bool _punch(int port);
         std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
     };
   }
