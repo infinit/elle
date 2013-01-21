@@ -312,29 +312,12 @@ namespace surface
         MetricReporter&
         server()
         {
-          static std::string retrieved_id = retrieve_id();
-          static std::unique_ptr<surface::gap::MetricReporter> server = nullptr;
-
-          if (!server)
-          {
-            try
-            {
-              server.reset(
-                new surface::gap::ServerReporter{
+          static std::unique_ptr<surface::gap::MetricReporter> server{
+            new surface::gap::ServerReporter{
                   "cd",
-                  retrieved_id,
+                  retrieve_id(),
                   common::metrics::google_server(),
-                  80});
-            }
-            catch(...) // If http server init failed, use a fallback.
-            {
-              server.reset(
-                new surface::gap::NoConnectionReporter{
-                  "cd",
-                  retrieved_id,
-                  "/home/dimrok/cjaja.log"});
-            }
-          }
+                    80}};
 
           return *server;
         }
