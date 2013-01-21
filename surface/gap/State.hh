@@ -474,8 +474,6 @@ namespace surface
                          elle::format::json::Dictionary const* request = nullptr,
                          elle::format::json::Dictionary* response = nullptr);
 
-      void
-      _reload_networks();
     };
 
   }
