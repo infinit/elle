@@ -3,14 +3,17 @@
 
 # include <reactor/network/server.hh>
 # include <reactor/network/udt-socket.hh>
+# include <reactor/signal.hh>
 
-# include <elle/nat/Nat.hh>
+# include <elle/Printable.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class UDTServer: public Server, public ProtoServer<UDTSocket>
+    class UDTServer: public Server,
+                     public ProtoServer<UDTSocket>,
+                     public elle::Printable
     {
       public:
         typedef Server Super;
@@ -45,12 +48,26 @@ namespace reactor
       private:
         reactor::Signal _accepted;
         std::vector<std::unique_ptr<UDTSocket>> _sockets;
+
       /*----.
       | NAT |
       `----*/
       private:
-        bool _punch(int port);
+        bool
+        _punch(int port);
+        bool
+        _punch(int port,
+               std::unique_ptr<reactor::network::UDPSocket>& socket);
         std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
+        std::unique_ptr<reactor::Thread> _heartbeat;
+
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        virtual
+        void
+        print(std::ostream&) const;
     };
   }
 }
