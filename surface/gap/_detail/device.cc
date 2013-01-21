@@ -30,7 +30,7 @@ namespace surface
       if (this->_device_id.size() == 0)
         {
           elle::Passport passport;
-          passport.load(common::passport_path(this->_me._id));
+          passport.load(elle::io::Path{common::passport_path(this->_me._id)});
           this->_device_id = passport.id();
           this->_device_name = passport.name();
         }
