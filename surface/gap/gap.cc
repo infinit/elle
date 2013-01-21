@@ -977,16 +977,35 @@ extern "C"
   gap_transaction_message(gap_State* state,
                           char const* transaction_id)
   {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
     gap_Status ret = gap_ok;
     try
-    {
-      auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
-      return transaction.message.c_str();
-    }
+      {
+        auto const& transaction = __TO_CPP(state)->transaction(transaction_id);
+        return transaction.message.c_str();
+      }
     CATCH_ALL(transaction_message);
 
     (void) ret;
     return nullptr;
+  }
+
+  float
+  gap_transaction_progress(gap_State* state,
+                           char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+    gap_Status ret = gap_ok;
+    try
+      {
+        return __TO_CPP(state)->transaction_progress(transaction_id);
+      }
+    CATCH_ALL(transaction_progress);
+
+    (void) ret;
+    return 0;
   }
 
   // - Notifications -----------------------------------------------------------

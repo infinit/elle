@@ -182,6 +182,10 @@ namespace surface
       Transaction const&
       transaction(std::string const& transaction_id);
 
+      /// @brief Returns a floating number in [0.0f, 1.0f]
+      float
+      transaction_progress(std::string const& transaction_id);
+
     public:
       /// A process is indexed with a unique identifier.
       typedef size_t ProcessId;

@@ -265,6 +265,9 @@ extern "C" {
   gap_transaction_message(gap_State*,
                           char const*);
 
+  float
+  gap_transaction_progress(gap_State* state,
+                           char const* transaction_id);
 
   /// - Message ---------------------------------------------------------------
   gap_Status

@@ -122,6 +122,54 @@ namespace surface
       }
     }
 
+    float
+    State::transaction_progress(std::string const& transaction_id)
+    {
+      ELLE_TRACE("Retrieve progress of transaction %s", transaction_id);
+
+      auto const& tr = this->transaction(transaction_id);
+
+      if (tr.status == gap_transaction_status_finished)
+        return 1.0f;
+      else if (tr.status != gap_transaction_status_started)
+        return 0.0f;
+
+      std::string const& progress_binary = common::infinit::binary_path("8progress");
+      QStringList arguments;
+      arguments << "-n" << tr.network_id.c_str()
+                << "-u" << this->_me._id.c_str()
+      ;
+      ELLE_DEBUG("LAUNCH: %s %s", progress_binary,
+                 arguments.join(" ").toStdString());
+
+      QProcess p;
+      p.start(progress_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception{
+            gap_internal_error, "8progress binary failed"
+        };
+      if (p.exitCode())
+        throw Exception{
+            gap_internal_error, "8progress binary exited with errors"
+        };
+
+      int progress = 0;
+      std::stringstream ss{p.readAllStandardOutput().data()};
+      ss >> progress;
+
+      if (progress < 0)
+        {
+          ELLE_WARN("8progress returned a negative integer: %s", progress);
+          progress = 0;
+        }
+      else if (progress > 100)
+        {
+          ELLE_WARN("8progress returned an integer greater than 100: %s", progress);
+          progress = 100;
+        }
+      return ((float) progress) / 100.0f;
+    }
+
     void
     State::_download_files(std::string const& transaction_id)
     {
@@ -489,7 +537,7 @@ namespace surface
       // Wait for it ..!
 
       if (exception != std::exception_ptr{})
-        std::rethrow_exception(exception);
+        std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
 
       // TODO: Do this only on the current device for sender and recipient.
       if (this->_wait_portal(transaction.sender_id, transaction.network_id) == false)
