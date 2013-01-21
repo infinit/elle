@@ -1,8 +1,7 @@
 #ifndef  ELLE_SERIALIZE_FOOTPRINT_HXX
 # define ELLE_SERIALIZE_FOOTPRINT_HXX
 
-# include <cassert>
-
+# include <elle/assert.hh>
 # include <elle/IOStream.hh>
 
 # include "BinaryArchive.hh"
@@ -37,8 +36,7 @@ namespace elle
         elle::WeakBuffer
         read_buffer()
         {
-          assert("Should not be called");
-          throw false;
+          ELLE_ASSERT("Should not be called");
         }
 
         virtual

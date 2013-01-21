@@ -5,6 +5,7 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 #include <elle/system/system.hh>
+#include <elle/CrashReporter.hh>
 
 #include <reactor/network/tcp-socket.hh>
 
@@ -97,7 +98,7 @@ namespace satellite
                                         *socket);
     Transfer::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Transfer::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Transfer::rpcs->authenticate(phrase.pass))
@@ -915,16 +916,19 @@ _main(elle::Natural32 argc, elle::Character* argv[])
   catch (reactor::Exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e << std::endl;
+      elle::crash::report("8transfer", e.what());
       goto _error;
     }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8transfer", e.what());
       goto _error;
     }
   catch (...)
     {
       std::cerr << argv[0] << ": unknown exception" << std::endl;
+      elle::crash::report("8transfer");
       goto _error;
     }
 
@@ -939,6 +943,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&_main, argc, argv));

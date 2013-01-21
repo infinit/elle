@@ -86,7 +86,7 @@ error_details = {
     ACTIVATION_CODE_DOESNT_EXIST: "This activation code doesn't match any.",
 
     # Login.
-    EMAIL_PASSWORD_DONT_MATCH: "Login/Password don't match.",
+    EMAIL_PASSWORD_DONT_MATCH: "Wrong login/password.",
 
     # Network.
     USER_ALREADY_IN_NETWORK: "This user is already in the network.",

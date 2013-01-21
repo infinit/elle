@@ -4,6 +4,7 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
+#include <elle/CrashReporter.hh>
 
 #include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
@@ -121,7 +122,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Access::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Access::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Access::rpcs->authenticate(phrase.pass))
@@ -681,6 +682,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
           dynamic_cast<reactor::Exception const*>(&e))
         std::cerr << re->backtrace() << std::endl;
 
+      elle::crash::report("8acces", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -694,6 +696,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<elle::Status> main(sched, "main",
                                       boost::bind(&_main, argc, argv));

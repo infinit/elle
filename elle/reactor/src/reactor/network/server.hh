@@ -3,6 +3,8 @@
 
 # include <memory>
 
+# include <boost/asio.hpp>
+
 # include <reactor/network/fwd.hh>
 # include <reactor/network/Protocol.hh>
 
@@ -41,6 +43,7 @@ namespace reactor
       public:
         virtual void listen(int port) = 0;
         virtual Socket* accept() = 0;
+        virtual void accept(std::string const& addr, int port);
         virtual int port() const = 0;
 
       /*-----------.

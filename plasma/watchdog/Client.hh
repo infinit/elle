@@ -7,8 +7,6 @@
 
 # include <boost/noncopyable.hpp>
 
-# include <QApplication>
-
 # include "plasma/meta/Client.hh"
 
 namespace plasma

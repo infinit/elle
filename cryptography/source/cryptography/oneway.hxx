@@ -21,7 +21,7 @@ namespace infinit
       hash(T const& value,
            Algorithm algorithm)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
+        ELLE_LOG_COMPONENT("cryptography.oneway");
         ELLE_TRACE_FUNCTION(value);
 
         elle::Buffer buffer;

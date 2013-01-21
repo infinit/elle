@@ -11,6 +11,7 @@
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/CrashReporter.hh>
 
 #include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
@@ -406,6 +407,11 @@ namespace satellite
 int
 main(int argc, char** argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   try
     {
       satellite::User(argc, argv);
@@ -413,6 +419,9 @@ main(int argc, char** argv)
   catch (std::runtime_error const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+
+      elle::crash::report("8user", e.what());
+
       elle::concurrency::scheduler().terminate();
       return 1;
     }

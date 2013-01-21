@@ -11,6 +11,7 @@
 #include <elle/idiom/Open.hh>
 
 #include <elle/log.hh>
+#include <elle/CrashReporter.hh>
 
 ELLE_LOG_COMPONENT("elle.concurrency.Program");
 
@@ -34,6 +35,7 @@ namespace elle
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
+      ::signal(SIGSEGV, &Program::Exception);
 #elif defined(INFINIT_WINDOWS)
       // XXX to implement
 #else
@@ -81,6 +83,14 @@ namespace elle
         case SIGTERM:
           {
             // exit properly by finishing processing the last events.
+            Program::Exit();
+
+            break;
+          }
+        case SIGSEGV: // Probability to send succesfully data is small but try.
+          {
+            elle::crash::report("Program", "SIGSEGV", reactor::Backtrace::current());
+
             Program::Exit();
 
             break;

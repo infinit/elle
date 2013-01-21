@@ -285,7 +285,6 @@ add_subdirectory(elle)
 add_subdirectory(common)
 add_subdirectory(cryptography)
 add_subdirectory(nucleus)
-add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
@@ -315,19 +314,19 @@ set(INFINIT_LIBRARIES
   lune
   nucleus # circular dependency with lune
 
-  hole
   nucleus
   ${HORIZON_LIB}
   etoile
-
-  metal
-  agent
 
   nucleus # circular dependency with etoile
   common
   protocol
   infinit
   hole
+
+  agent
+  metal
+
   cryptography
   lune
   elle
@@ -353,6 +352,7 @@ endforeach()
 ## Executables ----------------------------------------------------------------
 
 add_subdirectory(satellites)
+add_subdirectory(protocol)
 add_subdirectory(plasma)
 if (ENABLE_TEST_COMPILATION)
    add_subdirectory(tests)

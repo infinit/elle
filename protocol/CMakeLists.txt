@@ -6,3 +6,13 @@ add_library(protocol
   Serializer.cc
   Stream.cc
 )
+
+project(8rpc CXX)
+
+add_executable(8rpc
+  8rpc.cc
+)
+
+target_link_libraries(8rpc
+	${INFINIT_LIBRARIES}
+)

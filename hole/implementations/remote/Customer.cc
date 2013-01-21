@@ -37,7 +37,7 @@ namespace hole
         , _server(server)
         , _socket(socket.release())
         , _serializer(elle::concurrency::scheduler(), *_socket.get())
-        , _channels(elle::concurrency::scheduler(), _serializer, false)
+        , _channels(elle::concurrency::scheduler(), _serializer)
         , _rpcs(_channels)
         , _runner(new reactor::Thread(
                     elle::concurrency::scheduler(),

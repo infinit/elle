@@ -3,6 +3,7 @@
 
 #include <elle/log.hh>
 #include <elle/os/getenv.hh>
+#include <elle/CrashReporter.hh>
 
 #include <common/common.hh>
 
@@ -27,7 +28,7 @@ int     main(int ac, char* av[])
 
   if (ac != 2 || av[1] == nullptr)
     {
-      fprintf(stderr, "usage: %s user_id", av[0]);
+      std::cerr << "usage: " << av[0] << " user_id" << std::endl;
       return EXIT_FAILURE;
     }
 
@@ -53,10 +54,12 @@ int     main(int ac, char* av[])
     }
   catch (std::exception const& err)
     {
+      elle::crash::report("8watchdog", err.what());
       ELLE_ERR("An exception occured: %s", err.what());
     }
   catch (...)
     {
+      elle::crash::report("8watchdog");
       ELLE_ERR("Uncaught exception");
     }
   return EXIT_FAILURE;

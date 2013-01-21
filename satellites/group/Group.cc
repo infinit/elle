@@ -6,6 +6,7 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Unique.hh>
 #include <elle/finally.hh>
+#include <elle/CrashReporter.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -115,7 +116,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Group::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Group::rpcs = new etoile::portal::RPC(*channels);
 
     // Authenticate.
@@ -829,6 +830,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("fatal error: %s", e);
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8group", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -836,6 +838,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("fatal error: %s", e.what());
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8group", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -843,6 +846,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("unkown fatal error");
       std::cerr << argv[0] << ": unknown fatal error" << std::endl;
+      elle::crash::report("8group");
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -856,6 +860,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::report_handler  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<elle::Status> main(sched, "main",
                                       boost::bind(&_main, argc, argv));

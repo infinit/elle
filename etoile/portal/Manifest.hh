@@ -198,6 +198,12 @@ namespace etoile
                       etoile::gear::Identifier const&> groupstore;
       RemoteProcedure<void,
                       etoile::gear::Identifier const&> groupdestroy;
+
+      /*-------------.
+      | Hole (FIXME) |
+      `-------------*/
+      RemoteProcedure<void,
+                      std::string const&, int> slug_connect;
     };
   }
 }

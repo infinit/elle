@@ -1,8 +1,11 @@
 import drake.cxx
 import drake.cxx.boost
+import drake.cxx.qt
 
 def configure(cxx_toolkit, cxx_config, enable_horizon = True,
-              optimization = True):
+              optimization = True, prefix = '/usr'):
+
+  prefix = drake.Path(prefix)
 
   asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config)
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
@@ -31,6 +34,11 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   # Elle
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
+  # Qt
+  qt = drake.cxx.qt.Qt()
+  qt_cxx_config = drake.cxx.Config(cxx_config)
+  qt_cxx_config.define('QT_NO_KEYWORDS')
+  qt.plug(cxx_toolkit)
 
   # Fuse
   if enable_horizon:
@@ -270,6 +278,22 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     )
   protocol_lib = drake.cxx.DynLib('lib/protocol', protocol_sources,
                                   cxx_toolkit, cxx_config)
+
+  # RCP caller
+  rpc_sources = drake.nodes(
+    'protocol/8rpc.cc'
+    )
+  rpc_cxx_config = drake.cxx.Config(cxx_config)
+  rpc_cxx_config.lib_path_runtime('../lib')
+  rpc_bin = drake.cxx.Executable('bin/8rpc', rpc_sources + [reactor_lib,
+                                                            asio_udt_lib,
+                                                            udt_lib, # FIXME
+                                                            elle_lib,
+                                                            cryptography_lib,
+                                                            comet_lib,
+                                                            protocol_lib,
+                                                            ],
+                                 cxx_toolkit, rpc_cxx_config)
 
   # Plasma
   plasma_sources = drake.nodes(
@@ -583,6 +607,8 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     ]
   if enable_horizon:
     infinit_libs.append(horizon_slib)
+  infinit_libs += [asio_udt_lib, udt_lib] # FIXME: no need to depend on UDT
+
 
   # 8infinit
   infinit_bin_config = drake.cxx.Config(cxx_config)
@@ -591,9 +617,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   if enable_horizon:
     infinit_bin_config.lib('fuse')
   infinit_bin = drake.cxx.Executable('bin/8infinit',
-                                     drake.nodes('_infinit.cc') +
-                                     infinit_libs +
-                                     [asio_udt_lib, udt_lib], # FIXME: no need to depend on UDT
+                                     drake.nodes('_infinit.cc') + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
 
   # 8hole
@@ -633,16 +657,108 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                      network_sources + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
 
+  # 8transfer
+  transfer_sources = drake.nodes(
+    'satellites/transfer/Transfer.cc',
+    'satellites/transfer/Transfer.hh',
+    )
+  transfer_bin = drake.cxx.Executable('bin/8transfer',
+                                   transfer_sources + infinit_libs,
+                                   cxx_toolkit, infinit_bin_config)
 
-  # # Tests
-  # tests_cxx_config = drake.cxx.Config(cxx_config)
-  # tests_cxx_config += boost.config_test()
-  # tests = ['tests/unit/protocol/rpc.cc']
-  # for test in tests:
-  #   bin_path = drake.Path(test)
-  #   bin_path.extension = ''
-  #   bin = drake.cxx.Executable(bin_path,
-  #                              drake.nodes(test) + [
+  # Trophonius
+
+  tropho_cxx_config = drake.cxx.Config(cxx_config)
+  tropho_sources = drake.nodes(
+    'plasma/trophonius/Client.cc',
+    'plasma/trophonius/Client.hh',
+    )
+  tropho_lib = drake.cxx.DynLib('lib/trophonius',
+                             tropho_sources,
+                             cxx_toolkit, cxx_config)
+
+  # GAP
+
+  gap_cxx_config = drake.cxx.Config(qt_cxx_config)
+  gap_cxx_config.add_system_include_path('/usr/include/python3.2/')
+  gap_sources = drake.nodes(
+    'surface/gap/State.cc',
+    'surface/gap/State.hh',
+    'surface/gap/gap.cc',
+    'surface/gap/gap.h',
+    )
+  gap_cxx_config += qt.config()
+  gap_cxx_config += qt.cfg_network
+  gap_lib = drake.cxx.DynLib('lib/gap',
+                             gap_sources,
+                             cxx_toolkit, gap_cxx_config)
+
+  # GAP python
+
+  gap_python_cxx_config = drake.cxx.Config(qt_cxx_config)
+  gap_python_cxx_config.add_system_include_path('/usr/include/python3.2/')
+  gap_python_sources = drake.nodes(
+    'surface/gap/python/pygap.cc',
+    # FIXME: for longinus port temporarily
+    'common/common.cc',
+    )
+  gap_python_cxx_config += boost.config_python()
+  gap_python_cxx_config.add_system_include_path('/usr/include/python3.2')
+  gap_python_cxx_config.lib_path_runtime('..')
+  gap_python_lib = drake.cxx.Module('lib/python/_gap',
+                                    # FIXME: sooooo many libs ...
+                                    gap_python_sources + [gap_lib, tropho_lib] + infinit_libs,
+                                    cxx_toolkit, gap_python_cxx_config)
+
+  # Watchdog
+  watchdog_sources = drake.nodes(
+    'plasma/watchdog/Application.cc',
+    'plasma/watchdog/Application.hh',
+    'plasma/watchdog/Client.cc',
+    'plasma/watchdog/Client.hh',
+    'plasma/watchdog/ClientActions.cc',
+    'plasma/watchdog/ClientActions.hh',
+    'plasma/watchdog/Connection.cc',
+    'plasma/watchdog/Connection.hh',
+    'plasma/watchdog/InfinitNetwork.cc',
+    'plasma/watchdog/InfinitNetwork.hh',
+    'plasma/watchdog/LocalServer.cc',
+    'plasma/watchdog/LocalServer.hh',
+    'plasma/watchdog/Manager.cc',
+    'plasma/watchdog/Manager.hh',
+    'plasma/watchdog/NetworkManager.cc',
+    'plasma/watchdog/NetworkManager.hh',
+    'plasma/watchdog/WatchdogInterface.cc',
+    'plasma/watchdog/WatchdogInterface.hh',
+    'plasma/watchdog/main.cc',
+    )
+  watchdog_cxx_config = drake.cxx.Config(qt_cxx_config)
+  # watchdog_cxx_config += boost.config_python()
+  watchdog_cxx_config += qt.config()
+  watchdog_cxx_config += qt.cfg_network
+  watchdog_cxx_config += elle.config
+  watchdog_cxx_config.lib_path_runtime('../lib')
+  watchdog_bin = drake.cxx.Executable('bin/8watchdog',
+                                      watchdog_sources + [tropho_lib] + infinit_libs,
+                                      cxx_toolkit, watchdog_cxx_config)
+
+  # Install
+  install = drake.Rule('install')
+  install << drake.copy(infinit_bin, prefix)
+  install << drake.copy(infinit_libs + [udt_lib, asio_udt_lib], prefix)
+
+  # Tests
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += boost.config_test()
+  tests_cxx_config.lib_path_runtime('../../../lib')
+  tests = ['tests/unit/protocol/rpc.cc']
+  for test in tests:
+    bin_path = drake.Path(test)
+    bin_path.extension = ''
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test) + infinit_libs,
+                               cxx_toolkit,
+                               tests_cxx_config)
 
   #       infinit_lib,
   #       elle.lib_dynamic,
