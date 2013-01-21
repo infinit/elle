@@ -244,41 +244,7 @@ namespace reactor
           this->_udp_socket->bind(boost::asio::ip::udp::endpoint
                                   (boost::asio::ip::udp::v4(), desired_port));
         }
-      // try
-      //   {
-      //     if (_udp_socket)
-      //       {
-      //         auto fd = _udp_socket->socket()->native_handle();
-      //         _acceptor = new boost::asio::ip::udt::acceptor
-      //           (scheduler().io_service(), port, fd);
-      //       }
-      //     else
-      //       _acceptor = new boost::asio::ip::udt::acceptor
-      //         (scheduler().io_service(), port);
-      //   }
-      // catch (boost::system::system_error& e)
-      //   {
-      //     throw Exception(scheduler(),
-      //                     elle::sprintf("unable to listen on %s: %s",
-      //                                   port, e.what()));
-      //   }
     }
-
-    // void
-    // UDTServer::listen_fd(int port, int fd)
-    // {
-    //   try
-    //     {
-    //       _acceptor = new boost::asio::ip::udt::acceptor
-    //         (scheduler().io_service(), port, fd);
-    //     }
-    //   catch (boost::system::system_error& e)
-    //     {
-    //       throw Exception(scheduler(),
-    //                       elle::sprintf("unable to listen on %s: %s",
-    //                                     port, e.what()));
-    //     }
-    // }
 
     UDTServer::EndPoint
     UDTServer::local_endpoint() const
