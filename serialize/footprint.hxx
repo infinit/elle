@@ -34,7 +34,7 @@ namespace elle
         elle::WeakBuffer
         read_buffer()
         {
-          ELLE_ASSERT("should not be called");
+          elle::unreachable();
         }
 
         virtual
