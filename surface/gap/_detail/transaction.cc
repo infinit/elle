@@ -356,7 +356,7 @@ namespace surface
                                       {{"cd2", transaction.transaction_id}});
 
       this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_transaction_status_accepted,
+                                      plasma::TransactionStatus::accepted,
                                       this->device_id(),
                                       this->device_name());
 
@@ -382,7 +382,7 @@ namespace surface
                                       {{"cd2", transaction.transaction_id}});
 
       this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_transaction_status_started);
+                                      plasma::TransactionStatus::started);
 
       metrics::google::server().store("transaction:start:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -401,21 +401,20 @@ namespace surface
                                          {"cd2", transaction.transaction_id}});
 
         this->_meta->update_transaction(transaction.transaction_id,
-                                        gap_transaction_status_canceled);
+                                        plasma::TransactionStatus::canceled);
 
         metrics::google::server().store("transaction:cancel:sender:succeed",
                                         {{"cd1", std::to_string(transaction.status)},
-                                         {"cd2", transaction.transaction_id}});
+                                          {"cd2", transaction.transaction_id}});
       }
       else
       {
         metrics::google::server().store("transaction:cancel:recipient:attempt",
                                         {{"cd1", std::to_string(transaction.status)},
-                                         {"cd2", transaction.transaction_id}});
+                                          {"cd2", transaction.transaction_id}});
 
-        //XXX
         this->_meta->update_transaction(transaction.transaction_id,
-                                        gap_transaction_status_canceled);
+                                        plasma::TransactionStatus::canceled);
 
         metrics::google::server().store("transaction:cancel:recipient:succeed",
                                         {{"cd1", std::to_string(transaction.status)},
@@ -438,7 +437,7 @@ namespace surface
                                       {{"cd2", transaction.transaction_id}});
 
       this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_finished);
+                                      plasma::TransactionStatus::finished);
 
       metrics::google::server().store("transaction:finish:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -486,8 +485,7 @@ namespace surface
     void
     State::_on_transaction_accepted(Transaction const& transaction)
     {
-      ELLE_DEBUG("On transaction accepted '%s'", transaction.transaction_id);
-
+      ELLE_TRACE("On transaction accepted '%s'", transaction.transaction_id);
 
       if (transaction.sender_device_id != this->device_id())
         return;
@@ -507,6 +505,7 @@ namespace surface
                             transaction.network_id,
                             nucleus::neutron::permissions::write);
 
+      ELLE_DEBUG("update transaction");
       // When recipient has rights, allow him to start download.
       this->update_transaction(transaction.transaction_id,
                                gap_transaction_status_started);
@@ -639,7 +638,10 @@ namespace surface
       auto it = this->transactions().find(notif.transaction.transaction_id);
 
       if (it != this->transactions().end())
+      {
+        ELLE_WARN("you already have this transaction");
         return;
+      }
 
       // Normal case, this is a new transaction, store it to match server.
       (*this->_transactions)[notif.transaction.transaction_id] = notif.transaction;
@@ -664,22 +666,22 @@ namespace surface
 
       auto const& transaction = this->transaction(notif.transaction_id);
 
-      switch(notif.status)
+      switch((plasma::TransactionStatus) notif.status)
       {
-        case gap_transaction_status_accepted:
+        case plasma::TransactionStatus::accepted:
           // We update the transaction from meta.
           (*_transactions)[notif.transaction_id] = this->_meta->transaction(
               notif.transaction_id
           );
           this->_on_transaction_accepted(transaction);
           break;
-        case gap_transaction_status_started:
+        case plasma::TransactionStatus::started:
           this->_on_transaction_started(transaction);
           break;
-        case gap_transaction_status_canceled:
+        case plasma::TransactionStatus::canceled:
           this->_on_transaction_canceled(transaction);
           break;
-        case gap_transaction_status_finished:
+        case plasma::TransactionStatus::finished:
           this->_on_transaction_closed(transaction);
           break;
         default:

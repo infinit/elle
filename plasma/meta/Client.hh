@@ -13,7 +13,7 @@
 # include <plasma/plasma.hh>
 
 # include <elle/HttpClient.hh>
-# include <surface/gap/gap.h>
+
 
 namespace plasma
 {
@@ -32,17 +32,24 @@ namespace plasma
     template <typename T, typename U>
     using map = std::map<T, U>;
 
+    enum class Error: int
+    {
+# define ERR_CODE(name, value, comment)                                         \
+      name = value,
+# include <oracle/disciples/meta/error_code.hh.inc>
+# undef ERR_CODE
+    };
 
     /// Base class for every response
     struct Response
     {
       bool _success;
-      int response_code;
+      int response_code; // should be a plasma::meta::Error
       string response_details;
 
       bool success() const
       {
-        return _success;//response_code < (int) elle::ResponseCode::error;
+        return _success;
       }
     };
 
@@ -292,7 +299,7 @@ namespace plasma
 
       UpdateTransactionResponse
       update_transaction(string const& transaction_id,
-                         int status,
+                         plasma::TransactionStatus status,
                          string const& device_id = "",
                          string const& device_name = "");
 

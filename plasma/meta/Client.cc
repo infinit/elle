@@ -50,7 +50,7 @@ SERIALIZE_RESPONSE(plasma::meta::DebugResponse, ar, res)
 {
   (void) ar;
   (void) res;
-};
+}
 
 
 SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
@@ -428,7 +428,7 @@ namespace plasma
 
     UpdateTransactionResponse
     Client::update_transaction(string const& transaction_id,
-                               int status,
+                               plasma::TransactionStatus status,
                                string const& device_id,
                                string const& device_name)
     {
@@ -437,7 +437,7 @@ namespace plasma
           {"transaction_id", transaction_id},
         }};
 
-      request["status"] = status;
+      request["status"] = (int) status;
       if (device_id.length() > 0)
         request["device_id"] = device_id;
       if (device_name.length() > 0)
@@ -452,22 +452,21 @@ namespace plasma
 
       switch(status)
       {
-        case gap_TransactionStatus::gap_transaction_status_accepted:
+        case plasma::TransactionStatus::accepted:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/accept", request);
           break;
-        case gap_TransactionStatus::gap_transaction_status_started:
+        case plasma::TransactionStatus::started:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
           break;
-        case gap_TransactionStatus::gap_transaction_status_canceled:
+          case plasma::TransactionStatus::canceled:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/cancel", request);
           break;
-        case gap_TransactionStatus::gap_transaction_status_finished:
+        case plasma::TransactionStatus::finished:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/finish", request);
           break;
         default:
           ELLE_WARN("You are not able to change transaction status to '%i'.",
             status);
-
       }
 
       return res;

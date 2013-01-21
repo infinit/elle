@@ -22,6 +22,14 @@ namespace plasma
     int                   is_directory;
     int                   status;
   };
+
+  enum class TransactionStatus: int
+  {
+# define TRANSACTION_STATUS(name, value)                                       \
+    name = value,
+# include <oracle/disciples/meta/resources/transaction_status.hh.inc>
+# undef TRANSACTION_STATUS
+  };
 }
 
 # include "plasma.hxx"
