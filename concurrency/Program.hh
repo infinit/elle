@@ -27,7 +27,7 @@ namespace elle
       //
       // static methods
       //
-      static Status             Setup();
+      static Status             Setup(std::string const& name);
       static void               Launch();
       static Void               Exception(int);
       static void               Exit();
@@ -36,6 +36,7 @@ namespace elle
       // attributes
       //
     private:
+      static std::string        _name;
       static reactor::Signal    _exit;
     };
 
