@@ -4,6 +4,8 @@
 # include <reactor/network/server.hh>
 # include <reactor/network/udt-socket.hh>
 
+# include <elle/nat/Nat.hh>
+
 namespace reactor
 {
   namespace network
@@ -20,21 +22,34 @@ namespace reactor
       `----------*/
       public:
         void listen(int port = 0);
+        void listen_fd(int port, int fd);
 
       public:
         /// The locally bound port.
         virtual int port() const;
         /// The locally bound endpoint.
         EndPoint local_endpoint() const;
+        /// The public bound endpoint.
+        ELLE_ATTRIBUTE_R(EndPoint, public_endpoint)
 
       /*----------.
       | Accepting |
       `----------*/
       public:
-        UDTSocket* accept();
-
+        virtual
+        UDTSocket*
+        accept();
+        virtual
+        void
+        accept(std::string const& addr, int port);
       private:
-        boost::asio::ip::udt::acceptor* _acceptor;
+        reactor::Signal _accepted;
+        std::vector<std::unique_ptr<UDTSocket>> _sockets;
+      /*----.
+      | NAT |
+      `----*/
+      private:
+        std::shared_ptr<reactor::network::UDPSocket> _udp_socket;
     };
   }
 }

@@ -305,5 +305,13 @@ namespace elle
       return Status::Ok;
     }
 
+    Time const&
+    Time::get_current()
+    {
+      static Time _time;
+      _time.Current();
+
+      return _time;
+    }
   }
 }

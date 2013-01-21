@@ -24,9 +24,9 @@ namespace elle
   {
 
     Logger::Level
-    logLevel()
+    default_log_level()
     {
-      const char* env = ::getenv("ELLE_LOG_LEVEL");
+      static const char* env = ::getenv("ELLE_LOG_LEVEL");
       if (env)
         {
           const std::string level(env);
@@ -47,10 +47,18 @@ namespace elle
     }
 
 
-    elle::log::Logger& default_logger()
+    Logger&
+    logger(std::string const& name)
     {
-      static elle::log::Logger logger(logLevel());
-      return logger;
+      static std::unordered_map<std::string, std::unique_ptr<Logger>> loggers;
+      auto it = loggers.find(name);
+      if (it == loggers.end())
+        {
+          auto logger =  new Logger{default_log_level()};
+          loggers[name].reset(logger);
+          return *logger;
+        }
+      return *it->second;
     };
 
     namespace detail
@@ -74,7 +82,7 @@ namespace elle
       struct Components
       {
       private:
-        std::vector<std::string> _patterns;
+        std::vector<std::string>      _patterns;
         std::map<std::string, bool>   _enabled;
 
       public:
@@ -245,7 +253,8 @@ namespace elle
           fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
         else
           fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
-        default_logger().message(level, type, str(fmt));
+        std::string pid = "[" + std::to_string(getpid()) + "]";
+        logger(this->_component).message(level, type, pid + str(fmt));
       }
 
       void
