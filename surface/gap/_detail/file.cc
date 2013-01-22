@@ -164,7 +164,7 @@ namespace surface
       ELLE_TRACE("setting permissions");
 
       // TODO: Do this only on the current device for sender and recipient.
-      if (this->_wait_portal(this->_me._id, network_id) == false)
+      if (this->_wait_portal(network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       std::string const& access_binary = common::infinit::binary_path("8access");

@@ -370,8 +370,7 @@ namespace surface
 
     private:
       bool
-      _wait_portal(std::string const& user_id,
-                   std::string const& network_id);
+      _wait_portal(std::string const& network_id);
 
     public:
       /// Retrieve all networks.

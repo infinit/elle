@@ -70,7 +70,7 @@ namespace surface
       std::string network_id = this->create_network(network_name);
 
       ELLE_DEBUG("created network id is %s", network_id);
-      if (this->_wait_portal(this->_me._id, network_id) == false)
+      if (this->_wait_portal(network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       ELLE_DEBUG("Retrieving 8transfert binary path...");
@@ -539,7 +539,7 @@ namespace surface
         std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
 
       // TODO: Do this only on the current device for sender and recipient.
-      if (this->_wait_portal(transaction.sender_id, transaction.network_id) == false)
+      if (this->_wait_portal(transaction.network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       if (transaction.recipient_device_id != this->device_id())

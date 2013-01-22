@@ -24,8 +24,7 @@ namespace surface
     namespace json = elle::format::json;
 
     bool
-    State::_wait_portal(std::string const& user_id,
-                        std::string const& network_id)
+    State::_wait_portal(std::string const& network_id)
     {
       ELLE_TRACE("_wait_portal for network %s", network_id);
       (void) this->refresh_networks();
@@ -35,7 +34,7 @@ namespace surface
       // (void) this->network_status(network_id);
 
       ELLE_DEBUG("retrieving portal path");
-      auto portal_path = common::infinit::portal_path(user_id, network_id);
+      auto portal_path = common::infinit::portal_path(this->_me._id, network_id);
 
       ELLE_DEBUG("portal path is %s", portal_path);
 
@@ -52,7 +51,7 @@ namespace surface
     std::string
     State::create_network(std::string const& name)
     {
-
+      ELLE_TRACE("creating network %s", name);
 
       metrics::google::server().store("network:create:attempt");
 
@@ -69,6 +68,8 @@ namespace surface
     std::string
     State::delete_network(std::string const& network_id, bool force)
     {
+      ELLE_TRACE("deleting network %s", network_id);
+
       auto const& net = this->_networks.find(network_id);
 
       if (net != this->_networks.end())

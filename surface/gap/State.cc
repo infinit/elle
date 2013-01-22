@@ -425,7 +425,6 @@ namespace surface
           locals = std::move(e.locals);
       }
 
-
       // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
       {
         lune::Phrase phrase;
@@ -450,15 +449,21 @@ namespace surface
 
         etoile::portal::RPC rpcs{channels};
 
+        bool ok = false;
         auto send_to_slug = [&] (std::string const& endpoint) -> void {
+          if (!ok)
+          {
             std::vector<std::string> result;
 
             boost::split(result, endpoint, boost::is_any_of(":"));
+            ELLE_DEBUG("sending %s:%s to slug", result[0], result[1]);
             rpcs.slug_connect(result[0], std::stoi(result[1]));
+            ok = true;
+          }
         };
 
-        std::for_each(begin(externals), end(externals), send_to_slug);
-        std::for_each(begin(locals), end(locals), send_to_slug);
+        std::for_each(std::begin(locals), std::end(locals), send_to_slug);
+        std::for_each(std::begin(externals), std::end(externals), send_to_slug);
       }
     }
 
