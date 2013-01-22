@@ -6,7 +6,7 @@
 
 #include <boost/foreach.hpp>
 
-ELLE_LOG_COMPONENT("Reactor.Scheduler");
+ELLE_LOG_COMPONENT("reactor.Scheduler");
 
 namespace reactor
 {
@@ -187,7 +187,6 @@ namespace reactor
   void
   Scheduler::_terminate(Thread* thread)
   {
-    ELLE_LOG_COMPONENT("Reactor.Thread");
     ELLE_TRACE("%s: terminate", *thread);
     if (current() == thread)
       throw Terminate(*this);
