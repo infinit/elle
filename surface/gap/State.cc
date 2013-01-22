@@ -419,10 +419,17 @@ namespace surface
       std::list<std::string> externals;
       std::list<std::string> locals;
       {
-          Endpoint e = this->_meta->device_endpoints(network_id, sender_device);
+        std::string target_device{};
 
-          externals = std::move(e.externals);
-          locals = std::move(e.locals);
+        if (trans.recipient_device_id == this->device_id())
+          target_device = trans.sender_device_id;
+        else
+          target_device = trans.recipient_device_id;
+
+        Endpoint e = this->_meta->device_endpoints(network_id, target_device);
+
+        externals = std::move(e.externals);
+        locals = std::move(e.locals);
       }
 
       // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
@@ -442,6 +449,7 @@ namespace surface
                          boost::posix_time::seconds(10));
 
         s.run();
+
         // Connect to the server.
         reactor::network::TCPSocket socket{
             elle::concurrency::scheduler(),
@@ -489,6 +497,5 @@ namespace surface
         }
       }
     }
-
   }
 }
