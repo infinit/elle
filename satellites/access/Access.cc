@@ -76,6 +76,7 @@ namespace satellite
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the public key's unique");
           std::cout << "User"
+                    << " "
                     << unique
                     << " "
                     << std::dec

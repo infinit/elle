@@ -152,6 +152,30 @@ namespace nucleus
 
     template <typename T>
     std::pair<Handle, Capacity>
+    Tree<T>::find(typename T::K const& k)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");
+      ELLE_TRACE_METHOD(k);
+
+      // Initialize the base.
+      Capacity base(0);
+
+      ELLE_ASSERT(this->_root != nullptr);
+
+      Ambit<Nodule<T>> root(this->_nest, *this->_root);
+
+      root.load();
+
+      // Find the key down the tree.
+      Handle v{root().find(k, base)};
+
+      root.unload();
+
+      return (std::pair<Handle, Capacity>(v, base));
+    }
+
+    template <typename T>
+    std::pair<Handle, Capacity>
     Tree<T>::seek(Capacity const target)
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Tree");

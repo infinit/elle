@@ -116,7 +116,7 @@ namespace nucleus
       // construction
       //
     public:
-      Group();
+      Group(); // XXX[to deserialize]
       Group(proton::Network const& network,
             cryptography::PublicKey const& manager_K,
             elle::String const& description);

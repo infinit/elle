@@ -43,7 +43,7 @@ namespace surface
       if (this->_device_name.size() == 0)
         {
           elle::Passport passport;
-          passport.load(common::passport_path(this->_me._id));
+          passport.load(elle::io::Path{common::passport_path(this->_me._id)});
           this->_device_id = passport.id();
           this->_device_name = passport.name();
         }
@@ -70,7 +70,7 @@ namespace surface
         {
           ELLE_DEBUG("Loading passport from '%s'.", passport_path);
           elle::Passport passport;
-          passport.load(passport_path);
+          passport.load(elle::io::Path{passport_path});
 
           ELLE_DEBUG("Passport id: %s", passport.id());
           auto res = this->_meta->update_device(passport.id(), name);

@@ -173,6 +173,9 @@ namespace nucleus
       /// not not be loaded in main memory once the handle is returned.
       Handle
       lookup(typename T::K const& k);
+      /// XXX
+      std::pair<Handle, Capacity>
+      find(typename T::K const& k);
       /// Take the target index capacity and return the value responsible
       /// for it along with its base capacity index i.e the capacity index
       /// of the first element in the returned value.

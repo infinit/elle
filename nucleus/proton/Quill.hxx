@@ -567,6 +567,38 @@ namespace nucleus
 
     template <typename T>
     Handle
+    Quill<T>::find(typename T::K const& k,
+                   Capacity& base)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Quill");
+      ELLE_TRACE_METHOD(k);
+
+      auto end = this->_container.end();
+      auto scoutor = this->_container.begin();
+      auto rbegin = this->_container.rbegin();
+
+      // go through the container.
+      for (; scoutor != end; ++scoutor)
+        {
+          Quill<T>::I* inlet = scoutor->second;
+
+          // check if this inlet is responsible for the given key or
+          // the end of the quill has been reached.
+          if ((k <= inlet->key()) || (inlet == rbegin->second))
+            {
+              // return the value.
+              return (inlet->value());
+            }
+
+          // increases the base.
+          base += inlet->capacity();
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    Handle
     Quill<T>::seek(Capacity const target,
                    Capacity& base)
     {

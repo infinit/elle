@@ -61,6 +61,9 @@ namespace nucleus
       /// Return the value associated with the given key _k_.
       Door<T>
       lookup(typename T::K const& k) const;
+      /// XXX
+      std::pair<Door<T>, Capacity>
+      find(typename T::K const& k) const;
       /// Take the target index capacity and return the value responsible
       /// for it along with its base capacity index i.e the capacity index
       /// of the first element in the returned value.

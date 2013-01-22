@@ -37,10 +37,13 @@ namespace nucleus
       /// Construct an empty radix.
       Radix();
       /// Construct a value-based radix.
+      explicit
       Radix(cryptography::Cipher const& value);
       /// Construct a radix based on a single block whose address is _address_.
+      explicit
       Radix(Address const& address);
       /// Construct a tree-based radix given the root _root_.
+      explicit
       Radix(Root const& root);
       /// Copy constructor.
       Radix(Radix const& other);

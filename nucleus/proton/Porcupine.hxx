@@ -226,6 +226,75 @@ namespace nucleus
 
     template <typename T>
     std::pair<Door<T>, Capacity>
+    Porcupine<T>::find(typename T::K const& k) const
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");
+      ELLE_TRACE_METHOD(k);
+
+      // Note that this method assumes that a single value or block
+      // is responsible for any valid key _k_.
+
+      ELLE_TRACE("strategy: %s", this->_strategy);
+
+      switch (this->_strategy)
+        {
+        case Strategy::none:
+          {
+            // Create a value.
+            this->_create();
+
+            // Do not break and proceed with the lookup.
+            ELLE_ASSERT(this->_strategy == Strategy::value);
+          }
+        case Strategy::value:
+          {
+            ELLE_ASSERT(this->_value != nullptr);
+
+            // Return a door to the value along with a capacity index of
+            // zero since this is the first and only value.
+            Door<T> door{this->_value};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), 0});
+          }
+        case Strategy::block:
+          {
+            ELLE_ASSERT(this->_handle != nullptr);
+
+            Ambit<T> value(this->_nest, *this->_handle);
+
+            value.load();
+
+            value.unload();
+
+            // Return a door to the value block along with a capacity index of
+            // zero since this is the first and only value.
+            Door<T> door{*this->_handle, this->_nest};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), 0});
+          }
+        case Strategy::tree:
+          {
+            ELLE_ASSERT(this->_tree != nullptr);
+
+            // Find the key in the tree.
+            auto pair = this->_tree->find(k);
+
+            // Return a door to the value block responsible for the given
+            // capacity index along with the base capacity index of this value.
+            Door<T> door{pair.first, this->_nest};
+
+            return (std::pair<Door<T>, Capacity>{std::move(door), pair.second});
+          }
+        default:
+          throw Exception("unknown strategy: '%s'",
+                          static_cast<int>(this->_strategy));
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    std::pair<Door<T>, Capacity>
     Porcupine<T>::seek(Capacity const target) const
     {
       ELLE_LOG_COMPONENT("infinit.nucleus.proton.Porcupine");

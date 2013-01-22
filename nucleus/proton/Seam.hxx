@@ -658,6 +658,52 @@ namespace nucleus
 
     template <typename T>
     Handle
+    Seam<T>::find(typename T::K const& k,
+                  Capacity& base)
+    {
+      ELLE_LOG_COMPONENT("infinit.nucleus.proton.Seam");
+
+      auto end = this->_container.end();
+      auto iterator = this->_container.begin();
+      auto rbegin = this->_container.rbegin();
+
+      ELLE_TRACE_SCOPE("find(%s)", k);
+
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<T>::I* inlet = iterator->second;
+
+          // check if this inlet is responsible for the given key or
+          // the end of the quill has been reached.
+          if ((k <= inlet->key()) || (inlet == rbegin->second))
+            {
+              //
+              // load the child nodule and explore it.
+              //
+              Ambit<Nodule<T>> current(this->nest(), inlet->value());
+
+              // load the current nodule.
+              current.load();
+
+              // find the key in this nodule.
+              Handle v{current().find(k, base)};
+
+              // unload the current nodule.
+              current.unload();
+
+              return (v);
+            }
+
+          // increases the base.
+          base += inlet->capacity();
+        }
+
+      elle::unreachable();
+    }
+
+    template <typename T>
+    Handle
     Seam<T>::seek(Capacity const target,
                   Capacity& base)
     {

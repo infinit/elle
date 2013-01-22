@@ -37,6 +37,7 @@ namespace nucleus
         | Construction |
         `-------------*/
       public:
+        Node(); // XXX
         Node(Extent const extent,
              Contention const contention,
              Balancing const balancing);
@@ -76,6 +77,7 @@ namespace nucleus
       | Construction |
       `-------------*/
     public:
+      Limits(); // XXX
       Limits(limits::Porcupine const& porcupine,
              limits::Node const& nodule,
              limits::Node const& value);

@@ -387,7 +387,7 @@ namespace satellite
               // 1MB seems large enough for the performance to remain
               // good while ensuring a smooth progress i.e no jump from
               // 4% to 38% for reasonable large files.
-              std::streamsize N = 5048576;
+              std::streamsize N = 1048576;
               nucleus::neutron::Offset offset(0);
 
 #ifdef TRANSFER_UGLY_PERFORMANCE_HACK

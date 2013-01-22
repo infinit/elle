@@ -135,6 +135,11 @@ namespace nucleus
       /// XXX
       virtual
       Handle
+      find(typename T::K const& k,
+           Capacity& base) = 0;
+      /// XXX
+      virtual
+      Handle
       seek(Capacity const target,
            Capacity& base) = 0;
       /// XXX

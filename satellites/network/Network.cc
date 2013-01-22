@@ -215,6 +215,8 @@ namespace satellite
         }
       case horizon::Policy::confidential:
         {
+          access_radix = new nucleus::proton::Radix{};
+
           break;
         }
       }
@@ -222,8 +224,8 @@ namespace satellite
     cryptography::Digest fingerprint =
       nucleus::neutron::access::fingerprint(access);
 
+    ELLE_ASSERT(access_radix != nullptr);
     ELLE_ASSERT(access_radix->strategy() == nucleus::proton::Strategy::value);
-    assert(access_radix != nullptr);
 
     //
     // create the root directory.

@@ -3,6 +3,7 @@
 #include <etoile/automaton/Access.hh>
 #include <etoile/gear/Object.hh>
 
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Access.hh>
@@ -55,20 +56,20 @@ namespace etoile
             if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access");
 
-            /* XXX
-            //context.access_porcupine->find(agent::Agent::Subject)};
+            auto pair = context.access_porcupine->find(agent::Agent::Subject);
+            auto& door = pair.first;
+            auto& capacity = pair.second;
 
             door.open();
 
             // lookup the user's subject in the access records.
             nucleus::neutron::Index index =
-              door().seek(agent::Agent::Subject) + door.;
+              capacity + door().seek(agent::Agent::Subject);
 
             door.close();
 
             // Create a lord author.
             context.author = new nucleus::neutron::Author(index);
-            */
 
             break;
           }

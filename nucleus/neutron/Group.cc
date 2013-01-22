@@ -54,7 +54,7 @@ namespace nucleus
           cryptography::KeyPair::generate(Group::Constants::keypair_length));
 
         Token token(pass.k(), this->manager_subject().user());
-        this->upgrade(proton::Address::null(), pass.K(), token);
+        this->upgrade(proton::Radix{}, pass.K(), token);
       }
     }
 

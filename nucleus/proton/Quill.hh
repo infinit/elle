@@ -161,6 +161,9 @@ namespace nucleus
       Handle
       search(typename T::K const& k);
       Handle
+      find(typename T::K const& k,
+           Capacity& base);
+      Handle
       seek(Capacity const target,
            Capacity& base);
       void

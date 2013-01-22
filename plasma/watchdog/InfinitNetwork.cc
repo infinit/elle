@@ -16,7 +16,6 @@
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
 
-#include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
@@ -169,11 +168,68 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("unable to create the group subject");
 
   //- access-------------------------------------------------------------------
-  nucleus::neutron::Access access(network, identity.pair.K());
-  access.insert(new nucleus::neutron::Record{subject, permissions});
+  // A temporary nest which should never be used.
+  class Nest
+  {
+  public:
+    Nest(Limits const& limits,
+         Network const& network,
+         cryptography::PublicKey const& agent_K):
+      nucleus::proton::Nest(limits, network, agent_K)
+    {}
+    ~Nest()
+    {}
+    virtual
+    Handle
+    attach(nucleus::proton::Contents* block)
+    {
+      elle::unreachable();
+    }
+    virtual
+    void
+    detach(nucleus::proton::Handle& handle)
+    {
+      elle::unreachable();
+    }
+    virtual
+    void
+    load(nucleus::proton::Handle& handle)
+    {
+      elle::unreachable();
+    }
+    virtual
+    void
+    unload(nucleus::proton::Handle& handle)
+    {
+      elle::unreachable();
+    }
+  };
+  Nest nest{nucleus::proton::Limits{}, network, identity.pair().K()};
 
-  //- access address ----------------------------------------------------------
-  nucleus::proton::Address      access_address(access.bind());
+  nucleus::proton::Porcupine access_porcupine{nest};
+
+  nucleus::proton::Door<nucleus::neutron::Access> access_door =
+    access_porcupine.lookup(subject);
+
+  access_door.open();
+
+  access_door().insert(new nucleus::neutron::Record{subject, permissions});
+
+  access_door.close();
+
+// XXX[cf: etoile/automaton/Access.hh>, until no longer encrypted]
+#define ACCESS_SECRET_KEY_LENGTH 256
+#define ACCESS_SECRET_KEY "no-secret-key"
+
+  // XXX
+  static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+
+  ELLE_ASSERT(access_porcupine.strategy() == nucleus::proton::Strategy::value);
+
+  cryptography::Digest access_fingerprint =
+    nucleus::neutron::access::fingerprint(access_porcupine);
+
+  nucleus::proton::Radix access_radix = access_porcupine.seal(secret_key);
 
   //- directory ---------------------------------------------------------------
   nucleus::neutron::Object      directory(network,
@@ -183,18 +239,18 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   if (directory.Update(directory.author(),
                        directory.contents(),
                        directory.size(),
-                       access_address,
+                       access_radix,
                        directory.owner_token()) == e)
     throw std::runtime_error("unable to update the directory");
 
-  if (directory.Seal(identity.pair.k(), &access) == e)
+  if (directory.Seal(identity.pair.k(), access_fingerprint) == e)
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------
   nucleus::proton::Address      directory_address(directory.bind());
 
   {
-    assert(false);
+    ELLE_ASSERT(false);
     /* XXX[to improve: contact Raphael]
     elle::io::Unique root_block_;
     directory.Save(root_block_);

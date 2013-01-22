@@ -82,6 +82,13 @@ namespace etoile
 
             break;
           }
+        case nucleus::neutron::Object::RoleLord:
+          {
+            // XXX[this is wrong: we should look into the ACL]
+            this->keys.author = new cryptography::PublicKey{object.owner_K()};
+
+            break;
+          }
         default:
           {
             // XXX to implement.
