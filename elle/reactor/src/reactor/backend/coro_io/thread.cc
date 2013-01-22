@@ -7,7 +7,7 @@
 #include <elle/log.hh>
 #include <elle/idiom/Close.hh>
 
-ELLE_LOG_COMPONENT("Reactor.Backend");
+ELLE_LOG_COMPONENT("reactor.backend");
 
 namespace reactor
 {

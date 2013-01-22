@@ -428,8 +428,20 @@ namespace surface
       // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
       {
         lune::Phrase phrase;
+
+        if (this->_wait_portal(network_id) == false)
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
         phrase.load(this->_me._id, network_id, "portal");
 
+        ELLE_DEBUG("Connect to the local 8infint instance (%s:%d)",
+                   elle::String{"127.0.0.1"},
+                   phrase.port);
+
+        reactor::Sleep s(elle::concurrency::scheduler(),
+                         boost::posix_time::seconds(10));
+
+        s.run();
         // Connect to the server.
         reactor::network::TCPSocket socket{
             elle::concurrency::scheduler(),
@@ -456,14 +468,25 @@ namespace surface
             std::vector<std::string> result;
 
             boost::split(result, endpoint, boost::is_any_of(":"));
-            ELLE_DEBUG("sending %s:%s to slug", result[0], result[1]);
+            ELLE_DEBUG("slug_connect(%s, %s)", result[0], result[1]);
+
             rpcs.slug_connect(result[0], std::stoi(result[1]));
             ok = true;
           }
+          else
+              ELLE_DEBUG("ignore %s", endpoint);
         };
 
-        std::for_each(std::begin(locals), std::end(locals), send_to_slug);
-        std::for_each(std::begin(externals), std::end(externals), send_to_slug);
+        try
+        {
+            std::for_each(std::begin(locals), std::end(locals), send_to_slug);
+            std::for_each(std::begin(externals), std::end(externals), send_to_slug);
+        }
+        catch (elle::Exception const &e)
+        {
+            ELLE_TRACE("Caught exception %s", e.what());
+            throw e;
+        }
       }
     }
 

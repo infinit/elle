@@ -133,6 +133,7 @@ namespace elle
 # include <boost/preprocessor/seq/for_each_i.hpp>
 # include <boost/preprocessor/variadic/size.hpp>
 # include <boost/preprocessor/variadic/to_seq.hpp>
+# include <boost/preprocessor/seq.hpp>
 
 # define __ESC_INITIALIZATION_LIST_TRANSFORM(__s, __data, __elem)             \
   __elem{elle::serialize::no_init}

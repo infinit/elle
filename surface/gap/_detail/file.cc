@@ -50,7 +50,7 @@ namespace surface
                   pair.first,
                   abspath,
                   relpath,
-                  {},
+                  std::map<std::string, int>{},
               });
               break;
             }
