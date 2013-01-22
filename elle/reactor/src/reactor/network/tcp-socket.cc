@@ -11,7 +11,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_COMPONENT("Reactor.TCPSocket");
+ELLE_LOG_COMPONENT("reactor.network.TCPSocket");
 
 namespace reactor
 {
