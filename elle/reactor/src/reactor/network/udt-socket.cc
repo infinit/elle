@@ -39,10 +39,11 @@ namespace reactor
       : Super(sched, new boost::asio::ip::udt::socket(sched.io_service()))
       , _write_mutex()
     {
+      this->_peer = resolve_udp(sched, hostname, port);
       ELLE_DEBUG("%s: rebind FD %s", *this, fd)
         this->socket()->_bind_fd(fd);
       ELLE_DEBUG("%s: connect to %s:%s", *this, hostname, port)
-        _connect(resolve_udp(sched, hostname, port), timeout);
+      _connect(this->_peer, timeout);
     }
 
     UDTSocket::UDTSocket(Scheduler& sched,
