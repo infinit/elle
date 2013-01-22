@@ -18,7 +18,7 @@
 #include <openssl/evp.h>
 #include <fcntl.h>
 
-ELLE_LOG_COMPONENT("cryptography.KeyPair");
+ELLE_LOG_COMPONENT("infinit.cryptography.KeyPair");
 
 namespace infinit
 {
