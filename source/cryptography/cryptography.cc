@@ -6,7 +6,7 @@
 #include <openssl/engine.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("cryptography.cryptography");
+ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
 
 namespace infinit
 {

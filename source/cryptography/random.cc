@@ -21,7 +21,7 @@
 # include <wincrypt.h>
 #endif
 
-ELLE_LOG_COMPONENT("cryptography.random");
+ELLE_LOG_COMPONENT("infinit.cryptography.random");
 
 namespace infinit
 {
