@@ -38,7 +38,7 @@ namespace elle
       Insertor&
       operator <<(T&& val)
       {
-        _archive << std::forward<T>(val);
+        (*_archive) << std::forward<T>(val);
         return *this;
       }
 
@@ -46,7 +46,7 @@ namespace elle
       Insertor&
       operator &(T&& val)
       {
-        _archive & std::forward<T>(val);
+        (*_archive) & std::forward<T>(val);
         return *this;
       }
 
