@@ -7,7 +7,7 @@
 #include <elle/log.hh>
 #include <elle/idiom/Close.hh>
 
-ELLE_LOG_COMPONENT("Reactor.Network.UDPServer");
+ELLE_LOG_COMPONENT("reactor.network.UDPServer");
 
 namespace reactor
 {
