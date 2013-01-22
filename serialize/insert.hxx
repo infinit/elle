@@ -16,13 +16,13 @@ namespace elle
     class Insertor
     {
     protected:
-      Archive                       _archive;
+      std::unique_ptr<Archive>      _archive;
       std::unique_ptr<std::ostream> _stream; // stream destroyed after archive
 
     public:
       explicit
       Insertor(std::unique_ptr<std::ostream>&& stream):
-        _archive(*stream),
+        _archive{new Archive{*stream}},
         _stream(std::move(stream))
       {
         if (!this->_stream->good())
