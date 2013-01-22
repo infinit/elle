@@ -8,19 +8,22 @@
 #define NETWORK_STRING_REF_INC
 
 #include <network/uri/config.hpp>
-#include <string>
+#include <iosfwd>
 #include <iterator>
+#include <memory>
+#include <string>
 #include <boost/optional.hpp>
 #include <boost/range/as_literal.hpp>
-#include <iosfwd>
 
 namespace network {
-  template <typename CharT, class CharTraits = std::char_traits<CharT> >
+  template <class CharT,
+            class CharTraits = std::char_traits<CharT>,
+            class Allocator = std::allocator<CharT> >
   class basic_string_ref {
 
   public:
 
-    typedef std::basic_string<CharT, CharTraits> string_type;
+    typedef std::basic_string<CharT, CharTraits, Allocator> string_type;
     typedef typename string_type::const_iterator const_iterator;
     typedef const_iterator iterator;
     typedef typename std::iterator_traits<iterator>::value_type value_type;
@@ -65,8 +68,9 @@ namespace network {
       return string_type(first_, last_);
     }
 #else
-    explicit operator string_type () const {
-      return string_type(first_, last_);
+    template <class AllocL>
+    explicit operator std::basic_string<CharT, CharTraits, AllocL> () const {
+      return std::basic_string<CharT, CharTraits, AllocL>(first_, last_);
     }
 #endif // !defined(BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS)
 
@@ -76,21 +80,21 @@ namespace network {
 
   };
 
-  template <typename CharT, class CharTraits>
+  template <typename CharT, class CharTraits, class Allocator>
   inline
-  bool operator == (const basic_string_ref<CharT, CharTraits> &lhs, const basic_string_ref<CharT, CharTraits> &rhs) {
+  bool operator == (const basic_string_ref<CharT, CharTraits, Allocator> &lhs, const basic_string_ref<CharT, CharTraits, Allocator> &rhs) {
     return boost::equal(lhs, rhs);
   }
 
-  template <typename CharT, class CharTraits>
+  template <typename CharT, class CharTraits, class Allocator>
   inline
-  bool operator == (const basic_string_ref<CharT, CharTraits> &lhs, const CharT *rhs) {
+  bool operator == (const basic_string_ref<CharT, CharTraits, Allocator> &lhs, const CharT *rhs) {
     return boost::equal(lhs, boost::as_literal(rhs));
   }
 
-  template <typename CharT, class CharTraits>
+  template <typename CharT, class CharTraits, class Allocator>
   inline
-  bool operator == (const CharT *lhs, const basic_string_ref<CharT, CharTraits> &rhs) {
+  bool operator == (const CharT *lhs, const basic_string_ref<CharT, CharTraits, Allocator> &rhs) {
     return rhs == lhs;
   }
 
