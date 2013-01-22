@@ -30,6 +30,11 @@ namespace nucleus
       | Construction |
       `-------------*/
 
+      Node::Node()
+      {
+        // XXX
+      }
+
       Node::Node(Extent const extent,
                  Contention const contention,
                  Balancing const balancing):
@@ -63,6 +68,11 @@ namespace nucleus
     /*-------------.
     | Construction |
     `-------------*/
+
+    Limits::Limits()
+    {
+      // XXX
+    }
 
     Limits::Limits(limits::Porcupine const& porcupine,
                    limits::Node const& nodule,

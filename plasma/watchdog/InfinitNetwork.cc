@@ -16,10 +16,13 @@
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
 
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
-#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <elle/idiom/Close.hh>
 
@@ -156,8 +159,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("Couldn't restore the identity.");
 
   //- group -------------------------------------------------------------------
-  nucleus::neutron::Group group(network, identity.pair.K(), "everybody");
-  group.seal(identity.pair.k());
+  nucleus::neutron::Group group(network, identity.pair().K(), "everybody");
+  group.seal(identity.pair().k());
 
   //- group address -----------------------------------------------------------
   nucleus::proton::Address      group_address(group.bind());
@@ -168,45 +171,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("unable to create the group subject");
 
   //- access-------------------------------------------------------------------
-  // A temporary nest which should never be used.
-  class Nest
-  {
-  public:
-    Nest(Limits const& limits,
-         Network const& network,
-         cryptography::PublicKey const& agent_K):
-      nucleus::proton::Nest(limits, network, agent_K)
-    {}
-    ~Nest()
-    {}
-    virtual
-    Handle
-    attach(nucleus::proton::Contents* block)
-    {
-      elle::unreachable();
-    }
-    virtual
-    void
-    detach(nucleus::proton::Handle& handle)
-    {
-      elle::unreachable();
-    }
-    virtual
-    void
-    load(nucleus::proton::Handle& handle)
-    {
-      elle::unreachable();
-    }
-    virtual
-    void
-    unload(nucleus::proton::Handle& handle)
-    {
-      elle::unreachable();
-    }
-  };
-  Nest nest{nucleus::proton::Limits{}, network, identity.pair().K()};
-
-  nucleus::proton::Porcupine access_porcupine{nest};
+  nucleus::proton::Porcupine<nucleus::neutron::Access> access_porcupine{
+    nucleus::proton::nest::none()};
 
   nucleus::proton::Door<nucleus::neutron::Access> access_door =
     access_porcupine.lookup(subject);
@@ -233,7 +199,7 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   //- directory ---------------------------------------------------------------
   nucleus::neutron::Object      directory(network,
-                                          identity.pair.K(),
+                                          identity.pair().K(),
                                           genreDirectory);
 
   if (directory.Update(directory.author(),
@@ -243,15 +209,14 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
                        directory.owner_token()) == e)
     throw std::runtime_error("unable to update the directory");
 
-  if (directory.Seal(identity.pair.k(), access_fingerprint) == e)
+  if (directory.Seal(identity.pair().k(), access_fingerprint) == e)
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------
   nucleus::proton::Address      directory_address(directory.bind());
 
   {
-    ELLE_ASSERT(false);
-    /* XXX[to improve: contact Raphael]
+    // XXX[to improve: contact Raphael]
     elle::io::Unique root_block_;
     directory.Save(root_block_);
     elle::io::Unique root_address_;
@@ -277,7 +242,6 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
                                &group_block_,
                                &group_address_
                                ));
-    */
   }
 }
 

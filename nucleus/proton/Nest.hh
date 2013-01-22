@@ -7,8 +7,10 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Limits.hh>
 # include <nucleus/proton/Network.hh>
+# include <nucleus/proton/Handle.hh>
 
 # include <cryptography/PublicKey.hh>
+# include <cryptography/KeyPair.hh>
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
@@ -52,10 +54,60 @@ namespace nucleus
       // attributes
       //
     private:
-      ELLE_ATTRIBUTE_R(nucleus::proton::Limits, limits);
+      ELLE_ATTRIBUTE_R(Limits, limits);
       ELLE_ATTRIBUTE_R(Network, network); // XXX
       ELLE_ATTRIBUTE_R(cryptography::PublicKey, agent_K); // XXX
     };
+
+    namespace nest
+    {
+      /// XXX
+      class None:
+        public Nest
+      {
+      public:
+        None(Limits const& limits,
+             Network const& network,
+             cryptography::PublicKey const& agent_K):
+          Nest(limits, network, agent_K)
+        {}
+        ~None()
+        {}
+
+        virtual
+        Handle
+        attach(Contents*)
+        {
+          elle::unreachable();
+        }
+        virtual
+        void
+        detach(Handle&)
+        {
+          elle::unreachable();
+        }
+        virtual
+        void
+        load(Handle&)
+        {
+          elle::unreachable();
+        }
+        virtual
+        void
+        unload(Handle&)
+        {
+          elle::unreachable();
+        }
+      };
+
+      /*----------.
+      | Functions |
+      `----------*/
+
+      /// XXX[to use when one knows what he/she is doing!]
+      None&
+      none();
+    }
   }
 }
 

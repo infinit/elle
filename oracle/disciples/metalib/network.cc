@@ -3,6 +3,7 @@
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 #include <elle/io/Unique.hh>
+#include <elle/serialize/extract.hh>
 
 #include <cryptography/KeyPair.hh>
 // XXX[temporary: for cryptography]
@@ -35,6 +36,7 @@ using namespace infinit;
 
 #include "network.hh"
 
+ELLE_LOG_COMPONENT("infinit.oracle.disciples.metalib.Network");
 
 static
 elle::io::Unique
@@ -112,6 +114,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
             * network_name = nullptr,
             * network_model = nullptr,
             * directory_address = nullptr,
+            * group_address = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
   PyObject* ret = nullptr;
@@ -122,6 +125,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
                         &network_name,
                         &network_model,
                         &directory_address,
+                        &group_address,
                         &authority_file,
                         &authority_password))
     return nullptr;
@@ -137,6 +141,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
           network_name,
           network_model,
           directory_address,
+          group_address,
           authority_file,
           authority_password
       );
@@ -177,17 +182,16 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (root_address.Restore(root_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore root address");
 
-    nucleus::neutron::Object root_block;
-    /* XXX[contact Raphael]
-    if (root_block.Restore(root_block_) == elle::Status::Error)
-      throw std::runtime_error("Unable to restore root block: <" + root_block_ + ">");
-    */
+    auto extractor =
+      elle::serialize::from_string<elle::serialize::InputBase64Archive>(
+        root_block_);
+    nucleus::neutron::Object root_block(extractor);
 
     try
       {
         // XXX root_block.validate(root_address, /*fingerprint*/);
-        ELLE_WARNING("the root block should be validated: assert on radix "
-                     "strategy which should be 'value': ask Julien");
+        ELLE_WARN("the root block should be validated: assert on radix "
+                  "strategy which should be 'value': ask Julien");
       }
     catch (nucleus::Exception const& e)
       {
@@ -205,12 +209,10 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (group_address.Restore(group_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore group address");
 
-    nucleus::neutron::Group group_block;
-    /* XXX[contact Raphael]
-    if (group_block.Restore(group_block_) == elle::Status::Error)
-      throw std::runtime_error("Cannot restore group block");
-    */
-    ELLE_ASSERT(false);
+    auto extractor =
+      elle::serialize::from_string<elle::serialize::InputBase64Archive>(
+        group_block_);
+    nucleus::neutron::Group group_block{extractor};
 
     try
       {
@@ -244,7 +246,7 @@ metalib_check_root_directory_signature(PyObject* self,
   char const* public_key = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "sssssss:check_root_directory_signature",
+  if (!PyArg_ParseTuple(args, "sssss:check_root_directory_signature",
                         &root_block,
                         &root_address,
                         &group_block,
