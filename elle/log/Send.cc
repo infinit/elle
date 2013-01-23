@@ -48,19 +48,11 @@ namespace elle
         return level;
       }
 
-
       Logger&
-      logger(std::string const& name)
+      logger()
       {
-        static std::unordered_map<std::string, std::unique_ptr<Logger>> loggers;
-        auto it = loggers.find(name);
-        if (it == loggers.end())
-          {
-            auto logger =  new Logger{default_log_level()};
-            loggers[name].reset(logger);
-            return *logger;
-          }
-        return *it->second;
+        static Logger logger(default_log_level());
+        return logger;
       };
 
       static
@@ -210,7 +202,6 @@ namespace elle
           this->_send(level, type, component, msg);
       }
 
-
       void
       Send::_send(elle::log::Logger::Level level,
                           elle::log::Logger::Type type,
@@ -243,7 +234,6 @@ namespace elle
           {
             static const bool universal =
               ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
-
             if (universal)
               ptime = boost::posix_time::second_clock::universal_time();
             else
@@ -256,7 +246,7 @@ namespace elle
         else
           fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
         std::string pid = "[" + std::to_string(getpid()) + "]";
-        logger(component).message(level, type, pid + str(fmt));
+        logger().message(level, type, pid + str(fmt));
       }
 
       void
