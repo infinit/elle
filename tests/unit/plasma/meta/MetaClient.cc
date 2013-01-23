@@ -12,6 +12,7 @@
 #include <functional>
 #include <utility>
 
+// USER_COUNT.
 #define USER_COUNT 8
 
 struct UniqueUser
@@ -129,19 +130,10 @@ test_logout(Users const& users)
 int
 test_sendfiles(Users const& users)
 {
+  int i = 0;
   std::for_each(users.begin(), users.end(), [&](UniqueUser const& u) -> void
                 {
-                  auto res = u.client->logout();
-
-                  if (res.success() != true)
-                    throw;
-
-                  if (u.client->email().length() != 0 ||
-                      u.client->token().length() != 0 ||
-                      u.client->identity().length() != 0);
-                    throw;
-
-                  std::cout << "logout user " << u.user.fullname << std::endl;
+                  i++;
                 });
   return 0;
 }
@@ -152,6 +144,8 @@ main()
 {
   // Initialization.
   std::srand(std::time(0));
+
+  assert((USER_COUNT % 2) == 0);
 
   Users users = init_users();
 

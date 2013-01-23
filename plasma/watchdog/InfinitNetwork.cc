@@ -235,6 +235,11 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     elle::serialize::to_string<elle::serialize::OutputBase64Archive>(
       group_address_) << group_address;
 
+    ELLE_DEBUG("root block %s", root_block_);
+    ELLE_DEBUG("root address %s", root_address_);
+    ELLE_DEBUG("group block %s", group_block_);
+    ELLE_DEBUG("group address %s", group_address_);
+
     this->_on_got_descriptor(this->_manager.meta().update_network(
                                this->_description._id,
                                nullptr,
