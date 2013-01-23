@@ -22,9 +22,9 @@ namespace elle
 {
   namespace log
   {
-
+    static
     Logger::Level
-    default_log_level()
+    _default_log_level()
     {
       static const char* env = ::getenv("ELLE_LOG_LEVEL");
       if (env)
@@ -44,6 +44,13 @@ namespace elle
         }
       else
         return Logger::Level::log;
+    }
+
+    Logger::Level
+    default_log_level()
+    {
+      static Logger::Level level = _default_log_level();
+      return level;
     }
 
 
@@ -147,11 +154,16 @@ namespace elle
             this->_max_string_size = name.size();
         }
 
-        bool enabled(std::string const& name) const
+        bool
+        enabled(std::string const& name) const
         {
           auto it = this->_enabled.find(name);
           if (it == this->_enabled.end())
-            throw std::runtime_error("Unknown component name '" + name + "'");
+            {
+              const_cast<Components*>(this)->enable(name);
+              it = this->_enabled.find(name);
+              assert(it != this->_enabled.end());
+            }
           return it->second;
         }
 
@@ -162,31 +174,33 @@ namespace elle
         }
       };
 
-      TraceContext::TraceContext(elle::log::Logger::Level level,
-                                 elle::log::Logger::Type type,
-                                 elle::String const& component,
-                                 char const* file,
-                                 unsigned int line,
-                                 char const* function,
-                                 std::string const& message)
-        : _component(component)
-      {
-        // XXX[improve this because enable() is called every time something is
-        //     logged]
-        Components::instance().enable(this->_component);
-
-        this->_indent();
-        this->_send(level, type, file, line, function, message);
-      }
-
       TraceContext::~TraceContext()
       {
+        if (!_proceed)
+          return;
         _unindent();
+      }
+
+      bool
+      TraceContext::_enabled(elle::log::Logger::Type type,
+                             elle::log::Logger::Level level,
+                             elle::String const& component)
+      {
+        // FIXME: do we always want to print warnings and errors ?
+        if (type >= Logger::Type::warning)
+          return true;
+        if (!Components::instance().enabled(component))
+          return false;
+        Components::instance().update_max_size(component);
+        if (level > default_log_level())
+          return false;
+        return true;
       }
 
       void
       TraceContext::_send(elle::log::Logger::Level level,
                           elle::log::Logger::Type type,
+                          std::string const& component,
                           char const* file,
                           unsigned int line,
                           char const* function,
@@ -196,25 +210,20 @@ namespace elle
         if (location)
           {
             static boost::format fmt("%s (at %s:%s in %s)");
-            this->_send(level, type, str(fmt % msg % file % line % function));
+            this->_send(level, type, component,
+                        str(fmt % file % line % msg % function));
           }
         else
-          this->_send(level, type, msg);
+          this->_send(level, type, component, msg);
       }
 
 
       void
       TraceContext::_send(elle::log::Logger::Level level,
                           elle::log::Logger::Type type,
+                          std::string const& component,
                           std::string const& msg)
       {
-        if (!Components::instance().enabled(this->_component))
-          {
-            if (type < Logger::Type::warning)
-              return;
-            else
-              Components::instance().update_max_size(this->_component);
-          }
         int indent;
         {
           boost::lock_guard<boost::mutex> lock(_indentation_mutex());
@@ -222,12 +231,12 @@ namespace elle
         }
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
-        unsigned int size = this->_component.size();
+        unsigned int size = component.size();
         assert(size <= Components::instance().max_string_size());
         unsigned int pad = Components::instance().max_string_size() - size;
         std::string s = (
           std::string(pad / 2, ' ') +
-          this->_component +
+          component +
           std::string(pad / 2 + pad % 2, ' ')
         );
 
@@ -254,7 +263,7 @@ namespace elle
         else
           fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
         std::string pid = "[" + std::to_string(getpid()) + "]";
-        logger(this->_component).message(level, type, pid + str(fmt));
+        logger(component).message(level, type, pid + str(fmt));
       }
 
       void

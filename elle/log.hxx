@@ -9,6 +9,25 @@ namespace elle
   {
     namespace detail
     {
+      template <typename ... Args>
+      inline
+      TraceContext::TraceContext(elle::log::Logger::Level level,
+                                 elle::log::Logger::Type type,
+                                 elle::String const& component,
+                                 char const* file,
+                                 unsigned int line,
+                                 char const* function,
+                                 char const* fmt,
+                                 Args const& ... args)
+        : _proceed(this->_enabled(type, level, component))
+      {
+        if (!_proceed)
+          return;
+        this->_indent();
+        this->_send(level, type, component, file, line, function,
+                    elle::sprintf(fmt, args...));
+      }
+
       inline
       TraceContext::operator bool() const
       {

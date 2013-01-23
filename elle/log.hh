@@ -26,7 +26,7 @@ namespace elle
        elle::log::Logger::Type::T,                                      \
        _trace_component_,                                               \
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
-       elle::sprintf(__VA_ARGS__))
+       __VA_ARGS__)                                                     \
 
 # define ELLE_LOG_LEVEL(Lvl, Type, ...)                                       \
     if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                         \
@@ -111,25 +111,34 @@ namespace elle
       struct TraceContext
       {
       public:
+        template <typename ... Args>
         TraceContext(elle::log::Logger::Level level,
                      elle::log::Logger::Type type,
                      elle::String const& component,
                      char const* file,
                      unsigned int line,
                      char const* function,
-                     std::string const& message);
+                     char const* fmt,
+                     Args const& ... args);
         ~TraceContext();
         operator bool() const;
       private:
-        elle::String const& _component;
+        bool _proceed;
+        static bool _enabled(elle::log::Logger::Type type,
+                             elle::log::Logger::Level level,
+                             elle::String const& component);
+
+      private:
         void _send(elle::log::Logger::Level level,
                    elle::log::Logger::Type type,
+                   std::string const& component,
                    char const* file,
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
         void _send(elle::log::Logger::Level level,
                    elle::log::Logger::Type type,
+                   std::string const& component,
                    std::string const& msg);
         void _indent();
         void _unindent();
