@@ -5,7 +5,7 @@
 # include <cryptography/bn.hh>
 
 # include <elle/Buffer.hh>
-# include <elle/idiom/Open.hh> // XXX
+# include <elle/log.hh>
 
 # include <openssl/rsa.h>
 
@@ -13,95 +13,99 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*--------.
+    | Methods |
+    `--------*/
 
     template <typename T>
     T
     PrivateKey::decrypt(Code const& code) const
     {
-      Clear clear{this->decrypt(code)};
-      T value;
+      ELLE_LOG_COMPONENT("infinit.cryptography.PrivateKey");
+      ELLE_DEBUG_FUNCTION(code);
 
+      static_assert(!std::is_same<T, Clear>::value,
+                    "this call should never have occured");
+
+      Clear clear{this->decrypt(code)};
+
+      // XXX[this is the way it should be] T value{clear.buffer().reader()};
+      T value;
       clear.buffer().reader() >> value;
 
       return (value);
     }
 
-    template<typename T>  elle::Status
-      PrivateKey::Encrypt(T const& in, Code& out) const
-      {
-        static_assert(
-            !std::is_same<T, elle::Buffer>::value,
-            "explicit cast to WeakBuffer needed"
-        );
-
-        elle::Buffer buf;
-
-        try
-          {
-            buf.writer() << in;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
-
-        return this->Encrypt(
-            elle::WeakBuffer(buf),
-            out
-        );
-      }
-
     template <typename T>
     Signature
-    PrivateKey::sign(T const& plain) const
+    PrivateKey::sign(T const& value) const
     {
-      assert((!std::is_same<T, elle::Buffer>::value));
+      ELLE_LOG_COMPONENT("infinit.cryptography.PrivateKey");
+      ELLE_DEBUG_FUNCTION(value);
+
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
 
       elle::Buffer buffer;
+      buffer.writer() << value;
 
-      buffer.writer() << plain;
-
-      return (this->sign(elle::WeakBuffer(buffer)));
+      return (this->sign(Plain{elle::WeakBuffer{buffer}}));
     }
 
+    template <typename T>
+    Code
+    PrivateKey::encrypt(T const& value) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.PrivateKey");
+      ELLE_DEBUG_FUNCTION(value);
+
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
+
+      elle::Buffer buffer;
+      buffer.writer() << value;
+
+      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+    }
   }
 }
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
-# include <cryptography/cryptography.hh>
+# include <cryptography/finally.hh>
+# include <cryptography/bn.hh>
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::PrivateKey)
 
 ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::PrivateKey,
                           archive,
                           value,
-                          version)
+                          format)
 {
-  enforce(version == 0);
+  enforce(format == 0);
 
   enforce(value._key != nullptr);
 
-  archive << *value._key->pkey.rsa->n;
-  archive << *value._key->pkey.rsa->e;
-  archive << *value._key->pkey.rsa->d;
-  archive << *value._key->pkey.rsa->p;
-  archive << *value._key->pkey.rsa->q;
-  archive << *value._key->pkey.rsa->dmp1;
-  archive << *value._key->pkey.rsa->dmq1;
-  archive << *value._key->pkey.rsa->iqmp;
+  archive << *value._key->pkey.rsa->n
+          << *value._key->pkey.rsa->e
+          << *value._key->pkey.rsa->d
+          << *value._key->pkey.rsa->p
+          << *value._key->pkey.rsa->q
+          << *value._key->pkey.rsa->dmp1
+          << *value._key->pkey.rsa->dmq1
+          << *value._key->pkey.rsa->iqmp;
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
                           archive,
                           value,
-                          version)
+                          format)
 {
-  enforce(version == 0);
+  enforce(format == 0);
 
   ::BIGNUM *n = ::BN_new();
   ::BIGNUM *e = ::BN_new();
@@ -112,14 +116,14 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
   ::BIGNUM *dmq1 = ::BN_new();
   ::BIGNUM *iqmp = ::BN_new();
 
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
 
   archive >> *n
           >> *e
@@ -130,14 +134,14 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
           >> *dmq1
           >> *iqmp;
 
-  CRYPTOGRAPHY_FINALLY_ABORT(n);
-  CRYPTOGRAPHY_FINALLY_ABORT(e);
-  CRYPTOGRAPHY_FINALLY_ABORT(d);
-  CRYPTOGRAPHY_FINALLY_ABORT(p);
-  CRYPTOGRAPHY_FINALLY_ABORT(q);
-  CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
-  CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
-  CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(d);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(p);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(q);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
 
   value._construct(n, e, d, p, q, dmp1, dmq1, iqmp);
 

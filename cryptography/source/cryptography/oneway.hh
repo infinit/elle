@@ -27,9 +27,9 @@ namespace infinit
         sha512
       };
 
-      /*---------------.
-      | Static Methods |
-      `---------------*/
+      /*----------.
+      | Functions |
+      `----------*/
       /// Hash a plain text and return a digest.
       Digest
       hash(Plain const& plain,
@@ -40,6 +40,12 @@ namespace infinit
       hash(T const& value,
            Algorithm algorithm);
     }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    // XXX operator << for Algorithm
   }
 }
 

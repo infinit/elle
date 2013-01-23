@@ -8,9 +8,9 @@
 # include <elle/operator.hh>
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
-# include <elle/io/Dumpable.hh>
-
 # include <elle/serialize/fwd.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace infinit
 {
@@ -20,8 +20,8 @@ namespace infinit
     /// can be constructed from a weak buffer which is basically a wrapper
     /// around a memory address and size.
     class Input:
-      public elle::io::Dumpable,
-      public elle::Printable
+      public elle::Printable,
+      private boost::noncopyable
     {
       /*-------------.
       | Construction |
@@ -58,9 +58,6 @@ namespace infinit
       | Interfaces |
       `-----------*/
     public:
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 = 0) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Input);
       // printable
