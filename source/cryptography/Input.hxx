@@ -1,12 +1,16 @@
 #ifndef INFINIT_CRYPTOGRAPHY_INPUT_HXX
 # define INFINIT_CRYPTOGRAPHY_INPUT_HXX
 
+/*-------------.
+| Serializable |
+`-------------*/
+
 ELLE_SERIALIZE_SIMPLE(infinit::cryptography::Input,
                       archive,
                       value,
-                      version)
+                      format)
 {
-  enforce(version == 0);
+  enforce(format == 0);
 
   archive & value._buffer;
 }

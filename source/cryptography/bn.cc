@@ -6,6 +6,10 @@
 
 # include <openssl/err.h>
 
+/*----------.
+| Operators |
+`----------*/
+
 std::ostream&
 operator <<(std::ostream& stream,
             ::BIGNUM const& bignum)
@@ -18,7 +22,7 @@ operator <<(std::ostream& stream,
     throw elle::Exception("%s",
                           ::ERR_error_string(ERR_get_error(), nullptr));
 
-  CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(hexadecimal);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(hexadecimal);
 
   // Display the string, depending on its length.
   if (::strlen(hexadecimal) < length)
@@ -35,7 +39,7 @@ operator <<(std::ostream& stream,
              << string.substr(string.length() - (length / 2));
     }
 
-  CRYPTOGRAPHY_FINALLY_ABORT(hexadecimal);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(hexadecimal);
 
   // Manually release the hexadecimal's memory.
   ::OPENSSL_free(hexadecimal);

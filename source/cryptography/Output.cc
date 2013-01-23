@@ -1,7 +1,5 @@
 #include <cryptography/Output.hh>
 
-#include <elle/format/hexadecimal.hh>
-
 namespace infinit
 {
   namespace cryptography
@@ -22,6 +20,10 @@ namespace infinit
 
     Output::Output(Output&& other):
       _buffer(std::move(other._buffer))
+    {
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output)
     {
     }
 
@@ -74,22 +76,6 @@ namespace infinit
       return (elle::WeakBuffer(this->_buffer) <= other.buffer());
     }
 
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status
-    Output::Dump(elle::Natural32           margin) const
-    {
-      elle::String      alignment(margin, ' ');
-
-      std::cout << alignment << "[Output] " << this << std::endl;
-
-      this->_buffer.dump(margin + 2);
-
-      return elle::Status::Ok;
-    }
-
     /*----------.
     | Printable |
     `----------*/
@@ -97,10 +83,7 @@ namespace infinit
     void
     Output::print(std::ostream& stream) const
     {
-      stream <<
-        elle::format::hexadecimal::encode(
-          reinterpret_cast<const char*>(this->_buffer.contents()),
-          this->_buffer.size());
+      stream << this->_buffer;
     }
   }
 }

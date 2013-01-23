@@ -2,155 +2,116 @@
 # define INFINIT_CRYPTOGRAPHY_PUBLICKEY_HXX
 
 # include <elle/Buffer.hh>
+# include <elle/log.hh>
 
 namespace infinit
 {
   namespace cryptography
   {
-
-    template<typename T>
-      elle::Status PublicKey::Encrypt(T const& in, Code& out) const
-      {
-        static_assert(
-            !std::is_same<T, elle::Buffer>::value,
-            "explicit cast to WeakBuffer needed"
-        );
-
-        elle::Buffer buf;
-
-        try
-          {
-            buf.writer() << in;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
-
-        return this->Encrypt(
-            elle::WeakBuffer(buf),
-            out
-        );
-      }
+    /*--------.
+    | Methods |
+    `--------*/
 
     template <typename T>
-      elle::Status PublicKey::Decrypt(Code const& in, T& out) const
-      {
-        elle::Buffer buf;
+    Code
+    PublicKey::encrypt(T const& value) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
+      ELLE_DEBUG_FUNCTION(value);
 
-        if (this->Decrypt(in, buf) == elle::Status::Error)
-          escape("Cannot decrypt data");
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
 
-        try
-          {
-            buf.reader() >> out;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot load object: %s", err.what());
-          }
+      elle::Buffer buffer;
+      buffer.writer() << value;
 
-        return elle::Status::Ok;
-      }
+      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+    }
 
-    template<typename T>
-      elle::Status PublicKey::Verify(Signature const& signature, T const& any) const
-      {
-        static_assert(
-            !std::is_same<T, elle::Buffer>::value,
-            "explicit cast to WeakBuffer needed"
-        );
+    template <typename T>
+    T
+    PublicKey::decrypt(Code const& code) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
+      ELLE_DEBUG_FUNCTION(code);
 
-        elle::Buffer buf;
+      static_assert(!std::is_same<T, Clear>::value,
+                    "this call should never have occured");
 
-        try
-          {
-            buf.writer() << any;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
+      Clear clear = this->decrypt(code);
 
-        return this->Verify(
-            signature,
-            elle::WeakBuffer(buf)
-        );
-      }
+      // XXX[this is the way it should be] T value{code.buffer().reader()};
+      T value;
+      code.buffer().reader() >> value;
+
+      return (value);
+    }
+
+    template <typename T>
+    elle::Boolean
+    PublicKey::verify(Signature const& signature,
+                      T const& value) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
+      ELLE_DEBUG_FUNCTION(signature, value);
+
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
+
+      elle::Buffer buffer;
+      buffer.writer() << value;
+
+      return (this->verify(signature, Plain{elle::WeakBuffer{buffer}}));
+    }
   }
 }
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
-# include <cryptography/cryptography.hh>
-# include <cryptography/LargeSerializer.hxx>
+# include <cryptography/finally.hh>
+# include <cryptography/bn.hh>
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::PublicKey)
-
-// XXX ya moyen de faire bcp plus simple, cf BN_new
-ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-
-  // Deleter for dupped large
-  struct LargeDeleter
-    {
-      void operator() (elle::Large* l)
-        {
-          // We didn't use BN_clear_free because public key is not a sensitive
-          // data, no need to waste time in clearing it.
-          ::BN_free(l);
-        }
-    };
-  typedef std::unique_ptr<elle::Large, LargeDeleter> LargePtr;
-
-  LargePtr n(::BN_new());
-  LargePtr e(::BN_new());
-
-  if (!n || !e)
-    throw std::bad_alloc();
-
-  archive >> *n.get();
-  archive >> *e.get();
-
-  // XXX
-  value.~PublicKey();
-  new (&value) infinit::cryptography::PublicKey;
-
-  enforce(value.key() == nullptr);
-
-  if (value.Create(n.get(),
-                   e.get()) == elle::Status::Error)
-    {
-      throw std::runtime_error(
-          "unable to create the public key from the archive"
-      );
-    }
-  else
-    {
-      n.release();
-      e.release();
-    }
-  enforce(value.key() != nullptr);
-}
 
 ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::PublicKey,
                           archive,
                           value,
-                          version)
+                          format)
 {
-  enforce(version == 0);
-  enforce(value.key() != nullptr);
+  enforce(format == 0);
 
-  archive << *(value.key()->pkey.rsa->n)
-          << *(value.key()->pkey.rsa->e);
+  enforce(value._key != nullptr);
+
+  archive << *value._key->pkey.rsa->n
+          << *value._key->pkey.rsa->e;
+}
+
+ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
+                          archive,
+                          value,
+                          format)
+{
+  enforce(format == 0);
+
+  ::BIGNUM *n = ::BN_new();
+  ::BIGNUM *e = ::BN_new();
+
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+
+  archive >> *n
+          >> *e;
+
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
+
+  value._construct(n, e);
+
+  ELLE_ASSERT(value._key != nullptr);
 }
 
 #endif

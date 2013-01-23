@@ -1,13 +1,11 @@
 #ifndef INFINIT_CRYPTOGRAPHY_SEED_HH
 # define INFINIT_CRYPTOGRAPHY_SEED_HH
-
+/* XXX
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 # include <elle/standalone/Region.hh>
 
 # include <cryptography/fwd.hh>
-
-# include <elle/idiom/Open.hh>
 
 namespace infinit
 {
@@ -44,7 +42,7 @@ namespace infinit
 
       // object
       declare(Seed);
-      elle::Boolean           operator==(const Seed&) const;
+      elle::Boolean           operator ==(const Seed&) const;
 
       // dumpable
       elle::Status            Dump(const elle::Natural32 = 0) const;
@@ -57,6 +55,7 @@ namespace infinit
 
   }
 }
+*/
 
 #include <cryptography/Seed.hxx>
 

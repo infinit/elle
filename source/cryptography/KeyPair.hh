@@ -6,9 +6,10 @@
 
 # include <elle/types.hh>
 # include <elle/Printable.hh>
-# include <elle/serialize/fwd.hh>
 # include <elle/operator.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -24,8 +25,7 @@ namespace infinit
     /// while a private key is noted with a lower-case 'k'.
     class KeyPair:
       public elle::concept::MakeUniquable<KeyPair>,
-      public elle::Printable,
-      public elle::io::Dumpable
+      public elle::Printable
     {
       /*------------------.
       | Static Attributes |
@@ -58,12 +58,16 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      KeyPair();
+      KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
-      KeyPair(KeyPair const& pair);
-    private:
+      /// Construct a key pair based on the given EVP_PKEY.
+      ///
+      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
+      /// call remains the owner of the given EVP_PKEY.
       KeyPair(::EVP_PKEY const* key);
+      KeyPair(KeyPair const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
 
       /*----------.
       | Operators |
@@ -71,14 +75,12 @@ namespace infinit
     public:
       elle::Boolean
       operator ==(KeyPair const& other) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(KeyPair);
 
       /*-----------.
       | Interfaces |
       `-----------*/
     public:
-      // dumpable
-      elle::Status
-      Dump(const elle::Natural32 = 0) const;
       // printable
       virtual
       void
@@ -90,10 +92,11 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
+      /// The public key.
       ELLE_ATTRIBUTE_R(PublicKey, K);
+      /// The private key.
       ELLE_ATTRIBUTE_R(PrivateKey, k);
     };
-
   }
 }
 
