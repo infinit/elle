@@ -184,6 +184,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   access_door.close();
 
+  access_porcupine.update(subject);
+
 // XXX[cf: etoile/automaton/Access.hh>, until no longer encrypted]
 #define ACCESS_SECRET_KEY_LENGTH 256
 #define ACCESS_SECRET_KEY "no-secret-key"
