@@ -69,8 +69,8 @@ ELLE_SERIALIZE_SIMPLE(plasma::trophonius::TransactionStatusNotification, ar, val
   ar & named("status", value.status);
 }
 
-ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::NetworkUpdatedNotification);
-ELLE_SERIALIZE_SIMPLE(plasma::trophonius::NetworkUpdatedNotification, ar, value, version)
+ELLE_SERIALIZE_NO_FORMAT(plasma::trophonius::NetworkUpdateNotification);
+ELLE_SERIALIZE_SIMPLE(plasma::trophonius::NetworkUpdateNotification, ar, value, version)
 {
   enforce(version == 0);
 
@@ -201,6 +201,9 @@ namespace plasma
                 break;
               case NotificationType::message:
                 notification = std::move(ar.Construct<MessageNotification>());
+                break;
+              case NotificationType::network_update:
+                notification = std::move(ar.Construct<NetworkUpdateNotification>());
                 break;
               case NotificationType::connection_enabled:
                 notification = std::move(ar.Construct<Notification>());

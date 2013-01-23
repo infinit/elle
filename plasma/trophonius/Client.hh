@@ -15,15 +15,20 @@ namespace plasma
 {
   namespace trophonius
   {
-    enum class NotificationType
+    enum class NotificationType: int
     {
-      none = 0,
-      user_status = 8,
-      transaction = 7,
-      transaction_status = 11,
-      message = 217,
-      connection_enabled = -666,
-      network_update = 128,
+# define NOTIFICATION_TYPE(name, value)         \
+      name = value,
+# include <oracle/disciples/meta/notification_type.hh.inc>
+# undef NOTIFICATION_TYPE
+    };
+
+    enum class NetworkUpdate: int
+    {
+# define NETWORK_UPDATE(name, value)         \
+      name = value,
+# include <oracle/disciples/meta/resources/network_update.hh.inc>
+# undef NETWORK_UPDATE
     };
 
     /// Base class for all notifications.
@@ -54,11 +59,11 @@ namespace plasma
       int         status;
     };
 
-    struct NetworkUpdatedNotification:
+    struct NetworkUpdateNotification:
       public Notification
     {
       std::string network_id;
-      std::string what;
+      /* NetworkUpdate */ int what;
     };
 
     struct MessageNotification:
