@@ -694,6 +694,9 @@ namespace surface
         case plasma::TransactionStatus::started:
           this->_on_transaction_started(transaction);
           break;
+        case plasma::TransactionStatus::prepared:
+          this->_on_transaction_prepared(transaction);
+          break;
         case plasma::TransactionStatus::canceled:
           this->_on_transaction_canceled(transaction);
           break;
