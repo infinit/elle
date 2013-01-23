@@ -509,7 +509,6 @@ void InfinitNetwork::_start_process()
 
   QStringList arguments;
   arguments << "-n" << this->_description._id.c_str()
-            << "-m" << this->_mount_point.c_str()
             << "-u" << this->_manager.user_id().c_str()
             ;
 
