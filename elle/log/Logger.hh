@@ -30,7 +30,6 @@ namespace elle
       };
 
     private:
-      Level         _level;
       std::string   _name;
       std::ostream* _out;
 
@@ -51,10 +50,6 @@ namespace elle
     public:
       std::string const& name() const;
       void name(std::string const& name_);
-
-      Level level() const;
-      void level(Level level_);
-
       void output(std::ostream& out);
 
     protected:
