@@ -55,6 +55,8 @@ add_library(elle ${LINK_METHOD}
   os/getenv.cc
   os/path.cc
 
+  system/Process.cc
+
   utility/Duration.cc
   # XXX utility/HTTP.cc
   utility/Parser.cc
