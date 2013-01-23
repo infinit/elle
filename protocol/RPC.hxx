@@ -200,7 +200,8 @@ namespace infinit
             reactor::Exception* inner =
               new reactor::Exception(elle::concurrency::scheduler(), error, bt);
             reactor::Exception e(
-              elle::concurrency::scheduler(), "remote procedure failed");
+              elle::concurrency::scheduler(),
+              "remote procedure " + this->_name + " failed");
             e.inner_exception(inner);
             throw e;
           }

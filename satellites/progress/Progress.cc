@@ -5,6 +5,7 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 #include <elle/system/system.hh>
+#include <elle/CrashReporter.hh>
 
 #include <reactor/network/tcp-socket.hh>
 
@@ -301,6 +302,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (reactor::Exception const& e)
     {
+      elle::crash::report("8transfer", elle::sprintf("%s", e));
       std::cerr << argv[0] << ": fatal error: " << e << std::endl;
       goto _error;
     }
@@ -326,6 +328,18 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  // Capture signal and send email without exiting.
+  elle::signal::ScoppedGuard guard{
+    {SIGINT, SIGABRT, SIGPIPE},
+    elle::crash::Handler("8progress", false, argc, argv)
+  };
+
+  // Capture signal and send email exiting.
+  elle::signal::ScoppedGuard exit_guard{
+    {SIGILL, SIGSEGV},
+    elle::crash::Handler("8progress", true, argc, argv)
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&_main, argc, argv));

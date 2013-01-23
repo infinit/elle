@@ -814,7 +814,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("fatal error: %s", e);
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      elle::crash::report("8group", e.what());
+      elle::crash::report("8group", elle::sprintf("%s", e));
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -845,8 +845,13 @@ int                     main(int                                argc,
                              char**                             argv)
 {
   elle::signal::ScoppedGuard guard{
-    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
-    elle::crash::Handler("group", false)  // Capture signal and send email without exiting.
+    {SIGINT, SIGABRT, SIGPIPE},
+    elle::crash::Handler("8group", false, argc, argv)  // Capture signal and send email without exiting.
+  };
+
+  elle::signal::ScoppedGuard exit_guard{
+    {SIGILL, SIGSEGV},
+    elle::crash::Handler("8group", true, argc, argv)  // Capture signal and send email exiting.
   };
 
   reactor::Scheduler& sched = elle::concurrency::scheduler();

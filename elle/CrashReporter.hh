@@ -74,6 +74,11 @@ namespace elle
       Handler(std::string const& name,
               bool quit);
 
+      Handler(std::string const& name,
+              bool quit,
+              int argc,
+              char** argv);
+
       virtual ~Handler();
 
       virtual

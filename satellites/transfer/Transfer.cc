@@ -971,7 +971,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
   catch (reactor::Exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e << std::endl;
-      elle::crash::report("8transfer", e.what());
+      elle::crash::report("8transfer", elle::sprintf("%s", e));
       goto _error;
     }
   catch (std::exception const& e)
@@ -998,9 +998,16 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  // Capture signal and send email without exiting.
   elle::signal::ScoppedGuard guard{
-    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
-    elle::crash::Handler("8transfer", false)  // Capture signal and send email without exiting.
+    {SIGINT, SIGABRT, SIGPIPE},
+    elle::crash::Handler("8transfer", false, argc, argv)
+  };
+
+  // Capture signal and send email exiting.
+  elle::signal::ScoppedGuard exit_guard{
+    {SIGILL, SIGSEGV},
+    elle::crash::Handler("8transfer", true, argc, argv)
   };
 
   reactor::Scheduler& sched = elle::concurrency::scheduler();

@@ -663,9 +663,16 @@ namespace satellite
 int                     main(int                                argc,
                              char**                             argv)
 {
+  // Capture signal and send email without exiting.
   elle::signal::ScoppedGuard guard{
-    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
-    elle::crash::Handler("8network", false)  // Capture signal and send email without exiting.
+    {SIGINT, SIGABRT, SIGPIPE},
+    elle::crash::Handler("8network", false, argc, argv)
+  };
+
+  // Capture signal and send email exiting.
+  elle::signal::ScoppedGuard exit_guard{
+    {SIGILL, SIGSEGV},
+    elle::crash::Handler("8network", true, argc, argv)
   };
 
   try
