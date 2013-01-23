@@ -136,7 +136,7 @@ SERIALIZE_RESPONSE(plasma::meta::TransactionResponse, ar, res)
   ar & named("recipient_id", res.recipient_id);
   ar & named("recipient_fullname", res.recipient_fullname);
   ar & named("recipient_device_id", res.recipient_device_id);
-  ar & named("recipient_device_name", res.recipient_device_id);
+  ar & named("recipient_device_name", res.recipient_device_name);
   ar & named("network_id", res.network_id);
   ar & named("first_filename", res.first_filename);
   ar & named("files_count", res.files_count);
