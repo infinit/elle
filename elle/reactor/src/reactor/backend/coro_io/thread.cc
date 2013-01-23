@@ -5,7 +5,6 @@
 #include <reactor/exception.hh>
 
 #include <elle/log.hh>
-#include <elle/idiom/Close.hh>
 
 ELLE_LOG_COMPONENT("reactor.backend");
 
