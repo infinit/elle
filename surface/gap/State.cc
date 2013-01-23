@@ -403,7 +403,6 @@ namespace surface
       ELLE_TRACE("Notify 8infinit for transaction %s", trans);
 
       namespace proto = infinit::protocol;
-      std::string const& sender_device = trans.sender_device_id;
       std::string const& network_id = trans.network_id;
 
       /// Check if network is valid
