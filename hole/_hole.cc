@@ -35,7 +35,7 @@ namespace hole
                       "unable to initialize Infinit");
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("8hole") == elle::Status::Error)
       throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to set up the program");
 
