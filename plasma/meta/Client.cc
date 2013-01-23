@@ -221,8 +221,6 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
     {
       ar & named("root_block", res.root_block);
       ar & named("root_address", res.root_address);
-      ar & named("access_block", res.access_block);
-      ar & named("access_address", res.access_address);
       ar & named("group_block", res.group_block);
       ar & named("group_address", res.group_address);
       ar & named("descriptor", res.descriptor);
@@ -233,8 +231,6 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
           throw;
       res.root_block = "";
       res.root_address = "";
-      res.access_block = "";
-      res.access_address = "";
       res.group_block = "";
       res.group_address = "";
       res.descriptor = "";
@@ -579,8 +575,6 @@ namespace plasma
                            string const* name,
                            string const* root_block,
                            string const* root_address,
-                           string const* access_block,
-                           string const* access_address,
                            string const* group_block,
                            string const* group_address)
     {
@@ -598,14 +592,6 @@ namespace plasma
       if (root_address != nullptr)
         request["root_address"] = *root_address;
 
-      assert(((access_block == nullptr && access_address == nullptr) ||
-              (access_block != nullptr && access_address != nullptr)) &&
-             "Give both access block and access address or none of them");
-      if (access_block != nullptr)
-        request["access_block"] = *access_block;
-      if (access_address != nullptr)
-        request["access_address"] = *access_address;
-
       assert(((group_block == nullptr && group_address == nullptr) ||
               (group_block != nullptr && group_address != nullptr)) &&
              "Give both group block and group address or none of them");
@@ -616,12 +602,10 @@ namespace plasma
 
       assert((
         (root_block == nullptr &&
-         access_block == nullptr &&
          group_block == nullptr) ||
         (root_block != nullptr &&
-         access_block != nullptr &&
          group_block != nullptr)
-      ) && "root, access and group block are tied together.");
+      ) && "root and group block are tied together.");
 
       return this->_client.post<UpdateNetworkResponse>("/network/update", request);
     }

@@ -154,8 +154,6 @@ namespace plasma
       string              model;
       string              root_block;
       string              root_address;
-      string              access_block;
-      string              access_address;
       string              group_block;
       string              group_address;
       string              descriptor;
@@ -335,8 +333,6 @@ namespace plasma
                      string const* name,
                      string const* root_block,
                      string const* root_address,
-                     string const* access_block,
-                     string const* access_address,
                      string const* group_block,
                      string const* group_address);
 

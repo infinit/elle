@@ -4,6 +4,8 @@
 #include <elle/finally.hh>
 #include <elle/Exception.hh>
 #include <elle/serialize/Serializable.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/extract.hh>
 #include <elle/io/Unique.hh>
 
 #include <nucleus/factory.hh>
@@ -83,15 +85,17 @@ namespace hole
 
       // Convert the address and block into strings.
       elle::io::Unique unique_address{address.unique()};
-      std::ostringstream stream(std::ios_base::out | std::ios_base::binary);
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(stream);
+
+      // Serialize the block.
+      elle::io::Unique value;
+
+      elle::serialize::to_string(value) << block;
 
       // Insert in the container.
       auto result =
         this->_container.insert(
           std::pair<elle::String const, elle::String const>(unique_address,
-                                                            stream.str()));
+                                                            value));
 
       // Check if the insertion was successful.
       if (result.second == false)
@@ -107,15 +111,17 @@ namespace hole
 
       // Convert the address and block into strings.
       elle::io::Unique unique_address{address.unique()};
-      std::ostringstream stream(std::ios_base::out | std::ios_base::binary);
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(stream);
+
+      // Serialize the block.
+      elle::io::Unique value;
+
+      elle::serialize::to_string(value) << block;
 
       // Insert in the container.
       auto result =
         this->_container.insert(
           std::pair<elle::String const, elle::String const>(unique_address,
-                                                            stream.str()));
+                                                            value));
 
       // Check if the insertion was successful.
       if (result.second == false)
@@ -140,13 +146,9 @@ namespace hole
 
       ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Open an input stream.
-      std::istringstream stream(this->_container.find(unique_address)->second,
-                                std::ios_base::in | std::ios_base::binary);
-
-      // Deserialize the block from the steam.
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(stream);
+      // Deserialize the block.
+      elle::serialize::from_string(
+        this->_container.find(unique_address)->second) >> *block;
 
       ELLE_FINALLY_ABORT(block);
 
@@ -176,13 +178,9 @@ namespace hole
 
       ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Open an input stream.
-      std::stringstream stream(this->_container.find(unique)->second,
-                               std::ios_base::in | std::ios_base::binary);
-
-      // Deserialize the block from the steam.
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(stream);
+      // Deserialize the block.
+      elle::serialize::from_string(
+        this->_container.find(unique_address)->second) >> *block;
 
       ELLE_FINALLY_ABORT(block);
 

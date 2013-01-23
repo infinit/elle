@@ -73,7 +73,7 @@ generate_network_descriptor(elle::String const& id,
 
   nucleus::proton::Address group_address;
   if (group_address.Restore(group_address_) != elle::Status::Ok)
-    throw std::runtime_error("Unable to restore access address");
+    throw std::runtime_error("Unable to restore group address");
 
   lune::Identity identity;
   if (identity.Restore(identity_) != elle::Status::Ok)
@@ -182,10 +182,9 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (root_address.Restore(root_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore root address");
 
-    auto extractor =
+    nucleus::neutron::Object root_block{
       elle::serialize::from_string<elle::serialize::InputBase64Archive>(
-        root_block_);
-    nucleus::neutron::Object root_block(extractor);
+        root_block_)};
 
     try
       {
@@ -209,10 +208,9 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (group_address.Restore(group_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore group address");
 
-    auto extractor =
+    nucleus::neutron::Group group_block{
       elle::serialize::from_string<elle::serialize::InputBase64Archive>(
-        group_block_);
-    nucleus::neutron::Group group_block{extractor};
+        group_block_)};
 
     try
       {

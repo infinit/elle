@@ -8,6 +8,7 @@
 #include <elle/log.hh>
 #include <elle/os/path.hh>
 #include <elle/io/Piece.hh>
+#include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
 #include <lune/Descriptor.hh>
@@ -216,29 +217,23 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
   nucleus::proton::Address      directory_address(directory.bind());
 
   {
-    // XXX[to improve: contact Raphael]
     elle::io::Unique root_block_;
-    directory.Save(root_block_);
-    elle::io::Unique root_address_;
-    directory_address.Save(root_address_);
+    elle::serialize::to_string(root_block_) << directory;
 
-    elle::io::Unique access_block_;
-    access.Save(access_block_);
-    elle::io::Unique access_address_;
-    access_address.Save(access_address_);
+    elle::io::Unique root_address_;
+    elle::serialize::to_string(root_address_) << directory_address;
 
     elle::io::Unique group_block_;
-    group.Save(group_block_);
+    elle::serialize::to_string(group_block_) << group;
+
     elle::io::Unique group_address_;
-    group_address.Save(group_address_);
+    elle::serialize::to_string(group_address_) << group_address;
 
     this->_on_got_descriptor(this->_manager.meta().update_network(
                                this->_description._id,
                                nullptr,
                                &root_block_,
                                &root_address_,
-                               &access_block_,
-                               &access_address_,
                                &group_block_,
                                &group_address_
                                ));
@@ -256,7 +251,8 @@ void InfinitNetwork::_prepare_directory()
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
-  hole::storage::Directory storage(shelter_path.string());
+  nucleus::proton::Network network(this->_description._id);
+  hole::storage::Directory storage(network, shelter_path.string());
 
   {
     LOG("Built directory storage of %s", this->_description._id);
@@ -299,21 +295,6 @@ void InfinitNetwork::_prepare_directory()
 
     storage.store(descriptor.meta().root(), directory);
     LOG("Root block stored.");
-  }
-
-  {
-    LOG("Storing access block.");
-    LOG("block: '%s'.", _description.access_block);
-    nucleus::neutron::Access access{
-      from_string<InputBase64Archive>(_description.access_block)
-    };
-    LOG("address: '%s'.", _description.access_address);
-    nucleus::proton::Address access_address{
-      from_string<InputBase64Archive>(_description.access_address)
-    };
-    LOG("Deserialization complete.");
-    storage.store(access_address, access);
-    LOG("Address block stored.");
   }
 
   {

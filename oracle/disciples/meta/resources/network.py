@@ -255,8 +255,6 @@ class Update(_Page):
 
             'root_block': "base64 root block", # optional (implies root_address)
             'root_address': "base64 root address", # optional (implies root_block)
-            'access_block': "base64 access block", # optional (implies access_address)
-            'access_address': "base64 access address", # optional (implies access_block)
             'group_block': "base64 group block", # optional (implies group_address)
             'group_address': "base64 group address", # optional (implies group_block)
         }
@@ -295,8 +293,6 @@ class Update(_Page):
 
         if 'root_block' in self.data and self.data['root_block'] and \
            'root_address' in self.data and self.data['root_address'] and \
-           'access_block' in self.data and self.data['access_block'] and \
-           'access_address' in self.data and self.data['access_address'] and \
            'group_block' in self.data and self.data['group_block'] and \
            'group_address' in self.data and self.data['group_address']:
             if to_save['root_block'] is not None:
@@ -305,8 +301,6 @@ class Update(_Page):
             try:
                 root_block = self.data['root_block']
                 root_address = self.data['root_address']
-                access_block = self.data['access_block']
-                access_address = self.data['access_address']
                 group_block = self.data['group_block']
                 group_address = self.data['group_address']
 
@@ -314,8 +308,6 @@ class Update(_Page):
                 is_valid = metalib.check_root_directory_signature(
                     root_block,
                     root_address,
-                    access_block,
-                    access_address,
                     group_block,
                     group_address,
                     self.user['public_key']
@@ -325,8 +317,6 @@ class Update(_Page):
 
                 to_save['root_block'] = root_block
                 to_save['root_address'] = root_address
-                to_save['access_block'] = access_block
-                to_save['access_address'] = access_address
                 to_save['group_block'] = group_block
                 to_save['group_address'] = group_address
 
@@ -517,8 +507,6 @@ class Create(_Page):
             'descriptor': None,
             'root_block': None,
             'root_address': None,
-            'access_block': None,
-            'access_address': None,
             'group_block': None,
             'group_address': None,
         }

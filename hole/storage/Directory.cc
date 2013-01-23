@@ -4,6 +4,8 @@
 #include <elle/finally.hh>
 #include <elle/concept/Fileable.hh>
 #include <elle/serialize/Serializable.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/extract.hh>
 
 #include <hole/storage/Directory.hh>
 
@@ -71,15 +73,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to dig the path '%s'.", path));
 
-      std::ofstream out(path.string(),
-                        std::ios_base::out | std::ios_base::binary);
-
-      if (!out.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(out);
+      // Serialize the block.
+      elle::serialize::to_file(path.string()) << block;
     }
 
     void
@@ -95,17 +90,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to dig the path '%s'.", path));
 
-      // Open ostream to selected file.
-      std::ofstream out(path.string(),
-                        std::ios_base::out | std::ios_base::binary);
-
-      // Check stream integrity.
-      if (!out.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive> const&>(block).serialize(out);
+      // Serialize the block.
+      elle::serialize::to_file(path.string()) << block;
     }
 
     std::unique_ptr<nucleus::proton::Block>
@@ -121,17 +107,8 @@ namespace hole
 
       ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Open an input stream.
-      std::ifstream in(path.string(),
-                       std::ios_base::in | std::ios_base::binary);
-
-      // Check stream integrity.
-      if (!in.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(in);
+      // Deserialize the block.
+      elle::serialize::from_file(path.string()) >> *block;
 
       ELLE_FINALLY_ABORT(block);
 
@@ -152,17 +129,8 @@ namespace hole
 
       ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Open an input stream.
-      std::ifstream in(path.string(),
-                       std::ios_base::in | std::ios_base::binary);
-
-      // Check stream integrity.
-      if (!in.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      // XXX[to improve: contact Raphael]
-      static_cast<elle::serialize::Serializable<elle::serialize::BinaryArchive>*>(block)->deserialize(in);
+      // Deserialize the block.
+      elle::serialize::from_file(path.string()) >> *block;
 
       ELLE_FINALLY_ABORT(block);
 
