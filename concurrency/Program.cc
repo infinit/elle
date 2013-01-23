@@ -97,7 +97,7 @@ namespace elle
             // Maybe this should be improved?
             elle::crash::report(Program::_name, "SIGSEGV", reactor::Backtrace::current());
 
-            Program::Exit();
+            ::exit(EXIT_FAILURE);
 
             break;
           }

@@ -113,6 +113,23 @@ namespace elle
       _quit{quit}
     {}
 
+    Handler::Handler(std::string const& name,
+                     bool quit,
+                     int argc,
+                     char** argv):
+      _name{name},
+      _quit{quit}
+    {
+      for (unsigned int i = 1; i < argc; ++i)
+      {
+        if (argv[i] == NULL)
+          break;
+
+        this->_name += " ";
+        this->_name += argv[i];
+      }
+    }
+
     Handler::~Handler()
     {}
 
