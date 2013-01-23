@@ -7,6 +7,7 @@
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <cryptography/fwd.hh>
 
@@ -23,6 +24,7 @@ namespace infinit
   {
     /// Represents a secret key for symmetric cryptosystem operations.
     class SecretKey:
+      public elle::concept::MakeUniquable<SecretKey>,
       public elle::Printable
     {
       /*----------.
