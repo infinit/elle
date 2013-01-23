@@ -454,14 +454,17 @@ namespace plasma
         case plasma::TransactionStatus::started:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
           break;
-          case plasma::TransactionStatus::canceled:
+        case plasma::TransactionStatus::canceled:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/cancel", request);
           break;
         case plasma::TransactionStatus::finished:
           res = this->_client.post<UpdateTransactionResponse>("/transaction/finish", request);
           break;
+        case plasma::TransactionStatus::prepared:
+          res = this->_client.post<UpdateTransactionResponse>("/transaction/prepare", request);
+          break;
         default:
-          ELLE_WARN("You are not able to change transaction status to '%i'.",
+          ELLE_WARN("You are not able to change transaction status to '%s'.",
             status);
       }
 

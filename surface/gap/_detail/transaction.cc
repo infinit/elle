@@ -309,6 +309,7 @@ namespace surface
           break;
         case gap_transaction_status_prepared:
           this->_prepare_transaction(transaction);
+          break;
         case gap_transaction_status_started:
           this->_start_transaction(transaction);
           break;
@@ -407,10 +408,12 @@ namespace surface
       if (transaction.recipient_device_id != this->device_id())
       {
         ELLE_DEBUG("transaction doesn't concern your device.");
+        return;
       }
 
       this->_meta->network_add_device(transaction.network_id,
                                       this->device_id());
+
 
       this->update_transaction(transaction.transaction_id,
                                gap_transaction_status_started);
@@ -423,7 +426,7 @@ namespace surface
 
       if (transaction.recipient_device_id != this->device_id())
       {
-        throw Exception{gap_error, "Only sender can start transaction."};
+        throw Exception{gap_error, "Only recipient can start transaction."};
       }
 
       metrics::google::server().store("transaction:start:attempt",
@@ -445,6 +448,7 @@ namespace surface
           transaction.sender_device_id != this->device_id())
       {
         ELLE_DEBUG("transaction doesn't concern your device.");
+        return;
       }
 
       std::exception_ptr exception;
