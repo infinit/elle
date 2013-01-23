@@ -302,7 +302,7 @@ namespace surface
       if (!_check_action_is_available(this->_me._id, transaction, status))
         return;
 
-      switch ((gap_TransactionStatus) status)
+      switch (status)
       {
         case gap_transaction_status_accepted:
           this->_accept_transaction(transaction);
@@ -319,7 +319,7 @@ namespace surface
           this->_close_transaction(transaction);
           break;
         default:
-          ELLE_WARN("You are not able to change transaction status to '%i'.",
+          ELLE_WARN("You are not able to change transaction status to '%s'.",
                     status);
           return;
       }
@@ -421,7 +421,7 @@ namespace surface
     {
       ELLE_DEBUG("Start transaction '%s'", transaction.transaction_id);
 
-      if (transaction.sender_device_id != this->device_id())
+      if (transaction.recipient_device_id != this->device_id())
       {
         throw Exception{gap_error, "Only sender can start transaction."};
       }
