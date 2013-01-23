@@ -220,16 +220,20 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   {
     elle::io::Unique root_block_;
-    elle::serialize::to_string(root_block_) << directory;
+    elle::serialize::to_string<elle::serialize::OutputBase64Archive>(
+      root_block_) << directory;
 
     elle::io::Unique root_address_;
-    elle::serialize::to_string(root_address_) << directory_address;
+    elle::serialize::to_string<elle::serialize::OutputBase64Archive>(
+      root_address_) << directory_address;
 
     elle::io::Unique group_block_;
-    elle::serialize::to_string(group_block_) << group;
+    elle::serialize::to_string<elle::serialize::OutputBase64Archive>(
+      group_block_) << group;
 
     elle::io::Unique group_address_;
-    elle::serialize::to_string(group_address_) << group_address;
+    elle::serialize::to_string<elle::serialize::OutputBase64Archive>(
+      group_address_) << group_address;
 
     this->_on_got_descriptor(this->_manager.meta().update_network(
                                this->_description._id,
