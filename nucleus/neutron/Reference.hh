@@ -2,12 +2,12 @@
 # define NUCLEUS_NEUTRON_REFERENCE_HH
 
 # include <elle/types.hh>
-# include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Value.hh>
+# include <nucleus/proton/Contents.hh>
 # include <nucleus/neutron/fwd.hh>
-
-# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {
@@ -21,31 +21,54 @@ namespace nucleus
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///
+    /// XXX rewrite
+    ///
+    /// XXX no split for references
+    ///
     class Reference:
-      public elle::Printable,
-      private boost::noncopyable
+      public proton::Value,
+      public elle::serialize::SerializableMixin<Reference>
     {
+      //
+      // types
+      //
+    public:
+      typedef Offset            K; // XXX[???]
+
       //
       // constants
       //
     public:
-      static const Component component = ComponentReference;
+      struct Constants
+      {
+        static proton::Nature const seam;
+        static proton::Nature const quill;
+        static proton::Nature const value;
+        static proton::Nature const nature;
+      };
 
-    public:
       //
       // constructors & destructors
       //
-      Reference(proton::Contents<Reference>&);
+      Reference();
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Reference);
 
       //
       // methods
       //
       elle::Status      Create();
 
-      elle::Status      Bind(const elle::String&);
+      elle::Status      Target(const elle::String&);
       elle::Status      Resolve(elle::String&) const;
 
       elle::Status      Capacity(Size&) const;
+      // XXX
+      Size
+      size() const
+      {
+        // XXX
+        return (0);
+      }
 
       //
       // interfaces
@@ -59,17 +82,26 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
+      // value
+      elle::Boolean
+      empty() const { return true; } // XXX
+      elle::String
+      mayor() const { return elle::String(); } // XXX
+
+      // serialize
+      ELLE_SERIALIZE_FRIEND_FOR(Reference);
+
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Reference);
+
       //
       // attributes
       //
-      proton::Contents<Reference>&      contents;
-
-      elle::String                      target;
+      elle::String      target;
     };
 
   }
 }
 
-#include <nucleus/neutron/Reference.hxx>
+# include <nucleus/neutron/Reference.hxx>
 
 #endif

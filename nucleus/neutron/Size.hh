@@ -7,13 +7,9 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    ///
-    /// this type represents the size of the contents being a catalog,
+    /// Represents the size of the contents being a catalog,
     /// data or reference.
-    ///
-    typedef elle::Natural64             Size;
-
+    typedef elle::Size Size;
   }
 }
 

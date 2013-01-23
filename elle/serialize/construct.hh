@@ -47,9 +47,9 @@
 // --------------------------------------------
 // struct D
 // {
-//   ELLE_SERIALIZE_CONSTRUCT_DECL(D);
+//   ELLE_SERIALIZE_CONSTRUCT_DECLARE(D);
 // }
-// ELLE_SERIALIZE_CONSTRUCT_DEF(D)
+// ELLE_SERIALIZE_CONSTRUCT_DEFINE(D)
 // {
 //    // here we go
 // }
@@ -73,7 +73,7 @@
 // };
 // --------------------------------------------
 # define ELLE_SERIALIZE_CONSTRUCT(...)                                  \
-  ELLE_SERIALIZE_CONSTRUCT_DECL(__ESC_HEAD(__VA_ARGS__))                \
+  ELLE_SERIALIZE_CONSTRUCT_DECLARE(__ESC_HEAD(__VA_ARGS__))             \
   __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                \
 /**/
 
@@ -84,7 +84,7 @@
 /// XXX: Should not work with templated types, use ELLE_SERIALIZE_CONSTRUCT
 ///      instead.
 ///
-# define ELLE_SERIALIZE_CONSTRUCT_DECL(__T)                                   \
+# define ELLE_SERIALIZE_CONSTRUCT_DECLARE(__T)                                \
   template <typename Archive>                                                 \
   explicit                                                                    \
   __T(Archive&& archive,                                                      \
@@ -102,7 +102,7 @@
 /**/
 
 /// Define implementation of the pre-deserialization constructor.
-# define ELLE_SERIALIZE_CONSTRUCT_DEF(...)                                    \
+# define ELLE_SERIALIZE_CONSTRUCT_DEFINE(...)                                 \
   __ESC_HEAD(__VA_ARGS__)                                                     \
     ::__ESC_HEAD(__VA_ARGS__)(elle::serialize::NoInit)                        \
   __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                      \
@@ -116,9 +116,7 @@ namespace elle
 {
   namespace serialize
   {
-
     enum NoInit { no_init };
-
   }
 }
 
@@ -133,23 +131,26 @@ namespace elle
 # include <boost/preprocessor/seq/for_each_i.hpp>
 # include <boost/preprocessor/variadic/size.hpp>
 # include <boost/preprocessor/variadic/to_seq.hpp>
+# include <boost/preprocessor/seq.hpp>
 
-# define __ESC_INITIALIZATION_LIST_REPEAT(__r, __data, __i, __elem)           \
-  BOOST_PP_IF(__i, BOOST_PP_COMMA, :)                                         \
-  __elem{elle::serialize::no_init}                                            \
-/**/
+# define __ESC_INITIALIZATION_LIST_TRANSFORM(__s, __data, __elem)             \
+  __elem{elle::serialize::no_init}
+
+# define __ESC_INITIALIZATION_LIST_PROCESS(...)                               \
+  :                                                                           \
+  BOOST_PP_SEQ_ENUM(                                                          \
+    BOOST_PP_SEQ_TRANSFORM(                                                   \
+      __ESC_INITIALIZATION_LIST_TRANSFORM,                                    \
+      _,                                                                      \
+      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))))                     \
+
+# define __ESC_INITIALIZATION_LIST_EMPTY(...)
 
 # define __ESC_INITIALIZATION_LIST(...)                                       \
   BOOST_PP_IF(                                                                \
     BOOST_PP_DEC(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__)),                        \
-    BOOST_PP_SEQ_FOR_EACH_I(                                                  \
-      __ESC_INITIALIZATION_LIST_REPEAT,                                       \
-      _,                                                                      \
-      BOOST_PP_VARIADIC_TO_SEQ(__ESC_TAIL(__VA_ARGS__))                       \
-      ),                                                                      \
-    BOOST_PP_EMPTY()                                                          \
-    )                                                                         \
-/**/
+    __ESC_INITIALIZATION_LIST_PROCESS,                                        \
+    __ESC_INITIALIZATION_LIST_EMPTY)(__VA_ARGS__)
 
 #define __ESC_HEAD(F, ...) F
 #define __ESC_TAIL(F, ...) __VA_ARGS__

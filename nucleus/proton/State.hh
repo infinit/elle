@@ -1,27 +1,36 @@
 #ifndef NUCLEUS_PROTON_STATE_HH
 # define NUCLEUS_PROTON_STATE_HH
 
+# include <iosfwd>
+
 namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Enumerations |
+    `-------------*/
 
+    /// Specify the state of an in-memory block.
     ///
-    /// this enumeration is used to specify the state of an in-memory block.
-    ///
-    /// the dirty state indicates that the block has been modified.
-    ///
-    /// the consistent state indicates that the block has changed but the
-    /// required adjustements have since been performed so that the block
-    /// can be stored in that state.
-    ///
-    enum State
+    /// The dirty state indicates that the block has been modified while the
+    /// consistent state indicates that the block has changed but the
+    /// required adjustements have since been performed for the block to be
+    /// stored.
+    enum class State
       {
-        StateClean = 0,
-        StateDirty,
-        StateConsistent = StateClean
+        clean = 0,
+        dirty,
+        consistent
       };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                State const state);
   }
 }
 

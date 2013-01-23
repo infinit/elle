@@ -33,6 +33,8 @@ namespace etoile
       // constructors & destructors
       //
       Object();
+      Object(Object const& other);
+      ~Object();
 
       //
       // method
@@ -66,8 +68,8 @@ namespace etoile
 
       struct
       {
-        cryptography::PublicKey owner;
-        cryptography::PublicKey author;
+        cryptography::PublicKey* owner;
+        cryptography::PublicKey* author;
       } keys;
 
       struct

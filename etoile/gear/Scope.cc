@@ -101,15 +101,15 @@ namespace etoile
     /// this method returns true if an anymous scope exists for
     /// the given chemin.
     ///
-    elle::Status        Scope::Exist(const path::Chemin&        chemin)
+    elle::Boolean       Scope::Exist(const path::Chemin&        chemin)
     {
       Scope::S::O::Scoutor      scoutor;
 
       if ((scoutor = Scope::Scopes::Onymous.find(chemin)) !=
           Scope::Scopes::Onymous.end())
-        return elle::Status::True;
+        return true;
 
-      return elle::Status::False;
+      return false;
     }
 
     ///
@@ -215,7 +215,7 @@ namespace etoile
     elle::Status        Scope::Acquire(const path::Chemin&      chemin,
                                        Scope*&                  scope)
     {
-      if (Scope::Exist(chemin) == elle::Status::False)
+      if (Scope::Exist(chemin) == false)
         {
           // allocate a new scope.
           auto s = std::unique_ptr<Scope>(new Scope(chemin));
@@ -341,7 +341,7 @@ namespace etoile
         {
           Scope*        scope = iterator->second;
 
-          if (scope->chemin.Derives(from) == elle::Status::False)
+          if (scope->chemin.Derives(from) == false)
             continue;
 
           //
@@ -424,7 +424,7 @@ namespace etoile
               {
                 std::cout << alignment << elle::io::Dumpable::Shift
                           << elle::io::Dumpable::Shift
-                          << "[Scope] " << elle::none << std::endl;
+                          << "[Scope] " << "none" << std::endl;
               }
             else
               {
@@ -454,7 +454,7 @@ namespace etoile
               {
                 std::cout << alignment << elle::io::Dumpable::Shift
                           << elle::io::Dumpable::Shift
-                          << "[Scope] " << elle::none << std::endl;
+                          << "[Scope] " << "none" << std::endl;
               }
             else
               {
@@ -553,7 +553,7 @@ namespace etoile
     ///
     /// this method returns true if the actor has been located.
     ///
-    elle::Status        Scope::Locate(Actor*                    actor,
+    elle::Boolean       Scope::Locate(Actor*                    actor,
                                       Scope::A::Iterator*       iterator)
     {
       Scope::A::Iterator        i;
@@ -571,11 +571,11 @@ namespace etoile
               if (iterator != nullptr)
                 *iterator = i;
 
-              return elle::Status::True;
+              return true;
             }
         }
 
-      return elle::Status::False;
+      return false;
     }
 
     ///
@@ -1112,7 +1112,6 @@ namespace etoile
                    this->context->state);
           }
         case Context::StateJournaled:
-        case Context::StateCleaned:
           {
             // nothing to do.
 
@@ -1335,7 +1334,7 @@ namespace etoile
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Context] " << elle::none << std::endl;
+                    << "[Context] " << "none" << std::endl;
         }
 
       // dump the chronicle, if present.
@@ -1347,7 +1346,7 @@ namespace etoile
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Chronicle] " << elle::none << std::endl;
+                    << "[Chronicle] " << "none" << std::endl;
         }
 
       std::cout << alignment << elle::io::Dumpable::Shift

@@ -27,34 +27,14 @@ namespace nucleus
             stream << "object";
             break;
           }
-        case ComponentData:
+        case ComponentContents:
           {
-            stream << "data";
-            break;
-          }
-        case ComponentCatalog:
-          {
-            stream << "catalog";
-            break;
-          }
-        case ComponentReference:
-          {
-            stream << "reference";
-            break;
-          }
-        case ComponentAccess:
-          {
-            stream << "access";
+            stream << "contents";
             break;
           }
         case ComponentGroup:
           {
             stream << "group";
-            break;
-          }
-        case ComponentEnsemble:
-          {
-            stream << "ensemble";
             break;
           }
         default:

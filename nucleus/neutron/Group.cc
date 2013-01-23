@@ -1,5 +1,6 @@
 #include <nucleus/neutron/Group.hh>
 #include <nucleus/neutron/Fellow.hh>
+#include <nucleus/proton/Radix.hh>
 #include <nucleus/Exception.hh>
 
 #include <cryptography/KeyPair.hh>
@@ -12,17 +13,12 @@ namespace nucleus
   namespace neutron
   {
 
-    /*------------------.
-    | Static Attributes |
-    `------------------*/
-
-    Component const Group::component{ComponentGroup};
-
     /*----------.
     | Constants |
     `----------*/
 
     elle::Natural32 const Group::Constants::keypair_length{1024};
+    Component const Group::Constants::component{ComponentGroup};
 
 //
 // ---------- construction ----------------------------------------------------
@@ -31,7 +27,10 @@ namespace nucleus
     Group::Group():
       ImprintBlock::ImprintBlock(),
 
+      _pass_K(nullptr),
       _size(1),
+      _ensemble(nullptr),
+      _signature(nullptr),
       _manager_fellow(nullptr)
     {
     }
@@ -42,7 +41,10 @@ namespace nucleus
       ImprintBlock::ImprintBlock(network, ComponentGroup, manager_K),
 
       _description(description),
+      _pass_K(nullptr),
       _size(1),
+      _ensemble(nullptr),
+      _signature(nullptr),
       _manager_fellow(nullptr)
     {
       /* XXX[this is a hack which consists in generating a unique pass
@@ -52,12 +54,23 @@ namespace nucleus
           cryptography::KeyPair::generate(Group::Constants::keypair_length));
 
         Token token(pass.k(), this->manager_subject().user());
-        this->upgrade(proton::Address::null(), pass.K(), token);
+        this->upgrade(proton::Radix{}, pass.K(), token);
       }
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Group, ImprintBlock)
+    {
+      this->_pass_K = nullptr;
+      this->_ensemble = nullptr;
+      this->_signature = nullptr;
+      this->_manager_fellow = nullptr;
     }
 
     Group::~Group()
     {
+      delete this->_pass_K;
+      delete this->_ensemble;
+      delete this->_signature;
       delete this->_manager_fellow;
     }
 
@@ -65,20 +78,33 @@ namespace nucleus
 // ---------- methods ---------------------------------------------------------
 //
 
+    proton::Radix const&
+    Group::ensemble() const
+    {
+      ELLE_ASSERT(this->_ensemble != nullptr);
+
+      return (*this->_ensemble);
+    }
+
     void
-    Group::upgrade(proton::Address const& ensemble,
+    Group::upgrade(proton::Radix const& ensemble,
                    cryptography::PublicKey const& pass_K,
                    Token const& manager_token)
     {
-      this->_pass_K = pass_K;
+      delete this->_pass_K;
+      this->_pass_K = nullptr;
+      this->_pass_K = new cryptography::PublicKey{pass_K};
+
+      delete this->_ensemble;
+      this->_ensemble = nullptr;
+      this->_ensemble = new proton::Radix{ensemble};
 
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = ensemble;
       this->_manager_token = manager_token;
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     void
@@ -87,9 +113,11 @@ namespace nucleus
       if (this->_modification_timestamp.Current() == elle::Status::Error)
         throw Exception("unable to set the last management time"); // XXX[to remove later]
 
-      this->_ensemble = proton::Address::null();
+      delete this->_ensemble;
+      this->_ensemble = nullptr;
+      this->_ensemble = new proton::Radix{};
 
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
     }
 
     void
@@ -97,23 +125,28 @@ namespace nucleus
     {
       switch (this->state())
         {
-        case proton::StateClean:
-        // XXX[duplicate case for now] case proton::StateConsistent:
+        case proton::State::clean:
+        case proton::State::consistent:
           {
             // Nothing to do, the group is already valid.
 
             break;
           }
-        case proton::StateDirty:
+        case proton::State::dirty:
           {
-            this->_signature =
+            ELLE_ASSERT(this->_pass_K != nullptr);
+            ELLE_ASSERT(this->_ensemble != nullptr);
+
+            delete this->_signature;
+            this->_signature = nullptr;
+            this->_signature = new cryptography::Signature{
               owner_k.sign(elle::serialize::make_tuple(
                              this->_description,
-                             this->_pass_K,
+                             *this->_pass_K,
                              this->_size,
                              this->_modification_timestamp,
-                             this->_ensemble,
-                             this->_manager_token));
+                             *this->_ensemble,
+                             this->_manager_token))};
 
             // Increase the mutable block's revision.
             this->revision(this->revision() + 1);
@@ -124,7 +157,15 @@ namespace nucleus
 
       // Now that the group has been sealed, the block can be considered
       // as consistent.
-      this->state(proton::StateConsistent);
+      this->state(proton::State::consistent);
+    }
+
+    cryptography::PublicKey const&
+    Group::pass_K() const
+    {
+      ELLE_ASSERT(this->_pass_K != nullptr);
+
+      return (*this->_pass_K);
     }
 
     cryptography::PublicKey const&
@@ -174,8 +215,9 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Description] " << this->_description << std::endl;
 
-      if (this->_pass_K.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the public pass");
+      ELLE_ASSERT(this->_pass_K != nullptr);
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Pass] " << *this->_pass_K << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Size] " << std::dec << this->_size << std::endl;
@@ -186,8 +228,10 @@ namespace nucleus
       if (this->_modification_timestamp.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the timestamp");
 
-      if (this->_ensemble.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the ensemble's address");
+      ELLE_ASSERT(this->_ensemble != nullptr);
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift << "[Ensemble] "
+                << *this->_ensemble << std::endl;
 
       if (this->_manager_token.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
@@ -201,11 +245,14 @@ namespace nucleus
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << elle::io::Dumpable::Shift << "[Fellow] "
-                    << elle::none << std::endl;
+                    << "none" << std::endl;
         }
 
-      if (this->_signature.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the signature");
+      if (this->_signature != nullptr)
+        {
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Signature] " << *this->_signature << std::endl;
+        }
 
       return (elle::Status::Ok);
     }
@@ -217,7 +264,7 @@ namespace nucleus
     void
     Group::print(std::ostream& stream) const
     {
-      stream << "group()";
+      stream << "{" << this->_description << ", " << this->_size << "}";
     }
 
   }

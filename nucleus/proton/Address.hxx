@@ -1,6 +1,7 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
+# include <elle/assert.hh>
 # include <elle/serialize/TupleSerializer.hxx>
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/Pointer.hh>
@@ -52,17 +53,11 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Address,
   enforce(version == 0);
 
   archive & value._type;
+
   switch (value._type)
     {
     case nucleus::proton::Address::Type::null:
       {
-        break;
-      }
-    case nucleus::proton::Address::Type::some:
-      {
-        // XXX[to handle for porcupine]
-        elle::abort("invalid address type: some");
-
         break;
       }
     case nucleus::proton::Address::Type::valid:

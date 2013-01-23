@@ -11,6 +11,7 @@
 #include <elle/idiom/Open.hh>
 
 #include <elle/log.hh>
+#include <elle/CrashReporter.hh>
 
 ELLE_LOG_COMPONENT("elle.concurrency.Program");
 
@@ -19,6 +20,8 @@ namespace elle
   namespace concurrency
   {
 
+    std::string Program::_name{""};
+
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -26,7 +29,7 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status              Program::Setup()
+    Status              Program::Setup(std::string const& name)
     {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // set the signal handlers.
@@ -34,11 +37,14 @@ namespace elle
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
+      ::signal(SIGSEGV, &Program::Exception);
 #elif defined(INFINIT_WINDOWS)
       // XXX to implement
 #else
 # error "unsupported platform"
 #endif
+
+      Program::_name = name;
 
       return Status::Ok;
     }
@@ -81,6 +87,16 @@ namespace elle
         case SIGTERM:
           {
             // exit properly by finishing processing the last events.
+            Program::Exit();
+
+            break;
+          }
+        case SIGSEGV: // Probability to send succesfully data is small but try.
+          {
+            // XXX: Backtrace is fucked by signal.
+            // Maybe this should be improved?
+            elle::crash::report(Program::_name, "SIGSEGV", reactor::Backtrace::current());
+
             Program::Exit();
 
             break;

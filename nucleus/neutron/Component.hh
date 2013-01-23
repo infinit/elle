@@ -16,15 +16,8 @@ namespace nucleus
         ComponentUnknown = 0, // XXX
 
         ComponentObject,
-        ComponentData,
-        ComponentCatalog,
-        ComponentReference,
-        ComponentAccess,
+        ComponentContents,
         ComponentGroup,
-        ComponentEnsemble,
-
-        ComponentSeamCatalog,
-        ComponentQuillCatalog,
 
         Components // XXX
       };

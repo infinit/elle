@@ -1,6 +1,11 @@
 #include <etoile/gear/Link.hh>
 #include <etoile/gear/Nature.hh>
 
+#include <etoile/nest/Nest.hh>
+
+#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/neutron/Reference.hh>
+
 namespace etoile
 {
   namespace gear
@@ -16,7 +21,11 @@ namespace etoile
     Link::Link():
       Object(NatureLink),
 
-      contents(nullptr)
+      contents_porcupine(nullptr),
+      contents_nest(nullptr),
+      contents_limits(nucleus::proton::limits::Porcupine{},
+                      nucleus::proton::limits::Node{1048576, 0.5, 0.2},
+                      nucleus::proton::limits::Node{1048576, 0.5, 0.2})
     {
     }
 
@@ -25,9 +34,8 @@ namespace etoile
     ///
     Link::~Link()
     {
-      // release the contents.
-      if (this->contents != nullptr)
-        delete this->contents;
+      delete this->contents_porcupine;
+      delete this->contents_nest;
     }
 
 //
@@ -47,16 +55,16 @@ namespace etoile
       if (Object::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the inherited object");
 
-      // dump the contents.
-      if (this->contents != nullptr)
+      // dump the porcupine.
+      if (this->contents_porcupine != nullptr)
         {
-          if (this->contents->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the contents");
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Contents] " << *this->contents_porcupine << std::endl;
         }
       else
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Contents] " << elle::none << std::endl;
+                    << "[Contents] " << "none" << std::endl;
         }
 
       return elle::Status::Ok;

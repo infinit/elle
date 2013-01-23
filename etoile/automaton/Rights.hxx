@@ -4,6 +4,7 @@
 # include <etoile/gear/Operation.hh>
 
 # include <elle/Exception.hh>
+# include <elle/log.hh>
 # include <elle/idiom/Open.hh>
 
 namespace etoile
@@ -19,6 +20,9 @@ namespace etoile
     elle::Status
     Rights::Recompute(T& context)
     {
+      ELLE_LOG_COMPONENT("infinit.etoile.automaton.Rights");
+      ELLE_TRACE_FUNCTION(context);
+
       // reset the role in order to make sure the Determine() method
       // will carry on.
       context.rights.role = T::Role::RoleUnknown;
@@ -38,6 +42,9 @@ namespace etoile
     Rights::Operate(T& context,
                     const gear::Operation& operation)
     {
+      ELLE_LOG_COMPONENT("infinit.etoile.automaton.Rights");
+      ELLE_TRACE_FUNCTION(context, operation);
+
       // depending on the operation.
       switch (operation)
         {

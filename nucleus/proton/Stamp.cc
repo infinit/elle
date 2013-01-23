@@ -3,12 +3,23 @@
 #include <elle/serialize/TupleSerializer.hxx>
 #include <cryptography/PrivateKey.hh>
 
-#include <Infinit.hh>
-
 namespace nucleus
 {
   namespace proton
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Stamp::Stamp():
+      _signature(nullptr)
+    {
+    }
+
+    Stamp::~Stamp()
+    {
+      delete this->_signature;
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,7 +44,11 @@ namespace nucleus
     elle::Status        Stamp::Seal(cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      this->signature = k.sign(elle::serialize::make_tuple(this->master, this->slave));
+      delete this->_signature;
+      this->_signature = nullptr;
+      this->_signature =
+        new cryptography::Signature{
+          k.sign(elle::serialize::make_tuple(this->master, this->slave))};
 
       return elle::Status::Ok;
     }
@@ -45,10 +60,13 @@ namespace nucleus
     elle::Status
     Stamp::Validate(elle::Authority const& authority)
     {
+      ELLE_ASSERT(this->_signature != nullptr);
+
       // sign the attributes.
-      if (authority.K.Verify(
-            this->signature,
-            elle::serialize::make_tuple(this->master, this->slave)) == elle::Status::Error)
+      if (authority.K().verify(
+            *this->_signature,
+            elle::serialize::make_tuple(this->master,
+                                        this->slave)) == false)
         escape("this stamp seems not to have been issued by the oracle");
 
       return elle::Status::Ok;
@@ -65,10 +83,13 @@ namespace nucleus
       if (this == &other)
         return true;
 
+      ELLE_ASSERT(this->_signature != nullptr);
+      ELLE_ASSERT(other._signature != nullptr);
+
       // compare the attributes.
       if ((this->master != other.master) ||
           (this->slave != other.slave) ||
-          (this->signature != other.signature))
+          (*this->_signature != *other._signature))
         return false;
 
       return true;
@@ -104,8 +125,11 @@ namespace nucleus
         escape("unable to dump the slave");
 
       // dump the signature.
-      if (this->signature.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the signature");
+      if (this->_signature != nullptr)
+        {
+          std::cout << alignment << elle::io::Dumpable::Shift
+                    << "[Signature] " << *this->_signature << std::endl;
+        }
 
       return elle::Status::Ok;
     }

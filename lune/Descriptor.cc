@@ -50,7 +50,7 @@ namespace lune
                network, this->_path(user, network));
     if (Descriptor::exists(user, network) == false)
       throw elle::Exception("this network does not seem to exist");
-    this->load(this->_path(user, network));
+    this->load(user, network);
     this->validate(Infinit::authority());
   }
 
@@ -71,6 +71,14 @@ namespace lune
     _data(name, openness, policy, version)
   {
   }
+
+  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Descriptor)
+  {
+  }
+
+  /*--------.
+  | Methods |
+  `--------*/
 
   void
   Descriptor::seal(cryptography::PrivateKey const& administrator_k)
@@ -127,21 +135,23 @@ namespace lune
   Descriptor::load(elle::String const& user,
                    elle::String const& network)
   {
-    this->load(Descriptor::_path(user, network));
+    this->load(elle::io::Path{Descriptor::_path(user, network)});
   }
 
   void
   Descriptor::store(Identity const& identity) const
   {
     ELLE_TRACE("store descriptor with %s", identity);
-    this->store(Descriptor::_path(identity.id(), this->meta().id()));
+    this->store(elle::io::Path{Descriptor::_path(identity.id(),
+                                                 this->meta().id())});
   }
 
   void
   Descriptor::erase(elle::String const& user,
                     elle::String const& network)
   {
-    elle::concept::Fileable<>::erase(Descriptor::_path(user, network));
+    elle::concept::Fileable<>::erase(
+      elle::io::Path{Descriptor::_path(user, network)});
   }
 
   elle::Boolean
@@ -157,7 +167,8 @@ namespace lune
 // ---------- meta ------------------------------------------------------------
 //
 
-  Descriptor::Meta::Meta()
+  Descriptor::Meta::Meta():
+    _signature(nullptr)
   {
     this->_everybody.subject = nullptr;
   }
@@ -176,12 +187,15 @@ namespace lune
     _root(root),
     _everybody{everybody, nullptr},
     _history(history),
-    _extent(extent)
+    _extent(extent),
+    _signature(nullptr)
   {
     if (authority.type != elle::Authority::TypePair)
       throw std::runtime_error("unable to sign with a public authority");
 
-    this->_signature =
+    delete this->_signature;
+    this->_signature = nullptr;
+    this->_signature = new cryptography::Signature{
       authority.k->sign(
         elle::serialize::make_tuple(
           this->_id,
@@ -190,14 +204,22 @@ namespace lune
           this->_root,
           this->_everybody.identity,
           this->_history,
-          this->_extent));
+          this->_extent))};
+  }
+
+  Descriptor::Meta::~Meta()
+  {
+    delete this->_everybody.subject;
+    delete this->_signature;
   }
 
   void
   Descriptor::Meta::validate(elle::Authority const& authority) const
   {
-    if (authority.K.Verify(
-          this->_signature,
+    ELLE_ASSERT(this->_signature != nullptr);
+
+    if (authority.K().verify(
+          *this->_signature,
           elle::serialize::make_tuple(
             this->_id,
             this->_administrator_K,
@@ -205,14 +227,9 @@ namespace lune
             this->_root,
             this->_everybody.identity,
             this->_history,
-            this->_extent)) == elle::Status::Error)
+            this->_extent)) == false)
       throw std::runtime_error("unable to validate the meta section "
                                "with the authority's key");
-  }
-
-  Descriptor::Meta::~Meta()
-  {
-    delete this->_everybody.subject;
   }
 
   elle::String const&
@@ -294,8 +311,8 @@ namespace lune
     std::cout << alignment << elle::io::Dumpable::Shift
               << "[ID] " << this->_id << std::endl;
 
-    if (this->_administrator_K.Dump(margin + 2) == elle::Status::Error)
-      escape("XXX");
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Administrator K] " << this->_administrator_K << std::endl;
 
     if (this->_model.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the model");
@@ -321,8 +338,11 @@ namespace lune
     std::cout << alignment << elle::io::Dumpable::Shift << "[Extent] "
               << this->_extent << std::endl;
 
-    if (this->_signature.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the signature");
+    if (this->_signature != nullptr)
+      {
+        std::cout << alignment << elle::io::Dumpable::Shift << "[Signature] "
+                  << *this->_signature << std::endl;
+      }
 
     return (elle::Status::Ok);
   }
@@ -331,7 +351,8 @@ namespace lune
 // ---------- data ------------------------------------------------------------
 //
 
-  Descriptor::Data::Data()
+  Descriptor::Data::Data():
+    _signature(nullptr)
   {
   }
 
@@ -343,15 +364,22 @@ namespace lune
     _openness(openness),
     _policy(policy),
     _version(version),
-    _formats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0}
+    _formats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    _signature(nullptr)
   {
+  }
+
+  Descriptor::Data::~Data()
+  {
+    delete this->_signature;
   }
 
   void
   Descriptor::Data::seal(cryptography::PrivateKey const& administrator_k)
   {
-    this->_signature =
+    delete this->_signature;
+    this->_signature = nullptr;
+    this->_signature = new cryptography::Signature{
       administrator_k.sign(
         elle::serialize::make_tuple(
           this->_name,
@@ -376,15 +404,17 @@ namespace lune
           this->_formats.reference,
           this->_formats.user,
           this->_formats.identity,
-          this->_formats.descriptor));
+          this->_formats.descriptor))};
   }
 
   void
   Descriptor::Data::validate(
     cryptography::PublicKey const& administrator_K) const
   {
-    if (administrator_K.Verify(
-          this->_signature,
+    ELLE_ASSERT(this->_signature != nullptr);
+
+    if (administrator_K.verify(
+          *this->_signature,
           elle::serialize::make_tuple(
             this->_name,
             this->_openness,
@@ -408,7 +438,7 @@ namespace lune
             this->_formats.reference,
             this->_formats.user,
             this->_formats.identity,
-            this->_formats.descriptor)) == elle::Status::Error)
+            this->_formats.descriptor)) == false)
       throw std::runtime_error("unable to validate the data section "
                                "with the administrator's key");
   }
@@ -512,8 +542,11 @@ namespace lune
     LUNE_DESCRIPTOR_FORMAT_DUMPER(identity);
     LUNE_DESCRIPTOR_FORMAT_DUMPER(descriptor);
 
-    if (this->_signature.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the signature");
+    if (this->_signature != nullptr)
+      {
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Signature] " << *this->_signature << std::endl;
+      }
 
     return elle::Status::Ok;
   }

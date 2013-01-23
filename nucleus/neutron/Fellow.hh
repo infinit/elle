@@ -12,11 +12,9 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents a group member and is defined by
-    /// a subject (which can be either a user or a group i.e a subgroup),
-    /// and a token which is the encrypted version of the group's private
-    /// pass.
+    /// Represent a group member and is defined by a subject (which can
+    /// be either a user or a group i.e a subgroup), and a token which
+    /// is the encrypted version of the group's private pass.
     class Fellow:
       public elle::Printable,
       public elle::io::Dumpable
@@ -41,12 +39,6 @@ namespace nucleus
         valid
       };
 
-      /*------.
-      | Types |
-      `------*/
-    public:
-      typedef Subject Symbol;
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -56,6 +48,7 @@ namespace nucleus
       Fellow(Subject const& subject,
              Token const& token);
       Fellow(Fellow const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Fellow);
       ~Fellow();
     private:
       Fellow(Type const type);
@@ -67,7 +60,6 @@ namespace nucleus
       elle::Boolean
       operator ==(Fellow const& other) const;
       ELLE_OPERATOR_NEQ(Fellow);
-      /// Do not allow fellow assignment: use the copy constructor instead.
       ELLE_OPERATOR_NO_ASSIGNMENT(Fellow);
 
       /*--------.
@@ -97,9 +89,12 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Fellow);
+      ELLE_SERIALIZE_FRIEND_FOR(Ensemble);
       // rangeable
+      typedef Subject Symbol;
+      virtual
       Subject const&
-      symbol();
+      symbol() const;
 
       /*-----------.
       | Structures |
@@ -109,14 +104,15 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Subject const& subject,
               Token const& token);
         ~Valid();
 
         // methods
       public:
-        /// Update the token.
+        Token const&
+        token() const;
         void
         token(Token const& token);
 
@@ -136,7 +132,7 @@ namespace nucleus
         /// a token, following the modification of the group's
         /// pass for example, the token is represented through
         /// a pointer.
-        ELLE_ATTRIBUTE_RW(Token*, token);
+        ELLE_ATTRIBUTE(Token*, token);
       };
 
       /*-----------.
@@ -145,8 +141,16 @@ namespace nucleus
     private:
       ELLE_ATTRIBUTE_R(Type, type)
       ELLE_ATTRIBUTE(Valid*, valid);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Fellow::Type const type);
   }
 }
 

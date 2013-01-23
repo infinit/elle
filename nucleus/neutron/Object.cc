@@ -1,15 +1,20 @@
 #include <nucleus/neutron/Object.hh>
-#include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Attributes.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Author.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Radix.hh>
+#include <nucleus/proton/Address.hh>
 
 #include <cryptography/Digest.hh>
-#include <elle/serialize/TupleSerializer.hxx>
 #include <cryptography/PrivateKey.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
+#include <elle/serialize/TupleSerializer.hxx>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -17,11 +22,11 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- constants -------------------------------------------------------
-//
+    /*----------.
+    | Constants |
+    `----------*/
 
-    const Component Object::component = ComponentObject;
+    Component const Object::Constants::component{ComponentObject};
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -32,15 +37,20 @@ namespace nucleus
 
       _author(nullptr)
     {
-      this->_meta.state = proton::StateClean;
+      this->_meta.state = proton::State::clean;
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
+      this->_meta.access = nullptr;
       this->_meta.revision = 0;
+      this->_meta.signature = nullptr;
 
-      this->_data.state = proton::StateClean;
+      this->_data.contents = nullptr;
+      this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
+      this->_data.signature = nullptr;
     }
 
     ///
@@ -67,15 +77,20 @@ namespace nucleus
       // the attributes below are initialized in the constructor body
       // because they belong to a sub-structure.
       //
-      this->_meta.state = proton::StateClean;
+      this->_meta.state = proton::State::clean;
       this->_meta.owner.permissions = permissions::none;
       this->_meta.owner.token = Token::null();
       this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
+      this->_meta.access = nullptr;
       this->_meta.revision = 0;
+      this->_meta.signature = nullptr;
 
-      this->_data.state = proton::StateClean;
+      this->_data.contents = nullptr;
+      this->_data.state = proton::State::clean;
       this->_data.size = 0;
       this->_data.revision = 0;
+      this->_data.signature = nullptr;
 
       // (i)
       {
@@ -84,7 +99,7 @@ namespace nucleus
 
         // set the initial owner permissions to all with an empty key.
         if (this->Administrate(
-              this->_meta.attributes,
+              proton::Radix{},
               permissions::read | permissions::write) == elle::Status::Error)
           throw Exception("unable to set the initial meta data");
       }
@@ -92,19 +107,35 @@ namespace nucleus
       // (ii)
       {
         // Set the initial data with no contents and the owner as the author.
-        if (this->Update(Author(),
-                         proton::Address::null(),
+        if (this->Update(Author{},
+                         proton::Radix{},
                          0,
-                         proton::Address::null(),
+                         proton::Radix{},
                          this->_meta.owner.token) == elle::Status::Error)
           throw Exception("unable to set the initial data");
       }
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Object, ImprintBlock)
+    {
+      this->_author = nullptr;
+      this->_meta.owner.record = nullptr;
+      this->_meta.attributes = nullptr;
+      this->_meta.access = nullptr;
+      this->_meta.signature = nullptr;
+      this->_data.contents = nullptr;
+      this->_data.signature = nullptr;
     }
 
     Object::~Object()
     {
       delete this->_author;
       delete this->_meta.owner.record;
+      delete this->_meta.attributes;
+      delete this->_meta.access;
+      delete this->_meta.signature;
+      delete this->_data.contents;
+      delete this->_data.signature;
     }
 
 //
@@ -115,13 +146,14 @@ namespace nucleus
     /// this method updates the data section.
     ///
     elle::Status        Object::Update(const Author&            author,
-                                       const proton::Address&   contents,
+                                       proton::Radix const& contents,
                                        const Size&              size,
-                                       const proton::Address&   access,
+                                       proton::Radix const& access,
                                        const Token&             token)
 
     {
       // set the author.
+      // XXX[delete and re-new]
       *this->_author = author;
 
       //
@@ -132,8 +164,12 @@ namespace nucleus
         if (this->_data.modification_timestamp.Current() == elle::Status::Error)
           escape("unable to set the last update time");
 
-        // set the address.
-        this->_data.contents = contents;
+        // XXX[hack to prevent too much allocations]
+        if (this->_data.contents != &contents)
+          {
+            delete this->_data.contents;
+            this->_data.contents = new proton::Radix{contents};
+          }
 
         // set the size.
         this->_data.size = size;
@@ -144,18 +180,22 @@ namespace nucleus
       // included in the data signature.
       //
       {
-        // set the address.
-        this->_meta.access = access;
+        // XXX[hack to prevent too much allocations]
+        if (this->_meta.access != &access)
+          {
+            delete this->_meta.access;
+            this->_meta.access = new proton::Radix{access};
+          }
 
         // set the owner token.
         this->_meta.owner.token = token;
       }
 
       // mark the section as dirty.
-      this->_data.state = proton::StateDirty;
+      this->_data.state = proton::State::dirty;
 
       // mark the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -163,21 +203,25 @@ namespace nucleus
     ///
     /// this method updates the meta section.
     ///
-    elle::Status        Object::Administrate(const Attributes&  attributes,
-                                             const Permissions& permissions)
+    elle::Status        Object::Administrate(proton::Radix const& attributes,
+                                             Permissions const permissions)
     {
       // set the last management time.
       if (this->_meta.modification_timestamp.Current() == elle::Status::Error)
         escape("unable to set the last management time");
 
-      // set the attributes.
-      this->_meta.attributes = attributes;
+      // XXX[hack to prevent too much allocations]
+      if (this->_meta.attributes != &attributes)
+        {
+          delete this->_meta.attributes;
+          this->_meta.attributes = new proton::Radix{attributes};
+        }
 
       // set the owner permissions.
       this->_meta.owner.permissions = permissions;
 
       // mark the section as dirty.
-      this->_meta.state = proton::StateDirty;
+      this->_meta.state = proton::State::dirty;
 
       // make sure the owner's record is computed.
       this->_owner_record();
@@ -193,7 +237,7 @@ namespace nucleus
                                             this->_meta.owner.token);
 
       // set the the block as dirty.
-      this->state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -202,87 +246,55 @@ namespace nucleus
     /// this method seals the data and meta data by signing them.
     ///
     elle::Status        Object::Seal(cryptography::PrivateKey const&    k,
-                                     Access const* access)
+                                     cryptography::Digest const& fingerprint)
     {
       // re-sign the data if required.
-      if (this->_data.state == proton::StateDirty)
+      if (this->_data.state == proton::State::dirty)
         {
           // increase the data revision.
           this->_data.revision += 1;
 
           // sign the archive with the author key.
-          this->_data.signature =
+          ELLE_ASSERT(this->_data.contents != nullptr);
+          ELLE_ASSERT(this->_meta.access != nullptr);
+
+          this->_data.signature = new cryptography::Signature{
             k.sign(elle::serialize::make_tuple(
-                     this->_data.contents,
+                     *this->_data.contents,
                      this->_data.size,
                      this->_data.modification_timestamp,
                      this->_data.revision,
                      this->_meta.owner.token,
-                     this->_meta.access));
+                     *this->_meta.access))};
 
           // mark the section as consistent.
-          this->_data.state = proton::StateConsistent;
+          this->_data.state = proton::State::consistent;
         }
 
       // re-sign the meta data if required.
-      if (this->_meta.state == proton::StateDirty)
+      if (this->_meta.state == proton::State::dirty)
         {
           // increase the meta revision.
           this->_meta.revision += 1;
 
           // perform the meta signature depending on the presence of a
           // reference to an access block.
-          if (this->_meta.access != proton::Address::null())
-            {
-              //
-              // if an access block is referenced, the identities and
-              // permissions of the delegates must be included in the meta
-              // signature.
-              //
-              // in practical terms, a digest of the (subject, permissions)
-              // access records is computed which is then included in
-              // the meta signature.
-              //
 
-              // test if there is an access block.
-              if (access == nullptr)
-                escape("the Seal() method must take the object's "
-                       "access block");
+          // sign the meta data, making sure to include the access
+          // fingerprint.
+          ELLE_ASSERT(this->_meta.attributes != nullptr);
 
-              // compute the fingerprint of the access (subject, permissions)
-              // tuples.
-              cryptography::Digest fingerprint(access->fingerprint());
-
-              // sign the meta data, making sure to include the access
-              // fingerprint.
-              this->_meta.signature =
-                k.sign(elle::serialize::make_tuple(
-                         this->_meta.owner.permissions,
-                         this->_meta.genre,
-                         this->_meta.modification_timestamp,
-                         this->_meta.attributes,
-                         this->_meta.revision,
-                         fingerprint));
-            }
-          else
-            {
-              //
-              // otherwise, only the meta attributes are included in
-              // the signature.
-              //
-
-              // sign the meta data.
-              this->_meta.signature =
-                k.sign(elle::serialize::make_tuple(
-                         this->_meta.owner.permissions,
-                         this->_meta.genre,
-                         this->_meta.modification_timestamp,
-                         this->_meta.attributes,
-                         this->_meta.revision));
-            }
+          this->_meta.signature = new cryptography::Signature{
+            k.sign(elle::serialize::make_tuple(
+                     this->_meta.owner.permissions,
+                     this->_meta.genre,
+                     this->_meta.modification_timestamp,
+                     *this->_meta.attributes,
+                     this->_meta.revision,
+                     fingerprint))};
 
           // mark the section as consistent.
-          this->_meta.state = proton::StateConsistent;
+          this->_meta.state = proton::State::consistent;
         }
 
       // set the mutable block's revision.
@@ -290,15 +302,17 @@ namespace nucleus
       this->revision(this->_meta.revision + this->_data.revision);
 
       // set the block as consistent.
-      this->state(proton::StateConsistent);
+      this->state(proton::State::consistent);
 
       return elle::Status::Ok;
     }
 
-    proton::Address const&
+    proton::Radix const&
     Object::access() const
     {
-      return (this->_meta.access);
+      ELLE_ASSERT(this->_meta.access != nullptr);
+
+      return (*this->_meta.access);
     }
 
     Record&
@@ -335,22 +349,20 @@ namespace nucleus
       return (*this->_author);
     }
 
-    proton::Address const&
+    proton::Radix const&
     Object::contents() const
     {
-      return (this->_data.contents);
+      ELLE_ASSERT(this->_data.contents);
+
+      return (*this->_data.contents);
     }
 
-    Attributes const&
+    proton::Radix const&
     Object::attributes() const
     {
-      return (this->_meta.attributes);
-    }
+      ELLE_ASSERT(this->_meta.attributes);
 
-    Attributes&
-    Object::attributes()
-    {
-      return (this->_meta.attributes);
+      return (*this->_meta.attributes);
     }
 
     Size const&
@@ -414,14 +426,14 @@ namespace nucleus
 
     void
     Object::validate(proton::Address const& address,
-                     Access const* access) const
+                     cryptography::Digest const& fingerprint) const
     {
       /// The method (i) calls the parent class for validation (iii) verifies
       /// the meta part's signature (iv) retrieves the author's public key
       /// (v) verifies the data signature and (vi) verify that the mutable
       /// block's general revision number matches the object's revisions.
 
-      cryptography::PublicKey author;
+      cryptography::PublicKey const* author = nullptr;
 
       // (i)
       {
@@ -431,42 +443,20 @@ namespace nucleus
 
       // (ii)
       {
-        if (this->_meta.access != proton::Address::null())
-          {
-            // test if there is an access block.
-            if (access == nullptr)
-              throw Exception("the Validate() method must take the object's "
-                              "access block");
+        // verify the meta part, including the access fingerprint.
+        ELLE_ASSERT(this->_meta.attributes != nullptr);
+        ELLE_ASSERT(this->_meta.signature != nullptr);
 
-            // compute the fingerprint of the access (subject, permissions)
-            // tuples.
-            cryptography::Digest fingerprint(access->fingerprint());
-
-            // verify the meta part, including the access fingerprint.
-            if (this->owner_K().Verify(
-                  this->_meta.signature,
-                  elle::serialize::make_tuple(
-                    this->_meta.owner.permissions,
-                    this->_meta.genre,
-                    this->_meta.modification_timestamp,
-                    this->_meta.attributes,
-                    this->_meta.revision,
-                    fingerprint)) == elle::Status::Error)
-              throw Exception("unable to verify the meta's signature");
-          }
-        else
-          {
-            // verify the meta part.
-            if (this->owner_K().Verify(
-                  this->_meta.signature,
-                  elle::serialize::make_tuple(
-                    this->_meta.owner.permissions,
-                    this->_meta.genre,
-                    this->_meta.modification_timestamp,
-                    this->_meta.attributes,
-                    this->_meta.revision)) == elle::Status::Error)
-              throw Exception("unable to verify the meta's signature");
-          }
+        if (this->owner_K().verify(
+              *this->_meta.signature,
+              elle::serialize::make_tuple(
+                this->_meta.owner.permissions,
+                this->_meta.genre,
+                this->_meta.modification_timestamp,
+                *this->_meta.attributes,
+                this->_meta.revision,
+                fingerprint)) == false)
+          throw Exception("unable to verify the meta's signature");
       }
 
       // (iii)
@@ -476,7 +466,7 @@ namespace nucleus
           case Object::RoleOwner:
             {
               // copy the public key.
-              author = this->owner_K();
+              author = &this->owner_K();
 
               //
               // note that the owner's permission to write the object
@@ -503,8 +493,10 @@ namespace nucleus
             }
           case Object::RoleLord:
             {
-              Record* record;
-
+              // XXX[c'est la merde pour valider, il faut le record du author,
+              //     a paser en argument du coup]
+              ELLE_ASSERT(false);
+              /* XXX
               // check that an access block has been provided.
               if (access == nullptr)
                 throw Exception("the Validate() method must take the object's "
@@ -512,25 +504,24 @@ namespace nucleus
 
               // retrieve the access record corresponding to the author's
               // index.
-              if (access->Lookup(this->_author->lord.index,
-                                 record) == elle::Status::Error)
-                throw Exception("unable to retrieve the access record");
+              Record const& record = access->select(this->_author->lord.index);
 
               // check the access record permissions for the given author.
-              if ((record->permissions() & permissions::write) !=
+              if ((record.permissions() & permissions::write) !=
                   permissions::write)
                 throw Exception("the object's author does not seem to have had "
                                 "the permission to modify this object");
 
               // check that the subject is indeed a user.
-              if (record->subject().type() != Subject::TypeUser)
+              if (record.subject().type() != Subject::TypeUser)
                 throw Exception("the author references an access record which "
                                 "is not related to a user");
 
               // finally, set the user's public key.
               //
               // note that a copy is made to avoid any complications.
-              author = record->subject().user();
+              author = &record.subject().user();
+              */
 
               break;
             }
@@ -542,24 +533,29 @@ namespace nucleus
             }
           default:
             {
-              throw Exception(
-                elle::sprintf("unexpected author's role '%u'",
-                              this->_author->role));
+              throw Exception("unexpected author's role '%u'",
+                              this->_author->role);
             }
           }
       }
 
+      ELLE_ASSERT(author != nullptr);
+
       // (iv)
       {
         // verify the signature.
-        if (author.Verify(this->_data.signature,
-                          elle::serialize::make_tuple(
-                            this->_data.contents,
-                            this->_data.size,
-                            this->_data.modification_timestamp,
-                            this->_data.revision,
-                            this->_meta.owner.token,
-                            this->_meta.access)) == elle::Status::Error)
+        ELLE_ASSERT(this->_data.contents != nullptr);
+        ELLE_ASSERT(this->_data.signature != nullptr);
+        ELLE_ASSERT(this->_meta.access != nullptr);
+
+        if (author->verify(*this->_data.signature,
+                           elle::serialize::make_tuple(
+                             *this->_data.contents,
+                             this->_data.size,
+                             this->_data.modification_timestamp,
+                             this->_data.revision,
+                             this->_meta.owner.token,
+                             *this->_meta.access)) == false)
           throw Exception("unable to verify the data signature");
       }
 
@@ -610,8 +606,7 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Genre] " << std::dec
-                << static_cast<elle::Natural32>(this->_meta.genre)
+                << "[Genre] " << this->_meta.genre
                 << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -620,23 +615,23 @@ namespace nucleus
       if (this->_meta.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta timestamp");
 
-      if (this->_meta.attributes.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the meta attributess");
-
+      ELLE_ASSERT(this->_meta.attributes != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Access]" << std::endl;
-      if (this->_meta.access.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta access address");
+                << "[Attributes] " << *this->_meta.attributes << std::endl;
+
+      ELLE_ASSERT(this->_meta.access != nullptr);
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
+                << "[Access] " << *this->_meta.access << std::endl;
 
       if (this->_meta.revision.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta revision");
 
+      ELLE_ASSERT(this->_meta.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-      if (this->_meta.signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta signature");
+                << "[Signature] " << *this->_meta.signature << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -646,11 +641,10 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Data]" << std::endl;
 
+      ELLE_ASSERT(this->_data.contents != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Contents]" << std::endl;
-      if (this->_data.contents.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the contents' address");
+                << "[Contents] " << *this->_data.contents << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -665,11 +659,10 @@ namespace nucleus
       if (this->_data.revision.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the data revision");
 
+      ELLE_ASSERT(this->_data.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-      if (this->_data.signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the data signature");
+                << "[Signature] " << *this->_data.signature << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift

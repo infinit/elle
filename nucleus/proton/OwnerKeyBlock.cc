@@ -5,6 +5,10 @@
 
 #include <cryptography/KeyPair.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.OwnerKeyBlock");
+
 namespace nucleus
 {
   namespace proton
@@ -63,6 +67,8 @@ namespace nucleus
     Address
     OwnerKeyBlock::bind() const
     {
+      ELLE_TRACE_METHOD("");
+
       // Note that the address computation of an owner key block is similar
       // to the one of a pubilc key block: the block's public key K is hashed
       // while the creation timestamp and salt do not need to be included
@@ -76,12 +82,13 @@ namespace nucleus
     void
     OwnerKeyBlock::validate(Address const& address) const
     {
+      ELLE_TRACE_METHOD(address);
+
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
+        throw Exception("the address %s does not seem to represent the given "
+                        "block", address);
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -92,12 +99,13 @@ namespace nucleus
 
       // verify with the recorded address.
       if (address != self)
-        throw Exception("the address does not correspond to the block's "
-                        "public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
 
       // verify the owner's key signature with the block's public key.
-      if (this->_block_K.Verify(this->_owner_signature,
-                                this->_owner_K) == elle::Status::Error)
+      if (this->_block_K.verify(this->_owner_signature,
+                                this->_owner_K) == false)
         throw Exception("unable to verify the owner's signature");
     }
 
@@ -132,10 +140,7 @@ namespace nucleus
 
       // dump the OKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Block K]" << std::endl;
-
-      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the public key");
+                << "[Block K]" << this->_block_K << std::endl;
 
       // dump the owner part.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Owner]"
@@ -143,21 +148,17 @@ namespace nucleus
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[K]" << std::endl;
-
-      if (this->_owner_K.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the owner's public key");
+                << "[K] " << this->_owner_K << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
-                << "[Signature]" << std::endl;
-
-      if (this->_owner_signature.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the owner's signature");
+                << "[Signature] " << this->_owner_signature << std::endl;
 
       if (this->_owner_subject != nullptr)
-        if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the subject");
+        {
+          if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
+            escape("unable to dump the subject");
+        }
 
       return elle::Status::Ok;
     }

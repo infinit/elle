@@ -214,7 +214,7 @@ namespace elle
         escape("unable to create the path");
 
       // if the directory exists.
-      if (io::Directory::Exist(path) == Status::True)
+      if (io::Directory::Exist(path) == true)
         {
           // clear the directory.
           if (io::Directory::Clear(path) == Status::Error)
@@ -242,7 +242,7 @@ namespace elle
         escape("unable to create the path");
 
       // if the directory exists.
-      if (io::Directory::Exist(path) == Status::True)
+      if (io::Directory::Exist(path) == true)
         {
           // clear the directory.
           if (io::Directory::Clear(path) == Status::Error)

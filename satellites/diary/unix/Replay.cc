@@ -1465,7 +1465,7 @@ namespace satellite
       // first, go through the upcalls that must be ignored.
       for (i = 0;
            (i < Replay::Reference->offsets.from) &&
-             (Replay::Reference->End() == elle::Status::False);
+             (Replay::Reference->End() == false);
            i++)
         {
           Upcall                upcall;
@@ -1478,7 +1478,7 @@ namespace satellite
       // then go through the remaining upcalls up to 'to'.
       for (;
            (i < Replay::Reference->offsets.to) &&
-             (Replay::Reference->End() == elle::Status::False);
+             (Replay::Reference->End() == false);
             i++)
         {
           Upcall        upcall;

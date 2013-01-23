@@ -37,6 +37,7 @@ class State:
             'connect',
             'invite_user',
             'send_message',
+
             # Users.
             'search_users',
             'get_swaggers',

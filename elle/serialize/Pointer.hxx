@@ -3,6 +3,7 @@
 
 # include <memory>
 # include <stdexcept>
+# include <type_traits>
 
 # include <elle/serialize/Serializer.hh>
 
@@ -17,14 +18,24 @@ namespace elle
     class Pointer
     {
       friend class Serializer<Pointer<T>>;
-    private:
-      T*& _ptr;
     public:
-      Pointer(T*& ptr)
+      typedef T pointer_type;
+      static_assert(
+          std::is_pointer<pointer_type>::value,
+          "Cannot use alive pointer with a non pointer type."
+      );
+    private:
+      pointer_type& _ptr;
+    public:
+      Pointer(pointer_type& ptr)
         : _ptr(ptr)
       {}
 
       Pointer(Pointer&& other)
+        : _ptr(other._ptr)
+      {}
+
+      Pointer(Pointer const& other)
         : _ptr(other._ptr)
       {}
     };
@@ -33,10 +44,16 @@ namespace elle
     class AlivePointer
     {
       friend class Serializer<AlivePointer<T>>;
-    private:
-      T*& _ptr;
     public:
-      AlivePointer(T*& ptr)
+      typedef T pointer_type;
+      static_assert(
+          std::is_pointer<pointer_type>::value,
+          "Cannot use alive pointer with a non pointer type."
+      );
+    private:
+      pointer_type& _ptr;
+    public:
+      AlivePointer(pointer_type& ptr)
         : _ptr(ptr)
       {}
 
@@ -49,18 +66,25 @@ namespace elle
       {}
     };
 
-    template<typename T> inline
-    Pointer<T>
-    pointer(T*& ptr)
+    template <typename T>
+    inline
+    Pointer<typename std::remove_reference<T>::type>
+    pointer(T&& ptr)
     {
-      return Pointer<T>(ptr);
+      return Pointer<typename std::remove_reference<T>::type>{
+        std::forward<T>(ptr)
+      };
     }
 
-    template<typename T> inline
-    AlivePointer<T>
-    alive_pointer(T*& ptr)
+    template
+    <typename T>
+    inline
+    AlivePointer<typename std::remove_reference<T>::type>
+    alive_pointer(T&& ptr)
     {
-      return AlivePointer<T>(ptr);
+      return AlivePointer<typename std::remove_reference<T>::type>{
+        std::forward<T>(ptr)
+      };
     }
 
     //
@@ -81,7 +105,14 @@ namespace elle
                                 Pointer<T1> const&    value,
                                 unsigned int          version)
         {
+          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
           BaseSerializer<Pointer<T1>>::enforce(version == 0);
+
+          if (value._ptr != nullptr)
+            {
+              ELLE_WARN("deleting the previous pointed value");
+            }
 
           delete value._ptr;
           value._ptr = nullptr;
@@ -89,8 +120,9 @@ namespace elle
           bool not_null;
           archive >> not_null;
 
+          typedef typename std::remove_pointer<T1>::type value_type;
           if (not_null)
-            value._ptr = archive.template Construct<T1>().release();
+            value._ptr = archive.template Construct<value_type>().release();
         }
 
       // Save
@@ -131,12 +163,20 @@ namespace elle
                                 AlivePointer<T1> const&   value,
                                 unsigned int              version)
         {
+          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
           BaseSerializer<AlivePointer<T1>>::enforce(version == 0);
+
+          if (value._ptr != nullptr)
+            {
+              ELLE_WARN("deleting the previous pointed value");
+            }
 
           delete value._ptr;
           value._ptr = nullptr;
 
-          value._ptr = archive.template Construct<T1>().release();
+          typedef typename std::remove_pointer<T1>::type value_type;
+          value._ptr = archive.template Construct<value_type>().release();
         }
 
       // Save

@@ -7,6 +7,8 @@
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Limits.hh>
 # include <nucleus/proton/Location.hh>
 # include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Object.hh>
@@ -15,6 +17,8 @@ using namespace infinit;
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
+
+# include <etoile/nest/fwd.hh>
 
 # include <etoile/automaton/Object.hh>
 
@@ -89,14 +93,21 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      nucleus::neutron::Object* object;
-      nucleus::neutron::Access* access;
+      std::unique_ptr<nucleus::neutron::Object> object;
+
+      nucleus::proton::Porcupine<nucleus::neutron::Access>* access_porcupine;
+      etoile::nest::Nest* access_nest;
+      nucleus::proton::Limits access_limits;
+
+      nucleus::proton::Porcupine<nucleus::neutron::Attributes>* attributes_porcupine;
+      etoile::nest::Nest* attributes_nest;
+      nucleus::proton::Limits attributes_limits;
 
       struct
       {
         nucleus::neutron::Object::Role role;
         nucleus::neutron::Permissions permissions;
-        cryptography::SecretKey key;
+        cryptography::SecretKey* key;
 
         // XXX[use a shared_ptr<> instead. cf: automaton::Access::lookup()]
         nucleus::neutron::Record* record;
@@ -106,7 +117,5 @@ namespace etoile
 
   }
 }
-
-# include <etoile/gear/Object.hxx>
 
 #endif

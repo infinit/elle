@@ -5,7 +5,7 @@
 
 # include <elle/serialize/Serializer.hh>
 
-# include <nucleus/nucleus.hh>
+# include <nucleus/factory.hh>
 
 ELLE_SERIALIZE_NO_FORMAT(nucleus::Derivable);
 
@@ -22,7 +22,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::Derivable, archive, value, version)
       enforce(value._block == nullptr);
 
       value._block =
-        nucleus::factory().allocate<nucleus::proton::Block>(value._component);
+        nucleus::factory::block().allocate<nucleus::proton::Block>(
+          value._component);
     }
   enforce(value._block != nullptr);
   typedef typename elle::serialize::SerializableFor<Archive>::Type interface_t;

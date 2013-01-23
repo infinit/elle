@@ -7,8 +7,8 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
-# include <elle/io/Dumpable.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
 # include <elle/concept/Uniquable.hh>
 
 # include <openssl/bn.h>
@@ -24,7 +24,6 @@ namespace infinit
     /// Represent a private key in a given cryptosystem, RSA for instance.
     class PrivateKey:
       public elle::concept::MakeUniquable<PrivateKey>,
-      public elle::io::Dumpable,
       public elle::Printable
     {
       /*----------.
@@ -41,9 +40,13 @@ namespace infinit
       `-------------*/
     public:
       PrivateKey(); // XXX[deserialize]
+      /// Construct a private key based on the given EVP_PKEY.
+      ///
+      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
+      /// call remains the owner of the given EVP_PKEY.
       PrivateKey(::EVP_PKEY const* key);
       PrivateKey(PrivateKey const& other);
-      // XXX[move?]
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
       ~PrivateKey();
     private:
       PrivateKey(::BIGNUM* n,
@@ -58,6 +61,43 @@ namespace infinit
       /*--------.
       | Methods |
       `--------*/
+    public:
+      /// Decrypt a code and returns the original clear text.
+      ///
+      /// Note that the code is, in practice, an archive containing both
+      /// a temporarily-generated secret key and the plain text encrypted
+      /// with the secret key.
+      ///
+      Clear
+      decrypt(Code const& code) const;
+      /// Decrypt a code and returns the given type, assuming the given type
+      /// can be extracted from the clear, which should then be an archive.
+      template <typename T>
+      T
+      decrypt(Code const& code) const;
+      /// Return a signature of the given plain text.
+      Signature
+      sign(Plain const& plain) const;
+      /// Return a signature of any given serializable type.
+      template <typename T>
+      Signature
+      sign(T const& value) const;
+      /// Encrypt the given plain text with the private key.
+      ///
+      /// Although unusual, the private key can very well be used for
+      /// encrypting in which case the public key would be used for
+      /// decrypting.
+      Code
+      encrypt(Plain const& plain) const;
+      /// Encrypt the given serializable type with the private key.
+      template <typename T>
+      Code
+      encrypt(T const& value) const;
+      /// XXX
+      /* XXX
+      elle::Status
+      Derive(const Seed& seed, PublicKey& key) const;
+      */
     private:
       /// Construct the object based on big numbers.
       ///
@@ -75,57 +115,6 @@ namespace infinit
                  ::BIGNUM* dmp1,
                  ::BIGNUM* dmq1,
                  ::BIGNUM* iqmp);
-    public:
-      /// Decrypt a code and returns the original clear text.
-      ///
-      /// Note that the code is, in practice, an archive containing both
-      /// a temporarily-generated secret key and the plain text encrypted
-      /// with the secret key.
-      ///
-      Clear
-      decrypt(Code const& code) const;
-      /// Decrypt a code and returns the given type, assuming the given type
-      /// can be extracted from the clear, which should then be an archive.
-      template <typename T>
-      T
-      decrypt(Code const& code) const;
-
-    public:
-      ///
-      /// This methods encrypt the given data with the private key.
-      ///
-      /// although unusual, the private key can very well be used for
-      /// encrypting in which case the public key would be used for
-      /// decrypting.
-      ///
-      /// since (i) the private key size limits the size of the data that
-      /// can be encrypted and (ii) raising large data to large exponent
-      /// is very slow; the algorithm below consists in (i) generating
-      /// a secret key, (ii) ciphering the plain text with this key,
-      /// (iii) encrypting the secret key with the private key and finally
-      /// (iv) returning an archive containing the asymetrically-encrypted
-      /// secret key with the symmetrically-encrypted data.
-      ///
-      elle::Status
-      Encrypt(elle::WeakBuffer const& in,
-              Code& out) const;
-      template<typename T> elle::Status
-      Encrypt(T const& in,
-              Code& out) const;
-
-    public:
-      /// Returns a signature of the given buffer.
-      Signature
-      sign(elle::WeakBuffer const& plain) const;
-      /// Returns a signature of any given type. Note that the given compound
-      /// must be serializable.
-      template <typename T>
-      Signature
-      sign(T const& plain) const;
-
-    public:
-      elle::Status
-      Derive(const Seed& seed, PublicKey& key) const;
 
       /*----------.
       | Operators |
@@ -133,39 +122,32 @@ namespace infinit
     public:
       elle::Boolean
       operator ==(PrivateKey const& other) const;
-      ELLE_OPERATOR_ASSIGNMENT(PrivateKey); // XXX
+      elle::Boolean
+      operator <(PrivateKey const& other) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(PrivateKey);
 
       /*-----------.
       | Interfaces |
       `-----------*/
     public:
-      // dumpable
-      elle::Status            Dump(const elle::Natural32 = 0) const;
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
       // printable
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
 
-      //
-      // attributes
-      //
-    public: // XXX
-      ::EVP_PKEY*       _key;
-      struct
-      {
-        ::EVP_PKEY_CTX* decrypt;
-        ::EVP_PKEY_CTX* sign;
-        ::EVP_PKEY_CTX* encrypt;
-      }                 _contexts;
-
-    public:
-      ::EVP_PKEY const* key() const { return this->_key; } // XXX
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(::EVP_PKEY*, key);
+      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
+      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_sign);
+      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt;)
     };
-
   }
 }
 
-#include <cryptography/PrivateKey.hxx>
+# include <cryptography/PrivateKey.hxx>
 
 #endif

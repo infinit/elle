@@ -30,6 +30,8 @@ namespace etoile
       // constructors & destructors
       //
       Group();
+      Group(Group const& other);
+      ~Group();
 
       //
       // method
@@ -61,9 +63,9 @@ namespace etoile
       } timestamps;
 
       nucleus::neutron::Size size;
-      cryptography::PublicKey manager;
+      cryptography::PublicKey* manager;
       nucleus::proton::Revision revision;
-      cryptography::PublicKey pass_K;
+      cryptography::PublicKey* pass_K;
     };
 
   }

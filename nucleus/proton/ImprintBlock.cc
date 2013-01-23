@@ -14,7 +14,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -34,6 +33,11 @@ namespace nucleus
       _owner_K(creator_K),
       _owner_subject(nullptr)
     {
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(ImprintBlock, MutableBlock)
+    {
+      this->_owner_subject = nullptr;
     }
 
     ImprintBlock::~ImprintBlock()
@@ -85,9 +89,8 @@ namespace nucleus
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
+        throw Exception("the address %s does not seem to represent the given "
+                        "block", address);
 
       // Make sure the block has not be tampered and correspond to the
       // given original address. In order to do that, the address is
@@ -99,8 +102,9 @@ namespace nucleus
       // Finally, compare the recomputed address with the theoretical address
       // of the block.
       if (address != self)
-        throw Exception("the address does not correspond to the block's "
-                        "public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
     }
 
     void
@@ -124,8 +128,8 @@ namespace nucleus
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Owner]" << std::endl;
 
-      if (this->_owner_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the owner's public key");
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[K] " << this->_owner_K << std::endl;
 
       if (this->_owner_subject != nullptr)
         {
@@ -136,11 +140,10 @@ namespace nucleus
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << elle::io::Dumpable::Shift
-                    << "[Subject] " << elle::none << std::endl;
+                    << "[Subject] " << "none" << std::endl;
         }
 
       return elle::Status::Ok;
     }
-
   }
 }

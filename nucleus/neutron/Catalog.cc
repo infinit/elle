@@ -1,231 +1,550 @@
 #include <nucleus/neutron/Catalog.hh>
-
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/proton/Ambit.hh>
+#include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/Limits.hh>
+
+#include <elle/assert.hh>
+#include <elle/finally.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.nucleus.proton.Catalog");
 
 namespace nucleus
 {
   namespace neutron
   {
+    /*----------.
+    | Constants |
+    `----------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+    proton::Nature const Catalog::Constants::seam =
+      proton::Nature::catalog_seam;
+    proton::Nature const Catalog::Constants::quill =
+      proton::Nature::catalog_quill;
+    proton::Nature const Catalog::Constants::value =
+      proton::Nature::catalog_value;
+    proton::Nature const Catalog::Constants::nature =
+      Catalog::Constants::value;
 
-    ///
-    /// this constant defines the component for the porcupine's seams
-    /// associated with Catalogs.
-    ///
-    const Component                     Catalog::S = ComponentSeamCatalog;
+    /*---------------.
+    | Static Methods |
+    `---------------*/
 
-    ///
-    /// this constant defines the component for the porcupine's quills
-    /// associated with Catalogs.
-    ///
-    const Component                     Catalog::Q = ComponentQuillCatalog;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    Catalog::Catalog(proton::Contents<Catalog>& other):
-      contents(other)
+    void
+    Catalog::transfer_right(Catalog& left,
+                            Catalog& right,
+                            proton::Extent const size)
     {
-    }
+      static proton::Footprint const initial =
+        elle::serialize::footprint<Catalog>();
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+      ELLE_TRACE_FUNCTION(left, right, size);
 
-    ///
-    /// this method creates the catalog.
-    ///
-    elle::Status        Catalog::Create()
-    {
-      this->contents.state(proton::StateDirty);
+      proton::Extent const extent = left.nest().limits().extent();
+      proton::Footprint footprint(initial);
 
-      return elle::Status::Ok;
-    }
+      ELLE_ASSERT(left.nest().limits().extent() ==
+                  right.nest().limits().extent());
 
-    ///
-    /// this method adds the given entry to the catalog.
-    ///
-    elle::Status        Catalog::Add(Entry*                     entry)
-    {
-      // check that the entry is non-empty.
-      if (entry->name.empty() == true)
-        escape("unable to create an empty-named entry in the catalog");
+      auto end = left._container.end();
+      auto i = left._container.begin();
 
-      // add the entry in the range.
-      if (this->range.Add(entry) == elle::Status::Error)
-        escape("unable to add the entry in the range");
-
-      // range the object as dirty.
-      this->contents.state(proton::StateDirty);
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method tests if the given name exists.
-    ///
-    elle::Status        Catalog::Exist(const elle::String&      name) const
-    {
-      // test.
-      if (this->range.Exist(name) == false)
-        return elle::Status::False;
-
-      return elle::Status::True;
-    }
-
-    ///
-    /// this method returns the entry corresponding to the given name.
-    ///
-    elle::Status        Catalog::Lookup(const elle::String&     name,
-                                        Entry const*& entry) const
-    {
-      // look in the range.
-      if (this->range.Lookup(name, entry) == elle::Status::Error)
-        escape("unable to retrieve the entry");
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this method returns a subrange of the catalog delimited by the given
-    /// index and size.
-    ///
-    elle::Status        Catalog::Consult(const Index&           index,
-                                         const Size&            size,
-                                         Range<Entry>&          range) const
-    {
-      Range<Entry>::Scoutor     scoutor;
-      Index                     i;
-
-      // first detach the data from the range.
-      if (range.Detach() == elle::Status::Error)
-        escape("unable to detach the data from the range");
-
-      // go through the catalog entries.
-      for (scoutor = this->range.container.begin(), i = 0;
-           scoutor != this->range.container.end();
-           scoutor++)
+      // Go through the left catalog's entries until the future size is
+      // reached after which all the remaining entries will be moved to
+      // the right catalog.
+      for (; i != end; ++i)
         {
-          Entry*        entry = *scoutor;
+          auto& entry = i->second;
 
-          // if this entry lies in the selected range [index, index + size[
+          // Check whether the container's contention size has been reached.
+          if (footprint >= size)
+            break;
+
+          // Otherwise, leave this item in the left entry.
+
+          // Note however that another check is performed in order to make
+          // sure that adding this entry will not make the container too large.
+          if ((footprint + entry->footprint()) > extent)
+            break;
+
+          // Add the entry's footprint to the local _footprint_ variable.
+          footprint += entry->footprint();
+        }
+
+      // Go through the remaining entries in order to move them to
+      // the right catalog.
+      for (auto j = i; j != end; ++j)
+        {
+          auto& entry = j->second;
+
+          // Substract the entry's footprint from the left catalog since
+          // it is getting moved to the right one.
+          left.footprint(left.footprint() - entry->footprint());
+
+          // Insert the entry into the right catalog.
+          right.insert(entry);
+        }
+
+      // Remove the moved entries from the the current catalog.
+      left._container.erase(i, end);
+    }
+
+    void
+    Catalog::transfer_left(Catalog& left,
+                           Catalog& right,
+                           proton::Extent const size)
+    {
+      static proton::Footprint const initial =
+        elle::serialize::footprint<Catalog>();
+
+      ELLE_TRACE_FUNCTION(left, right, size);
+
+      proton::Extent const extent = left.nest().limits().extent();
+      proton::Footprint footprint(initial);
+
+      ELLE_ASSERT(left.nest().limits().extent() ==
+                  right.nest().limits().extent());
+
+      auto rend = right._container.rend();
+      auto i = right._container.rbegin();
+
+      // Go through the right catalog's entries until the future size is
+      // reached after which all the remaining entries will be moved to
+      // the left catalog.
+      for (; i != rend; ++i)
+        {
+          auto& entry = i->second;
+
+          // Check whether the container's contention size has been reached.
+          if (footprint >= size)
+            break;
+
+          // Otherwise, leave this entry in the catalog.
+          //
+          // Note however that another check is performed in order to make
+          // sure that adding this entry will not make the container too large.
+          if ((footprint + entry->footprint()) > extent)
+            break;
+
+          // Add the entry's footprint to the footprint.
+          footprint += entry->footprint();
+        }
+
+      // Go through the remaining entries in order to move them to
+      // the left catalog.
+      for (auto j = i; j != rend; ++j)
+        {
+          auto& entry = j->second;
+
+          // Substract the entry's footprint from the right catalog since
+          // it is getting moved to the left one.
+          right.footprint(right.footprint() - entry->footprint());
+
+          // Insert the entry into the left catalog.
+          left.insert(entry);
+        }
+
+      // Remove the moved entries from the right catalog.
+      right._container.erase(right._container.begin(), i.base());
+    }
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Catalog::Catalog():
+      Value::Value()
+    {
+      static proton::Footprint const initial =
+        elle::serialize::footprint(*this);
+
+      this->footprint(initial);
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Catalog, proton::Value)
+    {
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    void
+    Catalog::insert(Entry* entry)
+    {
+      ELLE_TRACE_METHOD(entry);
+
+      ELLE_ASSERT(entry != nullptr);
+
+      std::shared_ptr<Entry> pointer{entry};
+
+      this->insert(pointer);
+    }
+
+    void
+    Catalog::insert(std::shared_ptr<Entry> const& entry)
+    {
+      ELLE_TRACE_METHOD(entry);
+
+      // Inject the entry in the container.
+      this->_inject(entry);
+
+      // Update the state.
+      this->state(proton::State::dirty);
+    }
+
+    elle::Boolean
+    Catalog::exist(elle::String const& name) const
+    {
+      ELLE_TRACE_METHOD(name);
+
+      return (this->_container.find(name) != this->_container.end());
+    }
+
+    void
+    Catalog::rename(elle::String const& from,
+                    elle::String const& to)
+    {
+      ELLE_TRACE_METHOD(from, to);
+
+      // Check if this name has already been recorded.
+      if (this->_container.find(to) != this->_container.end())
+        throw Exception("the name '%s' seems to have already been recorded",
+                        to);
+
+      // Locate the entry for the _from_ name.
+      auto iterator = this->_iterator(from);
+
+      // Retrieve the entry.
+      std::shared_ptr<Entry> entry = iterator->second;
+
+      // Rename the entry.
+      entry->name(to);
+
+      // Remove the entry from the container.
+      this->_container.erase(iterator);
+
+      // Re-insert the entry in the container.
+      auto result =
+        this->_container.insert(
+          std::pair<const elle::String, std::shared_ptr<Entry>>(
+            entry->name(), entry));
+
+      // Check if the insertion was successful.
+      if (result.second == false)
+        throw Exception("unable to re-insert the entry in the container");
+
+
+      // Update the state.
+      this->state(proton::State::dirty);
+    }
+
+    Entry const&
+    Catalog::locate(elle::String const& name) const
+    {
+      ELLE_TRACE_METHOD(name);
+
+      auto scoutor = this->_iterator(name);
+      auto& entry = scoutor->second;
+
+      return (*entry);
+    }
+
+    Range<Entry>
+    Catalog::consult(Index const& index,
+                     Size const& size) const
+    {
+      ELLE_TRACE_METHOD(index, size);
+
+      Range<Entry> range;
+      Index i(0);
+
+      for (auto& pair: this->_container)
+        {
+          auto& entry = pair.second;
+
+          // If this entry lies in the selected range [index, index + size[
           if ((i >= index) && (i < (index + size)))
             {
-              // check if the entry is empty: this should never
-              // happen but you never know!
-              if (entry->name.empty() == true)
+              // Check if the entry is empty: this should never
+              // happen but you never know! You do not want to throw an
+              // exception because a malicious user created such a catalog.
+              if (entry->name().empty() == true)
                 continue;
 
-              // add the entry to the range.
-              if (range.Add(entry) == elle::Status::Error)
-                escape("unable to add the entry to the range");
+              // Insert the entry to the range.
+              range.insert(entry);
             }
 
-          // increment the index.
+          // Increment the index.
           //
-          // note that this is done at the end so that empty
+          // Note that this is done at the end so that empty
           // entries are not taken into account.
           i++;
         }
 
-      return elle::Status::Ok;
+      return (range);
     }
 
-    ///
-    /// this method removes the given entry.
-    ///
-    elle::Status        Catalog::Remove(const elle::String&     name)
+    void
+    Catalog::erase(elle::String const& name)
     {
-      // remove the entry from the range.
-      if (this->range.Remove(name) == elle::Status::Error)
-        escape("unable to remove the entry");
+      ELLE_TRACE_METHOD(name);
 
-      // range the object as dirty.
-      this->contents.state(proton::StateDirty);
-
-      return elle::Status::Ok;
+      // Call take out and forget about the returned entry, hence (possibly)
+      // deleting it.
+      this->takeout(name);
     }
 
-    ///
-    /// this method renames an entry.
-    ///
-    elle::Status        Catalog::Rename(const elle::String&     from,
-                                        const elle::String&     to)
+    std::shared_ptr<Entry>
+    Catalog::takeout(elle::String const& name)
     {
-      Entry* entry;
+      ELLE_TRACE_METHOD(name);
 
-      // if _from_ and _to_ are identical, return.
-      if (from == to)
-        return elle::Status::Ok;
+      // Locate the entry for the given name.
+      auto iterator = this->_iterator(name);
 
-      // check that the entry is non-empty.
-      if (to.empty() == true)
-        escape("unable to rename to a non empty-named entry in the catalog");
+      // Retrieve the entry.
+      std::shared_ptr<Entry> entry = iterator->second;
 
-      // check that an entry _to_ does not already exist.
-      if (this->range.Exist(to) == elle::Status::True)
-        escape("an entry already exists with the to-be-renamed name");
+      // Substract the entry footprint from the catalog's.
+      ELLE_ASSERT(entry->footprint() != 0);
+      ELLE_ASSERT(this->footprint() >= entry->footprint());
+      this->footprint(this->footprint() - entry->footprint());
 
-      // look in the range.
-      if (this->range.Lookup(from, entry) == elle::Status::Error)
-        escape("unable to retrieve the entry");
+      // Remove the entry from the container.
+      this->_container.erase(iterator);
 
-      // modify the name.
-      entry->name = to;
+      // Update the state.
+      this->state(proton::State::dirty);
 
-      // range the object as dirty.
-      this->contents.state(proton::StateDirty);
-
-      return elle::Status::Ok;
+      // And finally return the pointer.
+      return (entry);
     }
 
-    ///
-    /// this method returns the size of the catalog.
-    ///
-    elle::Status        Catalog::Capacity(Size&                 size) const
+    Size
+    Catalog::size() const
     {
-      // look at the size of the range.
-      if (this->range.Capacity(size) == elle::Status::Error)
-        escape("unable to retrieve the range size");
+      ELLE_TRACE_METHOD("");
 
-      return elle::Status::Ok;
+      return (static_cast<Size>(this->_container.size()));
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this function dumps the catalog.
-    ///
-    elle::Status        Catalog::Dump(elle::Natural32           margin) const
+    void
+    Catalog::_inject(std::shared_ptr<Entry> const& entry)
     {
-      elle::String      alignment(margin, ' ');
+      ELLE_DEBUG_METHOD(entry);
 
-      std::cout << alignment << "[Catalog]" << std::endl;
+      // Check if this name has already been recorded.
+      if (this->_container.find(entry->name()) != this->_container.end())
+        throw Exception("the name '%s' seems to have already been recorded",
+                        entry->name());
 
-      // dump the range.
-      if (this->range.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the range");
+      // Insert the entry in the container.
+      auto result =
+        this->_container.insert(
+          std::pair<const elle::String, std::shared_ptr<Entry>>(
+            entry->name(), entry));
 
-      return elle::Status::Ok;
+      // Check if the insertion was successful.
+      if (result.second == false)
+        throw Exception("unable to insert the entry in the container");
+
+      // Update the footprint.
+      ELLE_ASSERT(entry->footprint() != 0);
+      this->footprint(this->footprint() + entry->footprint());
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    typename Catalog::Scoutor
+    Catalog::_iterator(elle::String const& name) const
+    {
+      Scoutor scoutor;
+
+      if ((scoutor = this->_container.find(name)) == this->_container.end())
+        throw Exception("unable to locate the given name: '%s'", name);
+
+      return (scoutor);
+    }
+
+    typename Catalog::Iterator
+    Catalog::_iterator(elle::String const& name)
+    {
+      Iterator iterator;
+
+      if ((iterator = this->_container.find(name)) == this->_container.end())
+        throw Exception("unable to locate the given name: '%s'", name);
+
+      return (iterator);
+    }
+
+    /*---------.
+    | Dumpable |
+    `---------*/
+
+    elle::Status
+    Catalog::Dump(elle::Natural32 margin) const
+    {
+      elle::String alignment(margin, ' ');
+      Catalog::Scoutor scoutor;
+
+      std::cout << alignment << "[Catalog] " << std::hex << this << std::endl;
+
+      if (Value::Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the value");
+
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Entries] #"
+                << this->_container.size() << std::endl;
+
+      // go through the entries.
+      for (auto& pair: this->_container)
+        {
+          auto& entry = pair.second;
+
+          // dump the entry.
+          if (entry->Dump(margin + 4) == elle::Status::Error)
+            escape("unable to dump the entry");
+        }
+
+      return (elle::Status::Ok);
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Catalog::print(std::ostream& stream) const
     {
-      stream << "catalog("
-             << this->range
+      stream << "catalog(#"
+             << this->_container.size()
              << ")";
     }
 
+    /*------.
+    | Value |
+    `------*/
+
+    elle::Boolean
+    Catalog::empty() const
+    {
+      return (this->_container.empty());
+    }
+
+    elle::String
+    Catalog::mayor() const
+    {
+      ELLE_ASSERT(this->_container.empty() == false);
+
+      return (this->_container.rbegin()->first);
+    }
+
+    proton::Capacity
+    Catalog::capacity() const
+    {
+      return (static_cast<proton::Capacity>(this->_container.size()));
+    }
+
+    proton::Handle
+    Catalog::split()
+    {
+      ELLE_TRACE_METHOD("");
+
+      // Allocate a new right catalog.
+      proton::Contents* contents =
+        new proton::Contents{this->nest().network(),
+                             this->nest().agent_K(),
+                             new Catalog};
+      proton::Handle orphan{this->nest().attach(contents)};
+      proton::Ambit<Catalog> right{this->nest(), orphan};
+
+      // Load the new right catalog.
+      right.load();
+
+      // Export the entries from the current catalog into the new catalog.
+      Catalog::transfer_right(*this,
+                              right(),
+                              this->nest().limits().extent() *
+                              this->nest().limits().contention());
+
+      // Set both values' state as dirty.
+      this->state(proton::State::dirty);
+      right().state(proton::State::dirty);
+
+      // Unload the new right catalog.
+      right.unload();
+
+      return (orphan);
+    }
+
+    void
+    Catalog::merge(proton::Handle& other)
+    {
+      ELLE_TRACE_METHOD(other);
+
+      proton::Ambit<Catalog> catalog(this->nest(), other);
+
+      // Load the other catalog.
+      catalog.load();
+
+      // Check which value has the lowest keys.
+      if (catalog().mayor() < this->mayor())
+        {
+          // In this case, export the entries from the given catalog
+          // into the current's since these entries happen to have
+          // lower keys.
+          //
+          // Note that the footprint-based number of entries to keep in
+          // the left catalog is zero i.e transfer all entries.
+          Catalog::transfer_right(catalog(), *this, 0);
+        }
+      else
+        {
+          // Otherwise, import the higher entries from the given catalog
+          // into the current's.
+          //
+          // Note that the footprint-based number of entries to keep in
+          // the right catalog is zero i.e transfer all entries.
+          Catalog::transfer_left(*this, catalog(), 0);
+        }
+
+      // Set both values' state as dirty.
+      this->state(proton::State::dirty);
+      catalog().state(proton::State::dirty);
+
+      ELLE_ASSERT(catalog()._container.size() == 0);
+
+      // Unload the given catalog.
+      catalog.unload();
+    }
+
+    /*---------.
+    | Iterable |
+    `---------*/
+
+    typename Catalog::Scoutor
+    Catalog::begin() const
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Scoutor
+    Catalog::end() const
+    {
+      return (this->_container.end());
+    }
+
+    typename Catalog::Iterator
+    Catalog::begin()
+    {
+      return (this->_container.begin());
+    }
+
+    typename Catalog::Iterator
+    Catalog::end()
+    {
+      return (this->_container.end());
+    }
   }
 }

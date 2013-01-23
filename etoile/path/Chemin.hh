@@ -50,7 +50,7 @@ namespace etoile
                                          std::numeric_limits<
                                            nucleus::neutron::Size>::max());
 
-      elle::Status              Derives(const Chemin&) const;
+      elle::Boolean             Derives(const Chemin&) const;
 
       elle::Status              Locate(nucleus::proton::Location&) const;
 

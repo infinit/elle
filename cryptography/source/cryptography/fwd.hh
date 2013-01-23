@@ -12,7 +12,6 @@ namespace infinit
     class PublicKey;
     class SecretKey;
     class Seed;
-    class Signature;
   }
 }
 
@@ -21,5 +20,6 @@ namespace infinit
 # include <cryptography/Clear.hh>
 # include <cryptography/Digest.hh>
 # include <cryptography/Plain.hh>
+# include <cryptography/Signature.hh>
 
 #endif

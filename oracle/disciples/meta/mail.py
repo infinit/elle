@@ -4,6 +4,7 @@ from meta import conf
 
 from email.mime.text import MIMEText
 from email.header import Header
+from email.Utils import formataddr
 #from email.utils import parseaddr, formataddr
 import smtplib
 
@@ -14,7 +15,8 @@ def send(mail, subject, content,
     msg = MIMEText(content, _charset=encoding)
     msg['Subject'] = Header(subject, encoding)
     msg['From'] = Header(from_, encoding)
-    msg['To'] = Header(mail, encoding)
+    # Got troubles with Header for recipient.
+    msg['To'] = mail #formataddr(("", mail))
     if reply_to is not None:
         msg['Reply-To'] = reply_to
 
@@ -99,7 +101,7 @@ http://infinit.io
 USER_INVITATION_CONTENT = """
 Dear user,
 
-%(invited_fullname) (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
+%(inviter_fullname)s (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
 
 %(message)s
 
@@ -173,4 +175,30 @@ All the best,
 --%(space)s
 The Infinit Team
 infinit.io
+""".strip()
+
+
+BACKTRACE_SUBJECT = u"""Crash report: %(signal)s in %(module)s - %(user)s""".strip()
+BACKTRACE_CONTENT = u"""
+%(user)s
+
+---------
+BACKTRACE
+---------
+%(bt)s
+
+---------
+ENV
+---------
+%(env)s
+
+---------
+SPEC
+---------
+%(spec)s
+
+---------
+More
+---------
+%(more)s
 """.strip()

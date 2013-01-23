@@ -2,8 +2,10 @@
 # define NUCLEUS_PROTON_BLOCK_HH
 
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
-# include <elle/concept/Fileable.hh>
+# include <elle/io/Dumpable.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/utility/Time.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/Serializable.hh>
@@ -26,7 +28,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class abstracts the notion of storable block of data.
     ///
     /// Note that every block is identified by an address which can be
@@ -46,8 +47,9 @@ namespace nucleus
     /// compute the block address.
     class Block:
       public elle::io::Dumpable,
-      public elle::serialize::Serializable<>,
       public elle::Printable,
+      public elle::serialize::Serializable<>,
+      public elle::concept::Uniquable<>,
       private boost::noncopyable
     {
       /*----------.
@@ -64,12 +66,11 @@ namespace nucleus
       `-------------*/
     public:
       Block(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(Block)
-      {}
       Block(Network const network,
             Family const family,
             neutron::Component const component,
             cryptography::PublicKey const& creator_K);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Block);
 
       /*--------.
       | Methods |
@@ -83,6 +84,12 @@ namespace nucleus
       virtual
       void
       validate(Address const& address) const = 0;
+
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_NO_ASSIGNMENT(Block);
 
       /*-----------.
       | Interfaces |
@@ -131,7 +138,6 @@ namespace nucleus
       /// example. This attribute is never serialized.
       ELLE_ATTRIBUTE_RW(State, state);
     };
-
   }
 }
 

@@ -19,7 +19,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
     /// A group represents a set of users and subgroups. Groups are used
     /// mainly to ease the process of managing accesses on files and
     /// directories by grouping entities (users for instance) together.
@@ -55,14 +54,8 @@ namespace nucleus
     class Group:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Group>,
-      public elle::concept::MakeUniquable<Group>
+      public elle::concept::UniquableMixin<Group>
     {
-      /*------------------.
-      | Static Attributes |
-      `------------------*/
-    public:
-      static Component const component;
-
       /*----------.
       | Constants |
       `----------*/
@@ -70,6 +63,8 @@ namespace nucleus
       struct Constants
       {
         static elle::Natural32 const keypair_length;
+
+        static Component const component;
       };
 
       //
@@ -108,12 +103,12 @@ namespace nucleus
       //
     private:
       ELLE_ATTRIBUTE_R(elle::String, description);
-      ELLE_ATTRIBUTE_R(cryptography::PublicKey, pass_K);
+      ELLE_ATTRIBUTE(cryptography::PublicKey*, pass_K);
       ELLE_ATTRIBUTE_RW(Size, size);
       ELLE_ATTRIBUTE_R(elle::utility::Time, modification_timestamp);
-      ELLE_ATTRIBUTE_R(proton::Address, ensemble);
+      ELLE_ATTRIBUTE(proton::Radix*, ensemble);
       ELLE_ATTRIBUTE_R(Token, manager_token);
-      ELLE_ATTRIBUTE(cryptography::Signature, signature);
+      ELLE_ATTRIBUTE(cryptography::Signature*, signature);
       // XXX[not serialized]
       ELLE_ATTRIBUTE(Fellow*, manager_fellow); //XXX unique_ptr
 
@@ -121,25 +116,27 @@ namespace nucleus
       // construction
       //
     public:
-      Group();
-      ELLE_SERIALIZE_CONSTRUCT(Group, ImprintBlock)
-      {
-        _manager_fellow = nullptr;
-      }
+      Group(); // XXX[to deserialize]
       Group(proton::Network const& network,
             cryptography::PublicKey const& manager_K,
             elle::String const& description);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Group);
       ~Group();
 
       //
       // methods
       //
     public:
+      /// XXX
+      proton::Radix const&
+      ensemble() const;
       /// Specifies the address of the new Ensemble block and thus
       /// instructs the group to upgrade itself by updating the public
       /// pass with the given one.
+      /// XXX[rewrite: -address +radix, meme chose pour description generale]
+      /// XXX[des methodes pour mettre a jour chaque attribut?]
       void
-      upgrade(proton::Address const& ensemble,
+      upgrade(proton::Radix const& ensemble,
               cryptography::PublicKey const& pass_K,
               Token const& manager_token);
       /// Indicates that the group no longer references an Ensemble
@@ -150,6 +147,9 @@ namespace nucleus
       /// private key.
       void
       seal(cryptography::PrivateKey const& manager_k);
+      /// Return the pass associated with the group.
+      cryptography::PublicKey const&
+      pass_K() const;
       /// Returns the public key of the group manager.
       cryptography::PublicKey const&
       manager_K() const;
@@ -173,11 +173,9 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
       // serialize
-      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
       ELLE_SERIALIZE_FRIEND_FOR(Group);
-
+      ELLE_SERIALIZE_SERIALIZABLE_METHODS(Group);
     };
-
   }
 }
 

@@ -21,12 +21,11 @@ int main()
                                kp.K(),
                                nucleus::neutron::Genre::directory);
 
-  CHECK(blk.Seal(kp.k(), nullptr));
+  cryptography::Digest fingerprint;
+
+  CHECK(blk.Seal(kp.k(), fingerprint));
 
   nucleus::proton::Address addr(blk.bind());
-
-  std::string unique;
-  static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
 
   elle::Buffer buf;
   buf.writer() << blk;
@@ -35,7 +34,7 @@ int main()
       nucleus::neutron::Object blk_copy;
       buf.reader() >> blk_copy;
 
-      blk_copy.validate(addr, nullptr);
+      blk_copy.validate(addr, fingerprint);
 
       assert(blk.owner_subject() == blk_copy.owner_subject());
     }

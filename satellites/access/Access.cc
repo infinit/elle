@@ -4,6 +4,7 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
+#include <elle/CrashReporter.hh>
 
 #include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
@@ -75,6 +76,7 @@ namespace satellite
             throw reactor::Exception(elle::concurrency::scheduler(),
                                      "unable to save the public key's unique");
           std::cout << "User"
+                    << " "
                     << unique
                     << " "
                     << std::dec
@@ -121,7 +123,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Access::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Access::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Access::rpcs->authenticate(phrase.pass))
@@ -155,12 +157,13 @@ namespace satellite
     etoile::gear::Identifier identifier(Access::rpcs->objectload(chemin));
     Ward ward(identifier);
     // Consult the object access.
-    nucleus::neutron::Range<nucleus::neutron::Record> records(
-      Access::rpcs->accessconsult(identifier,
-                                  std::numeric_limits<nucleus::neutron::Index>::min(),
-                                  std::numeric_limits<nucleus::neutron::Size>::max()));
+    nucleus::neutron::Range<nucleus::neutron::Record> range(
+      Access::rpcs->accessconsult(
+        identifier,
+        std::numeric_limits<nucleus::neutron::Index>::min(),
+        std::numeric_limits<nucleus::neutron::Size>::max()));
     // Dump the records.
-    BOOST_FOREACH(auto record, records.container)
+    for (auto& record: range)
       display(*record);
   }
 
@@ -207,7 +210,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Access") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -342,7 +345,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -372,10 +375,10 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Lookup") == elle::Status::True) &&
-        (Infinit::Parser->Test("Consult") == elle::Status::True) &&
-        (Infinit::Parser->Test("Grant") == elle::Status::True) &&
-        (Infinit::Parser->Test("Revoke") == elle::Status::True))
+    if ((Infinit::Parser->Test("Lookup") == true) &&
+        (Infinit::Parser->Test("Consult") == true) &&
+        (Infinit::Parser->Test("Grant") == true) &&
+        (Infinit::Parser->Test("Revoke") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -385,19 +388,19 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Lookup") == elle::Status::True)
+    if (Infinit::Parser->Test("Lookup") == true)
       operation = Access::OperationLookup;
 
     // test the option.
-    if (Infinit::Parser->Test("Consult") == elle::Status::True)
+    if (Infinit::Parser->Test("Consult") == true)
       operation = Access::OperationConsult;
 
     // test the option.
-    if (Infinit::Parser->Test("Grant") == elle::Status::True)
+    if (Infinit::Parser->Test("Grant") == true)
       operation = Access::OperationGrant;
 
     // test the option.
-    if (Infinit::Parser->Test("Revoke") == elle::Status::True)
+    if (Infinit::Parser->Test("Revoke") == true)
       operation = Access::OperationRevoke;
 
     // trigger the operation.
@@ -553,11 +556,11 @@ namespace satellite
           permissions = nucleus::neutron::permissions::none;
 
           // grant the read permission, if requested.
-          if (Infinit::Parser->Test("Read") == elle::Status::True)
+          if (Infinit::Parser->Test("Read") == true)
             permissions |= nucleus::neutron::permissions::read;
 
           // grant the write permission, if requested.
-          if (Infinit::Parser->Test("Write") == elle::Status::True)
+          if (Infinit::Parser->Test("Write") == true)
             permissions |= nucleus::neutron::permissions::write;
 
           // declare additional local variables.
@@ -681,6 +684,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
           dynamic_cast<reactor::Exception const*>(&e))
         std::cerr << re->backtrace() << std::endl;
 
+      elle::crash::report("8acces", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -694,6 +698,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+      elle::crash::Handler("8acces", false)  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<elle::Status> main(sched, "main",
                                       boost::bind(&_main, argc, argv));

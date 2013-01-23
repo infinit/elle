@@ -8,7 +8,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /*----------.
     | Operators |
     `----------*/
@@ -47,6 +46,5 @@ namespace nucleus
 
       return (stream);
     }
-
   }
 }

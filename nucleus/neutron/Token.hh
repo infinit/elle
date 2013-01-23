@@ -37,10 +37,10 @@ namespace nucleus
       `-------------*/
     public:
       enum class Type
-      {
-        null,
-        valid
-      };
+        {
+          null,
+          valid
+        };
 
       /*-------------.
       | Construction |
@@ -96,7 +96,7 @@ namespace nucleus
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(cryptography::Code const& code);
 
       public:
@@ -116,6 +116,13 @@ namespace nucleus
       ELLE_ATTRIBUTE(Valid*, valid);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Token::Type const type);
   }
 }
 

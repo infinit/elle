@@ -80,6 +80,10 @@ namespace nucleus
       _type(Subject::TypeUnknown),
       _user(nullptr)
     {
+      // Manually set all the union pointers to null so as to make all
+      // the cases are handled.
+      this->_user = nullptr;
+      this->_group = nullptr;
     }
 
     Subject::Subject(typename User::Identity const& identity):
@@ -95,22 +99,26 @@ namespace nucleus
     }
 
     Subject::Subject(Subject const& other):
-      _type(other._type),
-      _user(nullptr)
+      _type(other._type)
     {
-      switch (this->_type)
+      // Manually set all the union pointers to null so as to make sure all
+      // the cases are handled.
+      this->_user = nullptr;
+      this->_group = nullptr;
+
+      switch (other._type)
         {
         case Subject::TypeUser:
           {
             // Copy the user public key.
-            this->_user = new typename User::Identity(other.user());
+            this->_user = new typename User::Identity(*other._user);
 
             break;
           }
         case Subject::TypeGroup:
           {
             // Copy the group address.
-            this->_group = new typename Group::Identity(other.group());
+            this->_group = new typename Group::Identity(*other._group);
 
             break;
           }
@@ -203,32 +211,67 @@ namespace nucleus
     elle::Boolean
     Subject::operator ==(Subject const& other) const
     {
-      // check the address as this may actually be the same object.
       if (this == &other)
-        return true;
+        return (true);
 
-      // compare the type.
-      if (this->_type != other.type())
-        return false;
+      // Compare the type.
+      if (this->_type != other._type)
+        return (false);
 
-      // compare the identifier.
+      // Compare the identifier.
       switch (this->_type)
         {
         case Subject::TypeUser:
           {
-            return (*this->_user == other.user());
+            return (*this->_user == *other._user);
           }
         case Subject::TypeGroup:
           {
-            return (*this->_group == other.group());
+            return (*this->_group == *other._group);
           }
         default:
           {
+            // XXX
+            ELLE_ASSERT(false);
             break;
           }
         }
 
-      return true;
+      elle::unreachable();
+    }
+
+    elle::Boolean
+    Subject::operator <(Subject const& other) const
+    {
+      if (this == &other)
+        return (false);
+
+      // Compare the type.
+      if (this->_type < other._type)
+        return (true);
+      else if (this->_type > other._type)
+        return (false);
+
+      // Compare the identifier.
+      switch (this->_type)
+        {
+        case Subject::TypeUser:
+          {
+            return (*this->_user < *other._user);
+          }
+        case Subject::TypeGroup:
+          {
+            return (*this->_group < *other._group);
+          }
+        default:
+          {
+            // XXX
+            ELLE_ASSERT(false);
+            break;
+          }
+        }
+
+      elle::unreachable();
     }
 
 //
@@ -249,20 +292,14 @@ namespace nucleus
         case Subject::TypeUser:
           {
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Identifier]" << std::endl;
-
-            if (this->_user->Dump(margin + 4) == elle::Status::Error)
-              escape("unable to dump the user's public key");
+                      << "[Identifier] " << *this->_user << std::endl;
 
             break;
           }
         case Subject::TypeGroup:
           {
             std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Identifier]" << std::endl;
-
-            if (this->_group->Dump(margin + 4) == elle::Status::Error)
-              escape("unable to dump the group address");
+                      << "[Identifier] " << *this->_group << std::endl;
 
             break;
           }
@@ -292,14 +329,14 @@ namespace nucleus
         case TypeUser:
           {
             stream << "user("
-                   << this->_user
+                   << *this->_user
                    << ")";
             break;
           }
         case TypeGroup:
           {
             stream << "group("
-                   << this->_group
+                   << *this->_group
                    << ")";
             break;
           }

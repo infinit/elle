@@ -77,7 +77,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Progress::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Progress::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Progress::rpcs->authenticate(phrase.pass))
@@ -184,7 +184,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Progress") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -234,7 +234,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();

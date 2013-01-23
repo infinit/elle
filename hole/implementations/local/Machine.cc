@@ -30,6 +30,8 @@ namespace hole
       Machine::put(nucleus::proton::Address const& address,
                    nucleus::proton::ImmutableBlock const& block)
       {
+        ELLE_TRACE_METHOD(address, block);
+
         this->_hole.storage().store(address, block);
       }
 
@@ -37,6 +39,8 @@ namespace hole
       Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::MutableBlock& block)
       {
+        ELLE_TRACE_METHOD(address, block);
+
         // validate the block, depending on its component.
         //
         // indeed, the Object component requires as additional block for
@@ -45,6 +49,8 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               const nucleus::neutron::Object* object =
                 static_cast<const nucleus::neutron::Object*>(&block);
               assert(dynamic_cast<const nucleus::neutron::Object*>(&block) != nullptr);
@@ -80,6 +86,7 @@ namespace hole
                       object->validate(address, nullptr);
                     }
                 }
+              */
 
               break;
             }
@@ -107,6 +114,8 @@ namespace hole
       std::unique_ptr<nucleus::proton::Block>
       Machine::get(const nucleus::proton::Address& address)
       {
+        ELLE_TRACE_METHOD(address);
+
         std::unique_ptr<nucleus::proton::Block> block =
           this->_hole.storage().load(address);
 
@@ -119,9 +128,11 @@ namespace hole
       Machine::get(const nucleus::proton::Address& address,
                    const nucleus::proton::Revision& revision)
       {
-        // load the block.
+        ELLE_TRACE_METHOD(address, revision);
+
+         // load the block.
          std::unique_ptr<nucleus::proton::Block> block =
-          (this->_hole.storage().load(address, revision));
+           this->_hole.storage().load(address, revision);
 
         // validate the block, depending on its component.
         //
@@ -131,6 +142,8 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               const nucleus::neutron::Object* object =
                 static_cast<const nucleus::neutron::Object*>(block.get());
               assert(dynamic_cast<const nucleus::neutron::Object*>(block.get()) != nullptr);
@@ -156,13 +169,14 @@ namespace hole
                   // validate the object.
                   object->validate(address, nullptr);
                 }
+              */
 
               break;
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              throw elle::Exception(elle::sprintf("Unknown component '%u'.",
-                                                     address.component()));
+              throw elle::Exception(elle::sprintf("unknown component '%u'.",
+                                                  address.component()));
             }
           default:
             {
@@ -172,12 +186,15 @@ namespace hole
               break;
             }
           }
+
         return block;
       }
 
       void
       Machine::wipe(const nucleus::proton::Address& address)
       {
+        ELLE_TRACE_METHOD(address);
+
         // treat the request depending on the nature of the block which
         // the addres indicates.
         // FIXME: why a switch if we call the same method in both case.

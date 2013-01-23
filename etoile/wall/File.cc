@@ -7,6 +7,7 @@
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Rights.hh>
 #include <etoile/journal/Journal.hh>
+#include <etoile/abstract/Object.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
@@ -30,10 +31,10 @@ namespace etoile
     gear::Identifier
     File::create()
     {
+      ELLE_TRACE_FUNCTION("");
+
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION("");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -77,10 +78,10 @@ namespace etoile
     gear::Identifier
     File::load(path::Chemin const& chemin)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(chemin);
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -135,11 +136,11 @@ namespace etoile
                 nucleus::neutron::Offset const& offset,
                 elle::standalone::Region const& data)
     {
+      ELLE_TRACE_FUNCTION(identifier, offset, data);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier, offset, data);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -173,11 +174,11 @@ namespace etoile
                nucleus::neutron::Offset const& offset,
                nucleus::neutron::Size const& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, offset, size);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier, offset, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -214,11 +215,11 @@ namespace etoile
                           const gear::Identifier&               identifier,
                           const nucleus::neutron::Size& size)
     {
+      ELLE_TRACE_FUNCTION(identifier, size);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      ELLE_TRACE_FUNCTION(identifier, size);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -251,11 +252,11 @@ namespace etoile
     void
     File::discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -297,8 +298,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -338,11 +347,11 @@ namespace etoile
     void
     File::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::File* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -384,8 +393,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -428,11 +445,11 @@ namespace etoile
     elle::Status        File::Destroy(
                           const gear::Identifier&               identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -474,8 +491,16 @@ namespace etoile
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          escape("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return elle::Status::Ok;
+          }
       }
 
       // depending on the context's state.
@@ -514,19 +539,76 @@ namespace etoile
       return elle::Status::Ok;
     }
 
-    ///
-    /// this method purges a file i.e removes all the blocks of all
-    /// the revisions associated with this file.
-    ///
-    elle::Status        File::Purge(
-                          const gear::Identifier&)
+//
+// ---------- XXX -------------------------------------------------------------
+//
+
+    // XXX[to remove as soon as possible i.e when etoile will be instanciable]
+
+    nucleus::neutron::Size
+    File::transferto(elle::String const& source,
+                     gear::Identifier const& destination,
+                     nucleus::neutron::Offset const& offset)
     {
-      ELLE_TRACE_FUNCTION("");
+      ELLE_TRACE_FUNCTION(source, destination, offset);
 
-      // XXX to implement.
+      std::streamsize N = 5242880;
+      std::ifstream stream(source, std::ios::binary);
+      nucleus::neutron::Offset _offset(offset);
+      unsigned char* buffer = new unsigned char[N];
 
-      return elle::Status::Ok;
+      while (stream.good())
+        {
+          stream.read((char*)buffer, N);
+
+          elle::standalone::Region data(buffer, N);
+
+          data.size = stream.gcount();
+
+          File::write(destination, _offset, data);
+
+          _offset += data.size;
+        }
+
+      stream.close();
+
+      delete[] buffer;
+
+      return (_offset - offset);
     }
 
+    nucleus::neutron::Size
+    File::transferfrom(gear::Identifier const& source,
+                       elle::String const& destination,
+                       nucleus::neutron::Offset const& offset,
+                       nucleus::neutron::Size const& size)
+    {
+      ELLE_TRACE_FUNCTION(source, destination, offset, size);
+
+      std::ofstream stream(destination, std::ios::binary);
+      nucleus::neutron::Offset _offset(offset);
+
+      stream.seekp(offset);
+
+      while (_offset < (offset + size))
+        {
+          ELLE_TRACE("reading %s bytes at offset %s",
+                     size, _offset);
+
+          elle::standalone::Region data{
+            File::read(source, _offset, size)};
+
+          ELLE_ASSERT(data.size != 0);
+
+          stream.write((const char*)data.contents,
+                       static_cast<std::streamsize>(data.size));
+
+          _offset += data.size;
+        }
+
+      stream.close();
+
+      return (_offset - offset);
+    }
   }
 }

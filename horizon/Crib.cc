@@ -29,7 +29,7 @@ namespace horizon
 
   /// True if the created file referenced through the given path
   /// exists.
-  elle::Status
+  elle::Boolean
   Crib::Exist(const elle::String& path)
   {
     ELLE_TRACE_SCOPE("check if handle exists for %s", path);
@@ -37,9 +37,9 @@ namespace horizon
     Crib::Iterator iterator;
 
     if ((iterator = Crib::Handles.find(path)) != Crib::Handles.end())
-      return elle::Status::True;
+      return true;
 
-    return elle::Status::False;
+    return false;
   }
 
   /// The handle associated with the given path.

@@ -1,14 +1,14 @@
 #ifndef ETOILE_DEPOT_DEPOT_HH
 # define ETOILE_DEPOT_DEPOT_HH
 
-# include <memory>
-
 # include <elle/types.hh>
 
-# include <nucleus/neutron/Object.hh>
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
 
 # include <hole/Hole.hh>
+
+# include <memory>
 
 namespace etoile
 {
@@ -50,15 +50,12 @@ namespace etoile
       pull_object(nucleus::proton::Address const& address,
                   nucleus::proton::Revision const & revision);
       /// XXX
-      static std::unique_ptr<nucleus::neutron::Access>
-      pull_access(nucleus::proton::Address const& address);
-      /// XXX
       static std::unique_ptr<nucleus::neutron::Group>
       pull_group(nucleus::proton::Address const& address,
                  nucleus::proton::Revision const& revision);
       /// XXX
-      static std::unique_ptr<nucleus::neutron::Ensemble>
-      pull_ensemble(nucleus::proton::Address const& address);
+      static std::unique_ptr<nucleus::proton::Contents>
+      pull_contents(nucleus::proton::Address const& address);
 
       /// XXX
       template <typename T>

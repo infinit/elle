@@ -1,5 +1,4 @@
 #include <cryptography/cryptography.hh>
-#include <cryptography/random.hh>
 #include <cryptography/KeyPair.hh>
 
 #include <elle/log.hh>
@@ -13,7 +12,6 @@ namespace infinit
 {
   namespace cryptography
   {
-
     /*----------.
     | Functions |
     `----------*/
@@ -31,8 +29,7 @@ namespace infinit
       // Enable the SSL algorithms, especially for RSA.
       ::SSLeay_add_all_algorithms();
 
-      // Initialize the random and keypair classes.
-      random::initialize();
+      // Initialize the keypair class.
       KeyPair::initialize();
 
       // Set the module has initialized.
@@ -46,9 +43,8 @@ namespace infinit
     {
       ELLE_TRACE_SCOPE("cleaning the cryptography");
 
-      // Clean the keypair and random classes.
+      // Clean the keypair class.
       KeyPair::clean();
-      random::clean();
 
       // Free the current threads error queue.
       ::ERR_remove_state(0);

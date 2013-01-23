@@ -1,119 +1,143 @@
 #ifndef INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 # define INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 
+# include <elle/fwd.hh>
 # include <elle/types.hh>
-
-# include <elle/radix/Object.hh>
-
-# include <elle/standalone/Region.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <cryptography/fwd.hh>
 
-# include <elle/serialize/Polymorphic.hh>
+# include <openssl/evp.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
 
-# include <elle/idiom/Close.hh>
-#  include <openssl/evp.h>
-#  include <openssl/err.h>
-#  include <openssl/rand.h>
-#  include <fcntl.h>
-# include <elle/idiom/Open.hh>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace infinit
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents a secret key for symmetric encryption.
-    ///
+    /// Represents a secret key for symmetric cryptosystem operations.
     class SecretKey:
-      public elle::radix::Object
+      public elle::concept::MakeUniquable<SecretKey>,
+      public elle::Printable
     {
+      /*----------.
+      | Constants |
+      `----------*/
     public:
-      //
-      // constants
-      //
-      static const elle::Character            Magic[];
-
-      struct Default
+      struct Constants
       {
-        static const elle::Natural32          Length;
+        /// Define the magic which is embedded in every encrypted
+        /// text so for the decryption process to know that the text
+        /// has been salted.
+        static elle::Character const magic[];
       };
 
+      /// XXX[use enums and/or rename]
       struct Algorithms
       {
         static const ::EVP_CIPHER*      Cipher;
         static const ::EVP_MD*          Digest;
       };
 
-      static const SecretKey            Null;
+      /*---------------.
+      | Static Methods |
+      `---------------*/
+    public:
+      /// Return a freshly generated secret key.
+      static
+      SecretKey
+      generate(elle::Natural32 const length);
 
-      //
-      // constructors & destructors
-      //
-      SecretKey();
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      SecretKey(); // XXX[to deserialize]
+      /// Construct a secret key based on a string-based password.
+      explicit
+      SecretKey(elle::String const& password);
+      /// Copy constructor.
+      SecretKey(SecretKey const& other);
+      /// Derialization constructor.
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
+    private:
+      /// Construct a secret key based on a given buffer.
+      SecretKey(elle::Buffer&& buffer);
 
-      //
-      // methods
-      //
-      elle::Status            Create(const elle::String&);
-
-      elle::Status            Generate();
-      elle::Status            Generate(const elle::Natural32);
-
-      elle::Status
-      Encrypt(elle::WeakBuffer const& in,
-              Cipher& out) const;
-      template <typename T>
-      elle::Status Encrypt(T const& in, Cipher& out) const;
-
-      elle::Status
-      Decrypt(Cipher const& in,
-              elle::Buffer& out) const;
-      template<typename T>
-      elle::Status Decrypt(Cipher const& in, T& out) const;
-      /* XXX
-      /// Return an encrypted version of the given plain text.
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// Encrypt the given plain text and return a cipher text.
       Cipher
       encrypt(Plain const& plain) const;
-      /// Return an encrypted version of the given serializable value.
+      /// Encrypt any serializable object and return a cipher text
+      /// of its archive.
       template <typename T>
       Cipher
-      encrypt(T&& value) const;
-      /// Return a decrypted version of the given cipher text.
+      encrypt(T const& value) const;
+      /// Decrypt the given cipher and return a clear text i.e the
+      /// equivalent of the plain text provided as input to the
+      /// encryption process.
       Clear
       decrypt(Cipher const& cipher) const;
-      /// Return a decrypted serializable value of the given cipher text.
+      /// Decrypt a cipher and return a deserializable object.
       template <typename T>
       T
-      decrypt(Cipher const& in, T& out) const; // XXX forward?
-      */
+      decrypt(Cipher const& cipher) const;
 
-      template<typename T>
-        elle::Status Decrypt(Cipher const& in,
-                       elle::serialize::Polymorphic<T> const& out) const
-        {
-          return this->Decrypt<elle::serialize::Polymorphic<T> const>(in, out);
-        }
+      /// XXX[temporary until the nucleus node factory is set to handle this
+      //      case]
+      template <typename T>
+      void
+      decrypt(Cipher const& cipher,
+              T& object) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+        ELLE_TRACE_METHOD(cipher);
 
-      //
-      // interfaces
-      //
+        // Decrypt the cipher leading to a clear containing an archive.
+        Clear clear{this->decrypt(cipher)};
 
-      // object
-      declare(SecretKey);
-      elle::Boolean           operator==(const SecretKey&) const;
+        // Deserialize the object from the clear.
+        clear.buffer().reader() >> object;
+      }
 
-      // dumpable
-      elle::Status            Dump(const elle::Natural32 = 0) const;
-
+      /*----------.
+      | Operators |
+      `----------*/
     public:
-      elle::standalone::Region region;
-    };
+      elle::Boolean
+      operator ==(SecretKey const&) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(SecretKey);
 
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(elle::Buffer, buffer);
+    };
   }
 }
 
-#include <cryptography/SecretKey.hxx>
+# include <cryptography/SecretKey.hxx>
 
 #endif

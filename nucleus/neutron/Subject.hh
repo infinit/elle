@@ -9,6 +9,9 @@
 # include <nucleus/neutron/User.hh>
 # include <nucleus/neutron/Group.hh>
 
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
+
 namespace nucleus
 {
   namespace neutron
@@ -103,6 +106,8 @@ namespace nucleus
       elle::Boolean
       operator ==(Subject const& other) const;
       ELLE_OPERATOR_NEQ(Subject);
+      elle::Boolean
+      operator <(Subject const& other) const;
       ELLE_OPERATOR_ASSIGNMENT(Subject); // XXX
 
       //

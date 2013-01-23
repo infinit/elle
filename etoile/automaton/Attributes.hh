@@ -20,6 +20,10 @@ namespace etoile
       //
       // static methods
       //
+      static
+      void
+      open(gear::Object& context);
+
       static elle::Status       Set(gear::Object&,
                                     const elle::String&,
                                     const elle::String&);
@@ -31,6 +35,13 @@ namespace etoile
                                         nucleus::neutron::Trait>&);
       static elle::Status       Omit(gear::Object&,
                                      const elle::String&);
+
+      static
+      void
+      destroy(gear::Object& context);
+      static
+      void
+      close(gear::Object& context);
     };
 
   }

@@ -99,7 +99,7 @@ namespace elle
       if ((scoutor = this->_container.find(product)) ==
           this->_container.end())
         throw Exception("unable to locate the generatoid for the "
-                        "given product");
+                        "given product '%s'", product);
 
       // Allocate and return the instance.
       return (reinterpret_cast<T*>(scoutor->second->allocate()));

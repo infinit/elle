@@ -41,6 +41,11 @@
   public:                                                               \
   _type_&                                                               \
   operator =(_type_ const&) = delete;
+/* XXX[to add]
+  public:                                                               \
+  _type_&                                                               \
+  operator =(_type_&&) = delete;
+*/
 
 /// Generate the operator ==() method. Note that this method relies on
 /// the operator !=().

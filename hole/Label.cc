@@ -57,10 +57,7 @@ namespace hole
     elle::String        alignment(margin, ' ');
 
     // display the name.
-    std::cout << alignment << "[Label]" << std::endl;
-
-    if (this->_digest.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the digest");
+    std::cout << alignment << "[Label] " << this->_digest << std::endl;
 
     return elle::Status::Ok;
   }

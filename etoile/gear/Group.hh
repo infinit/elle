@@ -3,12 +3,15 @@
 
 # include <elle/types.hh>
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Location.hh>
+# include <nucleus/proton/Limits.hh>
 # include <nucleus/neutron/fwd.hh>
-# include <nucleus/neutron/Group.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
+
+# include <etoile/nest/fwd.hh>
 
 # include <etoile/automaton/Group.hh>
 
@@ -55,8 +58,11 @@ namespace etoile
       //
       nucleus::proton::Location location;
 
-      nucleus::neutron::Group* group;
-      nucleus::neutron::Ensemble* ensemble;
+      std::unique_ptr<nucleus::neutron::Group> group;
+
+      nucleus::proton::Porcupine<nucleus::neutron::Ensemble>* ensemble_porcupine;
+      etoile::nest::Nest* ensemble_nest;
+      nucleus::proton::Limits ensemble_limits;
 
       struct
       {
@@ -66,7 +72,5 @@ namespace etoile
 
   }
 }
-
-# include <etoile/gear/Group.hxx>
 
 #endif

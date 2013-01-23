@@ -7,6 +7,9 @@
 #include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.hole.implementations.local.Implementation");
 
 namespace hole
 {
@@ -31,6 +34,8 @@ namespace hole
       void
       Implementation::_join()
       {
+        ELLE_DEBUG_METHOD("");
+
         Local::Computer = new Machine(*this);
         this->ready();
       }
@@ -38,6 +43,8 @@ namespace hole
       void
       Implementation::_leave()
       {
+        ELLE_DEBUG_METHOD("");
+
         delete Local::Computer;
       }
 
@@ -49,6 +56,8 @@ namespace hole
       Implementation::_push(nucleus::proton::Address const& address,
                             nucleus::proton::ImmutableBlock const& block)
       {
+        ELLE_DEBUG_METHOD(address, block);
+
         Local::Computer->put(address, block);
       }
 
@@ -56,12 +65,16 @@ namespace hole
       Implementation::_push(nucleus::proton::Address const& address,
                             nucleus::proton::MutableBlock const& block)
       {
+        ELLE_DEBUG_METHOD(address, block);
+
         Local::Computer->put(address, block);
       }
 
       std::unique_ptr<nucleus::proton::Block>
       Implementation::_pull(nucleus::proton::Address const& address)
       {
+        ELLE_DEBUG_METHOD(address);
+
         return Local::Computer->get(address);
       }
 
@@ -69,12 +82,16 @@ namespace hole
       Implementation::_pull(nucleus::proton::Address const& address,
                             nucleus::proton::Revision const& revision)
       {
+        ELLE_DEBUG_METHOD(address, revision);
+
         return Local::Computer->get(address, revision);
       }
 
       void
       Implementation::_wipe(nucleus::proton::Address const& address)
       {
+        ELLE_DEBUG_METHOD(address);
+
         Local::Computer->wipe(address);
       }
 

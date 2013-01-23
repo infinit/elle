@@ -3,6 +3,7 @@
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 #include <elle/io/Unique.hh>
+#include <elle/serialize/extract.hh>
 
 #include <cryptography/KeyPair.hh>
 // XXX[temporary: for cryptography]
@@ -16,7 +17,6 @@ using namespace infinit;
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
 
@@ -36,6 +36,7 @@ using namespace infinit;
 
 #include "network.hh"
 
+ELLE_LOG_COMPONENT("infinit.oracle.disciples.metalib.Network");
 
 static
 elle::io::Unique
@@ -72,14 +73,14 @@ generate_network_descriptor(elle::String const& id,
 
   nucleus::proton::Address group_address;
   if (group_address.Restore(group_address_) != elle::Status::Ok)
-    throw std::runtime_error("Unable to restore access address");
+    throw std::runtime_error("Unable to restore group address");
 
   lune::Identity identity;
   if (identity.Restore(identity_) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore the identity");
 
   lune::Descriptor descriptor(id,
-                              identity.pair.K(),
+                              identity.pair().K(),
                               model,
                               directory_address,
                               group_address,
@@ -91,7 +92,7 @@ generate_network_descriptor(elle::String const& id,
                               Infinit::version,
                               authority);
 
-  descriptor.seal(identity.pair.k());
+  descriptor.seal(identity.pair().k());
 
   descriptor.Dump();
 
@@ -113,7 +114,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
             * network_name = nullptr,
             * network_model = nullptr,
             * directory_address = nullptr,
-            * access_address = nullptr,
+            * group_address = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
   PyObject* ret = nullptr;
@@ -124,7 +125,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
                         &network_name,
                         &network_model,
                         &directory_address,
-                        &access_address,
+                        &group_address,
                         &authority_file,
                         &authority_password))
     return nullptr;
@@ -140,7 +141,7 @@ metalib_generate_network_descriptor(PyObject* self, PyObject* args)
           network_name,
           network_model,
           directory_address,
-          access_address,
+          group_address,
           authority_file,
           authority_password
       );
@@ -166,8 +167,6 @@ static
 bool
 check_root_directory_signature(elle::io::Unique const& root_block_,
                                elle::io::Unique const& root_address_,
-                               elle::io::Unique const& access_block_,
-                               elle::io::Unique const& access_address_,
                                elle::io::Unique const& group_block_,
                                elle::io::Unique const& group_address_,
                                elle::io::Unique const& public_key)
@@ -177,39 +176,21 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
   if (K.Restore(public_key) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore public key");
 
-  // access block -------------------------------------------------------------
-  nucleus::neutron::Access access_block;
-  {
-    nucleus::proton::Address access_address;
-    if (access_address.Restore(access_address_) == elle::Status::Error)
-      throw std::runtime_error("Unable to restore access address");
-
-    if (access_block.Restore(access_block_) == elle::Status::Error)
-      throw std::runtime_error("Cannot restore access block");
-
-    try
-      {
-        access_block.validate(access_address);
-      }
-    catch (nucleus::Exception const& e)
-      {
-        return false;
-      }
-  }
-
   // root block ---------------------------------------------------------------
   {
     nucleus::proton::Address root_address;
     if (root_address.Restore(root_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore root address");
 
-    nucleus::neutron::Object root_block;
-    if (root_block.Restore(root_block_) == elle::Status::Error)
-      throw std::runtime_error("Unable to restore root block: <" + root_block_ + ">");
+    nucleus::neutron::Object root_block{
+      elle::serialize::from_string<elle::serialize::InputBase64Archive>(
+        root_block_)};
 
     try
       {
-        root_block.validate(root_address, &access_block);
+        // XXX root_block.validate(root_address, /*fingerprint*/);
+        ELLE_WARN("the root block should be validated: assert on radix "
+                  "strategy which should be 'value': ask Julien");
       }
     catch (nucleus::Exception const& e)
       {
@@ -227,9 +208,9 @@ check_root_directory_signature(elle::io::Unique const& root_block_,
     if (group_address.Restore(group_address_) == elle::Status::Error)
       throw std::runtime_error("Unable to restore group address");
 
-    nucleus::neutron::Group group_block;
-    if (group_block.Restore(group_block_) == elle::Status::Error)
-      throw std::runtime_error("Cannot restore group block");
+    nucleus::neutron::Group group_block{
+      elle::serialize::from_string<elle::serialize::InputBase64Archive>(
+        group_block_)};
 
     try
       {
@@ -258,18 +239,14 @@ metalib_check_root_directory_signature(PyObject* self,
 
   char const* root_block = nullptr;
   char const* root_address = nullptr;
-  char const* access_block = nullptr;
-  char const* access_address = nullptr;
   char const* group_block = nullptr;
   char const* group_address = nullptr;
   char const* public_key = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "sssssss:check_root_directory_signature",
+  if (!PyArg_ParseTuple(args, "sssss:check_root_directory_signature",
                         &root_block,
                         &root_address,
-                        &access_block,
-                        &access_address,
                         &group_block,
                         &group_address,
                         &public_key))
@@ -286,8 +263,6 @@ metalib_check_root_directory_signature(PyObject* self,
       bool result = check_root_directory_signature(
           root_block,
           root_address,
-          access_block,
-          access_address,
           group_block,
           group_address,
           public_key

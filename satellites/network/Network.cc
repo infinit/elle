@@ -3,6 +3,8 @@
 #include <Infinit.hh>
 
 #include <etoile/Etoile.hh>
+#include <etoile/nest/Nest.hh>
+#include <etoile/automaton/Access.hh>
 
 #include <hole/Hole.hh>
 #include <hole/Openness.hh>
@@ -14,6 +16,7 @@
 #include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/CrashReporter.hh>
 
 #include <lune/Lune.hh>
 #include <elle/Authority.hh>
@@ -23,6 +26,8 @@
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/proton/Door.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Genre.hh>
@@ -58,7 +63,7 @@ namespace satellite
     //
     {
       // does the network already exist.
-      if (lune::Descriptor::exists(name) == true)
+      if (lune::Descriptor::exists(administrator, name) == true)
         escape("this network seems to already exist");
 
       // check the model.
@@ -120,22 +125,29 @@ namespace satellite
     // create an "everybody" group.
     //
     nucleus::neutron::Group group(network,
-                                  identity.pair.K(),
+                                  identity.pair().K(),
                                   "everybody");
 
     elle::io::Path shelter_path(lune::Lune::Shelter);
     shelter_path.Complete(elle::io::Piece{"%USER%", administrator},
                           elle::io::Piece{"%NETWORK%", name});
-    hole::storage::Directory storage(shelter_path.string());
+    hole::storage::Directory storage(network, shelter_path.string());
 
-    group.seal(identity.pair.k());
+    group.seal(identity.pair().k());
 
     nucleus::proton::Address group_address(group.bind());
 
     storage.store(group_address, group);
 
-    nucleus::neutron::Access access(network, identity.pair.K());
-    nucleus::proton::Address* access_address(nullptr);
+    // XXX[we should use a null nest in this case because no block should be loaded/unloded]
+    etoile::nest::Nest nest(ACCESS_SECRET_KEY_LENGTH,
+                            nucleus::proton::Limits(nucleus::proton::limits::Porcupine{},
+                                                    nucleus::proton::limits::Node{1024, 0.5, 0.2},
+                                                    nucleus::proton::limits::Node{1024, 0.5, 0.2}),
+                            network,
+                            identity.pair().K());
+    nucleus::proton::Porcupine<nucleus::neutron::Access> access(nest);
+    nucleus::proton::Radix* access_radix = nullptr;
 
     // depending on the policy.
     switch (policy)
@@ -181,44 +193,56 @@ namespace satellite
           if (subject.Create(group_address) == elle::Status::Error)
             escape("unable to create the group subject");
 
+          nucleus::proton::Door<nucleus::neutron::Access> door =
+            access.lookup(subject);
+
+          door.open();
+
           // Note that a null token is provided because the root directory
           // contains no data.
-          nucleus::neutron::Record* record =
-            new nucleus::neutron::Record(subject, permissions);
+          door().insert(new nucleus::neutron::Record{subject, permissions});
 
-          if (access.Add(record) == elle::Status::Error)
-            escape("unable to add the record to the access");
+          door.close();
 
-          access_address = new nucleus::proton::Address(access.bind());
+          access.update(subject);
 
-          storage.store(*access_address, access);
+          // XXX
+          static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+
+          access_radix = new nucleus::proton::Radix{access.seal(secret_key)};
 
           break;
         }
       case horizon::Policy::confidential:
         {
+          access_radix = new nucleus::proton::Radix{};
+
           break;
         }
       }
 
-    assert(access_address != nullptr);
+    cryptography::Digest fingerprint =
+      nucleus::neutron::access::fingerprint(access);
+
+    ELLE_ASSERT(access_radix != nullptr);
+    ELLE_ASSERT(access_radix->strategy() == nucleus::proton::Strategy::value);
 
     //
     // create the root directory.
     //
     nucleus::neutron::Object directory(network,
-                                       identity.pair.K(),
+                                       identity.pair().K(),
                                        nucleus::neutron::Genre::directory);
 
     if (directory.Update(directory.author(),
                          directory.contents(),
                          directory.size(),
-                         *access_address,
+                         *access_radix,
                          directory.owner_token()) == elle::Status::Error)
       escape("unable to update the directory");
 
     // seal the directory.
-    if (directory.Seal(identity.pair.k(), &access) == elle::Status::Error)
+    if (directory.Seal(identity.pair().k(), fingerprint) == elle::Status::Error)
       escape("unable to seal the object");
 
     nucleus::proton::Address directory_address(directory.bind());
@@ -230,7 +254,7 @@ namespace satellite
     //
     {
       lune::Descriptor    descriptor(identifier,
-                                     identity.pair.K(),
+                                     identity.pair().K(),
                                      model,
                                      directory_address,
                                      group_address,
@@ -242,7 +266,7 @@ namespace satellite
                                      Infinit::version,
                                      authority);
 
-      descriptor.seal(identity.pair.k());
+      descriptor.seal(identity.pair().k());
 
       descriptor.store(identity);
     }
@@ -283,7 +307,7 @@ namespace satellite
         escape("unable to complete the path");
 
       // if the shelter exists, clear it and remove it.
-      if (elle::io::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == true)
         {
           // clear the shelter content.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)
@@ -310,13 +334,17 @@ namespace satellite
                         elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      // clear the network directory content.
-      if (elle::io::Directory::Clear(path) == elle::Status::Error)
-        escape("unable to clear the directory");
+      // if the network exists, clear it and remove it.
+      if (elle::io::Directory::Exist(path) == true)
+        {
+          // clear the network directory content.
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
+            escape("unable to clear the directory");
 
-      // remove the directory.
-      if (elle::io::Directory::Remove(path) == elle::Status::Error)
-        escape("unable to remove the directory");
+          // remove the directory.
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
+            escape("unable to remove the directory");
+        }
     }
 
     return elle::Status::Ok;
@@ -364,7 +392,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Network") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -474,7 +502,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -484,9 +512,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
-        (Infinit::Parser->Test("Information") == elle::Status::True))
+    if ((Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Destroy") == true) &&
+        (Infinit::Parser->Test("Information") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -496,15 +524,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = Network::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = Network::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = Network::OperationInformation;
 
     // trigger the operation.
@@ -635,6 +663,11 @@ namespace satellite
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::Handler("8network", false)  // Capture signal and send email without exiting.
+  };
+
   try
     {
       if (satellite::Main(argc, argv) == elle::Status::Error)
@@ -644,6 +677,8 @@ int                     main(int                                argc,
     {
       std::cout << "The program has been terminated following "
                 << "a fatal error (" << e.what() << ")." << std::endl;
+
+      elle::crash::report("8network", e.what());
 
       return (1);
     }

@@ -1,6 +1,8 @@
 #include <elle/serialize/extract.hh>
 
-#include <lune/Descriptor.hh>
+#include <cryptography/KeyPair.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 int main()
 {
@@ -10,15 +12,16 @@ int main()
 
   // This string has been generated as follows:
   //
-  //   elle::io::Unique unique;
-  //   if (descriptor.Save(unique) == elle::Status::Error)
-  //     escape("XXX");
-  //   std::cout << unique << std::endl;
-  std::string descriptor_str("AAAFAAAAbG9jYWwAAAAAgAC+qKTe1Ib9HXaGWlEu03vIH/dgIHafJtYZwS4nVjH0uzX2ov+AaVoIYaTtwQ+WKRbzUaEUqEvUYOlw0xRjytXcvuEjGvJZqjPjJJQbK4xMQgaeWsPGc9pAw15PeyBhNJURij5jFuMkFjIRrZVnfRTwr3D0kmBA4DwACy+QUqoz1wAAAwABAAEAAAEAAAACAAAAAAAFAAAAbG9jYWwDAAEAAAAAACAAAAAAAAAAz7SW68DZiIChmRkO5q035WhXuNYwvGxIAtgamz9eU6IAAAIAAAAAAAUAAABsb2NhbAMABgAAAAAAIAAAAAAAAAAdNugLAMidIDjXbAsGr01ufXGI2OQp/x+8N0UYhXN/qQAAIAAAAAAAAAACAAAAAAAAXB9h3cUoDKCZFJQqqlSz9l2NKLMrRUc43FU3slmLESDOFZzMg2TJ4aJmZFIAuZZOwMRC7zi4UebSmvq1wF62e5w7zYDx13ttWiEPjgggfdTFnPWKjkBy+wP6bXH+qu/8ovFVAw6y0aXb4VwIhZuTl+05WfT+KNslZdusbRHqvds962RmsTjnLzOXKkFoNJf4a3wjq8TfUU2JkGJeXtQTuqYKZ4MlXSLDKxy9jJIQO/FIsYOM16a3MVVZ/UmD6DG11iomIosPAXvuIEuX0t2/16cpZ4QsL0RzgVXKoPau2HsUOtPliyKCcoLzIgTL/Jyhur5kHNqhR2HOX99wPa9u5WWJT/wsZlSbNqLPyh+YFOoLUDX4pdOhBm+4/xqcAzzc8ZmD4/64navPQ0+j98c2Ca8mdOaKTjqqAdve8u3LkI0SGZ3ghXBum6NVIzvo9D7l1zaiUygumhfZbbmE4JA2Fn15GJrmhkxnGlIK4S7Pl5n5W8tO/2S4jSMlIlq1q5EvzlE9TSqXKXnG10+dw94IPOD2u+sUqC9lVhZnEOnKHAe6/xnS2pxFVV3VZI9xKEU1l4IpqTlusKXOfgcdfKZpPdxPhIgN+HbYfTtJjS1FbJBB0LAWg9DFk+GhBx2sQPLZ3iwCXRY2qhJqVAUjrJ/mxG7h+RagY3w+6XKlL7FAVIsFAAAAbG9jYWwDAAEAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAqXOVscW+qosSevFvYwd3ppGG9QkEq/kWs5ZI6sWpyBgu2/HIqynRGADr0bqb58BIr3QMHbSnnptsfU0lFpul9OA7Yga3X1tsBAOwCEB+Llikmh32KaPa2jUJ8LlQb3CpXprRuGUYJMJbUld41JYzDm7YcLmenQOBZV+2zOqmW0Y=");
+//       elle::io::Unique unique;
+//       cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+//       if (kp.Save(unique) == elle::Status::Error)
+//         throw elle::Exception("unable XXX");
+//       std::cout << unique << std::endl;
 
-  auto extractor = from_string<InputBase64Archive>(descriptor_str);
+  std::string string("AAAAAAAAgAAAALkv7mFyDOrSVRPH/aitVp0yk8eFzHtswUp6am4j4Ka8vGP4gDKHVzpEUGsr4IzFLJxsDCUGfLcWmfyqUru4Z6+ipspxZ89wiu1+/1mKSYL+B4iPLta7YAa/zVwKSyBuV+i34ez0lpJMLXea6iEb4f6DWXgLYceN0aVdndjEZpvZAAADAAAAAQABAAAAAIAAAAC5L+5hcgzq0lUTx/2orVadMpPHhcx7bMFKempuI+CmvLxj+IAyh1c6RFBrK+CMxSycbAwlBny3Fpn8qlK7uGevoqbKcWfPcIrtfv9ZikmC/geIjy7Wu2AGv81cCksgblfot+Hs9JaSTC13muohG+H+g1l4C2HHjdGlXZ3YxGab2QAAAwAAAAEAAQAAgAAAAHAdaafLQbDE6EcSlCqTztVa8ocgJR0wSZGKrXbC99Zae3/Wyd5Ne+zFwR4xMUBoe0q0S2H7HHRIFbAXegE2cmakw1c3i+9BZ/hODl2tdb6RiY59yF34XJVOpzSmJj+egjzp5HXIxHmy+sXxfYkXyy4tIXFGmJs7bj7AZvTmyy9lAABAAAAA8zcgSbmoo0lekrye6GcNsFZn+VwrWfX5fNBl+HP3eOS4uzRb+RpA0J2tpRyPSTnBTpdz9H3f35dty8zlbkOFTwAAQAAAAMLr8E82GT5kaG+aDAol2AGC2kZGoNH3tA9SpkzR3UOpyfI6yRnsyc4RbnRsIfeWVa7v88qJb0wK71WK5ervUlcAAEAAAAC5G1Coq/QMaq/e8E3lRWGmvuydXafk7Q+4Dgg9400LJtDuMfh6C6Ae5pMdYjIvohRc02o+P3se+mpnPQe1NxCDAABAAAAAu6WNQ4ROCv14eK+xFXfXGaVR4kOOAHRY2EN1qxCB1Oi4a8Ph415L7GBlmBidHo+QTwfbB0kFZwxD2XMM4f2gowAAQAAAADQPoWzQB3ic+G63B/YYlrkn7yEJxYgm7Uk7mMiZBmB8zq1q01JWaSDNORmTjE3B3Y7fdyDnEjW7uHEeThrUXPQ=");
 
-  lune::Descriptor descriptor{extractor};
+  auto extractor = from_string<InputBase64Archive>(string);
+  cryptography::KeyPair pair{extractor};
 
   std::cout << "tests done." << std::endl;
   return 0;

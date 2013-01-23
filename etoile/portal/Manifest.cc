@@ -59,7 +59,10 @@ namespace etoile
       groupremove("groupremove", *this),
       groupdiscard("groupdiscard", *this),
       groupstore("groupstore", *this),
-      groupdestroy("groupdestroy", *this)
+      groupdestroy("groupdestroy", *this),
+      slug_connect("slug_connect", *this),
+      transferto("transferto", *this),
+      transferfrom("transferfrom", *this)
     {}
   }
 }

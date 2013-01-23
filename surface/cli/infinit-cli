@@ -242,8 +242,6 @@ class InfinitShell(cmd.Cmd):
 
             self._thread = PollThread(self._state)
             self._thread.start()
-
-            self._state.launch_watchdog()
         except Exception as e:
             print(e)
 
@@ -268,7 +266,6 @@ class InfinitShell(cmd.Cmd):
 
     ###########################################################################
     # Search user.
-
     _search_users_argument_parser = make_simple_argument_parser(
         prog = "search_users",
         description = "Print all users",
@@ -416,7 +413,9 @@ class InfinitShell(cmd.Cmd):
 
     def complete_sendfiles(self, text, line, begidx, endidx):
         tok = shlex.split(line)
-        if len(tok) > 2:
+        if len(tok) == 1 and len(text) > 0:
+            return [t for t in len(self._state.get_swaggers()) and self._state.get_swaggers() or self._state.search_users(text) if t.startswith(text)]
+        if len(tok) > 1:
             return get_candidates_for_path(tok[len(tok) - 1], line[begidx:endidx])
 
     ###########################################################################

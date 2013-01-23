@@ -3,11 +3,16 @@
 #include <nucleus/Exception.hh>
 
 #include <elle/format/hexadecimal.hh>
+#include <elle/log.hh>
 
 namespace nucleus
 {
   namespace proton
   {
+//
+// ---------- Address ---------------------------------------------------------
+//
+
     /*----------.
     | Constants |
     `----------*/
@@ -27,21 +32,36 @@ namespace nucleus
       return (address);
     }
 
-    Address const&
-    Address::some()
-    {
-      static Address address(Address::Type::some);
-
-      return (address);
-    }
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     Address::Address():
       _valid(nullptr)
     {
+    }
+
+    Address::Address(Type const type):
+      _type(type),
+      _valid(nullptr)
+    {
+      switch (this->_type)
+        {
+        case Type::null:
+          {
+            // Nothing to do; this is the right way to construct such special
+            // addresses.
+
+            break;
+          }
+        case Type::valid:
+          {
+            throw Exception("valid addresses cannot be built through this "
+                            "constructor");
+          }
+        default:
+          throw Exception("unknown address type '%s'", this->_type);
+        }
     }
 
     Address::Address(Address const& other):
@@ -59,26 +79,9 @@ namespace nucleus
         }
     }
 
-    Address::Address(Type const type):
-      _type(type)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Address)
     {
-      switch (this->_type)
-        {
-        case Type::null:
-        case Type::some:
-          {
-            // Nothing to do; this is the right way to construct such special
-            // addresses
-            break;
-          }
-        case Type::valid:
-          {
-            throw Exception("valid addresses cannot be built through this "
-                            "constructor");
-          }
-        default:
-          throw Exception("unknown address type '%s'", this->_type);
-        }
+      this->_valid = nullptr;
     }
 
     Address::~Address()
@@ -86,24 +89,9 @@ namespace nucleus
       delete this->_valid;
     }
 
-    Address::Valid::Valid()
-    {
-    }
-
-    Address::Valid::Valid(Network const& network,
-                          Family const& family,
-                          neutron::Component const& component,
-                          cryptography::Digest const& digest):
-      _network(network),
-      _family(family),
-      _component(component),
-      _digest(digest)
-    {
-    }
-
-//
-// ---------- methosd ---------------------------------------------------------
-//
+    /*--------.
+    | Methods |
+    `--------*/
 
     elle::String const
     Address::unique() const
@@ -117,9 +105,7 @@ namespace nucleus
       // therefore, this method simply returns a string representation of
       // the digest.
       return (elle::format::hexadecimal::encode(
-                reinterpret_cast<const char*>(
-                  this->_valid->digest().buffer().contents()),
-                this->_valid->digest().buffer().size()));
+        this->_valid->digest().buffer()));
     }
 
     Network const&
@@ -149,9 +135,9 @@ namespace nucleus
       return (this->_valid->component());
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    /*----------.
+    | Operators |
+    `----------*/
 
     elle::Boolean
     Address::operator ==(Address const& other) const
@@ -213,9 +199,9 @@ namespace nucleus
       return (false);
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Address::Dump(elle::Natural32           margin) const
@@ -227,13 +213,7 @@ namespace nucleus
         {
         case Address::Type::null:
           {
-            std::cout << alignment << "[Address] " << elle::none << std::endl;
-
-            break;
-          }
-        case Address::Type::some:
-          {
-            std::cout << alignment << "[Address] " << "(undef)" << std::endl;
+            std::cout << alignment << "[Address] " << "none" << std::endl;
 
             break;
           }
@@ -257,8 +237,8 @@ namespace nucleus
                       << this->_valid->component() << std::endl;
 
             // dump the digest.
-            if (this->_valid->digest().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the digest");
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << "[Digest] " << this->_valid->digest() << std::endl;
 
             break;
           }
@@ -269,9 +249,9 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- printable -------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Address::print(std::ostream& stream) const
@@ -280,19 +260,14 @@ namespace nucleus
         {
         case Type::null:
           {
-            stream << "address(null)";
-            break;
-          }
-        case Type::some:
-          {
-            stream << "address(some)";
+            stream << "null";
             break;
           }
         case Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            stream << "address{"
+            stream << "{"
                    << this->_valid->network()
                    << ", "
                    << this->_valid->family()
@@ -308,5 +283,57 @@ namespace nucleus
         }
     }
 
+//
+// ---------- Valid -----------------------------------------------------------
+//
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Address::Valid::Valid()
+    {
+    }
+
+    Address::Valid::Valid(Network const& network,
+                          Family const& family,
+                          neutron::Component const& component,
+                          cryptography::Digest const& digest):
+      _network(network),
+      _family(family),
+      _component(component),
+      _digest(digest)
+    {
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Address::Type const type)
+    {
+      switch (type)
+        {
+        case Address::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Address::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown address type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

@@ -124,6 +124,7 @@ if (UNIX)
         -Wcast-align
         -Wno-overloaded-virtual
         -Wno-empty-body  # for ELLE_LOG_TRACE macro
+        -Wno-non-template-friend
         -DQT_NO_KEYWORDS
 		-fPIC
     )
@@ -221,12 +222,11 @@ find_library(INFINIT_Z_LIBRARY z PATHS /opt/local/lib NO_DEFAULT_PATH)
 message(STATUS "Zip library: ${INFINIT_Z_LIBRARY}")
 
 ## Loading Qt
-find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
+find_package(Qt4 4.6.0 REQUIRED QtCore)
 
-set(QT_USE_QTNETWORK true)
-set(QT_DONT_USE_QTGUI true)
-set(QT_USE_QTXML true)
-set(QT_DONT_USE_QTGUI TRUE)
+#set(QT_DONT_USE_QTNETWORK true)
+#set(QT_DONT_USE_QTGUI true)
+#set(QT_DONT_USE_QTXML true)
 include(${QT_USE_FILE})
 
 include_directories(${QT_INCLUDES})
@@ -286,7 +286,6 @@ add_subdirectory(elle)
 add_subdirectory(common)
 add_subdirectory(cryptography)
 add_subdirectory(nucleus)
-add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
@@ -316,19 +315,19 @@ set(INFINIT_LIBRARIES
   lune
   nucleus # circular dependency with lune
 
-  hole
   nucleus
   ${HORIZON_LIB}
   etoile
-
-  metal
-  agent
 
   nucleus # circular dependency with etoile
   common
   protocol
   infinit
   hole
+
+  agent
+  metal
+
   cryptography
   lune
   elle
@@ -339,7 +338,6 @@ set(INFINIT_LIBRARIES
   ${INFINIT_OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  #  readline
 
   nucleus
   elle
@@ -354,6 +352,7 @@ endforeach()
 ## Executables ----------------------------------------------------------------
 
 add_subdirectory(satellites)
+add_subdirectory(protocol)
 add_subdirectory(plasma)
 if (ENABLE_TEST_COMPILATION)
    add_subdirectory(tests)
@@ -366,7 +365,6 @@ add_executable(8infinit
 )
 target_link_libraries(8infinit LINK_PRIVATE
 	${INFINIT_LIBRARIES}
-	readline
 )
 add_dependencies(8infinit dependencies)
 

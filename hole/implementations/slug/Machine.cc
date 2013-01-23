@@ -1,6 +1,13 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/udt-server.hh>
 
+// FIXME
+#include <common/common.hh>
+#include <elle/io/Piece.hh>
+#include <lune/Lune.hh>
+#include <lune/Descriptor.hh>
+#include <plasma/meta/Client.hh>
+
 #include <elle/cast.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -41,6 +48,18 @@ namespace hole
   {
     namespace slug
     {
+      // FIXME
+      static Machine* machine(nullptr);
+      void portal_connect(std::string const& addr, int port)
+      {
+        machine->portal_connect(addr, port);
+      }
+
+      void
+      Machine::portal_connect(std::string const& host, int port)
+      {
+        _server->accept(host, port);
+      }
 
       /*----------.
       | Variables |
@@ -72,8 +91,7 @@ namespace hole
       Machine::_connect(std::unique_ptr<reactor::network::Socket> socket,
                         elle::network::Locus const& locus, bool opener)
       {
-        std::unique_ptr<Host> host(new Host(*this, locus,
-                                            std::move(socket), opener));
+        std::unique_ptr<Host> host(new Host(*this, locus, std::move(socket)));
         ELLE_TRACE("%s: authenticate to host: %s", *this, locus);
         auto loci = host->authenticate(this->_hole.passport());
         if (this->_state == State::detached)
@@ -122,6 +140,7 @@ namespace hole
                   (hole.protocol(), elle::concurrency::scheduler()))
         , _acceptor()
       {
+        machine = this; // FIXME
         elle::network::Locus     locus;
         ELLE_TRACE_SCOPE("launch");
 
@@ -132,7 +151,7 @@ namespace hole
           auto& sched = elle::concurrency::scheduler();
           for (elle::network::Locus const& locus: this->hole().members())
             {
-              auto action = std::bind(&Machine::_connect_try, this, locus);
+              auto action = [&, locus] {this->_connect_try(locus);};
               auto thread = new reactor::Thread
                 (sched, elle::sprintf("connect %s", locus), action);
               connections.push_back(thread);
@@ -163,14 +182,15 @@ namespace hole
           elle::network::Host host(elle::network::Host::TypeAny);
           try
             {
-              ELLE_TRACE("listen on port %s", this->_port)
               _server->listen(this->_port);
-              // In case we asked for a random port to be picked up
-              // (by using 0), retrieve the actual listening port.
+              // In case we asked for a random port to be picked up (by using 0)
+              // or hole punching happened, retrieve the actual listening port.
               this->_port = _server->port();
+              ELLE_ASSERT(this->_port != 0);
+              ELLE_TRACE("listening on port %s", this->_port);
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
                                                   "Slug accept",
-                                                  boost::bind(&Machine::_accept, this)));
+                                                  [&] {this->_accept();}));
             }
           catch (reactor::Exception& e)
             {
@@ -178,6 +198,53 @@ namespace hole
               // FIXME: what do ? For now, just go on without
               // listening. Useful when testing with several clients
               // on the same machine.
+            }
+        }
+
+
+        // Send addresses to meta.
+        {
+          lune::Descriptor descriptor(Infinit::User, Infinit::Network);
+          plasma::meta::Client client(common::meta::host(), common::meta::port());
+          try
+            {
+              elle::io::Path passport_path(lune::Lune::Passport);
+              passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
+              elle::Passport passport;
+              passport.load(passport_path);
+
+              std::vector<std::pair<std::string, uint16_t>> addresses;
+              auto interfaces = elle::network::Interface::get_map(
+                elle::network::Interface::Filter::only_up
+                | elle::network::Interface::Filter::no_loopback
+                );
+              for (auto const& pair: interfaces)
+                if (pair.second.ipv4_address.size() > 0 &&
+                    pair.second.mac_address.size() > 0)
+                  {
+                    addresses.emplace_back(pair.second.ipv4_address,
+                                           _server->port());
+                    break;
+                  }
+
+              std::vector<std::pair<std::string, uint16_t>> public_addresses;
+              auto udt = dynamic_cast<reactor::network::UDTServer*>
+                (_server.get());
+              assert(udt);
+              auto ep = udt->public_endpoint();
+              public_addresses.push_back(std::pair<std::string, uint16_t>
+                                         (ep.address().to_string(),
+                                          ep.port()));
+              client.token(agent::Agent::meta_token);
+              client.network_connect_device(descriptor.meta().id(),
+                                            passport.id(),
+                                            addresses,
+                                            public_addresses);
+            }
+          catch (std::exception const& err)
+            {
+              ELLE_ERR("Cannot update device port: %s",
+                       err.what()); // XXX[to improve]
             }
         }
       }
@@ -265,7 +332,8 @@ namespace hole
                   // FIXME: handling via loci is very wrong. IPs are
                   // not uniques, and this reconstruction is lame and
                   // non-injective.
-                  _connect(std::move(socket), socket->remote_locus(), false);
+                  auto locus = socket->remote_locus();
+                  _connect(std::move(socket), locus, false);
                   break;
                 }
                 default:
@@ -286,6 +354,8 @@ namespace hole
       Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::ImmutableBlock& block)
       {
+        ELLE_TRACE_METHOD(address, block);
+
         // depending on the machine's state.
         switch (this->_state)
           {
@@ -340,7 +410,7 @@ namespace hole
       Machine::put(const nucleus::proton::Address& address,
                    const nucleus::proton::MutableBlock& block)
       {
-        ELLE_TRACE_SCOPE("%s: put(%s, %s)", *this, address, block);
+        ELLE_TRACE_METHOD(address, block);
 
         // depending on the machine's state.
         switch (this->_state)
@@ -367,9 +437,10 @@ namespace hole
                   {
                   case nucleus::neutron::ComponentObject:
                     {
+                      /* XXX[need to change the way validation works by relying
+                             on a callback]
                       const nucleus::neutron::Object* object =
                         static_cast<const nucleus::neutron::Object*>(&block);
-
                       assert(dynamic_cast<const nucleus::neutron::Object*>(
                                &block) != nullptr);
 
@@ -398,6 +469,7 @@ namespace hole
                           // validate the object.
                           object->validate(address, nullptr);
                         }
+                      */
 
                       break;
                     }
@@ -503,7 +575,7 @@ namespace hole
       std::unique_ptr<nucleus::proton::Block>
       Machine::get(const nucleus::proton::Address& address)
       {
-        ELLE_TRACE_SCOPE("%s: get(%s)", *this, address);
+        ELLE_TRACE_METHOD(address);
 
         using nucleus::proton::ImmutableBlock;
 
@@ -610,6 +682,8 @@ namespace hole
       Ptr<nucleus::proton::Block>
       Machine::_get_latest(const nucleus::proton::Address&    address)
       {
+        ELLE_DEBUG_METHOD(address);
+
         // Contact all the hosts in order to retrieve the latest
         // revision of the block.
         //
@@ -685,7 +759,7 @@ namespace hole
         }
 #endif
 
-        ELLE_TRACE_SCOPE("%s: retrieving the block '%s' from the network",
+        ELLE_DEBUG_SCOPE("%s: retrieving the block '%s' from the network",
                          this, address);
 
         for (auto neighbour: this->_hosts)
@@ -713,6 +787,8 @@ namespace hole
               {
               case nucleus::neutron::ComponentObject:
                 {
+                  /* XXX[need to change the way validation works by relying
+                         on a callback]
                   assert(dynamic_cast<Object const*>(block.get()) != nullptr);
                   Object const& object = *static_cast<Object*>(block.get());
 
@@ -756,6 +832,7 @@ namespace hole
                           continue;
                         }
                     }
+                  */
 
                   break;
                 }
@@ -785,15 +862,15 @@ namespace hole
               }
 
             // XXX It force conflict to be public. Can we change that ?
-            ELLE_TRACE("Check if the block derives the current block")
+            ELLE_DEBUG("Check if the block derives the current block")
               if (this->_hole.storage().conflict(address, *block))
                 {
-                  ELLE_TRACE("the block %p does not derive the local one",
+                  ELLE_DEBUG("the block %p does not derive the local one",
                              block);
                   continue;
                 }
 
-            ELLE_TRACE("storing the remote block %s locally", address)
+            ELLE_DEBUG("storing the remote block %s locally", address)
               this->_hole.storage().store(address, *block);
           }
 
@@ -807,7 +884,7 @@ namespace hole
         Ptr<MutableBlock> block;
 
         // load the block.
-        ELLE_TRACE("loading the local block at %s", address);
+        ELLE_DEBUG("loading the local block at %s", address);
 
         block = elle::cast<MutableBlock>::runtime(
           this->_hole.storage().load(address));
@@ -815,7 +892,7 @@ namespace hole
         ELLE_DEBUG("loaded block %s has revision %s",
                    block, block->revision());
 
-        ELLE_TRACE("validating the block")
+        ELLE_DEBUG("validating the block")
         // Validate the block, depending on its component.
         // although every stored block has been checked, the block
         // may have been corrupt while on the hard disk.
@@ -826,9 +903,12 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               const Object* object =
                 static_cast<const Object*>(block.get());
               assert(dynamic_cast<const Object*>(block.get()) != nullptr);
+
               // Validate the object according to the presence of
               // a referenced access block.
               if (object->access() != nucleus::proton::Address::null())
@@ -849,6 +929,7 @@ namespace hole
                   // Validate the object.
                   object->validate(address, nullptr);
                 }
+              */
 
               break;
             }
@@ -882,7 +963,7 @@ namespace hole
             {
               elle::String unique = address.unique();
 
-              ELLE_TRACE("%s: register %s", *this, unique);
+              ELLE_DEBUG("%s: register %s", *this, unique);
 
               elle::utility::Time current;
 
@@ -904,7 +985,7 @@ namespace hole
             {
               elle::utility::Time current;
 
-              ELLE_TRACE("%s: update %s", *this, unique);
+              ELLE_DEBUG("%s: update %s", *this, unique);
 
               if (current.Current() == elle::Status::Error)
                 throw reactor::Exception(elle::concurrency::scheduler(),
@@ -963,6 +1044,8 @@ namespace hole
                   {
                   case nucleus::neutron::ComponentObject:
                     {
+                      /* XXX[need to change the way validation works by relying
+                             on a callback]
                       Object const&  object =
                         static_cast<Object const&>(derivable.block());
                       assert(dynamic_cast<Object const*>(
@@ -1011,6 +1094,7 @@ namespace hole
                               continue;
                             }
                         }
+                      */
 
                       break;
                     }
@@ -1068,6 +1152,8 @@ namespace hole
           {
           case nucleus::neutron::ComponentObject:
             {
+              /* XXX[need to change the way validation works by relying
+                     on a callback]
               assert(dynamic_cast<const Object*>(block.get()) != nullptr);
               const Object* object = static_cast<const Object*>(block.get());
 
@@ -1093,6 +1179,7 @@ namespace hole
                   // validate the object.
                   object->validate(address, nullptr);
                 }
+              */
 
               break;
             }
@@ -1118,7 +1205,7 @@ namespace hole
       Machine::get(const nucleus::proton::Address&    address,
                    const nucleus::proton::Revision&    revision)
       {
-        ELLE_TRACE_FUNCTION(address, revision);
+        ELLE_DEBUG_METHOD(address, revision);
 
         // Check the machine is connected and has been authenticated
         // as a valid node of the network.
@@ -1137,7 +1224,7 @@ namespace hole
       void
       Machine::wipe(const nucleus::proton::Address&   address)
       {
-        ELLE_TRACE_FUNCTION(address);
+        ELLE_TRACE_METHOD(address);
 
         // depending on the machine's state.
         switch (this->_state)

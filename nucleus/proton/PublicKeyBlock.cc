@@ -57,9 +57,8 @@ namespace nucleus
       if ((this->network() != address.network()) ||
           (this->family() != address.family()) ||
           (this->component() != address.component()))
-        throw Exception(
-          elle::sprint("the address %s does not seem to represent the given "
-                       "block", address));
+        throw Exception("the address %s does not seem to represent the given "
+                        "block", address);
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -70,8 +69,9 @@ namespace nucleus
 
       // verify with the recorded address.
       if (address != self)
-        throw Exception("the address does not correspond to the "
-                        "block's public key");
+        throw Exception("the recorded address does not correspond "
+                        "to this block: given(%s) versus self(%s)",
+                        address, self);
 
       //
       // at this point the node knows that the recorded address corresponds
@@ -98,10 +98,8 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
-      std::cout << alignment << elle::io::Dumpable::Shift << "[K]" << std::endl;
-
-      if (this->_block_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the public key");
+      std::cout << alignment << elle::io::Dumpable::Shift << "[K] "
+                << this->_block_K << std::endl;
 
       return elle::Status::Ok;
     }

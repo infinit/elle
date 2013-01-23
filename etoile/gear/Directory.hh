@@ -4,10 +4,12 @@
 # include <elle/types.hh>
 
 # include <nucleus/proton/fwd.hh>
-# include <nucleus/neutron/Catalog.hh>
+# include <nucleus/proton/Limits.hh>
 
 # include <etoile/gear/Object.hh>
 # include <etoile/gear/Nature.hh>
+
+# include <etoile/nest/fwd.hh>
 
 # include <etoile/automaton/Directory.hh>
 
@@ -57,12 +59,12 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::proton::Contents<C>*     contents;
+      nucleus::proton::Porcupine<nucleus::neutron::Catalog>* contents_porcupine;
+      etoile::nest::Nest* contents_nest;
+      nucleus::proton::Limits contents_limits;
     };
 
   }
 }
-
-# include <etoile/gear/Directory.hxx>
 
 #endif

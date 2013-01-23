@@ -50,6 +50,23 @@
     return (this->BOOST_PP_CAT(_, _name_));                             \
   }
 
+# define ELLE_ATTRIBUTE_RW_ACCESSORS(_type_, _name_)                    \
+  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RX_ACCESSORS(_type_, _name_)                    \
+  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_WX_ACCESSORS(_type_, _name_)                    \
+  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RWX_ACCESSORS(_type_, _name_)                   \
+  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+
 # define ELLE_ATTRIBUTE_R(_type_, _name_)                               \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)
@@ -64,23 +81,46 @@
 
 # define ELLE_ATTRIBUTE_RW(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
-  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
-  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)
+  ELLE_ATTRIBUTE_RW_ACCESSORS(_type_, _name_)
 
 # define ELLE_ATTRIBUTE_RX(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
-  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
-  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+  ELLE_ATTRIBUTE_RX_ACCESSORS(_type_, _name_)
 
 # define ELLE_ATTRIBUTE_WX(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
-  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                             \
-  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+  ELLE_ATTRIBUTE_WX_ACCESSORS(_type_, _name_)
 
 # define ELLE_ATTRIBUTE_RWX(_type_, _name_)                             \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
-  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
-  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_RWX_ACCESSORS(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RP(_type_, _name_, _property_)                  \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_WP(_type_, _name_, _property_)                  \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_XP(_type_, _name_, _property_)                  \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
   ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RWP(_type_, _name_, _property_)                 \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_RW_ACCESSORS(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RXP(_type_, _name_, _property_)                 \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_RX_ACCESSORS(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_WXP(_type_, _name_, _property_)                 \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_WX_ACCESSORS(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RWXP(_type_, _name_, _property_)                \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_RWX_ACCESSORS(_type_, _name_)
 
 #endif

@@ -94,7 +94,7 @@ metalib_generate_identity(PyObject*,
       elle::String all, pub;
       bool res = (
           identity.Save(all) != elle::Status::Error &&
-          identity.pair.K().Save(pub) != elle::Status::Error
+          identity.pair().K().Save(pub) != elle::Status::Error
       );
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);

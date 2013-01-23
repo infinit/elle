@@ -6,6 +6,7 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Unique.hh>
 #include <elle/finally.hh>
+#include <elle/CrashReporter.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -115,7 +116,7 @@ namespace satellite
       new infinit::protocol::Serializer(elle::concurrency::scheduler(), *socket);
     Group::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Group::rpcs = new etoile::portal::RPC(*channels);
 
     // Authenticate.
@@ -184,7 +185,7 @@ namespace satellite
     GROUP_FINALLY_ACTION_DISCARD(identifier);
     nucleus::neutron::Range<nucleus::neutron::Fellow> fellows =
       Group::rpcs->groupconsult(identifier, index, size);
-    for (auto fellow: fellows.container)
+    for (auto& fellow: fellows)
       Group::display(*fellow);
   }
 
@@ -225,7 +226,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Group") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -377,7 +378,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -406,30 +407,16 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
-    // FIXME: do not re-parse the descriptor every time.
     lune::Descriptor descriptor(Infinit::User, Infinit::Network);
 
-    // Instanciate a Storage
-    elle::io::Path shelter_path(lune::Lune::Shelter);
-    shelter_path.Complete(elle::io::Piece("%NETWORK%", Infinit::Network));
-    hole::storage::Directory storage(shelter_path.string());
-
-    elle::io::Path passport_path(lune::Lune::Passport);
-    passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
-    elle::Passport passport;
-    passport.load(passport_path);
-
-    std::unique_ptr<hole::Hole> hole(
-      infinit::hole_factory(storage, passport, Infinit::authority()));
-
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Information") == elle::Status::True) &&
-        (Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Add") == elle::Status::True) &&
-        (Infinit::Parser->Test("Lookup") == elle::Status::True) &&
-        (Infinit::Parser->Test("Consult") == elle::Status::True) &&
-        (Infinit::Parser->Test("Remove") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True))
+    if ((Infinit::Parser->Test("Information") == true) &&
+        (Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Add") == true) &&
+        (Infinit::Parser->Test("Lookup") == true) &&
+        (Infinit::Parser->Test("Consult") == true) &&
+        (Infinit::Parser->Test("Remove") == true) &&
+        (Infinit::Parser->Test("Destroy") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -439,25 +426,25 @@ namespace satellite
       }
 
     // test the options.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = Group::OperationInformation;
 
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = Group::OperationCreate;
 
-    if (Infinit::Parser->Test("Add") == elle::Status::True)
+    if (Infinit::Parser->Test("Add") == true)
       operation = Group::OperationAdd;
 
-    if (Infinit::Parser->Test("Lookup") == elle::Status::True)
+    if (Infinit::Parser->Test("Lookup") == true)
       operation = Group::OperationLookup;
 
-    if (Infinit::Parser->Test("Consult") == elle::Status::True)
+    if (Infinit::Parser->Test("Consult") == true)
       operation = Group::OperationConsult;
 
-    if (Infinit::Parser->Test("Remove") == elle::Status::True)
+    if (Infinit::Parser->Test("Remove") == true)
       operation = Group::OperationRemove;
 
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = Group::OperationDestroy;
 
     // trigger the operation.
@@ -797,8 +784,6 @@ namespace satellite
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
 
-    delete hole.release();
-
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
       escape("unable to clean Infinit");
@@ -829,6 +814,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("fatal error: %s", e);
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8group", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -836,6 +822,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("fatal error: %s", e.what());
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8group", e.what());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -843,6 +830,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     {
       ELLE_ERR("unkown fatal error");
       std::cerr << argv[0] << ": unknown fatal error" << std::endl;
+      elle::crash::report("8group");
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -856,6 +844,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::Handler("group", false)  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<elle::Status> main(sched, "main",
                                       boost::bind(&_main, argc, argv));

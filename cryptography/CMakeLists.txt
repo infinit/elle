@@ -10,5 +10,4 @@ add_library(cryptography
   source/cryptography/random.cc
   source/cryptography/SecretKey.cc
   source/cryptography/Seed.cc
-  source/cryptography/Signature.cc
 )

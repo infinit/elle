@@ -26,7 +26,8 @@ namespace hole
       /// Create a Directory storage.
       ///
       /// @param path The directory where to stock blocks.
-      Directory(std::string const& root);
+      Directory(nucleus::proton::Network const& network,
+                std::string const& root);
       /// Delete a directory.
       ~Directory();
     private:
@@ -52,12 +53,12 @@ namespace hole
       virtual
       void
       _store(const nucleus::proton::Address& address,
-             const nucleus::proton::ImmutableBlock& block) const;
+             const nucleus::proton::ImmutableBlock& block);
       /// The overriden store implementation.
       virtual
       void
       _store(const nucleus::proton::Address& address,
-             const nucleus::proton::MutableBlock& block) const;
+             const nucleus::proton::MutableBlock& block);
       /// The overriden load implementation.
       virtual
       std::unique_ptr<nucleus::proton::Block>
@@ -70,7 +71,7 @@ namespace hole
       /// The overriden erase implementation.
       virtual
       void
-      _erase(nucleus::proton::Address const& address) const;
+      _erase(nucleus::proton::Address const& address);
 
     private:
       /*----------.

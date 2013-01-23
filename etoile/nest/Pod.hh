@@ -1,82 +1,81 @@
 #ifndef ETOILE_NEST_POD_HH
-#define ETOILE_NEST_POD_HH
+# define ETOILE_NEST_POD_HH
 
-#include <elle/types.hh>
-#include <nucleus/nucleus.hh> // XXX fwd.hh
-#include <XXX/Placement.hh> // XXX fwd.hh
-#include <XXX/Handle.hh> // XXX fwd.hh
+# include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Printable.hh>
+# include <elle/utility/Time.hh>
+
+# include <nucleus/proton/fwd.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace etoile
 {
   namespace nest
   {
-
-    ///
-    /// XXX
-    ///
+    /// Provide a overlay on top of an egg, especially by holding the
+    /// state of the egg's block to know whether it has been detached
+    /// from the nest or if it is still attached.
     class Pod:
-      public elle::radix::Object
+      public elle::Printable,
+      private boost::noncopyable
     {
+      /*-------------.
+      | Enumerations |
+      `-------------*/
     public:
-      //
-      // enumerations
-      //
-      enum Nature
+      /// Define whether the block is attached to the nest.
+      enum class State
         {
-          NatureUnknown,
-          NatureVolatile,
-          NaturePersistent,
-          NatureOrphan
+          attached,
+          detached
         };
 
-      enum State
-        {
-          StateUnloaded,
-          StateLoaded
-        };
+      /*-------------.
+      | Construction |
+      `-------------*/
+    public:
+      /// Construct a pod from the given egg whose ownership is lost
+      /// in favor of the pod.
+      Pod(std::shared_ptr<nucleus::proton::Egg>& egg);
+      /// Likewise but through a rvalue.
+      Pod(std::shared_ptr<nucleus::proton::Egg>&& egg);
 
-      //
-      // constructors & destructors
-      //
-      Pod();
-      Pod(const nucleus::Placement&,
-          nucleus::Block*);
-      Pod(const nucleus::Placement&,
-          const nucleus::Address&);
-      Pod(const Pod&);
-      ~Pod();
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      ELLE_OPERATOR_NO_ASSIGNMENT(Pod);
 
-      //
-      // methods
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
 
-      elle::Status              Load(nucleus::Handle&);
-      elle::Status              Unload(nucleus::Handle&);
-
-      //
-      // interfaces
-      //
-
-      // object
-      declare(Pod);
-
-      // dumpable
-      elle::Status              Dump(const elle::Natural32 = 0) const;
-
-      //
-      // attributes
-      //
-      Nature                    nature;
-      State                     state;
-
-      nucleus::Placement        placement;
-      nucleus::Address          address;
-
-      nucleus::Block*           block;
-
-      elle::Natural32           counter;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_RW(State, state);
+      /// The last time the block has been accessed..
+      ELLE_ATTRIBUTE_RW(elle::utility::Time, accessed);
+      /// The egg containing the block and its information.
+      ELLE_ATTRIBUTE_RX(std::shared_ptr<nucleus::proton::Egg>, egg);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Pod::State const state);
   }
 }
 

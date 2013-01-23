@@ -3,9 +3,7 @@
 
 namespace nucleus
 {
-
   class Derivable;
-
 }
 
 # include <nucleus/proton/fwd.hh>

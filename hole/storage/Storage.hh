@@ -1,12 +1,15 @@
 #ifndef HOLE_STORAGE_STORAGE_HH
 # define HOLE_STORAGE_STORAGE_HH
 
-# include <string>
+# include <elle/attribute.hh>
 
 # include <nucleus/proton/ImmutableBlock.hh>
 # include <nucleus/proton/MutableBlock.hh>
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Revision.hh>
+# include <nucleus/proton/Network.hh>
+
+# include <string>
 
 namespace hole
 {
@@ -30,7 +33,8 @@ namespace hole
     `-------------*/
     public:
       /// Create a Storage.
-      Storage();
+      Storage(nucleus::proton::Network const& network);
+
       /// Destroy a Storage.
       virtual
       ~Storage();
@@ -41,20 +45,20 @@ namespace hole
     public:
       /// Whether a block is stored for the given identifier.
       bool
-      exist(Address const&  identifier,
+      exist(Address const& identifier,
             Revision const& revision = Revision::Last) const;
       /// Store an immutable block in the storage.
       //
       /// \throw if block already exists.
       void
-      store(const nucleus::proton::Address&        address,
-            const nucleus::proton::ImmutableBlock& block) const;
+      store(const nucleus::proton::Address& address,
+            const nucleus::proton::ImmutableBlock& block);
       /// Store a mutable block in the storage.
       ///
       /// \throw if block already exists.
       void
-      store(const nucleus::proton::Address&      address,
-            const nucleus::proton::MutableBlock& block) const;
+      store(const nucleus::proton::Address& address,
+            const nucleus::proton::MutableBlock& block);
       /// Retrieve a block.
       ///
       /// \throw if address doesn't match any block.
@@ -64,17 +68,17 @@ namespace hole
       ///
       /// \throw if address doesn't match any block.
       std::unique_ptr<nucleus::proton::Block>
-      load(nucleus::proton::Address const&  address,
+      load(nucleus::proton::Address const& address,
           nucleus::proton::Revision const& revision) const;
       /// Destroy a specific block.
       ///
       /// \throw if address doesn't match any block.
       void
-      erase(nucleus::proton::Address const& address) const;
+      erase(nucleus::proton::Address const& address);
 
 
     protected:
-      std::string _identifier(Address const& addr,
+      std::string _identifier(Address const& address,
                               Revision const& revision = Revision::Last) const;
 
     /*----------.
@@ -103,14 +107,14 @@ namespace hole
       virtual
       void
       _store(const nucleus::proton::Address& address,
-             const nucleus::proton::ImmutableBlock& block) const = 0;
+             const nucleus::proton::ImmutableBlock& block) = 0;
       /// Implementation of store for mb to be overridden by subclasses.
       ///
       /// \see store.
       virtual
       void
       _store(const nucleus::proton::Address& address,
-             const nucleus::proton::MutableBlock& block) const = 0;
+             const nucleus::proton::MutableBlock& block) = 0;
       /// Implementation of get to be overridden by subclasses.
       ///
       /// \set get.
@@ -129,7 +133,13 @@ namespace hole
       /// \set erase.
       virtual
       void
-      _erase(nucleus::proton::Address const& address) const = 0;
+      _erase(nucleus::proton::Address const& address) = 0;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(nucleus::proton::Network, network);
     };
   }
 }

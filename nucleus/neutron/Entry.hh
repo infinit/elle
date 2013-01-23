@@ -3,9 +3,12 @@
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
+# include <elle/attribute.hh>
 # include <elle/Printable.hh>
 
+# include <nucleus/proton/Footprint.hh>
 # include <nucleus/proton/Address.hh>
+# include <nucleus/neutron/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -30,6 +33,7 @@ namespace nucleus
       //
       // constructors & destructors
       //
+    public:
       Entry();
       Entry(const elle::String&,
             const proton::Address&);
@@ -41,7 +45,7 @@ namespace nucleus
       elle::Boolean
       operator ==(Entry const& other) const;
       ELLE_OPERATOR_NEQ(Entry);
-      ELLE_OPERATOR_ASSIGNMENT(Entry); // XXX
+      ELLE_OPERATOR_ASSIGNMENT(Entry);
 
       //
       // interfaces
@@ -54,16 +58,21 @@ namespace nucleus
       virtual
       void
       print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Entry);
+      ELLE_SERIALIZE_FRIEND_FOR(Catalog);
       // rangeable
       virtual
       elle::String const&
-      symbol();
+      symbol() const;
 
       //
       // attributes
       //
-      elle::String      name;
-      proton::Address   address;
+    private:
+      ELLE_ATTRIBUTE_RW(elle::String, name); // XXX[method rename instead: update footprint]
+      ELLE_ATTRIBUTE_R(proton::Address, address);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
   }

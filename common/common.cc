@@ -11,8 +11,6 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Lune.hh>
-
 #include <elle/assert.hh>
 
 #include <elle/idiom/Close.hh>
@@ -341,24 +339,10 @@ namespace common
 
   //- scheduled for deletion --------------------------------------------------
 
-  static
   std::string
-  _passport_path(std::string const& user)
-  {
-    ELLE_ASSERT(!lune::Lune::Passport.string.empty());
-
-    elle::io::Path passport_path(lune::Lune::Passport);
-    passport_path.Complete(elle::io::Piece{"%USER%", user});
-
-    return passport_path.string();
-  }
-
-  std::string const&
   passport_path(std::string const& user)
   {
-    static std::string const path(_passport_path(user));
-
-    return path;
+    return path::join(infinit::user_directory(user), user + ".ppt");
   }
 
   namespace watchdog
@@ -428,6 +412,25 @@ namespace common
           elle::sprint(COMMON_DEFAULT_LONGINUS_PORT)
       );
       return std::stoi(port_string);
+    }
+  }
+
+  namespace metrics
+  {
+    std::string const&
+    id_path()
+    {
+      static std::string const id_path = path::join(common::infinit::home(),
+                                                    "ga.id");
+      return id_path;
+    }
+
+    std::string const&
+    google_server()
+    {
+      static std::string const analytics = "www.google-analytics.com";
+
+      return analytics;
     }
   }
 }

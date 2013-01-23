@@ -43,8 +43,6 @@ add_library(elle ${LINK_METHOD}
   io/Piece.cc
   io/Path.cc
 
-  types.cc
-
   concurrency/Program.cc
   concurrency/Scheduler.cc
 
@@ -54,6 +52,8 @@ add_library(elle ${LINK_METHOD}
 
   os/getenv.cc
   os/path.cc
+
+  system/Process.cc
 
   utility/Duration.cc
   # XXX utility/HTTP.cc
@@ -80,6 +80,7 @@ add_library(elle ${LINK_METHOD}
   serialize/ArchiveMode.cc
   serialize/Base64Archive.cc
   serialize/extract.cc
+  serialize/insert.cc
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
 
@@ -87,6 +88,7 @@ add_library(elle ${LINK_METHOD}
 
   print.cc
 
+  CrashReporter.cc
   log.cc
 
   log/Logger.cc

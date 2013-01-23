@@ -17,6 +17,7 @@ add_library(hole ${LINK_METHOD}
   implementations/slug/Manifest.cc
 
   storage/Directory.cc
+  storage/Memory.cc
   storage/Storage.cc
 
 # XXX

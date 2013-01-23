@@ -27,6 +27,8 @@ namespace lune
   /// default constructor.
   ///
   Identity::Identity():
+    _pair(nullptr),
+    _signature(nullptr),
     cipher(nullptr)
   {
   }
@@ -36,9 +38,9 @@ namespace lune
   ///
   Identity::~Identity()
   {
-    // release the cipher.
-    if (this->cipher != nullptr)
-      delete this->cipher;
+    delete this->_signature;
+    delete this->_pair;
+    delete this->cipher;
   }
 
 //
@@ -53,16 +55,11 @@ namespace lune
                    const elle::String& user_name,
                    cryptography::KeyPair const& pair)
   {
-    // One does not simply ...
-    assert(pair.k().key() != nullptr);
-    assert(pair.K().key() != nullptr);
-
     this->_id = user_id;
     this->name = user_name;
-    this->pair = pair;
 
-    assert(this->pair.k().key() != nullptr);
-    assert(this->pair.K().key() != nullptr);
+    delete this->_pair;
+    this->_pair = new cryptography::KeyPair{pair};
 
     return elle::Status::Ok;
   }
@@ -72,19 +69,13 @@ namespace lune
   ///
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    cryptography::SecretKey     key;
+    cryptography::SecretKey key(pass);
 
-    // create a secret key with this pass.
-    if (key.Create(pass) == elle::Status::Error)
-      escape("unable to create the secret key");
+    ELLE_ASSERT(this->_pair != nullptr);
 
     // allocate the cipher.
-    this->cipher = new cryptography::Cipher;
-
-    // encrypt the authority.
-    if (key.Encrypt(this->pair,
-                    *this->cipher) == elle::Status::Error)
-      escape("unable to encrypt the key pair");
+    this->cipher = new cryptography::Cipher{
+      key.encrypt(*this->_pair)};
 
     return elle::Status::Ok;
   }
@@ -94,20 +85,16 @@ namespace lune
   ///
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    cryptography::SecretKey     key;
-
     // check the cipher.
     if (this->cipher == nullptr)
       escape("unable to decrypt an unencrypted identity");
 
-    // create a secret key with this pass.
-    if (key.Create(pass) == elle::Status::Error)
-      escape("unable to create the secret key");
+    cryptography::SecretKey key{pass};
 
     // decrypt the authority.
-    if (key.Decrypt(*this->cipher,
-                    this->pair) == elle::Status::Error)
-      escape("unable to decrypt the key pair");
+    delete this->_pair;
+    this->_pair = new cryptography::KeyPair{
+      key.decrypt<cryptography::KeyPair>(*this->cipher)};
 
     return elle::Status::Ok;
   }
@@ -140,10 +127,12 @@ namespace lune
     if (this->cipher == nullptr)
       escape("unable to seal an unencrypted identity");
 
-    // sign the pair with the authority.
-    this->signature =
+    // sign with the authority.
+    delete this->_signature;
+    this->_signature = nullptr;
+    this->_signature = new cryptography::Signature{
       authority.k->sign(
-        elle::serialize::make_tuple(this->_id, this->name, *this->cipher));
+        elle::serialize::make_tuple(this->_id, this->name, *this->cipher))};
 
     return elle::Status::Ok;
   }
@@ -160,11 +149,13 @@ namespace lune
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
-    if (authority.K.Verify(
-          this->signature,
+    ELLE_ASSERT(this->_signature != nullptr);
+
+    if (authority.K().verify(
+          *this->_signature,
           elle::serialize::make_tuple(this->_id,
                                       this->name,
-                                      *this->cipher)) == elle::Status::Error)
+                                      *this->cipher)) == false)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
@@ -210,18 +201,24 @@ namespace lune
               << "[Name] " << this->name << std::endl;
 
     // dump the pair.
-    if (this->pair.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the pair");
+    if (this->_pair != nullptr)
+      {
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Pair] " << this->_pair << std::endl;
+      }
 
     // dump the signature.
-    if (this->signature.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the signature");
+    if (this->_signature != nullptr)
+      {
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Signature] " << *this->_signature << std::endl;
+      }
 
     // dump the cipher.
     if (this->cipher != nullptr)
       {
-        if (this->cipher->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the cipher");
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << "[Cipher] " << this->cipher << std::endl;
       }
 
     return elle::Status::Ok;
@@ -234,24 +231,20 @@ namespace lune
   void
   Identity::load(elle::String const& user_id)
   {
-    elle::io::Path path{
-        Identity::_path(user_id)
-    };
-
-    this->load(path);
+    this->load(elle::io::Path{Identity::_path(user_id)});
   }
 
   void
   Identity::store() const
   {
     ELLE_TRACE("store identity %s", *this);
-    this->store(Identity::_path(this->_id));
+    this->store(elle::io::Path{Identity::_path(this->_id)});
   }
 
   void
   Identity::erase(elle::String const& user_id)
   {
-    elle::concept::Fileable<>::erase(Identity::_path(user_id));
+    elle::concept::Fileable<>::erase(elle::io::Path{Identity::_path(user_id)});
   }
 
   elle::Boolean

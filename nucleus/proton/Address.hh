@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_ADDRESS_HH
 
 # include <elle/Printable.hh>
+# include <elle/io/Dumpable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/construct.hh>
 
@@ -22,7 +23,6 @@ namespace nucleus
 {
   namespace proton
   {
-
     /// This class is one of the most fundamental of the nucleus library
     /// as it is used to identify a block in the storage layer.
     ///
@@ -40,6 +40,7 @@ namespace nucleus
     /// in the generation of the address' digest.
     class Address:
       public elle::Printable,
+      public elle::io::Dumpable,
       public elle::concept::MakeUniquable<Address>
     {
       /*----------.
@@ -59,13 +60,6 @@ namespace nucleus
       static
       Address const&
       null();
-      /// Return a not-yet-used address i.e an address with a irrelevant
-      /// value (for now) but whose state, once serialized, should reflect
-      /// the one of a valid address; the size of the address once serialized
-      /// should be extremely close (or equal) to the one of a valid address.
-      static
-      Address const&
-      some();
 
       /*-------------.
       | Enumerations |
@@ -74,7 +68,6 @@ namespace nucleus
       enum class Type
       {
         null,
-        some,
         valid
       };
 
@@ -83,16 +76,13 @@ namespace nucleus
       `-------------*/
     public:
       Address(); // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT(Address)
-      {
-        _valid = nullptr;
-      }
       template <typename... T>
       Address(Network const& network,
               const Family&,
               const neutron::Component&,
               const T&...);
       Address(Address const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Address);
       ~Address();
     private:
       Address(Type const type);
@@ -143,15 +133,15 @@ namespace nucleus
       void
       print(std::ostream& stream) const;
 
-    public:
       /*-----------.
-      | structures |
+      | Structures |
       `-----------*/
+    public:
       struct Valid
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Network const& network,
               Family const& family,
               neutron::Component const& component,
@@ -177,6 +167,13 @@ namespace nucleus
       ELLE_ATTRIBUTE(Valid*, valid);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Address::Type const type);
   }
 }
 

@@ -5,6 +5,10 @@
 
 # include <etoile/gear/fwd.hh>
 
+// XXX
+#define ENSEMBLE_SECRET_KEY_LENGTH 13
+#define ENSEMBLE_SECRET_KEY "no-secret-key"
+
 namespace etoile
 {
   namespace automaton

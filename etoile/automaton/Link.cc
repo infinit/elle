@@ -7,6 +7,10 @@
 
 #include <agent/Agent.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Link");
+
 namespace etoile
 {
   namespace automaton
@@ -22,10 +26,14 @@ namespace etoile
     elle::Status        Link::Create(
                           gear::Link&                           context)
     {
-      context.object =
+      ELLE_TRACE_FUNCTION(context);
+
+      ELLE_ASSERT(context.object == nullptr);
+
+      context.object.reset(
         new nucleus::neutron::Object(nucleus::proton::Network(Infinit::Network),
-                                     agent::Agent::Identity.pair.K(),
-                                     nucleus::neutron::Genre::link);
+                                     agent::Agent::Identity.pair().K(),
+                                     nucleus::neutron::Genre::link));
 
       nucleus::proton::Address address(context.object->bind());
 
@@ -46,6 +54,8 @@ namespace etoile
     elle::Status        Link::Load(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
@@ -71,6 +81,8 @@ namespace etoile
                           gear::Link&                           context,
                           const path::Way&                      way)
     {
+      ELLE_TRACE_FUNCTION(context, way);
+
       nucleus::neutron::Size size;
 
       // determine the rights.
@@ -86,7 +98,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -109,7 +121,7 @@ namespace etoile
             context.object->access(),
             context.object->owner_token()) == elle::Status::Error)
         escape("unable to update the object");
-
+      */
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -123,6 +135,8 @@ namespace etoile
                           gear::Link&                           context,
                           path::Way&                            way)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -136,7 +150,7 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
-
+      /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == nullptr)
@@ -146,7 +160,7 @@ namespace etoile
       // resolve the link.
       if (context.contents->content->Resolve(way.path) == elle::Status::Error)
         escape("unable to resolve the link");
-
+      */
       return elle::Status::Ok;
     }
 
@@ -157,6 +171,12 @@ namespace etoile
     elle::Status        Link::Discard(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
+      // discard the object-related information.
+      if (Object::Discard(context) == elle::Status::Error)
+        escape("unable to discard the object");
+
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -170,6 +190,8 @@ namespace etoile
     elle::Status        Link::Destroy(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -178,10 +200,6 @@ namespace etoile
       if (context.rights.role != nucleus::neutron::Object::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this link");
-
-      // open the contents.
-      if (Contents::Open(context) == elle::Status::Error)
-        escape("unable to open the contents");
 
       // destroy the contents.
       if (Contents::Destroy(context) == elle::Status::Error)
@@ -204,6 +222,8 @@ namespace etoile
     elle::Status        Link::Store(
                           gear::Link&                           context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // close the contents.
       if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");

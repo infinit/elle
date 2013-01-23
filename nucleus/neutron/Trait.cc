@@ -1,13 +1,12 @@
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/io/Dumpable.hh>
+#include <elle/serialize/footprint.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
     /*---------------.
     | Static Methods |
     `---------------*/
@@ -25,20 +24,25 @@ namespace nucleus
     `-------------*/
 
     Trait::Trait():
-      _valid(nullptr)
+      _valid(nullptr),
+      _footprint(0)
     {
     }
 
     Trait::Trait(elle::String const& name,
                  elle::String const& value):
       _type(Type::valid),
-      _valid(new Valid(name, value))
+      _valid(new Valid(name, value)),
+      _footprint(0)
     {
+      // Compute the initial footprint.
+      this->_footprint = elle::serialize::footprint(*this);
     }
 
     Trait::Trait(Trait const& other):
       _type(other._type),
-      _valid(nullptr)
+      _valid(nullptr),
+      _footprint(other._footprint)
     {
       if (other._valid != nullptr)
         this->_valid = new Valid(other._valid->name(),
@@ -47,7 +51,8 @@ namespace nucleus
 
     Trait::Trait(Type const type):
       _type(type),
-      _valid(nullptr)
+      _valid(nullptr),
+      _footprint(0)
     {
       switch (this->_type)
         {
@@ -65,6 +70,9 @@ namespace nucleus
         default:
           throw Exception("unknown trait type '%s'", this->_type);
         }
+
+      // Compute the initial footprint.
+      this->_footprint = elle::serialize::footprint(*this);
     }
 
     Trait::~Trait()
@@ -96,6 +104,23 @@ namespace nucleus
       return (this->_valid->name());
     }
 
+    void
+    Trait::name(elle::String const& name)
+    {
+      ELLE_ASSERT(this->_type == Type::valid);
+      ELLE_ASSERT(this->_valid != nullptr);
+
+      // Substract the current name's footprint.
+      ELLE_ASSERT(this->_footprint >= elle::serialize::footprint(name));
+      this->_footprint -= elle::serialize::footprint(name);
+
+      // Update the name;
+      this->_valid->name(name);
+
+      // Add the new name's footprint.
+      this->_footprint += elle::serialize::footprint(name);
+    }
+
     elle::String const&
     Trait::value() const
     {
@@ -106,12 +131,22 @@ namespace nucleus
     }
 
     void
-    Trait::value(elle::String const& value) const
+    Trait::value(elle::String const& value)
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
 
+      // Substract the current value's footprint.
+      ELLE_ASSERT(this->_footprint >=
+                  elle::serialize::footprint(this->_valid->value()));
+      this->_footprint -=
+        elle::serialize::footprint(this->_valid->value());
+
+      // Update the value;
       this->_valid->value(value);
+
+      // Add the new value's footprint.
+      this->_footprint += elle::serialize::footprint(value);
     }
 
     /*----------.
@@ -140,43 +175,6 @@ namespace nucleus
       return (true);
     }
 
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    elle::Status        Trait::Dump(elle::Natural32             margin) const
-    {
-      elle::String      alignment(margin, ' ');
-
-      switch (this->_type)
-        {
-        case Type::null:
-          {
-            std::cout << alignment << "[Trait] " << elle::none << std::endl;
-
-            break;
-          }
-        case Type::valid:
-          {
-            ELLE_ASSERT(this->_valid != nullptr);
-
-            std::cout << alignment << "[Trait]" << std::endl;
-
-            std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Name] " << this->_valid->name() << std::endl;
-
-            std::cout << alignment << elle::io::Dumpable::Shift
-                      << "[Value] " << this->_valid->value() << std::endl;
-
-            break;
-          }
-        default:
-          throw Exception("unknown trait type '%s'", this->_type);
-        }
-
-      return elle::Status::Ok;
-    }
-
     /*----------.
     | Printable |
     `----------*/
@@ -188,18 +186,20 @@ namespace nucleus
         {
         case Type::null:
           {
-            stream << "trait(null)";
+            stream << "null";
             break;
           }
         case Type::valid:
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            stream << "trait("
+            stream << "\""
                    << this->_valid->name()
-                   << ", "
+                   << "\""
+                   << ": "
+                   << "\""
                    << this->_valid->value()
-                   << ")";
+                   << "\"";
 
             break;
           }
@@ -213,7 +213,7 @@ namespace nucleus
     `----------*/
 
     elle::String const&
-    Trait::symbol()
+    Trait::symbol() const
     {
       ELLE_ASSERT(this->_type == Type::valid);
       ELLE_ASSERT(this->_valid != nullptr);
@@ -221,5 +221,34 @@ namespace nucleus
       return (this->_valid->name());
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Trait::Type const type)
+    {
+      switch (type)
+        {
+        case Trait::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Trait::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown trait type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

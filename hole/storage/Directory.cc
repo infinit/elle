@@ -1,14 +1,16 @@
 #include <sys/stat.h>
 
-#include <elle/concept/Fileable.hh>
 #include <elle/log.hh>
+#include <elle/finally.hh>
+#include <elle/concept/Fileable.hh>
 #include <elle/serialize/Serializable.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/extract.hh>
 
 #include <hole/storage/Directory.hh>
 
-#include <nucleus/nucleus.hh>
+#include <nucleus/factory.hh>
 #include <nucleus/fwd.hh>
-
 
 ELLE_LOG_COMPONENT("infinit.hole.storage.Directory");
 
@@ -20,8 +22,9 @@ namespace hole
     | Construction |
     `-------------*/
 
-    Directory::Directory(std::string const& root):
-      Storage(),
+    Directory::Directory(nucleus::proton::Network const& network,
+                         std::string const& root):
+      Storage(network),
       _root(root)
     {}
 
@@ -62,7 +65,7 @@ namespace hole
 
     void
     Directory::_store(const nucleus::proton::Address& address,
-                      const nucleus::proton::ImmutableBlock& block) const
+                      const nucleus::proton::ImmutableBlock& block)
     {
       elle::io::Path path(this->path(address));
 
@@ -70,19 +73,13 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to dig the path '%s'.", path));
 
-      std::ofstream out(path.string(),
-                        std::ios_base::out | std::ios_base::binary);
-
-      if (!out.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      block.serialize(out);
+      // Serialize the block.
+      elle::serialize::to_file(path.string()) << block;
     }
 
     void
     Directory::_store(const nucleus::proton::Address& address,
-                      const nucleus::proton::MutableBlock& block) const
+                      const nucleus::proton::MutableBlock& block)
 
     {
       // Generate path.
@@ -93,16 +90,8 @@ namespace hole
         throw std::runtime_error(
           elle::sprintf("Unable to dig the path '%s'.", path));
 
-      // Open ostream to selected file.
-      std::ofstream out(path.string(),
-                        std::ios_base::out | std::ios_base::binary);
-
-      // Check stream integrity.
-      if (!out.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
-
-      block.serialize(out);
+      // Serialize the block.
+      elle::serialize::to_file(path.string()) << block;
     }
 
     std::unique_ptr<nucleus::proton::Block>
@@ -113,19 +102,15 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::ImmutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::ImmutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::ImmutableBlock>(
           address.component())};
 
-      // Open an input stream.
-      std::ifstream in(path.string(),
-                       std::ios_base::in | std::ios_base::binary);
+      ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Check stream integrity.
-      if (!in.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
+      // Deserialize the block.
+      elle::serialize::from_file(path.string()) >> *block;
 
-      block->deserialize(in);
+      ELLE_FINALLY_ABORT(block);
 
       return std::unique_ptr<nucleus::proton::Block>(block);
     }
@@ -139,25 +124,21 @@ namespace hole
 
       // Create an empty block.
       nucleus::proton::MutableBlock* block{
-        nucleus::factory().allocate<nucleus::proton::MutableBlock>(
+        nucleus::factory::block().allocate<nucleus::proton::MutableBlock>(
           address.component())};
 
-      // Open an input stream.
-      std::ifstream in(path.string(),
-                       std::ios_base::in | std::ios_base::binary);
+      ELLE_FINALLY_ACTION_DELETE(block);
 
-      // Check stream integrity.
-      if (!in.good())
-        throw std::runtime_error(
-          elle::sprintf("Unable to open the file '%s'.", path));
+      // Deserialize the block.
+      elle::serialize::from_file(path.string()) >> *block;
 
-      block->deserialize(in);
+      ELLE_FINALLY_ABORT(block);
 
       return std::unique_ptr<nucleus::proton::Block>(block);
     }
 
     void
-    Directory::_erase(nucleus::proton::Address const& address) const
+    Directory::_erase(nucleus::proton::Address const& address)
     {
       // Get block path.
       elle::io::Path path(this->path(address));

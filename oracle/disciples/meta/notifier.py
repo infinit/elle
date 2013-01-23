@@ -5,7 +5,7 @@ import json
 
 import meta.page
 import database
-from meta.constants import *
+from meta import conf
 
 from twisted.python import log
 import time
@@ -16,7 +16,9 @@ FILE_TRANSFER = 7
 FILE_TRANSFER_STATUS = 11
 USER_STATUS = 8
 MESSAGE = 217
-LOGGED_IN = 666
+LOGGED_IN = -666
+NETWORK_CHANGED = 128
+
 
 class Notifier(object):
     def open(self):
@@ -35,7 +37,7 @@ class TrophoniusNotify(Notifier):
         self.conn = socket.socket()
 
     def open(self):
-        self.conn.connect(("localhost", int(TROPHONIUS_LISTEN_SSL_PORT)))
+        self.conn.connect((conf.TROPHONIUS_HOST, int(conf.TROPHONIUS_LISTEN_SSL_PORT)))
 
     def send_notification(self, message):
         if isinstance(message, dict):
@@ -81,6 +83,7 @@ class TrophoniusNotify(Notifier):
         if not isinstance(recipients_id, list):
             return self.notify_one(notification_type, recipients_id, message)
 
+        print("Notifying some", recipients_id)
         # Recipients empty.
         if not recipients_id:
             return

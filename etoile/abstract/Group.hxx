@@ -1,6 +1,7 @@
 #ifndef ETOILE_ABSTRACT_GROUP_HXX
 # define ETOILE_ABSTRACT_GROUP_HXX
 
+# include <elle/serialize/Pointer.hh>
 # include <elle/utility/Time.hh>
 
 # include <cryptography/PublicKey.hh>
@@ -16,9 +17,9 @@ ELLE_SERIALIZE_SIMPLE(etoile::abstract::Group,
   archive & value.timestamps.creation;
   archive & value.timestamps.modification;
   archive & value.size;
-  archive & value.manager;
+  archive & elle::serialize::alive_pointer(value.manager);
   archive & value.revision;
-  archive & value.pass_K;
+  archive & elle::serialize::alive_pointer(value.pass_K);
 }
 
 #endif

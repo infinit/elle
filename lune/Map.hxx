@@ -59,7 +59,7 @@ namespace lune
     Map<T>::Entry*      entry;
 
     // check if the entry exists.
-    if (this->Lookup(name) == elle::Status::True)
+    if (this->Lookup(name) == true)
       escape("this name is already registered");
 
     // allocate a new entry.
@@ -67,7 +67,8 @@ namespace lune
 
     // create the entry.
     entry->name = name;
-    entry->value = value;
+    // XXX[to fix for dictionary to work] entry->value = value;
+    ELLE_ASSERT(false && "to fix with a pointer to value for copying");
 
     // add a new entry.
     this->container.push_back(entry);
@@ -79,7 +80,7 @@ namespace lune
   /// this method returns the maped value.
   ///
   template <typename T>
-  elle::Status          Map<T>::Lookup(const elle::String&      name,
+  elle::Boolean         Map<T>::Lookup(const elle::String&      name,
                                        T*&                      value)
   {
     Map<T>::Scoutor     scoutor;
@@ -97,18 +98,18 @@ namespace lune
             // return the value.
             value = &entry->value;
 
-            return elle::Status::True;
+            return true;
           }
       }
 
-    return elle::Status::False;
+    return false;
   }
 
   ///
   /// this method returns the mapped name.
   ///
   template <typename T>
-  elle::Status          Map<T>::Lookup(const T&                 value,
+  elle::Boolean         Map<T>::Lookup(const T&                 value,
                                        elle::String*&           name)
   {
     Map<T>::Scoutor     scoutor;
@@ -126,11 +127,11 @@ namespace lune
             // return the name.
             name = &entry->name;
 
-            return elle::Status::True;
+            return true;
           }
       }
 
-    return elle::Status::False;
+    return false;
   }
 
   ///
@@ -198,10 +199,6 @@ namespace lune
         // dump the name.
         std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
                   << entry->name << std::endl;
-
-        // dump the value.
-        if (entry->value.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the value");
       }
 
     return elle::Status::Ok;

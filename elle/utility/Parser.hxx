@@ -49,7 +49,6 @@ namespace elle
     /// these macro-function calls actually generate the specialized-templates
     /// for every basic type of the elle library.
     ///
-    ParserDeclare(Null);
     ParserDeclare(Boolean);
     ParserDeclare(Character);
     ParserDeclare(Real);
@@ -77,7 +76,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      if (this->Locate(name, option) == Status::False)
+      if (this->Locate(name, option) == false)
         throw ParserException("unable to locate the option '%s'", name.c_str());
 
       if (option->state == Parser::StateDeactivated)
@@ -115,7 +114,7 @@ namespace elle
                                       const T&                  D)
     {
       Option* option;
-      if (this->Locate(name, option) == Status::False || option->value == nullptr)
+      if (this->Locate(name, option) == false || option->value == nullptr)
         {
           value = D;
           return elle::Status::Ok;

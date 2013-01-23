@@ -1,5 +1,5 @@
 
-set(ELLE_LIB 
+set(ELLE_LIB
     elle
     ${Boost_LIBRARIES}
     )
@@ -16,4 +16,5 @@ add_subdirectory(network)
 add_subdirectory(io)
 add_subdirectory(serialize)
 add_subdirectory(standalone)
+add_subdirectory(system)
 add_subdirectory(utility)

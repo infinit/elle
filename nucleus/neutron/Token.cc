@@ -114,7 +114,7 @@ namespace nucleus
         {
         case Type::null:
           {
-            std::cout << alignment << "[Token] " << elle::none << std::endl;
+            std::cout << alignment << "[Token] " << "none" << std::endl;
 
             break;
           }
@@ -122,10 +122,10 @@ namespace nucleus
           {
             ELLE_ASSERT(this->_valid != nullptr);
 
-            std::cout << alignment << "[Token] " << std::endl;
+            std::cout << alignment << "[Token] "
+                      << this->_valid->code() << std::endl;
 
-            if (this->_valid->code().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the parent Code class");
+            break;
           }
         default:
           throw Exception("unknown token type '%s'", this->_type);
@@ -163,5 +163,34 @@ namespace nucleus
         }
     }
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Token::Type const type)
+    {
+      switch (type)
+        {
+        case Token::Type::null:
+          {
+            stream << "null";
+            break;
+          }
+        case Token::Type::valid:
+          {
+            stream << "valid";
+            break;
+          }
+        default:
+          {
+            throw Exception("unknown token type: '%s'",
+                            static_cast<int>(type));
+          }
+        }
+
+      return (stream);
+    }
   }
 }

@@ -5,6 +5,7 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/Path.hh>
 #include <elle/system/system.hh>
+#include <elle/CrashReporter.hh>
 
 #include <reactor/network/tcp-socket.hh>
 
@@ -37,6 +38,14 @@
 #include <fstream>
 
 ELLE_LOG_COMPONENT("infinit.satellites.transfer.Transfer");
+
+// Through this hack, the etoile's portal API is used for triggering
+// specific RPCs for reading/writing files without having to transfer
+// the content through a socket.
+//
+// XXX[to remove as soon as possible, especially when etoile will be
+//     instantiable]
+#define TRANSFER_UGLY_PERFORMANCE_HACK
 
 namespace satellite
 {
@@ -83,6 +92,8 @@ namespace satellite
   void
   Transfer::connect()
   {
+    ELLE_TRACE_FUNCTION("");
+
     // Load the phrase.
     lune::Phrase phrase;
     phrase.load(Infinit::User, Infinit::Network, "portal");
@@ -97,7 +108,7 @@ namespace satellite
                                         *socket);
     Transfer::channels =
       new infinit::protocol::ChanneledStream(elle::concurrency::scheduler(),
-                                             *serializer, true);
+                                             *serializer);
     Transfer::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Transfer::rpcs->authenticate(phrase.pass))
@@ -109,6 +120,8 @@ namespace satellite
   Transfer::attach(etoile::gear::Identifier const& object,
                    elle::String const& path)
   {
+    ELLE_TRACE_FUNCTION(object, path);
+
     etoile::path::Slab name;
     etoile::path::Way way(etoile::path::Way(path), name);
 
@@ -187,6 +200,8 @@ namespace satellite
   etoile::path::Chemin
   Transfer::from_setup()
   {
+    ELLE_TRACE_FUNCTION("");
+
     // (1) Get the transfer size from the root directory.
     {
       // Resolve the path to the root directory.
@@ -270,6 +285,8 @@ namespace satellite
   void
   Transfer::from_progress(elle::Natural64 increment)
   {
+    ELLE_TRACE_FUNCTION(increment);
+
     // The difference between the current progress and the last
     // one which has been pushed in the attributes. Once this
     // difference is reached, the attributes are updated.
@@ -325,6 +342,8 @@ namespace satellite
   Transfer::from_traverse(etoile::path::Way const& source,
                           elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Resolve the directory.
     etoile::path::Chemin chemin(Transfer::rpcs->pathresolve(source));
 
@@ -343,7 +362,7 @@ namespace satellite
     for (auto entry: entries)
       {
         etoile::path::Way _source(source.path +
-                                  entry->name);
+                                  entry->name());
 
         ELLE_TRACE("source %s", _source.path.c_str());
 
@@ -369,8 +388,25 @@ namespace satellite
               // good while ensuring a smooth progress i.e no jump from
               // 4% to 38% for reasonable large files.
               std::streamsize N = 1048576;
-              std::ofstream stream(path, std::ios::binary);
               nucleus::neutron::Offset offset(0);
+
+#ifdef TRANSFER_UGLY_PERFORMANCE_HACK
+              // Transfer is too slow: this hack consists in using a specific
+              // RPC for reading a whole file.
+              while (offset < abstract.size)
+                {
+                  nucleus::neutron::Size toread =
+                    (offset + N) > abstract.size ? (abstract.size - offset) : N;
+
+                  nucleus::neutron::Size read =
+                    Transfer::rpcs->transferfrom(child, path, offset, toread);
+
+                  offset += read;
+
+                  Transfer::from_progress(read);
+                }
+#else
+              std::ofstream stream(path, std::ios::binary);
 
               ELLE_TRACE("file %s", path.c_str());
 
@@ -393,6 +429,7 @@ namespace satellite
               assert(offset == abstract.size);
 
               stream.close();
+#endif
 
               // Discard the child.
               Transfer::rpcs->objectdiscard(child);
@@ -456,6 +493,8 @@ namespace satellite
   void
   Transfer::from(elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(target);
+
     // Connect to Etoile.
     Transfer::connect();
 
@@ -467,6 +506,8 @@ namespace satellite
   void
   Transfer::to_update(elle::Natural64 const size)
   {
+    ELLE_TRACE_FUNCTION(size);
+
     etoile::path::Way root(elle::system::path::separator);
 
     // Resolve the root directory.
@@ -491,6 +532,8 @@ namespace satellite
   Transfer::to_create(elle::String const& source,
                       elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Create file.
     etoile::gear::Identifier file(Transfer::rpcs->filecreate());
 
@@ -501,10 +544,16 @@ namespace satellite
 
     Ward ward_directory(directory);
 
+    nucleus::neutron::Offset offset(0);
+
+#ifdef TRANSFER_UGLY_PERFORMANCE_HACK
+    // Transfer is too slow: this hack consists in using a specific
+    // RPC for writing a whole file.
+    offset += Transfer::rpcs->transferto(source, file, 0);
+#else
     // Write the source file's content into the Infinit file freshly created.
     std::streamsize N = 5242880;
     std::ifstream stream(source, std::ios::binary);
-    nucleus::neutron::Offset offset(0);
     unsigned char* buffer = new unsigned char[N];
 
     while (stream.good())
@@ -523,6 +572,7 @@ namespace satellite
     stream.close();
 
     delete[] buffer;
+#endif
 
     // Store file.
     Transfer::rpcs->filestore(file);
@@ -542,6 +592,8 @@ namespace satellite
   elle::Natural64
   Transfer::to_dig(elle::String const& path)
   {
+    ELLE_TRACE_FUNCTION(path);
+
     // Create directory.
     etoile::gear::Identifier subdirectory(Transfer::rpcs->directorycreate());
 
@@ -572,6 +624,8 @@ namespace satellite
   Transfer::to_symlink(elle::String const& source,
                        elle::String const& target)
   {
+    ELLE_TRACE_FUNCTION(source, target);
+
     // Create symlink.
     etoile::gear::Identifier link(Transfer::rpcs->linkcreate());
 
@@ -604,6 +658,8 @@ namespace satellite
   void
   Transfer::to(elle::String const& source)
   {
+    ELLE_TRACE_FUNCTION(source);
+
     elle::Natural64 size(0);
 
     // Connect to Etoile.
@@ -698,7 +754,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Transfer") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -760,7 +816,7 @@ namespace satellite
     if (Infinit::Parser->Register(
           "To",
           't',
-          "too",
+          "to",
           "specifies that the file is copied from the local file system to "
           "the Infinit network",
           elle::utility::Parser::KindNone) == elle::Status::Error)
@@ -771,7 +827,7 @@ namespace satellite
           "Path",
           'p',
           "path",
-          "the directory path where the data must be copied from/to",
+          "the path where the data must be copied from/to",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
@@ -790,7 +846,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -824,8 +880,8 @@ namespace satellite
       escape("unable to initialize Agent");
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("From") == elle::Status::True) &&
-        (Infinit::Parser->Test("To") == elle::Status::True))
+    if ((Infinit::Parser->Test("From") == true) &&
+        (Infinit::Parser->Test("To") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -834,11 +890,11 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("From") == elle::Status::True)
+    if (Infinit::Parser->Test("From") == true)
       operation = Transfer::OperationFrom;
 
     // test the option.
-    if (Infinit::Parser->Test("To") == elle::Status::True)
+    if (Infinit::Parser->Test("To") == true)
       operation = Transfer::OperationTo;
 
     // FIXME: do not re-parse the descriptor every time.
@@ -915,16 +971,19 @@ _main(elle::Natural32 argc, elle::Character* argv[])
   catch (reactor::Exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e << std::endl;
+      elle::crash::report("8transfer", e.what());
       goto _error;
     }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::crash::report("8transfer", e.what());
       goto _error;
     }
   catch (...)
     {
       std::cerr << argv[0] << ": unknown exception" << std::endl;
+      elle::crash::report("8transfer");
       goto _error;
     }
 
@@ -939,6 +998,11 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::Handler("8transfer", false)  // Capture signal and send email without exiting.
+  };
+
   reactor::Scheduler& sched = elle::concurrency::scheduler();
   reactor::VThread<int> main(sched, "main",
                              boost::bind(&_main, argc, argv));

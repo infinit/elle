@@ -10,7 +10,7 @@
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
@@ -18,15 +18,12 @@ using namespace infinit;
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
-# include <nucleus/neutron/Attributes.hh>
-# include <nucleus/neutron/Record.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-    ///
+    /// XXX[to rewrite]
     /// this class is the most important of the whole Infinit project
     /// as it describes file system objects being files, directories and
     /// references.
@@ -54,13 +51,16 @@ namespace nucleus
     class Object:
       public proton::ImprintBlock,
       public elle::serialize::SerializableMixin<Object>,
-      public elle::concept::MakeUniquable<Object>
+      public elle::concept::UniquableMixin<Object>
     {
-      //
-      // constants
-      //
+      /*----------.
+      | Constants |
+      `----------*/
     public:
-      static const Component component;
+      struct Constants
+      {
+        static Component const component;
+      };
 
       //
       // enumerations
@@ -80,18 +80,11 @@ namespace nucleus
       // constructors & destructors
       //
     public:
+      Object(); // XXX[use deserialize constructor]
       Object(proton::Network const& network,
              cryptography::PublicKey const& owner_K,
              Genre const genre);
-
-      Object(); // XXX[use deserialize constructor]
-
-      ELLE_SERIALIZE_CONSTRUCT(Object, ImprintBlock)
-      {
-        this->_author = nullptr;
-        this->_meta.owner.record = nullptr;
-      }
-
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Object);
       ~Object();
 
       //
@@ -99,19 +92,19 @@ namespace nucleus
       //
     public:
       elle::Status      Update(const Author& author,
-                               const proton::Address& contents,
+                               proton::Radix const& contents,
                                const Size& size,
-                               const proton::Address& access,
+                               proton::Radix const& access,
                                const Token& owner_token);
 
-      elle::Status      Administrate(const Attributes&,
-                                     const Permissions&);
+      elle::Status      Administrate(proton::Radix const& attributes,
+                                     Permissions const permissions);
 
       elle::Status      Seal(cryptography::PrivateKey const&,
-                             Access const* access);
+                             cryptography::Digest const& fingerprint);
 
-      /// Returns the address of the referenced Access block.
-      proton::Address const&
+      /// XXX
+      proton::Radix const&
       access() const;
       /// Returns the record associated with the object owner.
       /// XXX[the const on the return type needs to be added]
@@ -130,14 +123,11 @@ namespace nucleus
       Author const&
       author() const;
       /// Returns the address of the contents block.
-      proton::Address const&
+      proton::Radix const&
       contents() const;
       /// Returns the attributes associated with the object.
-      Attributes const&
+      proton::Radix const&
       attributes() const;
-      /// Returns the attributes associated with the object.
-      Attributes&
-      attributes();
       /// Returns the size of the object's content.
       Size const&
       size() const;
@@ -169,7 +159,7 @@ namespace nucleus
       validate(proton::Address const& address) const;
       void
       validate(proton::Address const& address,
-               Access const* access) const;
+               cryptography::Digest const& fingerprint) const;
       // dumpable
       elle::Status
       Dump(const elle::Natural32 = 0) const;
@@ -201,12 +191,11 @@ namespace nucleus
         Genre genre;
         elle::utility::Time modification_timestamp;
 
-        Attributes attributes;
-
-        proton::Address access;
+        proton::Radix* attributes;
+        proton::Radix* access;
 
         proton::Revision revision;
-        cryptography::Signature signature;
+        cryptography::Signature* signature;
 
         proton::State state;
       } _meta;
@@ -215,22 +204,25 @@ namespace nucleus
       {
         // XXX to implement: proton::Base               base;
 
-        proton::Address contents;
+        proton::Radix* contents;
 
         Size size;
         elle::utility::Time modification_timestamp;
 
         proton::Revision revision;
-        cryptography::Signature signature;
+        cryptography::Signature* signature;
 
         proton::State state;
       } _data;
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
     std::ostream&
     operator <<(std::ostream& stream,
                 Object::Role const role);
-
   }
 }
 

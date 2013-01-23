@@ -3,6 +3,7 @@
 
 #include <elle/log.hh>
 #include <elle/os/getenv.hh>
+#include <elle/CrashReporter.hh>
 
 #include <common/common.hh>
 
@@ -27,7 +28,7 @@ int     main(int ac, char* av[])
 
   if (ac != 2 || av[1] == nullptr)
     {
-      fprintf(stderr, "usage: %s user_id", av[0]);
+      std::cerr << "usage: " << av[0] << " user_id" << std::endl;
       return EXIT_FAILURE;
     }
 
@@ -40,7 +41,7 @@ int     main(int ac, char* av[])
       _initAll(user_id);
       ELLE_DEBUG("Starting the watchdog for user %s", user_id);
 
-      ::setenv("ELLE_LOG_COMPONENTS", "*", 1);
+      ::setenv("ELLE_LOG_COMPONENTS", "infinit.*,reactor.network.*", 1);
       ::setenv("ELLE_LOG_LEVEL", "DEBUG", 1);
 
       std::string log_file = common::watchdog::log_path(user_id);
@@ -53,10 +54,12 @@ int     main(int ac, char* av[])
     }
   catch (std::exception const& err)
     {
+      elle::crash::report("8watchdog", err.what());
       ELLE_ERR("An exception occured: %s", err.what());
     }
   catch (...)
     {
+      elle::crash::report("8watchdog");
       ELLE_ERR("Uncaught exception");
     }
   return EXIT_FAILURE;

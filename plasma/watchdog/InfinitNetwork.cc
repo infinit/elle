@@ -8,6 +8,7 @@
 #include <elle/log.hh>
 #include <elle/os/path.hh>
 #include <elle/io/Piece.hh>
+#include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
 #include <lune/Descriptor.hh>
@@ -16,11 +17,13 @@
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
 
-#include <nucleus/neutron/Access.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
-#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <elle/idiom/Close.hh>
 
@@ -157,8 +160,8 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("Couldn't restore the identity.");
 
   //- group -------------------------------------------------------------------
-  nucleus::neutron::Group group(network, identity.pair.K(), "everybody");
-  group.seal(identity.pair.k());
+  nucleus::neutron::Group group(network, identity.pair().K(), "everybody");
+  group.seal(identity.pair().k());
 
   //- group address -----------------------------------------------------------
   nucleus::proton::Address      group_address(group.bind());
@@ -169,29 +172,45 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
     throw std::runtime_error("unable to create the group subject");
 
   //- access-------------------------------------------------------------------
-  nucleus::neutron::Access access(network, identity.pair.K());
-  if (access.Add(new nucleus::neutron::Record{
-        subject,
-        permissions
-        }) == elle::Status::Error)
-    throw std::runtime_error("unable to add the record to the access");
+  nucleus::proton::Porcupine<nucleus::neutron::Access> access_porcupine{
+    nucleus::proton::nest::none()};
 
-  //- access address ----------------------------------------------------------
-  nucleus::proton::Address      access_address(access.bind());
+  nucleus::proton::Door<nucleus::neutron::Access> access_door =
+    access_porcupine.lookup(subject);
+
+  access_door.open();
+
+  access_door().insert(new nucleus::neutron::Record{subject, permissions});
+
+  access_door.close();
+
+// XXX[cf: etoile/automaton/Access.hh>, until no longer encrypted]
+#define ACCESS_SECRET_KEY_LENGTH 256
+#define ACCESS_SECRET_KEY "no-secret-key"
+
+  // XXX
+  static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+
+  ELLE_ASSERT(access_porcupine.strategy() == nucleus::proton::Strategy::value);
+
+  cryptography::Digest access_fingerprint =
+    nucleus::neutron::access::fingerprint(access_porcupine);
+
+  nucleus::proton::Radix access_radix = access_porcupine.seal(secret_key);
 
   //- directory ---------------------------------------------------------------
   nucleus::neutron::Object      directory(network,
-                                          identity.pair.K(),
+                                          identity.pair().K(),
                                           genreDirectory);
 
   if (directory.Update(directory.author(),
                        directory.contents(),
                        directory.size(),
-                       access_address,
+                       access_radix,
                        directory.owner_token()) == e)
     throw std::runtime_error("unable to update the directory");
 
-  if (directory.Seal(identity.pair.k(), &access) == e)
+  if (directory.Seal(identity.pair().k(), access_fingerprint) == e)
     throw std::runtime_error("Cannot seal the access");
 
   //- directory address -------------------------------------------------------
@@ -199,27 +218,22 @@ void InfinitNetwork::_create_network_root_block(std::string const& id)
 
   {
     elle::io::Unique root_block_;
-    directory.Save(root_block_);
-    elle::io::Unique root_address_;
-    directory_address.Save(root_address_);
+    elle::serialize::to_string(root_block_) << directory;
 
-    elle::io::Unique access_block_;
-    access.Save(access_block_);
-    elle::io::Unique access_address_;
-    access_address.Save(access_address_);
+    elle::io::Unique root_address_;
+    elle::serialize::to_string(root_address_) << directory_address;
 
     elle::io::Unique group_block_;
-    group.Save(group_block_);
+    elle::serialize::to_string(group_block_) << group;
+
     elle::io::Unique group_address_;
-    group_address.Save(group_address_);
+    elle::serialize::to_string(group_address_) << group_address;
 
     this->_on_got_descriptor(this->_manager.meta().update_network(
                                this->_description._id,
                                nullptr,
                                &root_block_,
                                &root_address_,
-                               &access_block_,
-                               &access_address_,
                                &group_block_,
                                &group_address_
                                ));
@@ -237,7 +251,8 @@ void InfinitNetwork::_prepare_directory()
   shelter_path.Complete(elle::io::Piece{"%USER%", this->_manager.user_id()},
                         elle::io::Piece{"%NETWORK%", this->_description._id});
   ELLE_DEBUG("Shelter path == %s", shelter_path.string());
-  hole::storage::Directory storage(shelter_path.string());
+  nucleus::proton::Network network(this->_description._id);
+  hole::storage::Directory storage(network, shelter_path.string());
 
   {
     LOG("Built directory storage of %s", this->_description._id);
@@ -280,21 +295,6 @@ void InfinitNetwork::_prepare_directory()
 
     storage.store(descriptor.meta().root(), directory);
     LOG("Root block stored.");
-  }
-
-  {
-    LOG("Storing access block.");
-    LOG("block: '%s'.", _description.access_block);
-    nucleus::neutron::Access access{
-      from_string<InputBase64Archive>(_description.access_block)
-    };
-    LOG("address: '%s'.", _description.access_address);
-    nucleus::proton::Address access_address{
-      from_string<InputBase64Archive>(_description.access_address)
-    };
-    LOG("Deserialization complete.");
-    storage.store(access_address, access);
-    LOG("Address block stored.");
   }
 
   {
@@ -399,51 +399,8 @@ void InfinitNetwork::_start_process()
 {
   if (this->_process.state() != QProcess::NotRunning)
     return;
-
   LOG("Starting infinit process (mount point: %s)", this->_mount_point);
 
-  if (!path::exists(this->_mount_point))
-    path::make_path(this->_mount_point);
-
-  ELLE_DEBUG("Create mount point link");
-  {
-    std::string mnt_link_dir = path::join(
-      common::system::home_directory(),
-      "Infinit"
-    );
-
-    if (!path::exists(mnt_link_dir))
-      path::make_directory(mnt_link_dir);
-
-    std::string owner_email = this->_manager.meta().user(
-        this->_description.owner
-    ).email;
-
-    std::string mnt_link = path::join(
-      mnt_link_dir,
-      elle::sprintf("%s (%s)", this->_description.name, owner_email)
-    );
-
-    if (!path::exists(mnt_link))
-      path::make_symlink(this->_mount_point, mnt_link);
-  }
-
-  LOG("exec: %s -n %s -m %s -u %s",
-      common::infinit::binary_path("8infinit"),
-      this->_description._id.c_str(),
-      this->_mount_point,
-      this->_manager.user_id().c_str());
-
-  QStringList arguments;
-  arguments << "-n" << this->_description._id.c_str()
-            << "-m" << this->_mount_point.c_str()
-            << "-u" << this->_manager.user_id().c_str()
-            ;
-
-  LOG("8infinit arguments created.")
-  // XXX[rename into [network-name].log]
-  std::string log_out = path::join(this->_network_dir, "out.log").c_str();
-  std::string log_err = path::join(this->_network_dir, "err.log").c_str();
   std::string pid_file = path::join(this->_network_dir, "run.pid").c_str();
 
   LOG("Set out files paths.")
@@ -501,6 +458,59 @@ void InfinitNetwork::_start_process()
           out.close();
         }
     }
+
+  try
+  {
+    if (!path::exists(this->_mount_point))
+      path::make_path(this->_mount_point);
+  }
+  catch(std::runtime_error const& e)
+  {
+    ELLE_WARN("mount point couldn't be created at '%s': %s",
+              this->_mount_point, e.what());
+
+    return;
+  }
+
+  ELLE_DEBUG("Create mount point link");
+  {
+    std::string mnt_link_dir = path::join(
+      common::system::home_directory(),
+      "Infinit"
+    );
+
+    if (!path::exists(mnt_link_dir))
+      path::make_directory(mnt_link_dir);
+
+    std::string owner_email = this->_manager.meta().user(
+        this->_description.owner
+    ).email;
+
+    std::string mnt_link = path::join(
+      mnt_link_dir,
+      elle::sprintf("%s (%s)", this->_description.name, owner_email)
+    );
+
+    if (!path::exists(mnt_link))
+      path::make_symlink(this->_mount_point, mnt_link);
+  }
+
+  LOG("exec: %s -n %s -m %s -u %s",
+      common::infinit::binary_path("8infinit"),
+      this->_description._id.c_str(),
+      this->_mount_point,
+      this->_manager.user_id().c_str());
+
+  QStringList arguments;
+  arguments << "-n" << this->_description._id.c_str()
+            << "-m" << this->_mount_point.c_str()
+            << "-u" << this->_manager.user_id().c_str()
+            ;
+
+  LOG("8infinit arguments created.")
+  // XXX[rename into [network-name].log]
+  std::string log_out = path::join(this->_network_dir, "out.log").c_str();
+  std::string log_err = path::join(this->_network_dir, "err.log").c_str();
 
   LOG("Setting output files to process.");
   this->_process.setStandardOutputFile(log_out.c_str());

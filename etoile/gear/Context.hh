@@ -4,8 +4,7 @@
 # include <elle/types.hh>
 # include <elle/io/Dumpable.hh>
 
-# include <nucleus/proton/Transcript.hh>
-
+# include <etoile/gear/Transcript.hh>
 # include <etoile/gear/Nature.hh>
 # include <etoile/gear/Operation.hh>
 
@@ -48,14 +47,27 @@ namespace etoile
           StateDestroyed,
 
           StateJournaled,
-
-          StateCleaned
         };
 
       //
       // constructors & destructors
       //
       Context(const Nature);
+      ~Context();
+
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      // XXX
+      Transcript const&
+      transcript() const;
+      // XXX
+      Transcript&
+      transcript();
+      // XXX
+      Transcript*
+      cede();
 
       //
       // interfaces
@@ -72,12 +84,11 @@ namespace etoile
       State                     state;
       Operation                 operation;
 
-      nucleus::proton::Transcript transcript;
+    private: // XXX
+      Transcript* _transcript;
     };
 
   }
 }
-
-# include <etoile/gear/Context.hxx>
 
 #endif

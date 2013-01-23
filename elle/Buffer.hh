@@ -6,6 +6,7 @@
 
 # include <elle/serialize/fwd.hh>
 
+# include <iosfwd>
 # include <memory>
 
 namespace elle
@@ -21,6 +22,10 @@ namespace elle
   class InputBufferArchive;
   class OutputBufferArchive;
   class WeakBuffer;
+
+//
+// ---------- Buffer ----------------------------------------------------------
+//
 
   /// @brief Manage a memory zone.
   ///
@@ -122,6 +127,13 @@ namespace elle
     static size_t _next_size(size_t);
   };
 
+  std::ostream&
+  operator <<(std::ostream& stream,
+              Buffer const& buffer);
+
+//
+// ---------- WeakBuffer ------------------------------------------------------
+//
 
   /// @brief A C array pointer and its size.
   ///
@@ -193,8 +205,16 @@ namespace elle
     ELLE_OPERATOR_NEQ(Buffer);
   };
 
+  /*----------.
+  | Operators |
+  `----------*/
+
+  std::ostream&
+  operator <<(std::ostream& stream,
+              WeakBuffer const& buffer);
+
 }
 
-# include "Buffer.hxx"
+# include <elle/Buffer.hxx>
 
 #endif

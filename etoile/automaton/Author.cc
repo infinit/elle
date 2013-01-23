@@ -3,12 +3,17 @@
 #include <etoile/automaton/Access.hh>
 #include <etoile/gear/Object.hh>
 
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 
 #include <agent/Agent.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("infinit.etoile.automaton.Author");
 
 namespace etoile
 {
@@ -25,6 +30,8 @@ namespace etoile
     ///
     elle::Status        Author::Forge(gear::Object&             context)
     {
+      ELLE_TRACE_FUNCTION(context);
+
       // if an author exists, return.
       if (context.author != nullptr)
         return elle::Status::Ok;
@@ -45,17 +52,21 @@ namespace etoile
           }
         case nucleus::neutron::Object::RoleLord:
           {
-            nucleus::neutron::Index      index;
-
             // open the access.
             if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access");
 
+            auto pair = context.access_porcupine->find(agent::Agent::Subject);
+            auto& door = pair.first;
+            auto& capacity = pair.second;
+
+            door.open();
+
             // lookup the user's subject in the access records.
-            if (context.access->Lookup(agent::Agent::Subject,
-                                       index) == elle::Status::Error)
-              escape("unable to lookup the user's identity in the "
-                     "access block");
+            nucleus::neutron::Index index =
+              capacity + door().seek(agent::Agent::Subject);
+
+            door.close();
 
             // Create a lord author.
             context.author = new nucleus::neutron::Author(index);

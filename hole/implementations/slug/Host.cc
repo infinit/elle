@@ -35,14 +35,13 @@ namespace hole
 
       Host::Host(Machine& machine,
                  elle::network::Locus const& locus,
-                 std::unique_ptr<reactor::network::Socket> socket,
-                 bool opener)
+                 std::unique_ptr<reactor::network::Socket> socket)
         : _locus(locus)
         , _machine(machine)
         , _state(State::connected)
         , _socket(std::move(socket))
         , _serializer(elle::concurrency::scheduler(), *_socket)
-        , _channels(elle::concurrency::scheduler(), _serializer, opener)
+        , _channels(elle::concurrency::scheduler(), _serializer)
         , _rpcs(_channels)
         , _rpcs_handler(new reactor::Thread(elle::concurrency::scheduler(),
                                             elle::sprintf("RPC %s", *this),
@@ -195,6 +194,8 @@ namespace hole
                   {
                     case nucleus::neutron::ComponentObject:
                     {
+                      /* XXX[need to change the way validation works by relying
+                             on a callback]
                       assert(dynamic_cast<nucleus::neutron::Object const*>(mb));
                       nucleus::neutron::Object const* object =
                         static_cast<nucleus::neutron::Object const*>(mb);
@@ -225,6 +226,7 @@ namespace hole
                           // Validate the object.
                           object->validate(address, nullptr);
                         }
+                      */
 
                       break;
                     }
@@ -306,6 +308,8 @@ namespace hole
               {
                 case nucleus::neutron::ComponentObject:
                 {
+                  /* XXX[need to change the way validation works by relying
+                         on a callback]
                   const nucleus::neutron::Object* object =
                     static_cast<const nucleus::neutron::Object*>(block.get());
                   assert(dynamic_cast<const nucleus::neutron::Object*>(
@@ -337,6 +341,7 @@ namespace hole
                     // validate the object.
                     object->validate(address, nullptr);
                   }
+                  */
 
                   break;
                 }

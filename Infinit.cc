@@ -13,18 +13,7 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String              Infinit::Key{
-    "AAAAAAACtdQhPIswro5dUmN7mgacsdxvYhRKXoi9D72nC9cUieMT9FtwP7eqVyeCVV+FMBTZD"
-    "GSxVrh7f9b0TeYqAu8sUbSCkQY+Qcbd2DOoOpuJztINuF2+2nP1LlMFYICeomUKj8wfDSoYo3"
-    "Y7FEuSy2AeJzHnrV+DUjGcJGu02WswraqqQbf/6wNwcXBg0hcvegwuLTjyzmA9TzwT7lHvF3s"
-    "Q2olxjOwk3+leRpiYHwV1yjlU+fR0cQeK+ouNmmIXaDbkM+BhoQDCmzD1nefNucf5J5cSRPHt"
-    "kJiB9LU+Cz226e+Js91zrKEzxhLfaiVNrhIL5PSSz/jD+t7MpA8kTtT002JFOJTDhkuoAVSSN"
-    "5By+/BTQa0609XRQ6+pEvyyZunRYkaZzciYHsg6PxfiURKyeWklK9ltqB2s/bmGLks5Bkblhk"
-    "0ms/V5y2950oc6tUOur/FgnDLGegssriZQpxZ6rwx77/Y1jB8yg+MKu4u7/R/uMfkqrkEbUbY"
-    "bUNRaIvhLOMTXCXKfMA8LrBDmzLiawozl0pVoMPqd1HQCZbl37hEh4afHf3Coivn0uZopdL+/"
-    "xthQTYzR8eTQmyV89lVY/bA4dou2SHtx/potV3a+w3yF8NHzZ0y+Zzfukfs1eY15vTVFn4KHm"
-    "p0npuc430bSNUoWB9KFgw+SOLZL83oTI8cAAAMAAQAB"
-};
+const elle::String Infinit::Key{"AAAAAAACAADF97QoZjk/7NcNVzInsPL1X+7M3mDH4Ca9yj3WBmjfmkLVF53QqtQ0yl3/7iykafbkNDdOHrJChmNN1RjnK8fikdd1/R4T2Tc1K+TeFUPyOv5STWvoJbNGXyFaxt3TVmd8FQ5SoCjspORZ+Ze38My6GEDKbZvknRPWAi6lbARAtxtFFhOiYQ3Ge2uefqHjSAFqk7VVVowoUQP2GmTOzCQfBwv6+e7M8Psi4WpvJnjDMgsVC8NCydKhGytAry9xO7yzX0PvDgpy48eozAIAEyRko5+DqPIl0dHc2DiJYMUh7rmSs6ECKvGYMEZXia4m5zIQVwELBz5IBbM6zcNZhRvmlzXBcy+js2lwJVIfdNOd/ymXPjcRGCPkr7eMotp2R0OAHK0wbR5vsUZ4EqlgA8NEAblpPwP1pxqtuP2km9pRt266HhuZO+50JXleVdyEsYPulZ5t5LEZS60gygbEvstM5gkoXpdJQQcmz1Tiu92VolCPfgqJNaciMaiP9wyj6WNqAYX/eRuOU/PqKO0NDo56COfgIx1NbZrrdncFczOEYH/bWXZc+LVdvySKLUJI0BZ+3BXRj/BNNWtA6cS7BcyBJMTjA+KFuTWftq3nW/y/1BH1Hxnd9B0P3/u1hGkf/F64XxLNj9cvwIVGMvduLLbrzgEWEb3F2RFPSnXyxU1J/QAAAwAAAAEAAQ=="};
 
 ///
 /// this constant contains the version of the current Infinit software.
@@ -38,7 +27,7 @@ const elle::String              Infinit::Copyright(
                                   "Infinit " +
                                   elle::sprint(Infinit::version) +
                                   " " +
-                                  "Copyright (c) 2012 "
+                                  "Copyright (c) 2013 "
                                   "infinit.io All rights reserved.");
 
 // XXX[temporary: for cryptography]

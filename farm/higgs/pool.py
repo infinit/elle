@@ -44,9 +44,6 @@ class PoolEngine:
         c = conf.Conf()
         c.set_listen_port(self.low_port)
         c.set_timeout(1000)
-        conf_file_path = os.path.join(new_home, "infinit.conf")
-        with open(conf_file_path, "w") as conf_file:
-            c.commit(file=conf_file)
 
         # Copy the generated auth into the new home
         auth_file_path = os.path.join(homedir, "infinit.auth")
@@ -96,19 +93,19 @@ class Pool:
     def high_port(self):
         return self._engine.low_port
 
-    def wait_ready(self, timeout=10):
+    def wait_ready(self, timeout=30):
         """
         Check the mount fs to see if we are ready to start the tests
         """
         tries = 0
         while tries < timeout:
             mounts = sp.check_output(["mount"]).split(b"\n")
-            print("Mount points:")
-            for m in mounts:
-                print("\t -", m)
-            print("Infinit mount points:")
-            for m in self.mountpoints:
-                print("\t -", m)
+            #print("Mount points:")
+            #for m in mounts:
+            #    print("\t -", m)
+            #print("Infinit mount points:")
+            #for m in self.mountpoints:
+            #    print("\t -", m)
 
             number_of_fs_mounted = 0
             for fs in mounts:
@@ -117,9 +114,9 @@ class Pool:
                         number_of_fs_mounted += 1
             if number_of_fs_mounted == len(self.mountpoints):
                 break
-            print("Number of mounted filesystems:", number_of_fs_mounted)
-            time.sleep(1)
             tries += 1
+            print("%d: %d/%d filesystem mounted" % (tries, number_of_fs_mounted, len(self.mountpoints)))
+            time.sleep(1)
         if tries == timeout:
             raise Exception(
                 ("Not all filesystems (%d/%d) were mounted in the allowed"
@@ -139,10 +136,12 @@ class Pool:
             new_homedir = tempfile.mkdtemp(dir=homedir)
             os.rmdir(new_homedir)
             new_H = H.duplicate(new_homedir)
-            new_H.conf.set_listen_port(last_assigned_port + 1);
-            new_conf_file_path = os.path.join(new_H.home, "infinit.conf")
-            with open(new_conf_file_path, "w") as conffile:
-                new_H.conf.commit(conffile)
+
+            new_conf = conf.Conf()
+            new_conf.set_listen_port(last_assigned_port + 1)
+            new_conf.set_timeout(1000)
+            new_H.overwrite_conf(new_conf)
+
             self.l_home.append(new_H)
             last_assigned_port = new_H.port
 

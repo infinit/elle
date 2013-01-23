@@ -17,7 +17,7 @@ ELLE_SERIALIZE_SIMPLE(plasma::Transaction, ar, res, version)
   ar & elle::serialize::named("recipient_id", res.recipient_id);
   ar & elle::serialize::named("recipient_fullname", res.recipient_fullname);
   ar & elle::serialize::named("recipient_device_id", res.recipient_device_id);
-  ar & elle::serialize::named("recipient_device_name", res.recipient_device_id);
+  ar & elle::serialize::named("recipient_device_name", res.recipient_device_name);
   ar & elle::serialize::named("network_id", res.network_id);
   ar & elle::serialize::named("message", res.message);
   ar & elle::serialize::named("first_filename", res.first_filename);

@@ -2,8 +2,12 @@
 # define NUCLEUS_NEUTRON_RECORD_HH
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
+# include <elle/serialize/construct.hh>
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Subject.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
@@ -12,10 +16,8 @@ namespace nucleus
 {
   namespace neutron
   {
-
-    /// This class represents an access control record, composed
-    /// of the subject, its permissions and the token allowing the subject
-    /// to access the data.
+    /// Represent an access control record, composed of the subject, its
+    /// permissions and the token allowing the subject to access the data.
     ///
     /// Note that a record could contain no token, because there is no data
     /// to decrypt for example. In this case, a null pointer is returned
@@ -44,25 +46,11 @@ namespace nucleus
         valid
       };
 
-      /*------.
-      | Types |
-      `------*/
-    public:
-      typedef Subject Symbol;
-      struct Valid;
-
-      /*-----------.
-      | Attributes |
-      `-----------*/
-    private:
-      ELLE_ATTRIBUTE_R(Type, type);
-      ELLE_ATTRIBUTE(Valid*, valid);
-
       /*-------------.
       | Construction |
       `-------------*/
     public:
-      Record();
+      Record(); // XXX[to deserialize]
       /// Construct a record with a subject/permissions. Note that the token
       /// can be left meaning that the record will not allow the referenced
       /// user to retrieve a secret.
@@ -74,6 +62,7 @@ namespace nucleus
              Permissions permissinos,
              Token const* token);
       Record(Record const& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Record);
       ~Record();
     private:
       Record(Type const type);
@@ -85,7 +74,6 @@ namespace nucleus
       elle::Boolean
       operator ==(Record const& other) const;
       ELLE_OPERATOR_NEQ(Record);
-      /// Do not allow record assignment: use the copy constructor instead.
       ELLE_OPERATOR_NO_ASSIGNMENT(Record);
 
       /*--------.
@@ -100,9 +88,9 @@ namespace nucleus
       permissions() const;
       // Update the record's permissions.
       void
-      permissions(Permissions permissions);
-      // Return the record's token though it could be null.
-      Token const*
+      permissions(Permissions const permissions);
+      // Return the record's token.
+      Token const&
       token() const;
       // Update the record's token.
       void
@@ -121,32 +109,41 @@ namespace nucleus
       print(std::ostream& stream) const;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Record);
+      ELLE_SERIALIZE_FRIEND_FOR(Access);
+
       // rangeable
+      typedef Subject Symbol;
       virtual
       Subject const&
-      symbol();
+      symbol() const;
 
       /*-----------.
       | Structures |
       `-----------*/
     public:
-      struct Valid
+      struct Valid:
+        public elle::Printable
       {
         // construction
       public:
-        Valid();
+        Valid(); // XXX
         Valid(Subject const& subject,
-              Permissions permissions,
+              Permissions const permissions,
               Token const& token);
         ~Valid();
 
         // methods
       public:
-        /// Update the token.
+        Token const&
+        token() const;
         void
         token(Token const& token);
 
       public:
+        // printable
+        virtual
+        void
+        print(std::ostream& stream) const;
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(Record::Valid);
 
@@ -157,10 +154,25 @@ namespace nucleus
         /// The token is optional since the referenced user may
         /// not have access to the object's content i.e no read
         /// permission.
-        ELLE_ATTRIBUTE_R(Token*, token);
+        ELLE_ATTRIBUTE(Token*, token);
       };
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE_R(Type, type);
+      ELLE_ATTRIBUTE(Valid*, valid);
+      ELLE_ATTRIBUTE_R(proton::Footprint, footprint);
     };
 
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Record::Type const type);
   }
 }
 

@@ -199,7 +199,7 @@ namespace hole
             {
               // if the neighbour has been registered in the routing table...
               if (Cirkle::Computer->routingtable.Exist(
-                    this->label) == elle::Status::True)
+                    this->label) == true)
                 {
                   // remove it.
                   if (Cirkle::Computer->routingtable.Remove(
@@ -269,7 +269,7 @@ namespace hole
         else
           {
             std::cout << alignment << elle::Dumpable::Shift
-                      << "[Gate] " << elle::none << std::endl;
+                      << "[Gate] " << "none" << std::endl;
           }
 
         return elle::Status::Ok;

@@ -4,13 +4,17 @@
 # include <elle/types.hh>
 
 # include <cryptography/fwd.hh>
+# include <cryptography/Digest.hh>
+// XXX[temporary: for cryptography]
+using namespace infinit;
 
 # include <nucleus/neutron/fwd.hh>
 
 # include <etoile/gear/fwd.hh>
 
-// XXX[temporary: for cryptography]
-using namespace infinit;
+// XXX
+#define ACCESS_SECRET_KEY_LENGTH 256
+#define ACCESS_SECRET_KEY "no-secret-key"
 
 namespace etoile
 {
@@ -54,6 +58,10 @@ namespace etoile
       static elle::Status       Audit(gear::Object&,
                                       const nucleus::neutron::Subject&);
       static elle::Status       Regulate(gear::Object&);
+
+      static
+      cryptography::Digest
+      fingerprint(gear::Object& context);
     };
 
   }

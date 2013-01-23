@@ -67,17 +67,18 @@ class Page(object):
     def validate(self):
         for (field, validator) in self._validators:
             if not field in self.data.keys():
-                return (error.BAD_REQUEST, "Field %s is mandatory" % field)
+                return (error.BAD_REQUEST[0], "Field %s is mandatory" % field)
             else:
                 error_code = validator(self.data[field])
                 if error_code:
                     return (error_code, str())
         for (field, type_) in self._mendatory_fields:
             if not field in self.data.keys() or not isinstance(self.data[field], type_):
-                return (error.BAD_REQUEST, "Field %s is mandatory and must be an %s" % (field, type_))
+                return (error.BAD_REQUEST[0], "Field %s is mandatory and must be an %s" % (field, type_))
         return ()
 
     def logout(self):
+        print("user %s logged out.", self.user)
         self.session.kill()
 
     def authenticate(self, email, password):
@@ -93,7 +94,8 @@ class Page(object):
             self.notifySwaggers(
                 notifier.USER_STATUS,
                 {
-                    'status': 1,
+                    'status': 1, #Connected.
+
                 }
             )
             return True
@@ -140,14 +142,14 @@ class Page(object):
                                   d)
 
     def error(self, err=error.UNKNOWN, msg=""):
-        assert isinstance(err, int)
+        assert isinstance(err, list)
         assert isinstance(msg, str)
-        if not msg and err in error.error_details:
-            msg = error.error_details[err]
+        if not msg:
+            msg = err[1]
 
         return json.dumps({
             'success': False,
-            'error_code': err,
+            'error_code': err[0],
             'error_details': str(msg),
         })
 

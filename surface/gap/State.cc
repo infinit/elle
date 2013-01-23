@@ -4,9 +4,8 @@
 #include <pwd.h>
 #include <stdexcept>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
-
-#include <boost/algorithm/string.hpp>
 
 #include <openssl/sha.h>
 
@@ -26,31 +25,34 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 #include <elle/HttpClient.hh>
+#include <elle/CrashReporter.hh>
+
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/sleep.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/ChanneledStream.hh>
+#include <etoile/portal/Portal.hh>
 
 #include <common/common.hh>
-#include <elle/os/path.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 #include <lune/Lune.hh>
+#include <lune/Phrase.hh>
 
 #include <nucleus/neutron/Permissions.hh>
 
 #include <elle/idiom/Close.hh>
-
+#include <surface/gap/MetricReporter.hh>
 #include "State.hh"
+
+#include <boost/algorithm/string.hpp>
 
 #include <signal.h>
 
-ELLE_LOG_COMPONENT("infinit.surface.gap.State");
+#include "_detail/Process.hh"
 
-#define _REGISTER_CALLBACK_HANDLER(data, indice, handler)                      \
-  void                                                                         \
-  State::attach_callback(std::function<void (data const*)> callback)           \
-  {                                                                            \
-    _notification_handlers[indice].push_back(new handler(callback));           \
-  }                                                                            \
-/**/
+ELLE_LOG_COMPONENT("infinit.surface.gap.State");
 
 namespace surface
 {
@@ -60,25 +62,22 @@ namespace surface
     namespace json = elle::format::json;
 
     // - Exception ------------------------------------------------------------
-
     Exception::Exception(gap_Status code, std::string const& msg)
       : std::runtime_error(msg)
       , code(code)
-    {
-    }
+    {}
 
     // - State ----------------------------------------------------------------
-
     State::State()
-      : _meta{
-      new plasma::meta::Client{
+      : _meta{new plasma::meta::Client{
         common::meta::host(),
-        common::meta::port(),
-        true,
-      }}
-      , _logged{false}
+          common::meta::port(),
+          true,
+          }
+        }
       , _trophonius{nullptr}
       , _users{}
+      , _logged{false}
       , _swaggers_dirty{true}
       , _output_dir{common::system::download_directory()}
       , _files_infos{}
@@ -87,13 +86,26 @@ namespace surface
       , _networks_status{}
       , _networks_status_dirty{true}
     {
+      // XXX degeu !
+      ELLE_LOG("Creating a new State");
+
       namespace p = std::placeholders;
       this->transaction_callback(
-        std::bind(&State::_on_transaction, this, p::_1, p::_2)
+          [&] (TransactionNotification const &n, bool is_new) -> void {
+            this->_on_transaction(n, is_new);
+          }
       );
       this->transaction_status_callback(
-        std::bind(&State::_on_transaction_status, this, p::_1)
+          [&] (TransactionStatusNotification const &n, bool) -> void {
+            this->_on_transaction_status(n);
+          }
       );
+
+      /*
+        rajouter on_swagger_online
+        dans swagger_online -> foreach network ; if swagger in network then
+        call RPC qui informe 8infinit
+       */
 
       std::string user = elle::os::getenv("INFINIT_USER", "");
 
@@ -126,31 +138,55 @@ namespace surface
           this->_meta->email(mail);
 
           this->_me = static_cast<User const&>(this->_meta->self());
-
-          this->_logged = true;
         }
       }
+    }
+
+    void
+    State::output_log_file(std::string const& path)
+    {
+      static std::ofstream* out = new std::ofstream{
+          path,
+          std::fstream::app | std::fstream::out
+      };
+      char const* components[] = {
+          "infinit.surface.gap",
+          "infinit.surface.gap.State",
+          "infinit.surface.gap.MetricReporter",
+          "infinit.plasma.trophonius.Client",
+          "infinit.plasma.meta.Client",
+          "elle.HTTPClient",
+      };
+
+      for (auto component : components)
+        {
+          elle::log::logger(component).output(*out);
+          elle::log::logger(component).level(
+              elle::log::Logger::Level::debug
+          );
+        }
     }
 
     State::State(std::string const& token):
       State{}
     {
+      ELLE_LOG("Creating a new State with token");
       this->_meta->token(token);
       auto res = this->_meta->self();
       this->_meta->identity(res.identity);
       this->_meta->email(res.email);
       //XXX factorize that shit
       this->_me = static_cast<User const&>(res);
-
-      this->_logged = true;
     }
 
 
     State::~State()
     {
+      ELLE_WARN("Destroying state.");
       for (auto& it: this->_networks)
         delete it.second;
       this->_networks.clear();
+      this->logout();
     }
 
     void
@@ -164,10 +200,6 @@ namespace surface
       this->_send_watchdog_cmd("refresh_networks");
       this->_networks_dirty = true;
       this->_networks_status_dirty = true;
-    }
-
-    void State::_reload_networks()
-    {
     }
 
     std::string State::_watchdog_id() const // XXX should be cached
@@ -220,11 +252,15 @@ namespace surface
           ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
           return;
         }
-      if (!conn.waitForReadyRead(-1)) // Infinit is maybe too long, or not.
+
+      ELLE_DEBUG("Waiting for response.");
+
+      if (!conn.waitForReadyRead(1000)) // Infinit is maybe too long, or not.
         throw Exception{
             gap_internal_error,
             "Couldn't read response of '" + cmd + "' command"
         };
+
       QByteArray response_data = conn.readLine();
       std::stringstream ss{
           std::string{
@@ -234,1069 +270,6 @@ namespace surface
       };
       auto ptr = json::parse(ss);
       response->update(ptr->as_dictionary());
-    }
-
-    User const& State::user(std::string const& id)
-    {
-      auto it = this->_users.find(id);
-      if (it != this->_users.end())
-        return *(it->second);
-
-      auto response = this->_meta->user(id);
-      std::unique_ptr<User> user{new User{
-          response._id,
-          response.fullname,
-          response.email,
-          response.public_key,
-          response.status,
-      }};
-
-      this->_users[response._id] = user.get();
-      return *(user.release());
-    }
-
-    User const&
-    State::get_me()
-    {
-      return this->_me;
-    }
-
-    std::string const&
-    State::get_token()
-    {
-      return this->_meta->token();
-    }
-
-    User const&
-    State::user_from_public_key(std::string const& public_key)
-    {
-      for (auto const& pair : this->_users)
-        {
-          if (pair.second->public_key == public_key)
-            return *(pair.second);
-        }
-      auto response = this->_meta->user_from_public_key(public_key);
-      std::unique_ptr<User> user{new User{
-          response._id,
-          response.fullname,
-          response.email,
-          response.public_key,
-          response.status,
-      }};
-
-      this->_users[response._id] = user.get();
-      return *(user.release());
-    }
-
-    std::map<std::string, User const*>
-    State::search_users(std::string const& text)
-    {
-      std::map<std::string, User const*> result;
-      auto res = this->_meta->search_users(text);
-      for (auto const& user_id : res.users)
-        {
-          result[user_id] = &this->user(user_id);
-        }
-      return result;
-    }
-
-    State::SwaggersMap const&
-    State::swaggers()
-    {
-      if (this->_swaggers_dirty)
-        {
-          auto response = this->_meta->get_swaggers();
-          for (auto const& swagger_id: response.swaggers)
-            {
-              if (this->_swaggers.find(swagger_id) == this->_swaggers.end())
-                {
-                  auto response = this->_meta->user(swagger_id);
-                  this->_swaggers[swagger_id] = new User{
-                      response._id,
-                      response.fullname,
-                      response.email,
-                      response.public_key,
-                      response.status,
-                  };
-                }
-            }
-          this->_swaggers_dirty = false;
-        }
-      return this->_swaggers;
-    }
-
-    User const&
-    State::swagger(std::string const& id)
-    {
-      auto it = this->swaggers().find(id);
-      if (it == this->swaggers() .end())
-        throw Exception{
-            gap_error,
-            "Cannot find any swagger for id '" + id + "'"
-        };
-      return *(it->second);
-    }
-
-    std::string State::hash_password(std::string const& email,
-                                     std::string const& password)
-    {
-      unsigned char hash[SHA256_DIGEST_LENGTH];
-      SHA256_CTX context;
-      std::string to_hash = email + "MEGABIET" + password + email + "MEGABIET";
-
-      if (SHA256_Init(&context) == 0 ||
-          SHA256_Update(&context, to_hash.c_str(), to_hash.size()) == 0 ||
-          SHA256_Final(hash, &context) == 0)
-        throw Exception(gap_internal_error, "Cannot hash login/password");
-
-      std::ostringstream out;
-      elle::serialize::OutputHexadecimalArchive ar(out);
-
-      ar.SaveBinary(hash, SHA256_DIGEST_LENGTH);
-
-      return out.str();
-    }
-
-    void State::login(std::string const& email, std::string const& password)
-    {
-      this->_meta->token("");
-      auto res = this->_meta->login(email, password);
-
-      ELLE_DEBUG("Logged in as %s token = %s", email, res.token);
-
-      this->_me._id = res._id.c_str();
-      this->_me.fullname = res.fullname.c_str();
-      this->_me.email = res.email.c_str();
-      this->_me.public_key = "";
-
-      ELLE_DEBUG("id: '%s' - fullname: '%s' - email: '%s'.",
-                 this->_me._id,
-                 this->_me.fullname,
-                 this->_me.email);
-
-      std::string identity_clear;
-
-      lune::Identity      identity;
-
-      // Decrypt the identity
-        {
-          if (identity.Restore(res.identity)    == elle::Status::Error ||
-              identity.Decrypt(password)        == elle::Status::Error ||
-              identity.Clear()                  == elle::Status::Error ||
-              identity.Save(identity_clear)     == elle::Status::Error)
-            throw Exception(gap_internal_error,
-                            "Couldn't decrypt the identity file !");
-        }
-
-      // Store the identity
-        {
-          if (identity.Restore(identity_clear)  == elle::Status::Error)
-            throw Exception(gap_internal_error,
-                            "Cannot save the identity file.");
-
-          identity.store();
-
-          // user.dic
-          lune::Dictionary dictionary;
-
-          dictionary.store(res._id);
-        }
-
-        this->_logged = true;
-    }
-
-    void
-    State::logout()
-    {
-      this->_meta->logout();
-    }
-
-    static
-    std::unique_ptr<Notification>
-    _xxx_dict_to_notification(json::Dictionary const& d)
-    {
-      std::unique_ptr<Notification> res;
-      NotificationType notification_type = (NotificationType) d["notification_type"].as_integer().value();
-
-      std::unique_ptr<UserStatusNotification> user_status{
-          new UserStatusNotification
-      };
-
-      std::unique_ptr<TransactionNotification> transaction{
-          new TransactionNotification
-      };
-      std::unique_ptr<TransactionStatusNotification> transaction_status{
-          new TransactionStatusNotification
-      };
-      std::unique_ptr<MessageNotification> message{
-          new MessageNotification
-      };
-
-      switch (notification_type)
-        {
-        case NotificationType::user_status:
-          user_status->user_id = d["user_id"].as_string();
-          user_status->status = d["status"].as_integer();
-          res = std::move(user_status);
-          break;
-
-        case NotificationType::transaction:
-          transaction->transaction.transaction_id = d["transaction"]["transaction_id"].as_string();
-          transaction->transaction.sender_id = d["transaction"]["sender_id"].as_string();
-          transaction->transaction.sender_fullname = d["transaction"]["sender_fullname"].as_string();
-          transaction->transaction.sender_device_id = d["transaction"]["sender_device_id"].as_string();
-          transaction->transaction.recipient_id = d["transaction"]["recipient_id"].as_string();
-          transaction->transaction.recipient_fullname = d["transaction"]["recipient_fullname"].as_string();
-          transaction->transaction.recipient_device_id = d["transaction"]["recipient_device_id"].as_string();
-          transaction->transaction.recipient_device_name = d["transaction"]["recipient_device_name"].as_string();
-          transaction->transaction.network_id = d["transaction"]["network_id"].as_string();
-          transaction->transaction.message = d["transaction"]["message"].as_string();
-          transaction->transaction.first_filename = d["transaction"]["first_filename"].as_string();
-          transaction->transaction.files_count = d["transaction"]["files_count"].as_integer();
-          transaction->transaction.total_size = d["transaction"]["total_size"].as_integer();
-          transaction->transaction.is_directory = d["transaction"]["is_directory"].as_integer();
-          transaction->transaction.status = d["transaction"]["status"].as_integer();
-          res = std::move(transaction);
-          break;
-
-        case NotificationType::transaction_status:
-          transaction_status->transaction_id = d["transaction_id"].as_string();
-          transaction_status->status = d["status"].as_integer();
-          res = std::move(transaction_status);
-          break;
-
-        case NotificationType::message:
-          message->sender_id = d["sender_id"].as_string();
-          message->message = d["message"].as_string();
-          res = std::move(message);
-          break;
-
-        case NotificationType::connection_enabled:
-          res.reset(new Notification);
-          break;
-
-        default:
-          throw elle::Exception{
-              "Unknown notification type %s", notification_type
-          };
-        }
-      res->notification_type = notification_type;
-      return res;
-    }
-
-
-    void
-    State::pull_notifications(int count, int offset)
-    {
-      if (count < 1)
-        return;
-
-      if (offset < 0)
-        return;
-
-      auto res = this->_meta->pull_notifications(count, offset);
-
-      // Handle old notif first to act like a queue.
-      for (auto& dict : res.old_notifs)
-        this->_handle_notification(*_xxx_dict_to_notification(dict), false);
-
-      for (auto& dict : res.notifs)
-        this->_handle_notification(*_xxx_dict_to_notification(dict), true);
-    }
-
-    void
-    State::notifications_read()
-    {
-      this->_meta->notification_read();
-    }
-
-    std::string
-    State::invite_user(std::string const& email)
-    {
-      auto response = this->_meta->invite_user(email);
-
-      return response._id;
-    }
-
-    void
-    State::send_files(std::string const& recipient_id_or_email,
-                      std::unordered_set<std::string> const& files)
-    {
-      ELLE_DEBUG("Sending file to '%s'.", recipient_id_or_email);
-
-      if (files.empty())
-            throw Exception(gap_no_file,
-                            "no files to send");
-
-      int size = 0;
-      for (auto const& path : files)
-        {
-          if (!fs::exists(path))
-            throw Exception(gap_file_not_found,
-                            "file doesn't exist.");
-
-          size += get_size(path);
-        }
-
-      std::string first_filename = fs::path(*(files.cbegin())).filename().string();
-
-      ELLE_DEBUG("First filename '%s'.", first_filename);
-
-      // Build timestamp.
-      elle::utility::Time time;
-      time.Current();
-
-      // Create an ostream to convert timestamp to string.
-      std::ostringstream oss;
-      oss << time.nanoseconds;
-
-      // FIXME: How to compute network name ?
-      /// XXX: Something fucked my id.
-      std::string network_name =
-        std::string(recipient_id_or_email)
-        + "-"
-        + oss.str();
-
-      ELLE_DEBUG("Creating temporary network '%s'.", network_name);
-
-      std::string network_id = this->create_network(network_name);
-
-      // Ensure the network status is available
-      (void) this->network_status(network_id);
-
-      auto portal_path = common::infinit::portal_path(
-        this->_me._id,
-        network_id
-      );
-      for (int i = 0; i < 10; ++i)
-        {
-          if (fs::exists(portal_path))
-            break;
-          ::sleep(1);
-        }
-
-      if (!fs::exists(portal_path))
-          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
-
-      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
-
-      QStringList arguments;
-      arguments << "-n" << network_id.c_str()
-                << "-u" << this->_me._id.c_str()
-                << "--path" << files.cbegin()->c_str()
-                << "--to"
-      ;
-      ELLE_DEBUG("LAUNCH: %s %s",
-                      transfer_binary,
-                      arguments.join(" ").toStdString());
-
-      QProcess p;
-      p.start(transfer_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8transfer binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8transfer binary exited with errors");
-
-      try
-      {
-        this->_meta->create_transaction(recipient_id_or_email,
-                                        first_filename,
-                                        files.size(),
-                                        size,
-                                        fs::is_directory(first_filename),
-                                        network_id,
-                                        this->device_id());
-      }
-      catch (elle::Exception const&)
-      {
-        // Something went wrong, we need to destroy the network.
-        this->delete_network(network_id,
-                             false);
-
-        throw;
-      }
-
-    }
-
-    //- Transactions ----------------------------------------------------------
-
-    void
-    State::_download_files(std::string const& transaction_id)
-    {
-      ELLE_ASSERT(this->_output_dir.length() != 0);
-
-      auto pair = State::transactions().find(transaction_id);
-
-      ELLE_ASSERT(pair != State::transactions().end());
-
-      if (pair == State::transactions().end())
-        return;
-
-      Transaction const& trans = pair->second;
-
-      (void) this->refresh_networks();
-
-      // Ensure the network status is available
-      (void) this->network_status(trans.network_id);
-
-      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
-
-      QStringList arguments;
-      arguments << "-n" << trans.network_id.c_str()
-                << "-u" << this->_me._id.c_str()
-                << "--path" << this->_output_dir.c_str()
-                << "--from"
-      ;
-      ELLE_DEBUG("LAUNCH: %s %s",
-                 transfer_binary,
-                 arguments.join(" ").toStdString());
-
-      QProcess p;
-      p.start(transfer_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8transfer binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8transfer binary exited with errors");
-
-      ELLE_WARN("TRANSFER IS FUCKING COMPLETE MOTHER FUCKER!! Your file is at '%s'.",
-                this->_output_dir.c_str());
-
-      update_transaction(transaction_id,
-                         gap_TransactionStatus::gap_transaction_status_finished);
-
-    }
-
-    void
-    State::output_dir(std::string const& dir)
-    {
-      printf("%s\n", dir.c_str());
-
-      if (!fs::exists(dir))
-        throw Exception(gap_error,
-                        "directory doesn't exist.");
-
-      if (!fs::is_directory(dir))
-        throw Exception(gap_error,
-                        "not a directroy.");
-
-      this->_output_dir = dir;
-    }
-
-    std::string
-    State::output_dir()
-    {
-      return this->_output_dir;
-    }
-
-    void
-    State::update_transaction(std::string const& transaction_id,
-                              gap_TransactionStatus status)
-    {
-      typedef
-        std::map<gap_TransactionStatus, std::set<gap_TransactionStatus>>
-        StatusMap;
-
-      static StatusMap _sender_status_update{
-        {gap_transaction_status_pending,
-          {
-            gap_transaction_status_canceled
-          }
-        },
-        {gap_transaction_status_accepted,
-          {
-            gap_transaction_status_started,
-            gap_transaction_status_canceled
-          }
-        },
-        {gap_transaction_status_started,
-          {
-            gap_transaction_status_canceled
-          }
-        },
-        // {gap_transaction_status_canceled,
-        //   {
-        //   }
-        // },
-        // {gap_transaction_status_finished,
-        //   {
-        //   }
-        //}
-      };
-
-      static StatusMap _recipient_status_update{
-        {gap_transaction_status_pending,
-          {
-            gap_transaction_status_accepted,
-            gap_transaction_status_canceled
-          }
-        },
-        {gap_transaction_status_accepted,
-          {
-            gap_transaction_status_canceled
-          }
-        },
-        {gap_transaction_status_started,
-          {
-            gap_transaction_status_canceled,
-            gap_transaction_status_finished
-          }
-        },
-        // {gap_transaction_status_canceled,
-        //   {
-        //   }
-        // },
-        // {gap_transaction_status_finished,
-        //   {
-        //   }
-        // }
-      };
-
-      ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
-
-      auto pair = State::transactions().find(transaction_id);
-
-      ELLE_ASSERT(pair != State::transactions().end());
-
-      if (pair == State::transactions().end())
-        return;
-
-      Transaction const& transaction = pair->second;
-
-      if (this->_me._id != transaction.recipient_id &&
-          this->_me._id != transaction.sender_id)
-      {
-        throw Exception{
-          gap_error,
-            "You are neither recipient nor the sender."
-        };
-      }
-
-      if (this->_me._id == transaction.recipient_id)
-      {
-        auto const& status_list = _recipient_status_update.find(
-          (gap_TransactionStatus) transaction.status);
-
-        if (status_list == _recipient_status_update.end() ||
-            status_list->second.find((gap_TransactionStatus) status) == status_list->second.end())
-        {
-          ELLE_WARN("You are not allowed to change status from %s to %s",
-                    transaction.status, status);
-          return;
-        }
-      }
-      else if (this->_me._id == transaction.sender_id)
-      {
-         auto const& status_list = _sender_status_update.find(
-           (gap_TransactionStatus) transaction.status);
-
-        if (status_list == _sender_status_update.end() ||
-            status_list->second.find((gap_TransactionStatus)status) == status_list->second.end())
-        {
-          ELLE_WARN("You are not allowed to change status from %s to %s",
-                    transaction.status, status);
-          return;
-        }
-      }
-
-      switch ((gap_TransactionStatus) status)
-      {
-        case gap_transaction_status_accepted:
-          this->_accept_transaction(transaction);
-          break;
-        case gap_transaction_status_started:
-          this->_start_transaction(transaction);
-          break;
-        case gap_transaction_status_canceled:
-          this->_cancel_transaction(transaction);
-          break;
-        case gap_transaction_status_finished:
-          this->_close_transaction(transaction);
-          break;
-        default:
-          ELLE_WARN("You are not able to change transaction status to '%i'.",
-                    status);
-          return;
-      }
-    } // !update_transaction()
-
-    void
-    State::_accept_transaction(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Accept transaction '%s'", transaction.transaction_id);
-
-      if (transaction.recipient_id != this->_me._id)
-      {
-        throw Exception{gap_error,
-            "Only recipient can accept transaction."};
-      }
-
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_transaction_status_accepted,
-                                      this->device_id(),
-                                      this->device_name());
-
-      // Could be improve.
-      _swaggers_dirty = true;
-    }
-
-    void
-    State::_start_transaction(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Start transaction '%s'", transaction.transaction_id);
-
-      if (transaction.sender_id != this->_me._id)
-      {
-        throw Exception{gap_error,
-            "Only sender can start transaction."};
-      }
-
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_transaction_status_started);
-
-    }
-
-    void
-    State::_cancel_transaction(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Cancel transaction '%s'", transaction.transaction_id);
-
-      //XXX: If download has started, cancel it, delete files, ...
-      if (transaction.sender_id == this->_me._id)
-      {
-        //XXX
-        this->_meta->update_transaction(transaction.transaction_id,
-                                        gap_transaction_status_canceled);
-
-      }
-      else
-      {
-        //XXX
-        this->_meta->update_transaction(transaction.transaction_id,
-                                        gap_transaction_status_canceled);
-      }
-    }
-
-    void
-    State::_close_transaction(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Close transaction '%s'", transaction.transaction_id);
-
-      if(transaction.recipient_id != this->_me._id)
-      {
-        throw Exception{gap_error,
-            "Only recipient can close transaction."};
-      }
-
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      gap_TransactionStatus::gap_transaction_status_finished);
-
-    }
-
-    void
-    State::send_message(std::string const& recipient_id,
-                        std::string const& message)
-    {
-      this->_meta->send_message(recipient_id,
-                                this->_me._id,
-                                message);
-    }
-
-
-    void
-    State::register_(std::string const& fullname,
-                     std::string const& email,
-                     std::string const& password,
-                     std::string const& activation_code)
-    {
-      // Logout first, and ignore errors.
-      try { this->logout(); } catch (elle::HTTPException const&) {}
-
-      this->_meta->register_(email, fullname, password, activation_code);
-
-      ELLE_DEBUG("Registered new user %s <%s>", fullname, email);
-      this->login(email, password);
-    }
-
-    State::TransactionsMap const&
-    State::transactions()
-    {
-      if (_transactions != nullptr)
-        return *_transactions;
-
-      _transactions.reset(new TransactionsMap{});
-
-      auto response = this->_meta->transactions();
-      for (auto const& transaction_id: response.transactions)
-        {
-          auto transaction = this->_meta->transaction(transaction_id);
-          (*this->_transactions)[transaction_id] = transaction;
-        }
-
-      return *(this->_transactions);
-    }
-
-    Transaction const&
-    State::transaction(std::string const& id)
-    {
-      auto it = this->transactions().find(id);
-      if (it == this->transactions().end())
-        throw Exception{
-            gap_error,
-            "Cannot find any transaction for id '" + id + "'"
-        };
-      return it->second;
-    }
-
-    // Thoose callbacks are used to keep the client and the server as the same
-    // state.
-    // Both recipient and sender recieve notifications, so some notification
-    // will only trigger a visual effect.
-    // Some of this notification will produce automatic actions such as
-    // launching 8transfer, 8acces, 8group.
-
-    void
-    State::_on_transaction_accepted(Transaction const& transaction)
-    {
-      ELLE_DEBUG("On transaction accepted '%s'", transaction.transaction_id);
-
-
-      if (transaction.sender_id != this->_me._id)
-        return;
-
-      ELLE_DEBUG("Giving '%s' acces to the network '%s'.",
-                transaction.recipient_id,
-                transaction.network_id);
-
-      this->network_add_user(transaction.network_id,
-                             transaction.recipient_id);
-
-      ELLE_DEBUG("Giving '%s' permissions on the network to '%s'.",
-                transaction.recipient_id,
-                transaction.network_id);
-
-      this->set_permissions(transaction.recipient_id,
-                            transaction.network_id,
-                            nucleus::neutron::permissions::write);
-
-      // When recipient has rights, allow him to start download.
-      this->update_transaction(transaction.transaction_id,
-                               gap_transaction_status_started);
-
-      // XXX Could be improved.
-      _swaggers_dirty = true;
-    }
-
-    void
-    State::_on_transaction_started(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Started transaction '%s'", transaction.transaction_id);
-
-      if (transaction.recipient_id != this->_me._id)
-        return;
-
-      _download_files(transaction.transaction_id);
-    }
-
-    void
-    State::_on_transaction_canceled(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Canceled transaction '%s'", transaction.transaction_id);
-
-      // XXX: If some process are launch, such as 8transfer, 8progess for the
-      // current transaction, cancel them.
-
-      // Delete networks.
-      (void) this->delete_network(transaction.network_id, true);
-
-      (void) this->refresh_networks();
-    }
-
-    void
-    State::_on_transaction_closed(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
-
-      // Delete networks.
-      (void) this->delete_network(transaction.network_id);
-
-      (void) this->refresh_networks();
-    }
-
-    size_t
-    State::poll(size_t max)
-    {
-      if (!this->_trophonius)
-        throw Exception{gap_error, "Trophonius is not connected"};
-
-      size_t count = 0;
-      while (count < max)
-        {
-          std::unique_ptr<Notification> notif{
-              this->_trophonius->poll()
-          };
-
-          if (!notif)
-            break;
-
-          this->_handle_notification(*notif);
-          ++count;
-        }
-
-      return count;
-    }
-
-    void
-    State::_handle_notification(Notification const& notif,
-                                bool new_)
-    {
-      // Connexion established.
-      if (notif.notification_type == NotificationType::connection_enabled)
-        // XXX set _connection_enabled to true
-        return;
-
-      auto handler_list = _notification_handlers.find(notif.notification_type);
-
-      if (handler_list == _notification_handlers.end())
-        {
-          ELLE_WARN("Handler missing for notification '%u'",
-                    notif.notification_type);
-          return;
-        }
-
-      for (auto& handler : handler_list->second)
-        {
-          ELLE_ASSERT(handler != nullptr);
-          handler(notif, new_);
-        }
-    }
-
-    bool
-    State::has_device() const
-    {
-      ELLE_ASSERT(this->_me._id.size() > 0 && "not properly initialized");
-      ELLE_DEBUG("Check for '%s' device existence at '%s'",
-                 this->_me._id,
-                 common::passport_path(this->_me._id));
-      return fs::exists(common::passport_path(this->_me._id));
-    }
-
-    std::string const&
-    State::device_id()
-    {
-      if (this->_device_id.size() == 0)
-        {
-          elle::Passport passport;
-          passport.load(common::passport_path(this->_me._id));
-          this->_device_id = passport.id();
-          this->_device_name = passport.name();
-        }
-      return this->_device_id;
-    }
-
-    std::string const&
-    State::device_name()
-    {
-      if (this->_device_name.size() == 0)
-        {
-          elle::Passport passport;
-          passport.load(common::passport_path(this->_me._id));
-          this->_device_id = passport.id();
-          this->_device_name = passport.name();
-        }
-      return this->_device_name;
-    }
-
-    void
-    State::update_device(std::string const& name, bool force_create)
-    {
-      std::string passport_string;
-
-      elle::io::Path passport_path(lune::Lune::Passport);
-
-      ELLE_WARN("ID: '%s'", this->_me._id);
-      passport_path.Complete(elle::io::Piece{"%USER%", this->_me._id});
-
-      this->_device_name = name;
-      ELLE_DEBUG("Device to update: '%s'", this->_device_name.c_str());
-
-      if (force_create || !this->has_device())
-        {
-          auto res = this->_meta->create_device(name);
-          passport_string = res.passport;
-          this->_device_id = res.created_device_id;
-          ELLE_DEBUG("Created device id: %s", this->_device_id.c_str());
-        }
-      else
-        {
-          ELLE_DEBUG("Loading passport from '%s'.", passport_path);
-          elle::Passport passport;
-          passport.load(passport_path);
-
-          ELLE_DEBUG("Passport id: %s", passport.id());
-          auto res = this->_meta->update_device(passport.id(), name);
-          this->_device_id = res.updated_device_id;
-          passport_string = res.passport;
-        }
-
-      elle::Passport passport;
-      if (passport.Restore(passport_string) == elle::Status::Error)
-        throw Exception(gap_wrong_passport, "Cannot load the passport");
-
-      passport.store(passport_path);
-    }
-
-    //- Network management ----------------------------------------------------
-
-    std::string
-    State::create_network(std::string const& name)
-    {
-      auto response = this->_meta->create_network(name);
-      this->_networks_dirty = true;
-      this->_networks_status_dirty = true;
-      this->refresh_networks(); //XXX not optimal
-      return response.created_network_id;
-    }
-
-    std::string
-    State::delete_network(std::string const& network_id, bool force)
-    {
-      auto const& net = this->_networks.find(network_id);
-
-      if (net != this->_networks.end())
-      {
-        delete net->second;
-        this->_networks.erase(net);
-      }
-
-      auto response = this->_meta->delete_network(network_id, force);
-      this->_networks_dirty = true;
-      this->_networks_status_dirty = true;
-      this->refresh_networks(); //XXX not optimal
-      return response.deleted_network_id;
-    }
-
-    std::map<std::string, Network*> const&
-    State::networks()
-    {
-      if (this->_networks_dirty)
-        {
-          auto response = this->_meta->networks();
-          for (auto const& network_id: response.networks)
-            {
-              if (this->_networks.find(network_id) == this->_networks.end())
-                {
-                  auto response = this->_meta->network(network_id);
-                  this->_networks[network_id] = new Network{response};
-                }
-            }
-          this->_networks_dirty = false;
-        }
-      return this->_networks;
-    }
-
-    Network const&
-    State::network(std::string const& id)
-    {
-      auto it = this->networks().find(id);
-      if (it == this->networks().end())
-        throw Exception{
-            gap_error,
-            "Cannot find any network for id '" + id + "'"
-        };
-      return *(it->second);
-    }
-
-    void
-    State::network_add_user(std::string const& network_id,
-                            std::string const& user)
-    {
-      // makes user we have an id
-      std::string user_id = this->user(user)._id;
-      auto it = this->networks().find(network_id);
-      ELLE_ASSERT(it != this->networks().end());
-      Network* network = it->second;
-      ELLE_ASSERT(network != nullptr);
-
-      std::string const& group_binary = common::infinit::binary_path("8group");
-
-      QStringList arguments;
-      arguments << "--user" << this->_me._id.c_str()
-                << "--type" << "user"
-                << "--add"
-                << "--network" << network->_id.c_str()
-                << "--identity" << this->user(user_id).public_key.c_str()
-      ;
-      ELLE_DEBUG("LAUNCH: %s %s",
-                      group_binary,
-                      arguments.join(" ").toStdString());
-      QProcess p;
-      p.start(group_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8group binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8group binary exited with errors");
-
-      auto res = this->_meta->network_add_user(network_id, user_id);
-      if (std::find(network->users.begin(),
-                    network->users.end(),
-                    user_id) == network->users.end())
-        network->users.push_back(user_id);
-    }
-
-    std::map<std::string, NetworkStatus*> const&
-    State::networks_status()
-    {
-      if (this->_networks_status_dirty)
-        {
-          json::Dictionary response;
-          this->_send_watchdog_cmd("status", nullptr, &response);
-
-          auto& networks = response["networks"].as_array();
-
-          for (size_t i = 0; i < networks.size(); ++i)
-            {
-              ELLE_DEBUG("network '%i'.", i);
-              auto& network = networks[i].as_dictionary();
-              ELLE_DEBUG("> '%s'.", network["_id"].as_string());
-              std::string mount_point = network["mount_point"].as_string();
-              std::string network_id = network["_id"].as_string();
-
-              NetworkStatus* status = nullptr;
-              auto it = this->_networks_status.find(network_id);
-              if (it == this->_networks_status.end())
-                {
-                  status = this->_networks_status[network_id]
-                         = new NetworkStatus;
-                }
-              else
-                {
-                  status = it->second;
-                }
-              ELLE_ASSERT(status != nullptr);
-              *status = NetworkStatus{
-                  network_id,
-                  mount_point,
-              };
-            }
-          this->_networks_status_dirty = false;
-        }
-      else
-        {
-          ELLE_DEBUG("Networks are clean.");
-        }
-      return this->_networks_status;
-    }
-
-    NetworkStatus const&
-    State::network_status(std::string const& id)
-    {
-      auto it = this->networks_status().find(id);
-      if (it == this->networks_status().end())
-        throw Exception{
-            gap_error,
-            "Unknown network id '" + id + "'",
-        };
-      return *(it->second);
     }
 
     //- Watchdog --------------------------------------------------------------
@@ -1419,331 +392,110 @@ namespace surface
 
     /// - File level ----------------------------------------------------------
 
-    FileInfos const&
-    State::file_infos(std::string const& path)
-    {
-      std::string abspath = elle::os::path::absolute(path, true);
-      ELLE_DEBUG("Get file infos of %s", abspath);
-      auto it = this->_files_infos.find(abspath);
-      if (it != this->_files_infos.end())
-        return *(it->second);
 
-      std::unique_ptr<FileInfos> infos;
-
-      for (auto const& pair : this->networks_status())
-        {
-          std::string mount_point = pair.second->mount_point;
-
-          if (boost::algorithm::starts_with(abspath, mount_point))
-            {
-              std::string relpath;
-              if (abspath == mount_point)
-                relpath = "";
-              else
-                relpath = abspath.substr(mount_point.size() + 1);
-
-              infos.reset(new FileInfos{
-                  mount_point,
-                  pair.first,
-                  abspath,
-                  relpath,
-                  {},
-              });
-              break;
-            }
-        }
-
-      if (infos.get() == nullptr)
-        throw Exception(gap_error,
-                        "Cannot find network for path '" + abspath + "'");
-
-      std::string const& access_binary = common::infinit::binary_path("8access");
-
-      QStringList arguments;
-      arguments << "--user" << this->_me._id.c_str()
-                << "--type" << "user"
-                << "--network" << this->network(infos->network_id)._id.c_str()
-                << "--path" << ("/" + infos->relative_path).c_str()
-                << "--consult"
-                ;
-
-      QProcess p;
-      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
-      p.start(access_binary.c_str(), arguments);
-      if (!p.waitForFinished()) // .8 sec
-        throw Exception(gap_internal_error, "8access binary failed");
-      std::stringstream ss{p.readAllStandardOutput().constData()};
-
-      std::string line;
-      while(std::getline(ss, line))
-        {
-          if (!line.size())
-            continue;
-          std::stringstream line_stream{line};
-          std::string public_key;
-          int permissions;
-          line_stream >> public_key /* eat "User" */
-                      >> public_key
-                      >> permissions;
-          int gap_perm = (int) gap_none;
-          if (permissions & nucleus::neutron::permissions::read)
-            gap_perm |= gap_read;
-          if (permissions & nucleus::neutron::permissions::write)
-            gap_perm |= gap_write;
-          std::string const& user_id = this->user_from_public_key(public_key)._id;
-          infos->accesses[user_id] = gap_perm;
-        }
-
-      this->_files_infos[abspath] = infos.get();
-      return *(infos.release());
-    }
-
-    void
-    State::deprecated_set_permissions(std::string const& user_id,
-                                      std::string const& abspath,
-                                      nucleus::neutron::Permissions permissions,
-                                      bool recursive)
-    {
-      FileInfos const& infos = this->file_infos(abspath);
-      auto it = this->networks().find(infos.network_id);
-
-      if (it == this->networks().end())
-        throw Exception(gap_error, "Wrong network id");
-
-      Network* network = it->second;
-
-      std::string const& access_binary = common::infinit::binary_path("8access");
-
-      QStringList arguments;
-      arguments << "--user" << this->_me._id.c_str()
-                << "--type" << "user"
-                << "--grant"
-                << "--network" << network->_id.c_str()
-                << "--path" << ("/" + infos.relative_path).c_str()
-                << "--identity" << this->user(user_id).public_key.c_str()
-                ;
-      if (permissions & nucleus::neutron::permissions::read)
-        arguments << "--read";
-      if (permissions & nucleus::neutron::permissions::write)
-        arguments << "--write";
-
-      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
-
-      if (permissions & gap_exec)
-        {
-          ELLE_WARN("XXX: setting executable permissions not yet implemented");
-        }
-
-      QProcess p;
-      p.start(access_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8access binary failed");
-
-      if (recursive && elle::os::path::is_directory(abspath))
-        {
-          boost::filesystem::directory_iterator it{abspath},
-                                                end{};
-          for (; it != end; ++it)
-            {
-              this->deprecated_set_permissions(user_id,
-                                               it->path().string(),
-                                               permissions,
-                                               true);
-            }
-        }
-    }
-
-    void
-    State::set_permissions(std::string const& user_id,
-                           std::string const& network_id,
-                           nucleus::neutron::Permissions permissions)
-    {
-      std::string const& access_binary = common::infinit::binary_path("8access");
-
-      QStringList arguments;
-      arguments << "--user" << this->_me._id.c_str()
-                << "--type" << "user"
-                << "--grant"
-                << "--network" << network_id.c_str()
-                << "--path" << "/"
-                << "--identity" << this->user(user_id).public_key.c_str()
-        ;
-      if (permissions & nucleus::neutron::permissions::read)
-        arguments << "--read";
-      if (permissions & nucleus::neutron::permissions::write)
-        arguments << "--write";
-
-      ELLE_DEBUG("LAUNCH: %s %s", access_binary, arguments.join(" ").toStdString());
-
-      if (permissions & gap_exec)
-      {
-        ELLE_WARN("XXX: setting executable permissions not yet implemented");
-      }
-
-      QProcess p;
-      p.start(access_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8access binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8access binary exited with errors");
-    }
-
-    size_t
-    State::get_size(fs::path const& path)
-    {
-      if (!fs::exists(path))
-        return 0;
-
-      if (!fs::is_directory(path))
-        return fs::file_size(path);
-
-      size_t size = 0;
-      fs::directory_iterator end_itr;
-
-      for (fs::directory_iterator itr(path);
-           itr != end_itr;
-           ++itr)
-        {
-          if (fs::is_directory(itr->status()))
-            {
-              size += get_size(itr->path());
-            }
-          else
-            {
-              size += fs::file_size(itr->path());
-            }
-        }
-      return size;
-    }
 
     // - TROPHONIUS ----------------------------------------------------
     /// Connect to trophonius
 
     void
-    State::connect()
+    State::_notify_8infinit(Transaction const& trans)
     {
-      if (this->_trophonius)
-        throw Exception{gap_error, "trophonius is already connected"};
+      ELLE_TRACE("Notify 8infinit for transaction %s", trans);
 
-      try
-        {
-          this->_trophonius.reset(new plasma::trophonius::Client{
-            common::trophonius::host(),
-            common::trophonius::port(),
-            true,
-          });
-        }
-      catch (std::runtime_error const& err)
-        {
-          throw Exception{gap_error, "Couldn't connect to trophonius"};
-        }
-      this->_trophonius->connect(this->_me._id,
-                                 this->_meta->token());
+      namespace proto = infinit::protocol;
+      std::string const& sender_device = trans.sender_device_id;
+      std::string const& network_id = trans.network_id;
 
-      ELLE_DEBUG("Connect to trophonius with 'id': %s and 'token':  %s",
-                 this->_meta->identity(), this->_meta->token());
-    }
-
-    void
-    State::user_status_callback(UserStatusNotificationCallback const& cb)
-    {
-      auto fn = [cb] (Notification const& notif, bool) -> void {
-        return cb(static_cast<UserStatusNotification const&>(notif));
-      };
-
-      this->_notification_handlers[NotificationType::user_status].push_back(fn);
-    }
-
-    void
-    State::transaction_callback(TransactionNotificationCallback const& cb)
-    {
-      auto fn = [cb] (Notification const& notif, bool is_new) -> void {
-        return cb(static_cast<TransactionNotification const&>(notif), is_new);
-      };
-
-      this->_notification_handlers[NotificationType::transaction].push_back(fn);
-    }
-
-    void
-    State::transaction_status_callback(TransactionStatusNotificationCallback const& cb)
-    {
-      auto fn = [cb] (Notification const& notif, bool is_new) -> void {
-        return cb(static_cast<TransactionStatusNotification const&>(notif), is_new);
-      };
-
-      _notification_handlers[NotificationType::transaction_status].push_back(fn);
-    }
-
-    void
-    State::message_callback(MessageNotificationCallback const& cb)
-    {
-      auto fn = [cb] (Notification const& notif, bool) -> void {
-        return cb(static_cast<MessageNotification const&>(notif));
-      };
-
-      this->_notification_handlers[NotificationType::message].push_back(fn);
-    }
-
-    void
-    State::_on_transaction(TransactionNotification const& notif,
-                           bool is_new)
-    {
-      ELLE_TRACE("_on_notification: gap_TransactionNotification");
-
-      if (!is_new)
-        return;
-
-      auto it = this->transactions().find(notif.transaction.transaction_id);
-
-      if (it != this->transactions().end())
-        return;
-
-      // Normal case, this is a new transaction, store it to match server.
-      (*this->_transactions)[notif.transaction.transaction_id] = notif.transaction;
-    }
-
-    void
-    State::_on_transaction_status(TransactionStatusNotification const& notif)
-    {
-      ELLE_TRACE("_on_notification: gap_TransactionStatusNotification");
-
-      auto const pair = State::transactions().find(notif.transaction_id);
-
-      if (pair == State::transactions().end())
+      /// Check if network is valid
       {
-        // Something went wrong.
-        auto transaction = this->_meta->transaction(notif.transaction_id);
+          auto network = this->networks().find(network_id);
 
-        (*this->_transactions)[notif.transaction_id] = transaction;
+          if (network == this->networks().end())
+              throw gap::Exception{gap_internal_error, "Unable to find network"};
+
       }
 
-      (*this->_transactions)[notif.transaction_id].status = notif.status;
-
-      auto const& transaction = this->transaction(notif.transaction_id);
-
-      switch(notif.status)
+      // Fetch Nodes and find the correct one to contact
+      std::list<std::string> externals;
+      std::list<std::string> locals;
       {
-        case gap_transaction_status_accepted:
-          // We update the transaction from meta.
-          (*_transactions)[notif.transaction_id] = this->_meta->transaction(
-              notif.transaction_id
-          );
-          this->_on_transaction_accepted(transaction);
-          break;
-        case gap_transaction_status_started:
-          this->_on_transaction_started(transaction);
-          break;
-        case gap_transaction_status_canceled:
-          this->_on_transaction_canceled(transaction);
-          break;
-        case gap_transaction_status_finished:
-          this->_on_transaction_closed(transaction);
-          break;
-        default:
-          ELLE_WARN("The status '%s' is unknown.", notif.status);
-          return;
+        std::string target_device{};
+
+        if (trans.recipient_device_id == this->device_id())
+          target_device = trans.sender_device_id;
+        else
+          target_device = trans.recipient_device_id;
+
+        Endpoint e = this->_meta->device_endpoints(network_id, target_device);
+
+        externals = std::move(e.externals);
+        locals = std::move(e.locals);
+      }
+
+      // Finish by calling the RPC to notify 8infinit of all the IPs of the peer
+      {
+        lune::Phrase phrase;
+
+        if (this->_wait_portal(network_id) == false)
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
+        phrase.load(this->_me._id, network_id, "portal");
+
+        ELLE_DEBUG("Connect to the local 8infint instance (%s:%d)",
+                   elle::String{"127.0.0.1"},
+                   phrase.port);
+
+        reactor::Sleep s(elle::concurrency::scheduler(),
+                         boost::posix_time::seconds(10));
+
+        s.run();
+
+        // Connect to the server.
+        reactor::network::TCPSocket socket{
+            elle::concurrency::scheduler(),
+            elle::String("127.0.0.1"),
+            phrase.port,
+        };
+
+        proto::Serializer serializer{
+            elle::concurrency::scheduler(),
+            socket
+        };
+
+        proto::ChanneledStream channels{
+            elle::concurrency::scheduler(),
+            serializer
+        };
+
+        etoile::portal::RPC rpcs{channels};
+
+        bool ok = false;
+        auto send_to_slug = [&] (std::string const& endpoint) -> void {
+          if (!ok)
+          {
+            std::vector<std::string> result;
+
+            boost::split(result, endpoint, boost::is_any_of(":"));
+            ELLE_DEBUG("slug_connect(%s, %s)", result[0], result[1]);
+
+            rpcs.slug_connect(result[0], std::stoi(result[1]));
+            ok = true;
+          }
+          else
+              ELLE_DEBUG("ignore %s", endpoint);
+        };
+
+        try
+        {
+            std::for_each(std::begin(locals), std::end(locals), send_to_slug);
+            std::for_each(std::begin(externals), std::end(externals), send_to_slug);
+        }
+        catch (elle::Exception const &e)
+        {
+            ELLE_TRACE("Caught exception %s", e.what());
+            throw e;
+        }
       }
     }
-
   }
 }

@@ -24,16 +24,15 @@
 #include <lune/Lune.hh>
 
 #include <plasma/meta/Client.hh>
-
 #include <HoleFactory.hh>
 
-ELLE_LOG_COMPONENT("infinit");
+#include <elle/CrashReporter.hh>
 
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
   // set up the program.
-  if (elle::concurrency::Program::Setup() == elle::Status::Error)
+  if (elle::concurrency::Program::Setup("Infinit") == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to set up the program");
 
@@ -91,7 +90,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to parse the command line");
 
   // test the option.
-  if (Infinit::Parser->Test("Help") == elle::Status::True)
+  if (Infinit::Parser->Test("Help") == true)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -123,7 +122,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     }
 
   // Retrieve the mount point.
-  if (Infinit::Parser->Test("Mountpoint") == elle::Status::True)
+  if (Infinit::Parser->Test("Mountpoint") == true)
     {
       if (Infinit::Parser->Value("Mountpoint",
                                  Infinit::Mountpoint) == elle::Status::Error)
@@ -151,31 +150,32 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
-  // Create the NAT Manipulation class
-  elle::nat::NAT NAT(elle::concurrency::scheduler());
-  std::vector<std::pair<std::string, uint16_t>> public_addresses;
+  // // Create the NAT Manipulation class
+  // elle::nat::NAT NAT(elle::concurrency::scheduler());
+  // std::vector<std::pair<std::string, uint16_t>> public_addresses;
 
 
-  // By default, try to open a hole in the nat.
-  try
-    {
-      ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
-                       common::longinus::host(),
-                       common::longinus::port());
-      elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
-                                         common::longinus::port());
+  // // By default, try to open a hole in the nat.
+  // try
+  //   {
+  //     ELLE_DEBUG_SCOPE("start hole punching on %s:%d",
+  //                      common::longinus::host(),
+  //                      common::longinus::port());
+  //     elle::nat::Hole pokey = NAT.punch(common::longinus::host(),
+  //                                        common::longinus::port());
 
-      public_addresses.push_back(pokey.public_endpoint());
-    }
-  catch (elle::Exception &e)
-    {
-      ELLE_WARN("NAT punching error: %s", e.what());
-    }
+  //     public_addresses.push_back(pokey.public_endpoint());
+  //   }
+  // catch (elle::Exception &e)
+  //   {
+  //     ELLE_WARN("NAT punching error: %s", e.what());
+  //   }
 
+  nucleus::proton::Network network(Infinit::Network);
   elle::io::Path shelter_path(lune::Lune::Shelter);
   shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
                         elle::io::Piece{"%NETWORK%", Infinit::Network});
-  hole::storage::Directory storage(shelter_path.string());
+  hole::storage::Directory storage(network, shelter_path.string());
 
   elle::io::Path passport_path(lune::Lune::Passport);
   passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
@@ -190,53 +190,53 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 #endif
   hole->join();
 
-  // FIXME
-  if (std::unique_ptr<hole::implementations::slug::Implementation> slug =
-      elle::cast<hole::implementations::slug::Implementation>::runtime(hole))
-    {
-      lune::Descriptor descriptor(Infinit::User, Infinit::Network);
-      plasma::meta::Client client(common::meta::host(), common::meta::port());
-      try
-        {
-          std::vector<std::pair<std::string, uint16_t>> addresses;
+  // // FIXME
+  // if (std::unique_ptr<hole::implementations::slug::Implementation> slug =
+  //     elle::cast<hole::implementations::slug::Implementation>::runtime(hole))
+  //   {
+  //     lune::Descriptor descriptor(Infinit::User, Infinit::Network);
+  //     plasma::meta::Client client(common::meta::host(), common::meta::port());
+  //     try
+  //       {
+  //         std::vector<std::pair<std::string, uint16_t>> addresses;
 
-          auto interfaces = elle::network::Interface::get_map(
-            elle::network::Interface::Filter::only_up
-            | elle::network::Interface::Filter::no_loopback
-            );
-          for (auto const& pair: interfaces)
-            if (pair.second.ipv4_address.size() > 0 &&
-                pair.second.mac_address.size() > 0)
-              {
-                addresses.emplace_back(pair.second.ipv4_address, slug->port());
-                break;
-              }
-          if (addresses.size() == 0)
-            {
-              ELLE_ERR("Cannot find any valid ip address");
-            }
-          else
-            {
-              for (auto const &pair: addresses)
-              {
-                ELLE_LOG("Register instance address: %s:%d", pair.first,
-                         pair.second);
-              }
+  //         auto interfaces = elle::network::Interface::get_map(
+  //           elle::network::Interface::Filter::only_up
+  //           | elle::network::Interface::Filter::no_loopback
+  //           );
+  //         for (auto const& pair: interfaces)
+  //           if (pair.second.ipv4_address.size() > 0 &&
+  //               pair.second.mac_address.size() > 0)
+  //             {
+  //               addresses.emplace_back(pair.second.ipv4_address, slug->port());
+  //               break;
+  //             }
+  //         if (addresses.size() == 0)
+  //           {
+  //             ELLE_ERR("Cannot find any valid ip address");
+  //           }
+  //         else
+  //           {
+  //             for (auto const &pair: addresses)
+  //             {
+  //               ELLE_LOG("Register instance address: %s:%d", pair.first,
+  //                        pair.second);
+  //             }
 
-              client.token(agent::Agent::meta_token);
-              client.network_connect_device(descriptor.meta().id(),
-                                            passport.id(),
-                                            addresses,
-                                            public_addresses);
-            }
-        }
-      catch (std::exception const& err)
-        {
-          ELLE_ERR("Cannot update device port: %s",
-                   err.what()); // XXX[to improve]
-        }
-      hole.reset(slug.release());
-    }
+  //             client.token(agent::Agent::meta_token);
+  //             // client.network_connect_device(descriptor.meta().id(),
+  //             //                               passport.id(),
+  //             //                               addresses,
+  //             //                               public_addresses);
+  //           }
+  //       }
+  //     catch (std::exception const& err)
+  //       {
+  //         ELLE_ERR("Cannot update device port: %s",
+  //                  err.what()); // XXX[to improve]
+  //       }
+  //     hole.reset(slug.release());
+  //   }
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)
@@ -298,14 +298,14 @@ elle::Status
 Main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
-    {
+   {
       Infinit(argc, argv);
     }
   catch (elle::utility::ParserException const &e)
-  {
+    {
       std::cerr << e.what() << std::endl;
       Infinit::Parser->Usage();
-  }
+    }
   catch (std::exception const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
@@ -313,6 +313,7 @@ Main(elle::Natural32 argc, elle::Character* argv[])
           dynamic_cast<reactor::Exception const*>(&e))
         std::cerr << re->backtrace() << std::endl;
 
+      elle::crash::report("8infinit", e.what(), reactor::Backtrace::current());
       elle::concurrency::scheduler().terminate();
       return elle::Status::Error;
     }
@@ -330,5 +331,6 @@ main(int argc, char* argv[])
                                         return Main(argc, argv);
                                       });
   sched.run();
+
   return main.result() == elle::Status::Ok ? 0 : 1;
 }

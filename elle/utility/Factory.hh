@@ -35,11 +35,13 @@ namespace elle
         private boost::noncopyable
       {
       public:
+        // construction
         virtual
         ~Functionoid()
         {
         }
 
+        // methods
       public:
         virtual
         void*
@@ -52,13 +54,16 @@ namespace elle
       class Generatoid:
         public Functionoid
       {
+        // construction
       public:
         Generatoid(P const&);
 
+        // methods
       public:
         void*
         allocate() const;
 
+        // attributes
       private:
         ELLE_ATTRIBUTE(P const, product);
       };

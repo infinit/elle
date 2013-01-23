@@ -1,10 +1,12 @@
 #include <etoile/automaton/Ensemble.hh>
 #include <etoile/gear/Group.hh>
 #include <etoile/depot/Depot.hh>
+#include <etoile/nest/Nest.hh>
 
 #include <nucleus/proton/Revision.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
+#include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
 #include <elle/finally.hh>
@@ -28,41 +30,47 @@ namespace etoile
     elle::Status
     Ensemble::Open(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Open()");
+      ELLE_TRACE_FUNCTION(context);
 
-      // if the ensemble is already opened, return.
-      if (context.ensemble != nullptr)
+      // XXX
+      static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+
+      if (context.ensemble_porcupine != nullptr)
         return elle::Status::Ok;
 
-      // check if there exists a ensemble. if so, load the block.
-      if (context.group->ensemble() != nucleus::proton::Address::null())
+      // Check if there exists ensemble. if so, instanciate a porcupine.
+      if (context.group->ensemble().empty() == false)
         {
-          ELLE_TRACE_SCOPE("pull the ensemble block from the storage layer");
+          // Instanciate a nest.
+          context.ensemble_nest =
+            new etoile::nest::Nest(ENSEMBLE_SECRET_KEY_LENGTH,
+                                   context.ensemble_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
-          // XXX[remove try/catch later]
-          try
-            {
-              // XXX[the context should make use of unique_ptr instead
-              //     of releasing here.]
-              context.ensemble =
-                depot::Depot::pull_ensemble(
-                  context.group->ensemble()).release();
-            }
-          catch (std::exception const& e)
-            {
-              escape("%s", e.what());
-            }
+          // Instanciate a porcupine.
+          context.ensemble_porcupine =
+            new nucleus::proton::Porcupine<nucleus::neutron::Ensemble>{
+              context.group->ensemble(),
+              secret_key,
+              *context.ensemble_nest};
         }
       else
         {
-          ELLE_TRACE_SCOPE("the group does not reference an ensemble");
+          // Instanciate a nest.
+          context.ensemble_nest =
+            new etoile::nest::Nest(ENSEMBLE_SECRET_KEY_LENGTH,
+                                   context.ensemble_limits,
+                                   depot::hole().storage().network(),
+                                   agent::Agent::Subject.user());
 
-          context.ensemble =
-            new nucleus::neutron::Ensemble(nucleus::proton::Network(Infinit::Network),
-                                           agent::Agent::Identity.pair.K());
+          // otherwise create a new empty porcupine.
+          context.ensemble_porcupine =
+            new nucleus::proton::Porcupine<nucleus::neutron::Ensemble>{
+              *context.ensemble_nest};
         }
 
-      assert(context.ensemble);
+      ELLE_ASSERT(context.ensemble_porcupine != nullptr);
 
       return elle::Status::Ok;
     }
@@ -70,15 +78,47 @@ namespace etoile
     elle::Status
     Ensemble::Destroy(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Destroy()");
+      ELLE_TRACE_FUNCTION(context);
 
-      assert(context.group != nullptr);
-
-      // if a block is referenced by the object, mark it as needing removal.
-      if (context.group->ensemble() != nucleus::proton::Address::null())
+      // If the.group holds some ensemble, mark the blocks as
+      // needing removal.
+      if (context.group->ensemble().empty() == false)
         {
-          ELLE_TRACE("record the ensemble block in the transcript")
-            context.transcript.wipe(context.group->ensemble());
+          // Optimisation: only proceed if the content strategy is block-based:
+          switch (context.group->ensemble().strategy())
+            {
+            case nucleus::proton::Strategy::none:
+              throw elle::Exception("unable to destroy an empty content");
+            case nucleus::proton::Strategy::value:
+              {
+                // Nothing to do in this case since there is no block for
+                // holding the ensemble.
+                //
+                // The optimization makes us save some time since the content
+                // is not deserialized.
+
+                break;
+              }
+            case nucleus::proton::Strategy::block:
+            case nucleus::proton::Strategy::tree:
+              {
+                Ensemble::Open(context);
+
+                ELLE_TRACE("record the ensemble blocks for removal");
+                ELLE_ASSERT(context.ensemble_porcupine != nullptr);
+                context.ensemble_porcupine->destroy();
+
+                ELLE_TRACE("mark the destroyed blocks as needed to be "
+                           "removed from the storage layer");
+                context.transcript().merge(
+                  context.ensemble_nest->transcribe());
+
+                break;
+              }
+            default:
+              throw elle::Exception("unknown strategy '%s'",
+                                    context.group->ensemble().strategy());
+            }
         }
 
       return elle::Status::Ok;
@@ -87,18 +127,19 @@ namespace etoile
     elle::Status
     Ensemble::Close(gear::Group& context)
     {
-      ELLE_TRACE_SCOPE("Close()");
+      ELLE_TRACE_FUNCTION(context);
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
       //
       {
         // if there is no loaded ensemble, then there is nothing to do.
-        if (context.ensemble == nullptr)
+        if (context.ensemble_porcupine == nullptr)
           return elle::Status::Ok;
 
         // if the ensemble has not changed, do nothing.
-        if (context.ensemble->state() == nucleus::proton::StateClean)
+        if (context.ensemble_porcupine->state() ==
+            nucleus::proton::State::clean)
           return elle::Status::Ok;
       }
 
@@ -106,8 +147,11 @@ namespace etoile
       // at this point, the ensemble is known to have been modified.
       //
 
+      // retrieve the ensemble's size.
+      nucleus::neutron::Size size = context.ensemble_porcupine->size();
+
       // modify the group according to the ensemble.
-      if (context.ensemble->empty() == true)
+      if (size == 0)
         {
           //
           // if the ensemble became empty after removals, the
@@ -137,19 +181,12 @@ namespace etoile
 
           // downgrade the group since it no longer reference an ensemble
           // of fellows.
-          // XXX[remove try/catch]
-          try
-            {
-              // The group size equals one i.e the group manager in this
-              // case since no ensemble is referenced.
-              context.group->size(1);
 
-              context.group->downgrade();
-            }
-          catch (...)
-            {
-              escape("unable to downdate the group");
-            }
+          // The group size equals one i.e the group manager in this
+          // case since no ensemble is referenced.
+          context.group->size(1);
+
+          context.group->downgrade();
         }
       else
         {
@@ -197,61 +234,50 @@ namespace etoile
 
             cryptography::PrivateKey k(
               token.extract<cryptography::PrivateKey>(
-                agent::Agent::Identity.pair.k()));
+                agent::Agent::Identity.pair().k()));
 
             pass = new cryptography::KeyPair(context.group->pass_K(), k);
           }
           // XXX
 
+          // XXX
+          static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+
           // upgrade the ensemble's tokens with the new pass.
           // besides, update the group's size with the number
           // of elements in the ensemble.
-          // XXX[remove try/catch]
-          try
-            {
-              context.ensemble->update(pass->k());
-            }
-          catch (...)
-            {
-              escape("unable to upgrade the ensemble with a new pass");
-            }
+          nucleus::neutron::ensemble::upgrade(*context.ensemble_porcupine,
+                                              pass->k());
 
-          nucleus::proton::Address address(context.ensemble->bind());
 
-          // set the content as consistent.
-          context.ensemble->state(nucleus::proton::StateConsistent);
-
-          // mark the block as needing to be stored.
-          context.transcript.push(address, context.ensemble);
+          // XXX[too slow without a nest optimization: to activate later]
+          ELLE_STATEMENT(context.ensemble_porcupine->check(nucleus::proton::flags::all));
 
           // ugrade the group.
-          // XXX[remove try/catch]
-          try
-            {
-              // The group size equals the number of fellows in the
-              // ensemble plus the group manager. This is why one is
-              // added to the size.
-              context.group->size(context.ensemble->size() + 1);
 
-              // Regenerate the group manager's token.
-              nucleus::neutron::Token manager_token(
-                pass->K(),
-                context.group->manager_subject().user());
+          // The group size equals the number of fellows in the
+          // ensemble plus the group manager. This is why one is
+          // added to the size.
+          context.group->size(1 + size);
 
-              context.group->upgrade(address, pass->K(), manager_token);
-            }
-          catch (...)
-            {
-              escape("unable to upgrade the group");
-            }
+          // Regenerate the group manager's token.
+          nucleus::neutron::Token manager_token(
+            pass->K(),
+            context.group->manager_subject().user());
+
+          context.group->upgrade(context.ensemble_porcupine->seal(secret_key),
+                                 pass->K(),
+                                 manager_token);
 
           ELLE_FINALLY_ABORT(pass);
 
           delete pass;
+
+          // mark the new/modified blocks as needing to be stored.
+          context.transcript().merge(context.ensemble_nest->transcribe());
         }
 
       return elle::Status::Ok;
     }
-
   }
 }

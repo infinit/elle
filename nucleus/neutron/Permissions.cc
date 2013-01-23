@@ -8,10 +8,20 @@ namespace nucleus
 {
   namespace neutron
   {
+    /*-------.
+    | Values |
+    `-------*/
 
-//
-// ---------- operators -------------------------------------------------------
-//
+    namespace permissions
+    {
+      Permissions const none = 0;
+      Permissions const read = (1 << 0);
+      Permissions const write = read | (1 << 1);
+    }
+
+    /*----------.
+    | Operators |
+    `----------*/
 
     std::ostream&
     operator <<(std::ostream& stream,
@@ -35,13 +45,11 @@ namespace nucleus
             break;
           }
         default:
-          {
-            throw Exception("unknown permissions '%s'", permissions);
-          }
+          throw Exception("unknown permissions '%s'",
+                          static_cast<int>(permissions));
         }
 
       return (stream);
     }
-
   }
 }

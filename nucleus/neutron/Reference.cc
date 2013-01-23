@@ -1,5 +1,5 @@
 #include <nucleus/neutron/Reference.hh>
-
+#include <nucleus/proton/Nest.hh>
 #include <nucleus/proton/Contents.hh>
 
 namespace nucleus
@@ -8,14 +8,30 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- definitions -----------------------------------------------------
 //
 
-    ///
-    /// default constructor.
-    ///
-    Reference::Reference(proton::Contents<Reference>&           contents):
-      contents(contents)
+    proton::Nature const Reference::Constants::seam =
+      proton::Nature::reference_seam;
+    proton::Nature const Reference::Constants::quill =
+      proton::Nature::reference_quill;
+    proton::Nature const Reference::Constants::value =
+      proton::Nature::reference_value;
+    proton::Nature const Reference::Constants::nature =
+      Reference::Constants::value;
+
+//
+// ---------- constructor & destructors ---------------------------------------
+//
+
+    Reference::Reference():
+      Value::Value()
+    {
+      this->state(proton::State::dirty); // XXX[est-ce necessaire?]
+      this->footprint(0); // XXX[initial catalog footprint]
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Reference, proton::Value)
     {
     }
 
@@ -28,7 +44,8 @@ namespace nucleus
     ///
     elle::Status        Reference::Create()
     {
-      this->contents.state(proton::StateDirty);
+      // set the initial state.
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -36,13 +53,13 @@ namespace nucleus
     ///
     /// this method sets the target way.
     ///
-    elle::Status        Reference::Bind(const elle::String&     target)
+    elle::Status        Reference::Target(const elle::String&     target)
     {
       // set the target.
       this->target = target;
 
       // set the reference as dirty.
-      this->contents.state(proton::StateDirty);
+      this->state(proton::State::dirty);
 
       return elle::Status::Ok;
     }
@@ -81,6 +98,9 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Reference] " << std::endl;
+
+      if (Value::Dump(margin + 2) == elle::Status::Error)
+        escape("unable to dump the value");
 
       // dump the target.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Target] "

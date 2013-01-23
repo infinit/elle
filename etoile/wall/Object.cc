@@ -31,18 +31,20 @@ namespace etoile
   {
 
     gear::Identifier
-    Object::load(const path::Chemin& chemin_)
+    Object::load(const path::Chemin& chemin)
     {
+      ELLE_TRACE_FUNCTION(chemin);
+
       gear::Scope* scope;
       gear::Object* context;
 
-      ELLE_TRACE_FUNCTION(chemin_);
-
       // acquire the scope.
-      if (gear::Scope::Acquire(chemin_, scope) == elle::Status::Error)
+      if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
         throw elle::Exception("unable to acquire the scope");
 
       gear::Guard guard(scope);
+
+      // XXX[tout ce bloc devrait probablement etre locke]
 
       // If the scope is new i.e there is no attached context, the system
       // needs to know what is the genre of the object, e.g directory, in
@@ -57,7 +59,6 @@ namespace etoile
           if (scope->chemin.Locate(location) == elle::Status::Error)
             throw elle::Exception("unable to locate the object");
 
-          // XXX[remove try/catch later]
           try
             {
               object = depot::Depot::pull_object(location.address(),
@@ -93,40 +94,65 @@ namespace etoile
           // for the scope.
           switch (object->genre())
             {
-              case nucleus::neutron::Genre::file:
+            case nucleus::neutron::Genre::file:
               {
-                gear::File* context;
+                gear::File* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }
-              case nucleus::neutron::Genre::directory:
+            case nucleus::neutron::Genre::directory:
               {
-                gear::Directory* context;
+                gear::Directory* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }
-              case nucleus::neutron::Genre::link:
+            case nucleus::neutron::Genre::link:
               {
-                gear::Link* context;
+                gear::Link* _context;
 
-                if (scope->Use(context) == elle::Status::Error)
+                if (scope->Use(_context) == elle::Status::Error)
                   throw elle::Exception("unable to create the context");
+
+                // In order to avoid loading the object twice, manually set it
+                // in the context.
+                //
+                // !WARNING! this code is redundant with
+                // automaton::Object::Load().
+                _context->object.reset(object.release());
+                _context->object->base(nucleus::proton::Base(*_context->object));
+                _context->state = gear::Context::StateLoaded;
 
                 break;
               }
-              default:
+            default:
               {
                 // XXX[this whole code should probably be put within the
                 //     critical section?]
-                printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
-                object.get()->Dump();
-
+                ELLE_STATEMENT(object.get()->Dump());
                 throw elle::Exception("unable to allocate the proper context");
               }
             }
@@ -134,7 +160,7 @@ namespace etoile
           // At this point, the context represents the real object so
           // that, assuming it is a directory, both Object::* and
           // Directory::* methods could be used.
-          assert(scope->context != nullptr);
+          ELLE_ASSERT(scope->context != nullptr);
         }
 
       // declare a critical section.
@@ -164,7 +190,8 @@ namespace etoile
           }
         catch (std::exception const& e)
           {
-            assert(scope != nullptr);
+            ELLE_ASSERT(scope != nullptr);
+
             Object::reload<gear::Object>(*scope);
           }
 
@@ -173,18 +200,19 @@ namespace etoile
           throw elle::Exception("unable to release the guard");
 
         ELLE_DEBUG("returning identifier %s on %s", identifier, *scope);
-        return identifier;
+
+        return (identifier);
       }
     }
 
     abstract::Object
     Object::information(const gear::Identifier& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -215,11 +243,11 @@ namespace etoile
     void
     Object::discard(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -262,8 +290,16 @@ namespace etoile
                                 "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          throw elle::Exception("Unable to shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -305,11 +341,11 @@ namespace etoile
     void
     Object::store(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -351,8 +387,16 @@ namespace etoile
                                    "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          throw elle::Exception("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -392,11 +436,11 @@ namespace etoile
     void
     Object::destroy(gear::Identifier const& identifier)
     {
+      ELLE_TRACE_FUNCTION(identifier);
+
       gear::Actor* actor;
       gear::Scope* scope;
       gear::Object* context;
-
-      ELLE_TRACE_FUNCTION(identifier);
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -438,8 +482,16 @@ namespace etoile
                                    "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::Status::Error)
-          throw elle::Exception("unable to trigger the shutdown");
+        try
+          {
+            if (scope->Shutdown() == elle::Status::Error)
+              escape("unable to trigger the shutdown");
+          }
+        catch (elle::Exception const& e)
+          {
+            ELLE_ERR("unable to shutdown the scope: '%s'", e.what());
+            return;
+          }
       }
 
       // depending on the context's state.
@@ -475,14 +527,5 @@ namespace etoile
           }
         }
     }
-
-    void
-    Object::purge(gear::Identifier const&)
-    {
-      ELLE_TRACE_SCOPE("Purge()");
-
-      // XXX to implement.
-    }
-
   }
 }

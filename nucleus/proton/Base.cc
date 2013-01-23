@@ -61,9 +61,9 @@ namespace nucleus
       return true;
     }
 
-    /*-----------.
-    | Interfaces |
-    `-----------*/
+    /*---------.
+    | Dumpable |
+    `---------*/
 
     elle::Status
     Base::Dump(elle::Natural32              margin) const
@@ -77,11 +77,15 @@ namespace nucleus
         escape("unable to dump the revision");
 
       // dump the digest.
-      if (this->_digest.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the digest");
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Digest] " << this->_digest << std::endl;
 
       return elle::Status::Ok;
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     Base::print(std::ostream& stream) const
@@ -90,6 +94,5 @@ namespace nucleus
              << this->_revision
              << "}";
     }
-
   }
 }

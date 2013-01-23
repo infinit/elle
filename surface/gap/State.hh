@@ -30,8 +30,10 @@ namespace surface
     };
 
     // Used to represent all users in the state class.
-    typedef ::plasma::meta::User User;
-    typedef ::plasma::meta::NetworkResponse Network;
+    using User = ::plasma::meta::User;
+    using Nodes = ::plasma::meta::NetworkNodesResponse;
+    using Network = ::plasma::meta::NetworkResponse;
+    using Endpoint = ::plasma::meta::EndpointNodeResponse;
 
     struct NetworkStatus
     {
@@ -72,9 +74,10 @@ namespace surface
       void
       debug();
 
-    ///
-    /// Login & register
-    ///
+      void
+      output_log_file(std::string const& path);
+
+    //- Login & register ------------------------------------------------------
     private:
       std::map<std::string, User*> _users;
       User _me;
@@ -90,7 +93,7 @@ namespace surface
       _logged;
     public:
       bool
-      is_logged() { return this->_logged; }
+      is_logged() { return this->_meta->token().length() > 0; }
 
       /// Logout from meta.
       void
@@ -113,9 +116,15 @@ namespace surface
       User const&
       user(std::string const& id);
 
+      elle::Buffer
+      user_icon(std::string const& id);
+
+
+      /// Retrieve current user data.
       User const&
       get_me();
 
+      /// Retrieve current user token.
       std::string const&
       get_token();
 
@@ -173,14 +182,51 @@ namespace surface
       Transaction const&
       transaction(std::string const& transaction_id);
 
+      /// @brief Returns a floating number in [0.0f, 1.0f]
+      float
+      transaction_progress(std::string const& transaction_id);
+
+    public:
+      /// A process is indexed with a unique identifier.
+      typedef size_t ProcessId;
+
+      /// The status of a process. failure or success implies that the process
+      /// is terminated.
+      enum class ProcessStatus : int { failure = 0, success = 1, running = 2};
+    private:
+      struct Process;
+      typedef std::unique_ptr<Process> ProcessPtr;
+      typedef std::unordered_map<ProcessId, ProcessPtr> ProcessMap;
+      ProcessMap _processes;
+
+    public:
+      /// Retreive the status of an existing process.
+      ProcessStatus
+      process_status(ProcessId const id) const;
+
+      /// @brief Remove a process and throw the exception if any.
+      ///
+      /// @throw if the process does not exist or if it is still running.
+      void process_finalize(ProcessId const id);
+
+    private:
+      ProcessId
+      _add_process(std::string const& name,
+                   std::function<void(void)> const& cb);
+
     public:
       /// @brief Send a file list to a specified user.
       ///
       /// Create a network, copy files locally, create transaction.
-      void
+      ProcessId
       send_files(std::string const& recipient_id_or_email,
                  std::unordered_set<std::string> const& files);
+    private:
+      void
+      _send_files(std::string const& recipient,
+                  std::unordered_set<std::string> const& files);
 
+    public:
       /// @brief Update transaction status.
       ///
       /// Used to answer a transaction (accept or deny).
@@ -188,6 +234,7 @@ namespace surface
       update_transaction(std::string const& transaction_id,
                          gap_TransactionStatus status);
 
+    private:
       /// @brief Start the transfer process on recipient.
       ///
       void
@@ -200,8 +247,8 @@ namespace surface
       void
       output_dir(std::string const& dir);
 
-      std::string
-      output_dir();
+      std::string const&
+      output_dir() const;
 
     private:
       // Functions callback on each status (set and get).
@@ -321,6 +368,10 @@ namespace surface
       std::map<std::string, NetworkStatus*> _networks_status;
       bool                                  _networks_status_dirty;
 
+    private:
+      bool
+      _wait_portal(std::string const& network_id);
+
     public:
       /// Retrieve all networks.
       std::map<std::string, Network*> const& networks();
@@ -401,6 +452,10 @@ namespace surface
       _on_transaction_status(TransactionStatusNotification const& notif);
 
     public:
+      void
+      _notify_8infinit(Transaction const& trans);
+
+    public:
       size_t
       poll(size_t max = 10);
 
@@ -421,9 +476,6 @@ namespace surface
       _send_watchdog_cmd(std::string const& cmd,
                          elle::format::json::Dictionary const* request = nullptr,
                          elle::format::json::Dictionary* response = nullptr);
-
-      void
-      _reload_networks();
 
     };
 

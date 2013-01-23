@@ -27,7 +27,7 @@ namespace etoile
     Access::lookup(const gear::Identifier& identifier,
                    const nucleus::neutron::Subject& subject)
     {
-      ELLE_TRACE_SCOPE("Lookup()");
+      ELLE_TRACE_FUNCTION(identifier, subject);
 
       gear::Actor* actor;
       gear::Scope* scope;
@@ -63,7 +63,7 @@ namespace etoile
                     nucleus::neutron::Index const& index,
                     nucleus::neutron::Size const& size)
     {
-      ELLE_TRACE_SCOPE("Consult()");
+      ELLE_TRACE_FUNCTION(identifier, index, size);
 
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -105,11 +105,11 @@ namespace etoile
       const nucleus::neutron::Subject& subject,
       const nucleus::neutron::Permissions& permissions)
     {
+      ELLE_TRACE_FUNCTION(identifier, subject, permissions);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ELLE_TRACE_SCOPE("Grant()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -149,11 +149,11 @@ namespace etoile
       const gear::Identifier&               identifier,
       const nucleus::neutron::Subject& subject)
     {
+      ELLE_TRACE_FUNCTION(identifier, subject);
+
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ELLE_TRACE_SCOPE("Revoke()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)

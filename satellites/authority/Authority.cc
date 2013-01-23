@@ -11,6 +11,9 @@ using namespace infinit;
 
 #include <satellites/authority/Authority.hh>
 
+// XXX
+#include <cryptography/all.hh>
+
 namespace satellite
 {
 
@@ -87,8 +90,6 @@ namespace satellite
     // Load the authority.
     elle::Authority authority{elle::io::Path(lune::Lune::Authority)};
 
-    authority.Dump();
-
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the authority");
@@ -98,7 +99,7 @@ namespace satellite
       escape("unable to dump the authority");
 
     // retrive the public key's unique.
-    if (authority.K.Save(unique) == elle::Status::Error)
+    if (authority.K().Save(unique) == elle::Status::Error)
       escape("unable to save the authority's public key");
 
     // dump the public key's unique so that it can be easily hard-coded in the
@@ -123,7 +124,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Authority") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -185,7 +186,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -195,9 +196,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
-        (Infinit::Parser->Test("Information") == elle::Status::True))
+    if ((Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Destroy") == true) &&
+        (Infinit::Parser->Test("Information") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -207,15 +208,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = Authority::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = Authority::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = Authority::OperationInformation;
 
     // trigger the operation.

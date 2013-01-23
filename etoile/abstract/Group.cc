@@ -15,8 +15,24 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Group::Group()
+    Group::Group():
+      manager(nullptr),
+      pass_K(nullptr)
     {
+    }
+
+    Group::Group(Group const& other):
+      elle::radix::Object(other),
+
+      manager{new cryptography::PublicKey{*other.manager}},
+      pass_K{new cryptography::PublicKey{*other.pass_K}}
+    {
+    }
+
+    Group::~Group()
+    {
+      delete this->manager;
+      delete this->pass_K;
     }
 
 //
@@ -35,11 +51,13 @@ namespace etoile
 
       this->size = group.size();
 
-      this->manager = group.manager_K();
+      ELLE_ASSERT(this->manager == nullptr);
+      this->manager = new cryptography::PublicKey{group.manager_K()};
 
       this->revision = group.revision();
 
-      this->pass_K = group.pass_K();
+      ELLE_ASSERT(this->pass_K == nullptr);
+      this->pass_K = new cryptography::PublicKey{group.pass_K()};
 
       return elle::Status::Ok;
     }
@@ -58,14 +76,19 @@ namespace etoile
       if (this == &element)
         return true;
 
+      ELLE_ASSERT(this->manager != nullptr);
+      ELLE_ASSERT(element.manager != nullptr);
+      ELLE_ASSERT(this->pass_K != nullptr);
+      ELLE_ASSERT(element.pass_K != nullptr);
+
       // compare the attributes.
       if ((this->description != element.description) ||
           (this->timestamps.creation != element.timestamps.creation) ||
           (this->timestamps.modification != element.timestamps.modification) ||
           (this->size != element.size) ||
-          (this->manager != element.manager) ||
+          (*this->manager != *element.manager) ||
           (this->revision != element.revision) ||
-          (this->pass_K != element.pass_K))
+          (*this->pass_K != *element.pass_K))
         return false;
 
       return true;
@@ -121,20 +144,16 @@ namespace etoile
                 << std::dec << this->size << std::endl;
 
       // dump the manager public key.
+      ELLE_ASSERT(this->manager != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Manager]" << std::endl;
-
-      if (this->manager.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the manager public key");
+                << "[Manager] " << *this->manager << std::endl;
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Revision] " << std::dec << this->revision << std::endl;
 
+      ELLE_ASSERT(this->pass_K != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Pass K]" << std::endl;
-
-      if (this->pass_K.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the pass");
+                << "[Pass K] " << *this->pass_K << std::endl;
 
       return elle::Status::Ok;
     }

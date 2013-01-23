@@ -16,7 +16,7 @@ namespace etoile
     path::Chemin
     Path::resolve(const path::Way& way)
     {
-      ELLE_TRACE_SCOPE("Resolve(%s)", way.path.c_str());
+      ELLE_TRACE_FUNCTION(way);
 
       path::Route       route;
       path::Venue       venue;
@@ -39,6 +39,7 @@ namespace etoile
       return chemin;
     }
 
+    // XXX[to move somewhere else]
     NoSuchFileOrDirectory::NoSuchFileOrDirectory(reactor::Scheduler& sched,
                                                  path::Way const& path):
       reactor::Exception(sched,
@@ -46,6 +47,7 @@ namespace etoile
       _path(path)
     {}
 
+    // XXX[to move somewhere else]
     NoSuchFileOrDirectory::~NoSuchFileOrDirectory() throw ()
     {}
   }

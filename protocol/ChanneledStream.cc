@@ -5,6 +5,8 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
+#include <cryptography/random.hh>
+
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
@@ -18,9 +20,39 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler, Stream& backend, bool master)
+    static
+    bool
+    handshake(Stream& backend)
+    {
+      ELLE_TRACE_SCOPE("determining master");
+      while (true)
+        {
+          char mine = infinit::cryptography::random::generate<char>();
+          char his;
+          {
+            Packet p;
+            p << mine;
+            backend.write(p);
+            ELLE_DEBUG("my roll: %d", (int)mine);
+          }
+          {
+            Packet p(backend.read());
+            p >> his;
+            ELLE_DEBUG("his roll: %d", (int)his);
+          }
+          if (mine != his)
+            {
+              bool master = mine > his;
+              ELLE_TRACE(master ? "master" : "slave");
+              return master;
+            }
+        }
+    }
+
+    ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
+                                     Stream& backend)
       : Super(scheduler)
-      , _master(master)
+      , _master(handshake(backend))
       , _id_current(0)
       , _reading(false)
       , _backend(backend)

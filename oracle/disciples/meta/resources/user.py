@@ -11,6 +11,7 @@ from meta import regexp
 
 import meta.mail
 
+import os
 import re
 
 import metalib
@@ -20,30 +21,34 @@ class Search(Page):
     __pattern__ = "/user/search"
 
     def POST(self):
+        self.requireLoggedIn()
+
         text = self.data["text"]
         count = 'count' in self.data and self.data['count'] or 5
         offset = 'offset' in self.data and self.data['offset'] or 0
 
         # While not sure it's an email or a fullname, search in both.
+        users = []
         if not '@' in text:
             users = database.users().find(
                 {
                     '$or' : [
                         {'fullname' : {'$regex' : '^%s' % text,  '$options': 'i'}},
-                        {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
-                    ]
+#                        {'email' : {'$regex' : '^%s' % text, '$options': 'i'}},
+                        ],
+                    'register_status':'ok',
                 },
                 fields=["_id"],
                 limit=count + offset
             )
-        else:
-            users = database.users().find(
-                {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
-                fields=["_id"],
-                limit=count + offset
-        )
+        # else:
+        #     users = database.users().find(
+        #         {'email' : {'$regex' : '^%s' %text, '$options': 'i'}},
+        #         fields=["_id"],
+        #         limit=count + offset
+        #     )
 
-        result = list(user['_id'] for user in users[offset:])
+        result = list(user['_id'] for user in users[offset:count])
 
         return self.success({
             'users': result,
@@ -53,6 +58,7 @@ class Message(Page):
     __pattern__ = "/debug"
 
     def POST(self):
+        self.requireLoggedIn()
         self.notifier.notify_one(
             notifier.MESSAGE,
             self.data["recipient_id"],
@@ -241,6 +247,7 @@ class One(Page):
     __pattern__ = "/user/(.+)/view"
 
     def GET(self, id_or_email):
+        self.requireLoggedIn()
         if '@' in id_or_email:
             user = database.users().find_one({'email': id_or_email})
         else:
@@ -249,12 +256,32 @@ class One(Page):
             return self.error(error.UNKNOWN_USER, "Couldn't find user for id '%s'" % str(id_or_email))
         return self.success({
             '_id': user['_id'],
-            'email': user['email'],
+            'email': user['_id'] in self.user["swaggers"].keys() and user['email'] or '',
             'public_key': user['public_key'],
             'fullname': user['fullname'],
             # XXX: user['connected']
-            'status': 1, #user['status']
+            'status': 'connected' in user and user['connected'] or 0
         })
+
+class Icon(Page):
+    """
+        Get the icon of an user.
+        GET
+            -> RAW_DATA (png 256x256)
+    """
+
+    __pattern__ = "/user/(.+)/icon"
+
+    def GET(self, _id):
+        if not self.user or _id not in self.user.swaggers:
+            raise web.forbidden()
+        with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
+            while 1:
+                data = f.read(4096)
+                if data:
+                    yield data
+                else:
+                    break
 
 class Register(Page):
     """

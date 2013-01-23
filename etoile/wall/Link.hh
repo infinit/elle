@@ -47,7 +47,6 @@ namespace etoile
       store(gear::Identifier const& identifier);
 
       static elle::Status       Destroy(const gear::Identifier&);
-      static elle::Status       Purge(const gear::Identifier&);
     };
 
   }

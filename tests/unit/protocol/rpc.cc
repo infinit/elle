@@ -65,7 +65,7 @@ void caller()
   elle::concurrency::scheduler().current()->wait(lock);
   reactor::network::TCPSocket socket(elle::concurrency::scheduler(), "127.0.0.1", 12345);
   infinit::protocol::Serializer s(elle::concurrency::scheduler(), socket);
-  infinit::protocol::ChanneledStream channels(elle::concurrency::scheduler(), s, false);
+  infinit::protocol::ChanneledStream channels(elle::concurrency::scheduler(), s);
 
   DummyRPC rpc(channels);
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
@@ -81,7 +81,7 @@ void runner()
   lock.release();
   reactor::network::TCPSocket* socket = server.accept();
   infinit::protocol::Serializer s(elle::concurrency::scheduler(), *socket);
-  infinit::protocol::ChanneledStream channels(elle::concurrency::scheduler(), s, true);
+  infinit::protocol::ChanneledStream channels(elle::concurrency::scheduler(), s);
 
   DummyRPC rpc(channels);
   rpc.answer = &answer;

@@ -275,7 +275,7 @@ namespace satellite
           elle::io::Unique          unique;
 
           // retrieve the entry.
-          if (dictionary.users.Lookup(name, K) != elle::Status::True)
+          if (dictionary.users.Lookup(name, K) != true)
             escape("unable to look up the user entry");
 
           // retrive the public key's unique.
@@ -294,7 +294,7 @@ namespace satellite
           elle::io::Unique          unique;
 
           // retrieve the entry.
-          if (dictionary.groups.Lookup(name, address) != elle::Status::True)
+          if (dictionary.groups.Lookup(name, address) != true)
             escape("unable to look up the group entry");
 
           // retrive the address's unique.
@@ -332,7 +332,7 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("Dictionary") == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the Lune library.
@@ -443,7 +443,7 @@ namespace satellite
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -453,10 +453,10 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Add") == elle::Status::True) &&
-        (Infinit::Parser->Test("Remove") == elle::Status::True) &&
-        (Infinit::Parser->Test("Dump") == elle::Status::True) &&
-        (Infinit::Parser->Test("Show") == elle::Status::True))
+    if ((Infinit::Parser->Test("Add") == true) &&
+        (Infinit::Parser->Test("Remove") == true) &&
+        (Infinit::Parser->Test("Dump") == true) &&
+        (Infinit::Parser->Test("Show") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -466,19 +466,19 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Add") == elle::Status::True)
+    if (Infinit::Parser->Test("Add") == true)
       operation = Dictionary::OperationAdd;
 
     // test the option.
-    if (Infinit::Parser->Test("Remove") == elle::Status::True)
+    if (Infinit::Parser->Test("Remove") == true)
       operation = Dictionary::OperationRemove;
 
     // test the option.
-    if (Infinit::Parser->Test("Dump") == elle::Status::True)
+    if (Infinit::Parser->Test("Dump") == true)
       operation = Dictionary::OperationDump;
 
     // test the option.
-    if (Infinit::Parser->Test("Show") == elle::Status::True)
+    if (Infinit::Parser->Test("Show") == true)
       operation = Dictionary::OperationShow;
 
     // trigger a command.

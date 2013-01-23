@@ -1,27 +1,41 @@
 project(Nucleus CXX)
 
 add_library(nucleus ${LINK_METHOD}
-  nucleus.cc
+  factory.cc
   Derivable.cc
 
-  proton/Action.cc
   proton/Address.cc
+  proton/Annals.cc
   proton/Base.cc
   proton/Block.cc
+  proton/Clef.cc
   proton/ContentHashBlock.cc
+  proton/Contents.cc
+  proton/Egg.cc
   proton/Family.cc
+  proton/Flags.cc
+  proton/Handle.cc
   proton/History.cc
   proton/ImmutableBlock.cc
   proton/ImprintBlock.cc
+  proton/Limits.cc
   proton/Location.cc
+  proton/Mode.hh
   proton/MutableBlock.cc
+  proton/Nature.cc
+  proton/Nest.cc
   proton/Network.cc
+  proton/Node.cc
   proton/OwnerKeyBlock.cc
-# XXX  proton/Porcupine.cc
   proton/PublicKeyBlock.cc
-  proton/Stamp.cc
-  proton/Transcript.cc
+  proton/Radix.cc
   proton/Revision.cc
+  proton/Root.cc
+  proton/Stamp.cc
+  proton/State.cc
+  proton/Statistics.cc
+  proton/Strategy.cc
+  proton/Value.cc
 
   neutron/Access.cc
   neutron/Attributes.cc

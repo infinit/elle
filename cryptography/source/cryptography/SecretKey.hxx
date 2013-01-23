@@ -2,74 +2,71 @@
 # define INFINIT_CRYPTOGRAPHY_SECRETKEY_HXX
 
 # include <elle/Buffer.hh>
-
-# include <elle/idiom/Open.hh>
+# include <elle/log.hh>
 
 namespace infinit
 {
   namespace cryptography
   {
+    /*--------.
+    | Methods |
+    `--------*/
 
-    template<typename T> elle::Status
-      SecretKey::Encrypt(T const& in, Cipher& out) const
-      {
-        static_assert(
-            !std::is_same<T, elle::Buffer>::value,
-            "Explicitly cast to WeakBuffer needed"
-        );
+    template <typename T>
+    Cipher
+    SecretKey::encrypt(T const& value) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+      ELLE_DEBUG_FUNCTION(value);
 
-        elle::Buffer buf;
-        try
-          {
-            buf.writer() << in;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot save object: %s", err.what());
-          }
+      static_assert(!std::is_same<T, Plain>::value,
+                    "this call should never have occured");
 
-        return this->Encrypt(
-            elle::WeakBuffer(buf),
-            out
-        );
-      }
+      // Serialize the value.
+      elle::Buffer buffer;
+      buffer.writer() << value;
 
-    template<typename T> elle::Status
-      SecretKey::Decrypt(Cipher const& in, T& out) const
-      {
-        elle::Buffer buffer;
+      // Encrypt the archive.
+      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+    }
 
-        if (this->Decrypt(in, buffer) == elle::Status::Error)
-          escape("Cannot decrypt cipher");
+    template <typename T>
+    T
+    SecretKey::decrypt(Cipher const& cipher) const
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
+      ELLE_DEBUG_FUNCTION(cipher);
 
-        try
-          {
-            buffer.reader() >> out;
-          }
-        catch (std::exception const& err)
-          {
-            escape("Cannot decode object: %s", err.what());
-          }
+      static_assert(!std::is_same<T, Clear>::value,
+                    "this call should never have occured");
 
-        return elle::Status::Ok;
-      }
+      // Decrypt the cipher leading to a clear containing an archive.
+      Clear clear{this->decrypt(cipher)};
+
+      // Deserialize the object from the clear.
+      // XXX[this is should be used] T value{clear.buffer().reader()};
+      T value;
+      clear.buffer().reader() >> value;
+
+      return (value);
+    }
   }
 }
 
-//
-// ---------- serialize -------------------------------------------------------
-//
+/*-------------.
+| Serializable |
+`-------------*/
 
 # include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(infinit::cryptography::SecretKey,
                       archive,
                       value,
-                      version)
+                      format)
 {
-  enforce(version == 0);
+  enforce(format == 0);
 
-  archive & value.region;
+  archive & value._buffer;
 }
 
 #endif

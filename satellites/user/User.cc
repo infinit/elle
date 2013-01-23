@@ -11,6 +11,7 @@
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/CrashReporter.hh>
 
 #include <cryptography/PublicKey.hh>
 // XXX[temporary: for cryptography]
@@ -195,7 +196,7 @@ namespace satellite
       escape("unable to dump the identity");
 
     // retrieve the user's public key unique.
-    if (identity.pair.K().Save(unique) == elle::Status::Error)
+    if (identity.pair().K().Save(unique) == elle::Status::Error)
       escape("unable to save the public key's unique");
 
     // display the unique.
@@ -210,7 +211,7 @@ namespace satellite
     User::Operation     operation;
 
     // set up the program.
-    if (elle::concurrency::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup("User") == elle::Status::Error)
       throw std::runtime_error("unable to set up the program");
 
     // initialize the Lune library.
@@ -290,7 +291,7 @@ namespace satellite
       throw std::runtime_error("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::Status::True)
+    if (Infinit::Parser->Test("Help") == true)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -298,9 +299,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
-        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
-        (Infinit::Parser->Test("Information") == elle::Status::True))
+    if ((Infinit::Parser->Test("Create") == true) &&
+        (Infinit::Parser->Test("Destroy") == true) &&
+        (Infinit::Parser->Test("Information") == true))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -310,15 +311,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::Status::True)
+    if (Infinit::Parser->Test("Create") == true)
       operation = User::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
+    if (Infinit::Parser->Test("Destroy") == true)
       operation = User::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::Status::True)
+    if (Infinit::Parser->Test("Information") == true)
       operation = User::OperationInformation;
 
     // trigger the operation.
@@ -406,6 +407,11 @@ namespace satellite
 int
 main(int argc, char** argv)
 {
+  elle::signal::ScoppedGuard guard{
+    {SIGSEGV, SIGILL, SIGPIPE, SIGABRT, SIGINT},
+    elle::crash::Handler("8user", false)  // Capture signal and send email without exiting.
+  };
+
   try
     {
       satellite::User(argc, argv);
@@ -413,6 +419,9 @@ main(int argc, char** argv)
   catch (std::runtime_error const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+
+      elle::crash::report("8user", e.what());
+
       elle::concurrency::scheduler().terminate();
       return 1;
     }

@@ -2,7 +2,6 @@
 #include <hole/implementations/slug/Machine.hh>
 
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Network.hh>
 
 #include <elle/idiom/Open.hh>
 
