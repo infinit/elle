@@ -53,7 +53,7 @@ namespace surface
     void
     MetricReporter::store(std::string const& caller, Metric const& metric)
     {
-      ELLE_TRACE("Storing new metric");
+      ELLE_TRACE("Storing new metric %s", caller);
 
       Metric& m = this->_push(metric);
 
