@@ -305,6 +305,70 @@ class Accept(Page):
             'updated_transaction_id': str(updated_transaction_id),
         })
 
+class Prepare(Page):
+    """
+    Notify the user that everything is ok and he can prepare downloading file.
+    POST {
+             'transaction_id' : the id
+         }
+         -> {
+                 'updated_transaction_id' : the (new) id
+            }
+
+    Errors:
+        The transaction doesn't exist.
+        The user is not the sender.
+        The transaction is not in a state in which it can be prepareed.
+    """
+    __pattern__ = "/transaction/prepare"
+
+    _validators = [
+        ('transaction_id', regexp.TransactionValidator),
+    ]
+
+    def POST(self):
+        self.requireLoggedIn()
+
+        status = self.validate()
+        if status:
+            return self.error(*status)
+
+        transaction =  database.transactions().find_one(
+            database.ObjectId(self.data['transaction_id'].strip()))
+
+        if not transaction:
+            return self.error(error.TRANSACTION_DOESNT_EXIST)
+
+        if self.user['_id'] != transaction['sender_id']:
+            return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
+
+        if transaction['status'] != ACCEPTED :
+            return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
+                              "This transaction can't be %s. Current status : %s"
+                              % (_status_to_string[PREPAREED], _status_to_string[transaction['status']])
+            )
+
+        transaction.update({
+            'status': PREPARED, # prepareed.
+        })
+
+        updated_transaction_id = database.transactions().save(transaction)
+
+        self.notifier.notify_some(
+            notifier.FILE_TRANSFER_STATUS,
+            [transaction['sender_id'], transaction['recipient_id']],
+            {
+                'transaction_id': str(updated_transaction_id),
+
+                # Status.
+                'status': PREPARED,
+            }
+        )
+
+        return self.success({
+            'updated_transaction_id': str(updated_transaction_id),
+        })
+
 class Start(Page):
     """
     Notify the user that everything is ok and he can start downloading file.
@@ -339,10 +403,10 @@ class Start(Page):
         if not transaction:
             return self.error(error.TRANSACTION_DOESNT_EXIST)
 
-        if self.user['_id'] != transaction['sender_id']:
+        if self.user['_id'] != transaction['recipient_id']:
             return self.error(error.TRANSACTION_DOESNT_BELONG_TO_YOU)
 
-        if transaction['status'] != ACCEPTED :
+        if transaction['status'] != PREPARED :
             return self.error(error.TRANSACTION_OPERATION_NOT_PERMITTED,
                               "This transaction can't be %s. Current status : %s"
                               % (_status_to_string[STARTED], _status_to_string[transaction['status']])

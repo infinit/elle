@@ -1,3 +1,4 @@
+
 # -*- encoding: utf-8 -*-
 
 import json
@@ -5,6 +6,9 @@ import traceback
 import web
 
 import metalib
+import re
+import os.path
+import sys
 
 from meta import mail
 from meta.page import Page
@@ -12,6 +16,23 @@ from meta import database, conf
 from meta import error
 from meta import regexp
 from meta import notifier
+
+_macro_matcher = re.compile(r'(.*\()(\S+)(,.*\))')
+
+def replacer(match):
+    field = match.group(2)
+    return match.group(1) + "'" + field + "'" + match.group(3)
+
+_status_to_string = dict();
+
+def NETWORK_UPDATE(name, value):
+    globals()[name.upper()] = value
+
+filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'network_update.hh.inc'))
+
+configfile = open(filepath, 'r')
+for line in configfile:
+    eval(_macro_matcher.sub(replacer, line))
 
 class _Page(Page):
     """Common tools for network calls."""
@@ -22,10 +43,10 @@ class _Page(Page):
             '_id': database.ObjectId(_id),
         })
         if not network:
-            raise web.NotFound("Couldn't find any network with this id")
+            return self.forbidden("Couldn't find any network with this id")
         if network['owner'] != self.user['_id'] and \
            self.user['_id'] not in network['users']:
-            raise web.Forbidden("This network does not belong to you")
+            return self.forbidden("This network does not belong to you")
         return network
 
     def _check_name(self, name, id_=None):
@@ -93,8 +114,8 @@ class AddUser(_Page):
 
         network = self.network(self.data['_id'])
         if network['owner'] != self.user['_id']:
-            raise web.Forbidden("You cannot add a user in a network that does "
-                                "not belong to you")
+            return self.forbidden("You cannot add a user in a network that does "
+                           "not belong to you")
 
         to_add_user_id = database.ObjectId(self.data['user_id'])
         #XXX users should invited instead of added
@@ -116,7 +137,10 @@ class AddUser(_Page):
         to_add_user['networks'].append(network['_id'])
         database.users().save(to_add_user)
 
-        # notifier.notify_one(notifier.NETWORK_CHANGED, user_id, {"network_id": network_id, "what": "added"})
+        self.notifier.notify_some(
+            notifier.NETWORK_CHANGED,
+            network["users"],
+            {"network_id": str(network['_id']), "what": NEW_USER});
 
         return self.success({
             'updated_network_id': str(network['_id']),
@@ -219,13 +243,13 @@ class Endpoints(_Page):
         network_id = _id
 
         network = self.network(network_id)
+
         if not self.user['_id'] in network['users']:
-            raise web.Forbidden("You cannot get endpoint for a user in a"
-                                "network that does not belong to you")
+            return self.forbidden("You cannot get endpoint for a user in a"
+                                  "network that does not belong to you")
 
         if not device_id in network['nodes'].keys():
-            raise self.error(error.DEVICE_NOT_FOUND,
-                             "This user is not connected in this network")
+            return self.error(error.DEVICE_NOT_FOUND, "This user is not connected in this network")
 
         res = dict();
 
@@ -336,6 +360,12 @@ class Update(_Page):
                 return self.error(error.UNKNOWN, "Unexpected error: " + str(err))
 
         _id = database.networks().save(to_save)
+
+        self.notifier.notify_some(
+            notifier.NETWORK_CHANGED,
+            to_save["users"],
+            {"network_id": _id, "what": UPDATE});
+
         return self.success({
             'updated_network_id': _id
         })
@@ -370,20 +400,28 @@ class AddDevice(_Page):
 
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
+
         network = database.networks().find_one(network_id)
         if not network:
             return self.error(error.NETWORK_NOT_FOUND)
         device = database.devices().find_one(device_id)
         if not device:
             return self.error(error.DEVICE_NOT_FOUND)
+
         if str(device_id) not in network['nodes']:
             network['nodes'][str(device_id)] = {
                     "locals": None,
                     "externals": None,
             }
-        database.networks().save(network)
+            database.networks().save(network)
+
+            self.notifier.notify_some(
+                notifier.NETWORK_CHANGED,
+                network["users"],
+                {"network_id": str(network['_id']), "what": NEW_DEVICE});
+
         return self.success({
-            "updated_network_id": network['_id'],
+            "updated_network_id": str(network['_id']),
         })
 
 class ConnectDevice(_Page):
@@ -452,8 +490,9 @@ class ConnectDevice(_Page):
         print("Connected device", device['name'], "(%s)" % device_id,
               "to network", network['name'], "(%s)" % network_id,
               "with", node)
+
         return self.success({
-            "updated_network_id": network_id
+            "updated_network_id": str(network_id)
         })
 
 class Create(_Page):
@@ -562,6 +601,7 @@ class Delete(_Page):
             else:
                 return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
 
+        # copy users to notify them.
         users = network['users'][::]
 
         # for each user in network, remove this network from his network list.
@@ -569,11 +609,10 @@ class Delete(_Page):
             #XXX: with many devices connected, should we notify the owner ?
             database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
 
-        # self.notifier.notify_some(
-        #     notifier.NETWORK_CHANGED,
-        #     users,
-        #     {"network_id": network_id, "what": "added"}
-        # )
+        self.notifier.notify_some(
+            notifier.NETWORK_CHANGED,
+            users,
+            {"network_id": network_id, "what": DELETED})
 
         database.networks().find_and_modify(
             {
