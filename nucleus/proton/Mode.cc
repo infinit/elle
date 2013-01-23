@@ -1,4 +1,5 @@
 #include <nucleus/proton/Mode.hh>
+#include <nucleus/Exception.hh>
 
 namespace nucleus
 {

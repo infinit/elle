@@ -1,6 +1,8 @@
 #ifndef NUCLEUS_PROTON_MODE_HH
 # define NUCLEUS_PROTON_MODE_HH
 
+# include <ostream>
+
 namespace nucleus
 {
   namespace proton
