@@ -19,7 +19,6 @@ namespace surface
 {
   namespace gap
   {
-
     namespace fs = boost::filesystem;
     namespace json = elle::format::json;
 
@@ -38,7 +37,7 @@ namespace surface
 
       ELLE_DEBUG("portal path is %s", portal_path);
 
-      for (int i = 0; i < 30; ++i)
+      for (int i = 0; i < 45; ++i)
         {
           ELLE_DEBUG("Waiting for portal.");
           if (fs::exists(portal_path))
@@ -230,5 +229,24 @@ namespace surface
       return *(it->second);
     }
 
+
+    void
+    State::network_update_callback(NetworkUpdateNotificationCallback const& cb)
+    {
+      auto fn = [cb] (Notification const& notif, bool) -> void {
+        return cb(static_cast<NetworkUpdateNotification const&>(notif));
+      };
+
+      this->_notification_handlers[NotificationType::network_update].push_back(fn);
+    }
+
+    void
+    State::_on_network_update(NetworkUpdateNotification const& notif)
+    {
+      ELLE_TRACE("network %s updated", notif.network_id);
+
+      this->refresh_networks();
+      this->network_status(notif.network_id);
+    }
   }
 }

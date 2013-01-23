@@ -57,6 +57,7 @@ namespace surface
     using ::plasma::trophonius::TransactionStatusNotification;
     using ::plasma::trophonius::UserStatusNotification;
     using ::plasma::trophonius::MessageNotification;
+    using ::plasma::trophonius::NetworkUpdateNotification;
     using ::plasma::trophonius::NotificationType;
 
     class State
@@ -430,6 +431,10 @@ namespace surface
         std::function<void(MessageNotification const&)>
         MessageNotificationCallback;
 
+      typedef
+        std::function<void(NetworkUpdateNotification const&)>
+        NetworkUpdateNotificationCallback;
+
     public:
       void
       user_status_callback(UserStatusNotificationCallback const& cb);
@@ -443,6 +448,9 @@ namespace surface
       void
       message_callback(MessageNotificationCallback const& cb);
 
+      void
+      network_update_callback(NetworkUpdateNotificationCallback const& cb);
+
     private:
       void
       _on_transaction(TransactionNotification const& notif,
@@ -450,6 +458,9 @@ namespace surface
 
       void
       _on_transaction_status(TransactionStatusNotification const& notif);
+
+      void
+      _on_network_update(NetworkUpdateNotification const& notif);
 
     public:
       void
