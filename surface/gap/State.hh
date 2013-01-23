@@ -278,6 +278,15 @@ namespace surface
       void
       _on_transaction_canceled(Transaction const& transaction);
 
+      /// @brief Use to inform recipient that everything is ok and he can prepare
+      /// downloading.
+      void
+      _prepare_transaction(Transaction const& transaction);
+
+      /// @brief Use to .
+      void
+      _on_transaction_prepared(Transaction const& transaction);
+
       /// @brief Use to inform recipient that everything is ok and he can start
       /// downloading.
       void

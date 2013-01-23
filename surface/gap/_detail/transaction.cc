@@ -208,9 +208,11 @@ namespace surface
                          gap_TransactionStatus::gap_transaction_status_finished);
     }
 
-    void
-    State::update_transaction(std::string const& transaction_id,
-                              gap_TransactionStatus status)
+    static
+    bool
+    _check_action_is_available(std::string const& user_id,
+                               Transaction const& transaction,
+                               gap_TransactionStatus status)
     {
       typedef
         std::map<gap_TransactionStatus, std::set<gap_TransactionStatus>>
@@ -218,59 +220,74 @@ namespace surface
 
       static const StatusMap _sender_status_update{
         {gap_transaction_status_pending,
-          {
-            gap_transaction_status_canceled
-          }
-        },
+          {gap_transaction_status_canceled}},
         {gap_transaction_status_accepted,
-          {
-            gap_transaction_status_started,
-            gap_transaction_status_canceled
-          }
-        },
+          {gap_transaction_status_prepared, gap_transaction_status_canceled}},
+        {gap_transaction_status_prepared,
+          {gap_transaction_status_canceled}},
         {gap_transaction_status_started,
-          {
-            gap_transaction_status_canceled
-          }
-        },
+          {gap_transaction_status_canceled}},
         // {gap_transaction_status_canceled,
-        //   {
-        //   }
-        // },
+        //   {}},
         // {gap_transaction_status_finished,
-        //   {
-        //   }
-        //}
+        //   {}}
       };
 
       static StatusMap _recipient_status_update{
         {gap_transaction_status_pending,
-          {
-            gap_transaction_status_accepted,
-            gap_transaction_status_canceled
-          }
-        },
+          {gap_transaction_status_accepted, gap_transaction_status_canceled}},
         {gap_transaction_status_accepted,
-          {
-            gap_transaction_status_canceled
-          }
-        },
+          {gap_transaction_status_canceled}},
+        {gap_transaction_status_prepared,
+          {gap_transaction_status_started, gap_transaction_status_canceled}},
         {gap_transaction_status_started,
-          {
-            gap_transaction_status_canceled,
-            gap_transaction_status_finished
-          }
-        },
+          {gap_transaction_status_canceled, gap_transaction_status_finished}},
         // {gap_transaction_status_canceled,
-        //   {
-        //   }
-        // },
+        //   {}},
         // {gap_transaction_status_finished,
-        //   {
-        //   }
-        // }
+        //   {}}
       };
 
+      if (user_id != transaction.recipient_id &&
+          user_id != transaction.sender_id)
+      {
+        throw Exception{gap_error, "You are neither recipient nor the sender."};
+      }
+
+      if (user_id == transaction.recipient_id)
+      {
+        auto const& status_list = _recipient_status_update.find(
+          (gap_TransactionStatus) transaction.status);
+
+        if (status_list == _recipient_status_update.end() ||
+            status_list->second.find((gap_TransactionStatus) status) == status_list->second.end())
+        {
+          ELLE_WARN("You are not allowed to change status from %s to %s",
+                    transaction.status, status);
+          return false;
+        }
+      }
+      else if (user_id == transaction.sender_id)
+      {
+         auto const& status_list = _sender_status_update.find(
+           (gap_TransactionStatus) transaction.status);
+
+        if (status_list == _sender_status_update.end() ||
+            status_list->second.find((gap_TransactionStatus)status) == status_list->second.end())
+        {
+          ELLE_WARN("You are not allowed to change status from %s to %s",
+                    transaction.status, status);
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    void
+    State::update_transaction(std::string const& transaction_id,
+                              gap_TransactionStatus status)
+    {
       ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
 
       auto pair = State::transactions().find(transaction_id);
@@ -282,47 +299,16 @@ namespace surface
 
       Transaction const& transaction = pair->second;
 
-      if (this->_me._id != transaction.recipient_id &&
-          this->_me._id != transaction.sender_id)
-      {
-        throw Exception{
-          gap_error,
-            "You are neither recipient nor the sender."
-        };
-      }
-
-      if (this->_me._id == transaction.recipient_id)
-      {
-        auto const& status_list = _recipient_status_update.find(
-          (gap_TransactionStatus) transaction.status);
-
-        if (status_list == _recipient_status_update.end() ||
-            status_list->second.find((gap_TransactionStatus) status) == status_list->second.end())
-        {
-          ELLE_WARN("You are not allowed to change status from %s to %s",
-                    transaction.status, status);
-          return;
-        }
-      }
-      else if (this->_me._id == transaction.sender_id)
-      {
-         auto const& status_list = _sender_status_update.find(
-           (gap_TransactionStatus) transaction.status);
-
-        if (status_list == _sender_status_update.end() ||
-            status_list->second.find((gap_TransactionStatus)status) == status_list->second.end())
-        {
-          ELLE_WARN("You are not allowed to change status from %s to %s",
-                    transaction.status, status);
-          return;
-        }
-      }
+      if (!_check_action_is_available(this->_me._id, transaction, status))
+        return;
 
       switch ((gap_TransactionStatus) status)
       {
         case gap_transaction_status_accepted:
           this->_accept_transaction(transaction);
           break;
+        case gap_transaction_status_prepared:
+          this->_prepare_transaction(transaction);
         case gap_transaction_status_started:
           this->_start_transaction(transaction);
           break;
@@ -348,8 +334,7 @@ namespace surface
 
       if (transaction.recipient_id != this->_me._id)
       {
-        throw Exception{gap_error,
-            "Only recipient can accept transaction."};
+        throw Exception{gap_error, "Only recipient can accept transaction."};
       }
 
       metrics::google::server().store("transaction:accept:attempt",
@@ -368,14 +353,77 @@ namespace surface
     }
 
     void
+    State::_on_transaction_accepted(Transaction const& transaction)
+    {
+      ELLE_TRACE("On transaction accepted '%s'", transaction.transaction_id);
+
+      if (transaction.sender_device_id != this->device_id())
+        return;
+
+      ELLE_DEBUG("giving '%s' access to the network '%s'",
+                transaction.recipient_id,
+                transaction.network_id);
+
+      this->network_add_user(transaction.network_id,
+                             transaction.recipient_id);
+
+      ELLE_DEBUG("Giving '%s' permissions on the network to '%s'.",
+                transaction.recipient_id,
+                transaction.network_id);
+
+      this->set_permissions(transaction.recipient_id,
+                            transaction.network_id,
+                            nucleus::neutron::permissions::write);
+
+      ELLE_DEBUG("update transaction");
+
+      // When recipient has rights, allow him to start download.
+      this->update_transaction(transaction.transaction_id,
+                               gap_transaction_status_prepared);
+
+      // XXX Could be improved.
+      _swaggers_dirty = true;
+    }
+
+    void
+    State::_prepare_transaction(Transaction const& transaction)
+    {
+      ELLE_DEBUG("prepare transaction '%s'", transaction.transaction_id);
+
+      if (transaction.sender_device_id != this->device_id())
+      {
+        throw Exception{gap_error, "Only sender can prepare his network."};
+      }
+
+      this->_meta->update_transaction(transaction.transaction_id,
+                                      plasma::TransactionStatus::prepared);
+    }
+
+    void
+    State::_on_transaction_prepared(Transaction const& transaction)
+    {
+      ELLE_TRACE("prepared trans '%s'", transaction.transaction_id);
+
+      if (transaction.recipient_device_id != this->device_id())
+      {
+        ELLE_DEBUG("transaction doesn't concern your device.");
+      }
+
+      this->_meta->network_add_device(transaction.network_id,
+                                      this->device_id());
+
+      this->update_transaction(transaction.transaction_id,
+                               gap_transaction_status_started);
+    }
+
+    void
     State::_start_transaction(Transaction const& transaction)
     {
       ELLE_DEBUG("Start transaction '%s'", transaction.transaction_id);
 
       if (transaction.sender_device_id != this->device_id())
       {
-        throw Exception{gap_error,
-            "Only sender can start transaction."};
+        throw Exception{gap_error, "Only sender can start transaction."};
       }
 
       metrics::google::server().store("transaction:start:attempt",
@@ -386,6 +434,77 @@ namespace surface
 
       metrics::google::server().store("transaction:start:succeed",
                                       {{"cd2", transaction.transaction_id}});
+    }
+
+    void
+    State::_on_transaction_started(Transaction const& transaction)
+    {
+      ELLE_TRACE("Started trans '%s'", transaction.transaction_id);
+
+      if (transaction.recipient_device_id != this->device_id() &&
+          transaction.sender_device_id != this->device_id())
+      {
+        ELLE_DEBUG("transaction doesn't concern your device.");
+      }
+
+      std::exception_ptr exception;
+      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      reactor::Thread sync{
+          sched,
+          "notify_8infinit",
+          [&] () -> void {
+              try {
+                this->_notify_8infinit(transaction);
+              } catch (std::runtime_error const&) {
+                  exception = std::current_exception();
+              }
+          }
+      };
+
+      // TODO: Do this only on the current device for sender and recipient.
+      if (this->_wait_portal(transaction.network_id) == false)
+          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+
+      sched.run();
+
+      if (exception != std::exception_ptr{})
+        std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
+
+      if (transaction.recipient_device_id == this->device_id())
+        _download_files(transaction.transaction_id);
+    }
+
+    void
+    State::_close_transaction(Transaction const& transaction)
+    {
+      ELLE_DEBUG("Close transaction '%s'", transaction.transaction_id);
+
+      if(transaction.recipient_device_id != this->device_id())
+      {
+        throw Exception{gap_error,
+            "Only recipient can close transaction."};
+      }
+
+      metrics::google::server().store("transaction:finish:attempt",
+                                      {{"cd2", transaction.transaction_id}});
+
+      this->_meta->update_transaction(transaction.transaction_id,
+                                      plasma::TransactionStatus::finished);
+
+      metrics::google::server().store("transaction:finish:succeed",
+                                      {{"cd2", transaction.transaction_id}});
+
+    }
+
+    void
+    State::_on_transaction_closed(Transaction const& transaction)
+    {
+      ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
+
+      // Delete networks.
+      (void) this->delete_network(transaction.network_id);
+
+      (void) this->refresh_networks();
     }
 
     void
@@ -423,27 +542,18 @@ namespace surface
     }
 
     void
-    State::_close_transaction(Transaction const& transaction)
+    State::_on_transaction_canceled(Transaction const& transaction)
     {
-      ELLE_DEBUG("Close transaction '%s'", transaction.transaction_id);
+      ELLE_DEBUG("Canceled transaction '%s'", transaction.transaction_id);
 
-      if(transaction.recipient_device_id != this->device_id())
-      {
-        throw Exception{gap_error,
-            "Only recipient can close transaction."};
-      }
+      // XXX: If some process are launch, such as 8transfer, 8progess for the
+      // current transaction, cancel them.
 
-      metrics::google::server().store("transaction:finish:attempt",
-                                      {{"cd2", transaction.transaction_id}});
+      // Delete networks.
+      (void) this->delete_network(transaction.network_id, true);
 
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      plasma::TransactionStatus::finished);
-
-      metrics::google::server().store("transaction:finish:succeed",
-                                      {{"cd2", transaction.transaction_id}});
-
+      (void) this->refresh_networks();
     }
-
 
     State::TransactionsMap const&
     State::transactions()
@@ -473,104 +583,6 @@ namespace surface
             "Cannot find any transaction for id '" + id + "'"
         };
       return it->second;
-    }
-
-    // Thoose callbacks are used to keep the client and the server as the same
-    // state.
-    // Both recipient and sender recieve notifications, so some notification
-    // will only trigger a visual effect.
-    // Some of this notification will produce automatic actions such as
-    // launching 8transfer, 8acces, 8group.
-
-    void
-    State::_on_transaction_accepted(Transaction const& transaction)
-    {
-      ELLE_TRACE("On transaction accepted '%s'", transaction.transaction_id);
-
-      if (transaction.sender_device_id != this->device_id())
-        return;
-
-      ELLE_DEBUG("giving '%s' access to the network '%s'",
-                transaction.recipient_id,
-                transaction.network_id);
-
-      this->network_add_user(transaction.network_id,
-                             transaction.recipient_id);
-
-      ELLE_DEBUG("Giving '%s' permissions on the network to '%s'.",
-                transaction.recipient_id,
-                transaction.network_id);
-
-      this->set_permissions(transaction.recipient_id,
-                            transaction.network_id,
-                            nucleus::neutron::permissions::write);
-
-      ELLE_DEBUG("update transaction");
-      // When recipient has rights, allow him to start download.
-      this->update_transaction(transaction.transaction_id,
-                               gap_transaction_status_started);
-
-      // XXX Could be improved.
-      _swaggers_dirty = true;
-    }
-
-    void
-    State::_on_transaction_started(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Started trans '%s'", transaction.transaction_id);
-
-      std::exception_ptr exception;
-      reactor::Scheduler& sched = elle::concurrency::scheduler();
-      reactor::Thread sync{
-          sched,
-          "notify_8infinit",
-          [&] () -> void {
-              try {
-                this->_notify_8infinit(transaction);
-              } catch (std::runtime_error const&) {
-                  exception = std::current_exception();
-              }
-          }
-      };
-      sched.run();
-      // Wait for it ..!
-
-      if (exception != std::exception_ptr{})
-        std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
-
-      // TODO: Do this only on the current device for sender and recipient.
-      if (this->_wait_portal(transaction.network_id) == false)
-          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
-
-      if (transaction.recipient_device_id != this->device_id())
-        return;
-
-      _download_files(transaction.transaction_id);
-    }
-
-    void
-    State::_on_transaction_canceled(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Canceled transaction '%s'", transaction.transaction_id);
-
-      // XXX: If some process are launch, such as 8transfer, 8progess for the
-      // current transaction, cancel them.
-
-      // Delete networks.
-      (void) this->delete_network(transaction.network_id, true);
-
-      (void) this->refresh_networks();
-    }
-
-    void
-    State::_on_transaction_closed(Transaction const& transaction)
-    {
-      ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
-
-      // Delete networks.
-      (void) this->delete_network(transaction.network_id);
-
-      (void) this->refresh_networks();
     }
 
     size_t
