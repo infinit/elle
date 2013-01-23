@@ -198,48 +198,26 @@ BOOST_PYTHON_MODULE(_gap)
     .value("error", gap_error)
     .value("network_error", gap_network_error)
     .value("internal_error", gap_internal_error)
-    .value("api_error", gap_api_error)
     .value("no_device_error", gap_no_device_error)
-    .value("not_logged_in", gap_not_logged_in)
-    .value("bad_request", gap_bad_request)
-    .value("already_logged_in", gap_already_logged_in)
-    .value("not_logged_in", gap_not_logged_in)
-    .value("email_not_valid", gap_email_not_valid)
-    .value("handle_not_valid", gap_handle_not_valid)
-    .value("device_not_valid", gap_device_not_valid)
-    .value("password_not_valid", gap_password_not_valid)
-    .value("user_id_not_valid", gap_user_id_not_valid)
-    .value("network_id_not_valid", gap_network_id_not_valid)
-    .value("device_id_not_valid", gap_device_id_not_valid)
-    .value("field_is_empty", gap_field_is_empty)
-    .value("activation_code_not_valid", gap_activation_code_not_valid)
-    .value("deprecated", gap_deprecated)
-    .value("email_already_registred", gap_email_already_registred)
-    .value("handle_already_registred", gap_handle_already_registred)
-    .value("device_already_registred", gap_device_already_registred)
-    .value("activation_code_doesnt_exist", gap_activation_code_doesnt_exist)
-    .value("email_password_dont_match", gap_email_password_dont_match)
-    .value("unknown_user", gap_unknown_user)
-    .value("user_already_in_network", gap_user_already_in_network)
-    .value("network_not_found", gap_network_not_found)
-    .value("device_not_found", gap_device_not_found)
-    .value("device_not_in_network", gap_device_not_in_network)
-    .value("root_block_already_exist", gap_root_block_already_exist)
-    .value("root_block_badly_signed", gap_root_block_badly_signed)
-    .value("user_already_invited", gap_user_already_invited)
-    .value("user_already_in_infinit", gap_user_already_in_infinit)
-    .value("file_name_empty", gap_file_name_empty)
-    .value("unknown", gap_unknown)
+    .value("wrong_passport", gap_wrong_passport)
+    .value("no_file", gap_no_file)
+    .value("file_not_found", gap_file_not_found)
+    .value("api_error", gap_api_error)
+# define _TS(c) #c
+# define ERR_CODE(name, value_, comment)         \
+    .value(_TS(name), gap_ ## name)
+# include <oracle/disciples/meta/error_code.hh.inc>
+# undef _TS
+# undef ERR_CODE
   ;
 
   py::enum_<gap_TransactionStatus>("TransactionStatus")
-    .value("none", gap_transaction_status_none)
-    .value("pending", gap_transaction_status_pending)
-    .value("accepted", gap_transaction_status_accepted)
-    .value("started", gap_transaction_status_started)
-    .value("canceled", gap_transaction_status_canceled)
-    .value("finished", gap_transaction_status_finished)
-    .value("count", _gap_transaction_status_count)
+# define _TS(c) #c
+# define TRANSACTION_STATUS(name, value_)                                       \
+    .value(_TS(name), gap_transaction_status_ ## name)
+# include <oracle/disciples/meta/resources/transaction_status.hh.inc>
+# undef TRANSACTION_STATUS
+# undef _TS
   ;
 
   //- gap ctor and dtor -------------------------------------------------------

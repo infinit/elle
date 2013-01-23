@@ -1084,11 +1084,9 @@ extern "C"
                          gap_TransactionStatus status)
   {
     assert(transaction_id != nullptr);
-    // assert(   status > gap_TransactionStatus::gap_transaction_status_none
-    //        && status < gap_TransactionStatus::_gap_transaction_status_count);
 
     if(status <= gap_TransactionStatus::gap_transaction_status_none
-       || status >= gap_TransactionStatus::_gap_transaction_status_count)
+       || status >= gap_TransactionStatus::gap_transaction_status__count)
       return gap_error;
 
     WRAP_CPP_RET(state,

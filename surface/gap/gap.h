@@ -5,7 +5,7 @@
 extern "C" {
 # endif
 
-  /// Status returned from gap calls.
+  /// Status returned froym gap calls.
   typedef enum
   {
     gap_ok = 0,
@@ -151,25 +151,10 @@ extern "C" {
 
   typedef enum
   {
-    gap_transaction_status_none = 0,
-
-    /// Waiting for the recipient to accept.
-    gap_transaction_status_pending,
-
-    /// The recipient accepted the file transfer.
-    gap_transaction_status_accepted,
-
-    /// The sender has set writes and the recipient can start 8transfer.
-    gap_transaction_status_started,
-
-    /// The sender or the recipient cancel transaciton (before it start or
-    /// while downloading).
-    gap_transaction_status_canceled,
-
-    /// The transaction is done.
-    gap_transaction_status_finished,
-
-    _gap_transaction_status_count,
+# define TRANSACTION_STATUS(name, value)        \
+      gap_transaction_status_ ## name = value,
+# include <oracle/disciples/meta/resources/transaction_status.hh.inc>
+# undef TRANSACTION_STATUS
   } gap_TransactionStatus;
 
   /// New transaction callback.
