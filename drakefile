@@ -19,6 +19,8 @@ def configure(cxx_toolkit, cxx_config):
   sources = drake.nodes(
     'Buffer.cc',
     'Buffer.hh',
+    'CrashReporter.cc',
+    'CrashReporter.hh',
     'Exception.hh',
     'Exception.hxx',
     'IOStream.cc',
@@ -191,6 +193,9 @@ def configure(cxx_toolkit, cxx_config):
     'serialize/extract.hxx',
     'serialize/footprint.hh',
     'serialize/footprint.hxx',
+    'serialize/insert.cc',
+    'serialize/insert.hh',
+    'serialize/insert.hxx',
     'serialize/fwd.hh',
     'standalone/Region.cc',
     'standalone/Region.hh',
