@@ -38,25 +38,8 @@ namespace elle
   bool
   Passport::validate(elle::Authority const& authority) const
   {
-    auto res = authority.K.Verify(
-        this->_signature,
-        elle::serialize::make_tuple(_id, _owner_K)
-    );
-    static_assert(
-      std::is_same<decltype(res), Status>::value,
-      "Remove the above switch."
-    );
-    switch (res)
-      {
-      case Status::Ok:
-      case Status::True:
-        return true;
-      case Status::Error:
-      case Status::False:
-        return false;
-      default:
-        ELLE_ASSERT(false && "Invalid return code");
-      }
+    return (authority.K().verify(this->_signature,
+                                 elle::serialize::make_tuple(_id, _owner_K)));
   }
 
 //
@@ -79,7 +62,10 @@ namespace elle
     std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
               << this->_name << std::endl;
 
-    this->_owner_K.Dump(margin + 2);
-    this->_signature.Dump(margin + 2);
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Owner K] " << this->_owner_K << std::endl;
+
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Signature] " << this->_signature << std::endl;
   }
 }

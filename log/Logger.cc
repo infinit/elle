@@ -34,9 +34,12 @@ namespace elle
     ELLE_LOG_LEVEL_MESSAGE(dump);
 #undef ELLE_LOG_LEVEL_MESSAGE
 
-    Logger::Logger(Logger::Level level, std::string const& name)
+    Logger::Logger(Logger::Level level,
+                   std::string const& name,
+                   std::ostream* out)
       : _level(level)
       , _name(name)
+      , _out(out == nullptr ? &std::cerr : out)
     {}
 
     Logger::~Logger()
@@ -85,11 +88,12 @@ namespace elle
               color_code = "[33;01;31m";
               break;
           }
-      std::cerr << color_code;
+      *_out << color_code;
       if (level <= _level)
-        std::cerr << message << std::endl;
+        *_out << message << std::endl;
       if (!color_code.empty())
-        std::cerr << "[0m";
+        *_out << "[0m";
+      _out->flush();
     }
 
     std::string const&
@@ -114,6 +118,12 @@ namespace elle
     Logger::level(Level level_)
     {
       this->_level = level_;
+    }
+
+    void
+    Logger::output(std::ostream& out)
+    {
+      this->_out = &out;
     }
 
   }

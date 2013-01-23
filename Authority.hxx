@@ -14,6 +14,7 @@ ELLE_SERIALIZE_SIMPLE(elle::Authority,
   enforce(version == 0);
 
   archive & value.type;
+  archive & value._K;
   archive & elle::serialize::alive_pointer(value.cipher);
 }
 

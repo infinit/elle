@@ -12,7 +12,7 @@
 #include <elle/log.hh>
 #include <elle/idiom/Close.hh>
 
-ELLE_LOG_COMPONENT("Reactor.Socket");
+ELLE_LOG_COMPONENT("reactor.network.Socket");
 
 namespace reactor
 {
@@ -115,7 +115,6 @@ namespace reactor
                                          AsioSocket* socket)
       : Super(sched)
       , _socket(socket)
-      , _peer(socket->remote_endpoint())
     {}
 
     template <typename AsioSocket>
@@ -164,7 +163,8 @@ namespace reactor
     PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint, DurationOpt timeout)
     {
       ELLE_TRACE("%s: connecting to %s", *this, endpoint);
-      _socket = new AsioSocket(this->scheduler().io_service());
+      if (!this->_socket)
+        this->_socket = new AsioSocket(this->scheduler().io_service());
       Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
       try
       {

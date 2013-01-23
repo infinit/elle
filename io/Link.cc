@@ -38,12 +38,12 @@ namespace elle
                                      const Path&                target)
     {
       // does the link exist.
-      if (Link::Exist(link) == Status::True)
+      if (Link::Exist(link) == true)
         escape("the link seems to already exist");
 
       // does the target exist.
-      if ((File::Exist(target) == Status::False) &&
-          (Directory::Exist(target) == Status::False))
+      if ((File::Exist(target) == false) &&
+          (Directory::Exist(target) == false))
         escape("the target does not seem to exist");
 
       // create the link.
@@ -69,7 +69,7 @@ namespace elle
     Status              Link::Erase(const Path&                 path)
     {
       // does the link exist.
-      if (Link::Exist(path) == Status::False)
+      if (Link::Exist(path) == false)
         escape("the link does not seem to exist");
 
       // unlink the link.
@@ -81,27 +81,27 @@ namespace elle
     ///
     /// this method returns true if the pointed to link exists.
     ///
-    Status              Link::Exist(const Path&                 path)
+    Boolean             Link::Exist(const Path&                 path)
     {
       struct ::stat             stat;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
       if (::lstat(path.string().c_str(), &stat) != 0)
-        return Status::False;
+        return false;
 
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
-        return Status::False;
+        return false;
 #elif defined(INFINIT_WINDOWS)
       // does the path points to something.
       if (::stat(path.string().c_str(), &stat) != 0)
-        return Status::False;
+        return false;
 #else
 # error "unsupported platform"
 #endif
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -134,7 +134,7 @@ namespace elle
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == Status::False)
+          if (Directory::Exist(chemin) == false)
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)

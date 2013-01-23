@@ -1,6 +1,9 @@
-#ifndef  ELLE_AUTHORITY_HH
+#ifndef ELLE_AUTHORITY_HH
 # define ELLE_AUTHORITY_HH
 
+# include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/io/Dumpable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 
@@ -24,7 +27,8 @@ namespace elle
   /// verify signatures.
   ///
   class Authority:
-    public elle::concept::MakeFileable<Authority>
+    public elle::concept::MakeFileable<Authority>,
+    public elle::io::Dumpable
   {
     /*-------------.
     | Enumerations |
@@ -70,7 +74,8 @@ namespace elle
   public:
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
-
+    // serializable
+    ELLE_SERIALIZE_FRIEND_FOR(Authority);
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
 
@@ -79,7 +84,7 @@ namespace elle
     //
     Type                type;
 
-    cryptography::PublicKey     K;
+    ELLE_ATTRIBUTE_R(cryptography::PublicKey, K);
     cryptography::PrivateKey*   k;
 
     cryptography::Cipher*       cipher;

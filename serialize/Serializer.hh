@@ -104,7 +104,7 @@ namespace elle
           throw Exception{
             msg ?
             std::string(msg) :
-            "couldn't serialize '" + std::string{ELLE_PRETTY_TYPE(T)} + "'"
+            "couldn't (de)serialize '" + std::string{ELLE_PRETTY_TYPE(T)} + "'"
           };
       }
 

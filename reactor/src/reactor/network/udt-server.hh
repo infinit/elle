@@ -3,12 +3,17 @@
 
 # include <reactor/network/server.hh>
 # include <reactor/network/udt-socket.hh>
+# include <reactor/signal.hh>
+
+# include <elle/Printable.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class UDTServer: public Server, public ProtoServer<UDTSocket>
+    class UDTServer: public Server,
+                     public ProtoServer<UDTSocket>,
+                     public elle::Printable
     {
       public:
         typedef Server Super;
@@ -20,21 +25,49 @@ namespace reactor
       `----------*/
       public:
         void listen(int port = 0);
+        void listen_fd(int port, int fd);
 
       public:
         /// The locally bound port.
         virtual int port() const;
         /// The locally bound endpoint.
         EndPoint local_endpoint() const;
+        /// The public bound endpoint.
+        ELLE_ATTRIBUTE_R(EndPoint, public_endpoint)
 
       /*----------.
       | Accepting |
       `----------*/
       public:
-        UDTSocket* accept();
-
+        virtual
+        UDTSocket*
+        accept();
+        virtual
+        void
+        accept(std::string const& addr, int port);
       private:
-        boost::asio::ip::udt::acceptor* _acceptor;
+        reactor::Signal _accepted;
+        std::vector<std::unique_ptr<UDTSocket>> _sockets;
+
+      /*----.
+      | NAT |
+      `----*/
+      private:
+        bool
+        _punch(int port);
+        bool
+        _punch(int port,
+               std::unique_ptr<reactor::network::UDPSocket>& socket);
+        std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
+        std::unique_ptr<reactor::Thread> _heartbeat;
+
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        virtual
+        void
+        print(std::ostream&) const;
     };
   }
 }

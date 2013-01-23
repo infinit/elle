@@ -5,6 +5,8 @@
 #include <elle/IOStream.hh>
 #include <elle/log.hh>
 
+#include <elle/format/hexadecimal.hh>
+
 #include <elle/io/Dumpable.hh>
 
 #include <iomanip>
@@ -12,7 +14,7 @@
 
 ELLE_LOG_COMPONENT("elle.Buffer");
 
-# define ELLE_BUFFER_INITIAL_SIZE (sizeof(void*))
+#define ELLE_BUFFER_INITIAL_SIZE (sizeof(void*))
 
 namespace elle
 {
@@ -21,6 +23,12 @@ namespace elle
     ::free(data);
   }
 
+//
+// ---------- Buffer ----------------------------------------------------------
+//
+
+  // Note that an empty buffer has a valid pointer to a memory region with
+  // a size of zero.
   Buffer::Buffer()
     : _contents{static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE))}
     , _size{0}
@@ -35,8 +43,8 @@ namespace elle
     , _size(size)
     , _buffer_size(Buffer::_next_size(size))
   {
-    this->_contents = static_cast<Byte*>(::malloc(_buffer_size));
-    if (this->_contents == nullptr)
+    if ((this->_contents =
+         static_cast<Byte*>(::malloc(this->_buffer_size))) == nullptr)
       throw std::bad_alloc();
   }
 
@@ -55,8 +63,8 @@ namespace elle
     if (size == 0)
       {
         this->_buffer_size = ELLE_BUFFER_INITIAL_SIZE;
-        this->_contents = static_cast<Byte*>(::malloc(_buffer_size));
-        if (this->_contents == nullptr)
+        if ((this->_contents =
+             static_cast<Byte*>(::malloc(_buffer_size))) == nullptr)
           throw std::bad_alloc();
       }
     else
@@ -89,8 +97,8 @@ namespace elle
     /// XXX some implementations of memmove does not check for memory overlap
     memmove(this->_contents + old_size, data, size);
     // std::uninitialized_copy(
-    //   static_cast<elle::Byte const*>(data),
-    //   static_cast<elle::Byte const*>(data) + size,
+    //   static_cast<Byte const*>(data),
+    //   static_cast<Byte const*>(data) + size,
     //   this->_contents + old_size
   }
 
@@ -243,6 +251,38 @@ namespace elle
     return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
+  std::ostream&
+  operator <<(std::ostream& stream,
+              Buffer const& buffer)
+  {
+    static Natural32 const length = 40;
+    String hexadecimal = format::hexadecimal::encode(buffer);
+
+    // Display the string, depending on its length.
+    if (hexadecimal.length() == 0)
+      {
+        stream << "empty";
+      }
+    else if (hexadecimal.length() < length)
+      {
+        // If the string is short enough, display it in its entirety.
+        stream << hexadecimal;
+      }
+    else
+      {
+        // Otherwise chop it and display the begining and the end only.
+        stream << hexadecimal.substr(0, length / 2)
+               << "..." << std::dec << buffer.size() << " bytes" << "..."
+               << hexadecimal.substr(hexadecimal.length() - (length / 2));
+      }
+
+    return (stream);
+  }
+
+//
+// ---------- WeakBuffer ------------------------------------------------------
+//
+
   InputBufferArchive
   WeakBuffer::reader() const
   {
@@ -345,11 +385,43 @@ namespace elle
     return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
+  /*----------.
+  | Operators |
+  `----------*/
+
+  std::ostream&
+  operator <<(std::ostream& stream,
+              WeakBuffer const& buffer)
+  {
+    static Natural32 const length = 40;
+    String hexadecimal = format::hexadecimal::encode(buffer);
+
+    // Display the string, depending on its length.
+    if (hexadecimal.length() == 0)
+      {
+        stream << "empty";
+      }
+    else if (hexadecimal.length() < length)
+      {
+        // If the string is short enough, display it in its entirety.
+        stream << hexadecimal;
+      }
+    else
+      {
+        // Otherwise chop it and display the begining and the end only.
+        stream << hexadecimal.substr(0, length / 2)
+               << "..." << std::dec << buffer.size() << " bytes" << "..."
+               << hexadecimal.substr(hexadecimal.length() - (length / 2));
+      }
+
+    return (stream);
+  }
+
   ///////////////////////////////////////////////////////////////////////////
 
   template<typename BufferType>
   class InputStreamBuffer:
-    public elle::StreamBuffer
+    public StreamBuffer
   {
   private:
     BufferType const& _buffer;
@@ -395,19 +467,19 @@ namespace elle
   ///////////////////////////////////////////////////////////////////////////
 
   InputBufferArchive::InputBufferArchive(WeakBuffer const& buffer):
-    elle::serialize::InputBinaryArchive(
+    serialize::InputBinaryArchive(
       *(_istream = new IOStream(new InputStreamBuffer<WeakBuffer>(buffer)))
     )
   {}
 
   InputBufferArchive::InputBufferArchive(Buffer const& buffer):
-    elle::serialize::InputBinaryArchive(
+    serialize::InputBinaryArchive(
       *(_istream = new IOStream(new InputStreamBuffer<Buffer>(buffer)))
     )
   {}
 
   InputBufferArchive::InputBufferArchive(InputBufferArchive&& other):
-    elle::serialize::InputBinaryArchive(*_istream),
+    serialize::InputBinaryArchive(*_istream),
     _istream(other._istream)
   {
     other._istream = nullptr;
@@ -422,7 +494,7 @@ namespace elle
   ///////////////////////////////////////////////////////////////////////////
 
   class OutputStreamBuffer:
-    public elle::StreamBuffer
+    public StreamBuffer
   {
   private:
     size_t  _old_size;
@@ -463,7 +535,7 @@ namespace elle
   ///////////////////////////////////////////////////////////////////////////
 
   OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
-    elle::serialize::OutputBinaryArchive(
+    serialize::OutputBinaryArchive(
       *(_ostream = new IOStream(new OutputStreamBuffer(buffer)))
     )
   {
@@ -471,7 +543,7 @@ namespace elle
   }
 
   OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other):
-    elle::serialize::OutputBinaryArchive(*_ostream),
+    serialize::OutputBinaryArchive(*_ostream),
     _ostream(other._ostream)
   {
     ELLE_DEBUG("move OutputBufferArchive %s stream %s", this, _ostream);

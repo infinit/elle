@@ -2,6 +2,7 @@
 # define REACTOR_BACKTRACE_HH
 
 # include <vector>
+# include <string>
 
 namespace reactor
 {

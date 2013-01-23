@@ -20,7 +20,7 @@ namespace elle
       static Status     Create(const Path&,
                                const Path&);
       static Status     Erase(const Path&);
-      static Status     Exist(const Path&);
+      static Boolean    Exist(const Path&);
       static Status     Dig(const Path&);
     };
 

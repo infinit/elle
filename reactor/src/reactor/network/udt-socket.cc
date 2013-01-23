@@ -11,7 +11,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-ELLE_LOG_COMPONENT("Reactor.UDTSocket");
+ELLE_LOG_COMPONENT("reactor.network.UDTSocket");
 
 namespace reactor
 {
@@ -32,15 +32,42 @@ namespace reactor
     {}
 
     UDTSocket::UDTSocket(Scheduler& sched,
+                         int fd,
+                         const std::string& hostname,
+                         const std::string& port,
+                         DurationOpt timeout)
+      : Super(sched, new boost::asio::ip::udt::socket(sched.io_service()))
+      , _write_mutex()
+    {
+      this->_peer = resolve_udp(sched, hostname, port);
+      ELLE_DEBUG("%s: rebind FD %s", *this, fd)
+        this->socket()->_bind_fd(fd);
+      ELLE_DEBUG("%s: connect to %s:%s", *this, hostname, port)
+      _connect(this->_peer, timeout);
+    }
+
+    UDTSocket::UDTSocket(Scheduler& sched,
                          const std::string& hostname,
                          int port,
                          DurationOpt timeout)
-      : Super(sched,
-              resolve_udp(sched, hostname,
-                          boost::lexical_cast<std::string>(port)),
-              timeout)
-      , _write_mutex()
+      : UDTSocket(sched,
+                  hostname,
+                  boost::lexical_cast<std::string>(port),
+                  timeout)
     {}
+
+    UDTSocket::UDTSocket(Scheduler& sched,
+                         const std::string& hostname,
+                         int port,
+                         int local_port,
+                         DurationOpt timeout)
+      : Super(sched, new boost::asio::ip::udt::socket(sched.io_service()))
+      , _write_mutex()
+    {
+      this->socket()->_bind(local_port);
+      _connect(resolve_udp(sched, hostname,
+                           boost::lexical_cast<std::string>(port)), timeout);
+    }
 
     UDTSocket::~UDTSocket()
     {}

@@ -6,8 +6,6 @@
 # include <string>
 # include <typeinfo>
 
-# include <openssl/bn.h> // XXX[to remove]
-
 // XXX demangle + types check for the following macros
 
 /// Returns a nice string for the given type
@@ -32,8 +30,6 @@ namespace elle
     typedef uint32_t                      Natural32;
     typedef uint64_t                      Natural64;
 
-  typedef ::BIGNUM                      Large; // XXX[to remove]
-
     typedef void                          Void;
     typedef bool                          Bool;
     typedef bool                          Boolean;
@@ -44,12 +40,7 @@ namespace elle
 
     typedef std::basic_string<Character>  String;
 
-    enum class Null { Nil };
-    extern Null const none;
-
-    std::ostream& operator <<(std::ostream& out, elle::Null);
-
-    typedef unsigned int                  Size;
+    typedef Natural64 Size;
 
     ///
     /// this enumeration represents a return status.
@@ -59,44 +50,9 @@ namespace elle
     ///
     enum class Status
       {
-        Unknown,
-
-        // XXX[to remove: use Boolean instead]
-        False = false,
-        True = true,
-
         Ok = 42,
         Error = 666
       };
-
-    inline bool operator ==(Status s, Boolean b)
-      {
-        if (b == true)
-          return s == Status::True;
-        else
-          return s == Status::False;
-      }
-    inline bool operator !=(Status s, Boolean b)
-      {
-        if (b == true)
-          return s == Status::False;
-        else
-          return s == Status::True;
-      }
-    inline bool operator ==(Boolean b, Status s)
-      {
-        if (b == true)
-          return s == Status::True;
-        else
-          return s == Status::False;
-      }
-    inline bool operator !=(Boolean b, Status s)
-      {
-        if (b == true)
-          return s == Status::False;
-        else
-          return s == Status::True;
-      }
 }
 
 #endif

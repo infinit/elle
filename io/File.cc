@@ -42,8 +42,8 @@ namespace elle
       Natural32         roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == Status::False)
-        escape("the file does not seem to exist");
+      if (File::Exist(path) == false)
+        escape("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
@@ -149,8 +149,8 @@ namespace elle
       DWORD             roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == Status::False)
-        escape("the file does not seem to exist");
+      if (File::Exist(path) == false)
+         escape("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
@@ -259,8 +259,8 @@ namespace elle
     Status              File::Erase(const Path&                 path)
     {
       // does the file exist.
-      if (File::Exist(path) == Status::False)
-        escape("the file does not seem to exist");
+      if (File::Exist(path) == false)
+        escape("the file '%s' does not seem to exist", path);
 
       // unlink the file.
       ::unlink(path.string().c_str());
@@ -271,19 +271,19 @@ namespace elle
     ///
     /// this method returns true if the pointed to file exists.
     ///
-    Status              File::Exist(const Path&                 path)
+    Boolean              File::Exist(const Path&                 path)
     {
       struct ::stat             stat;
 
       // does the path points to something.
       if (::stat(path.string().c_str(), &stat) != 0)
-        return Status::False;
+        return false;
 
       // does the path points to a regular file.
       if (!S_ISREG(stat.st_mode))
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -316,7 +316,7 @@ namespace elle
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == Status::False)
+          if (Directory::Exist(chemin) == false)
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)

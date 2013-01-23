@@ -25,7 +25,7 @@ namespace elle
       static Status     Write(const Path&,
                               const standalone::Region&);
       static Status     Erase(const Path&);
-      static Status     Exist(const Path&);
+      static Boolean    Exist(const Path&);
       static Status     Dig(const Path&);
     };
 

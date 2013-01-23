@@ -32,11 +32,14 @@ namespace elle
       };
 
     private:
-      Level       _level;
-      std::string _name;
+      Level         _level;
+      std::string   _name;
+      std::ostream* _out;
 
     public:
-      Logger(Level lvl, std::string const& name = "");
+      Logger(Level lvl,
+             std::string const& name = "",
+             std::ostream* out = nullptr);
       ~Logger();
 
     public:
@@ -53,6 +56,8 @@ namespace elle
 
       Level level() const;
       void level(Level level_);
+
+      void output(std::ostream& out);
 
     protected:
       void _message(Level level,

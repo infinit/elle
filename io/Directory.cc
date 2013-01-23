@@ -135,7 +135,7 @@ namespace elle
       // XXX
 #if 0
       // does the directory already exist.
-      if (Directory::Exist(path) == Status::True)
+      if (Directory::Exist(path) == true)
         escape("the directory seems to already exist");
 
       // dig the directory which will hold the target directory.
@@ -164,7 +164,7 @@ namespace elle
     Status              Directory::Remove(const Path&           path)
     {
       // does the directory exist.
-      if (Directory::Exist(path) == Status::False)
+      if (Directory::Exist(path) == false)
         escape("the directory does not seem to exist");
 
       // remove the directory.
@@ -176,19 +176,19 @@ namespace elle
     ///
     /// this method returns true if the pointed to directory exists.
     ///
-    Status              Directory::Exist(const Path&                    path)
+    Boolean             Directory::Exist(const Path&                    path)
     {
       struct ::stat             stat;
 
       // does the path points to something.
       if (::stat(path.string().c_str(), &stat) != 0)
-        return Status::False;
+        return false;
 
       // does the path points to a directory.
       if (!S_ISDIR(stat.st_mode))
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -233,7 +233,7 @@ namespace elle
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == Status::False)
+          if (Directory::Exist(chemin) == false)
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)
@@ -252,7 +252,7 @@ namespace elle
     Status              Directory::Clear(const Path&            path)
     {
       // is the path pointing to a valid directory.
-      if (Directory::Exist(path) == Status::False)
+      if (Directory::Exist(path) == false)
         escape("the path does not reference a directory");
 
       _Directory directory(path);

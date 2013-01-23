@@ -33,7 +33,7 @@ namespace elle
     typedef JSONArchive<ArchiveMode::output>        OutputJSONArchive;
 
     template<typename T>
-    struct Serializer;
+    class Serializer;
 
     template <template<ArchiveMode> class Archive>
     struct _Serializable;
