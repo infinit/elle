@@ -1,17 +1,15 @@
 #ifndef  ELLE_LOG_LOGGER_HH
 # define ELLE_LOG_LOGGER_HH
 
-# include <elle/idiom/Close.hh>
-#  include <iosfwd>
-#  include <memory>
-#  include <string>
-#  include <boost/noncopyable.hpp>
+# include <iosfwd>
+# include <memory>
+# include <string>
+# include <boost/noncopyable.hpp>
 
 namespace elle
 {
   namespace log
   {
-
     class Logger
       : private boost::noncopyable
     {
@@ -65,6 +63,14 @@ namespace elle
                     std::string const& message);
     };
 
+    /// Here the simplest type possible is used (.rodata-located) so
+    /// as to make sure that its initialization will always take place
+    /// before the other global variables which construction may require
+    /// logging.
+
+    /// @brief Retreive a logger by its name.
+    Logger&
+    logger(std::string const& name);
   }
 }
 

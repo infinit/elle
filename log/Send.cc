@@ -1,75 +1,68 @@
 #include <fnmatch.h>
-
-#include <cassert>
-#include <cstdlib> // getenv
-#include <string>
-#include <map>
 #include <unordered_map>
-#include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/format.hpp>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
-#include <elle/log.hh>
+#include <elle/log/Send.hh>
+#include <elle/printf.hh>
+#include <elle/reactor/src/reactor/storage.hh>
 
-#include <reactor/storage.hh>
+#include <reactor/exception.hh>
 
 namespace elle
 {
   namespace log
   {
-    static
-    Logger::Level
-    _default_log_level()
-    {
-      static const char* env = ::getenv("ELLE_LOG_LEVEL");
-      if (env)
-        {
-          const std::string level(env);
-          if (level == "LOG")
-            return Logger::Level::log;
-          else if (level == "TRACE")
-            return Logger::Level::trace;
-          else if (level == "DEBUG")
-            return Logger::Level::debug;
-          else if (level == "DUMP")
-            return Logger::Level::dump;
-          else
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     elle::sprintf("invalid log level: %s", level));
-        }
-      else
-        return Logger::Level::log;
-    }
-
-    Logger::Level
-    default_log_level()
-    {
-      static Logger::Level level = _default_log_level();
-      return level;
-    }
-
-
-    Logger&
-    logger(std::string const& name)
-    {
-      static std::unordered_map<std::string, std::unique_ptr<Logger>> loggers;
-      auto it = loggers.find(name);
-      if (it == loggers.end())
-        {
-          auto logger =  new Logger{default_log_level()};
-          loggers[name].reset(logger);
-          return *logger;
-        }
-      return *it->second;
-    };
-
     namespace detail
     {
+      static
+      Logger::Level
+      _default_log_level()
+      {
+        static const char* env = ::getenv("ELLE_LOG_LEVEL");
+        if (env)
+          {
+            const std::string level(env);
+            if (level == "LOG")
+              return Logger::Level::log;
+            else if (level == "TRACE")
+              return Logger::Level::trace;
+            else if (level == "DEBUG")
+              return Logger::Level::debug;
+            else if (level == "DUMP")
+              return Logger::Level::dump;
+            else
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       elle::sprintf("invalid log level: %s", level));
+          }
+        else
+          return Logger::Level::log;
+      }
+
+      Logger::Level
+      default_log_level()
+      {
+        static Logger::Level level = _default_log_level();
+        return level;
+      }
+
+
+      Logger&
+      logger(std::string const& name)
+      {
+        static std::unordered_map<std::string, std::unique_ptr<Logger>> loggers;
+        auto it = loggers.find(name);
+        if (it == loggers.end())
+          {
+            auto logger =  new Logger{default_log_level()};
+            loggers[name].reset(logger);
+            return *logger;
+          }
+        return *it->second;
+      };
+
       static
       boost::mutex&
       _indentation_mutex()
@@ -174,7 +167,7 @@ namespace elle
         }
       };
 
-      TraceContext::~TraceContext()
+      Send::~Send()
       {
         if (!_proceed)
           return;
@@ -182,7 +175,7 @@ namespace elle
       }
 
       bool
-      TraceContext::_enabled(elle::log::Logger::Type type,
+      Send::_enabled(elle::log::Logger::Type type,
                              elle::log::Logger::Level level,
                              elle::String const& component)
       {
@@ -198,7 +191,7 @@ namespace elle
       }
 
       void
-      TraceContext::_send(elle::log::Logger::Level level,
+      Send::_send(elle::log::Logger::Level level,
                           elle::log::Logger::Type type,
                           std::string const& component,
                           char const* file,
@@ -219,7 +212,7 @@ namespace elle
 
 
       void
-      TraceContext::_send(elle::log::Logger::Level level,
+      Send::_send(elle::log::Logger::Level level,
                           elle::log::Logger::Type type,
                           std::string const& component,
                           std::string const& msg)
@@ -267,14 +260,14 @@ namespace elle
       }
 
       void
-      TraceContext::_indent()
+      Send::_indent()
       {
         boost::lock_guard<boost::mutex> lock(_indentation_mutex());
         _indentation() += 1;
       }
 
       void
-      TraceContext::_unindent()
+      Send::_unindent()
       {
         boost::lock_guard<boost::mutex> lock(_indentation_mutex());
         auto& indentation = _indentation();
