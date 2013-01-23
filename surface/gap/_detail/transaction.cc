@@ -604,8 +604,16 @@ namespace surface
 
           if (!notif)
             break;
-
-          this->_handle_notification(*notif);
+          try
+            {
+              this->_handle_notification(*notif);
+            }
+          catch (std::runtime_error const& e)
+            {
+              ELLE_WARN("error while handling notificaiton '%s'",
+                        notif->notification_type);
+              continue;
+            }
           ++count;
         }
 
