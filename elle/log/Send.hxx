@@ -1,5 +1,5 @@
-#ifndef  ELLE_LOG_HXX
-# define ELLE_LOG_HXX
+#ifndef ELLE_LOG_SEND_HXX
+# define ELLE_LOG_SEND_HXX
 
 # include <elle/printf.hh>
 
@@ -11,7 +11,7 @@ namespace elle
     {
       template <typename ... Args>
       inline
-      TraceContext::TraceContext(elle::log::Logger::Level level,
+      Send::Send(elle::log::Logger::Level level,
                                  elle::log::Logger::Type type,
                                  elle::String const& component,
                                  char const* file,
@@ -29,12 +29,18 @@ namespace elle
       }
 
       inline
-      TraceContext::operator bool() const
+      Send::operator bool() const
       {
         return false;
       }
-    }
 
+      template <typename... Args>
+      std::string
+      print_function_params(Args const&... args)
+      {
+        return elle::sprint(elle::iomanip::Separator(", "), args...);
+      }
+    }
   }
 }
 
