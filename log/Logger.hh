@@ -1,10 +1,13 @@
 #ifndef  ELLE_LOG_LOGGER_HH
 # define ELLE_LOG_LOGGER_HH
 
-# include <iosfwd>
+# include <iostream>
 # include <memory>
 # include <string>
+
 # include <boost/noncopyable.hpp>
+
+# include <elle/attribute.hh>
 
 namespace elle
 {
@@ -13,6 +16,9 @@ namespace elle
     class Logger
       : private boost::noncopyable
     {
+    /*------.
+    | Level |
+    `------*/
     public:
       enum class Level
       {
@@ -22,6 +28,10 @@ namespace elle
         dump,
       };
 
+    /*-----.
+    | Type |
+    `-----*/
+    public:
       enum class Type
       {
         info,
@@ -29,43 +39,32 @@ namespace elle
         error,
       };
 
-    private:
-      std::string   _name;
-      std::ostream* _out;
-
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       Logger(Level lvl,
              std::string const& name = "",
-             std::ostream* out = nullptr);
+             std::ostream& out = std::cerr);
       ~Logger();
+      ELLE_ATTRIBUTE_R(std::string, name);
 
+    /*----------.
+    | Messaging |
+    `----------*/
     public:
       void message(Level level, elle::log::Logger::Type type, std::string const& values);
       void log(std::string const& msg);
       void trace(std::string const& msg);
       void debug(std::string const& msg);
       void dump(std::string const& msg);
-
-      /// properties
-    public:
-      std::string const& name() const;
-      void name(std::string const& name_);
-      void output(std::ostream& out);
-
     protected:
       void _message(Level level,
                     elle::log::Logger::Type type,
                     std::string const& message);
+      ELLE_ATTRIBUTE_R(std::ostream&, output);
+
     };
-
-    /// Here the simplest type possible is used (.rodata-located) so
-    /// as to make sure that its initialization will always take place
-    /// before the other global variables which construction may require
-    /// logging.
-
-    /// @brief Retreive a logger by its name.
-    Logger&
-    logger(std::string const& name);
   }
 }
 

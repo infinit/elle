@@ -36,9 +36,9 @@ namespace elle
 
     Logger::Logger(Logger::Level level,
                    std::string const& name,
-                   std::ostream* out)
+                   std::ostream& out)
       : _name(name)
-      , _out(out == nullptr ? &std::cerr : out)
+      , _output(out)
     {}
 
     Logger::~Logger()
@@ -87,30 +87,11 @@ namespace elle
               color_code = "[33;01;31m";
               break;
           }
-      *_out << color_code;
-      *_out << message << std::endl;
+      _output << color_code;
+      _output << message << std::endl;
       if (!color_code.empty())
-        *_out << "[0m";
-      _out->flush();
+        _output << "[0m";
+      _output.flush();
     }
-
-    std::string const&
-    Logger::name() const
-    {
-      return this->_name;
-    }
-
-    void
-    Logger::name(std::string const& name_)
-    {
-      this->_name = name_;
-    }
-
-    void
-    Logger::output(std::ostream& out)
-    {
-      this->_out = &out;
-    }
-
   }
 }
