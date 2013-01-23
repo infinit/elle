@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+source ${INFINIT_SOURCE_DIR}/scripts/common.sh
+
+infinitd_probe() {
+	for proc in $(pgrep 8watchdog)
+	do
+		i8info 8watchdog \(pid ${proc}\)
+		for child in $(ps h -o pid --ppid ${proc})
+		do
+			i8info " " 8infinit \(pid ${child}\)
+		done
+	done
+}
+
+infinitd_probe

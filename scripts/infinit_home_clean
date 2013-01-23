@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+infinit_home_clean() {
+    rm -rf ~/.infinit/*
+}
+
+infinit_home_clean

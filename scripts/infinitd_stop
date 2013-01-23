@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+source ${INFINIT_SOURCE_DIR}/scripts/common.sh
+
+infinitd_stop() {
+	for proc in $(pgrep 8watchdog)
+	do
+		for child in $(ps h -o pid --ppid ${proc})
+		do
+			i8warn Stopping 8infinit \(with pid ${child}\)
+			kill -9 $child
+		done
+		i8warn Stopping 8watchdog \(with pid ${proc}\)
+		kill -9 $proc
+	done
+}
+
+infinitd_stop
