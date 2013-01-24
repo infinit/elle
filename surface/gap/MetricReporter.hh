@@ -144,15 +144,25 @@ namespace surface
     {
       namespace google
       {
+
         //XXX: create an enum and a map that list with a user friendly name the
         // key of the field such as Key::session_control instead of "sc".
         static const std::pair<std::string, std::string> Success{"cd1", "success"};
         static const std::pair<std::string, std::string> Failure{"cd1", "failure"};
         static const std::pair<std::string, std::string> Pending{"cd1", "pending"};
 
+        std::string
+        retrieve_id(std::string const& path);
+
+        void
+        update_id(std::string const& id);
+
         // Create a static MetricReporter with google analytics server.
         MetricReporter&
-        server();
+        server(std::string const& host = "",
+               uint16_t port = 80,
+               std::string const& tag = "",
+               std::string const& id = "");
       }
     }
   }

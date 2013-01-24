@@ -141,6 +141,13 @@ namespace surface
           this->_me = static_cast<User const&>(this->_meta->self());
         }
       }
+
+      // Initialize server.
+      metrics::google::server(common::metrics::google_server(),
+                              common::metrics::google_port(),
+                              "cd",
+                              metrics::google::retrieve_id(common::metrics::id_path()));
+
     }
 
     void
@@ -431,11 +438,6 @@ namespace surface
                    elle::String{"127.0.0.1"},
                    phrase.port);
 
-        reactor::Sleep s(elle::concurrency::scheduler(),
-                         boost::posix_time::seconds(10));
-
-        s.run();
-
         // Connect to the server.
         reactor::network::TCPSocket socket{
             elle::concurrency::scheduler(),
@@ -472,15 +474,17 @@ namespace surface
         };
 
         try
-        {
+          {
+            ELLE_DEBUG("found endpoints: %s locals, %s externals",
+                       locals.size(), externals.size());
             std::for_each(std::begin(locals), std::end(locals), send_to_slug);
             std::for_each(std::begin(externals), std::end(externals), send_to_slug);
-        }
+          }
         catch (elle::Exception const &e)
-        {
+          {
             ELLE_TRACE("Caught exception %s", e.what());
             throw e;
-        }
+          }
       }
     }
   }

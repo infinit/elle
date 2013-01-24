@@ -244,7 +244,7 @@ namespace surface
       {
 
         std::string
-        retrieve_id()
+        retrieve_id(std::string const& path)
         {
           std::string id = "66666666-6666-6666-6666-66666666";
 
@@ -310,14 +310,25 @@ namespace surface
         }
 
         MetricReporter&
-        server()
+        server(std::string const& host,
+               uint16_t port,
+               std::string const& tag,
+               std::string const& id)
         {
-          static std::unique_ptr<surface::gap::MetricReporter> server{
-            new surface::gap::ServerReporter{
-                  "cd",
-                  retrieve_id(),
-                  common::metrics::google_server(),
-                    80}};
+          static std::unique_ptr<surface::gap::MetricReporter> server;
+          if (!server)
+            {
+              if (host.empty() ||
+                  tag.empty()  ||
+                  id.empty())
+                throw elle::Exception("google host not specified");
+
+              server.reset(new surface::gap::ServerReporter{
+                  tag,
+                    id,
+                    host,
+                    port});
+            }
 
           return *server;
         }
