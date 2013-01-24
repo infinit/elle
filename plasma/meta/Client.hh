@@ -402,6 +402,10 @@ namespace plasma
       string const& email() const;
       void email(string const& str);
     };
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                Error e);
   }
 }
 

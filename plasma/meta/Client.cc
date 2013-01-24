@@ -748,5 +748,22 @@ namespace plasma
     {
       _email = str;
     }
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                Error e)
+    {
+      switch (e)
+      {
+#define ERR_CODE(name, value, comment)                 \
+        case Error::name:                              \
+          out << #name << "(" << #comment << ")";      \
+          break;
+#include <oracle/disciples/meta/error_code.hh.inc>
+#undef ERROR_CODE
+      }
+
+      return out;
+    }
   }
 }

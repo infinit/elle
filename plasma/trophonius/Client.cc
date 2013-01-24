@@ -210,7 +210,7 @@ namespace plasma
                 break;
               default:
                 ELLE_WARN("unknown notification %s", notification_type);
-                };
+              };
           }
 
           if (notification)
@@ -297,6 +297,40 @@ namespace plasma
     Client::has_notification(void)
     {
       return !(_notifications.empty());
+    }
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                NotificationType t)
+    {
+      switch (t)
+      {
+#define NOTIFICATION_TYPE(name, value)             \
+        case NotificationType::name:           \
+          out << #name;                            \
+          break;
+#include <oracle/disciples/meta/notification_type.hh.inc>
+#undef NOTIFICATION_TYPE
+      }
+
+      return out;
+    }
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                NetworkUpdate n)
+    {
+      switch (n)
+      {
+#define NETWORK_UPDATE(name, value)             \
+        case NetworkUpdate::name:           \
+          out << #name;                            \
+          break;
+#include <oracle/disciples/meta/resources/network_update.hh.inc>
+#undef NETWORK_UPDATE
+      }
+
+      return out;
     }
 
   }

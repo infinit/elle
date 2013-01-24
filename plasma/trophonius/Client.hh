@@ -108,6 +108,14 @@ namespace plasma
       _on_read_socket(boost::system::error_code const& err,
                       size_t bytes_transferred);
     };
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                NotificationType t);
+
+    std::ostream&
+    operator <<(std::ostream& out,
+                NetworkUpdate n);
   }
 }
 
