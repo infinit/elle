@@ -16,6 +16,7 @@
 
 #include <elle/format/json.hh>
 #include <elle/log.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/network/Host.hh>
 #include <elle/os/path.hh>
 #include <elle/os/getenv.hh>
@@ -149,22 +150,8 @@ namespace surface
           path,
           std::fstream::app | std::fstream::out
       };
-      char const* components[] = {
-          "infinit.surface.gap",
-          "infinit.surface.gap.State",
-          "infinit.surface.gap.MetricReporter",
-          "infinit.plasma.trophonius.Client",
-          "infinit.plasma.meta.Client",
-          "elle.HTTPClient",
-      };
-
-      for (auto component : components)
-        {
-          elle::log::logger(component).output(*out);
-          elle::log::logger(component).level(
-              elle::log::Logger::Level::debug
-          );
-        }
+      elle::log::logger(std::unique_ptr<elle::log::Logger>
+                        (new elle::log::TextLogger(*out)));
     }
 
     State::State(std::string const& token):
