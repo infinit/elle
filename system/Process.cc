@@ -16,6 +16,45 @@ namespace elle
   namespace system
   {
 
+    //- ProcessConfig ---------------------------------------------------------
+
+    struct ProcessConfig::Impl
+    {
+      bool daemon;
+
+      Impl()
+        : daemon{false}
+      {}
+    };
+
+    ProcessConfig::ProcessConfig():
+      _impl{new Impl}
+    {}
+
+    ProcessConfig::~ProcessConfig()
+    {}
+
+    bool
+    ProcessConfig::daemon() const
+    { return _impl->daemon; }
+
+    ProcessConfig&
+    ProcessConfig::daemon(bool mode)
+    {
+      _impl->daemon = mode;
+      return *this;
+    }
+
+    ProcessConfig const&
+    process_config(Process::Kind const kind)
+    {
+      static std::unique_ptr<ProcessConfig> normal_config;
+      static std::unique_ptr<ProcessConfig> daemon_config;
+      throw std::runtime_error{"Not implemented"};
+    }
+
+    //- Process ---------------------------------------------------------------
+
     struct Process::Impl
     {
       Kind const              kind;
