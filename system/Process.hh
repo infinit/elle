@@ -1,6 +1,7 @@
 #ifndef  ELLE_SYSTEM_PROCESS_HH
 # define ELLE_SYSTEM_PROCESS_HH
 
+# include <iosfwd>
 # include <list>
 # include <memory>
 # include <string>
@@ -9,6 +10,28 @@ namespace elle
 {
   namespace system
   {
+
+    class ProcessConfig
+    {
+    public:
+      enum Stream
+      {
+        stream_stdout,
+        stream_stderr,
+        stream_pipe,
+      };
+
+    private:
+      struct Impl;
+      std::unique_ptr<Impl> _impl;
+
+    public:
+      ProcessConfig();
+      ~ProcessConfig();
+
+      bool daemon() const;
+      ProcessConfig& daemon(bool mode);
+    };
 
     class Process
     {
@@ -30,6 +53,7 @@ namespace elle
       std::unique_ptr<Impl> _impl;
 
     public:
+      /// Construct a process and launch it.
       Process(Kind const kind,
               std::string const& binary,
               std::list<std::string> const& arguments);
@@ -40,7 +64,7 @@ namespace elle
 
       Process(Process&& other);
 
-      /// Wait for the process to terminate unless it is a daemon.
+      /// Kill and wait for the process to terminate unless it is a daemon.
       ~Process();
 
       /// Returns the process exit status, or the negated value of a caught
@@ -64,6 +88,10 @@ namespace elle
       /// Ask the program to terminate.
       void terminate(Termination const term = Termination::wait);
     };
+
+    /// Retrieve a default process config of any kind.
+    ProcessConfig const&
+    process_config(Process::Kind const kind);
 
   }
 }
