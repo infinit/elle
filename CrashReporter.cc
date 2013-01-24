@@ -24,48 +24,35 @@ namespace elle
 {
   namespace signal
   {
-    ScoppedGuard::ScoppedGuard():
-      _signals{elle::concurrency::scheduler().io_service()}
-    {
-    }
-
-    ScoppedGuard::ScoppedGuard(std::vector<int> const& sig,
+    ScopedGuard::ScopedGuard(std::vector<int> const& sig,
                                Handler const& handler):
-      ScoppedGuard{}
+      _signals{elle::concurrency::scheduler().io_service()},
+      _handler{handler}
     {
-      this->init(sig, handler);
-    }
-
-    ScoppedGuard::~ScoppedGuard()
-    {
-      this->release();
-    }
-
-    void
-    ScoppedGuard::init(std::vector<int> const& sig,
-                       Handler const& handler)
-    {
-      if (sig.size() == 0)
-        return;
-
       // Each guard manager a specific handler but any signals.
-      std::for_each(sig.begin(), sig.end(), [&](int sig) { this->_signals.add(sig); });
+      std::for_each(sig.begin(), sig.end(),
+                    [&](int sig) { ELLE_DEBUG("handling %s", sig);
+                                   this->_signals.add(sig); });
 
-      this->_handler = handler;
+      //XXX: this->_launch();
+    }
+
+    ScopedGuard::~ScopedGuard()
+    {
+      //XXX: this->_release();
     }
 
     void
-    ScoppedGuard::launch()
+    ScopedGuard::_launch()
     {
-      ELLE_WARN("launching signal scopped guard");
-      this->_signals.async_wait( this->_handler);
+      ELLE_TRACE("launching guard");
+      this->_signals.async_wait(this->_handler);
     }
 
-
     void
-    ScoppedGuard::release()
+    ScopedGuard::_release()
     {
-      ELLE_WARN("releasing signal scopped guard");
+      ELLE_TRACE("releasing guard");
       this->_signals.cancel();
     }
 
@@ -120,7 +107,7 @@ namespace elle
       _name{name},
       _quit{quit}
     {
-      for (unsigned int i = 1; i < argc; ++i)
+      for (int i = 1; i < argc; ++i)
       {
         if (argv[i] == NULL)
           break;
