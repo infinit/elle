@@ -178,6 +178,10 @@ namespace reactor
 
       std::vector<std::string> splitted;
       boost::split(splitted, answer, boost::is_any_of(" :\n"));
+      if (splitted.size() != 2)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "loginus returned a bad formed endpoint: " +
+                                 answer);
       boost::asio::ip::udp::endpoint public_endpoint
         (boost::asio::ip::address::from_string(splitted[1]),
          boost::lexical_cast<int>(splitted[2]));
