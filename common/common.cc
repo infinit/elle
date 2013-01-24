@@ -432,5 +432,12 @@ namespace common
 
       return analytics;
     }
+
+    uint16_t
+    google_port()
+    {
+      return 80;
+    }
+
   }
 }

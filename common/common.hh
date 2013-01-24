@@ -185,6 +185,9 @@ namespace common
 
     std::string const&
     google_server();
+
+    uint16_t
+    google_port();
   }
 
   // XXX scheduled for deletion
