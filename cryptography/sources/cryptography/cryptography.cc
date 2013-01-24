@@ -1,12 +1,13 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/KeyPair.hh>
+#include <cryptography/random.hh>
 
 #include <elle/log.hh>
 
 #include <openssl/engine.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("cryptography.cryptography");
+ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
 
 namespace infinit
 {
@@ -29,6 +30,14 @@ namespace infinit
 
       // Initialize the keypair class.
       KeyPair::initialize();
+
+      // Setup the random generator so as to generate more entropy if
+      // required.
+      if (::RAND_status() == 0)
+        random::setup();
+
+      // Set the module has initialized.
+      _initialized = true;
 
       ELLE_TRACE_SCOPE("cryptography initialized");
     }
