@@ -84,26 +84,6 @@ void ClientActions::_on_run(Connection&,
       this->_manager.identity(identity);
       this->_manager.user(user);
 
-      std::ofstream identity_infos{common::watchdog::identity_path(user_id)};
-
-      if (!identity_infos.good())
-        {
-          ELLE_ERR("Cannot open identity file");
-          std::abort();
-        }
-
-      identity_infos << token << "\n"
-                     << identity << "\n"
-                     << user << "\n"
-                     << user_id << "\n"
-                     ;
-
-      if (!identity_infos.good())
-        {
-          ELLE_ERR("Cannot write identity file");
-          std::abort();
-        }
-      identity_infos.close();
       try
         {
           this->_manager.start_refresh_networks();

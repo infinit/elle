@@ -172,7 +172,16 @@ namespace common
       return path::join(home(), "users", user_id);
     }
 
-  }
+    std::string
+    identity_path(std::string const& user_id)
+    {
+        return path::join(
+          infinit::user_directory(user_id),
+          "identity"
+        );
+    }
+
+  } // !infinit
 
 
   namespace system
@@ -352,15 +361,6 @@ namespace common
     server_name(std::string const& user_id)
     {
       return path::join(infinit::user_directory(user_id), "server.wtg");
-    }
-
-    std::string
-    identity_path(std::string const& user_id)
-    {
-        return path::join(
-          infinit::user_directory(user_id),
-          "identity.wtg"
-        );
     }
 
     std::string

@@ -44,7 +44,6 @@ auto make_login = []
   }
   s.connect();
   s.update_device("device" + user);
-  s.launch_watchdog();
 };
 
 auto make_worker = []

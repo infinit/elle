@@ -8,6 +8,7 @@ file(GLOB gap_srcs
 	State.cc
 	_detail/device.cc
 	_detail/file.cc
+	_detail/InfinitInstanceManager.cc
 	_detail/network.cc
 	_detail/notification.cc
 	_detail/process.cc

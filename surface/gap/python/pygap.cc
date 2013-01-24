@@ -298,12 +298,6 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("search_users", &_search_users);
   py::def("get_swaggers", &_get_swaggers);
 
-  //- Watchdog ----------------------------------------------------------------
-
-  py::def("launch_watchdog", &gap_launch_watchdog);
-  py::def("refresh_networks", &gap_refresh_networks);
-  py::def("stop_watchdog", &gap_stop_watchdog);
-
   //- Permissions -------------------------------------------------------------
 
   py::enum_<gap_Permission>("Permission")

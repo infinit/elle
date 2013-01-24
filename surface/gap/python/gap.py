@@ -45,10 +45,7 @@ class State:
             'user_email',
 
             # Networks.
-            'launch_watchdog',
-            'stop_watchdog',
             'create_network',
-            'refresh_networks',
             'networks',
             'network_add_user',
             'network_name',
