@@ -236,6 +236,17 @@ namespace hole
                                          (ep.address().to_string(),
                                           ep.port()));
               client.token(agent::Agent::meta_token);
+
+              ELLE_DEBUG("addresses");
+              std::for_each(addresses.begin(), addresses.end(),
+                            [](std::pair<std::string, uint16_t> const& e)
+                            { ELLE_DEBUG("%s:%s", e.first, e.second); });
+
+              ELLE_DEBUG("public_addresses");
+              std::for_each(public_addresses.begin(), public_addresses.end(),
+                            [](std::pair<std::string, uint16_t> const& e)
+                            { ELLE_DEBUG("%s:%s", e.first, e.second); });
+
               client.network_connect_device(descriptor.meta().id(),
                                             passport.id(),
                                             addresses,
