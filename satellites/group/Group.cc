@@ -844,14 +844,16 @@ _main(elle::Natural32 argc, elle::Character* argv[])
 int                     main(int                                argc,
                              char**                             argv)
 {
-  elle::signal::ScoppedGuard guard{
+  // Capture signal and send email without exiting.
+  elle::signal::ScopedGuard guard{
     {SIGINT, SIGABRT, SIGPIPE},
-    elle::crash::Handler("8group", false, argc, argv)  // Capture signal and send email without exiting.
+    elle::crash::Handler("8group", false, argc, argv)
   };
 
-  elle::signal::ScoppedGuard exit_guard{
+  // Capture signal and send email exiting.
+  elle::signal::ScopedGuard exit_guard{
     {SIGILL, SIGSEGV},
-    elle::crash::Handler("8group", true, argc, argv)  // Capture signal and send email exiting.
+    elle::crash::Handler("8group", true, argc, argv)
   };
 
   reactor::Scheduler& sched = elle::concurrency::scheduler();

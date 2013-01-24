@@ -999,13 +999,13 @@ int                     main(int                                argc,
                              char**                             argv)
 {
   // Capture signal and send email without exiting.
-  elle::signal::ScoppedGuard guard{
+  elle::signal::ScopedGuard guard{
     {SIGINT, SIGABRT, SIGPIPE},
     elle::crash::Handler("8transfer", false, argc, argv)
   };
 
   // Capture signal and send email exiting.
-  elle::signal::ScoppedGuard exit_guard{
+  elle::signal::ScopedGuard exit_guard{
     {SIGILL, SIGSEGV},
     elle::crash::Handler("8transfer", true, argc, argv)
   };

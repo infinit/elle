@@ -14,7 +14,7 @@ namespace elle
   namespace signal
   {
 
-    class ScoppedGuard:
+    class ScopedGuard:
       private boost::noncopyable
     {
       /*---------.
@@ -23,7 +23,7 @@ namespace elle
     private:
       /// Handler prototype.
       typedef
-      boost::function<void(boost::system::error_code const&, int)> Handler;
+      std::function<void(boost::system::error_code const&, int)> Handler;
 
       /// Attributes.
     private:
@@ -34,34 +34,27 @@ namespace elle
       | Construction |
       `-------------*/
     public:
-      /// Initialize signal list with scheduler io_service.
-      ScoppedGuard();
       /// Initialize with signal list and handler.
-      ScoppedGuard(std::vector<int> const& sig,
+      ScopedGuard(std::vector<int> const& sig,
                    Handler const& handler);
       /// Destroy current handlers.
-      ~ScoppedGuard();
+      ~ScopedGuard();
 
       /*---------------.
       | Initialization |
       `---------------*/
-    public:
-      /// Register signals with handler.
-      void
-      init(std::vector<int> const& sig,
-           Handler const& handler);
-
       /// Launch thread;
+    private:
       void
-      launch();
+      _launch();
 
       /*------------.
       | Destruction |
       `------------*/
-    public:
+    private:
       /// Clear handler list.
       void
-      release();
+      _release();
     };
   } // End of signal.
 

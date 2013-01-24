@@ -302,7 +302,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (reactor::Exception const& e)
     {
-      elle::crash::report("8transfer", elle::sprintf("%s", e));
+      elle::crash::report("8progress", elle::sprintf("%s", e));
       std::cerr << argv[0] << ": fatal error: " << e << std::endl;
       goto _error;
     }
@@ -329,13 +329,13 @@ int                     main(int                                argc,
                              char**                             argv)
 {
   // Capture signal and send email without exiting.
-  elle::signal::ScoppedGuard guard{
+  elle::signal::ScopedGuard guard{
     {SIGINT, SIGABRT, SIGPIPE},
     elle::crash::Handler("8progress", false, argc, argv)
   };
 
   // Capture signal and send email exiting.
-  elle::signal::ScoppedGuard exit_guard{
+  elle::signal::ScopedGuard exit_guard{
     {SIGILL, SIGSEGV},
     elle::crash::Handler("8progress", true, argc, argv)
   };
