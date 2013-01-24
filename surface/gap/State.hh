@@ -1,20 +1,22 @@
 #ifndef  SURFACE_GAP_STATE_HH
 # define SURFACE_GAP_STATE_HH
 
-# include <functional>
-# include <map>
-# include <string>
-# include <unordered_set>
+# include "gap.h"
+# include "_detail/InfinitInstanceManager.hh"
 
-# include <boost/filesystem.hpp>
-# include <elle/format/json/fwd.hh>
-# include <reactor/scheduler.hh>
 # include <nucleus/neutron/Permissions.hh>
 
 # include <plasma/meta/Client.hh>
 # include <plasma/trophonius/Client.hh>
 
-# include "gap.h"
+# include <elle/format/json/fwd.hh>
+
+# include <reactor/scheduler.hh> // XXX
+
+# include <functional>
+# include <map>
+# include <string>
+# include <unordered_set>
 
 # define CATCH_FAILURE_TO_METRICS(prefix)                               \
   catch (elle::HTTPException const& e)                                  \
@@ -56,11 +58,6 @@ namespace surface
     using Network = ::plasma::meta::NetworkResponse;
     using Endpoint = ::plasma::meta::EndpointNodeResponse;
 
-    struct NetworkStatus
-    {
-      std::string network_id;
-      std::string mount_point;
-    };
 
     class Exception
       : public std::runtime_error
@@ -115,7 +112,8 @@ namespace surface
       _logged;
     public:
       bool
-      is_logged() { return this->_meta->token().length() > 0; }
+      logged_in() const
+      { return !this->_meta->token().empty(); }
 
       /// Logout from meta.
       void
@@ -337,18 +335,6 @@ namespace surface
       device_name();
 
     ///
-    /// Launch and stop infinit instances.
-    ///
-    public:
-      /// Stop the watchdog process.
-      void
-      stop_watchdog();
-
-      /// Start the watchdog process.
-      void
-      launch_watchdog();
-
-    ///
     /// Manage local device.
     ///
     public:
@@ -372,10 +358,10 @@ namespace surface
 
       /// Get size of a given path.
       size_t
-      get_size(boost::filesystem::path const& path);
+      file_size(std::string const& path);
 
       std::string
-      get_name(boost::filesystem::path const& path);
+      file_name(std::string const& path);
 
       /// Set the permissions for a file.
       /// XXX: old
@@ -396,8 +382,12 @@ namespace surface
     private:
       std::map<std::string, Network*>       _networks;
       bool                                  _networks_dirty;
-      std::map<std::string, NetworkStatus*> _networks_status;
-      bool                                  _networks_status_dirty;
+      typedef std::unique_ptr<InfinitInstanceManager> InfinitInstanceManagerPtr;
+      InfinitInstanceManagerPtr             _infinit_instance_manager;
+
+    public:
+      InfinitInstanceManager&
+      infinit_instance_manager();
 
     private:
       bool
@@ -411,26 +401,18 @@ namespace surface
       std::string
       create_network(std::string const& name);
 
+      /// Prepare directories and files for the network to be launched.
+      void
+      prepare_network(std::string const& network_id);
+
       /// Delete a new network.
       std::string
       delete_network(std::string const& name,
                      bool force = false);
 
-      /// Force the watchdog to check for new networks.
-      void
-      refresh_networks();
-
       /// Retrieve a network.
       Network const&
       network(std::string const& id);
-
-      /// Retrieve all networks status.
-      std::map<std::string, NetworkStatus*> const&
-      networks_status();
-
-      /// Retrieve a network status (from the watchdog).
-      NetworkStatus const&
-      network_status(std::string const& id);
 
       /// Add a user to a network with its mail or id.
       void
@@ -438,10 +420,20 @@ namespace surface
                        std::string const& user);
 
     private:
+      void
+      _create_network_root_block(std::string const& id);
+
+      void
+      _prepare_network_directory(std::string const& network_id);
+
+    private:
       typedef
         std::function<void(Notification const&, bool)>
         NotificationHandler;
-      std::map<NotificationType, std::list<NotificationHandler>> _notification_handlers;
+      typedef
+        std::map<NotificationType, std::list<NotificationHandler>>
+        NotificationHandlerMap;
+      NotificationHandlerMap  _notification_handlers;
 
     public:
       typedef
@@ -505,19 +497,6 @@ namespace surface
       void
       _handle_notification(Notification const& notif,
                            bool _new = true);
-
-    private:
-      // Retrieve the current watchdog id.
-      std::string
-      _watchdog_id() const;
-
-      // Send a command to the watchdog. If request is not null, it will be
-      // sent along with the command, and if response is not null, it will be
-      // filled with the command results.
-      void
-      _send_watchdog_cmd(std::string const& cmd,
-                         elle::format::json::Dictionary const* request = nullptr,
-                         elle::format::json::Dictionary* response = nullptr);
 
     };
 

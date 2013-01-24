@@ -56,7 +56,7 @@ namespace agent
       if (lune::Identity::exists(Infinit::User) == false)
         escape("the user identity does not seem to exist");
 
-      std::ifstream identity_file(common::watchdog::identity_path(Infinit::User));
+      std::ifstream identity_file(common::infinit::identity_path(Infinit::User));
       if (identity_file.good())
         {
           std::getline(identity_file, Agent::meta_token);
@@ -68,8 +68,8 @@ namespace agent
         }
       else
         {
-          ELLE_TRACE("Cannot load identity from watchdog %s",
-                     common::watchdog::identity_path(Infinit::User));
+          ELLE_TRACE("Cannot load identity from  %s",
+                     common::infinit::identity_path(Infinit::User));
           elle::String        pass;
           // prompt the user for the passphrase.
           /* XXX[to change to a better version where we retrieve the passphrase

@@ -2,6 +2,7 @@
 
 #include <common/common.hh>
 
+#include <elle/os/path.hh>
 #include <elle/Passport.hh>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap.State");
@@ -11,9 +12,6 @@ namespace surface
   namespace gap
   {
 
-    namespace fs = boost::filesystem;
-    namespace json = elle::format::json;
-
     bool
     State::has_device() const
     {
@@ -21,7 +19,7 @@ namespace surface
       ELLE_DEBUG("Check for '%s' device existence at '%s'",
                  this->_me._id,
                  common::passport_path(this->_me._id));
-      return fs::exists(common::passport_path(this->_me._id));
+      return elle::os::path::exists(common::passport_path(this->_me._id));
     }
 
     std::string const&
