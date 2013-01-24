@@ -243,6 +243,7 @@ namespace surface
     void
     State::_on_network_update(NetworkUpdateNotification const& notif)
     {
+      return;
       ELLE_TRACE("network %s updated", notif.network_id);
 
       this->refresh_networks();

@@ -108,7 +108,7 @@ namespace surface
 
       auto res = this->_meta->login(lower_email, password);
 
-      metrics::google::server().update_user(res._id);
+      metrics::google::update_id(res._id);
       metrics::google::server().store("user:login:succeed", "cs", "start");
 
 

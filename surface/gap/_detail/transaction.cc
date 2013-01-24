@@ -396,8 +396,14 @@ namespace surface
         throw Exception{gap_error, "Only sender can prepare his network."};
       }
 
+      metrics::google::server().store("transaction:prepare:attempt",
+                                      {{"cd2", transaction.transaction_id}});
+
       this->_meta->update_transaction(transaction.transaction_id,
                                       plasma::TransactionStatus::prepared);
+
+      metrics::google::server().store("transaction:prepare:succeed",
+                                      {{"cd2", transaction.transaction_id}});
     }
 
     void
@@ -414,6 +420,8 @@ namespace surface
       this->_meta->network_add_device(transaction.network_id,
                                       this->device_id());
 
+      // Ensure creation.
+      this->_wait_portal(transaction.network_id);
 
       this->update_transaction(transaction.transaction_id,
                                gap_transaction_status_started);
@@ -465,7 +473,6 @@ namespace surface
           }
       };
 
-      // TODO: Do this only on the current device for sender and recipient.
       if (this->_wait_portal(transaction.network_id) == false)
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
@@ -610,8 +617,8 @@ namespace surface
             }
           catch (std::runtime_error const& e)
             {
-              ELLE_WARN("error while handling notificaiton '%s'",
-                        notif->notification_type);
+              ELLE_WARN("error %s while handling notificaiton '%s'",
+                        e.what(), notif->notification_type);
               continue;
             }
           ++count;
@@ -699,11 +706,11 @@ namespace surface
           );
           this->_on_transaction_accepted(transaction);
           break;
-        case plasma::TransactionStatus::started:
-          this->_on_transaction_started(transaction);
-          break;
         case plasma::TransactionStatus::prepared:
           this->_on_transaction_prepared(transaction);
+          break;
+        case plasma::TransactionStatus::started:
+          this->_on_transaction_started(transaction);
           break;
         case plasma::TransactionStatus::canceled:
           this->_on_transaction_canceled(transaction);

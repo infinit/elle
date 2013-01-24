@@ -125,7 +125,7 @@ namespace surface
           }
         }
 
-      for (auto& dict : res.notifs)
+      for (auto& dict: res.notifs)
         {
           ELLE_DEBUG("Handling new notif %s", dict.repr());
           try {
@@ -162,12 +162,12 @@ namespace surface
 
       if (handler_list == _notification_handlers.end())
         {
-          ELLE_WARN("Handler missing for notification '%u'",
-                    notif.notification_type);
+          ELLE_DEBUG("Handler missing for notification '%u'",
+                     notif.notification_type);
           return;
         }
 
-      for (auto& handler : handler_list->second)
+      for (auto& handler: handler_list->second)
         {
           ELLE_ASSERT(handler != nullptr);
           handler(notif, new_);
@@ -175,4 +175,3 @@ namespace surface
     }
   }
 }
-
