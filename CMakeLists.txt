@@ -91,6 +91,7 @@ add_library(elle ${LINK_METHOD}
   CrashReporter.cc
   log/Logger.cc
   log/Sender.cc
+  log/TextLogger.cc
 
   reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
   reactor/src/reactor/backend/coro_io/libcoroutine/context.cc

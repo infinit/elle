@@ -113,6 +113,8 @@ def configure(cxx_toolkit, cxx_config):
     'log/Send.cc',
     'log/Send.hh',
     'log/Send.hxx',
+    'log/TextLogger.cc',
+    'log/TextLogger.hh',
     'nat/Nat.cc',
     'network/Host.cc',
     'network/Host.hh',

@@ -1,7 +1,6 @@
 #ifndef  ELLE_LOG_LOGGER_HH
 # define ELLE_LOG_LOGGER_HH
 
-# include <iostream>
 # include <memory>
 # include <string>
 
@@ -43,11 +42,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      Logger(Level lvl,
-             std::string const& name = "",
-             std::ostream& out = std::cerr);
+      Logger();
       ~Logger();
-      ELLE_ATTRIBUTE_R(std::string, name);
 
     /*----------.
     | Messaging |
@@ -59,11 +55,11 @@ namespace elle
       void debug(std::string const& msg);
       void dump(std::string const& msg);
     protected:
-      void _message(Level level,
-                    elle::log::Logger::Type type,
-                    std::string const& message);
-      ELLE_ATTRIBUTE_R(std::ostream&, output);
-
+      virtual
+      void
+      _message(Level level,
+               elle::log::Logger::Type type,
+               std::string const& message) = 0;
     };
   }
 }
