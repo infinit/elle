@@ -8,6 +8,9 @@ namespace elle
 {
   namespace log
   {
+    void
+    logger(std::unique_ptr<Logger> logger);
+
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
     /// before the other global variables which construction may require

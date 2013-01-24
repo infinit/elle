@@ -6,6 +6,7 @@
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log/Send.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
 #include <elle/reactor/src/reactor/storage.hh>
 
@@ -48,11 +49,20 @@ namespace elle
         return level;
       }
 
+      std::unique_ptr<Logger> _logger;
+
       Logger&
       logger()
       {
-        static Logger logger(default_log_level());
-        return logger;
+        if (!_logger)
+          _logger.reset(new elle::log::TextLogger(std::cerr));
+        return *_logger;
+      };
+
+      void
+      logger(std::unique_ptr<Logger> logger)
+      {
+        _logger = std::move(logger);
       };
 
       static
