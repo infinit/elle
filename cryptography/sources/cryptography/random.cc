@@ -12,6 +12,7 @@
 #include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -21,7 +22,7 @@
 # include <wincrypt.h>
 #endif
 
-ELLE_LOG_COMPONENT("cryptography.random");
+ELLE_LOG_COMPONENT("infinit.cryptography.random");
 
 namespace infinit
 {

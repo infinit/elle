@@ -278,7 +278,7 @@ endforeach()
 
 # XXX[unfortunate we cannot put these in their own CMakeLists.txt file]
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/source)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cryptography/sources)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/asio-udt/udt/include)
 
