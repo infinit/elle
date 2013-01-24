@@ -30,35 +30,32 @@ namespace surface
       if (it != this->_files_infos.end())
         return *(it->second);
 
+
+      InfinitInstance const* instance =
+        this->infinit_instance_manager().network_instance_for_file(abspath);
+
+      if (instance == nullptr)
+        throw Exception{
+            gap_error, "Cannot find network for path '" + abspath + "'"
+        };
+
       std::unique_ptr<FileInfos> infos;
+      // Prepare infos ptr
+      {
+        std::string relpath;
+        if (abspath == instance->mount_point)
+          relpath = "";
+        else
+          relpath = abspath.substr(instance->mount_point.size() + 1);
 
-      for (auto const& pair : this->networks_status())
-        {
-          std::string mount_point = pair.second->mount_point;
-
-          if (abspath.compare(0, mount_point.length(), abspath) != 0)
-//          if (boost::algorithm::starts_with(abspath, mount_point))
-            {
-              std::string relpath;
-              if (abspath == mount_point)
-                relpath = "";
-              else
-                relpath = abspath.substr(mount_point.size() + 1);
-
-              infos.reset(new FileInfos{
-                  mount_point,
-                  pair.first,
-                  abspath,
-                  relpath,
-                  std::map<std::string, int>{},
-              });
-              break;
-            }
-        }
-
-      if (infos.get() == nullptr)
-        throw Exception(gap_error,
-                        "Cannot find network for path '" + abspath + "'");
+        infos.reset(new FileInfos{
+          instance->mount_point,
+          instance->network_id,
+          abspath,
+          relpath,
+          std::map<std::string, int>{},
+        });
+      }
 
       std::string const& access_binary = common::infinit::binary_path("8access");
 
@@ -198,7 +195,7 @@ namespace surface
     }
 
     size_t
-    State::get_size(fs::path const& path)
+    State::file_size(std::string const& path)
     {
       if (!fs::exists(path))
         return 0;
@@ -215,7 +212,7 @@ namespace surface
         {
           if (fs::is_directory(itr->status()))
             {
-              size += get_size(itr->path());
+              size += this->file_size(itr->path().string());
             }
           else
             {

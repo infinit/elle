@@ -88,9 +88,6 @@ def __create_network():
     str = "FistParty%s" % math.floor(random.random()*234567890);
     state.create_network(str)
 
-def __launch_watchdog():
-    state.launch_watchdog()
-
 def __pullNotifs():
     state.get_notifications(10)
 
@@ -134,8 +131,6 @@ def main():
         polling.start()
 
         time.sleep(2)
-
-        __launch_watchdog()
 
         time.sleep(4)
 
@@ -222,9 +217,6 @@ def main2():
 
         # state.answer_transaction('bite', 1)
         # state.answer_transaction('bite', 0)
-
-        if input('\nwatchdog? y/N\n> ') == 'y':
-            __launch_watchdog()
 
         if input('\nsend_file? y/N\n> ') == 'y':
             __send_file(recipient)

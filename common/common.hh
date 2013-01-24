@@ -52,6 +52,11 @@ namespace common
     /// Returns user directory path.
     std::string
     user_directory(std::string const& user_id);
+
+    /// The path to the identity file.
+    std::string
+    identity_path(std::string const& user_id);
+
   }
 
   /// System and Operating System related stuffs
@@ -150,10 +155,6 @@ namespace common
     /// The name of the local socket.
     std::string
     server_name(std::string const& user_id);
-
-    /// The path to the watchdog identity file.
-    std::string
-    identity_path(std::string const& user_id);
 
     /// The path to the lock file.
     std::string

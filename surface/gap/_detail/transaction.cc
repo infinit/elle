@@ -50,10 +50,11 @@ namespace surface
             throw Exception(gap_file_not_found,
                             "file doesn't exist.");
 
-          size += get_size(path);
+          size += this->file_size(path);
         }
 
-      std::string first_filename = fs::path(*(files.cbegin())).filename().string();
+      std::string first_filename =
+        fs::path(*(files.cbegin())).filename().string();
 
       ELLE_DEBUG("First filename '%s'.", first_filename);
 
@@ -61,9 +62,9 @@ namespace surface
       elle::utility::Time time;
       time.Current();
 
-      std::string network_name = elle::sprintf("%s-%s",
-                                               recipient_id_or_email,
-                                               time.nanoseconds);
+      std::string network_name = elle::sprintf(
+          "%s-%s", recipient_id_or_email, time.nanoseconds
+      );
 
       ELLE_DEBUG("Creating temporary network '%s'.", network_name);
 
@@ -74,7 +75,7 @@ namespace surface
           throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
       ELLE_DEBUG("Retrieving 8transfert binary path...");
-      std::string const& transfer_binary = common::infinit::binary_path("8transfer");
+      auto transfer_binary = common::infinit::binary_path("8transfer");
       ELLE_DEBUG("Using 8transfert binary '%s'", transfer_binary);
 
       QStringList arguments;
@@ -434,12 +435,16 @@ namespace surface
       if (transaction.recipient_device_id != this->device_id())
       {
         ELLE_DEBUG("transaction doesn't concern your device.");
+        // grace à hanthhhony
         return;
       }
 
-      this->_meta->network_add_device(transaction.network_id,
-                                      this->device_id());
-
+      this->prepare_network(transaction.network_id);
+      this->_meta->network_add_device(
+          transaction.network_id,
+          this->device_id()
+      );
+      this->infinit_instance_manager().launch_network(transaction.network_id);
       // Ensure creation.
       this->_wait_portal(transaction.network_id);
 
@@ -541,9 +546,7 @@ namespace surface
       ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
 
       // Delete networks.
-      (void) this->delete_network(transaction.network_id);
-
-      (void) this->refresh_networks();
+      this->delete_network(transaction.network_id);
     }
 
     void
@@ -596,9 +599,7 @@ namespace surface
       // current transaction, cancel them.
 
       // Delete networks.
-      (void) this->delete_network(transaction.network_id, true);
-
-      (void) this->refresh_networks();
+      this->delete_network(transaction.network_id, true);
     }
 
     State::TransactionsMap const&

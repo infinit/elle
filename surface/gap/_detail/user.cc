@@ -7,6 +7,7 @@
 #include <lune/Identity.hh>
 
 #include <elle/serialize/HexadecimalArchive.hh>
+#include <elle/idiom/Close.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -92,8 +93,10 @@ namespace surface
 
       return out.str();
     }
+
     void
-    State::login(std::string const& email, std::string const& password)
+    State::login(std::string const& email,
+                 std::string const& password)
     {
       this->_meta->token("");
 
@@ -155,6 +158,25 @@ namespace surface
 
           dictionary.store(res._id);
         }
+
+      std::ofstream identity_infos{common::infinit::identity_path(res._id)};
+
+      if (!identity_infos.good())
+        {
+          ELLE_ERR("Cannot open identity file");
+        }
+
+      identity_infos << res.token << "\n"
+                     << res.identity << "\n"
+                     << res.email << "\n"
+                     << res._id << "\n"
+                     ;
+
+      if (!identity_infos.good())
+        {
+          ELLE_ERR("Cannot write identity file");
+        }
+      identity_infos.close();
     }
 
     void

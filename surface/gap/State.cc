@@ -48,6 +48,7 @@
 #include "State.hh"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 #include <signal.h>
 
@@ -84,8 +85,7 @@ namespace surface
       , _files_infos{}
       , _networks{}
       , _networks_dirty{true}
-      , _networks_status{}
-      , _networks_status_dirty{true}
+      , _infinit_instance_manager{}
     {
       // XXX degeu !
       ELLE_LOG("Creating a new State");
@@ -102,17 +102,11 @@ namespace surface
           }
       );
 
-      /*
-        rajouter on_swagger_online
-        dans swagger_online -> foreach network ; if swagger in network then
-        call RPC qui informe 8infinit
-       */
-
       std::string user = elle::os::getenv("INFINIT_USER", "");
 
       if (user.length() > 0)
       {
-        std::string identity_path = common::watchdog::identity_path(user);
+        std::string identity_path = common::infinit::identity_path(user);
 
         if (identity_path.length() > 0 && fs::exists(identity_path))
         {
@@ -140,6 +134,7 @@ namespace surface
 
           this->_me = static_cast<User const&>(this->_meta->self());
         }
+        this->output_log_file("/tmp/state.log");
       }
 
       // Initialize server.
@@ -157,8 +152,9 @@ namespace surface
           path,
           std::fstream::app | std::fstream::out
       };
-      elle::log::logger(std::unique_ptr<elle::log::Logger>
-                        (new elle::log::TextLogger(*out)));
+      elle::log::logger(
+          std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
+      );
     }
 
     State::State(std::string const& token):
@@ -188,205 +184,6 @@ namespace surface
     {
       this->_meta->debug();
     }
-
-    void State::refresh_networks()
-    {
-      this->_send_watchdog_cmd("refresh_networks");
-      this->_networks_dirty = true;
-      this->_networks_status_dirty = true;
-    }
-
-    std::string State::_watchdog_id() const // XXX should be cached
-    {
-      std::string watchdog_id_file = common::watchdog::id_path(_me._id);
-      std::ifstream file(watchdog_id_file);
-      if (!file.good())
-        throw std::runtime_error("Cannot open '" + watchdog_id_file + "'");
-
-      char wtg_id[4096];
-      file.read(wtg_id, 4096);
-      if (!file.eof())
-        throw Exception(gap_internal_error, "Watchdog id is too long!");
-      std::string id(wtg_id, file.gcount());
-      file.close();
-      return id;
-    }
-
-    void
-    State::_send_watchdog_cmd(std::string const& cmd,
-                              elle::format::json::Dictionary const* kwargs,
-                              elle::format::json::Dictionary* response)
-    {
-      ELLE_TRACE("Send watchdog command");
-      QLocalSocket conn;
-
-      conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
-      if (!conn.waitForConnected(2000))
-        throw Exception{
-            gap_internal_error,
-              "Couldn't connect to the watchdog:" + std::to_string(conn.error())
-        };
-
-      json::Dictionary req;
-      req["_id"] = this->_watchdog_id();
-      req["command"] = cmd;
-      if (kwargs != nullptr)
-        req.update(*kwargs);
-      ELLE_DEBUG("Send watchdog command: %s", req.repr());
-      conn.write(req.repr().c_str());
-      conn.write("\n");
-      if (!conn.waitForBytesWritten(2000))
-          throw Exception(gap_internal_error,
-                          "Couldn't send the command '" + cmd + "'");
-
-      ELLE_DEBUG("Command '%s' sent.", cmd);
-
-      if (response == nullptr)
-        {
-          ELLE_DEBUG("Watchdog response is ignored for call %s.", cmd);
-          return;
-        }
-
-      ELLE_DEBUG("Waiting for response.");
-
-      if (!conn.waitForReadyRead(1000)) // Infinit is maybe too long, or not.
-        throw Exception{
-            gap_internal_error,
-            "Couldn't read response of '" + cmd + "' command"
-        };
-
-      QByteArray response_data = conn.readLine();
-      std::stringstream ss{
-          std::string{
-              response_data.data(),
-              static_cast<size_t>(response_data.size()),
-          },
-      };
-      auto ptr = json::parse(ss);
-      response->update(ptr->as_dictionary());
-    }
-
-    //- Watchdog --------------------------------------------------------------
-
-    void
-    State::stop_watchdog()
-    {
-      this->_send_watchdog_cmd("stop");
-      // Waiting for the old server to be stopped
-      int tries = 1;
-      int sleep_time = 2;
-      do {
-            {
-              QLocalSocket conn;
-              conn.connectToServer(
-                  common::watchdog::server_name(this->_me._id).c_str()
-              );
-              if (!conn.waitForConnected(2000))
-                break;
-              conn.disconnectFromServer();
-            }
-            ELLE_DEBUG("Waiting %s secs for the old watchdog to be stopped (%s / 10 )",
-                       sleep_time, tries);
-          ::sleep(sleep_time);
-          sleep_time += 2;
-      } while (++tries < 10);
-
-      if (tries >= 10)
-        throw Exception(gap_internal_error,
-                        "The old watchdog instance does not stop !");
-      this->_networks_status_dirty = true;
-    }
-
-    void
-    State::launch_watchdog()
-    {
-      if (!this->has_device())
-        throw Exception(gap_no_device_error,
-                        "Cannot start infinit without any local device");
-
-      if (this->_meta->token().size() == 0 ||
-          this->_meta->identity().size() == 0 ||
-          this->_meta->email().size() == 0)
-        throw Exception(gap_not_logged_in,
-                        "Cannot start infinit anonymously");
-
-      std::string old_watchdog_id;
-      try
-        {
-          old_watchdog_id = this->_watchdog_id();
-          this->stop_watchdog();
-        }
-      catch (std::exception const& err)
-        {
-          ELLE_WARN("Couldn't stop the watchdog: %s", err.what());
-        }
-
-      ELLE_ASSERT(this->_me._id.size() != 0);
-
-      elle::os::path::make_path(
-          common::infinit::user_directory(this->_me._id)
-      );
-      std::string watchdog_binary = common::infinit::binary_path("8watchdog");
-
-      QStringList arguments;
-      arguments << this->_me._id.c_str();
-
-      ELLE_DEBUG("Launching binary: %s with id: %s", watchdog_binary, this->_me._id);
-      if (QProcess::execute(watchdog_binary.c_str(), arguments) < 0)
-        throw Exception(gap_internal_error, "Cannot start the watchdog");
-
-      // Connect to the new watchdog instance
-      QLocalSocket conn;
-      int tries = 0;
-      while (tries++ < 10)
-        {
-          conn.connectToServer(common::watchdog::server_name(this->_me._id).c_str());
-          ELLE_DEBUG("Trying to connect to the new watchdog");
-          if (conn.waitForConnected(2000))
-            break;
-          ELLE_DEBUG("Retrying to connect (%s)", tries);
-          ::sleep(1);
-        }
-      if (!conn.isValid())
-        throw Exception(gap_internal_error, "Couldn't connect to the new watchdog instance");
-
-      ELLE_DEBUG("Connected to the watchdog");
-
-      // Getting the new watchdog id
-      // When connected, the watchdog id file should exists
-      std::string new_watchdog_id;
-      tries = 0;
-      do {
-          if (tries > 0) ::sleep(1);
-          try { new_watchdog_id = this->_watchdog_id(); }
-          catch (std::exception const& err)
-            {
-              ELLE_WARN("Cannot read the new watchdog id: %s", err.what());
-            }
-          if (new_watchdog_id.size() && old_watchdog_id != new_watchdog_id)
-            {
-              ELLE_DEBUG("Found new watchdog id: %s", new_watchdog_id);
-              break;
-            }
-      } while (++tries < 10);
-
-      if (tries == 10)
-        throw Exception(gap_internal_error, "Couldn't open infinit watchdog id file");
-
-      // calling watchdog run command (which gives the meta token)
-        {
-          json::Dictionary args;
-          args["token"] = this->_meta->token();
-          args["identity"] = this->_meta->identity();
-          args["user"] = this->_meta->email();
-          args["user_id"] = this->_me._id;
-          this->_send_watchdog_cmd("run", &args);
-        }
-    }
-
-    /// - File level ----------------------------------------------------------
-
-
 
     // - TROPHONIUS ----------------------------------------------------
     /// Connect to trophonius
@@ -493,5 +290,6 @@ namespace surface
           }
       }
     }
+
   }
 }

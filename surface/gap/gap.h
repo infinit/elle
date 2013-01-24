@@ -1,6 +1,8 @@
 #ifndef  SURFACE_GAP_GAP_H
 # define SURFACE_GAP_GAP_H
 
+# include <stddef.h>
+
 # ifdef __cplusplus
 extern "C" {
 # endif
@@ -110,7 +112,7 @@ extern "C" {
 
   /// Check is user is already logged.
   int
-  gap_logged(gap_State* state);
+  gap_logged_in(gap_State* state);
 
   /// Logout from meta.
   gap_Status gap_logout(gap_State* state);
@@ -345,17 +347,6 @@ extern "C" {
   /// Free swagger list.
   void
   gap_swaggers_free(char** swaggers);
-
-  /// - Watchdog ------------------------------------------------------------
-
-  /// Launch the watchdog binary.
-  gap_Status gap_launch_watchdog(gap_State* state);
-
-  /// Notify the watchdog that networks has changed.
-  gap_Status gap_refresh_networks(gap_State* state);
-
-  /// Stop the watchdog process.
-  gap_Status gap_stop_watchdog(gap_State* state);
 
   /// - Permissions ---------------------------------------------------------
 

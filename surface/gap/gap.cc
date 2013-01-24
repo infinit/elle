@@ -262,20 +262,20 @@ extern "C"
     assert(email != nullptr);
     assert(password != nullptr);
 
-    if (gap_logged(state) == 1)
+    if (gap_logged_in(state) == 1)
       return gap_ok; // Already logged in.
 
     WRAP_CPP(state, login, email, password);
   }
 
   int
-  gap_logged(gap_State* state)
+  gap_logged_in(gap_State* state)
   {
     assert(state != nullptr);
     gap_Status ret;
     try
       {
-        int logged = __TO_CPP(state)->is_logged();
+        int logged = __TO_CPP(state)->logged_in();
         return logged;
       }
     CATCH_ALL(logged);
@@ -408,8 +408,9 @@ extern "C"
     gap_Status ret;
     try
       {
-        auto const& network_status = __TO_CPP(state)->network_status(id);
-        return network_status.mount_point.c_str();
+        auto const& instance =
+          __TO_CPP(state)->infinit_instance_manager().network_instance(id);
+        return instance.mount_point.c_str();
       }
     CATCH_ALL(network_mount_point);
 
@@ -641,23 +642,6 @@ extern "C"
   gap_swaggers_free(char** swaggers)
   {
     ::free(swaggers);
-  }
-
-  /// - Watchdog ------------------------------------------------------------
-
-  gap_Status gap_launch_watchdog(gap_State* state)
-  {
-    WRAP_CPP(state, launch_watchdog);
-  }
-
-  gap_Status gap_refresh_networks(gap_State* state)
-  {
-    WRAP_CPP(state, refresh_networks);
-  }
-
-  gap_Status gap_stop_watchdog(gap_State* state)
-  {
-    WRAP_CPP(state, stop_watchdog);
   }
 
   /// - Permissions ---------------------------------------------------------
