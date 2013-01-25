@@ -37,19 +37,32 @@ namespace infinit
       cryptography::require();
     }
 
-    PublicKey::PublicKey(::EVP_PKEY const* key):
-      PublicKey(::BN_dup(key->pkey.rsa->n),
-                ::BN_dup(key->pkey.rsa->e))
+    PublicKey::PublicKey(PublicKey const& other):
+      PublicKey(::BN_dup(other._key->pkey.rsa->n),
+                ::BN_dup(other._key->pkey.rsa->e))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
     }
 
-    PublicKey::PublicKey(PublicKey const& other):
+    PublicKey::PublicKey(PublicKey&& other):
       PublicKey(other._key)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+
+      // Reset the pointer for the given key.
+      other._key = nullptr;
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
@@ -78,6 +91,29 @@ namespace infinit
         ::EVP_PKEY_CTX_free(this->_context_decrypt);
     }
 
+    PublicKey::PublicKey(::EVP_PKEY* key):
+      _key(key),
+      _context_encrypt(nullptr),
+      _context_verify(nullptr),
+      _context_decrypt(nullptr)
+    {
+      ELLE_ASSERT(key != nullptr);
+      ELLE_ASSERT(key->pkey.rsa != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->e != nullptr);
+
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      // Prepare the cryptographic contexts.
+      this->_prepare();
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+    }
+
     PublicKey::PublicKey(::BIGNUM* n,
                          ::BIGNUM* e):
       _key(nullptr),
@@ -94,6 +130,9 @@ namespace infinit
       this->_construct(n, e);
 
       ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
     }
 
     /*--------.
@@ -266,8 +305,6 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
 
-      // 1) Create the RSA key based on the given big numbers.
-
       // Initialise the public key structure.
       if ((this->_key = ::EVP_PKEY_new()) == nullptr)
         throw elle::Exception("%s",
@@ -296,7 +333,14 @@ namespace infinit
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-      // 2) Initialize the contexts associated with the public key.
+      // Call the context construct method.
+      this->_prepare();
+    }
+
+    void
+    PublicKey::_prepare()
+    {
+      ELLE_DEBUG_FUNCTION("");
 
       // Prepare the encrypt context.
       if ((this->_context_encrypt =
@@ -415,6 +459,11 @@ namespace infinit
     void
     PublicKey::print(std::ostream& stream) const
     {
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+
       stream << "("
              << *this->_key->pkey.rsa->n
              << ", "

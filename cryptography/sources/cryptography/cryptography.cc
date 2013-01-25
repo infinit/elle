@@ -1,5 +1,4 @@
 #include <cryptography/cryptography.hh>
-#include <cryptography/KeyPair.hh>
 #include <cryptography/random.hh>
 
 #include <elle/log.hh>
@@ -28,9 +27,6 @@ namespace infinit
       // Enable the SSL algorithms, especially for RSA.
       ::SSLeay_add_all_algorithms();
 
-      // Initialize the keypair class.
-      KeyPair::initialize();
-
       // Setup the random generator so as to generate more entropy if
       // required.
       if (::RAND_status() == 0)
@@ -46,9 +42,6 @@ namespace infinit
     clean()
     {
       ELLE_TRACE_SCOPE("cleaning the cryptography");
-
-      // Clean the keypair class.
-      KeyPair::clean();
 
       // Free the current threads error queue.
       ::ERR_remove_state(0);
