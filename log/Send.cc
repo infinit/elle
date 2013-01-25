@@ -16,6 +16,23 @@ namespace elle
 {
   namespace log
   {
+
+    std::unique_ptr<Logger> _logger;
+
+    Logger&
+    logger()
+    {
+      if (!_logger)
+        _logger.reset(new elle::log::TextLogger(std::cerr));
+      return *_logger;
+    };
+
+    void
+    logger(std::unique_ptr<Logger> logger)
+    {
+      _logger = std::move(logger);
+    };
+
     namespace detail
     {
       static
@@ -48,22 +65,6 @@ namespace elle
         static Logger::Level level = _default_log_level();
         return level;
       }
-
-      std::unique_ptr<Logger> _logger;
-
-      Logger&
-      logger()
-      {
-        if (!_logger)
-          _logger.reset(new elle::log::TextLogger(std::cerr));
-        return *_logger;
-      };
-
-      void
-      logger(std::unique_ptr<Logger> logger)
-      {
-        _logger = std::move(logger);
-      };
 
       static
       boost::mutex&
@@ -182,13 +183,12 @@ namespace elle
                              elle::String const& component)
       {
         // FIXME: do we always want to print warnings and errors ?
-        if (type >= Logger::Type::warning)
-          return true;
-        if (!Components::instance().enabled(component))
-          return false;
+        if (type < Logger::Type::warning &&
+            (!Components::instance().enabled(component) ||
+             level > default_log_level()))
+            return false;
+
         Components::instance().update_max_size(component);
-        if (level > default_log_level())
-          return false;
         return true;
       }
 
