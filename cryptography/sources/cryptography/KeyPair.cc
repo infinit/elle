@@ -24,45 +24,9 @@ namespace infinit
 {
   namespace cryptography
   {
-    /*------------------.
-    | Static Attributes |
-    `------------------*/
-
-    ::EVP_PKEY_CTX* KeyPair::Contexts::generate = nullptr;
-
     /*---------------.
     | Static Methods |
     `---------------*/
-
-    void
-    KeyPair::initialize()
-    {
-      ELLE_TRACE("initializing the keypair contexts");
-
-      // Create the context for the RSA algorithm.
-      if ((KeyPair::Contexts::generate =
-           ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Initialise the context for key generation.
-      if (::EVP_PKEY_keygen_init(KeyPair::Contexts::generate) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      ELLE_TRACE("keypair contexts initialized");
-    }
-
-    void
-    KeyPair::clean()
-    {
-      ELLE_TRACE("cleaning the keypair contexts");
-
-      // Release the generation context.
-      ::EVP_PKEY_CTX_free(KeyPair::Contexts::generate);
-
-      ELLE_TRACE("keypair contexts cleaned");
-    }
 
     KeyPair
     KeyPair::generate(elle::Natural32 const length) // XXX[add algorithm argument]
@@ -72,32 +36,50 @@ namespace infinit
       // Make sure the cryptographic system is set up.
       cryptography::require();
 
+      ::EVP_PKEY_CTX* context = nullptr;
+
+      // Create the context for the RSA algorithm.
+      if ((context = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+
+      ELLE_ASSERT(context != nullptr);
+
+      // Initialise the context for key generation.
+      if (::EVP_PKEY_keygen_init(context) <= 0)
+        throw elle::Exception("%s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
+
       // Set the key length in the keypair generation context.
-      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::generate,
-                                             length) <= 0)
+      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
 
       ::EVP_PKEY* key = nullptr;
 
       // Generate the EVP key.
-      if (::EVP_PKEY_keygen(KeyPair::Contexts::generate, &key) <= 0)
+      if (::EVP_PKEY_keygen(context, &key) <= 0)
         throw elle::Exception("%s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
+
+      // Release the generation context.
+      ::EVP_PKEY_CTX_free(context);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
       ELLE_ASSERT(key != nullptr);
 
       // Instanciate a keypair based on the EVP_PKEY and return it.
+      //
+      // Note that the key's ownership is transferred to the key pair.
       KeyPair pair(key);
-
-      // Release the EVP_PKEY.
-      ::EVP_PKEY_free(key);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
-      return (pair);
+      return (std::move(pair));
     }
 
     /*-------------.
@@ -119,14 +101,6 @@ namespace infinit
       cryptography::require();
     }
 
-    KeyPair::KeyPair(::EVP_PKEY const* key):
-      _K(key),
-      _k(key)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-
     KeyPair::KeyPair(KeyPair const& other):
       _K(other._K),
       _k(other._k)
@@ -135,8 +109,27 @@ namespace infinit
       cryptography::require();
     }
 
+    KeyPair::KeyPair(KeyPair&& other):
+      _K(std::move(other._K)),
+      _k(std::move(other._k))
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
     {
+    }
+
+    // Construct the public key by duplicating the _n_ and _e_ internal
+    // numbers. Then, pass the whole key to the private key construction.
+    KeyPair::KeyPair(::EVP_PKEY* key):
+      _K(::BN_dup(key->pkey.rsa->n),
+         ::BN_dup(key->pkey.rsa->e)),
+      _k(key)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
     }
 
     /*--------.

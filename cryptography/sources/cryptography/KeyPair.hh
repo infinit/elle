@@ -27,27 +27,10 @@ namespace infinit
       public elle::concept::MakeUniquable<KeyPair>,
       public elle::Printable
     {
-      /*------------------.
-      | Static Attributes |
-      `------------------*/
-    public:
-      struct Contexts
-      {
-        static ::EVP_PKEY_CTX* generate;
-      };
-
       /*---------------.
       | Static Methods |
       `---------------*/
     public:
-      /// Initialize the keypair contexts.
-      static
-      void
-      initialize();
-      /// Clean the keypair contexts.
-      static
-      void
-      clean();
       /// Return a brand new, freshly generated key pair of the
       /// given length.
       static
@@ -61,13 +44,15 @@ namespace infinit
       KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
+      KeyPair(KeyPair const& other);
+      KeyPair(KeyPair&& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+    private:
       /// Construct a key pair based on the given EVP_PKEY.
       ///
-      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
-      /// call remains the owner of the given EVP_PKEY.
-      KeyPair(::EVP_PKEY const* key);
-      KeyPair(KeyPair const& other);
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+      /// Note that the key pair takes control over the ownership of
+      /// the given key.
+      KeyPair(::EVP_PKEY* key);
 
       /*----------.
       | Operators |

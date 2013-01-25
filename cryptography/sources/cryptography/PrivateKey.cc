@@ -45,25 +45,50 @@ namespace infinit
       cryptography::require();
     }
 
-    PrivateKey::PrivateKey(::EVP_PKEY const* key):
-      PrivateKey(::BN_dup(key->pkey.rsa->n),
-                 ::BN_dup(key->pkey.rsa->e),
-                 ::BN_dup(key->pkey.rsa->d),
-                 ::BN_dup(key->pkey.rsa->p),
-                 ::BN_dup(key->pkey.rsa->q),
-                 ::BN_dup(key->pkey.rsa->dmp1),
-                 ::BN_dup(key->pkey.rsa->dmq1),
-                 ::BN_dup(key->pkey.rsa->iqmp))
+    PrivateKey::PrivateKey(PrivateKey const& other):
+      PrivateKey(::BN_dup(other._key->pkey.rsa->n),
+                 ::BN_dup(other._key->pkey.rsa->e),
+                 ::BN_dup(other._key->pkey.rsa->d),
+                 ::BN_dup(other._key->pkey.rsa->p),
+                 ::BN_dup(other._key->pkey.rsa->q),
+                 ::BN_dup(other._key->pkey.rsa->dmp1),
+                 ::BN_dup(other._key->pkey.rsa->dmq1),
+                 ::BN_dup(other._key->pkey.rsa->iqmp))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
     }
 
-    PrivateKey::PrivateKey(PrivateKey const& other):
+    PrivateKey::PrivateKey(PrivateKey&& other):
       PrivateKey(other._key)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
+
+      // Reset the pointer for the given key.
+      other._key = nullptr;
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
@@ -75,6 +100,41 @@ namespace infinit
 
       // Make sure the cryptographic system is set up.
       cryptography::require();
+    }
+
+    PrivateKey::PrivateKey(::EVP_PKEY* key):
+      _key(key),
+      _context_decrypt(nullptr),
+      _context_sign(nullptr),
+      _context_encrypt(nullptr)
+    {
+      ELLE_ASSERT(key != nullptr);
+      ELLE_ASSERT(key->pkey.rsa != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->d != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->p != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->q != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->dmp1 != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->dmq1 != nullptr);
+      ELLE_ASSERT(key->pkey.rsa->iqmp != nullptr);
+
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      // Prepare the cryptographic contexts.
+      this->_prepare();
+
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
     }
 
     PrivateKey::~PrivateKey()
@@ -114,6 +174,15 @@ namespace infinit
       this->_construct(n, e, d, p, q, dmp1, dmq1, iqmp);
 
       ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
     }
 
     /*--------.
@@ -356,8 +425,6 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
       INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
 
-      // 1) Create the RSA key based on the given big numbers.
-
       // Initialise the private key structure.
       if ((this->_key = ::EVP_PKEY_new()) == nullptr)
         throw elle::Exception("%s",
@@ -398,7 +465,14 @@ namespace infinit
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-      // 2) Initialize the contexts associated with the private key.
+      // Call the context construct method.
+      this->_prepare();
+    }
+
+    void
+    PrivateKey::_prepare()
+    {
+      ELLE_DEBUG_FUNCTION("");
 
       // Prepare the decrypt context.
       if ((this->_context_decrypt =
@@ -566,14 +640,18 @@ namespace infinit
     void
     PrivateKey::print(std::ostream& stream) const
     {
+      ELLE_ASSERT(this->_key != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
+      ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+
       stream << "("
              << *this->_key->pkey.rsa->n
              << ", "
+             << *this->_key->pkey.rsa->e
+             << ", "
              << *this->_key->pkey.rsa->d
-             << ", "
-             << *this->_key->pkey.rsa->p
-             << ", "
-             << *this->_key->pkey.rsa->q
              << ")";
     }
   }

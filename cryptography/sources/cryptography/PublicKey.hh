@@ -32,6 +32,12 @@ namespace infinit
       public elle::concept::MakeUniquable<PublicKey>,
       public elle::Printable
     {
+      /*--------.
+      | Friends |
+      `--------*/
+    public:
+      friend class KeyPair;
+
       /*----------.
       | Constants |
       `----------*/
@@ -46,15 +52,14 @@ namespace infinit
       `-------------*/
     public:
       PublicKey(); // XXX[to deserialize]
-      /// Construct a public key based on the given EVP_PKEY.
-      ///
-      /// Note that the EVP_PKEY internal numbers are duplicate. Thus, the
-      /// call remains the owner of the given EVP_PKEY.
-      PublicKey(::EVP_PKEY const* key);
       PublicKey(PublicKey const& other);
+      PublicKey(PublicKey&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
       ~PublicKey();
     private:
+      /// Construct a public key based on the given EVP_PKEY key whose
+      /// ownership is transferred to the public key.
+      PublicKey(::EVP_PKEY* key);
       PublicKey(::BIGNUM* n,
                 ::BIGNUM* e);
 
@@ -97,6 +102,9 @@ namespace infinit
       void
       _construct(::BIGNUM* n,
                  ::BIGNUM* e);
+      /// Prepare the public key cryptographic contexts.
+      void
+      _prepare();
 
       /*----------.
       | Operators |
