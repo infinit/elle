@@ -77,42 +77,30 @@ namespace hole
 
       // XXX[very simple version where we assume there is a single node to
       //     which we will connect. otherwise, one would need to loop until...]
+      elle::network::Locus* _locus = nullptr;
       bool
       Machine::portal_wait(std::string const& host, int port)
       {
         ELLE_TRACE_FUNCTION(host, port);
 
-        elle::network::Locus locus(host, port);
+        _locus = new elle::network::Locus(host, port);
 
         ELLE_TRACE("checking if the host '%s' is present and has been "
-                   "authenticated", locus);
+                   "authenticated", *_locus);
 
         // Look for the given host in the list of hosts and
         // make sure it has been authenticated.
-        auto i = this->_hosts.find(locus);
+        auto i = this->_hosts.find(*_locus);
         if ((i == this->_hosts.end()) ||
             (i->second->state() != Host::State::authenticated))
           {
             ELLE_TRACE("waiting for the host '%s' to authenticate",
-                       locus);
+                       *_locus);
 
             // Wait for a new host to be authenticated.
             elle::concurrency::scheduler().current()->wait(
               _host_wait,
               boost::posix_time::seconds(10));
-
-            ELLE_TRACE("a host seems to have been authenticated, check again");
-
-            // Recheck and return an error if it's still not authenticated.
-            i = this->_hosts.find(locus);
-            if ((i == this->_hosts.end()) ||
-                (i->second->state() != Host::State::authenticated))
-              {
-                ELLE_TRACE("the host '%s' still has not been authenticated, "
-                           "abandon", locus);
-
-                return (false);
-              }
           }
 
         ELLE_TRACE("now checking if the machine has also been authenticated "
@@ -120,31 +108,17 @@ namespace hole
 
         // Look for the given host in the list of hosts and
         // make sure the machine has been able to authenticate to the host.
-        auto j = this->_hosts.find(locus);
-        ELLE_ASSERT(j != this->_hosts.end());
-        if (j->second->authenticated() == false)
+        auto j = this->_hosts.find(*_locus);
+        if ((j == this->_hosts.end()) ||
+            (j->second->authenticated() == false))
           {
             ELLE_TRACE("waiting for the machine to authenticate to host '%s'",
-                       locus);
+                       *_locus);
 
             // Wait for the machine to be authenticated by the host as well.
             elle::concurrency::scheduler().current()->wait(
               _machine_wait,
               boost::posix_time::seconds(10));
-
-            ELLE_TRACE("the machine seems to have been authenticated to a "
-                       "host, check again");
-
-            // Recheck and return an error if it's still not authenticated.
-            auto j = this->_hosts.find(locus);
-            ELLE_ASSERT(j != this->_hosts.end());
-            if (j->second->authenticated() == false)
-              {
-                ELLE_TRACE("the machine still has not authenticate to "
-                           "the host '%s', abandon", locus);
-
-                return (false);
-              }
           }
 
         ELLE_TRACE("both the machine and the host have been authenticated");
@@ -153,15 +127,19 @@ namespace hole
       }
 
       void
-      portal_machine_authenticated()
+      portal_machine_authenticated(elle::network::Locus const& locus)
       {
-        _machine_wait.signal();
+        if ((_locus != nullptr) &&
+            (*_locus == locus))
+          _machine_wait.signal();
       }
 
       void
-      portal_host_authenticated()
+      portal_host_authenticated(elle::network::Locus const& locus)
       {
-        _host_wait.signal();
+        if ((_locus != nullptr) &&
+            (*_locus == locus))
+          _host_wait.signal();
       }
 
       // FIXME

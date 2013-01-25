@@ -127,7 +127,7 @@ namespace hole
         _state = State::authenticating;
         auto res = _rpcs.authenticate(passport);
         this->_authenticated = true;
-        portal_machine_authenticated();
+        portal_machine_authenticated(this->_locus);
         return (res);
       }
 
@@ -145,7 +145,7 @@ namespace hole
         else
           _state = State::authenticated;
 
-        portal_host_authenticated();
+        portal_host_authenticated(this->_locus);
 
         // Also authenticate to this host if we're not already doing so.
         if (this->_state == State::connected)
