@@ -132,8 +132,8 @@ namespace hole
               _machine_wait,
               boost::posix_time::seconds(10));
 
-            ELLE_TRACE("the machine seems to have been authenticated to a host, "
-                       "check again");
+            ELLE_TRACE("the machine seems to have been authenticated to a "
+                       "host, check again");
 
             // Recheck and return an error if it's still not authenticated.
             auto j = this->_hosts.find(locus);
