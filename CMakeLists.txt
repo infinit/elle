@@ -1,4 +1,4 @@
-PROJECT(Elle CXX)
+fPROJECT(Elle CXX)
 
 IF(INFINIT_LINUX)
   SET(elle_PLATFORM
@@ -90,7 +90,7 @@ add_library(elle ${LINK_METHOD}
 
   CrashReporter.cc
   log/Logger.cc
-  log/Sender.cc
+  log/Send.cc
   log/TextLogger.cc
 
   reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
