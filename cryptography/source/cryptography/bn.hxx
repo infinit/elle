@@ -39,7 +39,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
 
   ELLE_FINALLY_ABORT(buffer);
 
-  delete buffer;
+  delete [] buffer;
 }
 
 // Note that the big number (i.e _value_) must have been initialized either
@@ -72,7 +72,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
 
   ELLE_FINALLY_ABORT(buffer);
 
-  delete buffer;
+  delete [] buffer;
 }
 
 #endif
