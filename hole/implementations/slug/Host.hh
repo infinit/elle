@@ -6,6 +6,7 @@
 # include <elle/idiom/Open.hh>
 
 # include <elle/types.hh>
+# include <elle/attribute.hh>
 # include <elle/network/fwd.hh>
 # include <elle/network/Locus.hh>
 
@@ -54,7 +55,10 @@ namespace hole
 
       private:
         Machine& _machine;
-        State _state;
+        ELLE_ATTRIBUTE_R(State, state);
+        /// Whether the machine itself has been able to authenticated to
+        /// the host.
+        ELLE_ATTRIBUTE_R(elle::Boolean, authenticated);
         std::unique_ptr<reactor::network::Socket> _socket;
         infinit::protocol::Serializer _serializer;
         infinit::protocol::ChanneledStream _channels;

@@ -36,6 +36,8 @@
 
 #include <Infinit.hh>
 
+#include <algorithm>
+
 ELLE_LOG_COMPONENT("infinit.hole.slug.Machine");
 
 // XXX[to improve later with a configuration variable]
@@ -50,16 +52,119 @@ namespace hole
     {
       // FIXME
       static Machine* machine(nullptr);
-      void portal_connect(std::string const& addr, int port)
+      void
+      portal_connect(std::string const& host, int port)
       {
-        machine->portal_connect(addr, port);
+        machine->portal_connect(host, port);
       }
 
       void
       Machine::portal_connect(std::string const& host, int port)
       {
+        ELLE_TRACE_FUNCTION(host, port);
+
         _server->accept(host, port);
       }
+
+      bool
+      portal_wait(std::string const& host, int port)
+      {
+        return (machine->portal_wait(host, port));
+      }
+
+      reactor::Signal _machine_wait;
+      reactor::Signal _host_wait;
+
+      // XXX[very simple version where we assume there is a single node to
+      //     which we will connect. otherwise, one would need to loop until...]
+      bool
+      Machine::portal_wait(std::string const& host, int port)
+      {
+        ELLE_TRACE_FUNCTION(host, port);
+
+        elle::network::Locus locus(host, port);
+
+        ELLE_TRACE("checking if the host '%s' is present and has been "
+                   "authenticated", locus);
+
+        // Look for the given host in the list of hosts and
+        // make sure it has been authenticated.
+        auto i = this->_hosts.find(locus);
+        if ((i == this->_hosts.end()) ||
+            (i->second->state() != Host::State::authenticated))
+          {
+            ELLE_TRACE("waiting for the host '%s' to authenticate",
+                       *i->second);
+
+            // Wait for a new host to be authenticated.
+            elle::concurrency::scheduler().current()->wait(
+              _host_wait,
+              boost::posix_time::seconds(10));
+
+            ELLE_TRACE("a host seems to have been authenticated, check again");
+
+            // Recheck and return an error if it's still not authenticated.
+            i = this->_hosts.find(locus);
+            if ((i == this->_hosts.end()) ||
+                (i->second->state() != Host::State::authenticated))
+              {
+                ELLE_TRACE("the host '%s' still has not been authenticated, "
+                           "abandon");
+
+                return (false);
+              }
+          }
+
+        ELLE_TRACE("now checking if the machine has also been authenticated "
+                   "by the host");
+
+        // Look for the given host in the list of hosts and
+        // make sure the machine has been able to authenticate to the host.
+        auto j = this->_hosts.find(locus);
+        ELLE_ASSERT(j != this->_hosts.end());
+        if (j->second->authenticated() == false)
+          {
+            ELLE_TRACE("waiting for the machine to authenticate to host '%s'",
+                       *j->second);
+
+            // Wait for the machine to be authenticated by the host as well.
+            elle::concurrency::scheduler().current()->wait(
+              _machine_wait,
+              boost::posix_time::seconds(10));
+
+            ELLE_TRACE("the machine seems to have been authenticated to a host, "
+                       "check again");
+
+            // Recheck and return an error if it's still not authenticated.
+            auto j = this->_hosts.find(locus);
+            ELLE_ASSERT(j != this->_hosts.end());
+            if (j->second->authenticated() == false)
+              {
+                ELLE_TRACE("the machine still has not authenticate to "
+                           "the host, abandon");
+
+                return (false);
+              }
+          }
+
+        ELLE_TRACE("both the machine and the host have been authenticated");
+
+        return (true);
+      }
+
+      void
+      portal_machine_authenticated()
+      {
+        _machine_wait.signal();
+      }
+
+      void
+      portal_host_authenticated()
+      {
+        _host_wait.signal();
+      }
+
+      // FIXME
 
       /*----------.
       | Variables |

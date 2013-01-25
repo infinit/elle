@@ -11,6 +11,7 @@
 # include <elle/idiom/Close.hh>
 #  include <reactor/network/fwd.hh>
 #  include <reactor/duration.hh>
+#  include <reactor/signal.hh>
 #  include <reactor/network/udt-server.hh>
 #  include <reactor/network/udt-socket.hh>
 # include <elle/idiom/Open.hh>
@@ -23,6 +24,8 @@
 
 # include <hole/implementations/slug/fwd.hh>
 
+# include <boost/signals.hpp>
+
 namespace hole
 {
   namespace implementations
@@ -30,7 +33,9 @@ namespace hole
     namespace slug
     {
       void portal_connect(std::string const& host, int port);
-
+      bool portal_wait(std::string const& host, int port);
+      void portal_host_authenticated();
+      void portal_machine_authenticated();
 
       ///
       /// XXX represents the current host
@@ -88,7 +93,9 @@ namespace hole
       `-------*/
       public:
         elle::network::Port port() const;
+        // XXX
         void portal_connect(std::string const& host, int port);
+        bool portal_wait(std::string const& host, int port);
       private:
         elle::network::Port _port;
         void _accept();

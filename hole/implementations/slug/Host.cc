@@ -39,6 +39,7 @@ namespace hole
         : _locus(locus)
         , _machine(machine)
         , _state(State::connected)
+        , _authenticated(false)
         , _socket(std::move(socket))
         , _serializer(elle::concurrency::scheduler(), *_socket)
         , _channels(elle::concurrency::scheduler(), _serializer)
@@ -124,7 +125,10 @@ namespace hole
       {
         ELLE_TRACE_SCOPE("%s: authenticate with %s", *this, passport);
         _state = State::authenticating;
-        return _rpcs.authenticate(passport);
+        auto res = _rpcs.authenticate(passport);
+        this->_authenticated = true;
+        portal_machine_authenticated();
+        return (res);
       }
 
       std::vector<elle::network::Locus>
@@ -140,6 +144,8 @@ namespace hole
                                    "unable to validate the passport");
         else
           _state = State::authenticated;
+
+        portal_host_authenticated();
 
         // Also authenticate to this host if we're not already doing so.
         if (this->_state == State::connected)

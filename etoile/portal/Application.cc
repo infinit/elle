@@ -124,6 +124,7 @@ namespace etoile
       this->rpcs->attributesfetch = &wall::Attributes::fetch;
 
       this->rpcs->slug_connect.operator=(&hole::implementations::slug::portal_connect);
+      this->rpcs->slug_wait.operator=(&hole::implementations::slug::portal_wait);
 
       // XXX[temporary]
       this->rpcs->transferto = &wall::File::transferto;
