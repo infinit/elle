@@ -469,10 +469,14 @@ namespace surface
             ELLE_DEBUG("slug_connect(%s, %s)", result[0], result[1]);
 
             rpcs.slug_connect(result[0], std::stoi(result[1]));
+
+            if (!rpcs.slug_wait(result[0], std::stoi(result[1])))
+              throw elle::Exception("enable to connect or authenticate both "
+                                    "nodes.");
             ok = true;
           }
           else
-              ELLE_DEBUG("ignore %s", endpoint);
+              ELLE_DEBUG("ignore endpoint %s", endpoint);
         };
 
         try

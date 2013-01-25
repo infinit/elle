@@ -207,7 +207,7 @@ namespace etoile
       `-------------*/
       RemoteProcedure<void,
                       std::string const&, int> slug_connect;
-      RemoteProcedure<void,
+      RemoteProcedure<bool,
                       std::string const&, int> slug_wait;
 
       /*---------.
