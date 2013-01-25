@@ -13,6 +13,7 @@ namespace infinit
       /*----------.
       | Functions |
       `----------*/
+
       /// Set up the random generator by adding entropy.
       ///
       /// !WARNING! Do not use unless you know exactly what you're doing.

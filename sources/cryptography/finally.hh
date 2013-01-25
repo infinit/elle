@@ -46,6 +46,15 @@
       ::EVP_MD_CTX_cleanup(&context);                                   \
     });
 
+/// Make it easy to clean up a EVP_PKEY context.
+# define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(_variable_) \
+  ELLE_FINALLY_LAMBDA(                                                  \
+    _variable_,                                                         \
+    [] (::EVP_PKEY_CTX* context)                                        \
+    {                                                                   \
+      ::EVP_PKEY_CTX_free(context);                                     \
+    });
+
 /// Make it super easy to abort the final action based on the name of
 /// the variable it relates to.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_variable_)                 \
