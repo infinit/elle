@@ -82,7 +82,7 @@ class GetBacktrace(Page):
         )
 
         meta.mail.send(
-            "bugs@infinit.io",
+            "crash@infinit.io",
             meta.mail.BACKTRACE_SUBJECT % {"user": _id, "module": module, "signal": signal},
             meta.mail.BACKTRACE_CONTENT %
                 {

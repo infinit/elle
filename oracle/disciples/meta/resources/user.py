@@ -324,7 +324,7 @@ class Register(Page):
                 'status': 'pending',
             })
             if not invitation:
-                return self.error(error.ACTIVATION_CODE_DOESNT_EXIST, "'%s' is not a valid activation code." % user['activation_code'])
+                return self.error(error.ACTIVATION_CODE_DOESNT_EXIST)
 
         ghost = database.users().find_one({
             'accounts': [{ 'type': 'email', 'id':user['email']}],
