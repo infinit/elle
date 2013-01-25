@@ -698,11 +698,14 @@ namespace plasma
       }
 
       EndpointNodeResponse
-      Client::device_endpoints(string const& network_id, string const& device_id)
+      Client::device_endpoints(std::string const& network_id,
+                               std::string const& self_device_id,
+                               std::string const& device_id)
       {
         json::Dictionary request{
           map<string, string>{
-                {"device_id", device_id},
+            {"self_device_id", self_device_id},
+            {"device_id", device_id},
           }
         };
 

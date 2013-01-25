@@ -419,7 +419,9 @@ namespace surface
         else
           target_device = trans.recipient_device_id;
 
-        Endpoint e = this->_meta->device_endpoints(network_id, target_device);
+        Endpoint e = this->_meta->device_endpoints(network_id,
+                                                   this->device_id(),
+                                                   target_device);
 
         externals = std::move(e.externals);
         locals = std::move(e.locals);
@@ -477,8 +479,8 @@ namespace surface
           {
             ELLE_DEBUG("found endpoints: %s locals, %s externals",
                        locals.size(), externals.size());
-            std::for_each(std::begin(locals), std::end(locals), send_to_slug);
             std::for_each(std::begin(externals), std::end(externals), send_to_slug);
+            std::for_each(std::begin(locals), std::end(locals), send_to_slug);
           }
         catch (elle::Exception const &e)
           {

@@ -391,8 +391,9 @@ namespace plasma
 
     public:
       EndpointNodeResponse
-      device_endpoints(string const& network_id, string const& device_id);
-
+      device_endpoints(std::string const& network_id,
+                       std::string const& self_device_id,
+                       std::string const& device_id);
 
     public:
       void token(string const& tok);
