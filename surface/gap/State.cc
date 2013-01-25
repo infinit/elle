@@ -392,7 +392,7 @@ namespace surface
     /// Connect to trophonius
 
     void
-    State::_notify_8infinit(Transaction const& trans)
+    State::_notify_8infinit(Transaction const& trans, reactor::Scheduler& sched)
     {
       ELLE_TRACE("Notify 8infinit for transaction %s", trans);
 
@@ -442,18 +442,18 @@ namespace surface
 
         // Connect to the server.
         reactor::network::TCPSocket socket{
-            elle::concurrency::scheduler(),
+            sched,
             elle::String("127.0.0.1"),
             phrase.port,
         };
 
         proto::Serializer serializer{
-            elle::concurrency::scheduler(),
+            sched,
             socket
         };
 
         proto::ChanneledStream channels{
-            elle::concurrency::scheduler(),
+            sched,
             serializer
         };
 

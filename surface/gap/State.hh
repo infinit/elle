@@ -8,7 +8,7 @@
 
 # include <boost/filesystem.hpp>
 # include <elle/format/json/fwd.hh>
-
+# include <reactor/scheduler.hh>
 # include <nucleus/neutron/Permissions.hh>
 
 # include <plasma/meta/Client.hh>
@@ -473,7 +473,8 @@ namespace surface
 
     public:
       void
-      _notify_8infinit(Transaction const& trans);
+      _notify_8infinit(Transaction const& trans,
+                       reactor::Scheduler& sched);
 
     public:
       size_t

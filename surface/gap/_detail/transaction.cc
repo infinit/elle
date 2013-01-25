@@ -460,13 +460,13 @@ namespace surface
       }
 
       std::exception_ptr exception;
-      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      reactor::Scheduler sched;
       reactor::Thread sync{
           sched,
           "notify_8infinit",
           [&] () -> void {
               try {
-                this->_notify_8infinit(transaction);
+                this->_notify_8infinit(transaction, sched);
               } catch (std::runtime_error const&) {
                   exception = std::current_exception();
               }
