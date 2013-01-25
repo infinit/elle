@@ -174,14 +174,19 @@ namespace reactor
       Buffer buffer(buffer_data);
       auto size = socket->read_some(buffer);
       std::string answer(buffer_data.c_str(), size);
+
       ELLE_DUMP("longinus answer: %s", escape(answer));
 
+      //XXX
       std::vector<std::string> splitted;
       boost::split(splitted, answer, boost::is_any_of(" :\n"));
-      if (splitted.size() != 2)
+      if (splitted.size() != 4)
         throw reactor::Exception(elle::concurrency::scheduler(),
                                  "loginus returned a bad formed endpoint: " +
                                  answer);
+
+      ELLE_ASSERT(splitted[1] != "0.0.0.0:0");
+
       boost::asio::ip::udp::endpoint public_endpoint
         (boost::asio::ip::address::from_string(splitted[1]),
          boost::lexical_cast<int>(splitted[2]));
