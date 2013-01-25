@@ -72,8 +72,8 @@ namespace hole
         return (machine->portal_wait(host, port));
       }
 
-      reactor::Signal _machine_wait;
-      reactor::Signal _host_wait;
+      reactor::Signal _machine_wait("machine wait");
+      reactor::Signal _host_wait("host wait");
 
       // XXX[very simple version where we assume there is a single node to
       //     which we will connect. otherwise, one would need to loop until...]
@@ -94,7 +94,7 @@ namespace hole
             (i->second->state() != Host::State::authenticated))
           {
             ELLE_TRACE("waiting for the host '%s' to authenticate",
-                       *i->second);
+                       locus);
 
             // Wait for a new host to be authenticated.
             elle::concurrency::scheduler().current()->wait(
@@ -109,7 +109,7 @@ namespace hole
                 (i->second->state() != Host::State::authenticated))
               {
                 ELLE_TRACE("the host '%s' still has not been authenticated, "
-                           "abandon");
+                           "abandon", locus);
 
                 return (false);
               }
@@ -125,7 +125,7 @@ namespace hole
         if (j->second->authenticated() == false)
           {
             ELLE_TRACE("waiting for the machine to authenticate to host '%s'",
-                       *j->second);
+                       locus);
 
             // Wait for the machine to be authenticated by the host as well.
             elle::concurrency::scheduler().current()->wait(
@@ -141,7 +141,7 @@ namespace hole
             if (j->second->authenticated() == false)
               {
                 ELLE_TRACE("the machine still has not authenticate to "
-                           "the host, abandon");
+                           "the host '%s', abandon", locus);
 
                 return (false);
               }
@@ -327,9 +327,12 @@ namespace hole
                 if (pair.second.ipv4_address.size() > 0 &&
                     pair.second.mac_address.size() > 0)
                   {
+                    ELLE_DEBUG("local address: %s:%s",
+                               pair.second.ipv4_address,
+                               _server->port());
+
                     addresses.emplace_back(pair.second.ipv4_address,
                                            _server->port());
-                    break;
                   }
 
               std::vector<std::pair<std::string, uint16_t>> public_addresses;
