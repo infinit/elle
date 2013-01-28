@@ -5,6 +5,7 @@
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
+#include <cryptography/rsa/keypair.hh>
 
 #include <elle/types.hh>
 #include <elle/Exception.hh>
@@ -29,57 +30,35 @@ namespace infinit
     `---------------*/
 
     KeyPair
-    KeyPair::generate(elle::Natural32 const length) // XXX[add algorithm argument]
+    KeyPair::generate(Cryptosystem const cryptosystem,
+                      elle::Natural32 const length)
     {
-      ELLE_TRACE_FUNCTION(length);
+      ELLE_TRACE_FUNCTION(cryptosystem, length);
 
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
+      switch (cryptosystem)
+        {
+        case Cryptosystem::rsa:
+          {
+            std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
+              rsa::keypair::generate(length);
 
-      ::EVP_PKEY_CTX* context = nullptr;
+            // Construct high-level public and private keys.
+            std::unique_ptr<interface::PublicKey> K{
+              new rsa::PublicKey{std::move(pair.first)}};
+            std::unique_ptr<interface::PrivateKey> k{
+              new rsa::PrivateKey{std::move(pair.second)}};
 
-      // Create the context for the RSA algorithm.
-      if ((context = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
+            // Construct a key pair based on both public and private key.
+            KeyPair keypair{std::move(K), std::move(k)};
 
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+            return (std::move(keypair));
+          }
+        default:
+          throw elle::Exception("unknown or non-supported asymmetric "
+                                "cryptosystem '%s'", cryptosystem);
+        }
 
-      ELLE_ASSERT(context != nullptr);
-
-      // Initialise the context for key generation.
-      if (::EVP_PKEY_keygen_init(context) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Set the key length in the keypair generation context.
-      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      ::EVP_PKEY* key = nullptr;
-
-      // Generate the EVP key.
-      if (::EVP_PKEY_keygen(context, &key) <= 0)
-        throw elle::Exception("%s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Release the generation context.
-      ::EVP_PKEY_CTX_free(context);
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
-
-      ELLE_ASSERT(key != nullptr);
-
-      // Instanciate a keypair based on the EVP_PKEY and return it.
-      //
-      // Note that the key's ownership is transferred to the key pair.
-      KeyPair pair(key);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
-
-      return (std::move(pair));
+      elle::unreachable();
     }
 
     /*-------------.
@@ -96,6 +75,15 @@ namespace infinit
                      PrivateKey const& k):
       _K(K),
       _k(k)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    KeyPair::KeyPair(PublicKey&& K,
+                     PrivateKey&& k):
+      _K(std::move(K)),
+      _k(std::move(k))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -119,17 +107,6 @@ namespace infinit
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
     {
-    }
-
-    // Construct the public key by duplicating the _n_ and _e_ internal
-    // numbers. Then, pass the whole key to the private key construction.
-    KeyPair::KeyPair(::EVP_PKEY* key):
-      _K(::BN_dup(key->pkey.rsa->n),
-         ::BN_dup(key->pkey.rsa->e)),
-      _k(key)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     /*--------.

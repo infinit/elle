@@ -1,6 +1,8 @@
 add_library(cryptography
   sources/cryptography/bn.cc
   sources/cryptography/cryptography.cc
+  sources/cryptography/Cryptosystem.cc
+  sources/cryptography/factory.cc
   sources/cryptography/KeyPair.cc
   sources/cryptography/Input.cc
   sources/cryptography/oneway.cc
@@ -10,4 +12,7 @@ add_library(cryptography
   sources/cryptography/random.cc
   sources/cryptography/SecretKey.cc
   sources/cryptography/Seed.cc
+  sources/cryptography/rsa/keypair.cc
+  sources/cryptography/rsa/PrivateKey.cc
+  sources/cryptography/rsa/PublicKey.cc
 )

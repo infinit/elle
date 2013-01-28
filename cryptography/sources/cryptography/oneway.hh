@@ -16,6 +16,8 @@ namespace infinit
       /*-------------.
       | Enumerations |
       `-------------*/
+
+      /// Define the oneway algorithm.
       enum class Algorithm
       {
         md5,
@@ -30,6 +32,7 @@ namespace infinit
       /*----------.
       | Functions |
       `----------*/
+
       /// Hash a plain text and return a digest.
       Digest
       hash(Plain const& plain,

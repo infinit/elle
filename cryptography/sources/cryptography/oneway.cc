@@ -13,10 +13,6 @@ ELLE_LOG_COMPONENT("infinit.cryptograhy.oneway");
 | Macro-functions |
 `----------------*/
 
-#define INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(_name_)                    \
-  case infinit::cryptography::oneway::Algorithm::_name_:                \
-    return (::EVP_ ## _name_());
-
 namespace infinit
 {
   namespace cryptography
@@ -34,13 +30,20 @@ namespace infinit
       {
         switch (name)
           {
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(md5);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha1);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha224);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha256);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha384);
-            INFINIT_CRYPTOGRAPHY_ONEWAY_ALGORITHM(sha512);
+          case Algorithm::md5:
+            return (::EVP_md5());
+          case Algorithm::sha:
+            return (::EVP_sha());
+          case Algorithm::sha1:
+            return (::EVP_sha1());
+          case Algorithm::sha224:
+            return (::EVP_sha224());
+          case Algorithm::sha256:
+            return (::EVP_sha256());
+          case Algorithm::sha384:
+            return (::EVP_sha384());
+          case Algorithm::sha512:
+            return (::EVP_sha512());
           default:
             throw elle::Exception("unable to resolve the given one-way "
                                   "function name");
@@ -56,7 +59,7 @@ namespace infinit
       // Note that the value return is not an rvalue in order to benefit from
       // the 'return value optimization'.
       //
-      // The caller could very well 'std::move' the result if required.
+      // The caller could very well 'std::move' the result if required. XXX remove
       Digest
       hash(Plain const& plain,
            Algorithm algorithm)
