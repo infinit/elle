@@ -144,6 +144,18 @@ namespace reactor
       return res + "\"";
     }
 
+    boost::asio::ip::udp::endpoint&
+    UDTServer::_longinus()
+    {
+      static auto lhost = "development.infinit.io";//common::longinus::host();
+      static auto lport = 9999;//common::longinus::port();
+      static auto longinus =
+        resolve_udp(this->scheduler(), lhost,
+                    boost::lexical_cast<std::string>(lport));
+
+      return longinus;
+    }
+
     bool
     UDTServer::_punch(int port)
     {
@@ -158,17 +170,12 @@ namespace reactor
     UDTServer::_punch(int port, std::unique_ptr<UDPSocket>& socket)
     {
       ELLE_DEBUG_SCOPE("try punching port %s", port);
-      static auto lhost = "development.infinit.io";//common::longinus::host();
-      static auto lport = 9999;//common::longinus::port();
-      static auto longinus =
-        resolve_udp(this->scheduler(), lhost,
-                    boost::lexical_cast<std::string>(lport));
 
       std::stringstream ss;
       ss << "local " << socket->local_endpoint() << std::endl;
       std::string question = ss.str();
       ELLE_DUMP("longinus question: %s", escape(question));
-      socket->send_to(Buffer(question), longinus);
+      socket->send_to(Buffer(question), _longinus());
 
       std::string buffer_data(1024, ' ');
       Buffer buffer(buffer_data);
@@ -185,7 +192,7 @@ namespace reactor
                                  "loginus returned a bad formed endpoint: " +
                                  answer);
 
-      ELLE_ASSERT(splitted[1] != "0.0.0.0:0");
+      ELLE_ASSERT(splitted[1] != "0.0.0.0");
 
       boost::asio::ip::udp::endpoint public_endpoint
         (boost::asio::ip::address::from_string(splitted[1]),
@@ -207,8 +214,8 @@ namespace reactor
                       {
                         this->scheduler().current()->sleep
                           (boost::posix_time::seconds(15));
-                        this->_punch(this->port(),
-                                     std::ref(this->_udp_socket));
+                        this->_beat(this->port(),
+                                    std::ref(this->_udp_socket));
                       }
                   }));
             }
@@ -221,6 +228,25 @@ namespace reactor
             ;  // FIXME: we lost the NAT, do something.
           return false;
         }
+    }
+
+    void
+    UDTServer::_beat(int port, std::unique_ptr<UDPSocket>& socket)
+    {
+      ELLE_DEBUG_SCOPE("try punching port %s", port);
+
+      std::stringstream ss;
+      ss << "ping" << std::endl;
+      std::string question = ss.str();
+      ELLE_DUMP("longinus question: %s", escape(question));
+      socket->send_to(Buffer(question), this->_longinus());
+
+      std::string buffer_data(1024, ' ');
+      Buffer buffer(buffer_data);
+      auto size = socket->read_some(buffer);
+      std::string answer(buffer_data.c_str(), size);
+
+      ELLE_DUMP("longinus answer: %s", escape(answer));
     }
 
     void
