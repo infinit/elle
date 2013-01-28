@@ -22,6 +22,7 @@ namespace elle
         none        = 0x00,
         no_loopback = 0x01, /// Exclude loopback interface.
         only_up     = 0x02, /// Exclude down interfaces.
+        no_autoip   = 0x04, /// Exclude autoip interfaces.
       };
     public:
       /// Retreive a map of local interfaces, indexed by interface name.
