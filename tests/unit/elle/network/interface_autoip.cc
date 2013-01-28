@@ -2,7 +2,7 @@
 #include <iostream>
 
 int
-main(int argc, const char *argv[])
+main()
 {
   auto interfaces = elle::network::Interface::get_map(
       elle::network::Interface::Filter::only_up
@@ -14,5 +14,6 @@ main(int argc, const char *argv[])
       std::cout << "IP: " << pair.second.ipv4_address << std::endl
                 << "MAC: " << pair.second.mac_address << std::endl;
   }
+  std::cout << "tests done." << std::endl;
   return (0);
 }
