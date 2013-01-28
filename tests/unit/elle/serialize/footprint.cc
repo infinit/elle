@@ -10,7 +10,8 @@ using namespace infinit;
 
 int main()
 {
-  cryptography::KeyPair pair(cryptography::KeyPair::generate(512));
+  cryptography::KeyPair pair =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 512);
 
   elle::Natural32 size = elle::serialize::footprint(pair);
 

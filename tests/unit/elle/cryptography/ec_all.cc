@@ -18,7 +18,8 @@ using namespace infinit;
 
 void test_encryption()
 {
-  cryptography::KeyPair kp = cryptography::KeyPair::generate(2048);
+  cryptography::KeyPair kp =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 2048);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Code code = kp.K().encrypt(plain);
@@ -29,7 +30,8 @@ void test_encryption()
 
 void test_noitpyrcne()
 {
-  cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+  cryptography::KeyPair kp =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Code code = kp.k().encrypt(plain);
@@ -40,7 +42,8 @@ void test_noitpyrcne()
 
 void test_signature()
 {
-  cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+  cryptography::KeyPair kp =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
   cryptography::Signature signature = kp.k().sign(plain);

@@ -51,7 +51,9 @@ namespace nucleus
              which will not evolve over time. */
       {
         cryptography::KeyPair pass(
-          cryptography::KeyPair::generate(Group::Constants::keypair_length));
+          cryptography::KeyPair::generate(
+            cryptography::Cryptosystem::rsa,
+            Group::Constants::keypair_length));
 
         Token token(pass.k(), this->manager_subject().user());
         this->upgrade(proton::Radix{}, pass.K(), token);

@@ -33,6 +33,9 @@ namespace lune
     public elle::concept::MakeUniquable<Identity>
   {
   public:
+    // XXX
+    static elle::Natural32 const keypair_length = 2048;
+
     enum Mode
       {
         ModeEncrypted,

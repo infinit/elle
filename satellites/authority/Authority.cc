@@ -43,7 +43,9 @@ namespace satellite
 
     // Create the authority with the generated key pair.
     elle::Authority authority{
-      cryptography::KeyPair::generate(Authority::Length)};
+      cryptography::KeyPair::generate(
+        cryptography::Cryptosystem::rsa,
+        Authority::Length)};
 
     // Encrypt the authority.
     if (authority.Encrypt(pass) == elle::Status::Error)

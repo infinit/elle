@@ -18,7 +18,7 @@ namespace nucleus
     | Constants |
     `----------*/
 
-    elle::Natural32 const OwnerKeyBlock::Constants::keypair_length{1024};
+    elle::Natural32 const OwnerKeyBlock::Constants::keypair_length{2048};
 
 //
 // ---------- construction ----------------------------------------------------
@@ -37,6 +37,7 @@ namespace nucleus
         cryptography::PublicKey const& creator_K):
       OwnerKeyBlock(network, component, creator_K,
                     cryptography::KeyPair::generate(
+                      cryptography::Cryptosystem::rsa,
                       OwnerKeyBlock::Constants::keypair_length))
     {
     }

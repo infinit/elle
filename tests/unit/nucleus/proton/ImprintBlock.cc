@@ -24,7 +24,8 @@ namespace test
     {
       nucleus::proton::Network network("test");
 
-      cryptography::KeyPair kp(cryptography::KeyPair::generate(1024));
+      cryptography::KeyPair kp =
+        cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
       test::ImprintBlock blk(network,
                              nucleus::neutron::ComponentObject,

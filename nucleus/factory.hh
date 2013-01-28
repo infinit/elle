@@ -18,7 +18,6 @@ namespace nucleus
     /// Return the factory capable of building nucleus block instances.
     elle::utility::Factory<neutron::Component> const&
     block();
-
     /// Return the factory capable of building tree node instances.
     elle::utility::Factory<proton::Nature> const&
     node();

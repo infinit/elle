@@ -335,7 +335,7 @@ test_porcupine_catalog()
 {
   ELLE_TRACE_FUNCTION("");
 
-  elle::Natural32 const N = 128;
+  elle::Natural32 const N = 1283;
 
   std::vector<elle::String> vector = test_porcupine_catalog_prepare(N);
 
@@ -639,11 +639,13 @@ Main(elle::Natural32,
       _network.reset(new nucleus::proton::Network(Infinit::Network));
       _user.reset(
         new cryptography::KeyPair(
-          cryptography::KeyPair::generate(1024)));
+          cryptography::KeyPair::generate(
+            cryptography::Cryptosystem::rsa,
+            1024)));
 
 #ifdef PORCUPINE_SERIALIZE_TEST
       cryptography::KeyPair pair_authority{
-        cryptography::KeyPair::generate(1024)};
+        cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024)};
       elle::Authority authority(pair_authority);
 
       elle::Passport passport(elle::String{"node"},

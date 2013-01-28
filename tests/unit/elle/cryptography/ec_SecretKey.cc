@@ -204,7 +204,8 @@ int main()
 
   {
     cryptography::SecretKey key{elle::String("")};
-    cryptography::KeyPair kp = cryptography::KeyPair::generate(1024);
+    cryptography::KeyPair kp =
+      cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
     cryptography::Cipher* cipher =
       new cryptography::Cipher{key.encrypt(kp.k())};
     cryptography::PrivateKey* k =

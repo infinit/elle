@@ -14,7 +14,8 @@ using namespace infinit;
 
 int main()
 {
-  cryptography::KeyPair kp(cryptography::KeyPair::generate(2048));
+  cryptography::KeyPair kp =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 2048);
 
   nucleus::proton::Network network("name");
   nucleus::neutron::Object blk(network,

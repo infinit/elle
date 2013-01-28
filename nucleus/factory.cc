@@ -19,76 +19,79 @@ ELLE_LOG_COMPONENT("infinit.nucleus.factory");
 
 namespace nucleus
 {
-  namespace setup
+  namespace factory
   {
-    /*----------.
-    | Functions |
-    `----------*/
-
-    static
-    elle::utility::Factory<neutron::Component> const*
-    _block()
+    namespace setup
     {
-      elle::utility::Factory<neutron::Component>* factory =
-        new elle::utility::Factory<neutron::Component>;
+      /*----------.
+      | Functions |
+      `----------*/
 
-      ELLE_TRACE("setting up the nucleus block factory");
+      static
+      elle::utility::Factory<neutron::Component> const*
+      _block()
+      {
+        elle::utility::Factory<neutron::Component>* factory =
+          new elle::utility::Factory<neutron::Component>;
 
-      factory->record<neutron::Object>(neutron::ComponentObject);
-      // XXX[shouldn't be in neutron?]
-      factory->record<proton::Contents>(neutron::ComponentContents);
-      factory->record<neutron::Group>(neutron::ComponentGroup);
+        ELLE_TRACE("setting up the nucleus block factory");
 
-      return (factory);
-    }
+        factory->record<neutron::Object>(neutron::ComponentObject);
+        // XXX[shouldn't be in neutron?]
+        factory->record<proton::Contents>(neutron::ComponentContents);
+        factory->record<neutron::Group>(neutron::ComponentGroup);
 
-    static
-    elle::utility::Factory<proton::Nature> const*
-    _node()
-    {
-      elle::utility::Factory<proton::Nature>* factory =
-        new elle::utility::Factory<proton::Nature>;
+        return (factory);
+      }
 
-      ELLE_TRACE("setting up the nucleus node factory");
+      static
+      elle::utility::Factory<proton::Nature> const*
+      _node()
+      {
+        elle::utility::Factory<proton::Nature>* factory =
+          new elle::utility::Factory<proton::Nature>;
 
-      factory->record<proton::Seam<neutron::Data>>(
-        proton::Nature::data_seam);
-      factory->record<proton::Quill<neutron::Data>>(
-        proton::Nature::data_quill);
-      factory->record<neutron::Data>(
-        proton::Nature::data_value);
+        ELLE_TRACE("setting up the nucleus node factory");
 
-      factory->record<proton::Seam<neutron::Catalog>>(
-        proton::Nature::catalog_seam);
-      factory->record<proton::Quill<neutron::Catalog>>(
-        proton::Nature::catalog_quill);
-      factory->record<neutron::Catalog>(
-        proton::Nature::catalog_value);
+        factory->record<proton::Seam<neutron::Data>>(
+          proton::Nature::data_seam);
+        factory->record<proton::Quill<neutron::Data>>(
+          proton::Nature::data_quill);
+        factory->record<neutron::Data>(
+          proton::Nature::data_value);
 
-      // XXX[reference]
+        factory->record<proton::Seam<neutron::Catalog>>(
+          proton::Nature::catalog_seam);
+        factory->record<proton::Quill<neutron::Catalog>>(
+          proton::Nature::catalog_quill);
+        factory->record<neutron::Catalog>(
+          proton::Nature::catalog_value);
 
-      factory->record<proton::Seam<neutron::Attributes>>(
-        proton::Nature::attributes_seam);
-      factory->record<proton::Quill<neutron::Attributes>>(
-        proton::Nature::attributes_quill);
-      factory->record<neutron::Attributes>(
-        proton::Nature::attributes_value);
+        // XXX[reference]
 
-      factory->record<proton::Seam<neutron::Access>>(
-        proton::Nature::access_seam);
-      factory->record<proton::Quill<neutron::Access>>(
-        proton::Nature::access_quill);
-      factory->record<neutron::Access>(
-        proton::Nature::access_value);
+        factory->record<proton::Seam<neutron::Attributes>>(
+          proton::Nature::attributes_seam);
+        factory->record<proton::Quill<neutron::Attributes>>(
+          proton::Nature::attributes_quill);
+        factory->record<neutron::Attributes>(
+          proton::Nature::attributes_value);
 
-      factory->record<proton::Seam<neutron::Ensemble>>(
-        proton::Nature::ensemble_seam);
-      factory->record<proton::Quill<neutron::Ensemble>>(
-        proton::Nature::ensemble_quill);
-      factory->record<neutron::Ensemble>(
-        proton::Nature::ensemble_value);
+        factory->record<proton::Seam<neutron::Access>>(
+          proton::Nature::access_seam);
+        factory->record<proton::Quill<neutron::Access>>(
+          proton::Nature::access_quill);
+        factory->record<neutron::Access>(
+          proton::Nature::access_value);
 
-      return (factory);
+        factory->record<proton::Seam<neutron::Ensemble>>(
+          proton::Nature::ensemble_seam);
+        factory->record<proton::Quill<neutron::Ensemble>>(
+          proton::Nature::ensemble_quill);
+        factory->record<neutron::Ensemble>(
+          proton::Nature::ensemble_value);
+
+        return (factory);
+      }
     }
   }
 

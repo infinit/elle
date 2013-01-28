@@ -18,6 +18,7 @@ namespace infinit
 # include <cryptography/Code.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/Clear.hh>
+# include <cryptography/Cryptosystem.hh>
 # include <cryptography/Digest.hh>
 # include <cryptography/Plain.hh>
 # include <cryptography/Signature.hh>

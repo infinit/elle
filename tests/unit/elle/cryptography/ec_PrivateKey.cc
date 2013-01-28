@@ -13,7 +13,8 @@ void test_encrypt()
   std::string const my_secret_text =
     "This is a very secret text. my gmail password is 'bite'";
 
-  cryptography::KeyPair pair = cryptography::KeyPair::generate(1024);
+  cryptography::KeyPair pair =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
   cryptography::Code code = pair.K().encrypt(my_secret_text);
 

@@ -72,7 +72,9 @@ namespace satellite
     if (identity.Create(
           id,
           name,
-          cryptography::KeyPair::generate(1024)) == elle::Status::Error) // XXX[1024 -> to Identity]
+          cryptography::KeyPair::generate(
+            cryptography::Cryptosystem::rsa,
+            lune::Identity::keypair_length)) == elle::Status::Error)
       escape("unable to create the identity");
 
     // encrypt the identity.

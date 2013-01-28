@@ -98,6 +98,8 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
+
+      ELLE_ASSERT(false);
       /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
@@ -150,6 +152,8 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
+
+      ELLE_ASSERT(false);
       /* XXX[porcupine]
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().

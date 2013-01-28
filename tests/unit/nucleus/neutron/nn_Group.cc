@@ -18,13 +18,15 @@ ELLE_LOG_COMPONENT("infinit.tests.nucleus.neutron.Group");
 
 void test1()
 {
-  cryptography::KeyPair owner(cryptography::KeyPair::generate(1024));
+  cryptography::KeyPair owner =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
   nucleus::proton::Network network("test");
 
   nucleus::neutron::Group group(network, owner.K(), "everybody");
 
-  cryptography::KeyPair pass(cryptography::KeyPair::generate(2048));
+  cryptography::KeyPair pass =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 2048);
 
   /* XXX
   nucleus::neutron::Ensemble ensemble(network, owner.K());
@@ -97,7 +99,8 @@ void test1()
 
 void test2()
 {
-  cryptography::KeyPair owner(cryptography::KeyPair::generate(1024));
+  cryptography::KeyPair owner =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
   nucleus::proton::Network network("test");
 

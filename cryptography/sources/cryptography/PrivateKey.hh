@@ -4,6 +4,7 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
+# include <cryptography/interface.hh>
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
@@ -22,6 +23,13 @@ namespace infinit
   namespace cryptography
   {
     /// Represent a private key in a given cryptosystem, RSA for instance.
+    ///
+    /// Note that this class could have been designed as a mere interface
+    /// implemented by every cryptosystem algorithm. Unfortunately, in
+    /// order to be serializable, once must keep the algorithm so as to
+    /// build the right instance through a factory. This is essentially
+    /// what this class does along with forwarding the calls to the
+    /// appropriate implementation.
     class PrivateKey:
       public elle::concept::MakeUniquable<PrivateKey>,
       public elle::Printable
@@ -32,36 +40,16 @@ namespace infinit
     public:
       friend class KeyPair;
 
-      /*----------.
-      | Constants |
-      `----------*/
-    public:
-      struct Constants
-      {
-        static oneway::Algorithm const oneway_algorithm;
-      };
-
       /*-------------.
       | Construction |
       `-------------*/
     public:
       PrivateKey(); // XXX[deserialize]
+      /// Construct a private key by providing its implementation.
+      PrivateKey(std::unique_ptr<interface::PrivateKey>&& implementation);
       PrivateKey(PrivateKey const& other);
       PrivateKey(PrivateKey&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
-      ~PrivateKey();
-    private:
-      /// Construct a private key based on the given EVP_PKEY key whose
-      /// ownership is transferred to the private key.
-      PrivateKey(::EVP_PKEY* key);
-      PrivateKey(::BIGNUM* n,
-                 ::BIGNUM* e,
-                 ::BIGNUM* d,
-                 ::BIGNUM* p,
-                 ::BIGNUM* q,
-                 ::BIGNUM* dmp1,
-                 ::BIGNUM* dmq1,
-                 ::BIGNUM* iqmp);
 
       /*--------.
       | Methods |
@@ -72,7 +60,6 @@ namespace infinit
       /// Note that the code is, in practice, an archive containing both
       /// a temporarily-generated secret key and the plain text encrypted
       /// with the secret key.
-      ///
       Clear
       decrypt(Code const& code) const;
       /// Decrypt a code and returns the given type, assuming the given type
@@ -98,31 +85,6 @@ namespace infinit
       template <typename T>
       Code
       encrypt(T const& value) const;
-      /// XXX
-      /* XXX
-      elle::Status
-      Derive(const Seed& seed, PublicKey& key) const;
-      */
-    private:
-      /// Construct the object based on big numbers.
-      ///
-      /// Note that when called, the number are already allocated for the
-      /// purpose of the object construction. In other words, the ownership
-      /// is transferred to the private key being constructed. Thus, it is
-      /// the responsibility of the private key being constructed to release
-      /// memory should an error occur, i.e not the caller's
-      void
-      _construct(::BIGNUM* n,
-                 ::BIGNUM* e,
-                 ::BIGNUM* d,
-                 ::BIGNUM* p,
-                 ::BIGNUM* q,
-                 ::BIGNUM* dmp1,
-                 ::BIGNUM* dmq1,
-                 ::BIGNUM* iqmp);
-      /// Prepare the private key cryptographic contexts.
-      void
-      _prepare();
 
       /*----------.
       | Operators |
@@ -148,10 +110,7 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(::EVP_PKEY*, key);
-      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
-      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_sign);
-      ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt;)
+      ELLE_ATTRIBUTE(std::unique_ptr<interface::PrivateKey>, implementation);
     };
   }
 }
