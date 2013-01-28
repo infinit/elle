@@ -53,11 +53,17 @@ namespace reactor
       | NAT |
       `----*/
       private:
+        boost::asio::ip::udp::endpoint&
+        _longinus();
+
         bool
         _punch(int port);
         bool
         _punch(int port,
                std::unique_ptr<reactor::network::UDPSocket>& socket);
+        void
+        _beat(int port, std::unique_ptr<UDPSocket>& socket);
+
         std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
         std::unique_ptr<reactor::Thread> _heartbeat;
 
