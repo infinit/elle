@@ -1,6 +1,15 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
-source ${INFINIT_SOURCE_DIR}/scripts/common.sh
+infinitd_probe() {
+	for proc in $(pgrep 8watchdog)
+	do
+		i8info 8watchdog \(pid ${proc}\)
+		for child in $(ps h -o pid --ppid ${proc})
+		do
+			i8info " " 8infinit \(pid ${child}\)
+		done
+	done
+}
 
 infinitd_stop() {
 	for proc in $(pgrep 8watchdog)
@@ -14,5 +23,3 @@ infinitd_stop() {
 		kill -9 $proc
 	done
 }
-
-infinitd_stop

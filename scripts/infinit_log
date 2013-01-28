@@ -1,0 +1,87 @@
+#!/usr/bin/env zsh
+
+typeset -U components
+components+=(cryptography.cryptography cryptography.KeyPair cryptography.random
+elle.assert.AssertError elle.Buffer elle.concept.Fileable elle.concept.Uniquable
+elle.concurrency.Program elle.CrashReporter elle.format.json.Parser
+elle.HTTPClient Elle.IOStream Elle.NAT elle.serialize.BaseArchive
+elle.serialize.Pointer elle.serialize.Serializable elle.serialize.Serializer
+elle.system.Process elle.utility.Factory elle.utility.Time etoile.wall.Object
+infinit.8group infinit.agent.Agent infinit.cryptograhy.oneway
+infinit.cryptography.oneway infinit.cryptography.PrivateKey
+infinit.cryptography.PublicKey infinit.cryptography.SecretKey
+infinit.etoile.automaton.Access infinit.etoile.automaton.Attributes
+infinit.etoile.automaton.Author infinit.etoile.automaton.Contents
+infinit.etoile.automaton.Directory infinit.etoile.automaton.Ensemble
+infinit.etoile.automaton.File infinit.etoile.automaton.Group
+infinit.etoile.automaton.Link infinit.etoile.automaton.Object
+infinit.etoile.automaton.Rights infinit.etoile.gear.Guard
+infinit.etoile.gear.Scope infinit.etoile.journal.Journal
+infinit.etoile.nest.Nest infinit.etoile.portal.Application
+infinit.etoile.portal.Portal infinit.etoile.wall.Access
+infinit.etoile.wall.Attributes infinit.etoile.wall.Directory
+infinit.etoile.wall.File infinit.etoile.wall.Group infinit.etoile.wall.Link
+infinit.etoile.wall.Object infinit.etoile.wall.Path infinit.hole.Hole
+infinit.hole.implementations.local.Implementation infinit.hole.local.Machine
+infinit.hole.remote.Client infinit.hole.remote.Customer
+infinit.hole.remote.Machine infinit.hole.remote.Server infinit.hole.slug.cache
+infinit.hole.slug.Host infinit.hole.slug.Machine infinit.hole.storage.Directory
+infinit.hole.storage.Memory infinit.hole.storage.Storage infinit.horizon.Crib
+infinit.horizon.Crux infinit.horizon.Crux infinit.horizon.Crux
+infinit.horizon.FUker infinit.horizon.FUker infinit.horizon.macosx.Crux
+infinit.lune.Authority infinit.lune.Descriptor infinit.lune.Identity
+infinit.nucleus.factory infinit.nucleus.neutron.Access
+infinit.nucleus.neutron.Ensemble infinit.nucleus.proton.Ambit
+infinit.nucleus.proton.Attributes infinit.nucleus.proton.Catalog
+infinit.nucleus.proton.ContentHashBlock infinit.nucleus.proton.Contents
+infinit.nucleus.proton.Data infinit.nucleus.proton.Door
+infinit.nucleus.proton.ImprintBlock infinit.nucleus.proton.Nodule
+infinit.nucleus.proton.OwnerKeyBlock infinit.nucleus.proton.Porcupine
+infinit.nucleus.proton.Quill infinit.nucleus.proton.Seam
+infinit.nucleus.proton.Tree infinit.oracle.disciples.metalib.Network
+infinit.plasma.meta.Client infinit.plasma.trophonius.Client
+infinit.plasma.watchdog infinit.plasma.watchdog
+infinit.plasma.watchdog.LocalServer infinit.protocol.Channel
+infinit.protocol.RPC infinit.protocol.Serializer
+infinit.satellites.transfer.Transfer infinit.surface.gap
+infinit.surface.gap.InfinitInstanceManager infinit.surface.gap.MetricReporter
+infinit.surface.gap.State infinit.surface.gap.State
+infinit.tests.nucleus.neutron.Group infinit.tests.nucleus.proton.Porcupine
+reactor.backend reactor.backend.Threads reactor.network.Socket
+reactor.network.TCPSocket reactor.network.UDPServer
+reactor.network.UDPServerSocket reactor.network.UDPSocket
+reactor.network.UDTServer reactor.network.UDTSocket reactor.RWMutex
+reactor.Scheduler reactor.Thread)
+
+infinit_log() {
+    for i in $(echo $ELLE_LOG_COMPONENTS | tr ',' ' ')
+    do
+        i8info $i
+    done
+}
+
+infinit_log_list() {
+    for i in $components
+    do
+        i8info $i
+    done
+}
+
+infinit_log_add() {
+    typeset -U set
+    for i in $(echo $ELLE_LOG_COMPONENTS $* | tr ',' ' ')
+    do
+        set+=($i)
+    done
+    export ELLE_LOG_COMPONENTS=$(echo $set | tr ' ' ',')
+}
+
+infinit_log_search() {
+	for i in $components
+	do
+		if [[ "$i" =~ "$1" ]]
+		then
+				i8info $i
+		fi
+	done
+}
