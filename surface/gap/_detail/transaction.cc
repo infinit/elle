@@ -87,15 +87,15 @@ namespace surface
                  transfer_binary,
                  arguments.join(" ").toStdString());
 
-      QProcess p;
-      p.start(transfer_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8transfer binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8transfer binary exited with errors");
-
       try
       {
+        QProcess p;
+        p.start(transfer_binary.c_str(), arguments);
+        if (!p.waitForFinished(-1))
+          throw Exception(gap_internal_error, "8transfer binary failed");
+        if (p.exitCode())
+          throw Exception(gap_internal_error, "8transfer binary exited with errors");
+
         metrics::google::server().store("transaction:create:attempt",
                                         {{"cm1", std::to_string(files.size())},
                                          {"cm2", std::to_string(size)}});
