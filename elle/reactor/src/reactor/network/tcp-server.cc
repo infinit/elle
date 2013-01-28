@@ -17,13 +17,11 @@ namespace reactor
 
     TCPServer::TCPServer(Scheduler& sched)
       : Super(sched)
-      , _acceptor(0)
+      , _acceptor()
     {}
 
     TCPServer::~TCPServer()
-    {
-      delete _acceptor;
-    }
+    {}
 
     /*----------.
     | Accepting |
@@ -35,7 +33,7 @@ namespace reactor
         TCPAccept(Scheduler& scheduler, boost::asio::ip::tcp::acceptor& acceptor)
           : Operation(scheduler)
           , _acceptor(acceptor)
-          , _socket(0)
+          , _socket()
           , _peer()
         {}
 
@@ -47,7 +45,7 @@ namespace reactor
 
         TCPSocket::AsioSocket* socket()
         {
-          return _socket;
+          return _socket.release();
         }
 
       protected:
@@ -59,7 +57,7 @@ namespace reactor
 
         virtual void _start()
         {
-          _socket = new TCPSocket::AsioSocket(scheduler().io_service());
+          _socket.reset(new TCPSocket::AsioSocket(scheduler().io_service()));
           _acceptor.async_accept(*_socket, _peer,
                                  boost::bind(&TCPAccept::_wakeup, this, _1));
         }
@@ -77,7 +75,7 @@ namespace reactor
         }
 
         boost::asio::ip::tcp::acceptor& _acceptor;
-        TCPSocket::AsioSocket* _socket;
+        std::unique_ptr<TCPSocket::AsioSocket> _socket;
         TCPSocket::EndPoint _peer;
     };
 
@@ -101,8 +99,9 @@ namespace reactor
     {
       try
         {
-          _acceptor = new boost::asio::ip::tcp::acceptor(scheduler().io_service(),
-                                                         end_point);
+          _acceptor.reset
+            (new boost::asio::ip::tcp::acceptor
+             (scheduler().io_service(), end_point));
         }
       catch (boost::system::system_error& e)
         {

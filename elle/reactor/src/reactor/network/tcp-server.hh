@@ -35,7 +35,7 @@ namespace reactor
         TCPSocket* accept();
 
       private:
-        boost::asio::ip::tcp::acceptor* _acceptor;
+        std::unique_ptr<boost::asio::ip::tcp::acceptor> _acceptor;
     };
   }
 }
