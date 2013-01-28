@@ -28,7 +28,7 @@ namespace reactor
          *  @param sched The underlying scheduler.
          */
         Server(Scheduler& sched);
-        ~Server();
+        virtual ~Server();
         /** Create a server for the given protocol.
          *  @param protocol The transport protocl to use.
          *  @param sched The underlying scheduler.
