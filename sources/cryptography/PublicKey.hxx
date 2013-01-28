@@ -72,10 +72,11 @@ namespace infinit
 
 # include <elle/serialize/Serializer.hh>
 
-# include <cryptography/finally.hh>
-# include <cryptography/bn.hh>
+# include <cryptography/KeyPair.hh>
+# include <cryptography/Cryptosystem.hh>
+# include <cryptography/factory.hh>
 
-ELLE_SERIALIZE_SPLIT(infinit::cryptography::PublicKey)
+ELLE_SERIALIZE_SPLIT(infinit::cryptography::PublicKey);
 
 ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::PublicKey,
                           archive,
@@ -84,10 +85,10 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::PublicKey,
 {
   enforce(format == 0);
 
-  enforce(value._key != nullptr);
+  archive << value._implementation->cryptosystem();
 
-  archive << *value._key->pkey.rsa->n
-          << *value._key->pkey.rsa->e;
+  // XXX[alive_pointer?]
+  archive << *value._implementation;
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
@@ -97,21 +98,16 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
 {
   enforce(format == 0);
 
-  ::BIGNUM *n = ::BN_new();
-  ::BIGNUM *e = ::BN_new();
+  infinit::cryptography::Cryptosystem cryptosystem;
+  archive >> cryptosystem;
 
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+  ELLE_ASSERT(value._implementation == nullptr);
+  value._implementation.reset(
+    infinit::cryptography::factory::K().allocate<
+      infinit::cryptography::interface::PublicKey>(cryptosystem));
 
-  archive >> *n
-          >> *e;
-
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
-
-  value._construct(n, e);
-
-  ELLE_ASSERT(value._key != nullptr);
+  // XXX[improve by passing the archive to the factory]
+  archive >> *value._implementation;
 }
 
 #endif

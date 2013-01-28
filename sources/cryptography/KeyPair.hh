@@ -3,6 +3,7 @@
 
 # include <cryptography/PublicKey.hh>
 # include <cryptography/PrivateKey.hh>
+# include <cryptography/Cryptosystem.hh>
 
 # include <elle/types.hh>
 # include <elle/Printable.hh>
@@ -13,6 +14,8 @@
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
+
+# include <iosfwd>
 
 namespace infinit
 {
@@ -35,7 +38,8 @@ namespace infinit
       /// given length.
       static
       KeyPair
-      generate(elle::Natural32 const length);
+      generate(Cryptosystem const cryptosystem,
+               elle::Natural32 const length);
 
       /*-------------.
       | Construction |
@@ -44,15 +48,17 @@ namespace infinit
       KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
               PrivateKey const& k);
+      KeyPair(PublicKey&& K,
+              PrivateKey&& k);
       KeyPair(KeyPair const& other);
       KeyPair(KeyPair&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
-    private:
-      /// Construct a key pair based on the given EVP_PKEY.
-      ///
-      /// Note that the key pair takes control over the ownership of
-      /// the given key.
-      KeyPair(::EVP_PKEY* key);
+
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// XXX[rotate]
 
       /*----------.
       | Operators |
