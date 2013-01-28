@@ -1,4 +1,5 @@
 #include <elle/network/Interface.hh>
+#include <elle/utility/Suffixes.hh>
 
 #include <iomanip>
 #include <iostream>
@@ -40,6 +41,26 @@ namespace elle
   namespace network
   {
 
+    namespace {
+      bool
+      check_ipv4_autoip(struct sockaddr *sock)
+      {
+        using namespace elle::suffix;
+        // 169.254.0.0
+        static const auto autoip_addr    = 10101001111111100000000000000000_bits;
+        // 255.255.0.0
+        static const auto autoip_netmask = 11111111111111110000000000000000_bits;
+
+        // This check only make sense in ipv4.
+        if (sock->sa_family != AF_INET)
+          return false;
+
+        struct sockaddr_in *sin = (struct sockaddr_in *)sock;
+        auto addr_bits = std::bitset<32>(ntohl(sin->sin_addr.s_addr));
+
+        return autoip_addr == (autoip_netmask & addr_bits);
+      }
+    }
     std::map<std::string, Interface>
     Interface::get_map(Interface::Filter filter)
     {
@@ -48,14 +69,22 @@ namespace elle
       ifaddrs * ifap = 0;
       if (getifaddrs(&ifap) != 0)
         return map;
+
       for (ifaddrs* iter = ifap; iter != NULL; iter = iter->ifa_next)
       {
+        // Apply filters
         if (filter & Interface::Filter::no_loopback &&
             bool(iter->ifa_flags & IFF_LOOPBACK))
           continue;
+
         if (filter & Interface::Filter::only_up &&
             !(iter->ifa_flags & IFF_UP))
           continue;
+
+        if ((filter & Interface::Filter::no_autoip) &&
+            check_ipv4_autoip(iter->ifa_addr))
+          continue;
+
         std::ostringstream oss;
         uint8_t* tab;
         sockaddr_in* inet_addr;
