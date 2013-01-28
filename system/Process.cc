@@ -20,10 +20,16 @@ namespace elle
 
     struct ProcessConfig::Impl
     {
-      bool daemon;
+      bool  daemon;
+      int   in_pipe[2];
+      int   out_pipe[2];
+      int   err_pipe[2];
 
       Impl()
         : daemon{false}
+        , in_pipe{-1, -1}
+        , out_pipe{-1, -1}
+        , err_pipe{-1, -1}
       {}
     };
 
